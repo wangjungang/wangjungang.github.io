@@ -6,27 +6,38 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Vim的简单使用 | Blog</title>
+  <title>iTerm2 + Oh My Zsh 打造舒适终端体验 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="vim的使用为配合教程, 所以简单的介绍下vim的基础使用. 当你在终端输入vi xxx或者vim xxx的后.会进入下图的状态, 请多注意左下角, 每一个步骤左下角都会有变化. 1.未编辑状态  2.按键盘上的i进入编辑状态, 然后输入内容 输入前  输入后  3.按esc退出编辑状态  4.输入:wq保存并退出  5.保存并退出后">
-<meta name="keywords" content="Vim">
+  <meta name="description" content="写在前面最终效果图  本文默认各位已经安装了git环境和xcode（command line tools），遇到提示找不到git命令或需要安装command line tool的地方，文中不再赘述了。 下载iTerm2可以直接去官网下载：地址 安装完成后，在/bin目录下会多出一个zsh的文件。 Mac系统默认使用dash作为终端，可以使用命令修改默认使用zsh： chsh -s /bin/zsh">
+<meta name="keywords" content="MAC OS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Vim的简单使用">
-<meta property="og:url" content="http://yoursite.com/2018/07/27/Vim的简单使用/index.html">
+<meta property="og:title" content="iTerm2 + Oh My Zsh 打造舒适终端体验">
+<meta property="og:url" content="http://yoursite.com/2018/07/31/iTerm2 + Oh My Zsh 打造舒适终端体验/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="vim的使用为配合教程, 所以简单的介绍下vim的基础使用. 当你在终端输入vi xxx或者vim xxx的后.会进入下图的状态, 请多注意左下角, 每一个步骤左下角都会有变化. 1.未编辑状态  2.按键盘上的i进入编辑状态, 然后输入内容 输入前  输入后  3.按esc退出编辑状态  4.输入:wq保存并退出  5.保存并退出后">
+<meta property="og:description" content="写在前面最终效果图  本文默认各位已经安装了git环境和xcode（command line tools），遇到提示找不到git命令或需要安装command line tool的地方，文中不再赘述了。 下载iTerm2可以直接去官网下载：地址 安装完成后，在/bin目录下会多出一个zsh的文件。 Mac系统默认使用dash作为终端，可以使用命令修改默认使用zsh： chsh -s /bin/zsh">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://zedxpp.com/images/20170225221630/QQ20170225-221338@2x.png">
-<meta property="og:image" content="http://zedxpp.com/images/20170225221630/QQ20170225-221348@2x.png">
-<meta property="og:image" content="http://zedxpp.com/images/20170225221630/QQ20170225-221354@2x.png">
-<meta property="og:image" content="http://zedxpp.com/images/20170225221630/QQ20170225-221401@2x.png">
-<meta property="og:image" content="http://zedxpp.com/images/20170225221630/QQ20170225-221412@2x.png">
-<meta property="og:image" content="http://zedxpp.com/images/20170225221630/QQ20170225-221420@2x.png">
-<meta property="og:updated_time" content="2018-07-27T15:40:58.643Z">
+<meta property="og:image" content="http://op1uxe89i.bkt.clouddn.com/WX20180731-131307@2x.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/5.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/6.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/7.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/8.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/9.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/10.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/11.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/12.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/13.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/14.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/15.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/16.png">
+<meta property="og:updated_time" content="2018-07-31T05:37:45.291Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Vim的简单使用">
-<meta name="twitter:description" content="vim的使用为配合教程, 所以简单的介绍下vim的基础使用. 当你在终端输入vi xxx或者vim xxx的后.会进入下图的状态, 请多注意左下角, 每一个步骤左下角都会有变化. 1.未编辑状态  2.按键盘上的i进入编辑状态, 然后输入内容 输入前  输入后  3.按esc退出编辑状态  4.输入:wq保存并退出  5.保存并退出后">
-<meta name="twitter:image" content="http://zedxpp.com/images/20170225221630/QQ20170225-221338@2x.png">
+<meta name="twitter:title" content="iTerm2 + Oh My Zsh 打造舒适终端体验">
+<meta name="twitter:description" content="写在前面最终效果图  本文默认各位已经安装了git环境和xcode（command line tools），遇到提示找不到git命令或需要安装command line tool的地方，文中不再赘述了。 下载iTerm2可以直接去官网下载：地址 安装完成后，在/bin目录下会多出一个zsh的文件。 Mac系统默认使用dash作为终端，可以使用命令修改默认使用zsh： chsh -s /bin/zsh">
+<meta name="twitter:image" content="http://op1uxe89i.bkt.clouddn.com/WX20180731-131307@2x.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -162,41 +173,99 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Vim的简单使用" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-iTerm2 + Oh My Zsh 打造舒适终端体验" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Vim的简单使用
+      iTerm2 + Oh My Zsh 打造舒适终端体验
     </h1>
   
 
         
-        <a href="/2018/07/27/Vim的简单使用/" class="archive-article-date">
-  	<time datetime="2018-07-27T15:32:00.875Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
+        <a href="/2018/07/31/iTerm2 + Oh My Zsh 打造舒适终端体验/" class="archive-article-date">
+  	<time datetime="2018-07-31T05:10:45.456Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h1 id="vim的使用"><a href="#vim的使用" class="headerlink" title="vim的使用"></a>vim的使用</h1><p>为配合教程, 所以简单的介绍下vim的基础使用.</p>
-<p>当你在终端输入vi xxx或者vim xxx的后.会进入下图的状态, 请多注意左下角, 每一个步骤左下角都会有变化.</p>
-<p>1.未编辑状态</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221338@2x.png" alt=""></p>
-<p>2.按键盘上的i进入编辑状态, 然后输入内容</p>
-<p>输入前</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221348@2x.png" alt=""></p>
-<p>输入后</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221354@2x.png" alt=""></p>
-<p>3.按esc退出编辑状态</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221401@2x.png" alt=""></p>
-<p>4.输入:wq保存并退出</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221412@2x.png" alt=""></p>
-<p>5.保存并退出后</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221420@2x.png" alt=""></p>
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最终效果图</p>
+<p><img src="http://op1uxe89i.bkt.clouddn.com/WX20180731-131307@2x.png" alt=""></p>
+<p>本文默认各位已经安装了git环境和xcode（command line tools），遇到提示找不到git命令或需要安装command line tool的地方，文中不再赘述了。</p>
+<h3 id="下载iTerm2"><a href="#下载iTerm2" class="headerlink" title="下载iTerm2"></a>下载iTerm2</h3><p>可以直接去官网下载：<a href="https://www.iterm2.com/" target="_blank" rel="noopener">地址</a></p>
+<p>安装完成后，在/bin目录下会多出一个zsh的文件。</p>
+<p>Mac系统默认使用dash作为终端，可以使用命令修改默认使用zsh：</p>
+<pre><code>chsh -s /bin/zsh
+</code></pre><p>如果想修改回默认dash，同样使用chsh命令即可：</p>
+<pre><code>chsh -s /bin/bash
+</code></pre><p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/1.png" alt=""></p>
+<h3 id="安装Oh-my-zsh"><a href="#安装Oh-my-zsh" class="headerlink" title="安装Oh my zsh"></a>安装Oh my zsh</h3><p>安装方法有两种，可以使用curl或wget，看自己环境或喜好：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># curl 安装方式</span></span><br><span class="line">sh -c <span class="string">"<span class="variable">$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)</span>"</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># wget 安装方式</span></span><br><span class="line">sh -c <span class="string">"<span class="variable">$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)</span>"</span></span><br></pre></td></tr></table></figure>
+<p>安装命令和安装完成后的截图：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/2.png" alt="ImageInitIterm"></p>
+<p>oh-my-zsh开源地址：<a href="https://github.com/robbyrussell/oh-my-zsh" target="_blank" rel="noopener">https://github.com/robbyrussell/oh-my-zsh</a></p>
+<h3 id="安装PowerLine"><a href="#安装PowerLine" class="headerlink" title="安装PowerLine"></a>安装PowerLine</h3><p>powerline官网：<a href="http://powerline.readthedocs.io/en/latest/installation.html" target="_blank" rel="noopener">http://powerline.readthedocs.io/en/latest/installation.html</a></p>
+<p>安装powerline的方式依然简单，也只需要一条命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install powerline-status --user</span><br></pre></td></tr></table></figure>
+<p>没有安装pip的同学可能会碰到zsh: command not found: pip。</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/3.png" alt="ImageInitIterm"></p>
+<p>使用命令安装pip即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo easy_install pip</span><br></pre></td></tr></table></figure>
+<p>安装后再次执行安装powerline的命令即可。</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/4.png" alt="ImageInitIterm"></p>
+<h3 id="安装PowerFonts"><a href="#安装PowerFonts" class="headerlink" title="安装PowerFonts"></a>安装PowerFonts</h3><p>安装字体库需要首先将项目git clone至本地，然后执行源码中的install.sh。</p>
+<p>在你习惯的位置新建一个文件夹，如：~/Desktop/OpenSource/</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/5.png" alt="ImageInitIterm"></p>
+<p>在此文件夹下执行git clone命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># git clone</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/powerline/fonts.git --depth=1</span><br><span class="line"><span class="comment"># cd to folder</span></span><br><span class="line"><span class="built_in">cd</span> fonts</span><br><span class="line"><span class="comment"># run install shell</span></span><br><span class="line">./install.sh</span><br></pre></td></tr></table></figure>
+<p>执行结果如下：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/6.png" alt="ImageInitIterm"></p>
+<p>安装好字体库之后，我们来设置iTerm2的字体，具体的操作是iTerm2 -&gt; Preferences -&gt; Profiles -&gt; Text，在Font区域选中Change Font，然后找到Meslo LG字体。有L、M、S可选，看个人喜好：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/7.png" alt="ImageInitIterm"></p>
+<h3 id="安装配色方案"><a href="#安装配色方案" class="headerlink" title="安装配色方案"></a>安装配色方案</h3><p>配色方案在使用VIM或Colorful Log时会变得非常有用，同时界面也不会一片黑绿一样死板。</p>
+<p>同样使用git clone的方式下载源码进行安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/Desktop/OpenSource</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/altercation/solarized</span><br><span class="line"><span class="built_in">cd</span> solarized/iterm2-colors-solarized/</span><br><span class="line">open .</span><br></pre></td></tr></table></figure>
+<p>在打开的finder窗口中，双击Solarized Dark.itermcolors和Solarized Light.itermcolors即可安装明暗两种配色：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/8.png" alt="ImageInitIterm"></p>
+<p>再次进入iTerm2 -&gt; Preferences -&gt; Profiles -&gt; Colors -&gt; Color Presets中根据个人喜好选择这两种配色中的一种即可：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/9.png" alt="ImageInitIterm"></p>
+<h3 id="安装主题"><a href="#安装主题" class="headerlink" title="安装主题"></a>安装主题</h3><p>下载agnoster主题，执行脚本安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/Desktop/OpenSource</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/fcamblor/oh-my-zsh-agnoster-fcamblor.git</span><br><span class="line"><span class="built_in">cd</span> oh-my-zsh-agnoster-fcamblor/</span><br><span class="line">./install</span><br></pre></td></tr></table></figure>
+<p>执行上面的命令会将主题拷贝到oh my zsh的themes中：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/10.png" alt="ImageInitIterm"></p>
+<p>拷贝完成后，执行命令打开zshrc配置文件，将ZSH_THEME后面的字段改为agnoster。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi ~/.zshrc</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/11.png" alt="ImageInitIterm"></p>
+<p>修改完成后按一下esc调出vi命令，输入:wq保存并退出vi模式。</p>
+<p>此时command+Q或source配置文件后，iTerm2变了模样：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/12.png" alt="ImageInitIterm"></p>
+<h3 id="安装高亮插件"><a href="#安装高亮插件" class="headerlink" title="安装高亮插件"></a>安装高亮插件</h3><p>这是oh my zsh的一个插件，安装方式与theme大同小异：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/.oh-my-zsh/custom/plugins/</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-syntax-highlighting.git</span><br><span class="line">vi ~/.zshrc</span><br></pre></td></tr></table></figure>
+<p>这时我们再次打开zshrc文件进行编辑。找到plugins，此时plugins中应该已经有了git，我们需要把高亮插件也加上：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/13.png" alt="ImageInitIterm"></p>
+<p>请务必保证插件顺序，zsh-syntax-highlighting必须在最后一个。</p>
+<p>然后在文件的最后一行添加：source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh</p>
+<p>按一下esc调出vi命令，输入:wq保存并退出vi模式。</p>
+<p>执行命令使刚才的修改生效：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.zshrc</span><br></pre></td></tr></table></figure>
+<p>至此大功告成，请看最终效果图：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/14.png" alt="ImageInitIterm"></p>
+<p>背景图片取自微软Surface Studio的4K壁纸(将近12MB大小)，非常漂亮，需要的可以自取：</p>
+<p><a href="https://pan.baidu.com/s/18jNrULbr05npD0Z_ht28Kg" target="_blank" rel="noopener">https://pan.baidu.com/s/18jNrULbr05npD0Z_ht28Kg</a></p>
+<p>更换背景图片方式：iTerm2 -&gt; Preferences -&gt; Profiles -&gt; Window -&gt; BackGround Image勾选图片即可。</p>
+<h4 id="可选择、命令补全"><a href="#可选择、命令补全" class="headerlink" title="可选择、命令补全"></a>可选择、命令补全</h4><p>跟代码高亮的安装方式一样，这也是一个zsh的插件，叫做zsh-autosuggestion，用于命令建议和补全。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/.oh-my-zsh/custom/plugins/</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-autosuggestions</span><br><span class="line">vi ~/.zshrc</span><br></pre></td></tr></table></figure>
+<p>找到plugins，加上这个插件即可：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/15.png" alt="ImageInitIterm"></p>
+<p>插件效果：</p>
+<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/16.png" alt="ImageInitIterm"></p>
+<p>有同学说补全命令的字体不太清晰，与背景颜色太过相近，其实可以自己调整一下字体颜色。</p>
+<p>Preferences -&gt; Profiles -&gt; Colors 中有Foreground是标准字体颜色，ANSI Colors中Bright的第一个是补全的字体颜色。</p>
 
       
 
@@ -231,7 +300,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vim</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">MAC OS</a>
         		</li>
       		
 		</ul>
@@ -287,7 +356,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/07/27/Vim的简单使用/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/07/31/iTerm2 + Oh My Zsh 打造舒适终端体验/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -301,18 +370,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/07/28/正确的使用pod install 和 pod update - CocoaPods/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          正确的使用pod install 和 pod update - CocoaPods
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/07/27/welcome/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Welcome</div>
+    <a href="/2018/07/28/正确的使用pod install 和 pod update - CocoaPods/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">正确的使用pod install 和 pod update - CocoaPods</div>
       <i class="icon-circle-right"></i>
     </a>
   
