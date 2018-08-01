@@ -152,6 +152,338 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS开发之XLForm的使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/01/iOS开发之XLForm的使用/">iOS开发之XLForm的使用</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/01/iOS开发之XLForm的使用/" class="archive-article-date">
+  	<time datetime="2018-08-01T07:20:49.513Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS开发中，开发”表单”界面，字段稍微多一点的一般都用UITableView来做，而XLForm就是这样一个框架，它是创建动态表格视图最牛逼的iOS库， 用它实现表单功能，非常简单，省心省力。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/735757-1979f0af7638203c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt=""></p>
+<h2 id="导入项目"><a href="#导入项目" class="headerlink" title="导入项目"></a>导入项目</h2><p>可以适用cocoapods 导入</p>
+<h2 id="改造表单ViewController"><a href="#改造表单ViewController" class="headerlink" title="改造表单ViewController"></a>改造表单ViewController</h2><p>让ViewController继承自XLFormViewController,并重写下面的两个方法</p>
+<pre><code>@interface OneViewController : XLFormViewController
+
+@end
+
+
+@implementation OneViewController
+
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self){
+        [self initializeForm];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if (self){
+        [self initializeForm];
+    }
+    return self;
+}
+@end
+</code></pre><h2 id="三、构造表单"><a href="#三、构造表单" class="headerlink" title="三、构造表单"></a>三、构造表单</h2><pre><code>- (void)initializeForm {
+
+    // 设置是否显示Cell之间分界线
+    //self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    // 设置Section的高度
+    self.tableView.sectionHeaderHeight = 30;
+
+    XLFormDescriptor * form;//form，一个表单只有一个
+    XLFormSectionDescriptor * section;//section，一个表单可能有多个
+    XLFormRowDescriptor * row; //row，每个section可能有多个row
+
+    // Form
+    form = [XLFormDescriptor formDescriptor];
+
+
+    // First section
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @&quot;用户&quot;;
+    [form addFormSection:section];
+    // 普通文本
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;username&quot; rowType:XLFormRowDescriptorTypeText];
+    // 设置placeholder
+    [row.cellConfig setObject:@&quot;用户名&quot; forKey:@&quot;textField.placeholder&quot;];
+    // 设置文本颜色
+    [row.cellConfig setObject:[UIColor redColor] forKey:@&quot;textField.textColor&quot;];
+    [section addFormRow:row];
+    // 密码
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;password&quot; rowType:XLFormRowDescriptorTypePassword];
+    // 设置placeholder的颜色
+    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:@&quot;密码&quot; attributes:
+                                      @{NSForegroundColorAttributeName:[UIColor greenColor],
+                                        }];
+    [row.cellConfig setObject:attrString forKey:@&quot;textField.attributedPlaceholder&quot;];
+    [section addFormRow:row];
+
+
+
+    // Second Section
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @&quot;日期&quot;;
+    [form addFormSection:section];
+    // 日期选择器
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;birthday&quot; rowType:XLFormRowDescriptorTypeDate title:@&quot;出生日期&quot;];
+    row.value = [NSDate dateWithTimeIntervalSinceNow:60*60*24];
+    [section addFormRow:row];
+
+
+
+     // Third Section
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @&quot;头像&quot;;
+    [form addFormSection:section];
+    // 图片选择
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;userpic&quot; rowType:XLFormRowDescriptorTypeImage];
+    [section addFormRow:row];
+
+
+
+    // Fourth Section
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @&quot;选择器&quot;;
+    [form addFormSection:section];
+    // 选择器
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;sex&quot; rowType:XLFormRowDescriptorTypeSelectorPush];
+    row.noValueDisplayText = @&quot;暂无&quot;;
+    row.selectorTitle = @&quot;性别选择&quot;;
+    row.selectorOptions = @[@&quot;男&quot;,@&quot;女&quot;,@&quot;其他&quot;];
+    row.title = @&quot;性别&quot;;
+    [row.cellConfigForSelector setObject:[UIColor redColor] forKey:@&quot;textLabel.textColor&quot;];
+    [row.cellConfigForSelector setObject:[UIColor greenColor] forKey:@&quot;detailTextLabel.textColor&quot;];
+    [section addFormRow:row];
+
+
+
+    // Fifth Section
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @&quot;加固&quot;;
+    [form addFormSection:section];
+    // 开关
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;enforce&quot; rowType:XLFormRowDescriptorTypeBooleanSwitch title:@&quot;加固&quot;];
+    [section addFormRow:row];
+
+
+    // Sixth Section
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    // 按钮
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;conform&quot; rowType:XLFormRowDescriptorTypeButton];
+    row.title = @&quot;确定&quot;;
+    [section addFormRow:row];
+
+
+    self.form = form;
+}
+
+-(void)didSelectFormRow:(XLFormRowDescriptor *)formRow{
+
+    // 判断是不是点击了确定按钮
+    if([formRow.tag isEqualToString:@&quot;conform&quot;] &amp;&amp; formRow.rowType == XLFormRowDescriptorTypeButton){
+
+        //获取表单所有到的值
+        NSDictionary *values =  [self formValues];
+
+        NSLog(@&quot;%@&quot;, values);
+
+    }
+
+    [super didSelectFormRow:formRow];
+
+}
+
+//重写改该方法 上面的方法就不会调用了
+//-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+//
+//    NSLog(@&quot;%s&quot;, __func__);
+//
+//}
+
+
+@end
+</code></pre><h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p><img src="https://upload-images.jianshu.io/upload_images/735757-b3bfc036fd7a2035.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/656" alt=""></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/01/iOS开发之XLForm的使用/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-四种遍历方法你选哪个？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/01/四种遍历方法你选哪个？/">四种遍历方法你选哪个？</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/01/四种遍历方法你选哪个？/" class="archive-article-date">
+  	<time datetime="2018-08-01T03:30:50.111Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>编程中有多种方式对collection（NSArray、NSDictionary、NSSet）中的元素进行遍历，实际运用中，需要根据效率视情况而用</p>
+<h2 id="for-循环"><a href="#for-循环" class="headerlink" title="for 循环"></a>for 循环</h2><p>最基本的遍历方法，只能进行有序遍历，对于set，dictionary，需要先转换为array才能进行遍历</p>
+<p>额外创建数组会增大开销，并且会多创建一个数组对象，它会保留collection中的所有元素对象。</p>
+<h2 id="使用NSEnumerator-来遍历"><a href="#使用NSEnumerator-来遍历" class="headerlink" title="使用NSEnumerator 来遍历"></a>使用NSEnumerator 来遍历</h2><pre><code>NSArray *arr = @[@&quot;1&quot;, @&quot;2&quot;, @&quot;3&quot;];
+
+NSEnumerator *enumerator = [arr objectEnumerator];
+
+id obj;
+
+while ((obj = [enumerator nextObject]) != nil) {
+   NSLog(@&quot;===%@&quot;, obj);
+}
+</code></pre><h2 id="快速遍历"><a href="#快速遍历" class="headerlink" title="快速遍历"></a>快速遍历</h2><pre><code>NSArray *arr = @[@&quot;1&quot;, @&quot;2&quot;, @&quot;3&quot;];
+
+for (id obj in arr) {
+
+   NSLog(@&quot;===%@&quot;, obj);
+}
+</code></pre><p>大幅简化了遍历所需的语法</p>
+<p>只要遵从了NSFastEnumeration协议，都可以使用快速遍历方法</p>
+<p>协议方法允许类实例同时返回多个对象，高效：</p>
+<pre><code>- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained _Nullable [_Nonnull])buffer count:(NSUInteger)len;
+</code></pre><p>NSEnumerator也实现了NSFastEnumeration协议，反向遍历的时候，也需要调用reverseObjectEnumerator方法</p>
+<pre><code>for (id obj in [arr reverseObjectEnumerator]) { }
+</code></pre><p>元素下标也有额外的方法</p>
+<h2 id="基于块的遍历方式"><a href="#基于块的遍历方式" class="headerlink" title="基于块的遍历方式"></a>基于块的遍历方式</h2><pre><code>// opts 是枚举类型，NSEnumerationConcurrent 表示开启并发执行， NSEnumerationReverse 表示反向遍历
+// obj 元素对象， idx 对象下标， *stop 为YES时，结束遍历
+- (void)enumerateObjectsWithOptions:(NSEnumerationOptions)opts usingBlock:(void (^)(ObjectType obj, NSUInteger idx, BOOL *stop))block;
+</code></pre><p>遍历时，直接从块里获取更多信息</p>
+<p>当确定元素类型时，可以修改块的方法签名，避免进行类型转换操作。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li><p>遍历collection，最新、最先进的方式是“块枚举法”</p>
+</li>
+<li><p>“块枚举法”能通过GCD来并发执行遍历操作</p>
+</li>
+<li><p>若提前知道待遍历的collection含有何种对象，则应修改块签名，指出对象的具体类型</p>
+</li>
+</ol>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/01/四种遍历方法你选哪个？/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS中runtim的几种常用的方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     

@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018 | Blog</title>
+  <title>四种遍历方法你选哪个？ | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2018/index.html">
+  <meta name="description" content="写在前面编程中有多种方式对collection（NSArray、NSDictionary、NSSet）中的元素进行遍历，实际运用中，需要根据效率视情况而用 for 循环最基本的遍历方法，只能进行有序遍历，对于set，dictionary，需要先转换为array才能进行遍历 额外创建数组会增大开销，并且会多创建一个数组对象，它会保留collection中的所有元素对象。 使用NSEnumerator">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="四种遍历方法你选哪个？">
+<meta property="og:url" content="http://yoursite.com/2018/08/01/四种遍历方法你选哪个？/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="写在前面编程中有多种方式对collection（NSArray、NSDictionary、NSSet）中的元素进行遍历，实际运用中，需要根据效率视情况而用 for 循环最基本的遍历方法，只能进行有序遍历，对于set，dictionary，需要先转换为array才能进行遍历 额外创建数组会增大开销，并且会多创建一个数组对象，它会保留collection中的所有元素对象。 使用NSEnumerator">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-08-01T06:59:35.653Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="四种遍历方法你选哪个？">
+<meta name="twitter:description" content="写在前面编程中有多种方式对collection（NSArray、NSDictionary、NSSet）中的元素进行遍历，实际运用中，需要根据效率视情况而用 for 循环最基本的遍历方法，只能进行有序遍历，对于set，dictionary，需要先转换为array才能进行遍历 额外创建数组会增大开销，并且会多创建一个数组对象，它会保留collection中的所有元素对象。 使用NSEnumerator">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,74 +155,93 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-四种遍历方法你选哪个？" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/01/iOS开发之XLForm的使用/" class="archive-article-date">
-  	<time datetime="2018-08-01T07:20:49.513Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-01</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/01/iOS开发之XLForm的使用/">iOS开发之XLForm的使用</a>
+    <h1 class="article-title" itemprop="name">
+      四种遍历方法你选哪个？
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/01/四种遍历方法你选哪个？/" class="archive-article-date">
+        
+        <a href="/2018/08/01/四种遍历方法你选哪个？/" class="archive-article-date">
   	<time datetime="2018-08-01T03:30:50.111Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-01</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/01/四种遍历方法你选哪个？/">四种遍历方法你选哪个？</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>编程中有多种方式对collection（NSArray、NSDictionary、NSSet）中的元素进行遍历，实际运用中，需要根据效率视情况而用</p>
+<h2 id="for-循环"><a href="#for-循环" class="headerlink" title="for 循环"></a>for 循环</h2><p>最基本的遍历方法，只能进行有序遍历，对于set，dictionary，需要先转换为array才能进行遍历</p>
+<p>额外创建数组会增大开销，并且会多创建一个数组对象，它会保留collection中的所有元素对象。</p>
+<h2 id="使用NSEnumerator-来遍历"><a href="#使用NSEnumerator-来遍历" class="headerlink" title="使用NSEnumerator 来遍历"></a>使用NSEnumerator 来遍历</h2><pre><code>NSArray *arr = @[@&quot;1&quot;, @&quot;2&quot;, @&quot;3&quot;];
 
-        <div class="article-info info-on-right">
-          
+NSEnumerator *enumerator = [arr objectEnumerator];
+
+id obj;
+
+while ((obj = [enumerator nextObject]) != nil) {
+   NSLog(@&quot;===%@&quot;, obj);
+}
+</code></pre><h2 id="快速遍历"><a href="#快速遍历" class="headerlink" title="快速遍历"></a>快速遍历</h2><pre><code>NSArray *arr = @[@&quot;1&quot;, @&quot;2&quot;, @&quot;3&quot;];
+
+for (id obj in arr) {
+
+   NSLog(@&quot;===%@&quot;, obj);
+}
+</code></pre><p>大幅简化了遍历所需的语法</p>
+<p>只要遵从了NSFastEnumeration协议，都可以使用快速遍历方法</p>
+<p>协议方法允许类实例同时返回多个对象，高效：</p>
+<pre><code>- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained _Nullable [_Nonnull])buffer count:(NSUInteger)len;
+</code></pre><p>NSEnumerator也实现了NSFastEnumeration协议，反向遍历的时候，也需要调用reverseObjectEnumerator方法</p>
+<pre><code>for (id obj in [arr reverseObjectEnumerator]) { }
+</code></pre><p>元素下标也有额外的方法</p>
+<h2 id="基于块的遍历方式"><a href="#基于块的遍历方式" class="headerlink" title="基于块的遍历方式"></a>基于块的遍历方式</h2><pre><code>// opts 是枚举类型，NSEnumerationConcurrent 表示开启并发执行， NSEnumerationReverse 表示反向遍历
+// obj 元素对象， idx 对象下标， *stop 为YES时，结束遍历
+- (void)enumerateObjectsWithOptions:(NSEnumerationOptions)opts usingBlock:(void (^)(ObjectType obj, NSUInteger idx, BOOL *stop))block;
+</code></pre><p>遍历时，直接从块里获取更多信息</p>
+<p>当确定元素类型时，可以修改块的方法签名，避免进行类型转换操作。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li><p>遍历collection，最新、最先进的方式是“块枚举法”</p>
+</li>
+<li><p>“块枚举法”能通过GCD来并发执行遍历操作</p>
+</li>
+<li><p>若提前知道待遍历的collection含有何种对象，则应修改块签名，指出对象的具体类型</p>
+</li>
+</ol>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -229,301 +253,115 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/08/01/四种遍历方法你选哪个？/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/31/iOS中runtim的几种常用的方法/" class="archive-article-date">
-  	<time datetime="2018-07-31T15:45:21.369Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2018/08/01/iOS开发之XLForm的使用/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          iOS开发之XLForm的使用
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/07/31/iOS中runtim的几种常用的方法/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iOS中runtime的几种常用的方法</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/31/iOS中runtim的几种常用的方法/">iOS中runtime的几种常用的方法</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/31/java连接Mysql8.0.11/" class="archive-article-date">
-  	<time datetime="2018-07-31T15:32:24.531Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/31/java连接Mysql8.0.11/">java连接Mysql8.0.11</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/31/浅谈iOS 开发中的界面通信/" class="archive-article-date">
-  	<time datetime="2018-07-31T05:58:01.437Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/31/浅谈iOS 开发中的界面通信/">浅谈iOS 开发中的界面通信</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/31/iTerm2 + Oh My Zsh 打造舒适终端体验/" class="archive-article-date">
-  	<time datetime="2018-07-31T05:10:45.456Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/31/iTerm2 + Oh My Zsh 打造舒适终端体验/">iTerm2 + Oh My Zsh 打造舒适终端体验</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">MAC OS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/28/正确的使用pod install 和 pod update - CocoaPods/" class="archive-article-date">
-  	<time datetime="2018-07-27T16:00:16.151Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/28/正确的使用pod install 和 pod update - CocoaPods/">正确的使用pod install 和 pod update - CocoaPods</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">CocoaPods</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/27/Vim的简单使用/" class="archive-article-date">
-  	<time datetime="2018-07-27T15:32:00.875Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/27/Vim的简单使用/">Vim的简单使用</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vim</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/27/welcome/" class="archive-article-date">
-  	<time datetime="2018-07-27T15:30:37.293Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/27/welcome/">Welcome</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/27/hello-world/" class="archive-article-date">
-  	<time datetime="2018-07-27T06:40:06.594Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/27/hello-world/">Hello World</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -546,8 +384,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
