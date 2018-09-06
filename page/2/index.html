@@ -152,6 +152,584 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS关于属性的整理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/05/iOS关于属性的整理/">iOS关于属性的整理</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/05/iOS关于属性的整理/" class="archive-article-date">
+  	<time datetime="2018-09-05T05:29:27.932Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-属性的实质是什么？包括哪几个部分"><a href="#1-属性的实质是什么？包括哪几个部分" class="headerlink" title="1.属性的实质是什么？包括哪几个部分"></a>1.属性的实质是什么？包括哪几个部分</h2><p>@property = ivar + getter + setter;</p>
+<p>利用class_copyPropertyList 查看类的所有属性</p>
+<p>利用class_copyIvarList查看类的所有成员变量</p>
+<p>利用class_copyMethodList查看类的所有方法
+  
+  </p>
+<h2 id="2-属性默认的关键字都有哪些？"><a href="#2-属性默认的关键字都有哪些？" class="headerlink" title="2.属性默认的关键字都有哪些？"></a>2.属性默认的关键字都有哪些？</h2><h3 id="1-property"><a href="#1-property" class="headerlink" title="1.@property"></a>1.@property</h3><p>prpperty其实就是在编译阶段由编译器自动帮我们生成ivar成员变量getter方法，setter方法。</p>
+<p>使用“自动合成”（ auto synthesis）这个过程由编译器在编译阶段执行自动合成，所以编译器里看不到这些“合成方法”（synthesized method）的源代码。除了生成getter、setter方法之外，编译器还要自动向类中添加成员变量（在属性名前面加下划线,以此作为实例变量的名字）反编译相关的代码大致生成：</p>
+<pre><code>OBJC_IVAR_$类名$属性名称        // 该属性的“偏移量” (offset),这个偏移量是“硬编码” (hardcode),表 示该变量距离存放对象的内存区域的起始地址有多远
+</code></pre><h3 id="2-readwrite-readonly-assign-retain-copy-nonatomic-atomic-strong-weak属性的作用分别是什么。"><a href="#2-readwrite-readonly-assign-retain-copy-nonatomic-atomic-strong-weak属性的作用分别是什么。" class="headerlink" title="2.readwrite,readonly,assign,retain,copy,nonatomic,atomic,strong,weak属性的作用分别是什么。"></a>2.readwrite,readonly,assign,retain,copy,nonatomic,atomic,strong,weak属性的作用分别是什么。</h3><p>readwrite 可读可写 此标记说明属性会被当成读写的，这也是默认属性。</p>
+<p>readonly 只读 此标记说明属性只可以读，也就是不能设置，可以获取。</p>
+<p>assign  不会引用数加1，也就是直接赋值</p>
+<p>retain 会使引用计数加1。</p>
+<p>copy 建立一个索引计数为1的对象，在赋值时使用传入值的一份拷贝。</p>
+<p>nonatomic  非原子性访问，多线程并发访问会提高性能。</p>
+<p>atomic 原子性访问</p>
+<p>strong 打开arc的时候使用，相当于retain</p>
+<p>weak 打开ARC时才会使用，相当于assign，可以把对应的指针变量置为nil</p>
+<h3 id="3-什么情况使用-weak-关键字-相比-assign-有什么不同？"><a href="#3-什么情况使用-weak-关键字-相比-assign-有什么不同？" class="headerlink" title="3.什么情况使用 weak 关键字,相比 assign 有什么不同？"></a>3.什么情况使用 weak 关键字,相比 assign 有什么不同？</h3><p>在 ARC 中,在有可能出现循环引用的时候,往往要通过让其中一端使用 weak 来解决,比如:</p>
+<p>delegate 代理属性,代理属性也可使用<br>assign自身已经对它进行一次强引用,没有必要再强引用一次,此时也会使用 weak<br>自定义IBOutlet 控件属性一般也使用weak;当然,也可以使用 strong,但是建议使用 weak</p>
+<p>weak 和 assign 的不同点:</p>
+<p>weak 策略在属性所指的对象遭到摧毁时,系统会将 weak 修饰的属性对象的指针指向 nil,在 OC 给 nil 发消息是不会有什么问题的;如果使用 assign 策略在属性所指的对象遭到摧毁时,属性对象指针还指向原来的对象,由于对象已经被销毁,这时候就产生了野指针,如果这时候在给此对象发送消息,很容造成程序奔溃assigin 可以用于修饰非 OC 对象,而 weak 必须用于 OC 对象。</p>
+<p>使用atomic线程一定是安全的吗</p>
+<p>不是，atomic的本意是属性的读取是线程安全的，并不保证整个属性的线程安全</p>
+<p>@synthesize 和 @dynamic 分别有什么作用</p>
+<p>@property 有两个对应的词,一个是@synthesize,一个是@dynamic。<br>如果@synthesize 和@dynamic 都没写,那么默认的就是</p>
+<p>@syntheszie var = _var;</p>
+<p>@synthesize 的语义是如果你没有手动实现 setter 方法和 getter 方法,那么编译器会自动为你加上这两个方法。</p>
+<p>@dynamic 告诉编译器:属性的 setter 与 getter 方法由用户自己实现,不自动生成。(当然对于 readonly 的属性只需提供 getter 即可)<br>假如一个属性被声明为</p>
+<p>@dynamic var；然后你没有提供@setter 方法和@getter 方法,编译的时候没问题,但是当程序运行到 instance.var = someVar,由于缺 setter方法会导致程序崩溃;</p>
+<p>或者当运行到 someVar = instance.var 时,由于缺 getter 方法同样会导致</p>
+<p>ARC 下,不显式指定任何属性关键字时,默认的关键字都有哪些?</p>
+<p>基本数据：  atomic,readwrite,assign</p>
+<p>普通的 OC 对象: atomic,readwrite,strong</p>
+<p>怎么用 copy 关键字?</p>
+<p>NSString、NSArray、NSDictionary 等等经常使用 copy 关键字,是因为他们有对应的可变类型:NSMutableString、NSMutableArray、NSMutableDictionary.<br>为确保对象中的属性值不会无意间变动,应该在设置新属性值时拷贝一份,保护其封装性block，也经常使用 copy，关键字block。</p>
+<p>使用 copy 是从 MRC 遗留下来的“传统”,在 MRC 中,方法内部的 block 是在栈区的,使用 copy 可以把它放到堆区.<br>在 ARC 中写不写都行:对于 block 使用 copy 还是 strong 效果是一样的,但是建议写上 copy,因为这样显示告知调用者“编译器会自动对 block 进行了 copy 操作。</p>
+<p>用@property 声明的 NSString(或 NSArray,NSDictionary)经常使用 copy 关键字,为什么?如果改用 strong 关键字,可能造成什么问题?</p>
+<p>因为父类指针可以指向子类对象,使用 copy 的目的是为了让本对象的属性不受外界影响,使用 copy 无论给我传入是一个可变对象还是不可对象,我本身持有的就是一个不可变的副本.</p>
+<p>如果我们使用是 strong,那么这个属性就有可能指向一个可变对象,如果这个可变对象在外部被修改了,那么会影响该属性.</p>
+<h2 id="3-dynamic关键字"><a href="#3-dynamic关键字" class="headerlink" title="3.@dynamic关键字"></a>3.@dynamic关键字</h2><p>@dynamic告诉编译器,属性的setter与getter方法由用户自己实现。</p>
+<h2 id="4-synthesize关键字"><a href="#4-synthesize关键字" class="headerlink" title="4.@synthesize关键字"></a>4.@synthesize关键字</h2><p>@synthesize的语义是如果你没有手动实现setter方法和getter方法，那么编译器会自动为你加上这两个方法。</p>
+<p>  </p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/05/iOS关于属性的整理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS关于delegate的整理内容" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/04/iOS关于delegate的整理内容/">iOS关于delegate的整理内容</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/04/iOS关于delegate的整理内容/" class="archive-article-date">
+  	<time datetime="2018-09-04T09:58:13.408Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-为什么代理要用weak？"><a href="#1-为什么代理要用weak？" class="headerlink" title="1.为什么代理要用weak？"></a>1.为什么代理要用weak？</h2><p> 防止循环引用。例如View有一个协议，需要一个代理实现回调。一个Controller添加这个View，并且遵守协议，成为View的代理。如果不用week，用strong，Controller -&gt;View -&gt; delegate -&gt; Controller，就循环引用了。</p>
+<h2 id="2-代理的delegate和dataSource有什么区别？"><a href="#2-代理的delegate和dataSource有什么区别？" class="headerlink" title="2.代理的delegate和dataSource有什么区别？"></a>2.代理的delegate和dataSource有什么区别？</h2><p> delegate偏重于与用户交互的回调，有那些方法可以供我使用，例如UITableviewDelegate；dataSource偏重于数据的回调，view里面有什么东西，属性都是什么，例如UITableviewDatasource；</p>
+<h2 id="3-block和代理的区别"><a href="#3-block和代理的区别" class="headerlink" title="3.block和代理的区别"></a>3.block和代理的区别</h2><h3 id="3-1-Block的介绍"><a href="#3-1-Block的介绍" class="headerlink" title="3.1 Block的介绍"></a>3.1 Block的介绍</h3><p> 在 iOS中， block一共分三种。<br>  (1)全局静态 block，不会访问任何外部变量，执行完就销毁。</p>
+<pre><code>^{
+        NSLog(@&quot;Hello World!&quot;);
+    }();
+</code></pre><p>（2）保存在栈中的 block，当函数返回时会被销毁，和第一种的区别就是调用了外部变量。</p>
+<pre><code>[UIView animateWithDuration:3 animations:^{
+        self.view.backgroundColor = [UIColor redColor];
+    }];
+</code></pre><p> (3)保存在堆中的 block，当引用计数为 0 时会被销毁。例如按钮的点击事件，一直存在，即使执行过，也不销毁，因为按钮还可能被点击。直到持有按钮的View被销毁，它才会被销毁。</p>
+<pre><code>#import &lt;UIKit/UIKit.h&gt;
+
+typedef void(^ButtonClickBlcok)();
+
+@interface TestView : UIView
+
+@property (nonatomic, copy) ButtonClickBlcok buttonClickBlcok;
+
+@end
+
+
+#import &quot;TestView.h&quot;
+
+@implementation TestView
+
+- (IBAction)buttonClick:(id)sender {
+    if (self.buttonClickBlcok) {
+        self.buttonClickBlcok();
+    }
+}
+@end
+</code></pre><p>###3.2 Block的优点 </p>
+<p>block的代码可读性更好。因为block只要实现就可以了，而代理需要遵守协议并且实现协议里的方法，而两者还不在一个地方。代理使用起来也更麻烦，因为要声明协议、声明代理属性、遵守协议、实现协议里的方法。block不需要声明，也不需要遵守，只需要声明属性和实现就可以了。</p>
+<p>  block是一种轻量级的回调，可以直接访问上下文，由于block的代码是内联的，运行效率更高。block就是一个对象，实现了匿名函数的功能。所以我们可以把block当做一个成员变量、属性、参数使用，使用起来非常灵活。像用AFNetworking请求数据和GCD实现多线程，都使用了block回调。</p>
+<h3 id="3-3block的缺点"><a href="#3-3block的缺点" class="headerlink" title="3.3block的缺点"></a>3.3block的缺点</h3><p>blcok的运行成本高。block出栈需要将使用的数据从栈内存拷贝到堆内存，当然对象的话就是引用计数加1，使用完或者block置nil后才销毁。delegate只是保存了一个对象指针(一定要用week修饰delegate，不然也会循环引用)，直接回调，没有额外消耗。就像C的函数指针，只多做了一个查表动作。</p>
+<p>  block容易造成循环引用，而且不易察觉。因为为了blcok不被系统回收，所以我们都用copy关键字修饰，实行强引用。block对捕获的变量也都是强引用，所以就会造成循环引用。
+  
+  </p>
+<pre><code>#import &quot;ViewController.h&quot;
+
+typedef void(^TestBlock)(void);
+
+@interface ViewController ()
+{
+    void (^_testCycleBlock)(void);
+}
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+
+    [super viewDidLoad];
+
+    __weak ViewController *weakSelf = self;
+    _testCycleBlock = ^{
+
+        /**
+          //引发循环引用
+          NSLog(@&quot;%@&quot;, self);
+         */
+        //防止循环引用
+        NSLog(@&quot;%@&quot;, weakSelf);
+    };
+}
+@end
+</code></pre><p>###3.4 如何使用</p>
+<p>优先使用block。</p>
+<p>如果回调的状态很多，多于三个使用代理。
+  
+  </p>
+<p>如果回调的很频繁，次数很多，像UITableview，每次初始化、滑动、点击都会回调，使用代理。
+  </p>
+<p>block和代理都各有优缺点，所以我们一定要理解区分使用场景，应用适合的回调方式。优化APP的性能，提高流畅性，从点滴做起。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/04/iOS关于delegate的整理内容/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS NSset 和 NSArray的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/04/iOS NSset 和 NSArray的区别/">iOS NSset 和 NSArray的区别</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/04/iOS NSset 和 NSArray的区别/" class="archive-article-date">
+  	<time datetime="2018-09-04T09:42:55.937Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>NSSet到底什么类型?</p>
+<p>其实它和NSArray功能性质一样，用于存储对象，属于集合；</p>
+<p>NSSet  ， NSMutableSet类声明编程接口对象，无序的集合，在内存中存储方式是不连续的</p>
+<p>像NSArray，NSDictionary（都是有序的集合）类声明编程接口对象是有序集合，在内存中存储位置是连续的</p>
+<p> NSSet和我们常用NSArry区别是：在搜索一个一个元素时NSSet比NSArray效率高，主要是它用到了一个算法hash(散列，也可直译为哈希)</p>
+<p> 比如你要存储元素A，一个hash算法直接就能直接找到A应该存储的位置；同样，当你要访问A时，一个hash过程就能找到A存储的位置。而对于NSArray，若想知道A到底在不在数组中，则需要便利整个数组，显然效率较低了</p>
+<p>  NSSet，NSArray都是类，只能添加cocoa对象，如果需要加入基本数据类型（int，float，BOOL，double等），需要将数据封装成NSNumber类型。</p>
+<p>  *NSSet:</p>
+<p>1&gt;无序的、不重复的。存放到NSSet中的内容并不会排序与添加顺序也没有关系</p>
+<p>2&gt;通过anyObject来访问单个元素</p>
+<p>3&gt;遍历NSSet中的每个元素。通过forin循环来遍历</p>
+<p>4&gt;好处:效率高。</p>
+<p>5&gt;应用场景:</p>
+<p>比如重用Cell的时候,从缓存池中随便获取一个就可以了,无需按照指定顺序来获取</p>
+<p>当需要把数据存放到一个集合中,然后判断集合中是否有某个对象的时候</p>
+<p>*NSArray</p>
+<p>1&gt;有序的、可以有重复对象。对象的顺序是按照添加的顺序来保存的</p>
+<p>2&gt;好处:有序访问</p>
+<p>3&gt;应用场景:在绝大多数需要依赖顺序的情况下（比如tableView的数据源集合，在实际操作中要根据下标来获取对象）</p>
+<p>3&gt;通过下标来访问</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/04/iOS NSset 和 NSArray的区别/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS开发之XLForm的使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/08/01/iOS开发之XLForm的使用/">iOS开发之XLForm的使用</a>
+    </h1>
+  
+
+        
+        <a href="/2018/08/01/iOS开发之XLForm的使用/" class="archive-article-date">
+  	<time datetime="2018-08-01T07:20:49.513Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS开发中，开发”表单”界面，字段稍微多一点的一般都用UITableView来做，而XLForm就是这样一个框架，它是创建动态表格视图最牛逼的iOS库， 用它实现表单功能，非常简单，省心省力。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/735757-1979f0af7638203c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt=""></p>
+<h2 id="导入项目"><a href="#导入项目" class="headerlink" title="导入项目"></a>导入项目</h2><p>可以适用cocoapods 导入</p>
+<h2 id="改造表单ViewController"><a href="#改造表单ViewController" class="headerlink" title="改造表单ViewController"></a>改造表单ViewController</h2><p>让ViewController继承自XLFormViewController,并重写下面的两个方法</p>
+<pre><code>@interface OneViewController : XLFormViewController
+
+@end
+
+
+@implementation OneViewController
+
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self){
+        [self initializeForm];
+    }
+    return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if (self){
+        [self initializeForm];
+    }
+    return self;
+}
+@end
+</code></pre><h2 id="三、构造表单"><a href="#三、构造表单" class="headerlink" title="三、构造表单"></a>三、构造表单</h2><pre><code>- (void)initializeForm {
+
+    // 设置是否显示Cell之间分界线
+    //self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    // 设置Section的高度
+    self.tableView.sectionHeaderHeight = 30;
+
+    XLFormDescriptor * form;//form，一个表单只有一个
+    XLFormSectionDescriptor * section;//section，一个表单可能有多个
+    XLFormRowDescriptor * row; //row，每个section可能有多个row
+
+    // Form
+    form = [XLFormDescriptor formDescriptor];
+
+
+    // First section
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @&quot;用户&quot;;
+    [form addFormSection:section];
+    // 普通文本
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;username&quot; rowType:XLFormRowDescriptorTypeText];
+    // 设置placeholder
+    [row.cellConfig setObject:@&quot;用户名&quot; forKey:@&quot;textField.placeholder&quot;];
+    // 设置文本颜色
+    [row.cellConfig setObject:[UIColor redColor] forKey:@&quot;textField.textColor&quot;];
+    [section addFormRow:row];
+    // 密码
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;password&quot; rowType:XLFormRowDescriptorTypePassword];
+    // 设置placeholder的颜色
+    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:@&quot;密码&quot; attributes:
+                                      @{NSForegroundColorAttributeName:[UIColor greenColor],
+                                        }];
+    [row.cellConfig setObject:attrString forKey:@&quot;textField.attributedPlaceholder&quot;];
+    [section addFormRow:row];
+
+
+
+    // Second Section
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @&quot;日期&quot;;
+    [form addFormSection:section];
+    // 日期选择器
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;birthday&quot; rowType:XLFormRowDescriptorTypeDate title:@&quot;出生日期&quot;];
+    row.value = [NSDate dateWithTimeIntervalSinceNow:60*60*24];
+    [section addFormRow:row];
+
+
+
+     // Third Section
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @&quot;头像&quot;;
+    [form addFormSection:section];
+    // 图片选择
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;userpic&quot; rowType:XLFormRowDescriptorTypeImage];
+    [section addFormRow:row];
+
+
+
+    // Fourth Section
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @&quot;选择器&quot;;
+    [form addFormSection:section];
+    // 选择器
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;sex&quot; rowType:XLFormRowDescriptorTypeSelectorPush];
+    row.noValueDisplayText = @&quot;暂无&quot;;
+    row.selectorTitle = @&quot;性别选择&quot;;
+    row.selectorOptions = @[@&quot;男&quot;,@&quot;女&quot;,@&quot;其他&quot;];
+    row.title = @&quot;性别&quot;;
+    [row.cellConfigForSelector setObject:[UIColor redColor] forKey:@&quot;textLabel.textColor&quot;];
+    [row.cellConfigForSelector setObject:[UIColor greenColor] forKey:@&quot;detailTextLabel.textColor&quot;];
+    [section addFormRow:row];
+
+
+
+    // Fifth Section
+    section = [XLFormSectionDescriptor formSection];
+    section.title = @&quot;加固&quot;;
+    [form addFormSection:section];
+    // 开关
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;enforce&quot; rowType:XLFormRowDescriptorTypeBooleanSwitch title:@&quot;加固&quot;];
+    [section addFormRow:row];
+
+
+    // Sixth Section
+    section = [XLFormSectionDescriptor formSection];
+    [form addFormSection:section];
+    // 按钮
+    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;conform&quot; rowType:XLFormRowDescriptorTypeButton];
+    row.title = @&quot;确定&quot;;
+    [section addFormRow:row];
+
+
+    self.form = form;
+}
+
+-(void)didSelectFormRow:(XLFormRowDescriptor *)formRow{
+
+    // 判断是不是点击了确定按钮
+    if([formRow.tag isEqualToString:@&quot;conform&quot;] &amp;&amp; formRow.rowType == XLFormRowDescriptorTypeButton){
+
+        //获取表单所有到的值
+        NSDictionary *values =  [self formValues];
+
+        NSLog(@&quot;%@&quot;, values);
+
+    }
+
+    [super didSelectFormRow:formRow];
+
+}
+
+//重写改该方法 上面的方法就不会调用了
+//-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+//
+//    NSLog(@&quot;%s&quot;, __func__);
+//
+//}
+
+
+@end
+</code></pre><h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p><img src="https://upload-images.jianshu.io/upload_images/735757-b3bfc036fd7a2035.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/656" alt=""></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/08/01/iOS开发之XLForm的使用/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-四种遍历方法你选哪个？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1128,232 +1706,9 @@ self.secondLabel.text = dataHandle.str;
 
 
   
-    <article id="post-Vim的简单使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/27/Vim的简单使用/">Vim的简单使用</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/27/Vim的简单使用/" class="archive-article-date">
-  	<time datetime="2018-07-27T15:32:00.875Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="vim的使用"><a href="#vim的使用" class="headerlink" title="vim的使用"></a>vim的使用</h1><p>为配合教程, 所以简单的介绍下vim的基础使用.</p>
-<p>当你在终端输入vi xxx或者vim xxx的后.会进入下图的状态, 请多注意左下角, 每一个步骤左下角都会有变化.</p>
-<p>1.未编辑状态</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221338@2x.png" alt=""></p>
-<p>2.按键盘上的i进入编辑状态, 然后输入内容</p>
-<p>输入前</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221348@2x.png" alt=""></p>
-<p>输入后</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221354@2x.png" alt=""></p>
-<p>3.按esc退出编辑状态</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221401@2x.png" alt=""></p>
-<p>4.输入:wq保存并退出</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221412@2x.png" alt=""></p>
-<p>5.保存并退出后</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221420@2x.png" alt=""></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vim</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/27/Vim的简单使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-welcome" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/27/welcome/">Welcome</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/27/welcome/" class="archive-article-date">
-  	<time datetime="2018-07-27T15:30:37.293Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>##电脑终于修好了</p>
-<p>整整两年的博客，由于数据没有备份，毁于一旦，深刻的教训，陆陆续续的补上好了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/27/welcome/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/27/hello-world/">Hello World</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/27/hello-world/" class="archive-article-date">
-  	<time datetime="2018-07-27T06:40:06.594Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/27/hello-world/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 
@@ -1456,19 +1811,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
             
             <div class="clearfix"></div>
