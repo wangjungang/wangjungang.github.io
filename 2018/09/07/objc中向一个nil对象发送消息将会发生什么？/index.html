@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>关于数组和链表 | Blog</title>
+  <title>objc中向一个nil对象发送消息将会发生什么？ | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面修炼内功，数据结构这东西永远是程序的核心，关于数组，链表，hash这些东西，需要时不时的总结回顾一下。 大致总结一下特点和区别，拿几个人一起去看电影时坐座位为例。 数组的特点在内存中，数组是一块连续的区域。 拿上面的看电影来说，这几个人在电影院必须坐在一起。 数组需要预留空间，在使用前要先申请占内存的大小，可能会浪费内存空间。 比如看电影时，为了保证10个人能坐在一起，必须提前订好10个连">
-<meta name="keywords" content="数据结构">
+  <meta name="description" content="在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用: 如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如： Person * motherInlaw = [[aPerson spouse] mother];     如果 spouse 对象为 nil，那么发送给 nil 的消息 mother 也将返回 nil。 如果方法返回值为指">
+<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于数组和链表">
-<meta property="og:url" content="http://yoursite.com/2018/09/06/关于数组和链表/index.html">
+<meta property="og:title" content="objc中向一个nil对象发送消息将会发生什么？">
+<meta property="og:url" content="http://yoursite.com/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面修炼内功，数据结构这东西永远是程序的核心，关于数组，链表，hash这些东西，需要时不时的总结回顾一下。 大致总结一下特点和区别，拿几个人一起去看电影时坐座位为例。 数组的特点在内存中，数组是一块连续的区域。 拿上面的看电影来说，这几个人在电影院必须坐在一起。 数组需要预留空间，在使用前要先申请占内存的大小，可能会浪费内存空间。 比如看电影时，为了保证10个人能坐在一起，必须提前订好10个连">
+<meta property="og:description" content="在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用: 如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如： Person * motherInlaw = [[aPerson spouse] mother];     如果 spouse 对象为 nil，那么发送给 nil 的消息 mother 也将返回 nil。 如果方法返回值为指">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-06T14:41:35.153Z">
+<meta property="og:updated_time" content="2018-09-07T02:48:13.472Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于数组和链表">
-<meta name="twitter:description" content="写在前面修炼内功，数据结构这东西永远是程序的核心，关于数组，链表，hash这些东西，需要时不时的总结回顾一下。 大致总结一下特点和区别，拿几个人一起去看电影时坐座位为例。 数组的特点在内存中，数组是一块连续的区域。 拿上面的看电影来说，这几个人在电影院必须坐在一起。 数组需要预留空间，在使用前要先申请占内存的大小，可能会浪费内存空间。 比如看电影时，为了保证10个人能坐在一起，必须提前订好10个连">
+<meta name="twitter:title" content="objc中向一个nil对象发送消息将会发生什么？">
+<meta name="twitter:description" content="在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用: 如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如： Person * motherInlaw = [[aPerson spouse] mother];     如果 spouse 对象为 nil，那么发送给 nil 的消息 mother 也将返回 nil。 如果方法返回值为指">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,52 +155,50 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-关于数组和链表" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-objc中向一个nil对象发送消息将会发生什么？" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      关于数组和链表
+      objc中向一个nil对象发送消息将会发生什么？
     </h1>
   
 
         
-        <a href="/2018/09/06/关于数组和链表/" class="archive-article-date">
-  	<time datetime="2018-09-06T14:28:49.016Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+        <a href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/" class="archive-article-date">
+  	<time datetime="2018-09-07T02:46:45.490Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>修炼内功，数据结构这东西永远是程序的核心，关于数组，链表，hash这些东西，需要时不时的总结回顾一下。</p>
-<p>大致总结一下特点和区别，拿几个人一起去看电影时坐座位为例。</p>
-<h2 id="数组的特点"><a href="#数组的特点" class="headerlink" title="数组的特点"></a>数组的特点</h2><p>在内存中，数组是一块连续的区域。 拿上面的看电影来说，这几个人在电影院必须坐在一起。</p>
-<p>数组需要预留空间，在使用前要先申请占内存的大小，可能会浪费内存空间。 比如看电影时，为了保证10个人能坐在一起，必须提前订好10个连续的位置。这样的好处就是能保证10个人可以在一起。但是这样的缺点是，如果来的人不够10个，那么剩下的位置就浪费了。如果临时有多来了个人，那么10个就不够用了，这时可能需要将第11个位置上的人挪走，或者是他们11个人重新去找一个11连坐的位置，效率都很低。如果没有找到符合要求的作为，那么就没法坐了。</p>
-<p>插入数据和删除数据效率低，插入数据时，这个位置后面的数据在内存中都要向后移。删除数据时，这个数据后面的数据都要往前移动。 比如原来去了5个人，然后后来又去了一个人要坐在第三个位置上，那么第三个到第五个都要往后移动一个位子，将第三个位置留给新来的人。 当这个人走了的时候，因为他们要连在一起的，所以他后面几个人要往前移动一个位置，把这个空位补上。</p>
-<p>随机读取效率很高。因为数组是连续的，知道每一个数据的内存地址，可以直接找到给地址的数据。</p>
-<p>并且不利于扩展，数组定义的空间不够时要重新定义数组。</p>
-<h2 id="链表的特点"><a href="#链表的特点" class="headerlink" title="链表的特点"></a>链表的特点</h2><p>在内存中可以存在任何地方，不要求连续。 在电影院几个人可以随便坐。</p>
-<p>每一个数据都保存了下一个数据的内存地址，通过这个地址找到下一个数据。 第一个人知道第二个人的座位号，第二个人知道第三个人的座位号……<br>增加数据和删除数据很容易。 再来个人可以随便坐，比如来了个人要做到第三个位置，那他只需要把自己的位置告诉第二个人，然后问第二个人拿到原来第三个人的位置就行了。其他人都不用动。</p>
-<p>查找数据时效率低，因为不具有随机访问性，所以访问某个位置的数据都要从第一个数据开始访问，然后根据第一个数据保存的下一个数据的地址找到第二个数据，以此类推。 要找到第三个人，必须从第一个人开始问起。</p>
-<p>不指定大小，扩展方便。链表大小不用定义，数据随意增删。</p>
-<h2 id="各自的优缺点"><a href="#各自的优缺点" class="headerlink" title="各自的优缺点"></a>各自的优缺点</h2><h3 id="数组的优点"><a href="#数组的优点" class="headerlink" title="数组的优点"></a>数组的优点</h3><p>随机访问性强</p>
-<p>查找速度快</p>
-<h3 id="数组的缺点"><a href="#数组的缺点" class="headerlink" title="数组的缺点"></a>数组的缺点</h3><p>插入和删除效率低</p>
-<p>可能浪费内存</p>
-<p>内存空间要求高，必须有足够的连续内存空间。</p>
-<p>数组大小固定，不能动态拓展</p>
-<h3 id="链表的优点"><a href="#链表的优点" class="headerlink" title="链表的优点"></a>链表的优点</h3><p>插入删除速度快</p>
-<p>内存利用率高，不会浪费内存</p>
-<p>大小没有固定，拓展很灵活。</p>
-<h3 id="链表的缺点"><a href="#链表的缺点" class="headerlink" title="链表的缺点"></a>链表的缺点</h3><p>不能随机查找，必须从第一个开始遍历，查找效率低</p>
-<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><p>   哈希表结合了数组的快速查询的优点又能融合链表方便快捷的增加删除元素的优势</p>
-<p>   所谓的hash，简单的说就是散列，即将输入的数据通过hash函数得到一个key值，输入的数据存储到数组中下标为key值的数组单元中去。</p>
-<p>我们发现，不相同的数据通过hash函数得到相同的key值。这时候，就产生了hash冲突。解决hash冲突的方式有两种。一种是挂链式，也叫拉链法。挂链式的思想在产生冲突的hash地址指向一个链表，将具有相同的key值的数据存放到链表中。另一种是建立一个公共溢出区。将所有产生冲突的数据都存放到公共溢出区，也可以使问题解决。</p>
-<p>hash表其实是结合了数组和链表的优点，进行的折中方案。平衡了数组和链表的优缺点。hash的具体实现有很多种，但是需要解决冲突的问题。​</p>
-<p>不相同的数据通过hash函数得到相同的key值。这时候，就产生了hash冲突。解决hash冲突的方式有两种。一种是挂链式，也叫拉链法。挂链式的思想在产生冲突的hash地址指向一个链表，将具有相同的key值的数据存放到链表中。另一种是建立一个公共溢出区。将所有产生冲突的数据都存放到公共溢出区，也可以使问题解决。​</p>
+        <p>在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:</p>
+<p>如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如：</p>
+<pre><code>Person * motherInlaw = [[aPerson spouse] mother];    
+</code></pre><p>如果 spouse 对象为 nil，那么发送给 nil 的消息 mother 也将返回 nil。</p>
+<p>如果方法返回值为指针类型，其指针大小为小于或者等于sizeof(void*)，float，double，long double 或者 long long 的整型标量，发送给 nil 的消息将返回0。</p>
+<p>如果方法返回值为结构体,发送给 nil 的消息将返回0。结构体中各个字段的值将都是0。</p>
+<p>如果方法的返回值不是上述提到的几种情况，那么发送给 nil 的消息的返回值将是未定义的。</p>
+<pre><code>objc是动态语言，每个方法在运行时会被动态转为消息发送，即：objc_msgSend(receiver, selector)。
+
+struct objc_class {
+    Class isa OBJC_ISA_AVAILABILITY; //isa指针指向Meta Class，因为Objc的类的本身也是一个Object，为了处理这个关系，runtime就创造了Meta Class，当给类发送[NSObject alloc]这样消息时，实际上是把这个消息发给了Class Object
+#if !__OBJC2__
+    Class super_class OBJC2_UNAVAILABLE; // 父类
+    const char *name OBJC2_UNAVAILABLE; // 类名
+    long version OBJC2_UNAVAILABLE; // 类的版本信息，默认为0
+    long info OBJC2_UNAVAILABLE; // 类信息，供运行期使用的一些位标识
+    long instance_size OBJC2_UNAVAILABLE; // 该类的实例变量大小
+    struct objc_ivar_list *ivars OBJC2_UNAVAILABLE; // 该类的成员变量链表
+    struct objc_method_list **methodLists OBJC2_UNAVAILABLE; // 方法定义的链表
+    struct objc_cache *cache OBJC2_UNAVAILABLE; // 方法缓存，对象接到一个消息会根据isa指针查找消息对象，这时会在method Lists中遍历，如果cache了，常用的方法调用时就能够提高调用的效率。
+    struct objc_protocol_list *protocols OBJC2_UNAVAILABLE; // 协议链表
+#endif
+} OBJC2_UNAVAILABLE;
+</code></pre><p>objc在向一个对象发送消息时，runtime库会根据对象的isa指针找到该对象实际所属的类，然后在该类中的方法列表以及其父类方法列表中寻找方法运行，然后在发送消息的时候，objc_msgSend方法不会返回值，所谓的返回内容都是具体调用时执行的。那么，回到本题，如果向一个nil对象发送消息，首先在寻找对象的isa指针时就是0地址返回了，所以不会出现任何错误。</p>
 
       
 
@@ -235,7 +233,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
         		</li>
       		
 		</ul>
@@ -291,7 +289,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/06/关于数组和链表/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -305,18 +303,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/09/06/OC中的isa指针/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/09/07/BOOL和bool的区别/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          OC中的isa指针
+          BOOL和bool的区别
         
       </div>
     </a>
   
   
-    <a href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）</div>
+    <a href="/2018/09/06/关于tableview的优化/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">关于tableview的优化</div>
       <i class="icon-circle-right"></i>
     </a>
   
