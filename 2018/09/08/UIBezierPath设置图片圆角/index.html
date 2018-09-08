@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>objc中向一个nil对象发送消息将会发生什么？ | Blog</title>
+  <title>UIBezierPath设置图片圆角 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用: 如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如： Person * motherInlaw = [[aPerson spouse] mother];     如果 spouse 对象为 nil，那么发送给 nil 的消息 mother 也将返回 nil。 如果方法返回值为指">
+  <meta name="description" content="写在前面一般我们都会通过Layer设置图片圆角，这种方法在iOS9以前可能会发生离屏渲染， 比较消耗性能，比如当一个页面上有十几头像这样设置了圆角会明显感觉到卡顿。这种就是最常用的，也是最耗性能的。 imageView.layer.cornerRadius=20; imageView.layer.masksToBounds=YES; ios9.0之后对UIImageView的圆角设置做了优化，UI">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="objc中向一个nil对象发送消息将会发生什么？">
-<meta property="og:url" content="http://yoursite.com/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/index.html">
+<meta property="og:title" content="UIBezierPath设置图片圆角">
+<meta property="og:url" content="http://yoursite.com/2018/09/08/UIBezierPath设置图片圆角/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用: 如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如： Person * motherInlaw = [[aPerson spouse] mother];     如果 spouse 对象为 nil，那么发送给 nil 的消息 mother 也将返回 nil。 如果方法返回值为指">
+<meta property="og:description" content="写在前面一般我们都会通过Layer设置图片圆角，这种方法在iOS9以前可能会发生离屏渲染， 比较消耗性能，比如当一个页面上有十几头像这样设置了圆角会明显感觉到卡顿。这种就是最常用的，也是最耗性能的。 imageView.layer.cornerRadius=20; imageView.layer.masksToBounds=YES; ios9.0之后对UIImageView的圆角设置做了优化，UI">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-07T02:48:13.472Z">
+<meta property="og:updated_time" content="2018-09-08T15:28:14.059Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="objc中向一个nil对象发送消息将会发生什么？">
-<meta name="twitter:description" content="在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用: 如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如： Person * motherInlaw = [[aPerson spouse] mother];     如果 spouse 对象为 nil，那么发送给 nil 的消息 mother 也将返回 nil。 如果方法返回值为指">
+<meta name="twitter:title" content="UIBezierPath设置图片圆角">
+<meta name="twitter:description" content="写在前面一般我们都会通过Layer设置图片圆角，这种方法在iOS9以前可能会发生离屏渲染， 比较消耗性能，比如当一个页面上有十几头像这样设置了圆角会明显感觉到卡顿。这种就是最常用的，也是最耗性能的。 imageView.layer.cornerRadius=20; imageView.layer.masksToBounds=YES; ios9.0之后对UIImageView的圆角设置做了优化，UI">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,51 +155,85 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-objc中向一个nil对象发送消息将会发生什么？" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-UIBezierPath设置图片圆角" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      objc中向一个nil对象发送消息将会发生什么？
+      UIBezierPath设置图片圆角
     </h1>
   
 
         
-        <a href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/" class="archive-article-date">
-  	<time datetime="2018-09-07T02:46:45.490Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
+        <a href="/2018/09/08/UIBezierPath设置图片圆角/" class="archive-article-date">
+  	<time datetime="2018-09-08T15:25:13.677Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-08</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:</p>
-<p>如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如：</p>
-<pre><code>Person * motherInlaw = [[aPerson spouse] mother];    
-</code></pre><p>如果 spouse 对象为 nil，那么发送给 nil 的消息 mother 也将返回 nil。</p>
-<p>如果方法返回值为指针类型，其指针大小为小于或者等于sizeof(void*)，float，double，long double 或者 long long 的整型标量，发送给 nil 的消息将返回0。</p>
-<p>如果方法返回值为结构体,发送给 nil 的消息将返回0。结构体中各个字段的值将都是0。</p>
-<p>如果方法的返回值不是上述提到的几种情况，那么发送给 nil 的消息的返回值将是未定义的。</p>
-<pre><code>objc是动态语言，每个方法在运行时会被动态转为消息发送，即：objc_msgSend(receiver, selector)。
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>一般我们都会通过Layer设置图片圆角，这种方法在iOS9以前可能会发生离屏渲染，</p>
+<p>比较消耗性能，比如当一个页面上有十几头像这样设置了圆角会明显感觉到卡顿。这种就是最常用的，也是最耗性能的。</p>
+<pre><code>imageView.layer.cornerRadius=20;
+imageView.layer.masksToBounds=YES;
+</code></pre><p>ios9.0之后对UIImageView的圆角设置做了优化，UIImageView这样设置圆角不会触发离屏渲染，ios9.0之前还是会触发离屏渲染。而UIButton还是都会触发离屏渲染。</p>
+<p>现在优化方案就是先把图片处理成圆角，处理后再渲染；</p>
+<pre><code>//1.先写一个切圆角的方法，方便调用
 
-struct objc_class {
-    Class isa OBJC_ISA_AVAILABILITY; //isa指针指向Meta Class，因为Objc的类的本身也是一个Object，为了处理这个关系，runtime就创造了Meta Class，当给类发送[NSObject alloc]这样消息时，实际上是把这个消息发给了Class Object
-#if !__OBJC2__
-    Class super_class OBJC2_UNAVAILABLE; // 父类
-    const char *name OBJC2_UNAVAILABLE; // 类名
-    long version OBJC2_UNAVAILABLE; // 类的版本信息，默认为0
-    long info OBJC2_UNAVAILABLE; // 类信息，供运行期使用的一些位标识
-    long instance_size OBJC2_UNAVAILABLE; // 该类的实例变量大小
-    struct objc_ivar_list *ivars OBJC2_UNAVAILABLE; // 该类的成员变量链表
-    struct objc_method_list **methodLists OBJC2_UNAVAILABLE; // 方法定义的链表
-    struct objc_cache *cache OBJC2_UNAVAILABLE; // 方法缓存，对象接到一个消息会根据isa指针查找消息对象，这时会在method Lists中遍历，如果cache了，常用的方法调用时就能够提高调用的效率。
-    struct objc_protocol_list *protocols OBJC2_UNAVAILABLE; // 协议链表
-#endif
-} OBJC2_UNAVAILABLE;
-</code></pre><p>objc在向一个对象发送消息时，runtime库会根据对象的isa指针找到该对象实际所属的类，然后在该类中的方法列表以及其父类方法列表中寻找方法运行，然后在发送消息的时候，objc_msgSend方法不会返回值，所谓的返回内容都是具体调用时执行的。那么，回到本题，如果向一个nil对象发送消息，首先在寻找对象的isa指针时就是0地址返回了，所以不会出现任何错误。</p>
+- (void)setGraphicsCutRoundCornersWithView:(UIImageView *) imageview roundCornersSize:(CGFloat )cornersSize
+{
+    //开始上下文
+    UIGraphicsBeginImageContextWithOptions(imageview.bounds.size, NO, 0.0);
+    [[UIBezierPath bezierPathWithRoundedRect:imageview.bounds cornerRadius:cornersSize] addClip];
+    [imageview drawRect:imageview.bounds];
+    //当前上下文
+    imageview.image = UIGraphicsGetImageFromCurrentImageContext();
+    // 结束上下文
+    UIGraphicsEndImageContext();
+}
 
+- (void)viewDidLoad {
+    [super viewDidLoad];
+ UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
+  [imageView setImage:[UIImage imageNamed:@&quot;aaa&quot;]];
+  [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];//调用方法
+
+ [self.view addSubview:imageView];
+}
+</code></pre><p>我上面的方法是加载的本地图片，如果是网络请求的，就不行了。。。我在AFNetworking里看了看不容易实现，因为他没有completed回调方法，所以我就用SD_WebImage实现了一下。</p>
+<pre><code>- (void)viewDidLoad {
+    [super viewDidLoad];
+ NSString *path=@&quot;http://pic.yesky.com/uploadImages/2015/211/46/Y9QRRQ94U8C3.jpg&quot;;
+
+    UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
+
+    [imageView sd_setImageWithURL:[NSURL URLWithString:path] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+         [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];
+    }];
+
+     [self.view addSubview:imageView];
+
+}
+</code></pre><p>如果是普通视图，不包含图片，可通过如下方式处理： 把背景图设置成clearColor, layer 的背景color和要渲染的视图颜色一致，设置好角度，通过颜色差异来显示出圆角的效果； 关键是把masksToBounds设置NO,就是这个家伙消耗性能；</p>
+<pre><code>   self.view.backgroundColor = [UIColor clearColor];
+
+// Set view.layer.backgroundColor not view.backgroundColor otherwise the background is not masked to the rounded border.
+
+    self.view.layer.backgroundColor = [UIColor whiteColor].CGColor;
+
+    self.view.layer.cornerRadius = 8;
+
+// Huge change in performance by explicitly setting the below (even though default is supposedly NO)
+    self.view.layer.masksToBounds = NO;   
+
+// Performance improvement here depends on the size of your view
+
+    self.view.layer.shouldRasterize = YES; 
+    [self.view.layer setRasterizationScale:[UIScreen mainScreen].scale];
+</code></pre>
       
 
       
@@ -289,7 +323,7 @@ struct objc_class {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/08/UIBezierPath设置图片圆角/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -303,18 +337,9 @@ struct objc_class {
   
 <nav id="article-nav">
   
-    <a href="/2018/09/07/BOOL和bool的区别/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          BOOL和bool的区别
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/09/06/关于tableview的优化/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">关于tableview的优化</div>
+    <a href="/2018/09/07/BOOL和bool的区别/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">BOOL和bool的区别</div>
       <i class="icon-circle-right"></i>
     </a>
   
