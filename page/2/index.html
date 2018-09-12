@@ -152,6 +152,472 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-关于数组和链表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/06/关于数组和链表/">关于数组和链表</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/06/关于数组和链表/" class="archive-article-date">
+  	<time datetime="2018-09-06T14:28:49.016Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>修炼内功，数据结构这东西永远是程序的核心，关于数组，链表，hash这些东西，需要时不时的总结回顾一下。</p>
+<p>大致总结一下特点和区别，拿几个人一起去看电影时坐座位为例。</p>
+<h2 id="数组的特点"><a href="#数组的特点" class="headerlink" title="数组的特点"></a>数组的特点</h2><p>在内存中，数组是一块连续的区域。 拿上面的看电影来说，这几个人在电影院必须坐在一起。</p>
+<p>数组需要预留空间，在使用前要先申请占内存的大小，可能会浪费内存空间。 比如看电影时，为了保证10个人能坐在一起，必须提前订好10个连续的位置。这样的好处就是能保证10个人可以在一起。但是这样的缺点是，如果来的人不够10个，那么剩下的位置就浪费了。如果临时有多来了个人，那么10个就不够用了，这时可能需要将第11个位置上的人挪走，或者是他们11个人重新去找一个11连坐的位置，效率都很低。如果没有找到符合要求的作为，那么就没法坐了。</p>
+<p>插入数据和删除数据效率低，插入数据时，这个位置后面的数据在内存中都要向后移。删除数据时，这个数据后面的数据都要往前移动。 比如原来去了5个人，然后后来又去了一个人要坐在第三个位置上，那么第三个到第五个都要往后移动一个位子，将第三个位置留给新来的人。 当这个人走了的时候，因为他们要连在一起的，所以他后面几个人要往前移动一个位置，把这个空位补上。</p>
+<p>随机读取效率很高。因为数组是连续的，知道每一个数据的内存地址，可以直接找到给地址的数据。</p>
+<p>并且不利于扩展，数组定义的空间不够时要重新定义数组。</p>
+<h2 id="链表的特点"><a href="#链表的特点" class="headerlink" title="链表的特点"></a>链表的特点</h2><p>在内存中可以存在任何地方，不要求连续。 在电影院几个人可以随便坐。</p>
+<p>每一个数据都保存了下一个数据的内存地址，通过这个地址找到下一个数据。 第一个人知道第二个人的座位号，第二个人知道第三个人的座位号……<br>增加数据和删除数据很容易。 再来个人可以随便坐，比如来了个人要做到第三个位置，那他只需要把自己的位置告诉第二个人，然后问第二个人拿到原来第三个人的位置就行了。其他人都不用动。</p>
+<p>查找数据时效率低，因为不具有随机访问性，所以访问某个位置的数据都要从第一个数据开始访问，然后根据第一个数据保存的下一个数据的地址找到第二个数据，以此类推。 要找到第三个人，必须从第一个人开始问起。</p>
+<p>不指定大小，扩展方便。链表大小不用定义，数据随意增删。</p>
+<h2 id="各自的优缺点"><a href="#各自的优缺点" class="headerlink" title="各自的优缺点"></a>各自的优缺点</h2><h3 id="数组的优点"><a href="#数组的优点" class="headerlink" title="数组的优点"></a>数组的优点</h3><p>随机访问性强</p>
+<p>查找速度快</p>
+<h3 id="数组的缺点"><a href="#数组的缺点" class="headerlink" title="数组的缺点"></a>数组的缺点</h3><p>插入和删除效率低</p>
+<p>可能浪费内存</p>
+<p>内存空间要求高，必须有足够的连续内存空间。</p>
+<p>数组大小固定，不能动态拓展</p>
+<h3 id="链表的优点"><a href="#链表的优点" class="headerlink" title="链表的优点"></a>链表的优点</h3><p>插入删除速度快</p>
+<p>内存利用率高，不会浪费内存</p>
+<p>大小没有固定，拓展很灵活。</p>
+<h3 id="链表的缺点"><a href="#链表的缺点" class="headerlink" title="链表的缺点"></a>链表的缺点</h3><p>不能随机查找，必须从第一个开始遍历，查找效率低</p>
+<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><p>   哈希表结合了数组的快速查询的优点又能融合链表方便快捷的增加删除元素的优势</p>
+<p>   所谓的hash，简单的说就是散列，即将输入的数据通过hash函数得到一个key值，输入的数据存储到数组中下标为key值的数组单元中去。</p>
+<p>我们发现，不相同的数据通过hash函数得到相同的key值。这时候，就产生了hash冲突。解决hash冲突的方式有两种。一种是挂链式，也叫拉链法。挂链式的思想在产生冲突的hash地址指向一个链表，将具有相同的key值的数据存放到链表中。另一种是建立一个公共溢出区。将所有产生冲突的数据都存放到公共溢出区，也可以使问题解决。</p>
+<p>hash表其实是结合了数组和链表的优点，进行的折中方案。平衡了数组和链表的优缺点。hash的具体实现有很多种，但是需要解决冲突的问题。​</p>
+<p>不相同的数据通过hash函数得到相同的key值。这时候，就产生了hash冲突。解决hash冲突的方式有两种。一种是挂链式，也叫拉链法。挂链式的思想在产生冲突的hash地址指向一个链表，将具有相同的key值的数据存放到链表中。另一种是建立一个公共溢出区。将所有产生冲突的数据都存放到公共溢出区，也可以使问题解决。​</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/06/关于数组和链表/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/">iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/" class="archive-article-date">
+  	<time datetime="2018-09-06T13:53:32.378Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>很少有人知道weak表其实是一个hash（哈希）表，Key是所指对象的地址，Value是weak指针的地址数组。更多人的人只是知道weak是弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候自动被设置为nil。</p>
+<h2 id="weak-实现原理的概括"><a href="#weak-实现原理的概括" class="headerlink" title="weak 实现原理的概括"></a>weak 实现原理的概括</h2><p>Runtime维护了一个weak表，用于存储指向某个对象的所有weak指针。weak表其实是一个hash（哈希）表，Key是所指对象的地址，Value是weak指针的地址（这个地址的值是所指对象的地址）数组。</p>
+<p>weak 的实现原理可以概括一下三步：</p>
+<p>1、初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对象的地址。</p>
+<p>2、添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。</p>
+<p>3、释放时，调用clearDeallocating函数。clearDeallocating函数首先根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除，最后清理对象的记录。</p>
+<h3 id="1、初始化时：runtime会调用objc-initWeak函数，objc-initWeak函数会初始化一个新的weak指针指向对象的地址。"><a href="#1、初始化时：runtime会调用objc-initWeak函数，objc-initWeak函数会初始化一个新的weak指针指向对象的地址。" class="headerlink" title="1、初始化时：runtime会调用objc_initWeak函数，objc_initWeak函数会初始化一个新的weak指针指向对象的地址。"></a>1、初始化时：runtime会调用objc_initWeak函数，objc_initWeak函数会初始化一个新的weak指针指向对象的地址。</h3><p>示例代码</p>
+<pre><code>{
+    NSObject *obj = [[NSObject alloc] init];
+    id __weak obj1 = obj;
+}
+</code></pre><p>当我们初始化一个weak变量时，runtime会调用 NSObject.mm 中的objc_initWeak函数。这个函数在Clang中的声明如下：</p>
+<pre><code>id objc_initWeak(id *object, id value);
+</code></pre><p>而对于 objc_initWeak() 方法的实现</p>
+<pre><code>id objc_initWeak(id *location, id newObj) {
+// 查看对象实例是否有效
+// 无效对象直接导致指针释放
+    if (!newObj) {
+        *location = nil;
+        return nil;
+    }
+    // 这里传递了三个 bool 数值
+    // 使用 template 进行常量参数传递是为了优化性能
+    return storeWeakfalse/*old*/, true/*new*/, true/*crash*/&gt;
+    (location, (objc_object*)newObj);
+}    
+</code></pre><p>可以看出，这个函数仅仅是一个深层函数的调用入口，而一般的入口函数中，都会做一些简单的判断（例如 objc_msgSend 中的缓存判断），这里判断了其指针指向的类对象是否有效，无效直接释放，不再往深层调用函数。否则，object将被注册为一个指向value的__weak对象。而这事应该是objc_storeWeak函数干的。</p>
+<p>注意：objc_initWeak函数有一个前提条件：就是object必须是一个没有被注册为__weak对象的有效指针。而value则可以是null，或者指向一个有效的对象。</p>
+<h3 id="添加引用时：objc-initWeak函数会调用-objc-storeWeak-函数，-objc-storeWeak-的作用是更新指针指向，创建对应的弱引用表。"><a href="#添加引用时：objc-initWeak函数会调用-objc-storeWeak-函数，-objc-storeWeak-的作用是更新指针指向，创建对应的弱引用表。" class="headerlink" title="添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。"></a>添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。</h3><p>objc_storeWeak的函数声明如下：</p>
+<pre><code>id objc_storeWeak(id *location, id value);
+</code></pre><p>objc_storeWeak() 的具体实现如下：</p>
+<pre><code>// HaveOld:     true - 变量有值
+//             false - 需要被及时清理，当前值可能为 nil
+// HaveNew:     true - 需要被分配的新值，当前值可能为 nil
+//             false - 不需要分配新值
+// CrashIfDeallocating: true - 说明 newObj 已经释放或者 newObj 不支持弱引用，该过程需要暂停
+//             false - 用 nil 替代存储
+template bool HaveOld, bool HaveNew, bool CrashIfDeallocating&gt;
+static id storeWeak(id *location, objc_object *newObj) {
+    // 该过程用来更新弱引用指针的指向
+    // 初始化 previouslyInitializedClass 指针
+    Class previouslyInitializedClass = nil;
+    id oldObj;
+    // 声明两个 SideTable
+    // ① 新旧散列创建
+    SideTable *oldTable;
+    SideTable *newTable;
+    // 获得新值和旧值的锁存位置（用地址作为唯一标示）
+    // 通过地址来建立索引标志，防止桶重复
+    // 下面指向的操作会改变旧值
+retry:
+    if (HaveOld) {
+        // 更改指针，获得以 oldObj 为索引所存储的值地址
+        oldObj = *location;
+        oldTable = &amp;SideTables()[oldObj];
+    } else {
+        oldTable = nil;
+    }
+    if (HaveNew) {
+        // 更改新值指针，获得以 newObj 为索引所存储的值地址
+        newTable = &amp;SideTables()[newObj];
+    } else {
+        newTable = nil;
+    }
+    // 加锁操作，防止多线程中竞争冲突
+    SideTable::lockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
+    // 避免线程冲突重处理
+    // location 应该与 oldObj 保持一致，如果不同，说明当前的 location 已经处理过 oldObj 可是又被其他线程所修改
+    if (HaveOld  &amp;&amp;  *location != oldObj) {
+        SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
+        goto retry;
+    }
+    // 防止弱引用间死锁
+    // 并且通过 +initialize 初始化构造器保证所有弱引用的 isa 非空指向
+    if (HaveNew  &amp;&amp;  newObj) {
+        // 获得新对象的 isa 指针
+        Class cls = newObj-&gt;getIsa();
+        // 判断 isa 非空且已经初始化
+        if (cls != previouslyInitializedClass  &amp;&amp;
+            !((objc_class *)cls)-&gt;isInitialized()) {
+            // 解锁
+            SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
+            // 对其 isa 指针进行初始化
+            _class_initialize(_class_getNonMetaClass(cls, (id)newObj));
+            // 如果该类已经完成执行 +initialize 方法是最理想情况
+            // 如果该类 +initialize 在线程中
+            // 例如 +initialize 正在调用 storeWeak 方法
+            // 需要手动对其增加保护策略，并设置 previouslyInitializedClass 指针进行标记
+            previouslyInitializedClass = cls;
+            // 重新尝试
+            goto retry;
+        }
+    }
+    // ② 清除旧值
+    if (HaveOld) {
+        weak_unregister_no_lock(&amp;oldTable-&gt;weak_table, oldObj, location);
+    }
+    // ③ 分配新值
+    if (HaveNew) {
+        newObj = (objc_object *)weak_register_no_lock(&amp;newTable-&gt;weak_table,
+                                                      (id)newObj, location,
+                                                      CrashIfDeallocating);
+        // 如果弱引用被释放 weak_register_no_lock 方法返回 nil
+        // 在引用计数表中设置若引用标记位
+        if (newObj  &amp;&amp;  !newObj-&gt;isTaggedPointer()) {
+            // 弱引用位初始化操作
+            // 引用计数那张散列表的weak引用对象的引用计数中标识为weak引用
+            newObj-&gt;setWeaklyReferenced_nolock();
+        }
+        // 之前不要设置 location 对象，这里需要更改指针指向
+        *location = (id)newObj;
+    }
+    else {
+        // 没有新值，则无需更改
+    }
+    SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
+    return (id)newObj;
+}
+</code></pre><p>SideTable 这个结构体，我给他起名引用计数和弱引用依赖表，因为它主要用于管理对象的引用计数和 weak 表。在 NSObject.mm 中声明其数据结构：</p>
+<pre><code>struct SideTable {
+// 保证原子操作的自旋锁
+    spinlock_t slock;
+    // 引用计数的 hash 表
+    RefcountMap refcnts;
+    // weak 引用全局 hash 表
+    weak_table_t weak_table;
+}
+</code></pre><p>对于 slock 和 refcnts 两个成员不用多说，第一个是为了防止竞争选择的自旋锁，第二个是协助对象的 isa 指针的 extra_rc 共同引用计数的变量（对于对象结果，在今后的文中提到）。这里主要看 weak 全局 hash 表的结构与作用。</p>
+<p>weak表</p>
+<p>weak表是一个弱引用表，实现为一个weak_table_t结构体，存储了某个对象相关的的所有的弱引用信息。其定义如下(具体定义在objc-weak.h中)：</p>
+<pre><code>   struct weak_table_t {
+    // 保存了所有指向指定对象的 weak 指针
+    weak_entry_t *weak_entries;
+    // 存储空间
+    size_t    num_entries;
+    // 参与判断引用计数辅助量
+    uintptr_t mask;
+    // hash key 最大偏移值
+    uintptr_t max_hash_displacement;
+};
+</code></pre><p>这是一个全局弱引用hash表。使用不定类型对象的地址作为 key ，用 weak_entry_t 类型结构体对象作为 value 。其中的 weak_entries 成员，从字面意思上看，即为弱引用表入口。其实现也是这样的。</p>
+<p>其中weak_entry_t是存储在弱引用表中的一个内部结构体，它负责维护和存储指向一个对象的所有弱引用hash表。其定义如下：</p>
+<pre><code>typedef objc_object ** weak_referrer_t;
+struct weak_entry_t {
+    DisguisedPtrobjc_object&gt; referent;
+    union {
+        struct {
+            weak_referrer_t *referrers;
+            uintptr_t        out_of_line : 1;
+            uintptr_t        num_refs : PTR_MINUS_1;
+            uintptr_t        mask;
+            uintptr_t        max_hash_displacement;
+        };
+        struct {
+            // out_of_line=0 is LSB of one of these (don&apos;t care which)
+            weak_referrer_t  inline_referrers[WEAK_INLINE_COUNT];
+        };
+    }
+}
+</code></pre><p>在 weak_entry_t 的结构中，DisguisedPtr referent 是对泛型对象的指针做了一个封装，通过这个泛型类来解决内存泄漏的问题。从注释中写 out_of_line 成员为最低有效位，当其为0的时候， weak_referrer_t 成员将扩展为多行静态 hash table。其实其中的 weak_referrer_t 是二维 objc_object 的别名，通过一个二维指针地址偏移，用下标作为 hash 的 key，做成了一个弱引用散列。</p>
+<p>那么在有效位未生效的时候，out_of_line 、 num_refs、 mask 、 max_hash_displacement 有什么作用？以下是笔者自身的猜测：</p>
+<p>out_of_line：最低有效位，也是标志位。当标志位 0 时，增加引用表指针纬度。</p>
+<p>num_refs：引用数值。这里记录弱引用表中引用有效数字，因为弱引用表使用的是静态 hash 结构，所以需要使用变量来记录数目。</p>
+<p>mask：计数辅助量。</p>
+<p>max_hash_displacement：hash 元素上限阀值。</p>
+<p>其实 out_of_line 的值通常情况下是等于零的，所以弱引用表总是一个 objc_objective 指针二维数组。一维 objc_objective 指针可构成一张弱引用散列表，通过第三纬度实现了多张散列表，并且表数量为 WEAK_INLINE_COUNT 。</p>
+<p>总结一下 StripedMap[] ： StripedMap 是一个模板类，在这个类中有一个 array 成员，用来存储 PaddedT 对象，并且其中对于 [] 符的重载定义中，会返回这个 PaddedT 的 value 成员，这个 value 就是我们传入的 T 泛型成员，也就是 SideTable 对象。在 array 的下标中，这里使用了 indexForPointer 方法通过位运算计算下标，实现了静态的 Hash Table。而在 weak_table 中，其成员 weak_entry 会将传入对象的地址加以封装起来，并且其中也有访问全局弱引用表的入口。</p>
+<h3 id="旧对象解除注册操作-weak-unregister-no-lock"><a href="#旧对象解除注册操作-weak-unregister-no-lock" class="headerlink" title="旧对象解除注册操作 weak_unregister_no_lock"></a>旧对象解除注册操作 weak_unregister_no_lock</h3><p>该方法主要作用是将旧对象在 weak_table 中接触 weak 指针的对应绑定。根据函数名，称之为解除注册操作。从源码中，可以知道其功能就是从 weak_table 中接触 weak 指针的绑定。而其中的遍历查询，就是针对于 weak_entry 中的多张弱引用散列表。</p>
+<h3 id="新对象添加注册操作-weak-register-no-lock"><a href="#新对象添加注册操作-weak-register-no-lock" class="headerlink" title="新对象添加注册操作 weak_register_no_lock"></a>新对象添加注册操作 weak_register_no_lock</h3><p>这一步与上一步相反，通过 weak_register_no_lock 函数把心的对象进行注册操作，完成与对应的弱引用表进行绑定操作。</p>
+<h2 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h2><p>一个对象A,里面有一个weak属性B, 首先会有一个hash表, 键为A的地址, 值为一个数组, 这个数组里包含了B指针的地址, 当销毁的时候回根据B指针的地址获取到B的指针, 然后置为nil</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS 简单而粗暴的说一说内存管理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/">iOS 简单而粗暴的说一说内存管理</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/" class="archive-article-date">
+  	<time datetime="2018-09-06T05:21:08.050Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>既然是内存管理，首先要知道那么内存是用来干什么的？内存具体管理的东西是什么？当然这些东西基本都是常识了，内存当然是用来存储数据的，内存要管理的东西简单的说也就是如何将数据存储到内存中（比如说我们的声明变量就可以将数据存储到内存中），其次存储到内存中的数据怎样释放，什么时候释放，这都是内存管理需要来关心的</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="内存中的五大区域"><a href="#内存中的五大区域" class="headerlink" title="内存中的五大区域"></a>内存中的五大区域</h3><p>内存分为5个区域，分别指的是—–&gt;栈区/堆区/BSS段/数据段/代码段</p>
+<h4 id="栈区"><a href="#栈区" class="headerlink" title="栈区"></a>栈区</h4><p>存储局部变量，当其作用域执行完毕之后，就会被系统立即收回</p>
+<h4 id="堆区"><a href="#堆区" class="headerlink" title="堆区"></a>堆区</h4><p>存储OC对象，手动申请的字节空间，需要调用free来释放</p>
+<h4 id="BSS段"><a href="#BSS段" class="headerlink" title="BSS段"></a>BSS段</h4><p>未初始化的全局变量和静态变量，一旦初始化就会从BSS段中回收掉，转存到数据段中</p>
+<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><p>存储已经初始化的全局变量和静态变量，以及常量数据，直到结束程序时才会被立即收回</p>
+<h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><p>代码，直到结束程序时才会被立即收回</p>
+<h3 id="OC中堆区存储对象的特点"><a href="#OC中堆区存储对象的特点" class="headerlink" title="OC中堆区存储对象的特点"></a>OC中堆区存储对象的特点</h3><p>除了堆区，其他区域的中存储的数据，都是又系统自动释放的</p>
+<p>堆区中的OC对象，是不会自动释放的，如果不主动释放，那么将在程序结束的时候才去释放</p>
+<h3 id="引用计数器"><a href="#引用计数器" class="headerlink" title="引用计数器"></a>引用计数器</h3><p>首先简单来说一下，每一个OC对象都有一个属性，叫做retainCount，翻译过来也就是引用计数器，类型为unsigned long，占据8个字节，每一个对象负责维护对象所引用的记数值，当一个新的引用指向对象，那么这个对象的引用值增加1，当我们新创建出一个对象的时候这个对象的引用计数器的值默认为1，当这个对象被少一次引用的时候那么就先让这个对象的引用记数值减1，当这个对象所引用的记数值为0的时候，代表这个对象没有被使用，这时系统会自动回收掉此对象，回收这个对象的同时自动调用这个对象的dealloc方法</p>
+<h4 id="控制规则："><a href="#控制规则：" class="headerlink" title="控制规则："></a>控制规则：</h4><p>为对象发送一条retain消息，那么对象的引用计数器的值就会+1</p>
+<p>为对象发送一条release消息，那么对象的引用计数器的值就会-1</p>
+<p>为对象发送一条retainCount消息，那么就可以得到这个对象的引用计数器的值</p>
+<h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><p>MRC：Manual Reference Counting 手动引用计数器，需要我们手动管理对象引用计数器的值</p>
+<p>ARC：Autimatic Reference Counting 自动引用计数器，系统自动的改变对象引用计数器的值（iOS5之后），ARC是基于MRC的</p>
+<h3 id="内存管理的原则"><a href="#内存管理的原则" class="headerlink" title="内存管理的原则"></a>内存管理的原则</h3><p>新创建一个对象，这个对象的引用计数器的值为1，有对象的创建，就需要匹配一个release</p>
+<p>是谁来负责retain的，谁就要负责release，使用的时候retain，不是用的时候release</p>
+<p>retain的次数要和release次数想匹配，有加有减，做到平衡</p>
+<h3 id="野指针"><a href="#野指针" class="headerlink" title="野指针"></a>野指针</h3><p>在C中，声明一个指针变量，没有为这个指针变量初始化，那么这个指针变量的值也就是一个垃圾值，指针指向随机的一块空间，那么我们叫做野指针</p>
+<p>在OC中，一个指针指向的对象被释放了，那么这个指针叫野指针</p>
+<h3 id="对象的回收"><a href="#对象的回收" class="headerlink" title="对象的回收"></a>对象的回收</h3><p>对象所占用的字节空间，分配给别人使用，系统未分配这块空间被别人使用之前，这个对象的数据仍然处在内存中</p>
+<h3 id="僵尸对象"><a href="#僵尸对象" class="headerlink" title="僵尸对象"></a>僵尸对象</h3><p>已经被收回但是这个对象的数据仍然处在内存中，像这样的对象叫做僵尸对象</p>
+<p>僵尸对象有可能可以访问也有可能不可以访问，当僵尸对象所占的内存空间还没有分配给别人使用的时候，这个数据的对象其实仍然存在，通过指针仍然可以找到这个对象，所以说这个时候僵尸对象还可以被访问，当这个僵尸对象已经分配给别人使用的时候，这个对象就不存在了，这个时候不可以被访问</p>
+<p>注意：一旦一个对象成为僵尸对象之后，这个对象无论如何都不应该被使用，无论有没有分配给别人使用，都不能用！且不可以复活！</p>
+<h3 id="避免内存泄漏"><a href="#避免内存泄漏" class="headerlink" title="避免内存泄漏"></a>避免内存泄漏</h3><p>有对象的创建，就必须要匹配一个release，retain和release的次数要匹配，不要随便为一个指针赋值为nil，除非这个指针是野指针，在方法中不要随意对传入的对象进行retain</p>
+<p>当我们通过野指针去访问僵尸对象的时候会报错，为了避免报错当一个指针成为野指针后，为这个指针赋值为nil</p>
+<h2 id="循环引用"><a href="#循环引用" class="headerlink" title="循环引用"></a>循环引用</h2><p>@class</p>
+<p>对于循环依赖关系来说，比方A类引用B类，同时B类也引用A类</p>
+<p>这种代码编译会报错。当使用@class在两个类相互声明，就不会出现编译报错</p>
+<p>用法概括</p>
+<p>使用@class 类名; 就可以引用一个类，说明一下它是一个类</p>
+<p>和import的区别</p>
+<p>l  #import方式会包含被引用类的所有信息，包括被引用类的变量和方法；@class方式只是告诉编译器在A.h文件中 B *b 只是类的声明，具体这个类里有什么信息，这里不需要知道，等实现文件中真正要用到时，才会真正去查看B类中信息</p>
+<p>l  如果有上百个头文件都#import了同一个文件，或者这些文件依次被#improt,那么一旦最开始的头文件稍有改动，后面引用到这个文件的所有类都需要重新编译一遍，这样的效率也是可想而知的，而相对来讲，使用@class方式就不会出现这种问题了</p>
+<p>l  在.m实现文件中，如果需要引用到被引用类的实体变量或者方法时，还需要使用#import方式引入被引用类</p>
+<h3 id="如何解决循环引用的内存管理。"><a href="#如何解决循环引用的内存管理。" class="headerlink" title="如何解决循环引用的内存管理。"></a>如何解决循环引用的内存管理。</h3><p>解决方案：一端用assign，一端用retain</p>
+<p>  比如A对象retain了B对象，B对象retain了A对象</p>
+<p>  这样会导致A对象和B对象永远无法释放</p>
+<h3 id="didReceiveMemoryWarning、dealloc方法使用"><a href="#didReceiveMemoryWarning、dealloc方法使用" class="headerlink" title="didReceiveMemoryWarning、dealloc方法使用"></a>didReceiveMemoryWarning、dealloc方法使用</h3><p>####1.didReceiveMemoryWarning方法：</p>
+<p>首先调用[super didReceiveMemoryWarning]方法，然后检查当前视图的父视图是否为空，如果为空，则释放掉一些不需要的数据。关于视图界面的释放不应该在这个方法中，应该放在viewDidUnload方法中。</p>
+<p>####2.dealloc方法：</p>
+<p>对象释放时调用，在这个方法中，要释放掉所有的数据和输出口。比如释放输出口：[xxx release];(不使用self关键字)</p>
+<h2 id="一些注意的地方"><a href="#一些注意的地方" class="headerlink" title="一些注意的地方"></a>一些注意的地方</h2><p>1.向集合(NSArray,NSDictionary等)添加对象时，被添加的对象会被执行retain操作，当从集合中移走对象或者集合对象被释放时，集合中的对象会被执行release操作。</p>
+<p>2.要保证有多少个alloc、copy、multablecopy、retain消息，就要有多少个release或者autorelease，保证代码平衡。</p>
+<p>3.在程序中直接用@””创建的NSString对象，是常量，引用计数是-1，向它发送retain、release没有效果。</p>
+<p>4.在View中使用图片时，大的图片区域尽量使用小的图片数据来填充，减小内存占用。</p>
+<p>5.[UIImage imageNamed:@””]，次方法使用了系统缓存来缓存图像，会长时间占用内存，最好使用imageWithContentsOfFile方法。</p>
+<p>6.数据要延迟加载，只在内存中保留满足需要的最少的数据和视图元素，需要的时候再加载，不需要就马上销毁。</p>
+<p>7.假如一个成员变量在property中使用了retain，当使用self关键字对其赋值时，会对创建的对象再retain一次，造成内存泄露。比如：self.xxx = [[XXXalloc] init];</p>
+<p>  对一个成员变量赋nil值时，self.xxx = nil,会调用xxx的release方法，并且将指针置空，xxx = nil，只是将指针置空。</p>
+<p>9.在控制器中使用NSTimer会使当前控制器引用计数加1，所以在控制器释放之前，必须暂停和使定时器失效，否则控制器将不会被释放。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-AFN为什么添加一条常驻线程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -974,532 +1440,6 @@ typedef void(^TestBlock)(void);
 
 
   
-    <article id="post-四种遍历方法你选哪个？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/01/四种遍历方法你选哪个？/">四种遍历方法你选哪个？</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/01/四种遍历方法你选哪个？/" class="archive-article-date">
-  	<time datetime="2018-08-01T03:30:50.111Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>编程中有多种方式对collection（NSArray、NSDictionary、NSSet）中的元素进行遍历，实际运用中，需要根据效率视情况而用</p>
-<h2 id="for-循环"><a href="#for-循环" class="headerlink" title="for 循环"></a>for 循环</h2><p>最基本的遍历方法，只能进行有序遍历，对于set，dictionary，需要先转换为array才能进行遍历</p>
-<p>额外创建数组会增大开销，并且会多创建一个数组对象，它会保留collection中的所有元素对象。</p>
-<h2 id="使用NSEnumerator-来遍历"><a href="#使用NSEnumerator-来遍历" class="headerlink" title="使用NSEnumerator 来遍历"></a>使用NSEnumerator 来遍历</h2><pre><code>NSArray *arr = @[@&quot;1&quot;, @&quot;2&quot;, @&quot;3&quot;];
-
-NSEnumerator *enumerator = [arr objectEnumerator];
-
-id obj;
-
-while ((obj = [enumerator nextObject]) != nil) {
-   NSLog(@&quot;===%@&quot;, obj);
-}
-</code></pre><h2 id="快速遍历"><a href="#快速遍历" class="headerlink" title="快速遍历"></a>快速遍历</h2><pre><code>NSArray *arr = @[@&quot;1&quot;, @&quot;2&quot;, @&quot;3&quot;];
-
-for (id obj in arr) {
-
-   NSLog(@&quot;===%@&quot;, obj);
-}
-</code></pre><p>大幅简化了遍历所需的语法</p>
-<p>只要遵从了NSFastEnumeration协议，都可以使用快速遍历方法</p>
-<p>协议方法允许类实例同时返回多个对象，高效：</p>
-<pre><code>- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained _Nullable [_Nonnull])buffer count:(NSUInteger)len;
-</code></pre><p>NSEnumerator也实现了NSFastEnumeration协议，反向遍历的时候，也需要调用reverseObjectEnumerator方法</p>
-<pre><code>for (id obj in [arr reverseObjectEnumerator]) { }
-</code></pre><p>元素下标也有额外的方法</p>
-<h2 id="基于块的遍历方式"><a href="#基于块的遍历方式" class="headerlink" title="基于块的遍历方式"></a>基于块的遍历方式</h2><pre><code>// opts 是枚举类型，NSEnumerationConcurrent 表示开启并发执行， NSEnumerationReverse 表示反向遍历
-// obj 元素对象， idx 对象下标， *stop 为YES时，结束遍历
-- (void)enumerateObjectsWithOptions:(NSEnumerationOptions)opts usingBlock:(void (^)(ObjectType obj, NSUInteger idx, BOOL *stop))block;
-</code></pre><p>遍历时，直接从块里获取更多信息</p>
-<p>当确定元素类型时，可以修改块的方法签名，避免进行类型转换操作。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
-<li><p>遍历collection，最新、最先进的方式是“块枚举法”</p>
-</li>
-<li><p>“块枚举法”能通过GCD来并发执行遍历操作</p>
-</li>
-<li><p>若提前知道待遍历的collection含有何种对象，则应修改块签名，指出对象的具体类型</p>
-</li>
-</ol>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/01/四种遍历方法你选哪个？/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS中runtim的几种常用的方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/31/iOS中runtim的几种常用的方法/">iOS中runtime的几种常用的方法</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/31/iOS中runtim的几种常用的方法/" class="archive-article-date">
-  	<time datetime="2018-07-31T15:45:21.369Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>公司项目中用了一些 runtime 相关的知识, 初看时有些蒙, 虽然用的并不多, 但还是想着系统的把 runtime 相关的常用方法整理一下, 自己以后用着方便。</p>
-<p>ps：不知道是谁惯得毛病，面试很多都问这东西。其实实际用途吧，就–just so so。</p>
-<h2 id="runtime-简介"><a href="#runtime-简介" class="headerlink" title="runtime 简介"></a>runtime 简介</h2><p>runtime 简称运行时，是系统在运行的时候的一些机制，其中最主要的是消息机制。它是一套比较底层的纯 C 语言 API, 属于一个 C 语言库，包含了很多底层的 C 语言 API。我们平时编写的 OC 代码，在程序运行过程时，其实最终都是转成了 runtime 的 C 语言代码。如下所示:</p>
-<pre><code>// OC代码:
-[Person coding];
-
-//运行时 runtime 会将它转化成 C 语言的代码:
-objc_msgSend(Person, @selector(coding));
-</code></pre><h2 id="二、相关函数"><a href="#二、相关函数" class="headerlink" title="二、相关函数"></a>二、相关函数</h2><pre><code>// 遍历某个类所有的成员变量
-class_copyIvarList
-
-// 遍历某个类所有的方法
-class_copyMethodList
-
-// 获取指定名称的成员变量
-class_getInstanceVariable
-
-// 获取成员变量名
-ivar_getName
-
-// 获取成员变量类型编码
-ivar_getTypeEncoding
-
-// 获取某个对象成员变量的值
-object_getIvar
-
-// 设置某个对象成员变量的值
-object_setIvar
-
-// 给对象发送消息
-objc_msgSend
-</code></pre><h2 id="相关应用"><a href="#相关应用" class="headerlink" title="相关应用"></a>相关应用</h2><p>更改属性值</p>
-<p>动态添加属性</p>
-<p>动态添加方法</p>
-<p>交换方法的实现</p>
-<p>拦截并替换方法</p>
-<p>在方法上增加额外功能</p>
-<p>归档解档</p>
-<p>字典转模型</p>
-<h2 id="四、代码实现"><a href="#四、代码实现" class="headerlink" title="四、代码实现"></a>四、代码实现</h2><p>要使用runtime，要先引入头文件#import</p>
-<h3 id="4-1-更改属性值"><a href="#4-1-更改属性值" class="headerlink" title="4.1 更改属性值"></a>4.1 更改属性值</h3><p>用 runtime 修改一个对象的属性值</p>
-<pre><code>unsigned int count = 0;
-  // 动态获取类中的所有属性(包括私有)
-  Ivar *ivar = class_copyIvarList(_person.class, &amp;count);
-  // 遍历属性找到对应字段
-  for (int i = 0; i &lt; count; i ++) {
-      Ivar tempIvar = ivar[i];
-      const char *varChar = ivar_getName(tempIvar);
-      NSString *varString = [NSString stringWithUTF8String:varChar];
-      if ([varString isEqualToString:@&quot;_name&quot;]) {
-          // 修改对应的字段值
-          object_setIvar(_person, tempIvar, @&quot;更改属性值成功&quot;);
-          break;
-      }
-  }
-</code></pre><h3 id="4-2-动态添加属性"><a href="#4-2-动态添加属性" class="headerlink" title="4.2 动态添加属性"></a>4.2 动态添加属性</h3><p>用 runtime 为一个类添加属性, iOS 分类里一般会这样用, 我们建立一个分类, NSObject+NNAddAttribute.h, 并添加以下代码:</p>
-<pre><code>- (void)setName:(NSString *)name {
-    objc_setAssociatedObject(self, @&quot;name&quot;, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSString *)name {
-    return objc_getAssociatedObject(self, @&quot;name&quot;);
-}
-</code></pre><p>这样只要引用 NSObject+NNAddAttribute.h, 用 NSObject 创建的对象就会有一个 name 属性, 我们可以直接这样写:</p>
-<pre><code>NSObject *person = [NSObject new];
-person.name = @&quot;以梦为马&quot;;
-</code></pre><h3 id="4-3-动态添加方法"><a href="#4-3-动态添加方法" class="headerlink" title="4.3 动态添加方法"></a>4.3 动态添加方法</h3><p>person 类中没有 coding 方法，我们用 runtime 给 person 类添加了一个名字叫 coding 的方法，最终再调用coding方法做出相应. 下面代码的几个参数需要注意一下:</p>
-<pre><code>- (void)buttonClick:(UIButton *)sender {
-    /*
-     动态添加 coding 方法
-     (IMP)codingOC 意思是 codingOC 的地址指针;
-     &quot;v@:&quot; 意思是，v 代表无返回值 void，如果是 i 则代表 int；@代表 id sel; : 代表 SEL _cmd;
-     “v@:@@” 意思是，两个参数的没有返回值。
-     */
-    class_addMethod([_person class], @selector(coding), (IMP)codingOC, &quot;v@:&quot;);
-    // 调用 coding 方法响应事件
-    if ([_person respondsToSelector:@selector(coding)]) {
-        [_person performSelector:@selector(coding)];
-        self.testLabelText = @&quot;添加方法成功&quot;;
-    } else {
-        self.testLabelText = @&quot;添加方法失败&quot;;
-    }
-}
-
-// 编写 codingOC 的实现
-void codingOC(id self,SEL _cmd) {
-    NSLog(@&quot;添加方法成功&quot;);
-}
-</code></pre><h3 id="4-4-交换方法的实现"><a href="#4-4-交换方法的实现" class="headerlink" title="4.4 交换方法的实现"></a>4.4 交换方法的实现</h3><p>某个类有两个方法, 比如 person 类有两个方法, coding 方法与 eating 方法, 我们用 runtime 交换一下这两个方法, 就会出现这样的情况, 当我们调用 coding 的时候, 执行的是 eating, 当我们调用 eating 的时候, 执行的是 coding, 如下面的动态效果图.</p>
-<pre><code>Method oriMethod = class_getInstanceMethod(_person.class, @selector(coding));
-   Method curMethod = class_getInstanceMethod(_person.class, @selector(eating));
-   method_exchangeImplementations(oriMethod, curMethod);
-</code></pre><p><img src="http://cc.cocimg.com/api/uploads//20180731/1533006613832913.gif" alt=""></p>
-<h3 id="4-5-拦截并替换方法"><a href="#4-5-拦截并替换方法" class="headerlink" title="4.5 拦截并替换方法"></a>4.5 拦截并替换方法</h3><p>这个功能和上面的其实有些类似, 拦截并替换方法可以拦截并替换同一个类的, 也可以在两个类之间进行, 我这里用了两个不同的类, 下面是简单的代码实现.</p>
-<pre><code>_person = [NNPerson new];
-   _library = [NNLibrary new];
-   self.testLabelText = [_library libraryMethod];
-   Method oriMethod = class_getInstanceMethod(_person.class, @selector(changeMethod));
-   Method curMethod = class_getInstanceMethod(_library.class, @selector(libraryMethod));
-   method_exchangeImplementations(oriMethod, curMethod);
-</code></pre><h3 id="在方法上增加额外功能"><a href="#在方法上增加额外功能" class="headerlink" title="在方法上增加额外功能"></a>在方法上增加额外功能</h3><p>这个使用场景还是挺多的, 比如我们需要记录 APP 中某一个按钮的点击次数, 这个时候我们便可以利用 runtime 来实现这个功能. 我这里写了个 UIButton 的子类, 然后在 + (void)load 中用 runtime 给它增加了一个功能, 核心代码及实现效果图如下:</p>
-<pre><code>+ (void)load {
-    static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
-        Method oriMethod = class_getInstanceMethod(self.class, @selector(sendAction:to:forEvent:));
-        Method cusMethod = class_getInstanceMethod(self.class, @selector(customSendAction:to:forEvent:));
-        // 判断自定义的方法是否实现, 避免崩溃
-        BOOL addSuccess = class_addMethod(self.class, @selector(sendAction:to:forEvent:), method_getImplementation(cusMethod), method_getTypeEncoding(cusMethod));
-        if (addSuccess) {
-            // 没有实现, 将源方法的实现替换到交换方法的实现
-            class_replaceMethod(self.class, @selector(customSendAction:to:forEvent:), method_getImplementation(oriMethod), method_getTypeEncoding(oriMethod));
-        } else {
-            // 已经实现, 直接交换方法
-            method_exchangeImplementations(oriMethod, cusMethod);
-        }
-    });
-}
-</code></pre><p><img src="http://cc.cocimg.com/api/uploads//20180731/1533006692520815.gif" alt="">    </p>
-<h3 id="4-7归档解档"><a href="#4-7归档解档" class="headerlink" title="4.7归档解档"></a>4.7归档解档</h3><p>当我们使用 NSCoding 进行归档及解档时, 如果不用 runtime, 那么不管模型里面有多少属性, 我们都需要对其实现一遍 encodeObject 和 decodeObjectForKey 方法, 如果模型里面有 10000 个属性, 那么我们就需要写 10000 句encodeObject 和 decodeObjectForKey 方法, 这个时候用 runtime, 便可以充分体验其好处(以下只是核心代码, 具体代码请见 demo).</p>
-<pre><code>- (void)encodeWithCoder:(NSCoder *)aCoder {
-    unsigned int count = 0;
-    // 获取类中所有属性
-    Ivar *ivars = class_copyIvarList(self.class, &amp;count);
-    // 遍历属性
-    for (int i = 0; i &lt; count; i ++) {
-        // 取出 i 位置对应的属性
-        Ivar ivar = ivars[i];
-        // 查看属性
-        const char *name = ivar_getName(ivar);
-        NSString *key = [NSString stringWithUTF8String:name];
-        // 利用 KVC 进行取值，根据属性名称获取对应的值
-        id value = [self valueForKey:key];
-        [aCoder encodeObject:value forKey:key];
-    }
-    free(ivars);
-}
-
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if (self = [super init]) {
-        unsigned int count = 0;
-        // 获取类中所有属性
-        Ivar *ivars = class_copyIvarList(self.class, &amp;count);
-        // 遍历属性
-        for (int i = 0; i &lt; count; i ++) {
-            // 取出 i 位置对应的属性
-            Ivar ivar = ivars[i];
-            // 查看属性
-            const char *name = ivar_getName(ivar);
-            NSString *key = [NSString stringWithUTF8String:name];
-            // 进行解档取值
-            id value = [aDecoder decodeObjectForKey:key];
-            // 利用 KVC 对属性赋值
-            [self setValue:value forKey:key];
-        }
-    }
-    return self;
-}
-</code></pre><h3 id="4-8-字典转模型"><a href="#4-8-字典转模型" class="headerlink" title="4.8 字典转模型"></a>4.8 字典转模型</h3><p>字典转模型我们通常用的都是第三方, MJExtension, YYModel 等, 但也有必要了解一下其实现方式: 遍历模型中的所有属性，根据模型的属性名，去字典中查找对应的 key，取出对应的值，给模型的属性赋值。</p>
-<pre><code>/** 字典转模型 **/
-+ (instancetype)modelWithDict:(NSDictionary *)dict {
-    id objc = [[self alloc] init];
-    unsigned int count = 0;
-    // 获取成员属性数组
-    Ivar *ivarList = class_copyIvarList(self, &amp;count);
-    // 遍历所有的成员属性名
-    for (int i = 0; i &lt; count; i ++) {
-        // 获取成员属性
-        Ivar ivar = ivarList[i];
-        // 获取成员属性名
-        NSString *ivarName = [NSString stringWithUTF8String:ivar_getName(ivar)];
-        NSString *key = [ivarName substringFromIndex:1];
-        // 从字典中取出对应 value 给模型属性赋值
-        id value = dict[key];
-        // 获取成员属性类型
-        NSString *ivarType = [NSString stringWithUTF8String:ivar_getTypeEncoding(ivar)];
-        // 判断 value 是不是字典
-        if ([value isKindOfClass:[NSDictionary class]]) {
-            ivarType = [ivarType stringByReplacingOccurrencesOfString:@&quot;@&quot; withString:@&quot;&quot;];
-            ivarType = [ivarType stringByReplacingOccurrencesOfString:@&quot;\&quot;&quot; withString:@&quot;&quot;];
-            Class modalClass = NSClassFromString(ivarType);
-            // 字典转模型
-            if (modalClass) {
-                // 字典转模型
-                value = [modalClass modelWithDict:value];
-            }
-        }
-        if ([value isKindOfClass:[NSArray class]]) {
-            // 判断对应类有没有实现字典数组转模型数组的协议
-            if ([self respondsToSelector:@selector(arrayContainModelClass)]) {
-                // 转换成id类型，就能调用任何对象的方法
-                id idSelf = self;
-                // 获取数组中字典对应的模型
-                NSString *type = [idSelf arrayContainModelClass][key];
-                // 生成模型
-                Class classModel = NSClassFromString(type);
-                NSMutableArray *arrM = [NSMutableArray array];
-                // 遍历字典数组，生成模型数组
-                for (NSDictionary *dict in value) {
-                    // 字典转模型
-                    id model =  [classModel modelWithDict:dict];
-                    [arrM addObject:model];
-                }
-                // 把模型数组赋值给value
-                value = arrM;
-            }
-        }
-        // KVC 字典转模型
-        if (value) {
-            [objc setValue:value forKey:key];
-        }
-    }
-    return objc;
-}
-</code></pre><p><a href="https://github.com/wangjungang/runtimeTest" target="_blank" rel="noopener">代码地址</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/31/iOS中runtim的几种常用的方法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-java连接Mysql8.0.11" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/31/java连接Mysql8.0.11/">java连接Mysql8.0.11</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/31/java连接Mysql8.0.11/" class="archive-article-date">
-  	<time datetime="2018-07-31T15:32:24.531Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>java连接Mysql8.0.11与之前版本有些不同。</p>
-<p>最近也是踩了很多的坑，总结一下。</p>
-<pre><code>其中driver为com.mysql.cj.jdbc.Driver
-
-url为jdbc:mysql://localhost/net_tableinfo?useSSL=FALSE&amp;serverTimezone=UTC（net_tableinfo为数据库的名字）
-</code></pre><h2 id="测试代码如下"><a href="#测试代码如下" class="headerlink" title="测试代码如下"></a>测试代码如下</h2><pre><code>package com.dgd.test;
-
-import java.sql.*;
-
-
-/**
- * @author Dgd
- * @create 2017-10-16-21:25
- * 测试数据库
- */
-
-public class Test {
-    //mysql驱动包名
-    private static final String DRIVER_NAME = &quot;com.mysql.cj.jdbc.Driver&quot;;
-    //数据库连接地址
-    private static final String URL = &quot;jdbc:mysql://localhost/New_info?useSSL=FALSE&amp;serverTimezone=UTC&quot;;
-    //用户名
-    private static final String USER_NAME = &quot;root&quot;;
-    //密码
-    private static final String PASSWORD = &quot;password&quot;;
-    public static void main(String[] args){
-        Connection connection = null;
-        try {
-            //加载mysql的驱动类
-            Class.forName(DRIVER_NAME);
-            //获取数据库连接
-            connection = DriverManager.getConnection(URL, USER_NAME, PASSWORD);
-            //mysql查询语句
-            String sql = &quot;SELECT name FROM net_tableinfo&quot;;
-            PreparedStatement prst = connection.prepareStatement(sql);
-            //结果集
-            ResultSet rs = prst.executeQuery();
-            while (rs.next()) {
-                System.out.println(&quot;用户名:&quot; + rs.getString(&quot;name&quot;));
-            }
-            rs.close();
-            prst.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/31/java连接Mysql8.0.11/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1609,11 +1549,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
