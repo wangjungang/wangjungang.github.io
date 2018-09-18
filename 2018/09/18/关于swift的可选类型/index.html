@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018/7 | Blog</title>
+  <title>关于swift的可选类型 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2018/07/index.html">
+  <meta name="description" content="写在前面swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。 关于objcet-c和swift中对于nil的处理Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNo">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于swift的可选类型">
+<meta property="og:url" content="http://yoursite.com/2018/09/18/关于swift的可选类型/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="写在前面swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。 关于objcet-c和swift中对于nil的处理Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNo">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-09-18T15:16:01.893Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="关于swift的可选类型">
+<meta name="twitter:description" content="写在前面swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。 关于objcet-c和swift中对于nil的处理Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNo">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,36 +155,161 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-关于swift的可选类型" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/31/iOS中runtim的几种常用的方法/" class="archive-article-date">
-  	<time datetime="2018-07-31T15:45:21.369Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/31/iOS中runtim的几种常用的方法/">iOS中runtime的几种常用的方法</a>
+    <h1 class="article-title" itemprop="name">
+      关于swift的可选类型
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/09/18/关于swift的可选类型/" class="archive-article-date">
+  	<time datetime="2018-09-18T15:08:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。</p>
+<h3 id="关于objcet-c和swift中对于nil的处理"><a href="#关于objcet-c和swift中对于nil的处理" class="headerlink" title="关于objcet-c和swift中对于nil的处理"></a>关于objcet-c和swift中对于nil的处理</h3><p>Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNotFound)</p>
+<p>Swift中的nil:表示任意类型的值缺失，是一个确定的值，要么是该类型的一个值要么什么都没有(即为nil)</p>
+<h3 id="一、申明可选常量或变量"><a href="#一、申明可选常量或变量" class="headerlink" title="一、申明可选常量或变量"></a>一、申明可选常量或变量</h3><pre><code>let status: Int? = 1   // 申明可选Int类型的常量,初始值为1 
+var defaultAddress: String? = &quot;江苏南京&quot;   // 申明可选String类型的变量,初始值为&quot;江苏南京&quot;
+var student: Person? // 申明可选Person(自定义的类)的变量，初始值为nil
+</code></pre><p>注意：Int?与Int不相同，Int?表示可选的Int类型，可以赋值为nil，而Int不可以赋值为nil</p>
+<h3 id="二、使用”-”强制解析获取可选类型的值-不建议直接使用"><a href="#二、使用”-”强制解析获取可选类型的值-不建议直接使用" class="headerlink" title="二、使用”!”强制解析获取可选类型的值(不建议直接使用)"></a>二、使用”!”强制解析获取可选类型的值(不建议直接使用)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
+if defaultAddress != nil { // !=或==可以用来判断是否为nil
+    print(&quot;您的地址是\(defaultAddress!)&quot;) // 使用!强制解析
+} else {
+    print(&quot;对不起，您不存在地址信息&quot;)
+}
+
+var student: Person?
+print(&quot;学生为\(student!)&quot;) // XCode会提示运行错误，因为student初始值为nil，强制解析不行
+</code></pre><h3 id="三、使用可选绑定获取可选类型的值-建议的用法"><a href="#三、使用可选绑定获取可选类型的值-建议的用法" class="headerlink" title="三、使用可选绑定获取可选类型的值(建议的用法)"></a>三、使用可选绑定获取可选类型的值(建议的用法)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
+if let address = defaultAddress { // 如果defaultAddress有值或类型转换成功，则将值赋值给address直接使用
+    print(&quot;您的地址是\(address)&quot;)  // 使用address代替defaultAddress，且不需要加!强制解析
+} else {
+    print(&quot;对不起，您不存在地址信息&quot;)
+}
+</code></pre><h3 id="四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><a href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil" class="headerlink" title="四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)"></a>四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</h3><pre><code>var mobileNumber: Int64! = 13912345678 // 第一次申明有初始值
+print(&quot;您的电话号码是\(mobileNumber)&quot;) // 不需要使用!强制解析
+// 打印内容:**您的电话号码是****Optional(13912345678)**
+// 还是不建议直接强制解析，因为实际项目中可能中间已经对该值做了改变，若为nil则会运行错误导致APP崩溃
+if let number = mobileNumber { // 建议的做法
+    print(&quot;您的电话号码是\(number)&quot;)
+// 打印内容:**您的电话号码是****13912345678**
+} else {
+    print(&quot;您没有记录电话号码&quot;)
+}
+</code></pre><h3 id="空合运算符-用于判断变量或常量是否为nil"><a href="#空合运算符-用于判断变量或常量是否为nil" class="headerlink" title="空合运算符(用于判断变量或常量是否为nil)"></a>空合运算符(用于判断变量或常量是否为nil)</h3><pre><code>// 空合运算符：a ?? b 判断a是否为nil，若a不为nil对a解封，否则返回b的值
+var status: Int? // 申明可选Int类型的变量status，初始值为nil
+status ?? 0 // 因为status为nil，则返回0
+// ?? 即为以下if else的缩写
+func testOption() -&gt; Int {
+    let status: Int? = 1
+    if status == nil {
+        return 0
+    } else {
+        return status!
+    }
+}
+</code></pre><h3 id="六、函数-方法返回类型为可选类型"><a href="#六、函数-方法返回类型为可选类型" class="headerlink" title="六、函数/方法返回类型为可选类型"></a>六、函数/方法返回类型为可选类型</h3><h4 id="A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等"><a href="#A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等" class="headerlink" title="A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)"></a>A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)</h4><pre><code>func returnPossibleValue(value: Bool) -&gt; String? { // 返回类型为可选String类型
+    if value {
+        return &quot;返回类型是可选类型值&quot; // 如果为真，返回Int类型的值1
+    } else {
+        return nil // 如果为假，返回nil
+    }
+}
+
+let possibleValue = returnPossibleValue(value: true) // 要用可选绑定判断再使用，因为possibleValue为String？可选类型
+if let value = possibleValue {
+    print(value)
+} else {
+    print(&quot;none value&quot;)
+}
+</code></pre><h4 id="B-返回值为可选类型的类-如URL-、自定义Person-等"><a href="#B-返回值为可选类型的类-如URL-、自定义Person-等" class="headerlink" title="B:返回值为可选类型的类(如URL?、自定义Person?等)"></a>B:返回值为可选类型的类(如URL?、自定义Person?等)</h4><pre><code>class SomeClass {
+    var someValue: Int
+    init?(someValue: Int) { // 可失败构造器
+        if someValue == 1 { return nil }
+        self.someValue = someValue
+    }
+}
+
+func returnPossibleClass(value: Bool) -&gt; SomeClass? { // 返回的类实例可能为nil
+    if value {
+        return SomeClass(someValue: 1) // 返回的为nil
+    } else {
+        return SomeClass(someValue: 2) // 返回的SomeClass?实例，不为nil
+    }
+}
+</code></pre><h4 id="C-返回值为可选类型的闭包-如-gt-void"><a href="#C-返回值为可选类型的闭包-如-gt-void" class="headerlink" title="C:返回值为可选类型的闭包(如(()-&gt; (void))? )"></a>C:返回值为可选类型的闭包(如(()-&gt; (void))? )</h4><pre><code>func returnOptionalFunc(value: Bool) -&gt; (() -&gt; (Void))? { // 返回类型为可选类型的闭包
+    if value {
+        return { () in
+            print(&quot;返回类型是可选类型闭包&quot;)
+        }
+    } else {
+        return nil
+    }
+}
+
+let possibleFunc = returnOptionalFunc(value: true) // 要用可选绑定判断再使用，因为possibleFunc 为可选类型的闭包，类型为() -&gt; (Void)
+if let aFunc = possibleFunc {
+    print(aFunc())  // 注意增加()调用闭包，因为没有参数则是空括号
+} else {
+    print(&quot;none func&quot;)
+}
+</code></pre><h3 id="七、可选类型在类或结构体中的运用"><a href="#七、可选类型在类或结构体中的运用" class="headerlink" title="七、可选类型在类或结构体中的运用"></a>七、可选类型在类或结构体中的运用</h3><h4 id="A-可选类型在类中的运用"><a href="#A-可选类型在类中的运用" class="headerlink" title="A:可选类型在类中的运用"></a>A:可选类型在类中的运用</h4><pre><code>class PossibleClass {
+    var someValue: Int
+    var possibleValue: String? // 可选存储属性，默认值为nil
+    init(someValue: Int) { // 构造方法中可以不对possibleValue属性初始化
+        self.someValue = someValue
+    }
+}
+
+let someClass = PossibleClass(someValue: 4) // 实例化对象时不需要对possibleValue初始化，someClass实例中：someValue为4，possibleValue为nil
+</code></pre><p>注意：类中所有属性都需要有默认值。属性可以在申明时赋予初始值，也可以在构造方法中赋予初始值；子类继承父类时，必须先给自身属性先初始化后再继承父类构造方法初始化。一般的，出于安全的因素，子类的属性都赋予初始值或直接定义为可选类型。</p>
+<h4 id="B-可选类型在结构体中的运用"><a href="#B-可选类型在结构体中的运用" class="headerlink" title="B:可选类型在结构体中的运用"></a>B:可选类型在结构体中的运用</h4><pre><code>struct PossibleStruct {
+    var someValue: Int
+    var possibleValue: String? // 可选存储属性，默认值为nil
+    // 结构体中可以自定义一个init构造器对属性初始化，也可以不自定义
+}
+
+let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
+</code></pre>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -191,263 +321,106 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/18/关于swift的可选类型/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/31/java连接Mysql8.0.11/" class="archive-article-date">
-  	<time datetime="2018-07-31T15:32:24.531Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/09/17/iOS关于nsstring的copy和strong/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iOS关于nsstring的copy和strong</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/31/java连接Mysql8.0.11/">java连接Mysql8.0.11</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/31/浅谈iOS 开发中的界面通信/" class="archive-article-date">
-  	<time datetime="2018-07-31T05:58:01.437Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/31/浅谈iOS 开发中的界面通信/">浅谈iOS 开发中的界面通信</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/31/iTerm2 + Oh My Zsh 打造舒适终端体验/" class="archive-article-date">
-  	<time datetime="2018-07-31T05:10:45.456Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/31/iTerm2 + Oh My Zsh 打造舒适终端体验/">iTerm2 + Oh My Zsh 打造舒适终端体验</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">MAC OS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/28/正确的使用pod install 和 pod update - CocoaPods/" class="archive-article-date">
-  	<time datetime="2018-07-27T16:00:16.151Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/28/正确的使用pod install 和 pod update - CocoaPods/">正确的使用pod install 和 pod update - CocoaPods</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">CocoaPods</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/27/Vim的简单使用/" class="archive-article-date">
-  	<time datetime="2018-07-27T15:32:00.875Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/27/Vim的简单使用/">Vim的简单使用</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vim</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/27/welcome/" class="archive-article-date">
-  	<time datetime="2018-07-27T15:30:37.293Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/27/welcome/">Welcome</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/07/27/hello-world/" class="archive-article-date">
-  	<time datetime="2018-07-27T06:40:06.594Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/07/27/hello-world/">Hello World</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -470,8 +443,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
