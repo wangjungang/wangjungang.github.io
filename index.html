@@ -152,6 +152,149 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-每个程序员对着电梯都想过调度算法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/22/每个程序员对着电梯都想过调度算法/">每个程序员对着电梯都想过调度算法吧！</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/22/每个程序员对着电梯都想过调度算法/" class="archive-article-date">
+  	<time datetime="2018-09-22T14:13:11.373Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>作为程序员，今天你决定翘掉晚上的加班，约女朋友看电影。</p>
+<p>电影是 20:00 开始。</p>
+<p>虽然翘掉了加班，但你从公司出来，就已经 19:00 了。</p>
+<p>公司在望京 SOHO，约会地点在朝阳大悦城。</p>
+<p>（这点时间，祝你好运吧）</p>
+<p>也许你运气真的很好，19:50 就赶到商场了。</p>
+<p>心里想：“还有10分钟才开始，电影院在 F8，乘个直梯，两分钟就到，今天真美好。”</p>
+<p>你按了上行按钮，并行的 3 部电梯，一部正从 F2 升 F3，一部刚刚打算从 F8 降下来，另一部刚降到 F3 竟然又升上去了！</p>
+<p>（理论上讲，一部电梯，如果从 F8 以自由落体的方式下来，不超过 3s；如果正常运行下来，大概 105s；）</p>
+<p>可是……</p>
+<p>你到达电影院时，已经 20:10 了</p>
+<p>你的女朋友也等得不耐烦了……</p>
+<p>不管你是在北上广还是在港澳台，甚至三四线城市，凡是有规模的地区，高楼比比皆是。</p>
+<p>不管是写字楼，还是大型商城，让你最头痛的就是乘电梯，尤其是在赶时间的时候。</p>
+<p>每天早上，那些差5分钟就迟到的程序员，在等电梯时，一般会做两件事：</p>
+<p>第一，在心里骂电梯慢；</p>
+<p>第二，在心里暗算着电梯调度如何优化；</p>
+<p>前者可能是写字楼里上班族惯有的精神类疾病，但后者肯定是程序员的职业病。</p>
+<p>本文对“骂电梯”不给予任何指导性建议。</p>
+<p>但说起电梯调度算法，我觉得还是可以给大家科普一下，好为大家在等电梯之余，打发时间而做出一点贡献。（电梯调度算法可以参考各种硬盘换道算法，下面内容整理自网络）</p>
+<h2 id="传统电梯调度算法"><a href="#传统电梯调度算法" class="headerlink" title="传统电梯调度算法"></a>传统电梯调度算法</h2><h3 id="1-1-先来先服务算法（FCFS）"><a href="#1-1-先来先服务算法（FCFS）" class="headerlink" title="1.1 先来先服务算法（FCFS）"></a>1.1 先来先服务算法（FCFS）</h3><p>先来先服务（FCFS-First Come First Serve）算法，是一种随即服务算法，它不仅仅没有对寻找楼层进行优化，也没有实时性的特征，它是一种最简单的电梯调度算法。</p>
+<p>它根据乘客请求乘坐电梯的先后次序进行调度。此算法的优点是公平、简单，且每个乘客的请求都能依次地得到处理，不会出现某一乘客的请求长期得不到满足的情况。</p>
+<p>这种方法在载荷较轻松的环境下，性能尚可接受，但是在载荷较大的情况下，这种算法的性能就会严重下降，甚至恶化。</p>
+<p>人们之所以研究这种在载荷较大的情况下几乎不可用的算法，有两个原因：</p>
+<p>任何调度算法在请求队列长度为1时，请求速率极低或相邻请求的间隔为无穷大时使用先来先服务算法既对调度效率不会产生影响，而且实现这种算法极其简单。</p>
+<p>先来先服务算法可以作为衡量其他算法的标准。</p>
+<h3 id="1-2-最短寻找楼层时间优先算法（SSTF）"><a href="#1-2-最短寻找楼层时间优先算法（SSTF）" class="headerlink" title="1.2 最短寻找楼层时间优先算法（SSTF）"></a>1.2 最短寻找楼层时间优先算法（SSTF）</h3><p>最短寻找楼层时间优先（SSTF-Shortest Seek Time First）算法，它注重电梯寻找楼层的优化。</p>
+<p>最短寻找楼层时间优先算法选择下一个服务对象的原则是最短寻找楼层的时间。</p>
+<p>这样请求队列中距当前能够最先到达的楼层的请求信号就是下一个服务对象。</p>
+<p>在重载荷的情况下，最短寻找楼层时间优先算法的平均响应时间较短，但响应时间的方差较大，原因是队列中的某些请求可能长时间得不到响应，出现所谓的“饿死”现象。</p>
+<h3 id="1-3-扫描算法（SCAN）"><a href="#1-3-扫描算法（SCAN）" class="headerlink" title="1.3 扫描算法（SCAN）"></a>1.3 扫描算法（SCAN）</h3><p>扫描算法（SCAN） 是一种按照楼层顺序依次服务请求，它让电梯在最底层和最顶层之间连续往返运行，在运行过程中响应处在于电梯运行方向相同的各楼层上的请求。</p>
+<p>它进行寻找楼层的优化，效率比较高，但它是一个非实时算法。扫描算法较好地解决了电梯移动的问题，在这个算法中，每个电梯响应乘客请求使乘客获得服务的次序是由其发出请求的乘客的位置与当前电梯位置之间的距离来决定的。</p>
+<p>所有的与电梯运行方向相同的乘客的请求在一次电向上运行或向下运行的过程中完成，免去了电梯频繁的来回移动。</p>
+<p>扫描算法的平均响应时间比最短寻找楼层时间优先算法长，但是响应时间方差比最短寻找楼层时间优先算法小，从统计学角度来讲，扫描算法要比最短寻找楼层时间优先算法稳定。</p>
+<h3 id="1-4-LOOK-算法"><a href="#1-4-LOOK-算法" class="headerlink" title="1.4 LOOK 算法"></a>1.4 LOOK 算法</h3><p>LOOK 算法是扫描算法（SCAN）的一种改进。对LOOK算法而言，电梯同样在最底层和最顶层之间运行。</p>
+<p>但当 LOOK 算法发现电梯所移动的方向上不再有请求时立即改变运行方向，而扫描算法则需要移动到最底层或者最顶层时才改变运行方向。</p>
+<h3 id="1-5-SATF-算法"><a href="#1-5-SATF-算法" class="headerlink" title="1.5 SATF 算法"></a>1.5 SATF 算法</h3><p>SATF（Shortest Access Time First）算法与 SSTF 算法的思想类似，唯一的区别就是 SATF 算法将 SSTF 算法中的寻找楼层时间改成了访问时间。</p>
+<p>这是因为电梯技术发展到今天，寻找楼层的时间已经有了很大地改进，但是电梯的运行当中等待乘客上梯时间却不是人为可以控制。</p>
+<p>SATF 算法考虑到了电梯运行过程中乘客上梯时间的影响。</p>
+<h2 id="实际的电梯调度算法"><a href="#实际的电梯调度算法" class="headerlink" title="实际的电梯调度算法"></a>实际的电梯调度算法</h2><h3 id="2-1-最早截止期优先调度算法"><a href="#2-1-最早截止期优先调度算法" class="headerlink" title="2.1 最早截止期优先调度算法"></a>2.1 最早截止期优先调度算法</h3><p>最早截止期优先（EDF-Earliest Deadline First）调度算法是最简单的实时电梯调度算法，它的缺点就是造成电梯任意地寻找楼层，导致极低的电梯吞吐率。</p>
+<p>它与 FCFS 调度算法类似，EDF 算法是电梯实时调度算法中最简单的调度算法。</p>
+<p>它响应请求队列中时限最早的请求，是其它实时电梯调度算法性能衡量的基准和特例。</p>
+<h3 id="2-2-SCAN-EDF-算法"><a href="#2-2-SCAN-EDF-算法" class="headerlink" title="2.2 SCAN-EDF 算法"></a>2.2 SCAN-EDF 算法</h3><p>SCAN-EDF 算法是 SCAN 算法和 EDF 算法相结合的产物。SCAN-EDF 算法先按照 EDF 算法选择请求列队中哪一个是下一个服务对象，而对于具有相同时限的请求，则按照 SCAN 算法服务每一个请求。它的效率取决于有相同 deadline  的数目，因而效率是有限的。</p>
+<h3 id="2-3-PI-算法"><a href="#2-3-PI-算法" class="headerlink" title="2.3 PI 算法"></a>2.3 PI 算法</h3><p>PI（Priority Inversion）算法将请求队列中的请求分成两个优先级，它首先保证高优先级队列中的请求得到及时响应，再搞优先级队列为空的情况下在相应地优先级队列中的请求。</p>
+<h3 id="2-4-FD-SCAN-算法"><a href="#2-4-FD-SCAN-算法" class="headerlink" title="2.4 FD-SCAN 算法"></a>2.4 FD-SCAN 算法</h3><p>FD-SCAN（Feasible Deadline SCAN）算法首先从请求队列中找出时限最早、从当前位置开始移动又可以买足其时限要求的请求，作为下一次 SCAN 的方向。</p>
+<p>并在电梯所在楼层向该请求信号运行的过程中响应处在与电梯运行方向相同且电梯可以经过的请求信号。</p>
+<p>这种算法忽略了用 SCAN 算法相应其它请求的开销，因此并不能确保服务对象时限最终得到满足。</p>
+<p>算法基础阅读：8 种排序算法：从原理到改进，再到代码兑现透彻解析</p>
+<h2 id="电梯调度高水平研究"><a href="#电梯调度高水平研究" class="headerlink" title="电梯调度高水平研究"></a>电梯调度高水平研究</h2><p>以上两结介绍了几种简单的电梯调度算法。</p>
+<p>但是并不是说目前电梯调度只发展到这个层次。目前电梯的控制技术已经进入了电梯群控的时代。</p>
+<p>随着微机在电梯系统中的应用和人工智能技术的发展，智能群控技术得以迅速发展起来。</p>
+<p>由此，电梯的群控方面陆续发展出了一批新方法，包括：基于专家系统的电梯群控方法、基于模糊逻辑的电梯群控方法、基于遗产算法的电梯群控方法、基于胜景网络的电梯群控方法和基于模糊神经网络的电梯群控方法。</p>
+<h2 id="电梯问题的需求分析"><a href="#电梯问题的需求分析" class="headerlink" title="电梯问题的需求分析"></a>电梯问题的需求分析</h2><h3 id="4-1-电梯的初始状态"><a href="#4-1-电梯的初始状态" class="headerlink" title="4.1 电梯的初始状态"></a>4.1 电梯的初始状态</h3><p>本人设置的电梯的初始状态，是对住宅楼的电梯的设置。</p>
+<p>(1)建筑共有21层，其中含有地下一层（地下一层为停车场）。</p>
+<p>(2)建筑内部设有两部电梯，编号分别为A梯、B梯。</p>
+<p>(3)电梯内部有23个按钮，其中包括开门按钮、关门按钮和楼层按钮，编号为-1，1，2，3，4……20。</p>
+<p>(4)电梯外部含有两个按钮，即向上运行按钮和向下运行按钮。建筑顶层与地下一层例外，建筑顶层只设置有向下运行按钮，地下一层只设置有向上运行按钮。</p>
+<p>(5)电梯开关门完成时间设定为1秒。电梯到达每层后上下人的时间设定为8秒。电梯从静止开始运行到下一层的时间设置为2秒，而运行中通过一层的时间为1秒。</p>
+<p>(6)在凌晨2：00——4：30之间，如若没有请求信号，A梯自动停在14层，B梯自动停在6层。</p>
+<p>(7)当电梯下到-1层后，如果没有请求信号，电梯自动回到1层。</p>
+<h3 id="4-2-电梯基本功能"><a href="#4-2-电梯基本功能" class="headerlink" title="4.2 电梯基本功能"></a>4.2 电梯基本功能</h3><p>每一架电梯都有一个编号，以方便监控与维修。每一架电梯都有一实时监控器，负责监控电梯上下，向电梯升降盒发送启动、制动、加速、减速、开关电梯门的信号。若电梯发生故障，还应向相应的电梯负责人发送求救信号。</p>
+<h3 id="4-3-电梯按钮功能"><a href="#4-3-电梯按钮功能" class="headerlink" title="4.3 电梯按钮功能"></a>4.3 电梯按钮功能</h3><p>电梯内部的楼层按钮：电梯内部对应每一个楼层的按钮成为楼层按钮，即本章第一结提到的编号为 -1，1，2，3，4……20的按钮。当乘客进入电梯后按下楼层按钮，此按钮显示灰色，代表不可以用。</p>
+<p>这样就表示乘客将要去往此层，电梯将开往相应层。当电梯到达该层后，按钮恢复可以使用状态。</p>
+<p>电梯内部开门按钮：当电梯达到乘客想要去往的某楼层后，乘客需要准备离开电梯，当电梯停稳后，乘客可以按下开门按钮，电梯门将打开，让用户离开。</p>
+<p>如若电梯到了乘客曾经按下的楼层，但是无乘客按开门按钮，电梯将自动在停稳后1秒后自动开门。</p>
+<p>电梯内部关门按钮：当所有想要乘坐电梯的乘客都进入电梯以后，准备让电梯开始运行的时候，乘客需要按下关门按钮，让电梯门关闭，使电梯进入运行状态。设置电梯的自动关门时间为8秒。</p>
+<p>电梯外部向上按钮：此按钮表示上楼请求，当按下此按钮时，如果电梯到达按下此按钮的楼层，且电梯运行方向是向上的，那么电梯响将停下，并在电梯停稳之后自动开门，此请求被响应后，取消此请求信号。</p>
+<p>电梯外部向下按钮：此按钮表示下楼请求，当按下此按钮时，如果电梯到达按下此按钮的楼层，且电梯运行方向是向下的，那么电梯响将停下，并在电梯停稳之后自动开门，此请求被响应后，取消此请求信号。</p>
+<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>你肯能意识到哪个算法都不是一个最佳方案，只是它确实解决了一定情况的问题。</p>
+<p>但是对一个优秀的程序员而言，研究各种算法是无比快乐的。也许你下一次面试，就有关于调度算法的问题。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/22/每个程序员对着电梯都想过调度算法/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关于swift中的单例模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1106,124 +1249,6 @@ struct objc_category {
 
 
   
-    <article id="post-Runloop入门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/Runloop入门/">Runloop入门</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/Runloop入门/" class="archive-article-date">
-  	<time datetime="2018-09-12T15:05:09.896Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>首先，先象征性的讲下RunLoop的概念</p>
-<p>从字面上看，就可以看出就是兜圈圈，就是一个死循环嘛。</p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>1.保持程序运行</p>
-<p>2.处理app的各种事件（比如触摸，定时器等等）</p>
-<p>3.节省CPU资源，提高性能。</p>
-<h2 id="一些枯燥的知识"><a href="#一些枯燥的知识" class="headerlink" title="一些枯燥的知识"></a>一些枯燥的知识</h2><h3 id="两个api"><a href="#两个api" class="headerlink" title="两个api"></a>两个api</h3><p>首先要知道iOS里面有两套API可以访问和使用RunLoop：</p>
-<h4 id="Foundation"><a href="#Foundation" class="headerlink" title="Foundation"></a>Foundation</h4><p>NSRunLoop</p>
-<h4 id="Core-Foundation"><a href="#Core-Foundation" class="headerlink" title="Core Foundation"></a>Core Foundation</h4><p>CFNSRunLoop</p>
-<p>上面两套都可以使用，但是要知道CFRunLoopRef是用c语言写的，是开源的，相比于NSRunLoop更加底层，而NSRunLoop其实是对CFRunLoopRef的一个简单的封装。便于使用而已。这样说来，显然CFRunLoopRef的性能要高一点。</p>
-<h3 id="RunLoop与线程"><a href="#RunLoop与线程" class="headerlink" title="RunLoop与线程"></a>RunLoop与线程</h3><p>1.每条线程都有唯一的与之对应的RunLoop对象。</p>
-<p>2.主线程的RunLoop已经创建好了，而子线程的需要手动创建。（也就是说子线程的RunLoop默认是关闭的，因为有时候开了个线程但却没有必要开一个RunLoop，不然反而浪费了资源。 ）</p>
-<p>3.RunLoop在第一次获取时创建，在线程结束时销毁。（这就相当于 线程是一个类，RunLoop是类里的实例变量，这样便于理解）</p>
-<h3 id="获取RunLoop对象"><a href="#获取RunLoop对象" class="headerlink" title="获取RunLoop对象"></a>获取RunLoop对象</h3><h4 id="Foundation-1"><a href="#Foundation-1" class="headerlink" title="Foundation"></a>Foundation</h4><pre><code>[NSRunLoop currentRunLoop]; // 获得当前线程的RunLoop对象
-[NSRunLoop mainRunLoop]; // 获得主线程的RunLoop对象
-</code></pre><h4 id="Core-Foundation-1"><a href="#Core-Foundation-1" class="headerlink" title="Core Foundation"></a>Core Foundation</h4><pre><code>CFRunLoopGetCurrent(); // 获得当前线程的RunLoop对象
-CFRunLoopGetMain(); // 获得主线程的RunLoop对象 
-</code></pre><h3 id="RunLoop相关类"><a href="#RunLoop相关类" class="headerlink" title="RunLoop相关类"></a>RunLoop相关类</h3><p>在Core Foundation中有RunLoop的五个类</p>
-<pre><code>CFRunLoopRef
-CFRunLoopModeRef
-CFRunLoopSourceRef
-CFRunLoopTimerRef
-CFRunLoopObserverRef
-</code></pre><p>由图中可以得出以下几点：</p>
-<p>1.CFRunLoopModeRef代表的是RunLoop的运行模式。</p>
-<p>2.一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。</p>
-<p>3.每次调用 RunLoop 的主函数时，只能指定其中一个 Mode，这个Mode被称作 CurrentMode。</p>
-<p>4.如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</p>
-<h3 id="CFRunLoopModeRef"><a href="#CFRunLoopModeRef" class="headerlink" title="CFRunLoopModeRef"></a>CFRunLoopModeRef</h3><p>系统默认注册了5个mode</p>
-<pre><code>kCFRunLoopDefaultMode //App的默认Mode，通常主线程是在这个Mode下运行
-UITrackingRunLoopMode //界面跟踪 Mode，用于 ScrollView 追踪触摸滑动，保证界面滑动时不受其他 Mode 影响
-UIInitializationRunLoopMode // 在刚启动 App 时第进入的第一个 Mode，启动完成后就不再使用
-GSEventReceiveRunLoopMode // 接受系统事件的内部 Mode，通常用不到
-kCFRunLoopCommonModes //这是一个占位用的Mode，不是一种真正的Mode
-</code></pre><h3 id="CFRunLoopSourseRef"><a href="#CFRunLoopSourseRef" class="headerlink" title="CFRunLoopSourseRef"></a>CFRunLoopSourseRef</h3><p>CFRunLoopSourseRef是事件源，分为两种</p>
-<p>sourse0：非基于port的 （port相当于是系统）<br>自己写的方法，响应</p>
-<p>sourse1：基于port的<br>系统提供的</p>
-<p>CFRunLoopObserverRef<br>CFRunLoopObserver是观察者，可以监听runLoop的状态改变<br>监听的状态如下：</p>
-<pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) { 
-kCFRunLoopEntry = (1UL &lt;&lt; 0), //即将进入Runloop
-kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1), //即将处理NSTimer 
-kCFRunLoopBeforeSources = (1UL &lt;&lt; 2), //即将处理Sources 
-kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5), //即将进入休眠 
-kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6), //刚从休眠中唤醒 
-kCFRunLoopExit = (1UL &lt;&lt; 7), //即将退出runloop 
-kCFRunLoopAllActivities = 0x0FFFFFFFU //所有状态改变};
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/Runloop入门/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1333,11 +1358,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1350,6 +1375,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
               </li>
             
             <div class="clearfix"></div>

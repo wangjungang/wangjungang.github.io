@@ -6,20 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>iOS关于delegate的整理内容 | Blog</title>
+  <title>Tag: 算法 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1.为什么代理要用weak？ 防止循环引用。例如View有一个协议，需要一个代理实现回调。一个Controller添加这个View，并且遵守协议，成为View的代理。如果不用week，用strong，Controller -&amp;gt;View -&amp;gt; delegate -&amp;gt; Controller，就循环引用了。 2.代理的delegate和dataSource有什么区别？ delegate">
-<meta name="keywords" content="iOS">
-<meta property="og:type" content="article">
-<meta property="og:title" content="iOS关于delegate的整理内容">
-<meta property="og:url" content="http://yoursite.com/2018/09/04/iOS关于delegate的整理内容/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Blog">
+<meta property="og:url" content="http://yoursite.com/tags/算法/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="1.为什么代理要用weak？ 防止循环引用。例如View有一个协议，需要一个代理实现回调。一个Controller添加这个View，并且遵守协议，成为View的代理。如果不用week，用strong，Controller -&amp;gt;View -&amp;gt; delegate -&amp;gt; Controller，就循环引用了。 2.代理的delegate和dataSource有什么区别？ delegate">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-04T11:45:46.165Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS关于delegate的整理内容">
-<meta name="twitter:description" content="1.为什么代理要用weak？ 防止循环引用。例如View有一个协议，需要一个代理实现回调。一个Controller添加这个View，并且遵守协议，成为View的代理。如果不用week，用strong，Controller -&amp;gt;View -&amp;gt; delegate -&amp;gt; Controller，就循环引用了。 2.代理的delegate和dataSource有什么区别？ delegate">
+<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,250 +150,60 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-iOS关于delegate的整理内容" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      iOS关于delegate的整理内容
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/09/22/每个程序员对着电梯都想过调度算法/" class="archive-article-date">
+  	<time datetime="2018-09-22T14:13:11.373Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-22</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/09/22/每个程序员对着电梯都想过调度算法/">每个程序员对着电梯都想过调度算法吧！</a>
     </h1>
   
 
-        
-        <a href="/2018/09/04/iOS关于delegate的整理内容/" class="archive-article-date">
-  	<time datetime="2018-09-04T09:58:13.408Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1-为什么代理要用weak？"><a href="#1-为什么代理要用weak？" class="headerlink" title="1.为什么代理要用weak？"></a>1.为什么代理要用weak？</h2><p> 防止循环引用。例如View有一个协议，需要一个代理实现回调。一个Controller添加这个View，并且遵守协议，成为View的代理。如果不用week，用strong，Controller -&gt;View -&gt; delegate -&gt; Controller，就循环引用了。</p>
-<h2 id="2-代理的delegate和dataSource有什么区别？"><a href="#2-代理的delegate和dataSource有什么区别？" class="headerlink" title="2.代理的delegate和dataSource有什么区别？"></a>2.代理的delegate和dataSource有什么区别？</h2><p> delegate偏重于与用户交互的回调，有那些方法可以供我使用，例如UITableviewDelegate；dataSource偏重于数据的回调，view里面有什么东西，属性都是什么，例如UITableviewDatasource；</p>
-<h2 id="3-block和代理的区别"><a href="#3-block和代理的区别" class="headerlink" title="3.block和代理的区别"></a>3.block和代理的区别</h2><h3 id="3-1-Block的介绍"><a href="#3-1-Block的介绍" class="headerlink" title="3.1 Block的介绍"></a>3.1 Block的介绍</h3><p> 在 iOS中， block一共分三种。<br>  (1)全局静态 block，不会访问任何外部变量，执行完就销毁。</p>
-<pre><code>^{
-        NSLog(@&quot;Hello World!&quot;);
-    }();
-</code></pre><p>（2）保存在栈中的 block，当函数返回时会被销毁，和第一种的区别就是调用了外部变量。</p>
-<pre><code>[UIView animateWithDuration:3 animations:^{
-        self.view.backgroundColor = [UIColor redColor];
-    }];
-</code></pre><p> (3)保存在堆中的 block，当引用计数为 0 时会被销毁。例如按钮的点击事件，一直存在，即使执行过，也不销毁，因为按钮还可能被点击。直到持有按钮的View被销毁，它才会被销毁。</p>
-<pre><code>#import &lt;UIKit/UIKit.h&gt;
-
-typedef void(^ButtonClickBlcok)();
-
-@interface TestView : UIView
-
-@property (nonatomic, copy) ButtonClickBlcok buttonClickBlcok;
-
-@end
-
-
-#import &quot;TestView.h&quot;
-
-@implementation TestView
-
-- (IBAction)buttonClick:(id)sender {
-    if (self.buttonClickBlcok) {
-        self.buttonClickBlcok();
-    }
-}
-@end
-</code></pre><p>###3.2 Block的优点 </p>
-<p>block的代码可读性更好。因为block只要实现就可以了，而代理需要遵守协议并且实现协议里的方法，而两者还不在一个地方。代理使用起来也更麻烦，因为要声明协议、声明代理属性、遵守协议、实现协议里的方法。block不需要声明，也不需要遵守，只需要声明属性和实现就可以了。</p>
-<p>  block是一种轻量级的回调，可以直接访问上下文，由于block的代码是内联的，运行效率更高。block就是一个对象，实现了匿名函数的功能。所以我们可以把block当做一个成员变量、属性、参数使用，使用起来非常灵活。像用AFNetworking请求数据和GCD实现多线程，都使用了block回调。</p>
-<h3 id="3-3block的缺点"><a href="#3-3block的缺点" class="headerlink" title="3.3block的缺点"></a>3.3block的缺点</h3><p>blcok的运行成本高。block出栈需要将使用的数据从栈内存拷贝到堆内存，当然对象的话就是引用计数加1，使用完或者block置nil后才销毁。delegate只是保存了一个对象指针(一定要用week修饰delegate，不然也会循环引用)，直接回调，没有额外消耗。就像C的函数指针，只多做了一个查表动作。</p>
-<p>  block容易造成循环引用，而且不易察觉。因为为了blcok不被系统回收，所以我们都用copy关键字修饰，实行强引用。block对捕获的变量也都是强引用，所以就会造成循环引用。
-  
-  </p>
-<pre><code>#import &quot;ViewController.h&quot;
-
-typedef void(^TestBlock)(void);
-
-@interface ViewController ()
-{
-    void (^_testCycleBlock)(void);
-}
-@end
-
-@implementation ViewController
-
-- (void)viewDidLoad {
-
-    [super viewDidLoad];
-
-    __weak ViewController *weakSelf = self;
-    _testCycleBlock = ^{
-
-        /**
-          //引发循环引用
-          NSLog(@&quot;%@&quot;, self);
-         */
-        //防止循环引用
-        NSLog(@&quot;%@&quot;, weakSelf);
-    };
-}
-@end
-</code></pre><p>###3.4 如何使用</p>
-<p>优先使用block。</p>
-<p>如果回调的状态很多，多于三个使用代理。
-  
-  </p>
-<p>如果回调的很频繁，次数很多，像UITableview，每次初始化、滑动、点击都会回调，使用代理。
-  </p>
-<p>block和代理都各有优缺点，所以我们一定要理解区分使用场景，应用适合的回调方式。优化APP的性能，提高流畅性，从点滴做起。</p>
-
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/04/iOS关于delegate的整理内容/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2018/09/05/iOS关于属性的整理/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          iOS关于属性的整理
-        
-      </div>
-    </a>
   
   
-    <a href="/2018/09/04/iOS NSset 和 NSArray的区别/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">iOS NSset 和 NSArray的区别</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -421,9 +226,9 @@ typedef void(^TestBlock)(void);
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
