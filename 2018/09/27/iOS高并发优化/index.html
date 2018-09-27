@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Blog</title>
+  <title>iOS高并发优化 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/page/2/index.html">
+  <meta name="description" content="一.消息列表页面的优化：首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化： 1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。 2.如果消息已经显示过">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS高并发优化">
+<meta property="og:url" content="http://yoursite.com/2018/09/27/iOS高并发优化/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="一.消息列表页面的优化：首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化： 1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。 2.如果消息已经显示过">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-09-27T14:46:15.687Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="iOS高并发优化">
+<meta name="twitter:description" content="一.消息列表页面的优化：首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化： 1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。 2.如果消息已经显示过">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,40 +155,83 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-iOS高并发优化" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步</a>
+    <h1 class="article-title" itemprop="name">
+      iOS高并发优化
     </h1>
   
 
         
-        <a href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/" class="archive-article-date">
-  	<time datetime="2018-09-13T13:05:33.346Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
+        <a href="/2018/09/27/iOS高并发优化/" class="archive-article-date">
+  	<time datetime="2018-09-27T14:31:57.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-27</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="什么时候会报-unrecognized-selector这个错误"><a href="#什么时候会报-unrecognized-selector这个错误" class="headerlink" title="什么时候会报 unrecognized selector这个错误"></a>什么时候会报 unrecognized selector这个错误</h2><p>1 对象未使用该方法</p>
-<p>2 对象已经被释放。</p>
-<h2 id="iOS有哪些机制来避免走到这一步？"><a href="#iOS有哪些机制来避免走到这一步？" class="headerlink" title="iOS有哪些机制来避免走到这一步？"></a>iOS有哪些机制来避免走到这一步？</h2><p>1 使用[id respondsToSelector:]进行判断。</p>
-<p>2 Method resolution</p>
-<p>objc运行时会调用+resolveInstanceMethod:或者 +resolveClassMethod:，让你有机会提供一个函数实现。如果你添加了函数，那运行时系统就会重新启动一次消息发送的过程，否则 ，运行时就会移到下一步，消息转发（Message Forwarding）。<br>返回Nil和self，去调用第三步methodSignatureForSelector和forwarInvocation；返回receiver，如果receiver有响应就直接处理，如果没有就去对应的对象内去调用第三步；调用子类的函数，子类没有进行这几个方法的重载，在父类处理时返回子类，会死循环。</p>
-<p>3 Fast forwarding</p>
-<p>如果目标对象实现了-forwardingTargetForSelector:，Runtime 这时就会调用这个方法，给你把这个消息转发给其他对象的机会。 只要这个方法返回的不是nil和self，整个消息发送的过程就会被重启，当然发送的对象会变成你返回的那个对象。否则，就会继续Normal Fowarding。 这里叫Fast，只是为了区别下一步的转发机制。因为这一步不会创建任何新的对象，但下一步转发会创建一个NSInvocation对象，所以相对更快点。</p>
-<p>4 Normal forwarding</p>
-<p>这一步是Runtime最后一次给你挽救的机会。首先它会发送-methodSignatureForSelector:消息获得函数的参数和返回值类型。如果-methodSignatureForSelector:返回nil，Runtime则会发出-doesNotRecognizeSelector:消息，程序这时也就挂掉了。如果返回了一个函数签名，Runtime就会创建一个NSInvocation对象并发送-forwardInvocation:消息给目标对象。</p>
+        <h2 id="一-消息列表页面的优化："><a href="#一-消息列表页面的优化：" class="headerlink" title="一.消息列表页面的优化："></a>一.消息列表页面的优化：</h2><p>首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化：</p>
+<p>1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。</p>
+<p>2.如果消息已经显示过了，但是并不是第一位，则需要刷新列表。</p>
+<p>3.如果消息已经显示，并且是第一位，则只需要cell的内容变化。</p>
+<p>4.只修改cell里的内容，不进行刷新cell整体，这里要注意的是，一定要最小化刷新。刷新点越小，性能损耗越小。我们项目架构是MVVM,采用了ReactiveCocoa框架,针对每个cell上的可变化的控件数据进行了监听，每一个cell上对应一个vm，这样当vm上的数据变化时候，cell上的数据也就跟着变了。做到了最小化刷新。</p>
+<p>5.避免使用autolayout计算位置，这个很重要，在性能要求高的情况下，autolayout计算会很耗时间，尤其在算tableview高度的时候可见一斑。可喜的是消息列表的高度是固定的，所以在计算高度时候我们并未花费时间。</p>
+<p>6.使用(<strong>kindof UITableViewCell <em>)dequeueReusableCellWithIdentifier:(NSString </em>)identifier forIndexPath:(NSIndexPath *)indexPath而不使用-(nullable </strong>kindof UITableViewCell <em>)dequeueReusableCellWithIdentifier:(NSString </em>)identifier来查找cell,因为下边的方法会多查一次，耗时更长一点。</p>
+<p>7.cellForRowAtIndexPath方法只负责创建cell,willDisplayCell方法才给cell进行赋值操作。从方法名字就可以看出来原因</p>
+<p>8.当来消息轰炸时候，必然会是不同的人发来的消息，会导致tableview不可避免的刷新，如果不加处理必然会卡顿，要知道，机器也是有瓶颈的。这里我们做的优化是根据cpu的使用率选择性的刷新tableview。后来我们发现微信也是有这个现象，并不是实时的刷新，我们猜测也是类似处理。</p>
+<p>9.重绘制系统控件，相信你也发现了消息列表里，主要有两个控件，一个是头像，一个是label。而系统的UIImageView用来显示头像，未免有点重。我们的处理是使用UIView，设置View得layer.content来处理。针对layer层做的setImageWithUrl的第三方库也不少，大家可以自行查询。另一个就是label，如果你能集成UIView自己绘制一个label,我想也许会有一点效果。</p>
+<p>以上我们对消息列表做的优化，写的并不全，只记得大概有这些吧。</p>
+<h2 id="二-聊天界面的优化："><a href="#二-聊天界面的优化：" class="headerlink" title="二.聊天界面的优化："></a>二.聊天界面的优化：</h2><p>聊天界面的优化算是比较繁琐的了，但是优化点跟回话列表的优化差不多。上边提到回话列表里最耗时的tableview的高度是固定的，而聊天界面的几乎每条消息的高度都可能不一样，所以我们在优化聊天界面时候最重要的一点就是计算tableviewcell的高度。而我们在计算tableview的高度是怎么做的呢？</p>
+<p>其实这个网上千篇一律的优化tableview的方式是大同小异的。</p>
+<p>主要有两个准则：</p>
+<p>第一个是能在后台线程执行的都放在后台线程里。</p>
+<p>第二个计算高度要放在显示之前。</p>
+<p>上边提到我们使用的ReactiveCocoa基于事件流来处理消息，这个确实是为开发带来了很大的好处，处理层次非常清晰，开发效率的提升，代码复杂度降低，多人员开发分工分明，低耦合等这些好处充分让你感受到编程的乐趣，之后我们会出一篇关于架构的文章，这里只是稍提一嘴。当然即使你不用ReactiveCocoa也没关系，思路都是一样的。首先是你从底层异步接收到消息，进行消息的处理，包括数据库的处理，提供给View显示的对象处理，这里我们是用的VM层，其中也包括了消息的高度的计算，这些都是放在线程队列里，当所有的处理完成，然后进行主线程消息列表更新，进行插入一个cell和向上滚动一条消息的距离。我们之前把VM的创建放在了主线程，发现在32位机器上掉了10fps，这是让人不能忍受的事情。当然还有一点是尽量保证你的对象不要太大，如果太大也会影响性能，我们的vm就比较大，这也是以后性能上的隐患。优化tableView的另外一点就是cell的制作了，要说的跟上边第九条提到的也差不多，这里我也总结了一下几个原则：</p>
+<p>1.巧妙的选择控件。比如上边提到的，如果只是显示一个图片，那么用View的layer.content性能自然是好一些。图片加点击也可以用view,然后监听view的touch事件，像button这种重量级的控件在性能为主的app面前，我对他们都是弃之如敝履。</p>
+<p>2.减少使用layer层的cornerRadius，mask等圆角的绘制，这会引发离屏渲染，增加cpu的占用率。如果业务需要的话，我们可以通过UIBezierPath来drawInRect它。</p>
+<p>3.避免设置透明</p>
+<p>4.避免autolayout设定控件位置</p>
+<p>5.尽可能的减少视图的层级，如果你能把所有的控件都绘制到一个View上，可想而知性能会爆棚。</p>
+<h2 id="三-其他优化"><a href="#三-其他优化" class="headerlink" title="三.其他优化"></a>三.其他优化</h2><p>还有两大优化点不容忽视。</p>
+<p>一是数据持久层的优化，就是所谓的数据库优化。</p>
+<p>二就是内存优化。</p>
+<p>关于持久层的优化严格来性能上通常不会有太大出入，只不过我们之前是直接针对底层sqlite数据库很简单的封装，后来用了fmdb，发现在插入性能上有了明显的提升。几乎用过的小伙伴都说好。持久化这边我们将fmdb,jsonModel进行封装了一个库，提供了友好的api,通常像这样使用[message findAll],[message save]等基本上都不需要写sql语句。回头我们会开源化。关于sql优化的我们总结了几点：</p>
+<p>1.大批量插入时候，用事务可以几何倍的减少插入时间，原因是会把sql都加入内存，然后一次性提交。</p>
+<p>2.针对经常变化的表、字段避免使用索引，当然索引带来的查询性能也是几何倍的增加，这里要说的一点是like并不会使用到索引</p>
+<p>3.巧妙使用sql语句增删改查，能够用一条语句解决的事就不要使用两条，比如之前我们发现一个设置已读消息，是把这个人的消息取出来，然后再设置进去，后来我们直接进行了这个人的update语句，发现这块的处理性能高了很多。</p>
+<p>4.当单条数据小于 20K 时，数据越小 SQLite 读取性能越高；单条数据大于 20K 时，直接写为文件速度会更快一些。</p>
+<p>5.ibireme.com提到过在官网下载源码编译的sqlite性能会高几倍，我确实编译了一下，但是编译出来的是dylib,现在的系统是tbd,我没转过去，并且pods里依赖的也是tbd的，所以也就作罢了，主要放弃原因还是发现我们将很多数据库操作的部分去掉了，cpu占用率也没有发生变动。如果有搞定的同学记得分享一下。</p>
+<p>数据库的大概能记住的也就这几点吧。</p>
+<p>大最后说一嘴，多用Instuments来检测你的方法执行时间，以及CPU GPU占用率，这能够很好的帮你优化你的程序。</p>
 
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -203,16 +251,75 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/27/iOS高并发优化/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2018/09/22/每个程序员对着电梯都想过调度算法/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">每个程序员对着电梯都想过调度算法吧！</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -232,1189 +339,14 @@
 
 
 
-
-  
-    <article id="post-Runloop入门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/Runloop入门/">Runloop入门</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/Runloop入门/" class="archive-article-date">
-  	<time datetime="2018-09-12T15:05:09.896Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>首先，先象征性的讲下RunLoop的概念</p>
-<p>从字面上看，就可以看出就是兜圈圈，就是一个死循环嘛。</p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>1.保持程序运行</p>
-<p>2.处理app的各种事件（比如触摸，定时器等等）</p>
-<p>3.节省CPU资源，提高性能。</p>
-<h2 id="一些枯燥的知识"><a href="#一些枯燥的知识" class="headerlink" title="一些枯燥的知识"></a>一些枯燥的知识</h2><h3 id="两个api"><a href="#两个api" class="headerlink" title="两个api"></a>两个api</h3><p>首先要知道iOS里面有两套API可以访问和使用RunLoop：</p>
-<h4 id="Foundation"><a href="#Foundation" class="headerlink" title="Foundation"></a>Foundation</h4><p>NSRunLoop</p>
-<h4 id="Core-Foundation"><a href="#Core-Foundation" class="headerlink" title="Core Foundation"></a>Core Foundation</h4><p>CFNSRunLoop</p>
-<p>上面两套都可以使用，但是要知道CFRunLoopRef是用c语言写的，是开源的，相比于NSRunLoop更加底层，而NSRunLoop其实是对CFRunLoopRef的一个简单的封装。便于使用而已。这样说来，显然CFRunLoopRef的性能要高一点。</p>
-<h3 id="RunLoop与线程"><a href="#RunLoop与线程" class="headerlink" title="RunLoop与线程"></a>RunLoop与线程</h3><p>1.每条线程都有唯一的与之对应的RunLoop对象。</p>
-<p>2.主线程的RunLoop已经创建好了，而子线程的需要手动创建。（也就是说子线程的RunLoop默认是关闭的，因为有时候开了个线程但却没有必要开一个RunLoop，不然反而浪费了资源。 ）</p>
-<p>3.RunLoop在第一次获取时创建，在线程结束时销毁。（这就相当于 线程是一个类，RunLoop是类里的实例变量，这样便于理解）</p>
-<h3 id="获取RunLoop对象"><a href="#获取RunLoop对象" class="headerlink" title="获取RunLoop对象"></a>获取RunLoop对象</h3><h4 id="Foundation-1"><a href="#Foundation-1" class="headerlink" title="Foundation"></a>Foundation</h4><pre><code>[NSRunLoop currentRunLoop]; // 获得当前线程的RunLoop对象
-[NSRunLoop mainRunLoop]; // 获得主线程的RunLoop对象
-</code></pre><h4 id="Core-Foundation-1"><a href="#Core-Foundation-1" class="headerlink" title="Core Foundation"></a>Core Foundation</h4><pre><code>CFRunLoopGetCurrent(); // 获得当前线程的RunLoop对象
-CFRunLoopGetMain(); // 获得主线程的RunLoop对象 
-</code></pre><h3 id="RunLoop相关类"><a href="#RunLoop相关类" class="headerlink" title="RunLoop相关类"></a>RunLoop相关类</h3><p>在Core Foundation中有RunLoop的五个类</p>
-<pre><code>CFRunLoopRef
-CFRunLoopModeRef
-CFRunLoopSourceRef
-CFRunLoopTimerRef
-CFRunLoopObserverRef
-</code></pre><p>由图中可以得出以下几点：</p>
-<p>1.CFRunLoopModeRef代表的是RunLoop的运行模式。</p>
-<p>2.一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。</p>
-<p>3.每次调用 RunLoop 的主函数时，只能指定其中一个 Mode，这个Mode被称作 CurrentMode。</p>
-<p>4.如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</p>
-<h3 id="CFRunLoopModeRef"><a href="#CFRunLoopModeRef" class="headerlink" title="CFRunLoopModeRef"></a>CFRunLoopModeRef</h3><p>系统默认注册了5个mode</p>
-<pre><code>kCFRunLoopDefaultMode //App的默认Mode，通常主线程是在这个Mode下运行
-UITrackingRunLoopMode //界面跟踪 Mode，用于 ScrollView 追踪触摸滑动，保证界面滑动时不受其他 Mode 影响
-UIInitializationRunLoopMode // 在刚启动 App 时第进入的第一个 Mode，启动完成后就不再使用
-GSEventReceiveRunLoopMode // 接受系统事件的内部 Mode，通常用不到
-kCFRunLoopCommonModes //这是一个占位用的Mode，不是一种真正的Mode
-</code></pre><h3 id="CFRunLoopSourseRef"><a href="#CFRunLoopSourseRef" class="headerlink" title="CFRunLoopSourseRef"></a>CFRunLoopSourseRef</h3><p>CFRunLoopSourseRef是事件源，分为两种</p>
-<p>sourse0：非基于port的 （port相当于是系统）<br>自己写的方法，响应</p>
-<p>sourse1：基于port的<br>系统提供的</p>
-<p>CFRunLoopObserverRef<br>CFRunLoopObserver是观察者，可以监听runLoop的状态改变<br>监听的状态如下：</p>
-<pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) { 
-kCFRunLoopEntry = (1UL &lt;&lt; 0), //即将进入Runloop
-kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1), //即将处理NSTimer 
-kCFRunLoopBeforeSources = (1UL &lt;&lt; 2), //即将处理Sources 
-kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5), //即将进入休眠 
-kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6), //刚从休眠中唤醒 
-kCFRunLoopExit = (1UL &lt;&lt; 7), //即将退出runloop 
-kCFRunLoopAllActivities = 0x0FFFFFFFU //所有状态改变};
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/Runloop入门/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于GCD的信号量" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/关于GCD的信号量/">关于GCD的信号量</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/关于GCD的信号量/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:54:10.618Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当我们在处理一系列线程的时候，当数量达到一定量，在以前我们可能会选择使用NSOperationQueue来处理并发控制，但如何在GCD中快速的控制并发呢？答案就是dispatch_semaphore，对经常做unix开发的人来讲，我所介绍的内容可能就显得非常入门级了，信号量在他们的多线程开发中再平常不过了。</p>
-<p>信号量是一个整形值并且具有一个初始计数值，并且支持两个操作：信号通知和等待。当一个信号量被信号通知，其计数会被增加。当一个线程在一个信号量上等待时，线程会被阻塞（如果有必要的话），直至计数器大于零，然后线程会减少这个计数。</p>
-<p>在GCD中有三个函数是semaphore的操作，分别是：</p>
-<pre><code>dispatch_semaphore_creat 
-
-创建一个semaphore
-
-dispatch_semaphore_signal
-
-发送一个信号
-
-dispathc_semaphore_wait
-
-等待信号
-</code></pre><p>简单的介绍一下这三个函数，第一个函数有一个整形的参数，我们可以理解为信号的总量，dispatch_semaphore_signal是发送一个信号，自然会让信号总量加1，dispatch_semaphore_wait等待信号，当信号总量少于0的时候就会一直等待，否则就可以正常的执行，并让信号总量-1，根据这样的原理，我们便可以快速的创建一个并发控制来同步任务和有限资源访问控制。</p>
-<pre><code>　dispatch_group_t group = dispatch_group_create(); 
-dispatch_semaphore_t semaphore = dispatch_semaphore_create(10); 
-dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0); 
-for (int i = 0; i &lt; 100; i++) 
-{ 
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER); 
-    dispatch_group_async(group, queue, ^{ 
-        NSLog(@&quot;%i&quot;,i); 
-        sleep(2); 
-        dispatch_semaphore_signal(semaphore); 
-    }); 
-} 
-dispatch_group_wait(group, DISPATCH_TIME_FOREVER); 
-dispatch_release(group); 
-dispatch_release(semaphore); 
-</code></pre><p>简单的介绍一下这一段代码，创建了一个初使值为10的semaphore，每一次for循环都会创建一个新的线程，线程结束的时候会发送一个信号，线程创建之前会信号等待，所以当同时创建了10个线程之后，for循环就会阻塞，等待有线程结束之后会增加一个信号才继续执行，如此就形成了对并发的控制，如上就是一个并发数为10的一个线程队列。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/关于GCD的信号量/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS程序启动内部过程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/iOS程序启动内部过程/">iOS程序启动内部过程</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/iOS程序启动内部过程/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:43:06.341Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>之前面试遇到过这种问题，总结记录一下</p>
-<p>1.用户点击应用程序图标；</p>
-<p>2.程序执行main()函数；</p>
-<p>3.main函数中直接返回的是UIApplicationMain，所以接下来执行UIApplicationMain；</p>
-<p>4.根据UIApplicationMain中的第三、第四个参数分别设置UIApplication对象及其代理；第三个参数是UIApplication的类名或者子类名，如果为nil则默认是UIApplication，第四个参数代表代理的类名，该代理负责处理应用程序状态切换过程中所产生的事件；</p>
-<p>5.开启循环监听系统事件（Event Loop）；</p>
-<p>6.此处分有storyboard和没有storyboard两种情况，</p>
-<p>(1)有stroyboard</p>
-<blockquote>
-<p>应用程创建一个UIWindow对象(继承自UIView),并设置为AppDelegate的window属性。</p>
-</blockquote>
-<blockquote>
-<p>加载Info.plist文件，读取最主要storyboard文件的名称。</p>
-</blockquote>
-<blockquote>
-<p>加载最主要的storyboard文件，创建白色箭头所指的控制器对象。并且设置控制器为UIWindow的rootViewController属性(根控制器)。</p>
-</blockquote>
-<blockquote>
-<p>展示UIWindow,展示之前会将添加rootViewController的view到UIWindow上面(在这一步才会创建控制器的view),其内部会执行该行代码:[window addSubview: window.rootViewControler.view];</p>
-</blockquote>
-<p>(2)没有stroyboard</p>
-<blockquote>
-<p>首先会调用delegate对象的application:didFinishLaunchingWithOptions:方法。</p>
-</blockquote>
-<blockquote>
-<p>在application:didFinishLaunchingWithOptions:方法中需要主动创建 UIWindow对象。并设置为AppDelegate的window属性。</p>
-</blockquote>
-<blockquote>
-<p>主动创建一个 UIViewController对象，并赋值给window的rootViewController属性。</p>
-</blockquote>
-<blockquote>
-<p>调用 window的makeKeyAndVisible方法显示窗口。</p>
-</blockquote>
-<pre><code>//创建窗口对象
-    self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
-
-    //创建主控制器对象（控制器的View是延时加载的，等到用到的时候再用loadView方法加载）
-    self.HITViewController = [[UIViewController alloc]initWithNibName:@&quot;HITViewController&quot; bundle:nil];
-
-    //设置窗口的根控制器为该主控制器
-    self.window.rootViewController = self.HITViewController;
-
-    //让窗口成为主窗口并可见
-    [self.window makeKeyAndVisible];
-</code></pre><p>程序加载的顺序是先在程序中找storyboard，若果没有找到则找相应的xib，若是都没找到并且代理中没有手动添加代码，则默认用代码创建一个黑色的界面；</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/iOS程序启动内部过程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于TCP Socket http的一些东西" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/关于TCP Socket http的一些东西/">关于TCP Sockte HTTP的一些东西</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/关于TCP Socket http的一些东西/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:34:05.510Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>网络由下往上分为物理层、数据链路层、网络层、传输层、会话层、表示层和应用层。 通过初步的了解，我知道IP协议对应于网络层，TCP协议对应于传输层，而HTTP协议对应于应用层，三者从本质上来说没有可比性，socket则是对 TCP/IP协议的封装和应用(程序员层面上)。也可以说，TPC/IP协议是传输层协议，主要解决数据如何在网络中传输，而HTTP是应用层协议，主要 解决如何包装数据。</p>
-<p>  关于TCP/IP和HTTP协议的关系，网络有一段比较容易理解的介绍：“我们在传输数据时，可以只使用(传输层)TCP/IP协议，但是那样的话，如果 没有应用层，便无法识别数据内容。如果想要使传输的数据有意义，则必须使用到应用层协议。应用层协议有很多，比如HTTP、FTP、TELNET等，也可 以自己定义应用层协议。WEB使用HTTP协议作应用层协议，以封装HTTP文本信息，然后使用TCP/IP做传输层协议将它发到网络上。”</p>
-<p>   而我们平时说的最多的socket是什么呢，实际上socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口(API)。 通过Socket，我们才能使用TCP/IP协议。实际上，Socket跟TCP/IP协议没有必然的联系。Socket编程接口在设计的时候，就希望也 能适应其他的网络协议。所以说，Socket的出现只是使得程序员更方便地使用TCP/IP协议栈而已，是对TCP/IP协议的抽象，从而形成了我们知道 的一些最基本的函数接口，比如create、listen、connect、accept、send、read和write等等。网络有一段关于 socket和TCP/IP协议关系的说法比较容易理解：“TCP/IP只是一个协议栈，就像操作系统的运行机制一样，必须要具体实现，同时还要提供对外 的操作接口。这个就像操作系统会提供标准的编程接口，比如win32编程接口一样，TCP/IP也要提供可供程序员做网络开发所用的接口，这就是 Socket编程接口。”</p>
-<h2 id="一些常见的问题的统计和总结"><a href="#一些常见的问题的统计和总结" class="headerlink" title="一些常见的问题的统计和总结"></a>一些常见的问题的统计和总结</h2><p>ps 感觉这些东西都被问烂了的节奏</p>
-<h3 id="一、什么是TCP连接的三次握手"><a href="#一、什么是TCP连接的三次握手" class="headerlink" title="一、什么是TCP连接的三次握手"></a>一、什么是TCP连接的三次握手</h3><p>   第一次握手：客户端发送syn包(syn=j)到服务器，并进入SYN_SEND状态，等待服务器确认;</p>
-<p>   第二次握手：服务器收到syn包，必须确认客户的SYN(ack=j+1)，同时自己也发送一个SYN包(syn=k)，即SYN+ACK包，此时服务器进入SYN_RECV状态;</p>
-<p>   第三次握手：客户端收到服务器的SYN+ACK包，向服务器发送确认包ACK(ack=k+1)，此包发送完毕，客户端和服务器进入ESTABLISHED状态，完成三次握手。</p>
-<p>   握手过程中传送的包里不包含数据，三次握手完毕后，客户端与服务器才正式开始传送数据。</p>
-<p>   理想状态下，TCP连接一旦建立，在通信双方中的任何一方主动关闭连接之前，TCP 连接都将被一直保持下去。</p>
-<p>   断开连接时服务器和客户端均可以主动发起断开TCP连接的请求，断开过程需要经过“四次握手”(过程就不细写了，就是服务器和客户端交互，最终确定断开)。</p>
-<h3 id="二、利用Socket建立网络连接的步骤"><a href="#二、利用Socket建立网络连接的步骤" class="headerlink" title="二、利用Socket建立网络连接的步骤"></a>二、利用Socket建立网络连接的步骤</h3><p>   建立Socket连接至少需要一对套接字，其中一个运行于客户端，称为ClientSocket ，另一个运行于服务器端，称为ServerSocket 。套接字之间的连接过程分为三个步骤：服务器监听，客户端请求，连接确认。</p>
-<p>   1、服务器监听：服务器端套接字并不定位具体的客户端套接字，而是处于等待连接的状态，实时监控网络状态，等待客户端的连接请求。</p>
-<p>   2、客户端请求：指客户端的套接字提出连接请求，要连接的目标是服务器端的套接字。为此，客户端的套接字必须首先描述它要连接的服务器的套接字，指出服务器端套接字的地址和端口号，然后就向服务器端套接字提出连接请求。</p>
-<p>   3、连接确认：当服务器端套接字监听到或者说接收到客户端套接字的连接请求时，就响应客户端套接字的请求，建立一个新的线程，把服务器端套接字的描述发给 客户端，一旦客户端确认了此描述，双方就正式建立连接。而服务器端套接字继续处于监听状态，继续接收其他客户端套接字的连接请求。</p>
-<h3 id="HTTP链接的特点"><a href="#HTTP链接的特点" class="headerlink" title="HTTP链接的特点"></a>HTTP链接的特点</h3><p>　HTTP协议即超文本传送协议(Hypertext Transfer Protocol )，是Web联网的基础，也是手机联网常用的协议之一，HTTP协议是建立在TCP协议之上的一种应用。HTTP连接最显著的特点是客户端发送的每次请求 都需要服务器回送响应，在请求结束后，会主动释放连接。从建立连接到关闭连接的过程称为“一次连接”。</p>
-<h3 id="四、TCP和UDP的区别"><a href="#四、TCP和UDP的区别" class="headerlink" title="四、TCP和UDP的区别"></a>四、TCP和UDP的区别</h3><p>1、TCP是面向链接的，虽然说网络的不安全不稳定特性决定了多少次握手都不能保证连接的可靠性，但TCP的三次握手在最低限度上(实际上也很大程度上 保证了)保证了连接的可靠性;而UDP不是面向连接的，UDP传送数据前并不与对方建立连接，对接收到的数据也不发送确认信号，发送端不知道数据是否会正 确接收，当然也不用重发，所以说UDP是无连接的、不可靠的一种数据传输协议。</p>
-<p> 2、也正由于1所说的特点，使得UDP的开销更小数据传输速率更高，因为不必进行收发数据的确认，所以UDP的实时性更好。知道了TCP和UDP的区 别，就不难理解为何采用TCP传输协议的MSN比采用UDP的QQ传输文件慢了，但并不能说QQ的通信是不安全的，因为程序员可以手动对UDP的数据收发 进行验证，比如发送方对每个数据包进行编号然后由接收方进行验证啊什么的，即使是这样，UDP因为在底层协议的封装上没有采用类似TCP的“三次握手”而 实现了TCP所无法达到的传输效率。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/关于TCP Socket http的一些东西/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-UIBezierPath设置图片圆角" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/08/UIBezierPath设置图片圆角/">UIBezierPath设置图片圆角</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/08/UIBezierPath设置图片圆角/" class="archive-article-date">
-  	<time datetime="2018-09-08T15:25:13.677Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>一般我们都会通过Layer设置图片圆角，这种方法在iOS9以前可能会发生离屏渲染，</p>
-<p>比较消耗性能，比如当一个页面上有十几头像这样设置了圆角会明显感觉到卡顿。这种就是最常用的，也是最耗性能的。</p>
-<pre><code>imageView.layer.cornerRadius=20;
-imageView.layer.masksToBounds=YES;
-</code></pre><p>ios9.0之后对UIImageView的圆角设置做了优化，UIImageView这样设置圆角不会触发离屏渲染，ios9.0之前还是会触发离屏渲染。而UIButton还是都会触发离屏渲染。</p>
-<p>现在优化方案就是先把图片处理成圆角，处理后再渲染；</p>
-<pre><code>//1.先写一个切圆角的方法，方便调用
-
-- (void)setGraphicsCutRoundCornersWithView:(UIImageView *) imageview roundCornersSize:(CGFloat )cornersSize
-{
-    //开始上下文
-    UIGraphicsBeginImageContextWithOptions(imageview.bounds.size, NO, 0.0);
-    [[UIBezierPath bezierPathWithRoundedRect:imageview.bounds cornerRadius:cornersSize] addClip];
-    [imageview drawRect:imageview.bounds];
-    //当前上下文
-    imageview.image = UIGraphicsGetImageFromCurrentImageContext();
-    // 结束上下文
-    UIGraphicsEndImageContext();
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
- UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
-  [imageView setImage:[UIImage imageNamed:@&quot;aaa&quot;]];
-  [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];//调用方法
-
- [self.view addSubview:imageView];
-}
-</code></pre><p>我上面的方法是加载的本地图片，如果是网络请求的，就不行了。。。我在AFNetworking里看了看不容易实现，因为他没有completed回调方法，所以我就用SD_WebImage实现了一下。</p>
-<pre><code>- (void)viewDidLoad {
-    [super viewDidLoad];
- NSString *path=@&quot;http://pic.yesky.com/uploadImages/2015/211/46/Y9QRRQ94U8C3.jpg&quot;;
-
-    UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
-
-    [imageView sd_setImageWithURL:[NSURL URLWithString:path] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-         [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];
-    }];
-
-     [self.view addSubview:imageView];
-
-}
-</code></pre><p>如果是普通视图，不包含图片，可通过如下方式处理： 把背景图设置成clearColor, layer 的背景color和要渲染的视图颜色一致，设置好角度，通过颜色差异来显示出圆角的效果； 关键是把masksToBounds设置NO,就是这个家伙消耗性能；</p>
-<pre><code>   self.view.backgroundColor = [UIColor clearColor];
-
-// Set view.layer.backgroundColor not view.backgroundColor otherwise the background is not masked to the rounded border.
-
-    self.view.layer.backgroundColor = [UIColor whiteColor].CGColor;
-
-    self.view.layer.cornerRadius = 8;
-
-// Huge change in performance by explicitly setting the below (even though default is supposedly NO)
-    self.view.layer.masksToBounds = NO;   
-
-// Performance improvement here depends on the size of your view
-
-    self.view.layer.shouldRasterize = YES; 
-    [self.view.layer setRasterizationScale:[UIScreen mainScreen].scale];
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/08/UIBezierPath设置图片圆角/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-BOOL和bool的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/07/BOOL和bool的区别/">BOOL和bool的区别</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/07/BOOL和bool的区别/" class="archive-article-date">
-  	<time datetime="2018-09-07T03:26:53.657Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1、类型不同"><a href="#1、类型不同" class="headerlink" title="1、类型不同"></a>1、类型不同</h2><p>BOOL为int型 </p>
-<p>bool为布尔型 </p>
-<h2 id="2、长度不同"><a href="#2、长度不同" class="headerlink" title="2、长度不同"></a>2、长度不同</h2><p>bool只有一个字节 </p>
-<p>BOOL长度视实际环境来定，一般可认为是4个字节 </p>
-<h2 id="3、取值不同"><a href="#3、取值不同" class="headerlink" title="3、取值不同"></a>3、取值不同</h2><p>bool取值false和true，是0和1的区别 </p>
-<p>BOOL取值FALSE和TRUE，是0和非0的区别 </p>
-<p>bool是标准C++数据类型，可取值true和false。单独占一个字节，<br>如果数个bool对象列在一起，可能会各占一个bit，这取决于编译器。 </p>
-<p>BOOL是微软定义的typedef int BOOL。与bool不同，它是一个三值逻辑， </p>
-<p>TRUE/FALSE/ERROR，返回值为&gt;0的整数为TRUE，0为FALSE，-1为ERROR。 </p>
-<p>Win32 API中很多返回值为BOOL的函数都是三值逻辑。比如GetMessage(). </p>
-<h2 id="大BOOL和小bool之间的区别："><a href="#大BOOL和小bool之间的区别：" class="headerlink" title="大BOOL和小bool之间的区别："></a>大BOOL和小bool之间的区别：</h2><h3 id="1、类型不同-1"><a href="#1、类型不同-1" class="headerlink" title="1、类型不同"></a>1、类型不同</h3><p>BOOL为int型 </p>
-<p>bool为布尔型 </p>
-<h3 id="2、长度不同-1"><a href="#2、长度不同-1" class="headerlink" title="2、长度不同"></a>2、长度不同</h3><p>bool只有一个字节 </p>
-<p>BOOL长度视实际环境来定，一般可认为是4个字节 </p>
-<h3 id="3、取值不同-1"><a href="#3、取值不同-1" class="headerlink" title="3、取值不同"></a>3、取值不同</h3><p>bool取值false和true，是0和1的区别 </p>
-<p>BOOL取值FALSE和TRUE，是0和非0的区别 </p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/07/BOOL和bool的区别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-objc中向一个nil对象发送消息将会发生什么？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/">objc中向一个nil对象发送消息将会发生什么？</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/" class="archive-article-date">
-  	<time datetime="2018-09-07T02:46:45.490Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:</p>
-<p>如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如：</p>
-<pre><code>Person * motherInlaw = [[aPerson spouse] mother];    
-</code></pre><p>如果 spouse 对象为 nil，那么发送给 nil 的消息 mother 也将返回 nil。</p>
-<p>如果方法返回值为指针类型，其指针大小为小于或者等于sizeof(void*)，float，double，long double 或者 long long 的整型标量，发送给 nil 的消息将返回0。</p>
-<p>如果方法返回值为结构体,发送给 nil 的消息将返回0。结构体中各个字段的值将都是0。</p>
-<p>如果方法的返回值不是上述提到的几种情况，那么发送给 nil 的消息的返回值将是未定义的。</p>
-<pre><code>objc是动态语言，每个方法在运行时会被动态转为消息发送，即：objc_msgSend(receiver, selector)。
-
-struct objc_class {
-    Class isa OBJC_ISA_AVAILABILITY; //isa指针指向Meta Class，因为Objc的类的本身也是一个Object，为了处理这个关系，runtime就创造了Meta Class，当给类发送[NSObject alloc]这样消息时，实际上是把这个消息发给了Class Object
-#if !__OBJC2__
-    Class super_class OBJC2_UNAVAILABLE; // 父类
-    const char *name OBJC2_UNAVAILABLE; // 类名
-    long version OBJC2_UNAVAILABLE; // 类的版本信息，默认为0
-    long info OBJC2_UNAVAILABLE; // 类信息，供运行期使用的一些位标识
-    long instance_size OBJC2_UNAVAILABLE; // 该类的实例变量大小
-    struct objc_ivar_list *ivars OBJC2_UNAVAILABLE; // 该类的成员变量链表
-    struct objc_method_list **methodLists OBJC2_UNAVAILABLE; // 方法定义的链表
-    struct objc_cache *cache OBJC2_UNAVAILABLE; // 方法缓存，对象接到一个消息会根据isa指针查找消息对象，这时会在method Lists中遍历，如果cache了，常用的方法调用时就能够提高调用的效率。
-    struct objc_protocol_list *protocols OBJC2_UNAVAILABLE; // 协议链表
-#endif
-} OBJC2_UNAVAILABLE;
-</code></pre><p>objc在向一个对象发送消息时，runtime库会根据对象的isa指针找到该对象实际所属的类，然后在该类中的方法列表以及其父类方法列表中寻找方法运行，然后在发送消息的时候，objc_msgSend方法不会返回值，所谓的返回内容都是具体调用时执行的。那么，回到本题，如果向一个nil对象发送消息，首先在寻找对象的isa指针时就是0地址返回了，所以不会出现任何错误。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于tableview的优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/关于tableview的优化/">关于tableview的优化</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/关于tableview的优化/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:14:32.494Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS应用中，UITableView应该是使用率最高的视图之一了。iPod、时钟、日历、备忘录、Mail、天气、照片、电话、短信、Safari、App Store、iTunes、Game Center⋯几乎所有自带的应用中都能看到它的身影，可见它的重要性。</p>
-<p>然而在使用第三方应用时，却经常遇到性能上的问题，普遍表现在滚动时比较卡，特别是table cell中包含图片的情况时。</p>
-<p>UITableView是UIScrollView的子类，因此它可以自动响应滚动事件（一般为上下滚动）。</p>
-<p>它内部包含0到多个UITableViewCell对象，每个table cell展示各自的内容。当新cell需要被显示时，就会调用tableView:cellForRowAtIndexPath:方法来获取或创建一个cell；而不可视时，它又会被释放。由此可见，同一时间其实只需要存在一屏幕的cell对象即可，不需要为每一行创建一个cell。</p>
-<p>此外，UITableView还可以分为多个sections，每个区段都可以有自己的head、foot和cells。而在定位一个cell时，就需要2个字段了：在哪个section，以及在这个section的第几行。这在iOS SDK中是用NSIndexPath来表述的，UIKit为其添加了indexPathForRow:inSection:这个创建方法。</p>
-<h2 id="关于视图部分的优化"><a href="#关于视图部分的优化" class="headerlink" title="关于视图部分的优化"></a>关于视图部分的优化</h2><h3 id="使用不透明视图。"><a href="#使用不透明视图。" class="headerlink" title="使用不透明视图。"></a>使用不透明视图。</h3><p>不透明的视图可以极大地提高渲染的速度。因此如非必要，可以将table cell及其子视图的opaque属性设为YES（默认值）。</p>
-<p>其中的特例包括背景色，它的alpha值应该为1（例如不要使用clearColor）；图像的alpha值也应该为1，或者在画图时设为不透明。</p>
-<p>当一个view是透明的，iOS需要渲染一个像素两次或多次，这是因为一个像素同时属于很多subviews。这是一个非常耗时的过程。</p>
-<p>通过代码或者InterfaceBuilder能够很简单的做到。开发者应该多次检查所有的subviews是不透明的。</p>
-<p>对于自定义代码，你可以通过代码来设置，如下：</p>
-<pre><code>view.opaque = YES;
-</code></pre><h3 id="不要重复创建不必要的table-cell。"><a href="#不要重复创建不必要的table-cell。" class="headerlink" title="不要重复创建不必要的table cell。"></a>不要重复创建不必要的table cell。</h3><p>前面说了，UITableView只需要一屏幕的UITableViewCell对象即可。因此在cell不可见时，可以将其缓存起来，而在需要时继续使用它即可。</p>
-<p>而UITableView也提供了这种机制，只需要简单地设置一个identifier即可：</p>
-<pre><code>static NSString *CellIdentifier = @&quot;xxx&quot;;
-
-UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-
-if (cell == nil) {
-
-cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-
-}
-</code></pre><p>值得一提的是，cell被重用时，它内部绘制的内容并不会被自动清除，因此你可能需要调用setNeedsDisplayInRect:或setNeedsDisplay方法。</p>
-<p>此外，在添加table cell的时候，如果不需要动画效果，最好不要使用insertRowsAtIndexPaths:withRowAnimation:方法，而是直接调用reloadData方法。因为前者会对所有indexPaths调用<br>tableView:cellForRowAtIndexPath:方法，即便该cell并不需要显示（不知道是不是bug），这就可能创建大量多余的cell。勘误：只是在模拟器上测试如此，真机调试时没有这种bug。</p>
-<h3 id="减少视图的数目。"><a href="#减少视图的数目。" class="headerlink" title="减少视图的数目。"></a>减少视图的数目。</h3><p>UITableViewCell包含了textLabel、detailTextLabel和imageView等view，而你还可以自定义一些视图放在它的contentView里。然而view是很大的对象，创建它会消耗较多资源，并且也影响渲染的性能。</p>
-<p>如果你的table cell包含图片，且数目较多，使用默认的UITableViewCell会非常影响性能。奇怪的是，使用自定义的view，而非预定义的view，明显会快些。</p>
-<p>当然，最佳的解决办法还是继承UITableViewCell，并在其drawRect:中自行绘制：</p>
-<pre><code>- (void)drawRect:(CGRect)rect {
-
-if (image) {
-
-[image drawAtPoint:imagePoint];
-
-self.image = nil;
-
-} else {
-
-[placeHolder drawAtPoint:imagePoint];
-
-}
-
-[text drawInRect:textRect withFont:font lineBreakMode:UILineBreakModeTailTruncation];
-
-}
-</code></pre><p>不过这样一来，你会发现选中一行后，这个cell就变蓝了，其中的内容就被挡住了。最简单的方法就是将cell的selectionStyle属性设为UITableViewCellSelectionStyleNone，这样就不会被高亮了。</p>
-<p>此外还可以创建CALayer，将内容绘制到layer上，然后对cell的contentView.layer调用addSublayer:方法。这个例子中，layer并不会显著影响性能，但如果layer透明，或者有圆角、变形等效果，就会影响到绘制速度了。解决办法可参见后面的预渲染图像。</p>
-<h3 id="不要做多余的绘制工作。"><a href="#不要做多余的绘制工作。" class="headerlink" title="不要做多余的绘制工作。"></a>不要做多余的绘制工作。</h3><p>在实现drawRect:的时候，它的rect参数就是需要绘制的区域，这个区域之外的不需要进行绘制。</p>
-<p>例如上例中，就可以用CGRectIntersectsRect、CGRectIntersection或CGRectContainsRect判断是否需要绘制image和text，然后再调用绘制方法。</p>
-<h3 id="不要阻塞主线程。"><a href="#不要阻塞主线程。" class="headerlink" title="不要阻塞主线程。"></a>不要阻塞主线程。</h3><p>做到前几点后，你的table view滚动时应该足够流畅了，不过你仍可能让用户感到不爽。常见的现象就是在更新数据时，整个界面卡住不动，完全不响应用户请求。</p>
-<p>出现这种现象的原因就是主线程执行了耗时很长的函数或方法，在其执行完毕前，无法绘制屏幕和响应用户请求。其中最常见的就是网络请求了，它通常都需要花费数秒的时间，而你不应该让用户等待那么久。</p>
-<p>解决办法就是使用多线程，让子线程去执行这些函数或方法。这里面还有一个学问，当下载线程数超过2时，会显著影响主线程的性能。因此在使用ASIHTTPRequest时，可以用一个NSOperationQueue来维护下载请求，并将其maxConcurrentOperationCount设为2。而NSURLRequest则可以配合GCD来实现，或者使用NSURLConnection的setDelegateQueue:方法。</p>
-<p>当然，在不需要响应用户请求时，也可以增加下载线程数，以加快下载速度：</p>
-<pre><code>- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-
-if (!decelerate) {
-
-queue.maxConcurrentOperationCount = 5;
-
-}
-
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-
-queue.maxConcurrentOperationCount = 5;
-
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-
-queue.maxConcurrentOperationCount = 2;
-
-}
-</code></pre><p>此外，自动载入更新数据对用户来说也很友好，这减少了用户等待下载的时间。例如每次载入50条信息，那就可以在滚动到倒数第10条以内时，加载更多信息：</p>
-<pre><code>- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-
-if (count - indexPath.row &lt; 10 &amp;&amp; !updating) {
-
-updating = YES;
-
-[self update];
-
-}
-
-}
-
-// update方法获取到结果后，设置updating为NO
-</code></pre><p>还有一点要注意的就是当图片下载完成后，如果cell是可见的，还需要更新图像：</p>
-<pre><code>NSArray *indexPaths = [self.tableView indexPathsForVisibleRows];
-
-for (NSIndexPath *visibleIndexPath in indexPaths) {
-
-if (indexPath == visibleIndexPath) {
-
-MyTableViewCell *cell = (MyTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-
-cell.image = image;
-
-[cell setNeedsDisplayInRect:imageRect];
-
-break;
-
-}
-
-}
-</code></pre><p>最后还是前面所说过的</p>
-<p>insertRowsAtIndexPaths:withRowAnimation:方法，插入新行需要在主线程执行，而一次插入很多行的话（例如50行），会长时间阻塞主线程。而换成reloadData方法的话，瞬间就处理完了。</p>
-<h3 id="减少预加载时间"><a href="#减少预加载时间" class="headerlink" title="减少预加载时间"></a>减少预加载时间</h3><p>通常，我会通过缓存来重用图片，同时减少初始化的过程。当OS需要为TableView渲染一个新的cell，会通过调用下面的方法来返回一个新的cell：</p>
-<p>view sourceprint?</p>
-<pre><code>1.
-
-- (UITableViewCell *)tableView:(UITableView *)tableViewcellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
-2.
-
-// Initialize and return the Cell here
-
-3.
-
-}
-</code></pre><p>因此，如果你在这里阻塞了太长的时间，UserInterface渲染的过程就会被阻塞；它将不能做任何事情或显示任何新的东西。这就是为什么用户看到在某个地方滚动停止的原因。</p>
-<p>为了使这个过程尽可能的快，你可以去除一些逻辑，延迟计算，通过重用来缓存数据和图片。另外一个方法是通过首先使用默认的图片和数据来重用cell。当要获取图片或数据的时候，你可以使用多线程，然后稍后进行填充。从用户的角度来看，这种方法将会使得滚动更加流程，加载图片的速度更快。</p>
-<h3 id="缓存高度"><a href="#缓存高度" class="headerlink" title="缓存高度"></a>缓存高度</h3><p>无论是否需要创建一个新的cell，你需要缓存rows的高度，因为这是TableView所需要的信息。如果你的cell的高度是固定的，你不必担心。然而，如果它不是固定的，你需要确保你的cell计算足够的快。</p>
-<p>可以尝试使用如下代码：</p>
-<pre><code>view sourceprint?
-
-1.
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
-
-2.
-
-return 80;
-
-3.
-
-}
-</code></pre><p>避免使用下面的代码：</p>
-<pre><code>view sourceprint?
-
-1.
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
-
-2.
-
-for (int i = 0; i &lt; 100; i++) {
-
-3.
-
-// find the smallest possible height for the row
-
-4.
-
-}
-
-5.
-
-return smallestHeight;
-
-6.
-
-}
-</code></pre><p>当需要渲染cell或者在动画过程中需要编辑/重排序cell的时候，OS会多次运行第一段代码段。xiang像第二段代码中有一个循环，无论是否需要知道cell的高度，OS都会运行一个重复100次的循环。</p>
-<h3 id="避免使用图形特效"><a href="#避免使用图形特效" class="headerlink" title="避免使用图形特效"></a>避免使用图形特效</h3><p>避免在UIImage中使用复杂的图形特效(例如渐变)。</p>
-<p>当然，这个事情好像程序员说了不算！</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/关于tableview的优化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于分类的总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/关于分类的总结/">关于分类的总结</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/关于分类的总结/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:08:58.127Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>可以在不修改原来类的基础上，为一个类扩展方法。</p>
-<h2 id="分类的结构体"><a href="#分类的结构体" class="headerlink" title="分类的结构体"></a>分类的结构体</h2><pre><code>struct _category_t {
-    const char *name;//类名
-    struct _class_t *cls;//类
-    const struct _method_list_t *instance_methods;//category中所有给类添加的实例方法的列表（instanceMethods）
-    const struct _method_list_t *class_methods;//category中所有添加的类方法的列表（classMethods）
-    const struct _protocol_list_t *protocols;//category实现的所有协议的列表（protocols）
-    const struct _prop_list_t *properties;//category中添加的所有属性（instanceProperties）
-};
-
-struct category_t {
-    const char *name; // 类名
-    classref_t cls;   // 分类所属的类
-    struct method_list_t *instanceMethods;  // 实例方法列表
-    struct method_list_t *classMethods;     // 类方法列表
-    struct protocol_list_t *protocols;      // 遵循的协议列表
-    struct property_list_t *instanceProperties; // 属性列表
-
-    // 如果是元类，就返回类方法列表；否则返回实例方法列表
-    method_list_t *methodsForMeta(bool isMeta) {
-        if (isMeta) {
-            return classMethods;
-        } else {
-            return instanceMethods;
-        }
-    }
-
-    // 如果是元类，就返回 nil，因为元类没有属性；否则返回实例属性列表，但是...实例属性
-    property_list_t *propertiesForMeta(bool isMeta) {
-        if (isMeta) {
-            return nil; // classProperties;
-        } else {
-            return instanceProperties;
-        }
-    }
-};
-</code></pre><h2 id="编译时的分类"><a href="#编译时的分类" class="headerlink" title="编译时的分类"></a>编译时的分类</h2><h3 id="分类的属性"><a href="#分类的属性" class="headerlink" title="分类的属性"></a>分类的属性</h3><pre><code>// Person(categoryPerson) 属性列表
-static struct /*_prop_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count_of_properties;
-    struct _prop_t prop_list[1];
-} _OBJC_$_PROP_LIST_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_prop_t),
-    1,
-    {{"categoryPersonName","T@\"NSString\",C,N"}}
-};
-
-// Person 属性列表
-static struct /*_prop_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count_of_properties;
-    struct _prop_t prop_list[1];
-} _OBJC_$_PROP_LIST_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_prop_t),
-    1,
-    {{"presonName","T@\"NSString\",C,N,V_presonName"}}
-};
-</code></pre><p>在分类中可以声明属性，并且同样会生成一个 _prop_list_t 的结构体</p>
-<h3 id="分类的实例变量？"><a href="#分类的实例变量？" class="headerlink" title="分类的实例变量？"></a>分类的实例变量？</h3><pre><code>// Person 实例变量列表
-
-static struct /*_ivar_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count;
-    struct _ivar_t ivar_list[1];
-} _OBJC_$_INSTANCE_VARIABLES_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_ivar_t),
-    1,
-    {{(unsigned long int *)&OBJC_IVAR_$_Person$_presonName, "_presonName", "@\"NSString\"", 3, 8}}
-};
-</code></pre><p>因为 _category_t 这个结构体中并没有 _ivar_list_t<br>所以在编译时系统没有Person(categoryPerson) 没有生成类似的相应结构体，也没有生成  _categoryPersonName。</p>
-<h3 id="分类的实例方法"><a href="#分类的实例方法" class="headerlink" title="分类的实例方法"></a>分类的实例方法</h3><pre><code>// Person 实例方法结构体
-static struct /*_method_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _objc_method)
-    unsigned int method_count;
-    struct _objc_method method_list[3];
-} _OBJC_$_INSTANCE_METHODS_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_objc_method),
-    3,
-    {{(struct objc_selector *)"doSomeThing", "v16@0:8", (void *)_I_Person_doSomeThing},
-	    {(struct objc_selector *)"presonName", "@16@0:8", (void *)_I_Person_presonName},
-	    {(struct objc_selector *)"setPresonName:", "v24@0:8@16", (void *)_I_Person_setPresonName_}}
-};
-
-// Person(categoryPerson )实例方法结构体
-static struct /*_method_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _objc_method)
-    unsigned int method_count;
-    struct _objc_method method_list[1];
-} _OBJC_$_CATEGORY_INSTANCE_METHODS_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_objc_method),
-    1,
-    {{(struct objc_selector *)"doSomeThing", "v16@0:8", (void *)_I_Person_categoryPerson_doSomeThing}}
-};
-</code></pre><p>虽然分类可以声明属性，但是编译时，系统并没有生成分类属性的 get／set 方法，所以，这就是为什么分类要利用</p>
-<h3 id="分类的结构体-1"><a href="#分类的结构体-1" class="headerlink" title="分类的结构体"></a>分类的结构体</h3><pre><code>// Person(categoryPerson ) 结构体
-static struct _category_t _OBJC_$_CATEGORY_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = 
-{
-    &quot;Person&quot;,
-    0, // &amp;OBJC_CLASS_$_Person,
-    (const struct _method_list_t *)&amp;_OBJC_$_CATEGORY_INSTANCE_METHODS_Person_$_categoryPerson,
-    0,
-    0,
-    (const struct _prop_list_t *)&amp;_OBJC_$_PROP_LIST_Person_$_categoryPerson,
-};
-</code></pre><p>这是系统在编译时实例化 _category_t 生成的<br><em>OBJC</em>$_CATEGORY_Person_$_categoryPerson</p>
-<h3 id="分类数组"><a href="#分类数组" class="headerlink" title="分类数组"></a>分类数组</h3><pre><code>static struct _category_t *L_OBJC_LABEL_CATEGORY_$ [1] __attribute__((used, section (&quot;__DATA, __objc_catlist,regular,no_dead_strip&quot;)))= {
-    &amp;_OBJC_$_CATEGORY_Person_$_categoryPerson,
-};
-</code></pre><p>编译器最后生成了一个数组，数组的元素就是我们创建的各个分类，用来在运行时加载分类。</p>
-<h2 id="分类的加载"><a href="#分类的加载" class="headerlink" title="分类的加载"></a>分类的加载</h2><h3 id="加载分类调用栈"><a href="#加载分类调用栈" class="headerlink" title="加载分类调用栈"></a>加载分类调用栈</h3><pre><code>_objc_init
-└──map_2_images
-    └──map_images_nolock
-        └──_read_images
-</code></pre><p>分类加载的调用栈如上述</p>
-<p>_objc_init 算是整个 objc4 的入口，进行了一些初始化操作，注册了镜像状态改变时的回调函数</p>
-<p>map_2_images 主要是加锁并调用 map_images_nolock<br>map_images_nolock 在这个函数中，完成所有 class 的注册、fixup等工作，还有初始化自动释放池、初始化 side table 等工作并在函数后端调用了 _read_images</p>
-<p>_read_images 方法干了很多苦力活，比如加载类、Protocol、Category，加载分类的代码就写在 _read_images 函数的尾部</p>
-<p>该调用栈入口函数 void _objc_init(void) 在 objc-os.mm 中</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/关于分类的总结/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
-    </nav>
+  
+
+  
+
+  
+
   
 
 
@@ -1437,8 +369,8 @@ static struct _category_t _OBJC_$_CATEGORY_Person_$_categoryPerson __attribute__
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
