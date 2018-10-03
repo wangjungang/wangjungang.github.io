@@ -152,6 +152,179 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-无限循环滚动的TableView" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/02/无限循环滚动的TableView/">无限循环滚动的TableView</a>
+    </h1>
+  
+
+        
+        <a href="/2018/10/02/无限循环滚动的TableView/" class="archive-article-date">
+  	<time datetime="2018-10-02T14:37:33.938Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天来看看如何实现一个可以无限循环的TableView</p>
+<p>条条大路通罗马，个人分析下以下思路的可行性：</p>
+<p>借鉴无限广告轮播的思路。可行性不高，主要是列表头部和尾部的衔接不够自然，而且快速滑动不够流畅。</p>
+<p>使用TableView+3倍长度dataSource。可行性一般，在使用过程中滑动流畅，但是由于重复的数据源，可能导致在处理事件时需要特别对数据进行处理避免重复，另外此方法不能重用，总让有强迫症的人感觉不够优雅。。。</p>
+<p>使用TableView子类+数据源拦截器。可行性较高，在使用过程中滑动流畅，而且在代理方法中并不需要做特殊处理，可封装重用。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="我们通过创建TableView的子类，在子类中对dataSource进行处理。"><a href="#我们通过创建TableView的子类，在子类中对dataSource进行处理。" class="headerlink" title="我们通过创建TableView的子类，在子类中对dataSource进行处理。"></a>我们通过创建TableView的子类，在子类中对dataSource进行处理。</h3><p>如果直接将子类自身设为子类的dataSource，创建另外一个dataSource作为对外的delegate，将自身不处理的代理消息转发给对外的delegate，这样要求自身实现所有的代理方法，非常蛋疼。</p>
+<p>因此，我们创建一个拦截器，通过拦截器决定将消息发送到TableView子类内部或者是其dataSource，这样简洁又比较优雅（装逼）。</p>
+<p>注：使用此方法实现无限循环的TableView，需要对ObjC的消息转发有一定理解。</p>
+<h3 id="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"><a href="#1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置" class="headerlink" title="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"></a>1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置</h3><pre><code>- (void)layoutSubviews {
+    [self resetContentOffsetIfNeeded];
+    [super layoutSubviews];
+}
+
+- (void)resetContentOffsetIfNeeded {
+    CGPoint contentOffset  = self.contentOffset;
+    //头部
+    if (contentOffset.y &lt; 0.0) {
+        contentOffset.y = self.contentSize.height / 3.0;
+    }
+    //尾部
+    else if (contentOffset.y &gt;= (self.contentSize.height - self.bounds.size.height)) {
+        contentOffset.y = self.contentSize.height / 3.0 - self.bounds.size.height;
+    }
+    [self setContentOffset: contentOffset];
+}
+</code></pre><h3 id="2、创建一个拦截器"><a href="#2、创建一个拦截器" class="headerlink" title="2、创建一个拦截器"></a>2、创建一个拦截器</h3><pre><code>@interface SUTableViewInterceptor : NSObject
+
+@property (nonatomic, weak) id receiver;
+@property (nonatomic, weak) id middleMan;
+
+@end
+</code></pre><h3 id="3、将拦截器设置为TableView子类的dataSource"><a href="#3、将拦截器设置为TableView子类的dataSource" class="headerlink" title="3、将拦截器设置为TableView子类的dataSource"></a>3、将拦截器设置为TableView子类的dataSource</h3><pre><code>- (void)setDataSource:(id&lt;UITableViewDataSource&gt;)dataSource {
+    self.dataSourceInterceptor.receiver = dataSource;
+    [super setDataSource:(id&lt;UITableViewDataSource&gt;)self.dataSourceInterceptor];
+}
+
+- (SUTableViewInterceptor *)dataSourceInterceptor {
+    if (!_dataSourceInterceptor) {
+        _dataSourceInterceptor = [[SUTableViewInterceptor alloc]init];
+        _dataSourceInterceptor.middleMan = self;
+    }
+    return _dataSourceInterceptor;
+}
+</code></pre><h3 id="4、在子类中实现需要加工处理的代理方法"><a href="#4、在子类中实现需要加工处理的代理方法" class="headerlink" title="4、在子类中实现需要加工处理的代理方法"></a>4、在子类中实现需要加工处理的代理方法</h3><pre><code>- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
+    self.actualRows = [self.dataSourceInterceptor.receiver tableView:tableView numberOfRowsInSection:section];
+    return self.actualRows * 3;
+}
+
+- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSIndexPath * actualIndexPath = [NSIndexPath indexPathForRow:indexPath.row % self.actualRows inSection:indexPath.section];
+    return [self.dataSourceInterceptor.receiver tableView:tableView cellForRowAtIndexPath:actualIndexPath];
+}
+</code></pre><h3 id="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理"><a href="#5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理" class="headerlink" title="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)"></a>5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)</h3><pre><code>@implementation SUTableViewInterceptor
+
+#pragma mark - forward &amp; response override
+- (id)forwardingTargetForSelector:(SEL)aSelector {
+    if ([self.middleMan respondsToSelector:aSelector]) return self.middleMan;
+    if ([self.receiver respondsToSelector:aSelector]) return self.receiver;
+    return [super forwardingTargetForSelector:aSelector];
+}
+
+- (BOOL)respondsToSelector:(SEL)aSelector {
+    if ([self.middleMan respondsToSelector:aSelector]) return YES;
+    if ([self.receiver respondsToSelector:aSelector]) return YES;
+    return [super respondsToSelector:aSelector];
+}
+
+@end
+</code></pre><p>到此，自定义的TableView基本完成，整理一下思路，不难理解我们是通过拦截器将代理消息转发到子类内部，子类内部则通过外部代理提供的dataSource来拷贝成3份，来组成一个3倍于普通长度的TableView，并在其滑动时进行处理，形成可以无限循环滚动的效果。</p>
+<p>这样，在外部看起来，使用这个TableView和普通TableView没有什么不同，但是多了一个可以循环滚动的“属性”，当然，你也可以将其封装成可设置的属性，方便切换普通模式和循环滚动模式。</p>
+<p>下面，用这个TableView的子类来试着创建一个可以循环滚动的列表看看：</p>
+<pre><code>- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self.view addSubview:self.tableView];
+}
+
+- (UITableView *)tableView {
+    if(!_tableView) {
+        _tableView = [[SUTableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+        _tableView.showsVerticalScrollIndicator = NO;
+        _tableView.rowHeight = 150.0;
+        [_tableView registerNib:[UINib nibWithNibName:@&quot;LiveCell&quot; bundle:nil] forCellReuseIdentifier:liveCellID];
+    }
+    return _tableView;
+}
+
+#pragma mark - UITableViewDataSource
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    return 5;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    LiveCell * cell = [self.tableView dequeueReusableCellWithIdentifier:liveCellID];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    cell.descLabel.text = [NSString stringWithFormat:@&quot;第 %ld 个主播频道&quot;, indexPath.row + 1];
+    return cell;
+}
+</code></pre><p>怎么样，强迫症是不是舒缓了，是不是轻松多了~~~</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/10/02/无限循环滚动的TableView/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS高并发优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1166,84 +1339,6 @@ struct objc_category {
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/09/13/关于分类的总结 /">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-类方法(class method)和实例方法(instance method)有什么区别？ " class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">类方法(class method)和实例方法(instance method)有什么区别？</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /" class="archive-article-date">
-  	<time datetime="2018-09-13T13:26:51.045Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>类方法，也称静态方法，指的是用static关键字修饰的方法。此方法属类本身的方法，不属于类的某一个实例（对象）。类方法中不可直接使用实例变量。其调用方式有三种：可直接调用、类名.方法名、对象名.方法名。实例方法指的是不用static关键字修饰的方法。每个实例对象都有自身的实例方法，互相独立，不共享一个。其调用方式只能是对象名.方法名。</p>
-<h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><p>静态方法在程序开始时生成内存,实例方法在程序运行中生成内存，<br>所以静态方法可以直接调用,实例方法要先成生实例,通过实例调用方法，静态速度很快，但是多了会占内存。<br>静态内存是连续的,因为是在程序开始时就生成了,而实例申请的是离散的空间,所以当然没有静态方法快，<br>而且静态内存是有限制的，太多了程序会启动不了。</p>
-<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>如果需要访问或者修改某个实例的成员变量时，将该方法定义成实例方法。<br>类方法正好相反，它不需要访问或者修改某个实例的成员变量。<br>类方法一般用于实现一些工具方法，比如对某个对象进行扩展，或者实现单例。</p>
-<p>类方法常驻内存，实例方法不是，所以类方法效率高但占内存。<br>类方法在堆上分配内存，实例方法在堆栈上。<br>事实上所有的方法都不可能在堆或者堆栈上分配内存，方法作为代码是被加载到特殊的代码内存区域，这个内存区域是不可写的。<br>实例方法需要先创建实例才可以调用，比较麻烦，类方法不用，比较简单。</p>
-<p>事实上如果一个方法与他所在类型的实例无关，那么它就应该是静态的，决不会有人把它写成实例方法。所以所有的实例方法都与实例有关，既然与实例有关，那么创建实例就是必然的步骤，没有麻烦简单一说。实际上上你可以把所有的实例方法都写成静态的，将实例作为参数传入即可。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">展开全文 >></a>
         </p>
       
 
