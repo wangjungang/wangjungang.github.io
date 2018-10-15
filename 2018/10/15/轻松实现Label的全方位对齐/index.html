@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Blog</title>
+  <title>轻松实现Label的全方位对齐 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/page/2/index.html">
+  <meta name="description" content="开始ARUILabelTextAlign  实现 UILabel文本在 左(上 中 下)、中(上 中 下）、右(上 中 下) 9个方位显示；   提供富文本底部不对齐的解决方案；  核心代码：ARAlignLabel.h#import  @class ARMaker;  typedef NS_ENUM(NSUInteger, textAlignType) {     textAlignType_t">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="轻松实现Label的全方位对齐">
+<meta property="og:url" content="http://yoursite.com/2018/10/15/轻松实现Label的全方位对齐/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="开始ARUILabelTextAlign  实现 UILabel文本在 左(上 中 下)、中(上 中 下）、右(上 中 下) 9个方位显示；   提供富文本底部不对齐的解决方案；  核心代码：ARAlignLabel.h#import  @class ARMaker;  typedef NS_ENUM(NSUInteger, textAlignType) {     textAlignType_t">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-10-15T06:20:45.460Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="轻松实现Label的全方位对齐">
+<meta name="twitter:description" content="开始ARUILabelTextAlign  实现 UILabel文本在 左(上 中 下)、中(上 中 下）、右(上 中 下) 9个方位显示；   提供富文本底部不对齐的解决方案；  核心代码：ARAlignLabel.h#import  @class ARMaker;  typedef NS_ENUM(NSUInteger, textAlignType) {     textAlignType_t">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,897 +155,307 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-iOS分类(category),类扩展(extension)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-轻松实现Label的全方位对齐" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/14/iOS分类(category),类扩展(extension)/">iOS分类(category),类扩展(extension)</a>
+    <h1 class="article-title" itemprop="name">
+      轻松实现Label的全方位对齐
     </h1>
   
 
         
-        <a href="/2018/09/14/iOS分类(category),类扩展(extension)/" class="archive-article-date">
-  	<time datetime="2018-09-14T08:30:59.916Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-14</time>
+        <a href="/2018/10/15/轻松实现Label的全方位对齐/" class="archive-article-date">
+  	<time datetime="2018-10-15T06:16:13.019Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>category和extension这两个东西，基本上属于每天都要遇到的，他们之间有什么区别，该如何选择和使用，需要好好总结记录一下。</p>
-<h3 id="假想一个背景"><a href="#假想一个背景" class="headerlink" title="假想一个背景"></a>假想一个背景</h3><p>在大型项目，企业级开发中多人同时维护同一个类，此时程序员A因为某项需求只想给当前类currentClass添加一个方法newMethod，那该怎么办呢？ 最简单粗暴的方式是把newMethod添加到currentClass中，然后直接实现该方法就OK了。 但考虑到OC是单继承的，子类可以拥有父类的方法和属性。 如果把newMethod写到currentClass中，那么currentClass的子类也会拥有newMethod。但真正的需求是只需要currentClass拥有newMethod，而currentClass的子类不会拥有。 苹果为了解决这个问题，就引入了分类（Category）的概念。</p>
-<h2 id="分类-category"><a href="#分类-category" class="headerlink" title="分类  category"></a>分类  category</h2><h3 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h3><p> 分类（Category）是OC中的特有语法，它是表示一个指向分类的结构体的指针。可以给某一个类扩充一些方法（不修改原来类的代码），原则上它只能增加方法，不能增加成员（实例）变量。具体原因看源码组成:</p>
-<p> category源码</p>
-<pre><code> typedef struct objc_category *Category;
-struct objc_category {
-  char *category_name                          OBJC2_UNAVAILABLE; // 分类名
-  char *class_name                             OBJC2_UNAVAILABLE; // 分类所属的类名
-  struct objc_method_list *instance_methods    OBJC2_UNAVAILABLE; // 实例方法列表
-  struct objc_method_list *class_methods       OBJC2_UNAVAILABLE; // 类方法列表
-  struct objc_protocol_list *protocols         OBJC2_UNAVAILABLE; // 分类所实现的协议列表
-}
-</code></pre><p>通过上面我们可以发现，这个结构体主要包含了分类定义的实例方法与类方法，其中instance_methods 列表是 objc_class 中方法列表的一个子集，而class_methods列表是元类方法列表的一个子集。 但这个结构体里面</p>
-<p>根本没有属性列表， 根本没有属性列表， 根本没有属性列表。</p>
-<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>1.分类是用于给原有类添加方法的,因为分类的结构体指针中，没有属性列表，只有方法列表。所以&lt; 原则上讲它只能添加方法, 不能添加属性(成员变量),实际上可以通过其它方式添加属性&gt; ;   </p>
-<p>2.分类中的可以写@property, 但不会生成setter/getter方法, 也不会生成实现以及私有的成员变量（编译时会报警告）; </p>
-<p>3.可以在分类中访问原有类中.h中的属性; </p>
-<p>4.如果分类中有和原有类同名的方法, 会优先调用分类中的方法, 就是说会忽略原有类的方法。所以同名方法调用的优先级为 分类 &gt; 本类 &gt; 父类。因此在开发中尽量不要覆盖原有类; </p>
-<p>5.如果多个分类中都有和原有类中同名的方法, 那么调用该方法的时候执行谁由编译器决定；编译器会执行最后一个参与编译的分类中的方法。</p>
-<h2 id="类扩展-extension"><a href="#类扩展-extension" class="headerlink" title="类扩展 extension"></a>类扩展 extension</h2><p>这个东西每天都要见，但是大多数人不在意它</p>
-<p>这是一个类的.m文件</p>
-<pre><code>#import &quot;ZDMessageViewController.h&quot;
-
-@interface ZDMessageViewController ()
-@property(nonatomic,strong) NSMutableArray *allDataMutableArray;
-@end
-
-
-@interface XXX ()
-//私有属性
-//私有方法（如果不实现，编译时会报警,Method definition for &apos;XXX&apos; not found）
-@end
-</code></pre><p>这个东西就叫做类扩展，可以为一个类添加一些私有的成员变量和方法，其方法也在.m中实现</p>
-<h2 id="分类与类扩展的区别："><a href="#分类与类扩展的区别：" class="headerlink" title="分类与类扩展的区别："></a>分类与类扩展的区别：</h2><p>1 类别中原则上智能增加方法</p>
-<p>能添加属性的问题只是通过runtime解决没有setter/getter的问题而已</p>
-<p>2 类扩展不仅可以增加方法，还可以增加实例变量（或者属性），只是该实例变量默认只是@private类型的（只能在自身类使用，不能再子类或者其他地方使用）</p>
-<p>3 类扩展中声明的方法没有被实现，编译器会报警，但是类别中声明的方法没有被实现，编译器不会有任何警告。这是因为类扩展是在编译阶段被添加到类中，而类别是在运行时添加到类中</p>
-<p>4 类扩展不能像类别那样拥有独立的实现部分 @implementaton 部分。也就是说，类扩展所声明的方法必须依托对应的类的实现部分来实现</p>
-<p>5 定义在.m文件中的类扩展方法为私有方法，定义在.h中的类扩展的方法为公有方法。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/14/iOS分类(category),类扩展(extension)/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于分类的总结 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/13/关于分类的总结 /">关于分类的总结</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/13/关于分类的总结 /" class="archive-article-date">
-  	<time datetime="2018-09-13T13:49:46.950Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>类别(Category)主要有3个作用：</p>
-<p>将类的实现分散到多个不同文件或多个不同框架中。</p>
-<p>创建对私有方法的前向引用。</p>
-<p>向对象添加非正式协议。</p>
-<p>声明：@interface 类名(分类名称) @end</p>
-<p>实现：@implementation 类名(分类名称) @end</p>
-<p>注意:</p>
-<p>(1)在分类只能增加方法,不能增加成员变量，如果要增加成员变量的话该考虑用继承去实现</p>
-<p>(2)在分类实现方法中可以访问类中的成员变量但是不能访问类中的属性@property</p>
-<p>(3)在分类中可以重新实现原类中的方法，但会将原类中的方法覆盖而失效。</p>
-<p>因为在执行对象成员方法的时候会优先去分类中查找，然后再去原类中去查找，最后去父类中去查找</p>
-<p>(4)如果一个类有多个分类，而且分类中有同名的方法那么最后编译的分类会将前面编译的分类覆盖而执行输出</p>
-<pre><code>// 另外一份解释来自《招聘一个靠谱的 iOS》—参考答案（上）---24
-// 类方法：
-   - 类方法是属于类对象的
-   - 类方法只能通过类对象调用
-   - 类方法中的self是类对象
-   - 类方法可以调用其他的类方法
-   - 类方法中不能访问成员变量
-   - 类方法中不能直接调用对象方法
-
-//  实例方法：
-   -  实例方法是属于实例对象的
-   -  实例方法只能通过实例对象调用
-   -  实例方法中的self是实例对象
-   -  实例方法中可以访问成员变量
-   -  实例方法中直接调用实例方法
-   -  实例方法中也可以调用类方法(通过类名)
-</code></pre><p>4 运行时能增加成员变量么？能增加属性么？如果能，如何增加？如果不能，为什么？</p>
-<p>Category中不能动态添加成员变量;</p>
-<p>在Objective-C提供的runtime函数中，确实有一个class_addIvar()函数用于给类添加成员变量，但是阅读过苹果的官方文档的人应该会看到：</p>
-<p>大概的意思说，这个函数只能在“构建一个类的过程中”调用。一旦完成类定义，就不能再添加成员变量了。经过编译的类在程序启动后就被runtime加载，没有机会调用addIvar。程序在运行时动态构建的类需要在调用objc_registerClassPair之后才可以被使用，同样没有机会再添加成员变量。</p>
-<p>因为方法和属性并不“属于”类实例，而成员变量“属于”类实例。我们所说的“类实例”概念，指的是一块内存区域，包含了isa指针和所有的成员变量。所以假如允许动态修改类成员变量布局，已经创建出的类实例就不符合类定义了，变成了无效对象。但方法定义是在objc_class中管理的，不管如何增删类方法，都不影响类实例的内存布局，已经创建出的类实例仍然可正常使用。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/13/关于分类的总结 /">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-类方法(class method)和实例方法(instance method)有什么区别？ " class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">类方法(class method)和实例方法(instance method)有什么区别？</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /" class="archive-article-date">
-  	<time datetime="2018-09-13T13:26:51.045Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>类方法，也称静态方法，指的是用static关键字修饰的方法。此方法属类本身的方法，不属于类的某一个实例（对象）。类方法中不可直接使用实例变量。其调用方式有三种：可直接调用、类名.方法名、对象名.方法名。实例方法指的是不用static关键字修饰的方法。每个实例对象都有自身的实例方法，互相独立，不共享一个。其调用方式只能是对象名.方法名。</p>
-<h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><p>静态方法在程序开始时生成内存,实例方法在程序运行中生成内存，<br>所以静态方法可以直接调用,实例方法要先成生实例,通过实例调用方法，静态速度很快，但是多了会占内存。<br>静态内存是连续的,因为是在程序开始时就生成了,而实例申请的是离散的空间,所以当然没有静态方法快，<br>而且静态内存是有限制的，太多了程序会启动不了。</p>
-<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>如果需要访问或者修改某个实例的成员变量时，将该方法定义成实例方法。<br>类方法正好相反，它不需要访问或者修改某个实例的成员变量。<br>类方法一般用于实现一些工具方法，比如对某个对象进行扩展，或者实现单例。</p>
-<p>类方法常驻内存，实例方法不是，所以类方法效率高但占内存。<br>类方法在堆上分配内存，实例方法在堆栈上。<br>事实上所有的方法都不可能在堆或者堆栈上分配内存，方法作为代码是被加载到特殊的代码内存区域，这个内存区域是不可写的。<br>实例方法需要先创建实例才可以调用，比较麻烦，类方法不用，比较简单。</p>
-<p>事实上如果一个方法与他所在类型的实例无关，那么它就应该是静态的，决不会有人把它写成实例方法。所以所有的实例方法都与实例有关，既然与实例有关，那么创建实例就是必然的步骤，没有麻烦简单一说。实际上上你可以把所有的实例方法都写成静态的，将实例作为参数传入即可。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/" class="archive-article-date">
-  	<time datetime="2018-09-13T13:05:33.346Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="什么时候会报-unrecognized-selector这个错误"><a href="#什么时候会报-unrecognized-selector这个错误" class="headerlink" title="什么时候会报 unrecognized selector这个错误"></a>什么时候会报 unrecognized selector这个错误</h2><p>1 对象未使用该方法</p>
-<p>2 对象已经被释放。</p>
-<h2 id="iOS有哪些机制来避免走到这一步？"><a href="#iOS有哪些机制来避免走到这一步？" class="headerlink" title="iOS有哪些机制来避免走到这一步？"></a>iOS有哪些机制来避免走到这一步？</h2><p>1 使用[id respondsToSelector:]进行判断。</p>
-<p>2 Method resolution</p>
-<p>objc运行时会调用+resolveInstanceMethod:或者 +resolveClassMethod:，让你有机会提供一个函数实现。如果你添加了函数，那运行时系统就会重新启动一次消息发送的过程，否则 ，运行时就会移到下一步，消息转发（Message Forwarding）。<br>返回Nil和self，去调用第三步methodSignatureForSelector和forwarInvocation；返回receiver，如果receiver有响应就直接处理，如果没有就去对应的对象内去调用第三步；调用子类的函数，子类没有进行这几个方法的重载，在父类处理时返回子类，会死循环。</p>
-<p>3 Fast forwarding</p>
-<p>如果目标对象实现了-forwardingTargetForSelector:，Runtime 这时就会调用这个方法，给你把这个消息转发给其他对象的机会。 只要这个方法返回的不是nil和self，整个消息发送的过程就会被重启，当然发送的对象会变成你返回的那个对象。否则，就会继续Normal Fowarding。 这里叫Fast，只是为了区别下一步的转发机制。因为这一步不会创建任何新的对象，但下一步转发会创建一个NSInvocation对象，所以相对更快点。</p>
-<p>4 Normal forwarding</p>
-<p>这一步是Runtime最后一次给你挽救的机会。首先它会发送-methodSignatureForSelector:消息获得函数的参数和返回值类型。如果-methodSignatureForSelector:返回nil，Runtime则会发出-doesNotRecognizeSelector:消息，程序这时也就挂掉了。如果返回了一个函数签名，Runtime就会创建一个NSInvocation对象并发送-forwardInvocation:消息给目标对象。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Runloop入门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/Runloop入门/">Runloop入门</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/Runloop入门/" class="archive-article-date">
-  	<time datetime="2018-09-12T15:05:09.896Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>首先，先象征性的讲下RunLoop的概念</p>
-<p>从字面上看，就可以看出就是兜圈圈，就是一个死循环嘛。</p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>1.保持程序运行</p>
-<p>2.处理app的各种事件（比如触摸，定时器等等）</p>
-<p>3.节省CPU资源，提高性能。</p>
-<h2 id="一些枯燥的知识"><a href="#一些枯燥的知识" class="headerlink" title="一些枯燥的知识"></a>一些枯燥的知识</h2><h3 id="两个api"><a href="#两个api" class="headerlink" title="两个api"></a>两个api</h3><p>首先要知道iOS里面有两套API可以访问和使用RunLoop：</p>
-<h4 id="Foundation"><a href="#Foundation" class="headerlink" title="Foundation"></a>Foundation</h4><p>NSRunLoop</p>
-<h4 id="Core-Foundation"><a href="#Core-Foundation" class="headerlink" title="Core Foundation"></a>Core Foundation</h4><p>CFNSRunLoop</p>
-<p>上面两套都可以使用，但是要知道CFRunLoopRef是用c语言写的，是开源的，相比于NSRunLoop更加底层，而NSRunLoop其实是对CFRunLoopRef的一个简单的封装。便于使用而已。这样说来，显然CFRunLoopRef的性能要高一点。</p>
-<h3 id="RunLoop与线程"><a href="#RunLoop与线程" class="headerlink" title="RunLoop与线程"></a>RunLoop与线程</h3><p>1.每条线程都有唯一的与之对应的RunLoop对象。</p>
-<p>2.主线程的RunLoop已经创建好了，而子线程的需要手动创建。（也就是说子线程的RunLoop默认是关闭的，因为有时候开了个线程但却没有必要开一个RunLoop，不然反而浪费了资源。 ）</p>
-<p>3.RunLoop在第一次获取时创建，在线程结束时销毁。（这就相当于 线程是一个类，RunLoop是类里的实例变量，这样便于理解）</p>
-<h3 id="获取RunLoop对象"><a href="#获取RunLoop对象" class="headerlink" title="获取RunLoop对象"></a>获取RunLoop对象</h3><h4 id="Foundation-1"><a href="#Foundation-1" class="headerlink" title="Foundation"></a>Foundation</h4><pre><code>[NSRunLoop currentRunLoop]; // 获得当前线程的RunLoop对象
-[NSRunLoop mainRunLoop]; // 获得主线程的RunLoop对象
-</code></pre><h4 id="Core-Foundation-1"><a href="#Core-Foundation-1" class="headerlink" title="Core Foundation"></a>Core Foundation</h4><pre><code>CFRunLoopGetCurrent(); // 获得当前线程的RunLoop对象
-CFRunLoopGetMain(); // 获得主线程的RunLoop对象 
-</code></pre><h3 id="RunLoop相关类"><a href="#RunLoop相关类" class="headerlink" title="RunLoop相关类"></a>RunLoop相关类</h3><p>在Core Foundation中有RunLoop的五个类</p>
-<pre><code>CFRunLoopRef
-CFRunLoopModeRef
-CFRunLoopSourceRef
-CFRunLoopTimerRef
-CFRunLoopObserverRef
-</code></pre><p>由图中可以得出以下几点：</p>
-<p>1.CFRunLoopModeRef代表的是RunLoop的运行模式。</p>
-<p>2.一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。</p>
-<p>3.每次调用 RunLoop 的主函数时，只能指定其中一个 Mode，这个Mode被称作 CurrentMode。</p>
-<p>4.如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</p>
-<h3 id="CFRunLoopModeRef"><a href="#CFRunLoopModeRef" class="headerlink" title="CFRunLoopModeRef"></a>CFRunLoopModeRef</h3><p>系统默认注册了5个mode</p>
-<pre><code>kCFRunLoopDefaultMode //App的默认Mode，通常主线程是在这个Mode下运行
-UITrackingRunLoopMode //界面跟踪 Mode，用于 ScrollView 追踪触摸滑动，保证界面滑动时不受其他 Mode 影响
-UIInitializationRunLoopMode // 在刚启动 App 时第进入的第一个 Mode，启动完成后就不再使用
-GSEventReceiveRunLoopMode // 接受系统事件的内部 Mode，通常用不到
-kCFRunLoopCommonModes //这是一个占位用的Mode，不是一种真正的Mode
-</code></pre><h3 id="CFRunLoopSourseRef"><a href="#CFRunLoopSourseRef" class="headerlink" title="CFRunLoopSourseRef"></a>CFRunLoopSourseRef</h3><p>CFRunLoopSourseRef是事件源，分为两种</p>
-<p>sourse0：非基于port的 （port相当于是系统）<br>自己写的方法，响应</p>
-<p>sourse1：基于port的<br>系统提供的</p>
-<p>CFRunLoopObserverRef<br>CFRunLoopObserver是观察者，可以监听runLoop的状态改变<br>监听的状态如下：</p>
-<pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) { 
-kCFRunLoopEntry = (1UL &lt;&lt; 0), //即将进入Runloop
-kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1), //即将处理NSTimer 
-kCFRunLoopBeforeSources = (1UL &lt;&lt; 2), //即将处理Sources 
-kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5), //即将进入休眠 
-kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6), //刚从休眠中唤醒 
-kCFRunLoopExit = (1UL &lt;&lt; 7), //即将退出runloop 
-kCFRunLoopAllActivities = 0x0FFFFFFFU //所有状态改变};
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/Runloop入门/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于GCD的信号量" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/关于GCD的信号量/">关于GCD的信号量</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/关于GCD的信号量/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:54:10.618Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当我们在处理一系列线程的时候，当数量达到一定量，在以前我们可能会选择使用NSOperationQueue来处理并发控制，但如何在GCD中快速的控制并发呢？答案就是dispatch_semaphore，对经常做unix开发的人来讲，我所介绍的内容可能就显得非常入门级了，信号量在他们的多线程开发中再平常不过了。</p>
-<p>信号量是一个整形值并且具有一个初始计数值，并且支持两个操作：信号通知和等待。当一个信号量被信号通知，其计数会被增加。当一个线程在一个信号量上等待时，线程会被阻塞（如果有必要的话），直至计数器大于零，然后线程会减少这个计数。</p>
-<p>在GCD中有三个函数是semaphore的操作，分别是：</p>
-<pre><code>dispatch_semaphore_creat 
-
-创建一个semaphore
-
-dispatch_semaphore_signal
-
-发送一个信号
-
-dispathc_semaphore_wait
-
-等待信号
-</code></pre><p>简单的介绍一下这三个函数，第一个函数有一个整形的参数，我们可以理解为信号的总量，dispatch_semaphore_signal是发送一个信号，自然会让信号总量加1，dispatch_semaphore_wait等待信号，当信号总量少于0的时候就会一直等待，否则就可以正常的执行，并让信号总量-1，根据这样的原理，我们便可以快速的创建一个并发控制来同步任务和有限资源访问控制。</p>
-<pre><code>　dispatch_group_t group = dispatch_group_create(); 
-dispatch_semaphore_t semaphore = dispatch_semaphore_create(10); 
-dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0); 
-for (int i = 0; i &lt; 100; i++) 
-{ 
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER); 
-    dispatch_group_async(group, queue, ^{ 
-        NSLog(@&quot;%i&quot;,i); 
-        sleep(2); 
-        dispatch_semaphore_signal(semaphore); 
-    }); 
-} 
-dispatch_group_wait(group, DISPATCH_TIME_FOREVER); 
-dispatch_release(group); 
-dispatch_release(semaphore); 
-</code></pre><p>简单的介绍一下这一段代码，创建了一个初使值为10的semaphore，每一次for循环都会创建一个新的线程，线程结束的时候会发送一个信号，线程创建之前会信号等待，所以当同时创建了10个线程之后，for循环就会阻塞，等待有线程结束之后会增加一个信号才继续执行，如此就形成了对并发的控制，如上就是一个并发数为10的一个线程队列。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/关于GCD的信号量/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS程序启动内部过程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/iOS程序启动内部过程/">iOS程序启动内部过程</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/iOS程序启动内部过程/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:43:06.341Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>之前面试遇到过这种问题，总结记录一下</p>
-<p>1.用户点击应用程序图标；</p>
-<p>2.程序执行main()函数；</p>
-<p>3.main函数中直接返回的是UIApplicationMain，所以接下来执行UIApplicationMain；</p>
-<p>4.根据UIApplicationMain中的第三、第四个参数分别设置UIApplication对象及其代理；第三个参数是UIApplication的类名或者子类名，如果为nil则默认是UIApplication，第四个参数代表代理的类名，该代理负责处理应用程序状态切换过程中所产生的事件；</p>
-<p>5.开启循环监听系统事件（Event Loop）；</p>
-<p>6.此处分有storyboard和没有storyboard两种情况，</p>
-<p>(1)有stroyboard</p>
-<blockquote>
-<p>应用程创建一个UIWindow对象(继承自UIView),并设置为AppDelegate的window属性。</p>
-</blockquote>
-<blockquote>
-<p>加载Info.plist文件，读取最主要storyboard文件的名称。</p>
-</blockquote>
-<blockquote>
-<p>加载最主要的storyboard文件，创建白色箭头所指的控制器对象。并且设置控制器为UIWindow的rootViewController属性(根控制器)。</p>
-</blockquote>
-<blockquote>
-<p>展示UIWindow,展示之前会将添加rootViewController的view到UIWindow上面(在这一步才会创建控制器的view),其内部会执行该行代码:[window addSubview: window.rootViewControler.view];</p>
-</blockquote>
-<p>(2)没有stroyboard</p>
-<blockquote>
-<p>首先会调用delegate对象的application:didFinishLaunchingWithOptions:方法。</p>
-</blockquote>
-<blockquote>
-<p>在application:didFinishLaunchingWithOptions:方法中需要主动创建 UIWindow对象。并设置为AppDelegate的window属性。</p>
-</blockquote>
-<blockquote>
-<p>主动创建一个 UIViewController对象，并赋值给window的rootViewController属性。</p>
-</blockquote>
-<blockquote>
-<p>调用 window的makeKeyAndVisible方法显示窗口。</p>
-</blockquote>
-<pre><code>//创建窗口对象
-    self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
-
-    //创建主控制器对象（控制器的View是延时加载的，等到用到的时候再用loadView方法加载）
-    self.HITViewController = [[UIViewController alloc]initWithNibName:@&quot;HITViewController&quot; bundle:nil];
-
-    //设置窗口的根控制器为该主控制器
-    self.window.rootViewController = self.HITViewController;
-
-    //让窗口成为主窗口并可见
-    [self.window makeKeyAndVisible];
-</code></pre><p>程序加载的顺序是先在程序中找storyboard，若果没有找到则找相应的xib，若是都没找到并且代理中没有手动添加代码，则默认用代码创建一个黑色的界面；</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/iOS程序启动内部过程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于TCP Socket http的一些东西" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/关于TCP Socket http的一些东西/">关于TCP Sockte HTTP的一些东西</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/关于TCP Socket http的一些东西/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:34:05.510Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>网络由下往上分为物理层、数据链路层、网络层、传输层、会话层、表示层和应用层。 通过初步的了解，我知道IP协议对应于网络层，TCP协议对应于传输层，而HTTP协议对应于应用层，三者从本质上来说没有可比性，socket则是对 TCP/IP协议的封装和应用(程序员层面上)。也可以说，TPC/IP协议是传输层协议，主要解决数据如何在网络中传输，而HTTP是应用层协议，主要 解决如何包装数据。</p>
-<p>  关于TCP/IP和HTTP协议的关系，网络有一段比较容易理解的介绍：“我们在传输数据时，可以只使用(传输层)TCP/IP协议，但是那样的话，如果 没有应用层，便无法识别数据内容。如果想要使传输的数据有意义，则必须使用到应用层协议。应用层协议有很多，比如HTTP、FTP、TELNET等，也可 以自己定义应用层协议。WEB使用HTTP协议作应用层协议，以封装HTTP文本信息，然后使用TCP/IP做传输层协议将它发到网络上。”</p>
-<p>   而我们平时说的最多的socket是什么呢，实际上socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口(API)。 通过Socket，我们才能使用TCP/IP协议。实际上，Socket跟TCP/IP协议没有必然的联系。Socket编程接口在设计的时候，就希望也 能适应其他的网络协议。所以说，Socket的出现只是使得程序员更方便地使用TCP/IP协议栈而已，是对TCP/IP协议的抽象，从而形成了我们知道 的一些最基本的函数接口，比如create、listen、connect、accept、send、read和write等等。网络有一段关于 socket和TCP/IP协议关系的说法比较容易理解：“TCP/IP只是一个协议栈，就像操作系统的运行机制一样，必须要具体实现，同时还要提供对外 的操作接口。这个就像操作系统会提供标准的编程接口，比如win32编程接口一样，TCP/IP也要提供可供程序员做网络开发所用的接口，这就是 Socket编程接口。”</p>
-<h2 id="一些常见的问题的统计和总结"><a href="#一些常见的问题的统计和总结" class="headerlink" title="一些常见的问题的统计和总结"></a>一些常见的问题的统计和总结</h2><p>ps 感觉这些东西都被问烂了的节奏</p>
-<h3 id="一、什么是TCP连接的三次握手"><a href="#一、什么是TCP连接的三次握手" class="headerlink" title="一、什么是TCP连接的三次握手"></a>一、什么是TCP连接的三次握手</h3><p>   第一次握手：客户端发送syn包(syn=j)到服务器，并进入SYN_SEND状态，等待服务器确认;</p>
-<p>   第二次握手：服务器收到syn包，必须确认客户的SYN(ack=j+1)，同时自己也发送一个SYN包(syn=k)，即SYN+ACK包，此时服务器进入SYN_RECV状态;</p>
-<p>   第三次握手：客户端收到服务器的SYN+ACK包，向服务器发送确认包ACK(ack=k+1)，此包发送完毕，客户端和服务器进入ESTABLISHED状态，完成三次握手。</p>
-<p>   握手过程中传送的包里不包含数据，三次握手完毕后，客户端与服务器才正式开始传送数据。</p>
-<p>   理想状态下，TCP连接一旦建立，在通信双方中的任何一方主动关闭连接之前，TCP 连接都将被一直保持下去。</p>
-<p>   断开连接时服务器和客户端均可以主动发起断开TCP连接的请求，断开过程需要经过“四次握手”(过程就不细写了，就是服务器和客户端交互，最终确定断开)。</p>
-<h3 id="二、利用Socket建立网络连接的步骤"><a href="#二、利用Socket建立网络连接的步骤" class="headerlink" title="二、利用Socket建立网络连接的步骤"></a>二、利用Socket建立网络连接的步骤</h3><p>   建立Socket连接至少需要一对套接字，其中一个运行于客户端，称为ClientSocket ，另一个运行于服务器端，称为ServerSocket 。套接字之间的连接过程分为三个步骤：服务器监听，客户端请求，连接确认。</p>
-<p>   1、服务器监听：服务器端套接字并不定位具体的客户端套接字，而是处于等待连接的状态，实时监控网络状态，等待客户端的连接请求。</p>
-<p>   2、客户端请求：指客户端的套接字提出连接请求，要连接的目标是服务器端的套接字。为此，客户端的套接字必须首先描述它要连接的服务器的套接字，指出服务器端套接字的地址和端口号，然后就向服务器端套接字提出连接请求。</p>
-<p>   3、连接确认：当服务器端套接字监听到或者说接收到客户端套接字的连接请求时，就响应客户端套接字的请求，建立一个新的线程，把服务器端套接字的描述发给 客户端，一旦客户端确认了此描述，双方就正式建立连接。而服务器端套接字继续处于监听状态，继续接收其他客户端套接字的连接请求。</p>
-<h3 id="HTTP链接的特点"><a href="#HTTP链接的特点" class="headerlink" title="HTTP链接的特点"></a>HTTP链接的特点</h3><p>　HTTP协议即超文本传送协议(Hypertext Transfer Protocol )，是Web联网的基础，也是手机联网常用的协议之一，HTTP协议是建立在TCP协议之上的一种应用。HTTP连接最显著的特点是客户端发送的每次请求 都需要服务器回送响应，在请求结束后，会主动释放连接。从建立连接到关闭连接的过程称为“一次连接”。</p>
-<h3 id="四、TCP和UDP的区别"><a href="#四、TCP和UDP的区别" class="headerlink" title="四、TCP和UDP的区别"></a>四、TCP和UDP的区别</h3><p>1、TCP是面向链接的，虽然说网络的不安全不稳定特性决定了多少次握手都不能保证连接的可靠性，但TCP的三次握手在最低限度上(实际上也很大程度上 保证了)保证了连接的可靠性;而UDP不是面向连接的，UDP传送数据前并不与对方建立连接，对接收到的数据也不发送确认信号，发送端不知道数据是否会正 确接收，当然也不用重发，所以说UDP是无连接的、不可靠的一种数据传输协议。</p>
-<p> 2、也正由于1所说的特点，使得UDP的开销更小数据传输速率更高，因为不必进行收发数据的确认，所以UDP的实时性更好。知道了TCP和UDP的区 别，就不难理解为何采用TCP传输协议的MSN比采用UDP的QQ传输文件慢了，但并不能说QQ的通信是不安全的，因为程序员可以手动对UDP的数据收发 进行验证，比如发送方对每个数据包进行编号然后由接收方进行验证啊什么的，即使是这样，UDP因为在底层协议的封装上没有采用类似TCP的“三次握手”而 实现了TCP所无法达到的传输效率。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/关于TCP Socket http的一些东西/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-UIBezierPath设置图片圆角" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/08/UIBezierPath设置图片圆角/">UIBezierPath设置图片圆角</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/08/UIBezierPath设置图片圆角/" class="archive-article-date">
-  	<time datetime="2018-09-08T15:25:13.677Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>一般我们都会通过Layer设置图片圆角，这种方法在iOS9以前可能会发生离屏渲染，</p>
-<p>比较消耗性能，比如当一个页面上有十几头像这样设置了圆角会明显感觉到卡顿。这种就是最常用的，也是最耗性能的。</p>
-<pre><code>imageView.layer.cornerRadius=20;
-imageView.layer.masksToBounds=YES;
-</code></pre><p>ios9.0之后对UIImageView的圆角设置做了优化，UIImageView这样设置圆角不会触发离屏渲染，ios9.0之前还是会触发离屏渲染。而UIButton还是都会触发离屏渲染。</p>
-<p>现在优化方案就是先把图片处理成圆角，处理后再渲染；</p>
-<pre><code>//1.先写一个切圆角的方法，方便调用
-
-- (void)setGraphicsCutRoundCornersWithView:(UIImageView *) imageview roundCornersSize:(CGFloat )cornersSize
+        <h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>ARUILabelTextAlign</p>
+<ol>
+<li>实现 UILabel文本在 左(上 中 下)、中(上 中 下）、右(上 中 下) 9个方位显示；</li>
+</ol>
+<ol start="2">
+<li>提供富文本底部不对齐的解决方案；</li>
+</ol>
+<h2 id="核心代码："><a href="#核心代码：" class="headerlink" title="核心代码："></a>核心代码：</h2><h3 id="ARAlignLabel-h"><a href="#ARAlignLabel-h" class="headerlink" title="ARAlignLabel.h"></a>ARAlignLabel.h</h3><pre><code>#import 
+@class ARMaker;
+
+typedef NS_ENUM(NSUInteger, textAlignType)
 {
-    //开始上下文
-    UIGraphicsBeginImageContextWithOptions(imageview.bounds.size, NO, 0.0);
-    [[UIBezierPath bezierPathWithRoundedRect:imageview.bounds cornerRadius:cornersSize] addClip];
-    [imageview drawRect:imageview.bounds];
-    //当前上下文
-    imageview.image = UIGraphicsGetImageFromCurrentImageContext();
-    // 结束上下文
-    UIGraphicsEndImageContext();
+    textAlignType_top = 10,   // 顶部对齐
+    textAlignType_left,       // 左边对齐
+    textAlignType_bottom,     // 底部对齐
+    textAlignType_right,      // 右边对齐
+    textAlignType_center      // 水平/垂直对齐（默认中心对齐）
+};
+
+@interface ARAlignLabel : UILabel
+
+/**
+ *  根据对齐方式进行文本对齐
+ *
+ *  @param alignType 对齐block
+ */
+- (void)textAlign:(void(^)(ARMaker *make))alignType;
+
+@end
+
+
+//工具类
+@interface ARMaker : NSObject
+
+/* 存放对齐样式 */
+@property(nonatomic, strong) NSMutableArray *typeArray;
+
+/**
+ *  添加对齐样式
+ */
+- (ARMaker *(^)(textAlignType type))addAlignType;
+
+@end
+</code></pre><h3 id="ARAlignLabel-m"><a href="#ARAlignLabel-m" class="headerlink" title="ARAlignLabel.m"></a>ARAlignLabel.m</h3><pre><code>#import &quot;ARAlignLabel.h&quot;
+
+@interface ARAlignLabel ()
+
+/* 对齐方式 */
+@property(nonatomic, strong) NSArray *typeArray;
+//上
+@property(nonatomic, assign) BOOL hasTop;
+//左
+@property(nonatomic, assign) BOOL hasLeft;
+//下
+@property(nonatomic, assign) BOOL hasBottom;
+//右
+@property(nonatomic, assign) BOOL hasRight;
+
+@end
+
+@implementation ARAlignLabel
+
+- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
+    CGRect textRect = [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
+    if (self.typeArray){
+        for (int i=0; i&lt;self.typeArray.count; i++) {
+            textAlignType type = [self.typeArray[i] integerValue];
+            switch (type) {
+                case textAlignType_top:  //顶部对齐
+                    self.hasTop = YES;
+                    textRect.origin.y = bounds.origin.y;
+                    break;
+                case textAlignType_left: //左部对齐
+                    self.hasLeft = YES;
+                    textRect.origin.x = bounds.origin.x;
+                    break;
+                case textAlignType_bottom: //底部对齐
+                    self.hasBottom = YES;
+                    textRect.origin.y = bounds.size.height - textRect.size.height;
+                    break;
+                case textAlignType_right: //右部对齐
+                    self.hasRight = YES;
+                    textRect.origin.x = bounds.size.width - textRect.size.width;
+                    break;
+                case textAlignType_center:
+                    if (self.hasTop) {  //上中
+                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
+                    }
+                    else if (self.hasLeft) { //左中
+                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
+                    }
+                    else if (self.hasBottom) { //下中
+                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
+                    }
+                    else if (self.hasRight) { //右中
+                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
+                    }
+                    else{   //上下左右居中
+                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
+                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return textRect;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
- UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
-  [imageView setImage:[UIImage imageNamed:@&quot;aaa&quot;]];
-  [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];//调用方法
-
- [self.view addSubview:imageView];
+- (void)drawTextInRect:(CGRect)requestedRect {
+    CGRect actualRect = requestedRect;
+    if (self.typeArray) {
+        actualRect = [self textRectForBounds:requestedRect limitedToNumberOfLines:self.numberOfLines];
+    }
+    [super drawTextInRect:actualRect];
 }
-</code></pre><p>我上面的方法是加载的本地图片，如果是网络请求的，就不行了。。。我在AFNetworking里看了看不容易实现，因为他没有completed回调方法，所以我就用SD_WebImage实现了一下。</p>
-<pre><code>- (void)viewDidLoad {
+
+- (void)textAlign:(void(^)(ARMaker *make))alignType {
+    ARMaker *make = [[ARMaker alloc]init];
+    alignType(make);
+    self.typeArray = make.typeArray;
+}
+
+@end
+
+//工具类
+@implementation ARMaker
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.typeArray = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (ARMaker *(^)(enum textAlignType type))addAlignType {
+    __weak typeof (self) weakSelf = self;
+    return ^(enum textAlignType type) {
+        [weakSelf.typeArray addObject:@(type)];
+        return weakSelf;
+    };
+}
+
+@end
+</code></pre><h3 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h3><pre><code>- (void)viewDidLoad {
     [super viewDidLoad];
- NSString *path=@&quot;http://pic.yesky.com/uploadImages/2015/211/46/Y9QRRQ94U8C3.jpg&quot;;
+    self.view.backgroundColor = [UIColor whiteColor];
 
-    UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
+    if (_index == 9) {
+        //富文本底部对齐
+        [self attributedTextAgainOfBottom];
+    }else {
+        ARAlignLabel *label = [[ARAlignLabel alloc] initWithFrame:CGRectMake(kScreenWidth/2.0 - 150, 300, 300, 80)];
+        label.backgroundColor = [UIColor orangeColor];
+        label.textColor = [UIColor blackColor];
+        label.font = [UIFont systemFontOfSize:18];
+        label.text = @&quot;爱学习，爱编程，爱咖啡可乐&quot;;
+        label.numberOfLines = 1;
+        [self.view addSubview:label];
 
-    [imageView sd_setImageWithURL:[NSURL URLWithString:path] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-         [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];
+        switch (_index) {
+            case 0:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_top);
+                }];
+                break;
+            case 1:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_center);
+                }];
+                break;
+            case 2:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_bottom);
+                }];
+                break;
+            case 3:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_center).addAlignType(textAlignType_top);
+                }];
+                break;
+            case 4:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_center);
+                }];
+                break;
+            case 5:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_center).addAlignType(textAlignType_bottom);
+                }];
+                break;
+            case 6:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_top);
+                }];
+                break;
+            case 7:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_center);
+                }];
+                break;
+            case 8:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_bottom);
+                }];
+                break;
+            default:
+                break;
+        }
+    }
+}
+</code></pre><h3 id="富文本底部对齐"><a href="#富文本底部对齐" class="headerlink" title="富文本底部对齐"></a>富文本底部对齐</h3><pre><code>//富文本底部对齐
+- (void)attributedTextAgainOfBottom {
+
+    CGFloat space = 10.0;
+
+    ARAlignLabel *leftLB = [[ARAlignLabel alloc] initWithFrame:CGRectMake(20, 200, kScreenWidth/2.0 - 20 - space/2.0, 80)];
+    leftLB.backgroundColor = [UIColor lightGrayColor];
+    leftLB.textColor = [UIColor blackColor];
+    leftLB.numberOfLines = 1;
+    [self.view addSubview:leftLB];
+    //右下
+    [leftLB textAlign:^(ARMaker *make) {
+        make.addAlignType(textAlignType_center);
     }];
 
-     [self.view addSubview:imageView];
+    NSMutableAttributedString  *attributedArr = [[NSMutableAttributedString alloc] initWithString:@&quot;单价 $123&quot;];
+    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:40], NSForegroundColorAttributeName:[UIColor blackColor]} range:NSMakeRange(0, 1)];
+    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:25], NSForegroundColorAttributeName:[UIColor blackColor]} range:NSMakeRange(1, 1)];
+    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20], NSForegroundColorAttributeName:[UIColor blueColor]} range:NSMakeRange(3, 1)];
+    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:35], NSForegroundColorAttributeName:[UIColor redColor]} range:NSMakeRange(4, attributedArr.length - 4)];
+
+    leftLB.attributedText = attributedArr;
+
+
+    //对齐之后
+    ARAlignLabel *rightLB = [[ARAlignLabel alloc] initWithFrame:CGRectMake(kScreenWidth/2.0 + space/2.0, 200, leftLB.frame.size.width, 80)];
+    rightLB.backgroundColor = [UIColor lightGrayColor];
+    rightLB.textColor = [UIColor blackColor];
+    rightLB.numberOfLines = 1;
+    [self.view addSubview:rightLB];
+    //左下
+    [rightLB textAlign:^(ARMaker *make) {
+        make.addAlignType(textAlignType_center);
+    }];
+
+    //设置部分文字的偏移量 (0是让文字保持原来的位置, 负值是让文字下移，正值是让文字上移)
+    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(1) range:NSMakeRange(0, 1)];
+    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(0) range:NSMakeRange(1, 1)];
+    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(-2) range:NSMakeRange(3, 1)];
+    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(-3) range:NSMakeRange(4, attributedArr.length - 4)];
+
+    rightLB.attributedText = attributedArr;
 
 }
-</code></pre><p>如果是普通视图，不包含图片，可通过如下方式处理： 把背景图设置成clearColor, layer 的背景color和要渲染的视图颜色一致，设置好角度，通过颜色差异来显示出圆角的效果； 关键是把masksToBounds设置NO,就是这个家伙消耗性能；</p>
-<pre><code>   self.view.backgroundColor = [UIColor clearColor];
-
-// Set view.layer.backgroundColor not view.backgroundColor otherwise the background is not masked to the rounded border.
-
-    self.view.layer.backgroundColor = [UIColor whiteColor].CGColor;
-
-    self.view.layer.cornerRadius = 8;
-
-// Huge change in performance by explicitly setting the below (even though default is supposedly NO)
-    self.view.layer.masksToBounds = NO;   
-
-// Performance improvement here depends on the size of your view
-
-    self.view.layer.shouldRasterize = YES; 
-    [self.view.layer setRasterizationScale:[UIScreen mainScreen].scale];
 </code></pre>
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -1060,16 +475,75 @@ imageView.layer.masksToBounds=YES;
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/08/UIBezierPath设置图片圆角/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/10/15/轻松实现Label的全方位对齐/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iOS 和常见的离屏渲染Say Goodbye！</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -1089,101 +563,14 @@ imageView.layer.masksToBounds=YES;
 
 
 
-
-  
-    <article id="post-BOOL和bool的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/07/BOOL和bool的区别/">BOOL和bool的区别</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/07/BOOL和bool的区别/" class="archive-article-date">
-  	<time datetime="2018-09-07T03:26:53.657Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1、类型不同"><a href="#1、类型不同" class="headerlink" title="1、类型不同"></a>1、类型不同</h2><p>BOOL为int型 </p>
-<p>bool为布尔型 </p>
-<h2 id="2、长度不同"><a href="#2、长度不同" class="headerlink" title="2、长度不同"></a>2、长度不同</h2><p>bool只有一个字节 </p>
-<p>BOOL长度视实际环境来定，一般可认为是4个字节 </p>
-<h2 id="3、取值不同"><a href="#3、取值不同" class="headerlink" title="3、取值不同"></a>3、取值不同</h2><p>bool取值false和true，是0和1的区别 </p>
-<p>BOOL取值FALSE和TRUE，是0和非0的区别 </p>
-<p>bool是标准C++数据类型，可取值true和false。单独占一个字节，<br>如果数个bool对象列在一起，可能会各占一个bit，这取决于编译器。 </p>
-<p>BOOL是微软定义的typedef int BOOL。与bool不同，它是一个三值逻辑， </p>
-<p>TRUE/FALSE/ERROR，返回值为&gt;0的整数为TRUE，0为FALSE，-1为ERROR。 </p>
-<p>Win32 API中很多返回值为BOOL的函数都是三值逻辑。比如GetMessage(). </p>
-<h2 id="大BOOL和小bool之间的区别："><a href="#大BOOL和小bool之间的区别：" class="headerlink" title="大BOOL和小bool之间的区别："></a>大BOOL和小bool之间的区别：</h2><h3 id="1、类型不同-1"><a href="#1、类型不同-1" class="headerlink" title="1、类型不同"></a>1、类型不同</h3><p>BOOL为int型 </p>
-<p>bool为布尔型 </p>
-<h3 id="2、长度不同-1"><a href="#2、长度不同-1" class="headerlink" title="2、长度不同"></a>2、长度不同</h3><p>bool只有一个字节 </p>
-<p>BOOL长度视实际环境来定，一般可认为是4个字节 </p>
-<h3 id="3、取值不同-1"><a href="#3、取值不同-1" class="headerlink" title="3、取值不同"></a>3、取值不同</h3><p>bool取值false和true，是0和1的区别 </p>
-<p>BOOL取值FALSE和TRUE，是0和非0的区别 </p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/07/BOOL和bool的区别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
-    </nav>
+  
+
+  
+
+  
+
   
 
 
@@ -1206,8 +593,8 @@ imageView.layer.masksToBounds=YES;
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
