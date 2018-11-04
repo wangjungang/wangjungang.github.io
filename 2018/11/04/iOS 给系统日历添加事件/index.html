@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Blog</title>
+  <title>iOS 给系统日历添加事件 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/archives/page/3/index.html">
+  <meta name="description" content="最重要 添加#import &amp;lt;EventKit/EventKit.h&amp;gt; 库EKEventStore *eventStore = [[EKEventStore alloc] init];             //请求使用用户的日历数据库             if ([eventStore respondsToSelector:@selector(requestAccessToEn">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS 给系统日历添加事件">
+<meta property="og:url" content="http://yoursite.com/2018/11/04/iOS 给系统日历添加事件/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="最重要 添加#import &amp;lt;EventKit/EventKit.h&amp;gt; 库EKEventStore *eventStore = [[EKEventStore alloc] init];             //请求使用用户的日历数据库             if ([eventStore respondsToSelector:@selector(requestAccessToEn">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-04T15:23:17.155Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="iOS 给系统日历添加事件">
+<meta name="twitter:description" content="最重要 添加#import &amp;lt;EventKit/EventKit.h&amp;gt; 库EKEventStore *eventStore = [[EKEventStore alloc] init];             //请求使用用户的日历数据库             if ([eventStore respondsToSelector:@selector(requestAccessToEn">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,36 +155,122 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-iOS 给系统日历添加事件" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      iOS 给系统日历添加事件
+    </h1>
+  
+
+        
+        <a href="/2018/11/04/iOS 给系统日历添加事件/" class="archive-article-date">
+  	<time datetime="2018-11-04T15:22:50.550Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="最重要-添加-import-lt-EventKit-EventKit-h-gt-库"><a href="#最重要-添加-import-lt-EventKit-EventKit-h-gt-库" class="headerlink" title="最重要 添加#import &lt;EventKit/EventKit.h&gt; 库"></a>最重要 添加#import &lt;EventKit/EventKit.h&gt; 库</h3><pre><code>EKEventStore *eventStore = [[EKEventStore alloc] init];
+            //请求使用用户的日历数据库
+            if ([eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)])
+            {
+                [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (error){
+                            //错误信息 这里显示错误消息
+                        }else if (!granted){
+                            //被用户拒绝，不允许访问日历 拒绝访问显示错误消息
+                        }else{
+                            // 数据访问权限
+                            // ***** 在这里做重要的事情 *****
+
+                            //事件保存到日历
+                            //06.07 元素
+                            //title(标题 NSString),
+                            //location(位置NSString),
+                            //startDate(开始时间 2016/06/07 11:14AM),
+                            //endDate(结束时间 2016/06/07 11:14AM),
+                            //addAlarm(提醒时间 2016/06/07 11:14AM),
+                            //notes(备注类容NSString)
+
+                            //创建事件
+                            EKEvent *event  = [EKEvent eventWithEventStore:eventStore];
+                            event.title  = @&quot;测试写入日历事件&quot;;
+                            event.location = @&quot;北京海淀&quot;;
+
+                            NSDateFormatter * dateFormatter = [[NSDateFormatter alloc] init];
+                            [dateFormatter setAMSymbol:@&quot;AM&quot;];
+                            [dateFormatter setPMSymbol:@&quot;PM&quot;];
+                            [dateFormatter setDateFormat:@&quot;yyyy/MM/dd hh:mmaaa&quot;];
+                            NSDate *date = [NSDate date];
+                            NSString * s = [dateFormatter stringFromDate:date];
+                            DLog(@&quot;%@&quot;,s);
+
+                            //开始时间(必须传)
+                            event.startDate = [date dateByAddingTimeInterval:60 * 2];
+                            //结束时间(必须传)
+                            event.endDate   = [date dateByAddingTimeInterval:60 * 5 * 24];
+                            //                    event.endDate   = [[NSDate alloc]init];
+                            //                    event.allDay = YES;//全天
+
+                            //添加提醒
+                            //第一次提醒  (几分钟后)
+                            [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -1.0f]];
+                            //第二次提醒  ()
+                            //                    [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -10.0f * 24]];
+
+                            //06.07 add 事件类容备注
+                            NSString * str = ws.model.remark;
+                            event.notes = [NSString stringWithFormat:@&quot;%@&quot;,str];
+
+                            [event setCalendar:[eventStore defaultCalendarForNewEvents]];
+                            NSError *err;
+
+                            [eventStore saveEvent:event span:EKSpanThisEvent error:&amp;err];
+
+                            DLog(@&quot;保存成功&quot;);
+
+                            //直接杀死进程
+                            exit(2);
+
+                        }
+                    });
+                }];
+            }
+</code></pre>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/Runloop入门/" class="archive-article-date">
-  	<time datetime="2018-09-12T15:05:09.896Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/Runloop入门/">Runloop入门</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -191,364 +282,105 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/04/iOS 给系统日历添加事件/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/关于GCD的信号量/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:54:10.618Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/11/04/一些常见的跳转/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">一些常见的跳转</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/关于GCD的信号量/">关于GCD的信号量</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/iOS程序启动内部过程/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:43:06.341Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/iOS程序启动内部过程/">iOS程序启动内部过程</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/关于TCP Socket http的一些东西/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:34:05.510Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/关于TCP Socket http的一些东西/">关于TCP Sockte HTTP的一些东西</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/08/UIBezierPath设置图片圆角/" class="archive-article-date">
-  	<time datetime="2018-09-08T15:25:13.677Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/08/UIBezierPath设置图片圆角/">UIBezierPath设置图片圆角</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/07/BOOL和bool的区别/" class="archive-article-date">
-  	<time datetime="2018-09-07T03:26:53.657Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/07/BOOL和bool的区别/">BOOL和bool的区别</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/" class="archive-article-date">
-  	<time datetime="2018-09-07T02:46:45.490Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/">objc中向一个nil对象发送消息将会发生什么？</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/关于tableview的优化/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:14:32.494Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/关于tableview的优化/">关于tableview的优化</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/关于分类的总结/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:08:58.127Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/关于分类的总结/">关于分类的总结</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/类方法和实例方法的区别/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:05:33.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/类方法和实例方法的区别/">类方法和实例方法的区别</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/page/2/">&laquo; Prev</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/page/4/">4</a><a class="page-number" href="/archives/page/5/">5</a><a class="extend next" rel="next" href="/archives/page/4/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -572,8 +404,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

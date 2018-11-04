@@ -152,6 +152,484 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS 给系统日历添加事件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/04/iOS 给系统日历添加事件/">iOS 给系统日历添加事件</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/04/iOS 给系统日历添加事件/" class="archive-article-date">
+  	<time datetime="2018-11-04T15:22:50.550Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="最重要-添加-import-lt-EventKit-EventKit-h-gt-库"><a href="#最重要-添加-import-lt-EventKit-EventKit-h-gt-库" class="headerlink" title="最重要 添加#import &lt;EventKit/EventKit.h&gt; 库"></a>最重要 添加#import &lt;EventKit/EventKit.h&gt; 库</h3><pre><code>EKEventStore *eventStore = [[EKEventStore alloc] init];
+            //请求使用用户的日历数据库
+            if ([eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)])
+            {
+                [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (error){
+                            //错误信息 这里显示错误消息
+                        }else if (!granted){
+                            //被用户拒绝，不允许访问日历 拒绝访问显示错误消息
+                        }else{
+                            // 数据访问权限
+                            // ***** 在这里做重要的事情 *****
+
+                            //事件保存到日历
+                            //06.07 元素
+                            //title(标题 NSString),
+                            //location(位置NSString),
+                            //startDate(开始时间 2016/06/07 11:14AM),
+                            //endDate(结束时间 2016/06/07 11:14AM),
+                            //addAlarm(提醒时间 2016/06/07 11:14AM),
+                            //notes(备注类容NSString)
+
+                            //创建事件
+                            EKEvent *event  = [EKEvent eventWithEventStore:eventStore];
+                            event.title  = @&quot;测试写入日历事件&quot;;
+                            event.location = @&quot;北京海淀&quot;;
+
+                            NSDateFormatter * dateFormatter = [[NSDateFormatter alloc] init];
+                            [dateFormatter setAMSymbol:@&quot;AM&quot;];
+                            [dateFormatter setPMSymbol:@&quot;PM&quot;];
+                            [dateFormatter setDateFormat:@&quot;yyyy/MM/dd hh:mmaaa&quot;];
+                            NSDate *date = [NSDate date];
+                            NSString * s = [dateFormatter stringFromDate:date];
+                            DLog(@&quot;%@&quot;,s);
+
+                            //开始时间(必须传)
+                            event.startDate = [date dateByAddingTimeInterval:60 * 2];
+                            //结束时间(必须传)
+                            event.endDate   = [date dateByAddingTimeInterval:60 * 5 * 24];
+                            //                    event.endDate   = [[NSDate alloc]init];
+                            //                    event.allDay = YES;//全天
+
+                            //添加提醒
+                            //第一次提醒  (几分钟后)
+                            [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -1.0f]];
+                            //第二次提醒  ()
+                            //                    [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -10.0f * 24]];
+
+                            //06.07 add 事件类容备注
+                            NSString * str = ws.model.remark;
+                            event.notes = [NSString stringWithFormat:@&quot;%@&quot;,str];
+
+                            [event setCalendar:[eventStore defaultCalendarForNewEvents]];
+                            NSError *err;
+
+                            [eventStore saveEvent:event span:EKSpanThisEvent error:&amp;err];
+
+                            DLog(@&quot;保存成功&quot;);
+
+                            //直接杀死进程
+                            exit(2);
+
+                        }
+                    });
+                }];
+            }
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/04/iOS 给系统日历添加事件/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-一些常见的跳转" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/04/一些常见的跳转/">一些常见的跳转</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/04/一些常见的跳转/" class="archive-article-date">
+  	<time datetime="2018-11-04T15:18:17.304Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>跳转评论、详情</li>
+</ul>
+<p>跳转到详情</p>
+<pre><code>NSString *str = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&quot;, AppId];
+UIApplication *app = [UIApplication sharedApplication];
+NSURL *url = [NSURL URLWithString:str];
+if ([app canOpenURL:url]) {
+    [app openURL:url];
+}
+</code></pre><p>跳转到评论</p>
+<pre><code>NSString *str = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&amp;id=%@&quot;, AppId];
+UIApplication *app = [UIApplication sharedApplication];
+NSURL *url = [NSURL URLWithString:str];
+if ([app canOpenURL:url]) {
+     [app openURL:url];
+}
+</code></pre><ul>
+<li><p>弹出电话</p>
+<pre><code>@property (nonatomic, strong) UIWebView *webView;
+</code></pre></li>
+</ul>
+<pre><code>- (UIWebView *)webView
+{
+    if(!_webView)
+    {
+        _webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+    }
+    return _webView;
+}
+
+// 客服电话
+[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@&quot;tel://%@&quot;, self.lbl_Telphone.text]]]];
+</code></pre><ul>
+<li>跳转QQ</li>
+</ul>
+<pre><code>NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@&quot;mqq://im/chat?chat_type=wpa&amp;uin=%@&amp;version=1&amp;src_type=web&quot;, self.qq]];
+
+[self.webView loadRequest:[NSURLRequest requestWithURL:url]];
+</code></pre><ul>
+<li>跳转微信</li>
+</ul>
+<pre><code>NSString *str =@&quot;weixin://qr/JnXv90fE6hqVrQOU9yA0&quot;;
+[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:str]]];
+</code></pre><ul>
+<li>跳转到微信公众号</li>
+</ul>
+<p>注：跳转到微信公众号，首先需要到微信开发平台，绑定对应的公众号</p>
+<pre><code>if ([WXApi isWXAppInstalled]) {
+     JumpToBizProfileReq *req = [[JumpToBizProfileReq alloc]init];
+     req.username = @&quot;公众号原始ID&quot;;
+      req.extMsg = @&quot;&quot;;
+     req.profileType =0;
+     [WXApi sendReq:req];
+} else {
+     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+     [pasteboard setString:self.weChatID];
+     [QQMMessage showSuccessMessage:@&quot;已复制公众号&quot;];
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/04/一些常见的跳转/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-一些小知识的总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/04/一些小知识的总结/">一些小知识的总结</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/04/一些小知识的总结/" class="archive-article-date">
+  	<time datetime="2018-11-04T15:11:53.307Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这些内容，写完就忘，用完就扔，这样很不好，特意总结记录一下，方便之后查阅。</p>
+<h3 id="ios-半边圆角"><a href="#ios-半边圆角" class="headerlink" title="ios 半边圆角"></a>ios 半边圆角</h3><p>如果需要将UIView的4个角全部都为圆角，做法相当简单，只需设置其Layer的cornerRadius属性即可（项目需要使用QuartzCore框架）。而若要指定某几个角（小于4）为圆角而别的不变时，这种方法就不好用了。<br>对于这种情况，Stackoverflow上提供了几种解决方案。其中最简单优雅的方案，就是使用UIBezierPath。下面给出一段示例代码。</p>
+<pre><code>UIView *viewBackground = [[UIView alloc] initWithFrame:frame(10, 10, WIDTH-20, 182)];
+        viewBackground.backgroundColor = [UIColor whiteColor];
+        viewBackground.layer.cornerRadius = 3;
+        viewBackground.layer.masksToBounds = YES;
+        [self addSubview:viewBackground];
+
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:viewBackground.bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(10, 10)];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame = viewBackground.bounds;
+        maskLayer.path = maskPath.CGPath;
+        viewBackground.layer.mask = maskLayer;
+</code></pre><p>其中</p>
+<pre><code>byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight
+</code></pre><p>指定了需要成为圆角的角。该参数是UIRectCorner类型的，可选的值有：</p>
+<pre><code>* UIRectCornerTopLeft
+* UIRectCornerTopRight
+* UIRectCornerBottomLeft
+* UIRectCornerBottomRight
+* UIRectCornerAllCorners
+</code></pre><h3 id="ios推送跳转到指定页面"><a href="#ios推送跳转到指定页面" class="headerlink" title="ios推送跳转到指定页面"></a>ios推送跳转到指定页面</h3><pre><code>//获取当前屏幕显示的viewcontroller
+- (UIViewController *)getCurrentVC
+{
+    UIViewController  *result = nil;
+    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    if(window.windowLevel != UIWindowLevelNormal)
+    {
+        NSArray *windows = [[UIApplication sharedApplication] windows];
+        for(UIWindow * tmpWin in windows)
+        {
+            if(tmpWin.windowLevel == UIWindowLevelNormal)
+            {
+                window = tmpWin;
+                break;
+            }
+        }
+    }
+    UIView *frontView = [[window subviews] objectAtIndex:0];
+    id nextResponder = [frontView nextResponder];
+    if([nextResponder isKindOfClass:[UIViewController class]]){
+        result = nextResponder;
+    }else{
+        result = window.rootViewController;
+    }
+    return result;
+}
+
+//找到当前控制器  判断
+- (UIViewController *)getDisViewController
+{
+    UIViewController *currVC;
+    if ([[self getCurrentVC] isKindOfClass:[SystemViewController class]]) {//判断是是不是tabbar  是tabbar找到最好导航最后一个控制器是当前控制器
+        SystemViewController *tabBar = (SystemViewController *)[self getCurrentVC];
+        SystemNavigationController *mainNC = tabBar.selectedViewController;
+        return mainNC.viewControllers.lastObject;
+    }
+    /*else if ([ [self getCurrentVC] isKindOfClass:[WJInterpreterTabBarController class]])
+    {
+        WJInterpreterTabBarController *tabBar = (WJInterpreterTabBarController *)[self getCurrentVC];
+        WJNAVController *mainNC = tabBar.selectedViewController;
+        return mainNC.viewControllers.lastObject;
+    }*/
+     else if ([ [self getCurrentVC] isKindOfClass:[SystemNavigationController class]]){//如果当前页面是导航，找到导航数组中最后一个控制器 ，是当前屏幕显示的控制器
+        SystemNavigationController *mainNC = (SystemNavigationController *)[self getCurrentVC];
+        return mainNC.viewControllers.lastObject;
+    }else if ([ [self getCurrentVC] isKindOfClass:[UIViewController class]]){
+        return [self getCurrentVC] ;
+    }else{
+        return [self getCurrentVC] ;
+    }
+}
+
+
+//获取到控制器  直接跳转
+UIViewController *vc = [self getDisViewController];
+        [vc.navigationController pushViewController:systemMessageVC animated:YES];
+</code></pre><h3 id="ios返回指定控制器"><a href="#ios返回指定控制器" class="headerlink" title="ios返回指定控制器"></a>ios返回指定控制器</h3><pre><code>for (UIViewController *controller in self.navigationController.viewControllers) {
+        if ([controller isKindOfClass:[ChatViewController class]]) {
+            [self.navigationController popToViewController:controller animated:YES];
+        }
+    }
+</code></pre><h3 id="IOS-获取视频第一帧"><a href="#IOS-获取视频第一帧" class="headerlink" title="IOS 获取视频第一帧"></a>IOS 获取视频第一帧</h3><pre><code>#import &lt;AVFoundation/AVAsset.h&gt;
+#import &lt;AVFoundation/AVAssetImageGenerator.h&gt;
+#import &lt;AVFoundation/AVTime.h&gt;
+
+
+
+// 获取视频第一帧
+- (UIImage*) getVideoPreViewImage:(NSURL *)path
+{
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:path options:nil];
+    AVAssetImageGenerator *assetGen = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+
+    assetGen.appliesPreferredTrackTransform = YES;
+    CMTime time = CMTimeMakeWithSeconds(0.0, 600);
+    NSError *error = nil;
+    CMTime actualTime;
+    CGImageRef image = [assetGen copyCGImageAtTime:time actualTime:&amp;actualTime error:&amp;error];
+    UIImage *videoImage = [[UIImage alloc] initWithCGImage:image];
+    CGImageRelease(image);
+    return videoImage;
+}
+</code></pre><h3 id="IOS-label加图片"><a href="#IOS-label加图片" class="headerlink" title="IOS label加图片"></a>IOS label加图片</h3><pre><code>NSMutableAttributedString * attriStr = [[NSMutableAttributedString alloc] initWithString:_labelGrowthValue.text];
+
+    /**
+     添加图片到指定的位置
+     */
+    NSTextAttachment *attchImage = [[NSTextAttachment alloc] init];
+    // 表情图片
+    attchImage.image = [UIImage imageNamed:@&quot;icon_chengzhangzhi&quot;];
+    // 设置图片大小
+    attchImage.bounds = CGRectMake(0, 0, 15, 15);
+    NSAttributedString *stringImage = [NSAttributedString attributedStringWithAttachment:attchImage];
+    [attriStr insertAttributedString:stringImage atIndex:0];
+
+    _labelGrowthValue.attributedText = attriStr;
+</code></pre><h3 id="iOS-UITap-禁止传播到其他控件"><a href="#iOS-UITap-禁止传播到其他控件" class="headerlink" title="iOS UITap 禁止传播到其他控件"></a>iOS UITap 禁止传播到其他控件</h3><pre><code>UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(keyboardHide:)];
+    //设置成NO表示当前控件响应后会传播到其他控件上，默认为YES。
+    tapGestureRecognizer.cancelsTouchesInView = NO;
+    //将触摸事件添加到当前view
+</code></pre><h3 id="ios-杀死程序和程序进入后台"><a href="#ios-杀死程序和程序进入后台" class="headerlink" title="ios 杀死程序和程序进入后台"></a>ios 杀死程序和程序进入后台</h3><p> 杀死程序时调用</p>
+<pre><code>//进程杀死时会调用这个
+- (void)applicationWillTerminate:(UIApplication *)application{
+    DLog(@&quot;进程杀死时会调用这个&quot;);
+}
+</code></pre><p>进入后台时调用这个</p>
+<pre><code>[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(comeHome:) name:@&quot;UIApplicationDidEnterBackgroundNotification&quot; object:nil];
+
+
+- (void)comeHome:(UIApplication *)application {
+    NSLog(@&quot;进入后台&quot;);
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/04/一些小知识的总结/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS YYWebImage" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1321,458 +1799,6 @@ bezierPathWithRect:myView.bounds] CGPath]];
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/09/27/iOS高并发优化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-每个程序员对着电梯都想过调度算法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/22/每个程序员对着电梯都想过调度算法/">每个程序员对着电梯都想过调度算法吧！</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/22/每个程序员对着电梯都想过调度算法/" class="archive-article-date">
-  	<time datetime="2018-09-22T14:13:11.373Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>作为程序员，今天你决定翘掉晚上的加班，约女朋友看电影。</p>
-<p>电影是 20:00 开始。</p>
-<p>虽然翘掉了加班，但你从公司出来，就已经 19:00 了。</p>
-<p>公司在望京 SOHO，约会地点在朝阳大悦城。</p>
-<p>（这点时间，祝你好运吧）</p>
-<p>也许你运气真的很好，19:50 就赶到商场了。</p>
-<p>心里想：“还有10分钟才开始，电影院在 F8，乘个直梯，两分钟就到，今天真美好。”</p>
-<p>你按了上行按钮，并行的 3 部电梯，一部正从 F2 升 F3，一部刚刚打算从 F8 降下来，另一部刚降到 F3 竟然又升上去了！</p>
-<p>（理论上讲，一部电梯，如果从 F8 以自由落体的方式下来，不超过 3s；如果正常运行下来，大概 105s；）</p>
-<p>可是……</p>
-<p>你到达电影院时，已经 20:10 了</p>
-<p>你的女朋友也等得不耐烦了……</p>
-<p>不管你是在北上广还是在港澳台，甚至三四线城市，凡是有规模的地区，高楼比比皆是。</p>
-<p>不管是写字楼，还是大型商城，让你最头痛的就是乘电梯，尤其是在赶时间的时候。</p>
-<p>每天早上，那些差5分钟就迟到的程序员，在等电梯时，一般会做两件事：</p>
-<p>第一，在心里骂电梯慢；</p>
-<p>第二，在心里暗算着电梯调度如何优化；</p>
-<p>前者可能是写字楼里上班族惯有的精神类疾病，但后者肯定是程序员的职业病。</p>
-<p>本文对“骂电梯”不给予任何指导性建议。</p>
-<p>但说起电梯调度算法，我觉得还是可以给大家科普一下，好为大家在等电梯之余，打发时间而做出一点贡献。（电梯调度算法可以参考各种硬盘换道算法，下面内容整理自网络）</p>
-<h2 id="传统电梯调度算法"><a href="#传统电梯调度算法" class="headerlink" title="传统电梯调度算法"></a>传统电梯调度算法</h2><h3 id="1-1-先来先服务算法（FCFS）"><a href="#1-1-先来先服务算法（FCFS）" class="headerlink" title="1.1 先来先服务算法（FCFS）"></a>1.1 先来先服务算法（FCFS）</h3><p>先来先服务（FCFS-First Come First Serve）算法，是一种随即服务算法，它不仅仅没有对寻找楼层进行优化，也没有实时性的特征，它是一种最简单的电梯调度算法。</p>
-<p>它根据乘客请求乘坐电梯的先后次序进行调度。此算法的优点是公平、简单，且每个乘客的请求都能依次地得到处理，不会出现某一乘客的请求长期得不到满足的情况。</p>
-<p>这种方法在载荷较轻松的环境下，性能尚可接受，但是在载荷较大的情况下，这种算法的性能就会严重下降，甚至恶化。</p>
-<p>人们之所以研究这种在载荷较大的情况下几乎不可用的算法，有两个原因：</p>
-<p>任何调度算法在请求队列长度为1时，请求速率极低或相邻请求的间隔为无穷大时使用先来先服务算法既对调度效率不会产生影响，而且实现这种算法极其简单。</p>
-<p>先来先服务算法可以作为衡量其他算法的标准。</p>
-<h3 id="1-2-最短寻找楼层时间优先算法（SSTF）"><a href="#1-2-最短寻找楼层时间优先算法（SSTF）" class="headerlink" title="1.2 最短寻找楼层时间优先算法（SSTF）"></a>1.2 最短寻找楼层时间优先算法（SSTF）</h3><p>最短寻找楼层时间优先（SSTF-Shortest Seek Time First）算法，它注重电梯寻找楼层的优化。</p>
-<p>最短寻找楼层时间优先算法选择下一个服务对象的原则是最短寻找楼层的时间。</p>
-<p>这样请求队列中距当前能够最先到达的楼层的请求信号就是下一个服务对象。</p>
-<p>在重载荷的情况下，最短寻找楼层时间优先算法的平均响应时间较短，但响应时间的方差较大，原因是队列中的某些请求可能长时间得不到响应，出现所谓的“饿死”现象。</p>
-<h3 id="1-3-扫描算法（SCAN）"><a href="#1-3-扫描算法（SCAN）" class="headerlink" title="1.3 扫描算法（SCAN）"></a>1.3 扫描算法（SCAN）</h3><p>扫描算法（SCAN） 是一种按照楼层顺序依次服务请求，它让电梯在最底层和最顶层之间连续往返运行，在运行过程中响应处在于电梯运行方向相同的各楼层上的请求。</p>
-<p>它进行寻找楼层的优化，效率比较高，但它是一个非实时算法。扫描算法较好地解决了电梯移动的问题，在这个算法中，每个电梯响应乘客请求使乘客获得服务的次序是由其发出请求的乘客的位置与当前电梯位置之间的距离来决定的。</p>
-<p>所有的与电梯运行方向相同的乘客的请求在一次电向上运行或向下运行的过程中完成，免去了电梯频繁的来回移动。</p>
-<p>扫描算法的平均响应时间比最短寻找楼层时间优先算法长，但是响应时间方差比最短寻找楼层时间优先算法小，从统计学角度来讲，扫描算法要比最短寻找楼层时间优先算法稳定。</p>
-<h3 id="1-4-LOOK-算法"><a href="#1-4-LOOK-算法" class="headerlink" title="1.4 LOOK 算法"></a>1.4 LOOK 算法</h3><p>LOOK 算法是扫描算法（SCAN）的一种改进。对LOOK算法而言，电梯同样在最底层和最顶层之间运行。</p>
-<p>但当 LOOK 算法发现电梯所移动的方向上不再有请求时立即改变运行方向，而扫描算法则需要移动到最底层或者最顶层时才改变运行方向。</p>
-<h3 id="1-5-SATF-算法"><a href="#1-5-SATF-算法" class="headerlink" title="1.5 SATF 算法"></a>1.5 SATF 算法</h3><p>SATF（Shortest Access Time First）算法与 SSTF 算法的思想类似，唯一的区别就是 SATF 算法将 SSTF 算法中的寻找楼层时间改成了访问时间。</p>
-<p>这是因为电梯技术发展到今天，寻找楼层的时间已经有了很大地改进，但是电梯的运行当中等待乘客上梯时间却不是人为可以控制。</p>
-<p>SATF 算法考虑到了电梯运行过程中乘客上梯时间的影响。</p>
-<h2 id="实际的电梯调度算法"><a href="#实际的电梯调度算法" class="headerlink" title="实际的电梯调度算法"></a>实际的电梯调度算法</h2><h3 id="2-1-最早截止期优先调度算法"><a href="#2-1-最早截止期优先调度算法" class="headerlink" title="2.1 最早截止期优先调度算法"></a>2.1 最早截止期优先调度算法</h3><p>最早截止期优先（EDF-Earliest Deadline First）调度算法是最简单的实时电梯调度算法，它的缺点就是造成电梯任意地寻找楼层，导致极低的电梯吞吐率。</p>
-<p>它与 FCFS 调度算法类似，EDF 算法是电梯实时调度算法中最简单的调度算法。</p>
-<p>它响应请求队列中时限最早的请求，是其它实时电梯调度算法性能衡量的基准和特例。</p>
-<h3 id="2-2-SCAN-EDF-算法"><a href="#2-2-SCAN-EDF-算法" class="headerlink" title="2.2 SCAN-EDF 算法"></a>2.2 SCAN-EDF 算法</h3><p>SCAN-EDF 算法是 SCAN 算法和 EDF 算法相结合的产物。SCAN-EDF 算法先按照 EDF 算法选择请求列队中哪一个是下一个服务对象，而对于具有相同时限的请求，则按照 SCAN 算法服务每一个请求。它的效率取决于有相同 deadline  的数目，因而效率是有限的。</p>
-<h3 id="2-3-PI-算法"><a href="#2-3-PI-算法" class="headerlink" title="2.3 PI 算法"></a>2.3 PI 算法</h3><p>PI（Priority Inversion）算法将请求队列中的请求分成两个优先级，它首先保证高优先级队列中的请求得到及时响应，再搞优先级队列为空的情况下在相应地优先级队列中的请求。</p>
-<h3 id="2-4-FD-SCAN-算法"><a href="#2-4-FD-SCAN-算法" class="headerlink" title="2.4 FD-SCAN 算法"></a>2.4 FD-SCAN 算法</h3><p>FD-SCAN（Feasible Deadline SCAN）算法首先从请求队列中找出时限最早、从当前位置开始移动又可以买足其时限要求的请求，作为下一次 SCAN 的方向。</p>
-<p>并在电梯所在楼层向该请求信号运行的过程中响应处在与电梯运行方向相同且电梯可以经过的请求信号。</p>
-<p>这种算法忽略了用 SCAN 算法相应其它请求的开销，因此并不能确保服务对象时限最终得到满足。</p>
-<p>算法基础阅读：8 种排序算法：从原理到改进，再到代码兑现透彻解析</p>
-<h2 id="电梯调度高水平研究"><a href="#电梯调度高水平研究" class="headerlink" title="电梯调度高水平研究"></a>电梯调度高水平研究</h2><p>以上两结介绍了几种简单的电梯调度算法。</p>
-<p>但是并不是说目前电梯调度只发展到这个层次。目前电梯的控制技术已经进入了电梯群控的时代。</p>
-<p>随着微机在电梯系统中的应用和人工智能技术的发展，智能群控技术得以迅速发展起来。</p>
-<p>由此，电梯的群控方面陆续发展出了一批新方法，包括：基于专家系统的电梯群控方法、基于模糊逻辑的电梯群控方法、基于遗产算法的电梯群控方法、基于胜景网络的电梯群控方法和基于模糊神经网络的电梯群控方法。</p>
-<h2 id="电梯问题的需求分析"><a href="#电梯问题的需求分析" class="headerlink" title="电梯问题的需求分析"></a>电梯问题的需求分析</h2><h3 id="4-1-电梯的初始状态"><a href="#4-1-电梯的初始状态" class="headerlink" title="4.1 电梯的初始状态"></a>4.1 电梯的初始状态</h3><p>本人设置的电梯的初始状态，是对住宅楼的电梯的设置。</p>
-<p>(1)建筑共有21层，其中含有地下一层（地下一层为停车场）。</p>
-<p>(2)建筑内部设有两部电梯，编号分别为A梯、B梯。</p>
-<p>(3)电梯内部有23个按钮，其中包括开门按钮、关门按钮和楼层按钮，编号为-1，1，2，3，4……20。</p>
-<p>(4)电梯外部含有两个按钮，即向上运行按钮和向下运行按钮。建筑顶层与地下一层例外，建筑顶层只设置有向下运行按钮，地下一层只设置有向上运行按钮。</p>
-<p>(5)电梯开关门完成时间设定为1秒。电梯到达每层后上下人的时间设定为8秒。电梯从静止开始运行到下一层的时间设置为2秒，而运行中通过一层的时间为1秒。</p>
-<p>(6)在凌晨2：00——4：30之间，如若没有请求信号，A梯自动停在14层，B梯自动停在6层。</p>
-<p>(7)当电梯下到-1层后，如果没有请求信号，电梯自动回到1层。</p>
-<h3 id="4-2-电梯基本功能"><a href="#4-2-电梯基本功能" class="headerlink" title="4.2 电梯基本功能"></a>4.2 电梯基本功能</h3><p>每一架电梯都有一个编号，以方便监控与维修。每一架电梯都有一实时监控器，负责监控电梯上下，向电梯升降盒发送启动、制动、加速、减速、开关电梯门的信号。若电梯发生故障，还应向相应的电梯负责人发送求救信号。</p>
-<h3 id="4-3-电梯按钮功能"><a href="#4-3-电梯按钮功能" class="headerlink" title="4.3 电梯按钮功能"></a>4.3 电梯按钮功能</h3><p>电梯内部的楼层按钮：电梯内部对应每一个楼层的按钮成为楼层按钮，即本章第一结提到的编号为 -1，1，2，3，4……20的按钮。当乘客进入电梯后按下楼层按钮，此按钮显示灰色，代表不可以用。</p>
-<p>这样就表示乘客将要去往此层，电梯将开往相应层。当电梯到达该层后，按钮恢复可以使用状态。</p>
-<p>电梯内部开门按钮：当电梯达到乘客想要去往的某楼层后，乘客需要准备离开电梯，当电梯停稳后，乘客可以按下开门按钮，电梯门将打开，让用户离开。</p>
-<p>如若电梯到了乘客曾经按下的楼层，但是无乘客按开门按钮，电梯将自动在停稳后1秒后自动开门。</p>
-<p>电梯内部关门按钮：当所有想要乘坐电梯的乘客都进入电梯以后，准备让电梯开始运行的时候，乘客需要按下关门按钮，让电梯门关闭，使电梯进入运行状态。设置电梯的自动关门时间为8秒。</p>
-<p>电梯外部向上按钮：此按钮表示上楼请求，当按下此按钮时，如果电梯到达按下此按钮的楼层，且电梯运行方向是向上的，那么电梯响将停下，并在电梯停稳之后自动开门，此请求被响应后，取消此请求信号。</p>
-<p>电梯外部向下按钮：此按钮表示下楼请求，当按下此按钮时，如果电梯到达按下此按钮的楼层，且电梯运行方向是向下的，那么电梯响将停下，并在电梯停稳之后自动开门，此请求被响应后，取消此请求信号。</p>
-<h2 id="结束语"><a href="#结束语" class="headerlink" title="结束语"></a>结束语</h2><p>你肯能意识到哪个算法都不是一个最佳方案，只是它确实解决了一定情况的问题。</p>
-<p>但是对一个优秀的程序员而言，研究各种算法是无比快乐的。也许你下一次面试，就有关于调度算法的问题。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/22/每个程序员对着电梯都想过调度算法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于swift中的单例模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/18/关于swift中的单例模式/">关于swift中的单例模式</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/18/关于swift中的单例模式/" class="archive-article-date">
-  	<time datetime="2018-09-18T15:52:12.784Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>单例模式是设计模式中最简单的一种，甚至有些模式大师都不称其为模式，称其为一种实现技巧，因为设计模式讲究对象之间的关系的抽象，而单例模式只有自己一个对象。</p>
-<p>当你只需要一个实例的时候需要使用单例，如UIApplication.sharedApplication() 等 ，windows的任务管理器，回收站 都是只能同时存在一个。</p>
-<p>下面看看swift中的几种实现方式：</p>
-<pre><code>import Foundation
-
-class SingleOne {
-
-    //单例
-    static let shareSingleOne = SingleOne()
-
-}
-</code></pre><p>一句话搞定，静态常理。所有地方用到的都是同一个</p>
-<pre><code>import Foundation
-
-class SingleTwo {
-
-    //单例
-    class func shareSingleTwo()-&gt;SingleTwo{
-        struct Singleton{
-            static var onceToken : dispatch_once_t = 0
-            static var single:SingleTwo?
-        }
-        dispatch_once(&amp;Singleton.onceToken,{
-            Singleton.single=shareSingleTwo()
-        }
-        )
-        return Singleton.single!
-    }
-
-}
-</code></pre><p>使用dispatch_once可以保证其中的代码只执行一次</p>
-<pre><code>import Foundation
-
-//全局的常量
-let single = SingleThree()
-
-class SingleThree {
-
-    class var sharedInstance : SingleThree {
-        return single
-    }
-}
-
-
-import Foundation
-
-class SingleFour {
-
-    static var sharedInstance : SingleFour {
-        struct Static {
-            static let instance : SingleFour = SingleFour()
-        }
-        return Static.instance
-    }
-}
-
-在方法内定义静态常量
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/18/关于swift中的单例模式/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于swift的可选类型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/18/关于swift的可选类型/">关于swift的可选类型</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/18/关于swift的可选类型/" class="archive-article-date">
-  	<time datetime="2018-09-18T15:08:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。</p>
-<h3 id="关于objcet-c和swift中对于nil的处理"><a href="#关于objcet-c和swift中对于nil的处理" class="headerlink" title="关于objcet-c和swift中对于nil的处理"></a>关于objcet-c和swift中对于nil的处理</h3><p>Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNotFound)</p>
-<p>Swift中的nil:表示任意类型的值缺失，是一个确定的值，要么是该类型的一个值要么什么都没有(即为nil)</p>
-<h3 id="一、申明可选常量或变量"><a href="#一、申明可选常量或变量" class="headerlink" title="一、申明可选常量或变量"></a>一、申明可选常量或变量</h3><pre><code>let status: Int? = 1   // 申明可选Int类型的常量,初始值为1 
-var defaultAddress: String? = &quot;江苏南京&quot;   // 申明可选String类型的变量,初始值为&quot;江苏南京&quot;
-var student: Person? // 申明可选Person(自定义的类)的变量，初始值为nil
-</code></pre><p>注意：Int?与Int不相同，Int?表示可选的Int类型，可以赋值为nil，而Int不可以赋值为nil</p>
-<h3 id="二、使用”-”强制解析获取可选类型的值-不建议直接使用"><a href="#二、使用”-”强制解析获取可选类型的值-不建议直接使用" class="headerlink" title="二、使用”!”强制解析获取可选类型的值(不建议直接使用)"></a>二、使用”!”强制解析获取可选类型的值(不建议直接使用)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
-if defaultAddress != nil { // !=或==可以用来判断是否为nil
-    print(&quot;您的地址是\(defaultAddress!)&quot;) // 使用!强制解析
-} else {
-    print(&quot;对不起，您不存在地址信息&quot;)
-}
-
-var student: Person?
-print(&quot;学生为\(student!)&quot;) // XCode会提示运行错误，因为student初始值为nil，强制解析不行
-</code></pre><h3 id="三、使用可选绑定获取可选类型的值-建议的用法"><a href="#三、使用可选绑定获取可选类型的值-建议的用法" class="headerlink" title="三、使用可选绑定获取可选类型的值(建议的用法)"></a>三、使用可选绑定获取可选类型的值(建议的用法)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
-if let address = defaultAddress { // 如果defaultAddress有值或类型转换成功，则将值赋值给address直接使用
-    print(&quot;您的地址是\(address)&quot;)  // 使用address代替defaultAddress，且不需要加!强制解析
-} else {
-    print(&quot;对不起，您不存在地址信息&quot;)
-}
-</code></pre><h3 id="四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><a href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil" class="headerlink" title="四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)"></a>四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</h3><pre><code>var mobileNumber: Int64! = 13912345678 // 第一次申明有初始值
-print(&quot;您的电话号码是\(mobileNumber)&quot;) // 不需要使用!强制解析
-// 打印内容:**您的电话号码是****Optional(13912345678)**
-// 还是不建议直接强制解析，因为实际项目中可能中间已经对该值做了改变，若为nil则会运行错误导致APP崩溃
-if let number = mobileNumber { // 建议的做法
-    print(&quot;您的电话号码是\(number)&quot;)
-// 打印内容:**您的电话号码是****13912345678**
-} else {
-    print(&quot;您没有记录电话号码&quot;)
-}
-</code></pre><h3 id="空合运算符-用于判断变量或常量是否为nil"><a href="#空合运算符-用于判断变量或常量是否为nil" class="headerlink" title="空合运算符(用于判断变量或常量是否为nil)"></a>空合运算符(用于判断变量或常量是否为nil)</h3><pre><code>// 空合运算符：a ?? b 判断a是否为nil，若a不为nil对a解封，否则返回b的值
-var status: Int? // 申明可选Int类型的变量status，初始值为nil
-status ?? 0 // 因为status为nil，则返回0
-// ?? 即为以下if else的缩写
-func testOption() -&gt; Int {
-    let status: Int? = 1
-    if status == nil {
-        return 0
-    } else {
-        return status!
-    }
-}
-</code></pre><h3 id="六、函数-方法返回类型为可选类型"><a href="#六、函数-方法返回类型为可选类型" class="headerlink" title="六、函数/方法返回类型为可选类型"></a>六、函数/方法返回类型为可选类型</h3><h4 id="A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等"><a href="#A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等" class="headerlink" title="A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)"></a>A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)</h4><pre><code>func returnPossibleValue(value: Bool) -&gt; String? { // 返回类型为可选String类型
-    if value {
-        return &quot;返回类型是可选类型值&quot; // 如果为真，返回Int类型的值1
-    } else {
-        return nil // 如果为假，返回nil
-    }
-}
-
-let possibleValue = returnPossibleValue(value: true) // 要用可选绑定判断再使用，因为possibleValue为String？可选类型
-if let value = possibleValue {
-    print(value)
-} else {
-    print(&quot;none value&quot;)
-}
-</code></pre><h4 id="B-返回值为可选类型的类-如URL-、自定义Person-等"><a href="#B-返回值为可选类型的类-如URL-、自定义Person-等" class="headerlink" title="B:返回值为可选类型的类(如URL?、自定义Person?等)"></a>B:返回值为可选类型的类(如URL?、自定义Person?等)</h4><pre><code>class SomeClass {
-    var someValue: Int
-    init?(someValue: Int) { // 可失败构造器
-        if someValue == 1 { return nil }
-        self.someValue = someValue
-    }
-}
-
-func returnPossibleClass(value: Bool) -&gt; SomeClass? { // 返回的类实例可能为nil
-    if value {
-        return SomeClass(someValue: 1) // 返回的为nil
-    } else {
-        return SomeClass(someValue: 2) // 返回的SomeClass?实例，不为nil
-    }
-}
-</code></pre><h4 id="C-返回值为可选类型的闭包-如-gt-void"><a href="#C-返回值为可选类型的闭包-如-gt-void" class="headerlink" title="C:返回值为可选类型的闭包(如(()-&gt; (void))? )"></a>C:返回值为可选类型的闭包(如(()-&gt; (void))? )</h4><pre><code>func returnOptionalFunc(value: Bool) -&gt; (() -&gt; (Void))? { // 返回类型为可选类型的闭包
-    if value {
-        return { () in
-            print(&quot;返回类型是可选类型闭包&quot;)
-        }
-    } else {
-        return nil
-    }
-}
-
-let possibleFunc = returnOptionalFunc(value: true) // 要用可选绑定判断再使用，因为possibleFunc 为可选类型的闭包，类型为() -&gt; (Void)
-if let aFunc = possibleFunc {
-    print(aFunc())  // 注意增加()调用闭包，因为没有参数则是空括号
-} else {
-    print(&quot;none func&quot;)
-}
-</code></pre><h3 id="七、可选类型在类或结构体中的运用"><a href="#七、可选类型在类或结构体中的运用" class="headerlink" title="七、可选类型在类或结构体中的运用"></a>七、可选类型在类或结构体中的运用</h3><h4 id="A-可选类型在类中的运用"><a href="#A-可选类型在类中的运用" class="headerlink" title="A:可选类型在类中的运用"></a>A:可选类型在类中的运用</h4><pre><code>class PossibleClass {
-    var someValue: Int
-    var possibleValue: String? // 可选存储属性，默认值为nil
-    init(someValue: Int) { // 构造方法中可以不对possibleValue属性初始化
-        self.someValue = someValue
-    }
-}
-
-let someClass = PossibleClass(someValue: 4) // 实例化对象时不需要对possibleValue初始化，someClass实例中：someValue为4，possibleValue为nil
-</code></pre><p>注意：类中所有属性都需要有默认值。属性可以在申明时赋予初始值，也可以在构造方法中赋予初始值；子类继承父类时，必须先给自身属性先初始化后再继承父类构造方法初始化。一般的，出于安全的因素，子类的属性都赋予初始值或直接定义为可选类型。</p>
-<h4 id="B-可选类型在结构体中的运用"><a href="#B-可选类型在结构体中的运用" class="headerlink" title="B:可选类型在结构体中的运用"></a>B:可选类型在结构体中的运用</h4><pre><code>struct PossibleStruct {
-    var someValue: Int
-    var possibleValue: String? // 可选存储属性，默认值为nil
-    // 结构体中可以自定义一个init构造器对属性初始化，也可以不自定义
-}
-
-let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/18/关于swift的可选类型/">展开全文 >></a>
         </p>
       
 

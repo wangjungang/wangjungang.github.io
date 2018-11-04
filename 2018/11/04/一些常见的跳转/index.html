@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Blog</title>
+  <title>一些常见的跳转 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/archives/page/3/index.html">
+  <meta name="description" content="跳转评论、详情  跳转到详情 NSString *str = [NSString stringWithFormat: @&amp;quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&amp;quot;, AppId]; UIApplication *app = [UIApplication sharedApplication]; NSURL *url = [NS">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一些常见的跳转">
+<meta property="og:url" content="http://yoursite.com/2018/11/04/一些常见的跳转/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="跳转评论、详情  跳转到详情 NSString *str = [NSString stringWithFormat: @&amp;quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&amp;quot;, AppId]; UIApplication *app = [UIApplication sharedApplication]; NSURL *url = [NS">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-04T15:22:25.419Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="一些常见的跳转">
+<meta name="twitter:description" content="跳转评论、详情  跳转到详情 NSString *str = [NSString stringWithFormat: @&amp;quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&amp;quot;, AppId]; UIApplication *app = [UIApplication sharedApplication]; NSURL *url = [NS">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,36 +155,114 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-一些常见的跳转" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      一些常见的跳转
+    </h1>
+  
+
+        
+        <a href="/2018/11/04/一些常见的跳转/" class="archive-article-date">
+  	<time datetime="2018-11-04T15:18:17.304Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>跳转评论、详情</li>
+</ul>
+<p>跳转到详情</p>
+<pre><code>NSString *str = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&quot;, AppId];
+UIApplication *app = [UIApplication sharedApplication];
+NSURL *url = [NSURL URLWithString:str];
+if ([app canOpenURL:url]) {
+    [app openURL:url];
+}
+</code></pre><p>跳转到评论</p>
+<pre><code>NSString *str = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&amp;id=%@&quot;, AppId];
+UIApplication *app = [UIApplication sharedApplication];
+NSURL *url = [NSURL URLWithString:str];
+if ([app canOpenURL:url]) {
+     [app openURL:url];
+}
+</code></pre><ul>
+<li><p>弹出电话</p>
+<pre><code>@property (nonatomic, strong) UIWebView *webView;
+</code></pre></li>
+</ul>
+<pre><code>- (UIWebView *)webView
+{
+    if(!_webView)
+    {
+        _webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+    }
+    return _webView;
+}
+
+// 客服电话
+[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@&quot;tel://%@&quot;, self.lbl_Telphone.text]]]];
+</code></pre><ul>
+<li>跳转QQ</li>
+</ul>
+<pre><code>NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@&quot;mqq://im/chat?chat_type=wpa&amp;uin=%@&amp;version=1&amp;src_type=web&quot;, self.qq]];
+
+[self.webView loadRequest:[NSURLRequest requestWithURL:url]];
+</code></pre><ul>
+<li>跳转微信</li>
+</ul>
+<pre><code>NSString *str =@&quot;weixin://qr/JnXv90fE6hqVrQOU9yA0&quot;;
+[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:str]]];
+</code></pre><ul>
+<li>跳转到微信公众号</li>
+</ul>
+<p>注：跳转到微信公众号，首先需要到微信开发平台，绑定对应的公众号</p>
+<pre><code>if ([WXApi isWXAppInstalled]) {
+     JumpToBizProfileReq *req = [[JumpToBizProfileReq alloc]init];
+     req.username = @&quot;公众号原始ID&quot;;
+      req.extMsg = @&quot;&quot;;
+     req.profileType =0;
+     [WXApi sendReq:req];
+} else {
+     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+     [pasteboard setString:self.weChatID];
+     [QQMMessage showSuccessMessage:@&quot;已复制公众号&quot;];
+}
+</code></pre>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/Runloop入门/" class="archive-article-date">
-  	<time datetime="2018-09-12T15:05:09.896Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/Runloop入门/">Runloop入门</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -191,364 +274,114 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/04/一些常见的跳转/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/关于GCD的信号量/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:54:10.618Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2018/11/04/iOS 给系统日历添加事件/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          iOS 给系统日历添加事件
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/11/04/一些小知识的总结/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">一些小知识的总结</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/关于GCD的信号量/">关于GCD的信号量</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/iOS程序启动内部过程/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:43:06.341Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/iOS程序启动内部过程/">iOS程序启动内部过程</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/关于TCP Socket http的一些东西/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:34:05.510Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/关于TCP Socket http的一些东西/">关于TCP Sockte HTTP的一些东西</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/08/UIBezierPath设置图片圆角/" class="archive-article-date">
-  	<time datetime="2018-09-08T15:25:13.677Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/08/UIBezierPath设置图片圆角/">UIBezierPath设置图片圆角</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/07/BOOL和bool的区别/" class="archive-article-date">
-  	<time datetime="2018-09-07T03:26:53.657Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/07/BOOL和bool的区别/">BOOL和bool的区别</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/" class="archive-article-date">
-  	<time datetime="2018-09-07T02:46:45.490Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/">objc中向一个nil对象发送消息将会发生什么？</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/关于tableview的优化/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:14:32.494Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/关于tableview的优化/">关于tableview的优化</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/关于分类的总结/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:08:58.127Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/关于分类的总结/">关于分类的总结</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/类方法和实例方法的区别/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:05:33.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/类方法和实例方法的区别/">类方法和实例方法的区别</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/page/2/">&laquo; Prev</a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/page/4/">4</a><a class="page-number" href="/archives/page/5/">5</a><a class="extend next" rel="next" href="/archives/page/4/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -572,8 +405,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
