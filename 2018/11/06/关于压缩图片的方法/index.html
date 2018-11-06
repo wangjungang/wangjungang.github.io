@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: iOS | Blog</title>
+  <title>关于压缩图片的方法 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/tags/iOS/index.html">
+  <meta name="description" content="写在前面图片的两种压缩方法 1.1 压缩图片质量 1.2 压缩图片尺寸 压缩图片使图片文件小于指定大小 2.1 压缩图片质量 2.2 压缩图片尺寸 2.3 两种图片压缩方法结合 一、两种图片压缩方法两种压缩图片的方法：压缩图片质量(Quality)，压缩图片尺寸(Size)。 1.1 压缩图片质量NSData *data = UIImageJPEGRepresentation(image, com">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于压缩图片的方法">
+<meta property="og:url" content="http://yoursite.com/2018/11/06/关于压缩图片的方法/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="写在前面图片的两种压缩方法 1.1 压缩图片质量 1.2 压缩图片尺寸 压缩图片使图片文件小于指定大小 2.1 压缩图片质量 2.2 压缩图片尺寸 2.3 两种图片压缩方法结合 一、两种图片压缩方法两种压缩图片的方法：压缩图片质量(Quality)，压缩图片尺寸(Size)。 1.1 压缩图片质量NSData *data = UIImageJPEGRepresentation(image, com">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-06T10:42:59.904Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="关于压缩图片的方法">
+<meta name="twitter:description" content="写在前面图片的两种压缩方法 1.1 压缩图片质量 1.2 压缩图片尺寸 压缩图片使图片文件小于指定大小 2.1 压缩图片质量 2.2 压缩图片尺寸 2.3 两种图片压缩方法结合 一、两种图片压缩方法两种压缩图片的方法：压缩图片质量(Quality)，压缩图片尺寸(Size)。 1.1 压缩图片质量NSData *data = UIImageJPEGRepresentation(image, com">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,36 +155,173 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
+            <article id="post-关于压缩图片的方法" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
   
+    <h1 class="article-title" itemprop="name">
+      关于压缩图片的方法
+    </h1>
   
-    
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/06/关于压缩图片的方法/" class="archive-article-date">
+
+        
+        <a href="/2018/11/06/关于压缩图片的方法/" class="archive-article-date">
   	<time datetime="2018-11-06T10:17:23.002Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-06</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/06/关于压缩图片的方法/">关于压缩图片的方法</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>图片的两种压缩方法</p>
+<p>1.1 压缩图片质量</p>
+<p>1.2 压缩图片尺寸</p>
+<p>压缩图片使图片文件小于指定大小</p>
+<p>2.1 压缩图片质量</p>
+<p>2.2 压缩图片尺寸</p>
+<p>2.3 两种图片压缩方法结合</p>
+<h3 id="一、两种图片压缩方法"><a href="#一、两种图片压缩方法" class="headerlink" title="一、两种图片压缩方法"></a>一、两种图片压缩方法</h3><p>两种压缩图片的方法：压缩图片质量(Quality)，压缩图片尺寸(Size)。</p>
+<h4 id="1-1-压缩图片质量"><a href="#1-1-压缩图片质量" class="headerlink" title="1.1 压缩图片质量"></a>1.1 压缩图片质量</h4><pre><code>NSData *data = UIImageJPEGRepresentation(image, compression);
+UIImage *resultImage = [UIImage imageWithData:data];
+</code></pre><p>通过UIImage和NSData的相互转化，减小 JPEG 图片的质量来压缩图片。UIImageJPEGRepresentation::第二个参数compression 取值 0.0~1.0，值越小表示图片质量越低，图片文件自然越小。</p>
+<h4 id="1-2-压缩图片尺寸"><a href="#1-2-压缩图片尺寸" class="headerlink" title="1.2 压缩图片尺寸"></a>1.2 压缩图片尺寸</h4><pre><code>UIGraphicsBeginImageContext(size);
+[image drawInRect:CGRectMake(0, 0, size.width, size.height)];
+resultImage = UIGraphicsGetImageFromCurrentImageContext();
+UIGraphicsEndImageContext();
+</code></pre><p>给定所需的图片尺寸 size，resultImage 即为原图 image 绘制为 size 大小的图片。</p>
+<h3 id="二、-压缩图片使图片文件小于指定大小"><a href="#二、-压缩图片使图片文件小于指定大小" class="headerlink" title="二、 压缩图片使图片文件小于指定大小"></a>二、 压缩图片使图片文件小于指定大小</h3><p>如果对图片清晰度要求不高，要求图片的上传、下载速度快的话，上传图片前需要压缩图片。压缩到什么程度要看具体情况，但一般会设定一个图片文件最大值，例如100 KB。可以用上诉两种方法来压缩图片。假设图片转化来的 NSData对象为data，通过data.length即可得到图片的字节大小。</p>
+<p>####2.1 压缩图片质量</p>
+<p>比较容易想到的方法是，通过循环来逐渐减小图片质量，直到图片稍小于指定大小(maxLength)。</p>
+<p>UIImage+WLCompress.m</p>
+<pre><code>- (NSData *)compressQualityWithMaxLength:(NSInteger)maxLength {
+    CGFloat compression = 1;
+    NSData *data = UIImageJPEGRepresentation(self, compression);
+    while (data.length &gt; maxLength &amp;&amp; compression &gt; 0) {
+        compression -= 0.02;
+        data = UIImageJPEGRepresentation(self, compression); // When compression less than a value, this code dose not work
+    }
+    return data;
+}
+</code></pre><p>这样循环次数多，效率低，耗时长。</p>
+<p>可以通过二分法来优化。</p>
+<pre><code>- (NSData *)compressQualityWithMaxLength:(NSInteger)maxLength {
+   CGFloat compression = 1;
+    NSData *data = UIImageJPEGRepresentation(self, compression);
+    if (data.length &lt; maxLength) return data;
+    CGFloat max = 1;
+    CGFloat min = 0;
+    for (int i = 0; i &lt; 6; ++i) {
+        compression = (max + min) / 2;
+        data = UIImageJPEGRepresentation(self, compression);
+        if (data.length &lt; maxLength * 0.9) {
+            min = compression;
+        } else if (data.length &gt; maxLength) {
+            max = compression;
+        } else {
+            break;
+        }
+    }
+    return data;
+}
+</code></pre><p>当图片大小小于 maxLength，大于 maxLength * 0.9 时，不再继续压缩。最多压缩 6 次，1/(2^6) = 0.015625 &lt; 0.02，也能达到每次循环 compression减小 0.02 的效果。这样的压缩次数比循环减小 compression少，耗时短。需要注意的是，当图片质量低于一定程度时，继续压缩没有效果。也就是说，compression继续减小，data 也不再继续减小。</p>
+<p>压缩图片质量的优点在于，尽可能保留图片清晰度，图片不会明显模糊；<br>缺点在于，不能保证图片压缩后小于指定大小。</p>
+<h4 id="2-2-压缩图片尺寸"><a href="#2-2-压缩图片尺寸" class="headerlink" title="2.2 压缩图片尺寸"></a>2.2 压缩图片尺寸</h4><p>与之前类似，比较容易想到的方法是，通过循环逐渐减小图片尺寸，直到图片稍小于指定大小(maxLength)。具体代码省略。同样的问题是循环次数多，效率低，耗时长。可以用二分法来提高效率，具体代码省略。这里介绍另外一种方法，比二分法更好，压缩次数少，而且可以使图片压缩后刚好小于指定大小(不只是 &lt; maxLength， &gt; maxLength * 0.9)。</p>
+<pre><code>-(NSData *)compressBySizeWithMaxLength:(NSUInteger)maxLength{
+    UIImage *resultImage = self;
+    NSData *data = UIImageJPEGRepresentation(resultImage, 1);
+    NSUInteger lastDataLength = 0;
+    while (data.length &gt; maxLength &amp;&amp; data.length != lastDataLength) {
+        lastDataLength = data.length;
+        CGFloat ratio = (CGFloat)maxLength / data.length;
+        CGSize size = CGSizeMake((NSUInteger)(resultImage.size.width * sqrtf(ratio)),
+                                 (NSUInteger)(resultImage.size.height * sqrtf(ratio))); // Use NSUInteger to prevent white blank
+        UIGraphicsBeginImageContext(size);
+        // Use image to draw (drawInRect:), image is larger but more compression time
+        // Use result image to draw, image is smaller but less compression time
+        [resultImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+        resultImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        data = UIImageJPEGRepresentation(resultImage, 1);
+    }
+    return data;
+}
+</code></pre><p>[resultImage drawInRect:CGRectMake(0, 0, size.width, size.height)];<br>是用新图 resultImage 绘制，也可以用原图 image 来绘制。<br>用原图绘制，压缩后图片更接近指定大小，但是压缩次数较多，耗时较长。一张大小为 6064 KB 的图片，压缩图片尺寸，原图绘制与新图绘制结果如下</p>
+<h4 id="2-3-两种图片压缩方法结合"><a href="#2-3-两种图片压缩方法结合" class="headerlink" title="2.3 两种图片压缩方法结合"></a>2.3 两种图片压缩方法结合</h4><p>如果要保证图片清晰度，建议选择压缩图片质量。如果要使图片一定小于指定大小，压缩图片尺寸可以满足。对于后一种需求，还可以先压缩图片质量，如果已经小于指定大小，就可得到清晰的图片，否则再压缩图片尺寸。</p>
+<p>UIImage+WLCompress.m</p>
+<pre><code>-(NSData *)compressWithMaxLength:(NSUInteger)maxLength{
+    // Compress by quality
+    CGFloat compression = 1;
+    NSData *data = UIImageJPEGRepresentation(self, compression);
+    //NSLog(@&quot;Before compressing quality, image size = %ld KB&quot;,data.length/1024);
+    if (data.length &lt; maxLength) return data;
 
-        <div class="article-info info-on-right">
-          
+    CGFloat max = 1;
+    CGFloat min = 0;
+    for (int i = 0; i &lt; 6; ++i) {
+        compression = (max + min) / 2;
+        data = UIImageJPEGRepresentation(self, compression);
+        //NSLog(@&quot;Compression = %.1f&quot;, compression);
+        //NSLog(@&quot;In compressing quality loop, image size = %ld KB&quot;, data.length / 1024);
+        if (data.length &lt; maxLength * 0.9) {
+            min = compression;
+        } else if (data.length &gt; maxLength) {
+            max = compression;
+        } else {
+            break;
+        }
+    }
+    //NSLog(@&quot;After compressing quality, image size = %ld KB&quot;, data.length / 1024);
+    if (data.length &lt; maxLength) return data;
+    UIImage *resultImage = [UIImage imageWithData:data];
+    // Compress by size
+    NSUInteger lastDataLength = 0;
+    while (data.length &gt; maxLength &amp;&amp; data.length != lastDataLength) {
+        lastDataLength = data.length;
+        CGFloat ratio = (CGFloat)maxLength / data.length;
+        //NSLog(@&quot;Ratio = %.1f&quot;, ratio);
+        CGSize size = CGSizeMake((NSUInteger)(resultImage.size.width * sqrtf(ratio)),
+                                 (NSUInteger)(resultImage.size.height * sqrtf(ratio))); // Use NSUInteger to prevent white blank
+        UIGraphicsBeginImageContext(size);
+        [resultImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
+        resultImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+        data = UIImageJPEGRepresentation(resultImage, compression);
+        //NSLog(@&quot;In compressing size loop, image size = %ld KB&quot;, data.length / 1024);
+    }
+    //NSLog(@&quot;After compressing size loop, image size = %ld KB&quot;, data.length / 1024);
+    return data;
+}
+</code></pre>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -191,364 +333,105 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/06/关于压缩图片的方法/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/04/iOS 给系统日历添加事件/" class="archive-article-date">
-  	<time datetime="2018-11-04T15:22:50.550Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/11/04/iOS 给系统日历添加事件/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iOS 给系统日历添加事件</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/04/iOS 给系统日历添加事件/">iOS 给系统日历添加事件</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/04/一些常见的跳转/" class="archive-article-date">
-  	<time datetime="2018-11-04T15:18:17.304Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/04/一些常见的跳转/">一些常见的跳转</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/04/一些小知识的总结/" class="archive-article-date">
-  	<time datetime="2018-11-04T15:11:53.307Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/04/一些小知识的总结/">一些小知识的总结</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/04/iOS YYWebImage/" class="archive-article-date">
-  	<time datetime="2018-11-04T15:00:49.401Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/04/iOS YYWebImage/">iOS YYWebImaage</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/15/App启动速度优化/" class="archive-article-date">
-  	<time datetime="2018-10-15T07:18:39.953Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/15/App启动速度优化/">App启动速度优化</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/15/iOS导航栏的正确隐藏方式 /" class="archive-article-date">
-  	<time datetime="2018-10-15T06:51:01.655Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/15/iOS导航栏的正确隐藏方式 /">iOS导航栏的正确隐藏方式</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/15/轻松实现Label的全方位对齐/" class="archive-article-date">
-  	<time datetime="2018-10-15T06:16:13.019Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/15/轻松实现Label的全方位对齐/">轻松实现Label的全方位对齐</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/" class="archive-article-date">
-  	<time datetime="2018-10-12T17:07:25.380Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-13</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/">iOS 和常见的离屏渲染Say Goodbye！</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/02/无限循环滚动的TableView/" class="archive-article-date">
-  	<time datetime="2018-10-02T14:37:33.938Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/02/无限循环滚动的TableView/">无限循环滚动的TableView</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/tags/iOS/page/2/">2</a><a class="page-number" href="/tags/iOS/page/3/">3</a><a class="page-number" href="/tags/iOS/page/4/">4</a><a class="extend next" rel="next" href="/tags/iOS/page/2/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -572,9 +455,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
