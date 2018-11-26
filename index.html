@@ -152,6 +152,1197 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-详解AFNetworking的HTTPS模块" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/26/详解AFNetworking的HTTPS模块/">详解AFNetworking的HTTPS模块</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/26/详解AFNetworking的HTTPS模块/" class="archive-article-date">
+  	<time datetime="2018-11-26T03:48:45.867Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>内容包括</p>
+<ul>
+<li><p>AFNetworking简介</p>
+</li>
+<li><p>ATS和HTTPS介绍</p>
+</li>
+<li><p>AF中的证书验证介绍</p>
+</li>
+<li><p>如何创建服务端和客户端自签名证书</p>
+</li>
+<li><p>如何创建简单的https服务器</p>
+</li>
+<li><p>对CA正式证书和自签名证书的各种情况进行代码验证</p>
+</li>
+</ul>
+<h2 id="1-0-AFNetworking简介"><a href="#1-0-AFNetworking简介" class="headerlink" title="1.0 AFNetworking简介"></a>1.0 AFNetworking简介</h2><p>AFNetworking（下面简称AF）是一个优秀的网络框架，从事iOS开发工作的同学几乎都用过它。</p>
+<p>同时，AF也是一个简单，高效的网络框架。</p>
+<p>AF3.0版本(3.2.1)是对NSURLSession的封装。NSURLSession是苹果公司的HTTP协议实现，它尽可能完整地实现了所有功能，但是同苹果的Autolayout有相同的问题，就是API复杂难用。</p>
+<p>因此在项目实践中，即使我们不使用AF，我们也需要对NSURLSession进行适度封装才能够得心应手。AF帮你做了这件事，而且可能做的更好。<br>AF将NSURLSession的复杂调用封装到框架内部，并向外提供了更加简单易懂的接口，它主要包含如下功能：</p>
+<ul>
+<li>提供了AFHTTPSessionManager用于HTTP请求(GET，POST，…)</li>
+<li>提供AFURLRequestSerialization用于请求封装，添加参数，设置header，传递数据</li>
+<li>提供AFURLResponseSerialization用于服务端返回数据的解析和过滤</li>
+<li>提供AFSecurityPolicy用于HTTPS协议证书验证</li>
+<li>提供了AFNetworkReachabilityManager用于网络状态监听</li>
+<li>提供了UIKit主要可用于图片缓存，类似于SDWebImage</li>
+</ul>
+<p>AF3.0的代码足够简单，各个模块也很容易理解，就不过多介绍了，我们着重分析一下AFSecurityPolicy这个模块。</p>
+<h2 id="2-0-ATS"><a href="#2-0-ATS" class="headerlink" title="2.0 ATS"></a>2.0 ATS</h2><p>iOS9.0版本中，包含了一个叫ATS的验证机制，要求App网络请求必须是安全的。主要包含2点：</p>
+<ul>
+<li><p>必须使用https</p>
+</li>
+<li><p>https证书必须是公信机构颁发的证书</p>
+</li>
+</ul>
+<p>对于其中上面的第二点，在代码层次没有强制要求，使用自签名证书也是可以正常请求的，可能会在审核阶段有此要求。</p>
+<h2 id="3-0-AF中的证书验证"><a href="#3-0-AF中的证书验证" class="headerlink" title="3.0 AF中的证书验证"></a>3.0 AF中的证书验证</h2><p>AF中实现了对服务端证书的验证功能，验证通过之后，即可正常进行网络请求。</p>
+<p>但是它没有实现客户端证书，所以如果服务器要求双向验证的时候，我们就需要对AF进行一些扩展了。</p>
+<p>服务端验证证书的代码在：AFURLSessionManager.m</p>
+<pre><code>- (void)URLSession:(NSURLSession *)session
+didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
+ completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
+{
+    NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+    __block NSURLCredential *credential = nil;
+
+    if (self.sessionDidReceiveAuthenticationChallenge) {
+        disposition = self.sessionDidReceiveAuthenticationChallenge(session, challenge, &amp;credential);
+    } else {
+        if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+            if ([self.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host]) {
+                credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                if (credential) {
+                    disposition = NSURLSessionAuthChallengeUseCredential;
+                } else {
+                    disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+                }
+            } else {
+                disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+            }
+        }
+    }
+
+    if (completionHandler) {
+        completionHandler(disposition, credential);
+    }
+}
+</code></pre><p>在NSURLSession中，当请求https的接口时，会触发- (void)URLSession:(NSURLSession <em>)session didReceiveChallenge:(NSURLAuthenticationChallenge </em>)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler回调，在这个回调中，你需要验证服务端发送过来的证书，并返回一个NSURLCredential对象。</p>
+<p>其中 disposition 这个变量用于表示你对证书的验证结果，NSURLSessionAuthChallengeUseCredential表示验证通过，其他值都表示验证失败。</p>
+<p>challenge.protectionSpace.authenticationMethod 这个枚举字符串表示的是回调触发的原因，其中，</p>
+<p>NSURLAuthenticationMethodServerTrust表示服务端发来证书，NSURLAuthenticationMethodClientCertificate表示服务端请求验证客户端证书。</p>
+<p>验证证书的方法在AFSecurityPolicy.m中</p>
+<pre><code>- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust
+                  forDomain:(NSString *)domain
+{
+    if (domain &amp;&amp; self.allowInvalidCertificates &amp;&amp; self.validatesDomainName &amp;&amp; (self.SSLPinningMode == AFSSLPinningModeNone || [self.pinnedCertificates count] == 0)) {
+        // https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NetworkingTopics/Articles/OverridingSSLChainValidationCorrectly.html
+        //  According to the docs, you should only trust your provided certs for evaluation.
+        //  Pinned certificates are added to the trust. Without pinned certificates,
+        //  there is nothing to evaluate against.
+        //
+        //  From Apple Docs:
+        //          &quot;Do not implicitly trust self-signed certificates as anchors (kSecTrustOptionImplicitAnchors).
+        //           Instead, add your own (self-signed) CA certificate to the list of trusted anchors.&quot;
+        NSLog(@&quot;In order to validate a domain name for self signed certificates, you MUST use pinning.&quot;);
+        return NO;
+    }
+
+    NSMutableArray *policies = [NSMutableArray array];
+    if (self.validatesDomainName) {
+        [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
+    } else {
+        [policies addObject:(__bridge_transfer id)SecPolicyCreateBasicX509()];
+    }
+
+    SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
+
+    if (self.SSLPinningMode == AFSSLPinningModeNone) {
+        return self.allowInvalidCertificates || AFServerTrustIsValid(serverTrust);
+    } else if (!AFServerTrustIsValid(serverTrust) &amp;&amp; !self.allowInvalidCertificates) {
+        return NO;
+    }
+
+    switch (self.SSLPinningMode) {
+        case AFSSLPinningModeNone:
+        default:
+            return NO;
+        case AFSSLPinningModeCertificate: {
+            NSMutableArray *pinnedCertificates = [NSMutableArray array];
+            for (NSData *certificateData in self.pinnedCertificates) {
+                [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
+            }
+            SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
+
+            if (!AFServerTrustIsValid(serverTrust)) {
+                return NO;
+            }
+
+            // obtain the chain after being validated, which *should* contain the pinned certificate in the last position (if it&apos;s the Root CA)
+            NSArray *serverCertificates = AFCertificateTrustChainForServerTrust(serverTrust);
+
+            for (NSData *trustChainCertificate in [serverCertificates reverseObjectEnumerator]) {
+                if ([self.pinnedCertificates containsObject:trustChainCertificate]) {
+                    return YES;
+                }
+            }
+
+            return NO;
+        }
+        case AFSSLPinningModePublicKey: {
+            NSUInteger trustedPublicKeyCount = 0;
+            NSArray *publicKeys = AFPublicKeyTrustChainForServerTrust(serverTrust);
+
+            for (id trustChainPublicKey in publicKeys) {
+                for (id pinnedPublicKey in self.pinnedPublicKeys) {
+                    if (AFSecKeyIsEqualToKey((__bridge SecKeyRef)trustChainPublicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
+                        trustedPublicKeyCount += 1;
+                    }
+                }
+            }
+            return trustedPublicKeyCount &gt; 0;
+        }
+    }
+
+    return NO;
+}
+</code></pre><p>代码解析：</p>
+<p>函数第一行就是一长串的逻辑判断，乍一看，这里看的人很懵，它包含的信息很多。但实际上它的作用是用来处理服务端自签名证书的。其他情况无需考虑此处逻辑。根据后面代码来看，如果你服务端证书使用的是自签名证书，AFSecurityPolicy的allowInvalidCertificates属性必须设为YES，所以这里判断会带上self.allowInvalidCertificates。</p>
+<p>接下来就是验证服务端证书的过程，SSLPinningMode 有3个值，AFSSLPinningModeNone表示服务端使用的是CA机构签发的正式证书，另外2个值表示服务端使用的是自签名证书。</p>
+<p>AFServerTrustIsValid这个函数使用的是Security.framework中的方法，用于验证服务端发送来的证书是否是可信任的，只要证书链中任何一个证书是已经信任的证书，那么这个服务端证书就是合法的。详细过程已经被Security.framework处理了，不需要我们做额外工作。关于证书链可以参考这里。</p>
+<p>第三部分代码就是服务端自签名证书的验证了，这种情况下，需要把服务端证书也放到客户端中一份。根据SSLPinningMode，你可以选择使用服务端证书或者服务端证书内的公钥。</p>
+<p>AFSSLPinningModeCertificate表示客户端需要保存一个服务端根证书，用于验证服务端证书是否合法。客户端需要将服务端证书的证书链上的任意一个证书拖入xcode工程中。</p>
+<p>自签名证书需要设置pinnedCertificates属性，把拖入xcode的证书加载到内存中，保存在pinnedCertificates数组中。通过SecTrustSetAnchorCertificates方法把数组中的证书同服务端返回的证书做证书链绑定，然后就可以用AFServerTrustIsValid方法验证证书是否合法了，如果服务端证书和我们客户端保存的证书可以正确匹配，这个函数就会返回YES。</p>
+<p>AFSSLPinningModePublicKey表示客户端需要保存一个服务端根证书公钥，用于验证服务端证书是否合法。客户端需要将服务端证书链上的任意一证书的公钥拖入xcode工程中。</p>
+<p>若使用公钥验证，则需要从服务端证书中取出公钥，同时取出客户端中保存的公钥，逐一比较，如果有匹配的就认为验证成功。</p>
+<p>根据上述分析，客户端对于证书的使用，有下面的3种情况：</p>
+<ul>
+<li>服务端使用CA机构颁发的正式证书</li>
+<li>服务端使用自签名证书</li>
+<li>服务端要验证客户端证书时，客户端使用自签名证书</li>
+</ul>
+<h2 id="4-0-证书验证实践"><a href="#4-0-证书验证实践" class="headerlink" title="4.0 证书验证实践"></a>4.0 证书验证实践</h2><p>我们对上面所述3种证书使用情形进行逐一验证。</p>
+<p>验证之前，我们需要做3个准备工作：</p>
+<ul>
+<li>第一是要把所需的证书创建出来</li>
+<li>第二是搭建简单的服务器用于测试</li>
+<li>第三是创建客户端工程引入AF3.0准备测试</li>
+</ul>
+<h2 id="4-1-创建证书"><a href="#4-1-创建证书" class="headerlink" title="4.1 创建证书"></a>4.1 创建证书</h2><p>https使用的证书都是基于X.509格式的。</p>
+<p>CA机构的正式证书一般是要花钱购买的，当然也有免费的，我之前在阿里云买过免费的证书。一般申请通过后，你可以把证书下载下来，其中主要包含私钥和各种格式的证书。</p>
+<p>自签名的证书就比较容易了，在mac中可以使用openssl命令来生成。<br>我写了一个简单的脚本，用于生成各种自签名证书，你可以把它保存到文件（文件名为：create.sh）中，在终端里执行。</p>
+<p>脚本会生成3种证书：根证书，客户端证书，服务端证书。</p>
+<p>其中不同的证书没有本质区别，只是用在不同的地方而已。<br>每种证书包含5个文件，分别是：</p>
+<ul>
+<li>der格式证书</li>
+<li>pem格式证书</li>
+<li>p12格式证书</li>
+<li>pem格式私钥</li>
+<li><p>csr格式证书申请文件</p>
+<pre><code>#!/bin/sh
+
+locale=&apos;CN&apos; #地区
+province=&apos;Beijing&apos; #省份
+city=$province #城市
+company=&apos;xxx&apos; #公司
+unit=&apos;yyy&apos; #部门
+hostname=&apos;127.0.0.1&apos; #域名
+email=&apos;hr@suning.com&apos; #邮箱
+
+#clean
+function clean(){
+    echo &apos;清理文件...&apos;
+    ls | grep -v create.sh | xargs rm -rf
+}
+
+#用法
+function usage(){
+    echo &apos;usage: ./create.sh 
+        [-l [localevalue]]
+        [-p [provincevalue]]
+        [-c [cityvalue]]
+        [-d [companyvalue]]
+        [-u [unitvalue]]
+        [-h [hostnamevalue]]
+        [-e [emailvalue]]
+    &apos;
+    exit
+}
+
+#参数
+if [ $# -gt 0 ]; then
+    while getopts &quot;cl:p:c:d:u:h:e&quot; arg;
+    do
+        case $arg in
+            c)
+                clean &amp;&amp; exit
+                ;;
+            l)
+                locale=$OPTARG
+                ;;
+            p)
+                province=$OPTARG
+                ;;
+            c)
+                city=$OPTARG
+                ;;
+            d)
+                company=$OPTARG
+                ;;
+            u)
+                unit=$OPTARG
+                ;;
+            h)
+                hostname=$OPTARG
+                ;;
+            e)
+                email=$OPTARG
+                ;;
+            ?)
+                usage
+                ;;
+        esac
+    done
+fi
+
+clean
+
+echo &apos;开始创建根证书...&apos;
+
+openssl genrsa -out ca-private-key.pem 1024
+openssl req -new -out ca-req.csr -key ca-private-key.pem &lt;&lt;EOF
+${locale}
+${province}
+${city}
+${company}
+${unit}
+${hostname}
+${email}
+
+EOF
+openssl x509 -req -in ca-req.csr -out ca-cert.pem -outform PEM -signkey ca-private-key.pem -days 3650
+openssl x509 -req -in ca-req.csr -out ca-cert.der -outform DER -signkey ca-private-key.pem -days 3650
+echo &apos;请输入根证书p12文件密码，直接回车表示密码为空字符串...&apos;
+openssl pkcs12 -export -clcerts -in ca-cert.pem -inkey ca-private-key.pem -out ca-cert.p12
+
+echo &apos;开始创建服务端证书...&apos;
+
+openssl genrsa -out server-private-key.pem 1024
+openssl req -new -out server-req.csr -key server-private-key.pem &lt;&lt; EOF
+${locale}
+${province}
+${city}
+${company}
+${unit}
+${hostname}
+${email}
+
+EOF
+openssl x509 -req -in server-req.csr -out server-cert.pem -outform PEM -signkey server-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
+openssl x509 -req -in server-req.csr -out server-cert.der -outform DER -signkey server-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
+echo &apos;请输入服务端证书p12文件密码，直接回车表示密码为空字符串...&apos;
+openssl pkcs12 -export -clcerts -in server-cert.pem -inkey server-private-key.pem -out server-cert.p12
+
+echo &apos;开始创建客户端证书...&apos;
+
+openssl genrsa -out client-private-key.pem 1024
+openssl req -new -out client-req.csr -key client-private-key.pem &lt;&lt; EOF
+${locale}
+${province}
+${city}
+${company}
+${unit}
+${hostname}
+${email}
+
+EOF
+openssl x509 -req -in client-req.csr -out client-cert.pem -outform PEM -signkey client-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
+openssl x509 -req -in client-req.csr -out client-cert.der -outform DER -signkey client-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
+echo &apos;请输入客户端证书p12文件密码，直接回车表示密码为空字符串...&apos;
+openssl pkcs12 -export -clcerts -in client-cert.pem -inkey client-private-key.pem -out client-cert.p12
+
+echo &apos;finishied&apos;
+</code></pre></li>
+</ul>
+<p>你可以按照步骤操作：</p>
+<p>复制脚本内容，保存到文件中，文件名为create.sh</p>
+<p>打开终端，通过cd命令进入create.sh所在的文件夹</p>
+<p>在终端内输入：chmod +x create.sh 点击回车</p>
+<p>在终端输入：./create.sh -h，此时会打印用法</p>
+<pre><code>usage: ./create.sh 
+    [-l [localevalue]]
+    [-p [provincevalue]]
+    [-c [cityvalue]]
+    [-d [companyvalue]]
+    [-u [unitvalue]]
+    [-h [hostnamevalue]]
+    [-e [emailvalue]]
+</code></pre><p>脚本有下面几种用法：</p>
+<ul>
+<li><p>./create.sh -h 打印用法</p>
+</li>
+<li><p>./create.sh -c 会清空生成的所有文件</p>
+</li>
+<li><p>./create.sh 直接回车，会使用默认参数生成证书</p>
+</li>
+<li><p>./create.sh + 用法中所述选项 会使用自定义的参数生成证书</p>
+</li>
+</ul>
+<h2 id="4-2-搭建简单的HTTPS服务器"><a href="#4-2-搭建简单的HTTPS服务器" class="headerlink" title="4.2 搭建简单的HTTPS服务器"></a>4.2 搭建简单的HTTPS服务器</h2><p>我们使用nodejs来搭建https服务器，请按照如下步骤操作：</p>
+<p>首先下载nodejs并安装</p>
+<p>建立一个文件夹，文件夹内创建一个文件，名字为package.json，内容如下：</p>
+<pre><code>{
+    &quot;name&quot;: &quot;test-https&quot;,
+    &quot;version&quot;: &quot;1.0.0&quot;,
+    &quot;main&quot;: &quot;app.js&quot;,
+    &quot;scripts&quot;: {
+        &quot;start&quot;: &quot;node app.js&quot;
+    },
+    &quot;debug&quot;: true,
+    &quot;dependencies&quot;: {
+        &quot;koa&quot;: &quot;2.5.2&quot;,
+        &quot;koa-router&quot;: &quot;7.4.0&quot;
+    }
+}
+</code></pre><p>建立另一个文件，名字为app.js，内容如下：</p>
+<pre><code>const Koa = require(&apos;koa&apos;);
+const https = require(&apos;https&apos;);
+const fs = require(&apos;fs&apos;);
+const router = require(&apos;koa-router&apos;)();
+
+const app = new Koa();
+
+//路由
+router.get(&apos;/&apos;, (ctx, next) =&gt; {
+    ctx.response.body = &apos;this is a simple node js https server response&apos;;
+})
+app.use(router.routes());
+
+//https
+https.createServer({
+    key: fs.readFileSync(&apos;./yourServerCertPrivatekey.key&apos;),
+    cert: fs.readFileSync(&apos;./yourServerCert.pem&apos;),
+    requestCert: true,
+    ca:[fs.readFileSync(&apos;./yourClientCert.pem&apos;)]
+}, app.callback()).listen(3000);
+
+console.log(`https app started at port 3000`)
+</code></pre><p>打开终端，使用cd命令进入我们创建的服务器文件夹，然后执行命令：npm install，等待命令完成(可能会比较慢，根据网络情况而定)。如出现下列字样表示安装成功(不一定完全相同)：</p>
+<pre><code>added 40 packages from 21 contributors and audited 53 packages in 8.446s
+found 0 vulnerabilities
+</code></pre><p>至此我们的简易https服务器就搭建完成了。我们可以使用命令：node app.js 来启动服务器。但是你会发现会报错，这是因为fs.readFileSync(filename)这句代码表示要读取一个证书文件，要确保文件存在才可以。我们后续根据需求来修改此处文件路径即可。</p>
+<p>服务器启动成功后，你可以在终端看到下面的文字：</p>
+<pre><code>https app started at port 3000
+</code></pre><h2 id="4-3-建立客户端工程"><a href="#4-3-建立客户端工程" class="headerlink" title="4.3 建立客户端工程"></a>4.3 建立客户端工程</h2><pre><code>-(void) test{
+    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] init];
+
+    //HTTPS验证代码，我们主要修改这里
+    AFSecurityPolicy *policy = [AFSecurityPolicy defaultPolicy];
+    policy.validatesDomainName = NO;//不验证域名，是为了测试方便，否则你需要修改host文件了
+    manager.securityPolicy = policy;
+
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    //请求地址就写这个
+    [manager GET:@&quot;https://127.0.0.1:3000/&quot; parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@&quot;succ and response = [%@]&quot;, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@&quot;fail&quot;);
+    }];
+}
+</code></pre><h2 id="4-4-服务端使用CA机构颁发的正式证书"><a href="#4-4-服务端使用CA机构颁发的正式证书" class="headerlink" title="4.4 服务端使用CA机构颁发的正式证书"></a>4.4 服务端使用CA机构颁发的正式证书</h2><p>这个是最简单的情况，AF已经支持，我们不需要做任何额外工作就能够支持。</p>
+<p>首先，我们将服务端的代码中的证书路径指向我们在CA机构申请好的服务端证书路径，其中key表示证书私钥，cert表示pem格式证书。另外将requestCert和ca这两个字段先删除，然后重新启动服务器。像下面这样：</p>
+<pre><code>... ...
+//https
+https.createServer({
+    key: fs.readFileSync(这里改成你的私钥路径),
+    cert: fs.readFileSync(这里改成你的pem格式证书路径)
+}, app.callback()).listen(3000);
+... ...
+</code></pre><p>然后，客户端的代码不需要修改。直接运行xcode，正常情况下你可以看到如下输出：</p>
+<pre><code>succ and response = [this is a simple node js https server response]
+</code></pre><h2 id="4-5-服务端使用自签名证书"><a href="#4-5-服务端使用自签名证书" class="headerlink" title="4.5 服务端使用自签名证书"></a>4.5 服务端使用自签名证书</h2><p>服务端代码不变，只是将证书和私钥路径修改为我们自签名的证书路径。</p>
+<p>上文中，我们已经创建过自签名的证书。</p>
+<p>首先把证书文件夹的私钥文件server-private-key.pem和证书文件server-cert.pem复制到服务器文件夹下。</p>
+<p>然后服务器代码修改如下：</p>
+<pre><code>... ...
+//https
+https.createServer({
+    key: fs.readFileSync(&apos;./server-private-key.pem&apos;),
+    cert: fs.readFileSync(&apos;./server-cert.pem&apos;)
+}, app.callback()).listen(3000);
+... ...
+</code></pre><p>重启服务器。</p>
+<p>客户端需要把证书文件夹内的server-cert.der文件拖入xcode中，然后将xcode中的证书修改名字为server-cert.cer。</p>
+<p>客户端代码做如下修改（请看注释）</p>
+<pre><code>-(void) test{
+    //使用服务器自签名证书，需要指定baseUrl属性。
+    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:@&quot;https://127.0.0.1:3000&quot;]];
+
+    //AFSSLPinningModeCertificate表示使用自签名证书
+    AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
+    //为了测试方便不验证域名，若要验证域名，则请求时的域名要和创建证书（创建证书的脚本执行时可指定域名）时的域名一致
+    policy.validatesDomainName = NO;
+    //自签名服务器证书需要设置allowInvalidCertificates为YES
+    policy.allowInvalidCertificates = YES;
+    //指定本地证书路径
+    policy.pinnedCertificates = [AFSecurityPolicy certificatesInBundle:[NSBundle mainBundle]];
+
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    [manager GET:@&quot;https://127.0.0.1:3000/&quot; parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSLog(@&quot;succ and response = [%@]&quot;, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@&quot;fail&quot;);
+    }];
+}
+</code></pre><p>运行工程，正常情况下，可以看到正确输出。</p>
+<h2 id="4-6-服务端验证客户端证书"><a href="#4-6-服务端验证客户端证书" class="headerlink" title="4.6 服务端验证客户端证书"></a>4.6 服务端验证客户端证书</h2><p>这叫做双向验证，客户端验证服务端无误之后，服务端也可以验证客户端证书，这样可以保证数据传输双方都是自己想要的目标。</p>
+<p>首先，把证书文件夹内的client-cert.pem文件复制到服务器文件夹内。</p>
+<p>然后修改服务端代码：</p>
+<pre><code>... ...
+//https
+https.createServer({
+    key: fs.readFileSync(&apos;./server-private-key.pem&apos;),
+    cert: fs.readFileSync(&apos;./server-cert.pem&apos;),
+    requestCert: true,//表示客户端需要证书
+    ca:[fs.readFileSync(&apos;./client-cert.pem&apos;)]//用于匹配客户端证书
+}, app.callback()).listen(3000);
+... ...
+</code></pre><p>重启服务器。</p>
+<p>客户端需要把证书文件夹内的client-cert.p12文件拖到xcode中。<br>客户端请求代码不需要修改。</p>
+<p>因为AF3.0并没有提供对客户端证书的支持，所以我们需要修改AF的代码。</p>
+<p>找到AFURLSessionManager.m文件，</p>
+<p>在- (void)URLSession:(NSURLSession <em>)session didReceiveChallenge:(NSURLAuthenticationChallenge </em>)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler方法。</p>
+<pre><code>- (void)URLSession:(NSURLSession *)session
+didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
+ completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
+{
+    NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+    __block NSURLCredential *credential = nil;
+
+    if (self.sessionDidReceiveAuthenticationChallenge) {
+        disposition = self.sessionDidReceiveAuthenticationChallenge(session, challenge, &amp;credential);
+    } else {
+        NSString *authMethod = challenge.protectionSpace.authenticationMethod;
+        if ([authMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+            if ([self.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host]) {
+                credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
+                if (credential) {
+                    disposition = NSURLSessionAuthChallengeUseCredential;
+                } else {
+                    disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+                }
+            } else {
+                disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
+            }
+        } else if([authMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]){
+            NSData *p12Data = [NSData dataWithContentsOfFile:[NSBundle pathForResource:@&quot;client-cert&quot; ofType:@&quot;p12&quot; inDirectory:[NSBundle mainBundle].bundlePath]];
+            if([p12Data isKindOfClass:[NSData class]]){
+                SecTrustRef trust = NULL;
+                SecIdentityRef identity = NULL;
+                [[self class] extractIdentity:&amp;identity andTrust:&amp;trust fromPKCS12Data:p12Data];
+                if(identity){
+                    SecCertificateRef certificate = NULL;
+                    SecIdentityCopyCertificate(identity, &amp;certificate);
+                    const void *certs[] = {certificate};
+                    CFArrayRef certArray =CFArrayCreate(kCFAllocatorDefault, certs, 1, NULL);
+                    credential = [NSURLCredential credentialWithIdentity:identity certificates:(__bridge  NSArray*)certArray persistence:NSURLCredentialPersistencePermanent];
+                    disposition = NSURLSessionAuthChallengeUseCredential;
+                }else{
+                    disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+                }
+            }else{
+                disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+            }
+        } else {
+            disposition = NSURLSessionAuthChallengePerformDefaultHandling;
+        }
+    }
+
+    if (completionHandler) {
+        completionHandler(disposition, credential);
+    }
+}
+
++ (BOOL)extractIdentity:(SecIdentityRef*)outIdentity andTrust:(SecTrustRef *)outTrust fromPKCS12Data:(NSData *)inPKCS12Data {
+    OSStatus securityError = errSecSuccess;
+    //客户端证书密码
+    NSDictionary*optionsDictionary = [NSDictionary dictionaryWithObject: @&quot;&quot;
+                                                                 forKey: (__bridge id)kSecImportExportPassphrase];
+
+    CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
+    securityError = SecPKCS12Import((__bridge CFDataRef)inPKCS12Data,(__bridge CFDictionaryRef)optionsDictionary ,&amp;items);
+
+    if(securityError == 0) {
+        CFDictionaryRef myIdentityAndTrust = CFArrayGetValueAtIndex(items, 0);
+        const void *tempIdentity = NULL;
+        tempIdentity = CFDictionaryGetValue(myIdentityAndTrust, kSecImportItemIdentity);
+        *outIdentity = (SecIdentityRef)tempIdentity;
+        const void *tempTrust = NULL;
+        tempTrust = CFDictionaryGetValue(myIdentityAndTrust, kSecImportItemTrust);
+        *outTrust = (SecTrustRef)tempTrust;
+        return YES;
+    } else {
+        NSLog(@&quot;SecPKCS12Import is failed with error code %d&quot;, (int)securityError);
+        return NO;
+    }
+}
+</code></pre><p>值得注意的有2个地方：</p>
+<p>一个是p12文件的文件名，我们这里写死了client-cert.p12，可以根据具体情况做修改。<br>还有一个是p12文件的密码，在extractIdentity:方法的第三行，可以改成你的p12文件密码，密码可以为空。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/26/详解AFNetworking的HTTPS模块/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-UITableView性能优化的一点感悟及计算UILabel高度的新方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/">UITableView性能优化的一点感悟及计算UILabel高度的新方法</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/" class="archive-article-date">
+  	<time datetime="2018-11-26T03:31:35.713Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在使用过程中发现，我们App的首页在快速滑动时会出现掉帧，以及在上拉加载更多时会抖动，因为首页模块是以前的同事写的，很多代码已不适应当前的需求，所以产生了优化的想法，优化主要分为以下几个方面：</p>
+<ul>
+<li><p>1.缓存cell高度（发现了一种计算Label高度的新方法）</p>
+</li>
+<li><p>2.优化cellForRow方法</p>
+</li>
+<li><p>3.图片加载优化</p>
+</li>
+<li><p>4.禁止tableView预估高度</p>
+</li>
+<li><p>5.删除无用数据处理逻辑</p>
+</li>
+</ul>
+<h2 id="缓存cell高度"><a href="#缓存cell高度" class="headerlink" title="缓存cell高度"></a>缓存cell高度</h2><p>在Feed流中，UITableViewCell的高度通常是变化的，需要根据返回的数据中的cell类型以及label的文字长度来计算高度，而在UITableView中func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell是一个高频调用的方法，为了减少CPU的计算，尽可能减少掉帧，所以需要将高度进行缓存，在我们的项目中，首页的数据是这样一个操作流程后台返回的JSON-&gt;FeedListModel-&gt;FeedsModel-&gt;各种cell的ViewModel(例如小图片的cell对应的model-SmallImageCellViewModel，大图片的cell对应的-BigImageCellViewModel)FeedListModel主要是包含了一些页码信息和FeedsModel数组FeedsModel储存着后台返回的cell所需的信息BigImageCellViewModel是cell对FeedsModel进行处理后得到cell所需的信息</p>
+<pre><code>优化以前，我们的高度是通过BigImageCellViewModel中计算属性height去获取的
+
+var height: CGFloat {
+   guard let title = title else { 
+         return ((UIScreen.mainWidth - 30) * 9)/16.0 + 62   
+         }
+
+   let constraintRect = CGSize(width: UIScreen.mainWidth - 30, height: 38.5)
+
+     let attributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 16)]
+
+     let rect = title.boundingRect(with: constraintRect,                                 options: .usesLineFragmentOrigin,                                 attributes: attributes,                                 context: nil)  
+
+      if let type = itemType, type == ItemType.sohuVideo {    
+         return ((UIScreen.mainWidth - 30) * 9)/16.0 + rect.height + 62  
+          }   
+         return ((UIScreen.mainWidth - 30) * 9)/16.0 + rect.height + 62
+         }
+</code></pre><p>这样的话每次取值时，会需要通过计算然后返回height属性，所以一开始我也是把计算属性改成存储属性了，但是还是很耗时（后来才发现是因为高度是存在BigImageCellViewModel中的，而每次数据更新后，由于业务需要会对当前的列表数据重新遍历处理，生成新的BigImageCellViewModel，新的BigImageCellViewModel的高度自然是每次需要计算），在使用instruments分析时发现，在加载数据时，1s内有20%的时候是用于计算每个cell的高度，因为计算cell高度时需要根据model.title确定cell中的标题Label显示几行，从而确定Label的高度，进而算出cell的高度，而计算Label高度一般都是使用这个方法，</p>
+<pre><code>@available(iOS 7.0, *)   open func boundingRect(with size: CGSize, options: NSStringDrawingOptions = [], attributes: [NSAttributedString.Key : Any]? = nil, context: NSStringDrawingContext?) -&gt; CGRect
+</code></pre><p>因为即便是同一个字符串，字体大小一样，字体不同时，高度会不一定一样，这个方法会根据字符串和对应字体进行绘制计算后得到的高度，而且这个操作是在主线程进行的，所以会导致掉帧，然后我就网上查阅资料怎么优化这个方法，网上这方面的资料比较少因为这个方法的耗时本身是可接受范围以内的，只是我们的height没有真正缓存上导致这个方法测试时特别耗时，这种思路是思路一在子线程中调用这个方法，然后对height进行赋值，类似于这样：</p>
+<h2 id="思路一-异步计算Label高度"><a href="#思路一-异步计算Label高度" class="headerlink" title="思路一 异步计算Label高度"></a>思路一 异步计算Label高度</h2><pre><code>var height：CGFloat = 70   
+
+let queue = DispatchQueue.global()   queue.async {       
+
+let labelRect = title.boundingRect(with: constraintRect,                                    options: .usesLineFragmentOrigin,                                     attributes: attributes,    
+                                                                    context: nil)      
+
+                                                                     height = labelRect.height + 50  
+                                                                      }
+</code></pre><p>就是通过先给height赋一个概率最大的值，然后通过异步计算后，得到一个准确值，再给height赋值上，但是在实际测试中发现，大部分cell取的是我们预设的高度默认值，这样在下次reloadData时，cell的高度会取算出来的值，然后会导致tableView的contentSize变化，视图抖动然后我就自己思考，其实我们的标题并不复杂，大部分是中文，其他是数字，标点符号，字母，然后我就测试了一下在UIFont.boldSystemFont(ofSize: 16)下，中文，数字，标点符号，字母的大小，然后测试发现中文 15pt 数字是8pt左右，主要的一些标点符号16pt 小写字母大概8pt，大写自贸银11pt，就想能不能通过对标题字符串进行遍历，判断字符的类型来计算标题的总宽度，之后再将总宽度除以标题的最大宽度得到行数，然后计算得出cell高度，代码如下：</p>
+<h2 id="思路二-计算Label高度的新方法-通过遍历字符串来计算高度"><a href="#思路二-计算Label高度的新方法-通过遍历字符串来计算高度" class="headerlink" title="思路二 计算Label高度的新方法 通过遍历字符串来计算高度"></a>思路二 计算Label高度的新方法 通过遍历字符串来计算高度</h2><pre><code>-(CGFloat)calculateTotalWidthInBold16 {   
+CGFloat totalWidth = 0;  
+ for (int i = 0; i &lt; self.length; i++) {       
+ unichar character  = [self characterAtIndex:i];       //中 占15pt 数字 占7 英文 a 8.2 A 10.1 B 10.6 ， ? 16.6pt       
+ if ([[NSCharacterSet decimalDigitCharacterSet] characterIsMember:character]) {//数字           totalWidth += 8;       
+ } else if ([[NSCharacterSet lowercaseLetterCharacterSet] characterIsMember:character]) {//小写字母           totalWidth += 10;       
+ } else if ([[NSCharacterSet uppercaseLetterCharacterSet] characterIsMember:character]) {//大写字母           totalWidth += 12;       
+ } else if ([[NSCharacterSet punctuationCharacterSet] characterIsMember:character]) {//标点符号           
+ totalWidth += 17;       
+ } else if (character &gt;= 0x4E00 &amp;&amp; character &lt;= 0x9FA5) {           
+ totalWidth += 15;       
+ } else {           
+ totalWidth += 15;       
+ }   
+ }   
+ return totalWidth + 5;
+
+ }
+</code></pre><p>在不缓存高度的情况下，这个方法能够很快得计算出高度，让tableview达到平均55帧以上的帧率，但是缺点是需要对使用的字体下进行测试，在UIFont.boldSystemFont(ofSize: 16)字体下，中文是固定的15pt，但是数字，小写字母，大写字母的长度不是固定的，所以如果需要做到非常准确，需要对每个数字，字母在这个字体下的长度进行测试。在缓存高度的情况下，与boundingRect方法相比，这个方法也能够提高计算速度，只是收益不那么明显</p>
+<h2 id="优化cellForRow方法"><a href="#优化cellForRow方法" class="headerlink" title="优化cellForRow方法"></a>优化cellForRow方法</h2><p>因为tableView的cellForRow方法也是一个调用频率特别高的方法，所以应该避免在cellForRow对cell进行约束修改，frame变化等操作，</p>
+<pre><code>default: //feed流           
+
+let cellViewModel = viewModel.viewModels.value[indexPath.row]           
+
+let cell = configFeedCell(tableView: tableView, cellViewModel: cellViewModel, indexPath: indexPath)//            cell.saHorizontalSpace = (15, 15)//           
+
+ if viewModel.isInfrontOfFeedSpacAble(indexPath: indexPath) 
+ {//            
+ cell.saSeparaptorLineStyle = .bottom//            
+
+ } else if cellViewModel as? FeedSpacAble != nil {//                cell.saSeparaptorLineStyle = .bottom//            
+ } else {//                
+
+ cell.saSeparaptorLineStyle = .none//            
+ }           
+ return cell
+</code></pre><h2 id="图片加载优化"><a href="#图片加载优化" class="headerlink" title="图片加载优化"></a>图片加载优化</h2><p>主要使用charles进行抓包，看项目有没有加载比较大的图片，我们项目首页的三张图片的资讯使用的是大图，一张图片长达4M,所以我改成小图了</p>
+<h2 id="禁止tableView预估高度"><a href="#禁止tableView预估高度" class="headerlink" title="禁止tableView预估高度"></a>禁止tableView预估高度</h2><p>因为tableView会根据estimatedRowHeight*行数来计算contentSize，并且在滑动时进行修正，所以会发生抖动，所以可以通过以下代码，禁用预估高度，因为iOS11以后预估高度的值不为0，所以需要显式赋值为0</p>
+<pre><code>tableView.estimatedRowHeight = 0
+
+tableView.estimatedSectionHeaderHeight = 0  
+
+tableView.estimatedSectionFooterHeight = 0
+</code></pre><h2 id="删除无用数据处理逻辑"><a href="#删除无用数据处理逻辑" class="headerlink" title="删除无用数据处理逻辑"></a>删除无用数据处理逻辑</h2><p>主要注释了代码中没有用的数据处理逻辑</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上其实只是针对我们项目一些比较基本的优化的地方，当然还有很多地方可以进行优化，例如将cell中view的布局进行缓存，减少不必要的计算，还有将一些Label通过异步渲染的方式绘制在cell中，减少view的层级，将一部分渲染的工作放在子线程中，但是这样会对我们的项目改动过大，所以暂时没有采用</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Cocoapods</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS 对象数组的深拷贝(NSCoding协议)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/">iOS 对象数组的深拷贝(NSCoding协议)</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/" class="archive-article-date">
+  	<time datetime="2018-11-26T03:19:48.342Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>项目过程中遇到了对象数组的使用：联系人界面——需要分区显示，如果我存放在一个数组然后每次显示都重新分组发现会有一个计算的延迟，所有我先进行分区放在了一个单例类中的字典中。当我需要用到这个联系人的界面额外定义一个NSDictionary对它赋值，试图修改NSDictionary时发现存放在单例类中的数组对象也被修改了。感觉很无语啊。当时我的嵌套是这样的</p>
+<pre><code>NSDictionary@{key1:NSMutableArray@[对象1，对象2],key2:NSMutableArray@[对象3，对象4],...}
+</code></pre><p>就是在一个单例类中定义了一个不可变字典NSDictionary的属性，存放了n个可变数组NSMutableArray，而这些可变数组可以动态增加或者删除数组内存放的对象。</p>
+<p>在网上看了很多对象的深拷贝，浅拷贝copy/mutableCopy。并且我已经实现了NSCoding协议。可是发现全部无效。于是我写了一个Test工程发现一个问题</p>
+<pre><code>NSArray *array1 = [NSArray arrayWithObjects:@&quot;a&quot;, nil];
+
+ NSMutableArray *arry2 = [array1 mutableCopy];
+
+ [arry2 replaceObjectAtIndex:0 withObject:@&quot;b&quot;];
+
+ NSLog(@&quot;%@&quot;,array1);
+</code></pre><p>这样输出结果依然是@[a]</p>
+<p>但是当我定义两个一个实现了NSCoding协议并且有一个name属性的Person对象并且放到数组中时</p>
+<pre><code>Person *person1 = [[Person alloc] init];
+
+person1.name = @&quot;a&quot;;
+
+NSArray *array1 = [NSArray arrayWithObjects:person1, nil];
+
+NSArray *arry2 = [NSArray arrayWithArray:array1];
+
+[arry2 enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    Person *person = obj;
+    person.name = @&quot;c&quot;;
+ }];
+
+NSLog(@&quot;%@&quot;,array1);
+</code></pre><p>并且遍历的时候对象必须copy，不然还是难以达到深拷贝。 </p>
+<p>后来找到另一种方法，就是通过[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:]];</p>
+<pre><code>Person *person1 = [[Person alloc] init];
+    person1.name = @&quot;a&quot;;
+
+    Person *person2 = [[Person alloc] init];
+    person2.name = @&quot;b&quot;;
+
+    NSArray *array1 = [NSArray arrayWithObjects:person1, nil];
+
+    NSArray *array2 = [NSArray arrayWithObjects:person2, nil];
+
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:array1,@&quot;a&quot;,array2,@&quot;b&quot;, nil];
+
+    [Object shareObject].dict = dict;
+
+    NSLog(@&quot;1:%@&quot;,[Object shareObject].dict);
+
+    NSDictionary *temDict = [[Object shareObject].dict mutableCopy];
+
+    NSMutableArray *arrayM = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[temDict objectForKey:@&quot;a&quot;]]];
+
+    [arrayM enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        Person *person = obj;
+        person.name = @&quot;c&quot;;
+    }];
+
+    NSLog(@&quot;2:%@&quot;,[Object shareObject].dict);
+</code></pre><p>并且不管你嵌套了多少层，只要每一层都实现了NSCoding协议也可以实现深拷贝。后来我就放弃了把联系人放在单例类中，直接放在了本地文件中。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Cocoapods</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS NSConding 协议归档" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/24/iOS NSConding 协议归档/">iOS NSConding 协议归档</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/24/iOS NSConding 协议归档/" class="archive-article-date">
+  	<time datetime="2018-11-24T14:20:42.496Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>1.归档是将数据持久化的一种方式，一般针对于比较复杂对象，比如自定义的对象，来进行数据持久化操作。</p>
+<p>2.归档的对象需要遵循NSCoding协议，存储的时候调用encodeWithCoder：方法，读取的时候调用initWithCoder：方法。</p>
+<p>3.将数据写入本地需要调用 [NSKeyedArchiver archiveRootObject:per toFile:filePath]，filePath为存储的路径。</p>
+<p>4.从本地读取数据需要调用[NSKeyedUnarchiver unarchiveObjectWithFile:filePath]，filePath为存储的路径。</p>
+<h2 id="对自定义对象进行归档"><a href="#对自定义对象进行归档" class="headerlink" title="对自定义对象进行归档"></a>对自定义对象进行归档</h2><h3 id="1-自定义Person类服从NSCoding协议"><a href="#1-自定义Person类服从NSCoding协议" class="headerlink" title="1.自定义Person类服从NSCoding协议"></a>1.自定义Person类服从NSCoding协议</h3><pre><code>#import &lt;Foundation/Foundation.h&gt;
+#import &lt;UIKit/UIKit.h&gt;
+
+@interface Person : NSObject &lt;NSCoding&gt;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, assign) int age;
+@property (nonatomic, assign)  CGFloat height;
+@end
+</code></pre><h3 id="2-实现协议方法encodeWithCoder：和initWithCoder："><a href="#2-实现协议方法encodeWithCoder：和initWithCoder：" class="headerlink" title="2.实现协议方法encodeWithCoder：和initWithCoder："></a>2.实现协议方法encodeWithCoder：和initWithCoder：</h3><pre><code>#import &quot;Person.h&quot;
+
+@implementation Person
+//写入文件时调用 -- 将需要存储的属性写在里面
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:self.name forKey:@&quot;name&quot;];
+    [aCoder encodeInt:self.age forKey:@&quot;age&quot;];
+    [aCoder encodeFloat:self.height forKey:@&quot;height&quot;];
+}
+
+//从文件中读取时调用 -- 将需要存储的属性写在里面
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super init]) {
+        self.name = [aDecoder decodeObjectForKey:@&quot;name&quot;];
+        self.age = [aDecoder decodeIntForKey:@&quot;age&quot;];
+        self.height = [aDecoder decodeFloatForKey:@&quot;height&quot;];
+    }
+    return self;
+}
+@end
+</code></pre><h3 id="3-写入与读取"><a href="#3-写入与读取" class="headerlink" title="3.写入与读取"></a>3.写入与读取</h3><p>写入：[NSKeyedArchiver archiveRootObject:per toFile:filePath]</p>
+<p>读取： [NSKeyedUnarchiver unarchiveObjectWithFile:filePath]</p>
+<pre><code>#import &quot;ViewController.h&quot;
+#import &quot;Person.h&quot;
+@interface ViewController ()
+
+@end
+
+@implementation ViewController
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self saveModel];
+    [self readModel];
+}
+
+//存储数据
+- (void)saveModel {
+    Person *per = [Person new];
+    per.name = @&quot;xiaoming&quot;;
+    per.age = 18;
+    per.height = 180;
+
+    NSString *filePath = [self getFilePath];
+
+    //将对象per写入
+    [NSKeyedArchiver archiveRootObject:per toFile:filePath];
+
+}
+//读取数据
+- (void)readModel {
+    NSString *filePath = [self getFilePath];
+
+    //取出per对象
+    Person *per = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    NSLog(@&quot;%@ -- %@ -- %d -- %.0f&quot;, per, per.name, per.age, per.height);
+}
+//获得全路径
+- (NSString *)getFilePath {
+    //获取Documents
+    NSString *doc = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+    //在Documents下创建Person.data文件
+    NSString *filePath = [doc stringByAppendingPathComponent:@&quot;Person.data&quot;];
+    return filePath;
+}
+@end
+</code></pre><p>readModel：方法中打印出存储的per对象相关信息，则对自定义对象Person数据持久化成功</p>
+<h2 id="运用runtime优化"><a href="#运用runtime优化" class="headerlink" title="运用runtime优化"></a>运用runtime优化</h2><p>当该类拥有上百个属性时，那将会花费更多的功夫在重复代码上，所以使用运行时机制截取类的成员变量，进行赋值</p>
+<p>Animal 类</p>
+<pre><code>@property (nonatomic,copy) NSString *name;
+@property (nonatomic,assign) int age;
+//成员变量
+@property (nonatomic,assign) double weight;
+
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+
+    if (self = [super init]) {
+        Class c = self.class;
+        // 截取类和父类的成员变量
+        while (c &amp;&amp; c != [NSObject class]) {
+            unsigned int count = 0;
+            Ivar *ivars = class_copyIvarList(c, &amp;count);
+            for (int i = 0; i &lt; count; i++) {
+
+                NSString *key = [NSString stringWithUTF8String:ivar_getName(ivars[i])];
+
+                id value = [aDecoder decodeObjectForKey:key];
+
+                [self setValue:value forKey:key];
+
+            }
+            // 获得c的父类
+            c = [c superclass];
+            free(ivar);
+        }
+
+
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+
+     Class c = self.class;
+    // 截取类和父类的成员变量
+    while (c &amp;&amp; c != [NSObject class]) {
+        unsigned int count = 0;
+
+        Ivar *ivars = class_copyIvarList(c, &amp;count);
+
+        for (int i = 0; i &lt; count; i++) {
+            Ivar ivar = ivars[i];
+            NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
+
+            id value = [self valueForKey:key];
+
+            [aCoder encodeObject:value forKey:key];
+        }
+        c = [c superclass];
+        // 释放内存
+        free(ivar);
+    }
+
+}
+</code></pre><p>代码测试</p>
+<pre><code>- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CXDog *d = [[CXDog alloc] init];
+    d.name = @&quot;cx&quot;;
+    d.age = 12;
+    d.weight = 1.55;
+    // 将对象归档
+    [NSKeyedArchiverarchiveRootObject:d toFile:@&quot;/Users/c_xie/Desktop/wj.xxoo&quot;];
+    // 将对象解档
+    CXDog *dog = [NSKeyedUnarchiverunarchiveObjectWithFile:@&quot;/Users/c_xie/Desktop/wj.xxoo&quot;];
+    NSLog(@&quot;%@,%d,%f&quot;,dog.name,dog.age,d.weight);
+
+}
+</code></pre><h2 id="runtime自动归档和解档"><a href="#runtime自动归档和解档" class="headerlink" title="runtime自动归档和解档"></a>runtime自动归档和解档</h2><pre><code>#import &lt;Foundation/Foundation.h&gt;
+
+@interface Person : NSObject
+
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSNumber *age;
+@property (nonatomic, strong) NSString *address;
+@property (nonatomic, strong) NSString *company;
+@property (nonatomic, strong) NSString *job;
+
+@end
+
+#import &quot;Person.h&quot;
+#import &lt;objc/runtime.h&gt;
+
+@implementation Person
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super init])
+    {
+        unsigned int outCount;
+        Ivar *ivars = class_copyIvarList([self class], &amp;outCount);
+        for (int i = 0; i &lt; outCount; i ++)
+        {
+            Ivar ivar = ivars[i];
+            NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
+            [self setValue:[aDecoder decodeObjectForKey:key] forKey:key];
+        }
+        free(ivars)
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    unsigned int outCount;
+    Ivar *ivars = class_copyIvarList([self class], &amp;outCount);
+    for (int i = 0; i &lt; outCount; i ++)
+    {
+        Ivar ivar = ivars[i];
+        NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
+        [aCoder encodeObject:[self valueForKey:key] forKey:key];
+    }
+    free(ivars)
+}
+
+@end
+</code></pre><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><pre><code>// 自动归档/解档
+NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:@&quot;PersonInfo&quot;];
+if (data) {
+        // 解档使用
+        Person *person = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        NSLog(@&quot;name: %@&quot;, person.name);
+} else {
+        Person *person = [Person new];
+        person.name = @&quot;devZhang&quot;;
+        person.age = @(35);
+        person.company = @&quot;ShengXue&quot;;
+        person.job = @&quot;iOSDev&quot;;
+        person.address = @&quot;龙岗坂田国际中心&quot;;
+        // 归档存储
+        data = [NSKeyedArchiver archivedDataWithRootObject:person];
+        [[NSUserDefaults standardUserDefaults] setObject:data forKey:@&quot;PersonInfo&quot;];
+}
+</code></pre><p>未进行归档、解档时报错</p>
+<pre><code>// 归档错误
+Terminating app due to uncaught exception &apos;NSInvalidArgumentException&apos;, reason: &apos;-[Person encodeWithCoder:]: unrecognized selector sent to instance 0x600000450d40&apos;
+
+// 解档错误
+Terminating app due to uncaught exception &apos;NSInvalidArgumentException&apos;, reason: &apos;-[Person initWithCoder:]: unrecognized selector sent to instance 0x60000005d760&apos;
+</code></pre><p>使用自动归档、解档后，自定义类型数据处理正常</p>
+<pre><code>2018-07-07 00:26:20.023737+0800 DemoRuntime[1850:81640] name: devZhang
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/24/iOS NSConding 协议归档/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关于压缩图片的方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1114,805 +2305,6 @@ int main(int argc, char * argv[]) {
 
 
   
-    <article id="post-iOS导航栏的正确隐藏方式 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/15/iOS导航栏的正确隐藏方式 /">iOS导航栏的正确隐藏方式</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/15/iOS导航栏的正确隐藏方式 /" class="archive-article-date">
-  	<time datetime="2018-10-15T06:51:01.655Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目中经常碰到首页顶部是无限轮播,需要靠最上面显示.有的设置导航栏为透明等一系列的方法,这个可以借助第三方.或者干脆简单粗暴的直接隐藏掉导航栏.可是push到下一个页面的时候是需要导航栏的,如何做了,这里给出两种方法.</p>
-<h2 id="第一种做法"><a href="#第一种做法" class="headerlink" title="第一种做法"></a>第一种做法</h2><p>注意这里一定要用动画的方式隐藏导航栏,这样在使用滑动返回手势的时候效果最好,和上面动图一致.这样做有一个缺点就是在切换tabBar的时候有一个导航栏向上消失的动画.</p>
-<pre><code>- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-
-    [self.navigationController setNavigationBarHidden:YES animated:animated];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
-}
-</code></pre><h2 id="第二种做法"><a href="#第二种做法" class="headerlink" title="第二种做法"></a>第二种做法</h2><p>设置self为导航控制器的代理,实现代理方法,在将要显示控制器中设置导航栏隐藏和显示,使用这种方式不仅完美切合滑动返回手势,同时也解决了切换tabBar的时候,导航栏动态隐藏的问题。最后要记得在控制器销毁的时候把导航栏的代理设置为nil。</p>
-<pre><code>@interface WLHomePageController () &lt;UINavigationControllerDelegate&gt;
-
-@end
-
-@implementation WLHomePageController 
-
-#pragma mark - lifeCycle
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    // 设置导航控制器的代理为self
-    self.navigationController.delegate = self;
-}
-
-#pragma mark - UINavigationControllerDelegate
-// 将要显示控制器
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    // 判断要显示的控制器是否是自己
-    BOOL isShowHomePage = [viewController isKindOfClass:[self class]];
-
-    [self.navigationController setNavigationBarHidden:isShowHomePage animated:YES];
-}
-
-- (void)dealloc {
-    self.navigationController.delegate = nil;
-}
-</code></pre><h2 id="第三种做法"><a href="#第三种做法" class="headerlink" title="第三种做法"></a>第三种做法</h2><p>主要是针对A隐藏Nav, A push 到B，B也需要隐藏Nav的这种情况</p>
-<p>1、自定义UINavigationController</p>
-<pre><code>#import &quot;WYNavigationController.h&quot;
-#import &quot;ViewController.h&quot;
-#import &quot;WYTargetVC.h&quot;
-
-
-@interface WYNavigationController ()&lt;UINavigationControllerDelegate, UIGestureRecognizerDelegate&gt;
-
-@end
-
-@implementation WYNavigationController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    self.delegate = self;
-    // 设置全屏滑动返回
-    id target = self.interactivePopGestureRecognizer.delegate;
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:target action:@selector(handleNavigationTransition:)];
-    [self.view addGestureRecognizer:pan];
-    self.interactivePopGestureRecognizer.enabled = NO;
-}
-
-- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
-{
-    if (self.viewControllers.count &gt; 0) {
-        viewController.hidesBottomBarWhenPushed = YES;
-    }
-    [super pushViewController:viewController animated:animated];
-}
-
-
-#pragma mark - UINavigationControllerDelegate
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    // 判断如果是需要隐藏导航控制器的类，则隐藏
-    BOOL isHideNav = ([viewController isKindOfClass:[ViewController class]] || 
-                      [viewController isKindOfClass:[WYTargetVC class]]);
-
-    [self setNavigationBarHidden:isHideNav animated:YES];
-}
-</code></pre><p>但是注意setNavigationBarHidden:YES设置这行代码后会导致Nav的滑动返回手势失效，这也就是为什么前面我们在自定义导航的时候需要设置全屏滑动返回了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/15/iOS导航栏的正确隐藏方式 /">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-轻松实现Label的全方位对齐" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/15/轻松实现Label的全方位对齐/">轻松实现Label的全方位对齐</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/15/轻松实现Label的全方位对齐/" class="archive-article-date">
-  	<time datetime="2018-10-15T06:16:13.019Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>ARUILabelTextAlign</p>
-<ol>
-<li>实现 UILabel文本在 左(上 中 下)、中(上 中 下）、右(上 中 下) 9个方位显示；</li>
-</ol>
-<ol start="2">
-<li>提供富文本底部不对齐的解决方案；</li>
-</ol>
-<h2 id="核心代码："><a href="#核心代码：" class="headerlink" title="核心代码："></a>核心代码：</h2><h3 id="ARAlignLabel-h"><a href="#ARAlignLabel-h" class="headerlink" title="ARAlignLabel.h"></a>ARAlignLabel.h</h3><pre><code>#import 
-@class ARMaker;
-
-typedef NS_ENUM(NSUInteger, textAlignType)
-{
-    textAlignType_top = 10,   // 顶部对齐
-    textAlignType_left,       // 左边对齐
-    textAlignType_bottom,     // 底部对齐
-    textAlignType_right,      // 右边对齐
-    textAlignType_center      // 水平/垂直对齐（默认中心对齐）
-};
-
-@interface ARAlignLabel : UILabel
-
-/**
- *  根据对齐方式进行文本对齐
- *
- *  @param alignType 对齐block
- */
-- (void)textAlign:(void(^)(ARMaker *make))alignType;
-
-@end
-
-
-//工具类
-@interface ARMaker : NSObject
-
-/* 存放对齐样式 */
-@property(nonatomic, strong) NSMutableArray *typeArray;
-
-/**
- *  添加对齐样式
- */
-- (ARMaker *(^)(textAlignType type))addAlignType;
-
-@end
-</code></pre><h3 id="ARAlignLabel-m"><a href="#ARAlignLabel-m" class="headerlink" title="ARAlignLabel.m"></a>ARAlignLabel.m</h3><pre><code>#import &quot;ARAlignLabel.h&quot;
-
-@interface ARAlignLabel ()
-
-/* 对齐方式 */
-@property(nonatomic, strong) NSArray *typeArray;
-//上
-@property(nonatomic, assign) BOOL hasTop;
-//左
-@property(nonatomic, assign) BOOL hasLeft;
-//下
-@property(nonatomic, assign) BOOL hasBottom;
-//右
-@property(nonatomic, assign) BOOL hasRight;
-
-@end
-
-@implementation ARAlignLabel
-
-- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
-    CGRect textRect = [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
-    if (self.typeArray){
-        for (int i=0; i&lt;self.typeArray.count; i++) {
-            textAlignType type = [self.typeArray[i] integerValue];
-            switch (type) {
-                case textAlignType_top:  //顶部对齐
-                    self.hasTop = YES;
-                    textRect.origin.y = bounds.origin.y;
-                    break;
-                case textAlignType_left: //左部对齐
-                    self.hasLeft = YES;
-                    textRect.origin.x = bounds.origin.x;
-                    break;
-                case textAlignType_bottom: //底部对齐
-                    self.hasBottom = YES;
-                    textRect.origin.y = bounds.size.height - textRect.size.height;
-                    break;
-                case textAlignType_right: //右部对齐
-                    self.hasRight = YES;
-                    textRect.origin.x = bounds.size.width - textRect.size.width;
-                    break;
-                case textAlignType_center:
-                    if (self.hasTop) {  //上中
-                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
-                    }
-                    else if (self.hasLeft) { //左中
-                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
-                    }
-                    else if (self.hasBottom) { //下中
-                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
-                    }
-                    else if (self.hasRight) { //右中
-                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
-                    }
-                    else{   //上下左右居中
-                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
-                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    return textRect;
-}
-
-- (void)drawTextInRect:(CGRect)requestedRect {
-    CGRect actualRect = requestedRect;
-    if (self.typeArray) {
-        actualRect = [self textRectForBounds:requestedRect limitedToNumberOfLines:self.numberOfLines];
-    }
-    [super drawTextInRect:actualRect];
-}
-
-- (void)textAlign:(void(^)(ARMaker *make))alignType {
-    ARMaker *make = [[ARMaker alloc]init];
-    alignType(make);
-    self.typeArray = make.typeArray;
-}
-
-@end
-
-//工具类
-@implementation ARMaker
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        self.typeArray = [NSMutableArray array];
-    }
-    return self;
-}
-
-- (ARMaker *(^)(enum textAlignType type))addAlignType {
-    __weak typeof (self) weakSelf = self;
-    return ^(enum textAlignType type) {
-        [weakSelf.typeArray addObject:@(type)];
-        return weakSelf;
-    };
-}
-
-@end
-</code></pre><h3 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h3><pre><code>- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.view.backgroundColor = [UIColor whiteColor];
-
-    if (_index == 9) {
-        //富文本底部对齐
-        [self attributedTextAgainOfBottom];
-    }else {
-        ARAlignLabel *label = [[ARAlignLabel alloc] initWithFrame:CGRectMake(kScreenWidth/2.0 - 150, 300, 300, 80)];
-        label.backgroundColor = [UIColor orangeColor];
-        label.textColor = [UIColor blackColor];
-        label.font = [UIFont systemFontOfSize:18];
-        label.text = @&quot;爱学习，爱编程，爱咖啡可乐&quot;;
-        label.numberOfLines = 1;
-        [self.view addSubview:label];
-
-        switch (_index) {
-            case 0:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_top);
-                }];
-                break;
-            case 1:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_center);
-                }];
-                break;
-            case 2:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_bottom);
-                }];
-                break;
-            case 3:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_center).addAlignType(textAlignType_top);
-                }];
-                break;
-            case 4:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_center);
-                }];
-                break;
-            case 5:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_center).addAlignType(textAlignType_bottom);
-                }];
-                break;
-            case 6:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_top);
-                }];
-                break;
-            case 7:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_center);
-                }];
-                break;
-            case 8:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_bottom);
-                }];
-                break;
-            default:
-                break;
-        }
-    }
-}
-</code></pre><h3 id="富文本底部对齐"><a href="#富文本底部对齐" class="headerlink" title="富文本底部对齐"></a>富文本底部对齐</h3><pre><code>//富文本底部对齐
-- (void)attributedTextAgainOfBottom {
-
-    CGFloat space = 10.0;
-
-    ARAlignLabel *leftLB = [[ARAlignLabel alloc] initWithFrame:CGRectMake(20, 200, kScreenWidth/2.0 - 20 - space/2.0, 80)];
-    leftLB.backgroundColor = [UIColor lightGrayColor];
-    leftLB.textColor = [UIColor blackColor];
-    leftLB.numberOfLines = 1;
-    [self.view addSubview:leftLB];
-    //右下
-    [leftLB textAlign:^(ARMaker *make) {
-        make.addAlignType(textAlignType_center);
-    }];
-
-    NSMutableAttributedString  *attributedArr = [[NSMutableAttributedString alloc] initWithString:@&quot;单价 $123&quot;];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:40], NSForegroundColorAttributeName:[UIColor blackColor]} range:NSMakeRange(0, 1)];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:25], NSForegroundColorAttributeName:[UIColor blackColor]} range:NSMakeRange(1, 1)];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20], NSForegroundColorAttributeName:[UIColor blueColor]} range:NSMakeRange(3, 1)];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:35], NSForegroundColorAttributeName:[UIColor redColor]} range:NSMakeRange(4, attributedArr.length - 4)];
-
-    leftLB.attributedText = attributedArr;
-
-
-    //对齐之后
-    ARAlignLabel *rightLB = [[ARAlignLabel alloc] initWithFrame:CGRectMake(kScreenWidth/2.0 + space/2.0, 200, leftLB.frame.size.width, 80)];
-    rightLB.backgroundColor = [UIColor lightGrayColor];
-    rightLB.textColor = [UIColor blackColor];
-    rightLB.numberOfLines = 1;
-    [self.view addSubview:rightLB];
-    //左下
-    [rightLB textAlign:^(ARMaker *make) {
-        make.addAlignType(textAlignType_center);
-    }];
-
-    //设置部分文字的偏移量 (0是让文字保持原来的位置, 负值是让文字下移，正值是让文字上移)
-    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(1) range:NSMakeRange(0, 1)];
-    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(0) range:NSMakeRange(1, 1)];
-    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(-2) range:NSMakeRange(3, 1)];
-    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(-3) range:NSMakeRange(4, attributedArr.length - 4)];
-
-    rightLB.attributedText = attributedArr;
-
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/15/轻松实现Label的全方位对齐/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS 和常见的离屏渲染Say Goodbye！" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/">iOS 和常见的离屏渲染Say Goodbye！</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/" class="archive-article-date">
-  	<time datetime="2018-10-12T17:07:25.380Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>为什么会发生离屏渲染</p>
-<p>移动应用优化到最后主要还是看FPS（页面流畅程度）性能、内存占用等方面。离屏渲染也是老生常谈的一个问题。</p>
-<p>OpenGL中，GPU屏幕渲染有两种方式: On-Screen Rendering (当前屏幕渲染) 和 Off-Screen Rendering (离屏渲染) ，当前屏幕渲染不需要额外创建新的缓存，也不需要开启新的上下文，相对于离屏渲染性能更好。但是受当前屏幕渲染的局限因素限制(只有自身上下文、屏幕缓存有限等)，当前屏幕渲染有些情况下的渲染解决不了的，就使用到离屏渲染。离屏渲染的整个过程需要切换上下文环境,先从 当前屏幕切换到离屏,等结束后,又要将上下文环境切换回来.这也是为什么会消耗性能的原因了。</p>
-<p>离屏渲染引发因素有 cornerRadius（设置圆角）、shadows（阴影）、masks（遮罩）、edge antialiasing（抗锯齿）、group opacity（不透明）、shouldRasterize（光栅化） 等，至于检测离屏渲染的工具 Instruments的Core Animation 就不多说了。本文主要介绍 设置圆角 和 阴影 的方案。</p>
-<h2 id="设置圆角"><a href="#设置圆角" class="headerlink" title="设置圆角"></a>设置圆角</h2><p>常规做法：</p>
-<pre><code>//只需要设置layer层的两个属性
-//设置圆角
-imageView.layer.cornerRadius = imageView.frame.size.width / 2;
-//将多余的部分切掉
-imageView.layer.masksToBounds = YES;
-</code></pre><p>这里提供两种避免离屏渲染的方案</p>
-<p>1.视图上添加一个子layer到最上层，用于遮盖该视图及其子视图，设置layer的图片为刚好能够遮盖成所需圆角样子，并且图片颜色刚好是该视图父视图的背景颜色就达到想要的效果。</p>
-<p>封装了一个UIView的分类，3个API，分别是 设置一个四角圆角，设置一个指定位置的圆角，设置一个带边框的圆角 。</p>
-<p> <a href="https://github.com/wazrx/XWCornerRadius" target="_blank" rel="noopener">github</a></p>
-<pre><code> /**
- 设置一个四角圆角
-
- @param radius 圆角半径
- @param color  圆角背景色
- */
-- (void)xw_roundedCornerWithRadius:(CGFloat)radius cornerColor:(UIColor *)color;
-
-/**
- 设置一个普通圆角
-
- @param radius  圆角半径
- @param color   圆角背景色
- @param corners 圆角位置
- */
-- (void)xw_roundedCornerWithRadius:(CGFloat)radius cornerColor:(UIColor *)color corners:(UIRectCorner)corners;
-
-/**
- 设置一个带边框的圆角
-
- @param cornerRadii 圆角半径cornerRadii
- @param color       圆角背景色
- @param corners     圆角位置
- @param borderColor 边框颜色
- @param borderWidth 边框线宽
- */
-- (void)xw_roundedCornerWithCornerRadii:(CGSize)cornerRadii cornerColor:(UIColor *)color corners:(UIRectCorner)corners borderColor:(UIColor *)borderColor borderWidth:(CGFloat)borderWidth;
-</code></pre><p>下载下来这个分类直接拖入工程就可以使用了，调用很方便，不过使用的时候会发现，这三个API都需要传一个参数 cornerColor （父视图的背景色），所以也造成了这个功能的局限，即 如果该父视图的颜色不是纯色，此时该方式就不适用了，同样 如果父视图的颜色会变化，那实现起来的代码也不那么优雅，如下图，有点尴尬，这里引出了第二种方案。</p>
-<p>2 通过修改layer.mask，首先通过贝塞尔曲线创建基于矢量的路径，传递给CAShapeLayer进行渲染。路径闭环，再把绘制出的Shape赋值给layer.mask，在Mask范围之外的Layer将不被显示从而达到圆角效果。代码实现很简单，如下：</p>
-<pre><code>UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake(130, 330, 100, 100)];
- [btn setBackgroundColor:[UIColor colorWithRed:(226.0 / 255.0) green:(113.0 / 255.0) blue:(19.0 / 255.0) alpha:1]];
- [backgroundImageView addSubview:btn];
- //绘制曲线路径
- UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:btn.bounds byRoundingCorners:UIRectCornerAllCorners cornerRadii:btn.bounds.size];
- CAShapeLayer *maskLayer = [[CAShapeLayer alloc]init];
- //设置大小
- maskLayer.frame = btn.bounds;
- //设置图形样子
- maskLayer.path = maskPath.CGPath;
- btn.layer.mask = maskLayer;
-</code></pre><h2 id="设置阴影"><a href="#设置阴影" class="headerlink" title="设置阴影"></a>设置阴影</h2><p>常规做法：</p>
-<pre><code>//阴影的颜色
-self.imageView.layer.shadowColor= [UIColorblackColor].CGColor;
-//阴影的透明度
-self.imageView.layer.shadowOpacity=0.8f;
-//阴影的圆角
-self.imageView.layer.shadowRadius=4;
-//阴影偏移量
-self.imageView.layer.shadowOffset=CGSizeMake(0,0);
-</code></pre><p>优化方案：</p>
-<p>避免对shadowOffset直接修改，通过调用setShadowPath来提供一个CGPath给视图的Layer，向Core Animation提供渲染的View的形状Shape,就会减少离屏渲染计算</p>
-<pre><code>[self.imageView.layer setShadowPath:[[UIBezierPath 
-bezierPathWithRect:myView.bounds] CGPath]];
-</code></pre><p> 补充：当使用阴影的视图形状发生变化时，即shadowPath并不会跟随CALayer的bounds属性进行变化，所以在layer的bounds产生变化以后需要手动更新shadowPath才能让其适配新的bounds.</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-无限循环滚动的TableView" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/02/无限循环滚动的TableView/">无限循环滚动的TableView</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/02/无限循环滚动的TableView/" class="archive-article-date">
-  	<time datetime="2018-10-02T14:37:33.938Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天来看看如何实现一个可以无限循环的TableView</p>
-<p>条条大路通罗马，个人分析下以下思路的可行性：</p>
-<p>借鉴无限广告轮播的思路。可行性不高，主要是列表头部和尾部的衔接不够自然，而且快速滑动不够流畅。</p>
-<p>使用TableView+3倍长度dataSource。可行性一般，在使用过程中滑动流畅，但是由于重复的数据源，可能导致在处理事件时需要特别对数据进行处理避免重复，另外此方法不能重用，总让有强迫症的人感觉不够优雅。。。</p>
-<p>使用TableView子类+数据源拦截器。可行性较高，在使用过程中滑动流畅，而且在代理方法中并不需要做特殊处理，可封装重用。</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="我们通过创建TableView的子类，在子类中对dataSource进行处理。"><a href="#我们通过创建TableView的子类，在子类中对dataSource进行处理。" class="headerlink" title="我们通过创建TableView的子类，在子类中对dataSource进行处理。"></a>我们通过创建TableView的子类，在子类中对dataSource进行处理。</h3><p>如果直接将子类自身设为子类的dataSource，创建另外一个dataSource作为对外的delegate，将自身不处理的代理消息转发给对外的delegate，这样要求自身实现所有的代理方法，非常蛋疼。</p>
-<p>因此，我们创建一个拦截器，通过拦截器决定将消息发送到TableView子类内部或者是其dataSource，这样简洁又比较优雅（装逼）。</p>
-<p>注：使用此方法实现无限循环的TableView，需要对ObjC的消息转发有一定理解。</p>
-<h3 id="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"><a href="#1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置" class="headerlink" title="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"></a>1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置</h3><pre><code>- (void)layoutSubviews {
-    [self resetContentOffsetIfNeeded];
-    [super layoutSubviews];
-}
-
-- (void)resetContentOffsetIfNeeded {
-    CGPoint contentOffset  = self.contentOffset;
-    //头部
-    if (contentOffset.y &lt; 0.0) {
-        contentOffset.y = self.contentSize.height / 3.0;
-    }
-    //尾部
-    else if (contentOffset.y &gt;= (self.contentSize.height - self.bounds.size.height)) {
-        contentOffset.y = self.contentSize.height / 3.0 - self.bounds.size.height;
-    }
-    [self setContentOffset: contentOffset];
-}
-</code></pre><h3 id="2、创建一个拦截器"><a href="#2、创建一个拦截器" class="headerlink" title="2、创建一个拦截器"></a>2、创建一个拦截器</h3><pre><code>@interface SUTableViewInterceptor : NSObject
-
-@property (nonatomic, weak) id receiver;
-@property (nonatomic, weak) id middleMan;
-
-@end
-</code></pre><h3 id="3、将拦截器设置为TableView子类的dataSource"><a href="#3、将拦截器设置为TableView子类的dataSource" class="headerlink" title="3、将拦截器设置为TableView子类的dataSource"></a>3、将拦截器设置为TableView子类的dataSource</h3><pre><code>- (void)setDataSource:(id&lt;UITableViewDataSource&gt;)dataSource {
-    self.dataSourceInterceptor.receiver = dataSource;
-    [super setDataSource:(id&lt;UITableViewDataSource&gt;)self.dataSourceInterceptor];
-}
-
-- (SUTableViewInterceptor *)dataSourceInterceptor {
-    if (!_dataSourceInterceptor) {
-        _dataSourceInterceptor = [[SUTableViewInterceptor alloc]init];
-        _dataSourceInterceptor.middleMan = self;
-    }
-    return _dataSourceInterceptor;
-}
-</code></pre><h3 id="4、在子类中实现需要加工处理的代理方法"><a href="#4、在子类中实现需要加工处理的代理方法" class="headerlink" title="4、在子类中实现需要加工处理的代理方法"></a>4、在子类中实现需要加工处理的代理方法</h3><pre><code>- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
-    self.actualRows = [self.dataSourceInterceptor.receiver tableView:tableView numberOfRowsInSection:section];
-    return self.actualRows * 3;
-}
-
-- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSIndexPath * actualIndexPath = [NSIndexPath indexPathForRow:indexPath.row % self.actualRows inSection:indexPath.section];
-    return [self.dataSourceInterceptor.receiver tableView:tableView cellForRowAtIndexPath:actualIndexPath];
-}
-</code></pre><h3 id="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理"><a href="#5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理" class="headerlink" title="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)"></a>5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)</h3><pre><code>@implementation SUTableViewInterceptor
-
-#pragma mark - forward &amp; response override
-- (id)forwardingTargetForSelector:(SEL)aSelector {
-    if ([self.middleMan respondsToSelector:aSelector]) return self.middleMan;
-    if ([self.receiver respondsToSelector:aSelector]) return self.receiver;
-    return [super forwardingTargetForSelector:aSelector];
-}
-
-- (BOOL)respondsToSelector:(SEL)aSelector {
-    if ([self.middleMan respondsToSelector:aSelector]) return YES;
-    if ([self.receiver respondsToSelector:aSelector]) return YES;
-    return [super respondsToSelector:aSelector];
-}
-
-@end
-</code></pre><p>到此，自定义的TableView基本完成，整理一下思路，不难理解我们是通过拦截器将代理消息转发到子类内部，子类内部则通过外部代理提供的dataSource来拷贝成3份，来组成一个3倍于普通长度的TableView，并在其滑动时进行处理，形成可以无限循环滚动的效果。</p>
-<p>这样，在外部看起来，使用这个TableView和普通TableView没有什么不同，但是多了一个可以循环滚动的“属性”，当然，你也可以将其封装成可设置的属性，方便切换普通模式和循环滚动模式。</p>
-<p>下面，用这个TableView的子类来试着创建一个可以循环滚动的列表看看：</p>
-<pre><code>- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self.view addSubview:self.tableView];
-}
-
-- (UITableView *)tableView {
-    if(!_tableView) {
-        _tableView = [[SUTableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-        _tableView.delegate = self;
-        _tableView.dataSource = self;
-        _tableView.showsVerticalScrollIndicator = NO;
-        _tableView.rowHeight = 150.0;
-        [_tableView registerNib:[UINib nibWithNibName:@&quot;LiveCell&quot; bundle:nil] forCellReuseIdentifier:liveCellID];
-    }
-    return _tableView;
-}
-
-#pragma mark - UITableViewDataSource
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 5;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LiveCell * cell = [self.tableView dequeueReusableCellWithIdentifier:liveCellID];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.descLabel.text = [NSString stringWithFormat:@&quot;第 %ld 个主播频道&quot;, indexPath.row + 1];
-    return cell;
-}
-</code></pre><p>怎么样，强迫症是不是舒缓了，是不是轻松多了~~~</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/02/无限循环滚动的TableView/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -2015,6 +2407,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
