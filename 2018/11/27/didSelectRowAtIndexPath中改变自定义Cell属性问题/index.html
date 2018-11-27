@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Blog</title>
+  <title>didSelectRowAtIndexPath中改变自定义Cell属性问题 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/page/5/index.html">
+  <meta name="description" content="写在前面今天犯了一个很低级的问题，而这个问题还让我找了很长时间才发现。我在自定义cell中定义了一个属性 @property (assign, nonatomic) BOOL isChecked; 并且重写了它的set方法实现了内部一个属性改变 - (void)setIsChecked:(BOOL)isChecked {     _checkBoxView.checked = isChecked;">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="didSelectRowAtIndexPath中改变自定义Cell属性问题">
+<meta property="og:url" content="http://yoursite.com/2018/11/27/didSelectRowAtIndexPath中改变自定义Cell属性问题/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="写在前面今天犯了一个很低级的问题，而这个问题还让我找了很长时间才发现。我在自定义cell中定义了一个属性 @property (assign, nonatomic) BOOL isChecked; 并且重写了它的set方法实现了内部一个属性改变 - (void)setIsChecked:(BOOL)isChecked {     _checkBoxView.checked = isChecked;">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-27T09:22:55.773Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="didSelectRowAtIndexPath中改变自定义Cell属性问题">
+<meta name="twitter:description" content="写在前面今天犯了一个很低级的问题，而这个问题还让我找了很长时间才发现。我在自定义cell中定义了一个属性 @property (assign, nonatomic) BOOL isChecked; 并且重写了它的set方法实现了内部一个属性改变 - (void)setIsChecked:(BOOL)isChecked {     _checkBoxView.checked = isChecked;">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,1000 +155,74 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-objc中向一个nil对象发送消息将会发生什么？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-didSelectRowAtIndexPath中改变自定义Cell属性问题" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/">objc中向一个nil对象发送消息将会发生什么？</a>
+    <h1 class="article-title" itemprop="name">
+      didSelectRowAtIndexPath中改变自定义Cell属性问题
     </h1>
   
 
         
-        <a href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/" class="archive-article-date">
-  	<time datetime="2018-09-07T02:46:45.490Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
+        <a href="/2018/11/27/didSelectRowAtIndexPath中改变自定义Cell属性问题/" class="archive-article-date">
+  	<time datetime="2018-11-27T09:21:14.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>在 Objective-C 中向 nil 发送消息是完全有效的——只是在运行时不会有任何作用:</p>
-<p>如果一个方法返回值是一个对象，那么发送给nil的消息将返回0(nil)。例如：</p>
-<pre><code>Person * motherInlaw = [[aPerson spouse] mother];    
-</code></pre><p>如果 spouse 对象为 nil，那么发送给 nil 的消息 mother 也将返回 nil。</p>
-<p>如果方法返回值为指针类型，其指针大小为小于或者等于sizeof(void*)，float，double，long double 或者 long long 的整型标量，发送给 nil 的消息将返回0。</p>
-<p>如果方法返回值为结构体,发送给 nil 的消息将返回0。结构体中各个字段的值将都是0。</p>
-<p>如果方法的返回值不是上述提到的几种情况，那么发送给 nil 的消息的返回值将是未定义的。</p>
-<pre><code>objc是动态语言，每个方法在运行时会被动态转为消息发送，即：objc_msgSend(receiver, selector)。
-
-struct objc_class {
-    Class isa OBJC_ISA_AVAILABILITY; //isa指针指向Meta Class，因为Objc的类的本身也是一个Object，为了处理这个关系，runtime就创造了Meta Class，当给类发送[NSObject alloc]这样消息时，实际上是把这个消息发给了Class Object
-#if !__OBJC2__
-    Class super_class OBJC2_UNAVAILABLE; // 父类
-    const char *name OBJC2_UNAVAILABLE; // 类名
-    long version OBJC2_UNAVAILABLE; // 类的版本信息，默认为0
-    long info OBJC2_UNAVAILABLE; // 类信息，供运行期使用的一些位标识
-    long instance_size OBJC2_UNAVAILABLE; // 该类的实例变量大小
-    struct objc_ivar_list *ivars OBJC2_UNAVAILABLE; // 该类的成员变量链表
-    struct objc_method_list **methodLists OBJC2_UNAVAILABLE; // 方法定义的链表
-    struct objc_cache *cache OBJC2_UNAVAILABLE; // 方法缓存，对象接到一个消息会根据isa指针查找消息对象，这时会在method Lists中遍历，如果cache了，常用的方法调用时就能够提高调用的效率。
-    struct objc_protocol_list *protocols OBJC2_UNAVAILABLE; // 协议链表
-#endif
-} OBJC2_UNAVAILABLE;
-</code></pre><p>objc在向一个对象发送消息时，runtime库会根据对象的isa指针找到该对象实际所属的类，然后在该类中的方法列表以及其父类方法列表中寻找方法运行，然后在发送消息的时候，objc_msgSend方法不会返回值，所谓的返回内容都是具体调用时执行的。那么，回到本题，如果向一个nil对象发送消息，首先在寻找对象的isa指针时就是0地址返回了，所以不会出现任何错误。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/07/objc中向一个nil对象发送消息将会发生什么？/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于tableview的优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/关于tableview的优化/">关于tableview的优化</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/关于tableview的优化/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:14:32.494Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS应用中，UITableView应该是使用率最高的视图之一了。iPod、时钟、日历、备忘录、Mail、天气、照片、电话、短信、Safari、App Store、iTunes、Game Center⋯几乎所有自带的应用中都能看到它的身影，可见它的重要性。</p>
-<p>然而在使用第三方应用时，却经常遇到性能上的问题，普遍表现在滚动时比较卡，特别是table cell中包含图片的情况时。</p>
-<p>UITableView是UIScrollView的子类，因此它可以自动响应滚动事件（一般为上下滚动）。</p>
-<p>它内部包含0到多个UITableViewCell对象，每个table cell展示各自的内容。当新cell需要被显示时，就会调用tableView:cellForRowAtIndexPath:方法来获取或创建一个cell；而不可视时，它又会被释放。由此可见，同一时间其实只需要存在一屏幕的cell对象即可，不需要为每一行创建一个cell。</p>
-<p>此外，UITableView还可以分为多个sections，每个区段都可以有自己的head、foot和cells。而在定位一个cell时，就需要2个字段了：在哪个section，以及在这个section的第几行。这在iOS SDK中是用NSIndexPath来表述的，UIKit为其添加了indexPathForRow:inSection:这个创建方法。</p>
-<h2 id="关于视图部分的优化"><a href="#关于视图部分的优化" class="headerlink" title="关于视图部分的优化"></a>关于视图部分的优化</h2><h3 id="使用不透明视图。"><a href="#使用不透明视图。" class="headerlink" title="使用不透明视图。"></a>使用不透明视图。</h3><p>不透明的视图可以极大地提高渲染的速度。因此如非必要，可以将table cell及其子视图的opaque属性设为YES（默认值）。</p>
-<p>其中的特例包括背景色，它的alpha值应该为1（例如不要使用clearColor）；图像的alpha值也应该为1，或者在画图时设为不透明。</p>
-<p>当一个view是透明的，iOS需要渲染一个像素两次或多次，这是因为一个像素同时属于很多subviews。这是一个非常耗时的过程。</p>
-<p>通过代码或者InterfaceBuilder能够很简单的做到。开发者应该多次检查所有的subviews是不透明的。</p>
-<p>对于自定义代码，你可以通过代码来设置，如下：</p>
-<pre><code>view.opaque = YES;
-</code></pre><h3 id="不要重复创建不必要的table-cell。"><a href="#不要重复创建不必要的table-cell。" class="headerlink" title="不要重复创建不必要的table cell。"></a>不要重复创建不必要的table cell。</h3><p>前面说了，UITableView只需要一屏幕的UITableViewCell对象即可。因此在cell不可见时，可以将其缓存起来，而在需要时继续使用它即可。</p>
-<p>而UITableView也提供了这种机制，只需要简单地设置一个identifier即可：</p>
-<pre><code>static NSString *CellIdentifier = @&quot;xxx&quot;;
-
-UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-
-if (cell == nil) {
-
-cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
-
-}
-</code></pre><p>值得一提的是，cell被重用时，它内部绘制的内容并不会被自动清除，因此你可能需要调用setNeedsDisplayInRect:或setNeedsDisplay方法。</p>
-<p>此外，在添加table cell的时候，如果不需要动画效果，最好不要使用insertRowsAtIndexPaths:withRowAnimation:方法，而是直接调用reloadData方法。因为前者会对所有indexPaths调用<br>tableView:cellForRowAtIndexPath:方法，即便该cell并不需要显示（不知道是不是bug），这就可能创建大量多余的cell。勘误：只是在模拟器上测试如此，真机调试时没有这种bug。</p>
-<h3 id="减少视图的数目。"><a href="#减少视图的数目。" class="headerlink" title="减少视图的数目。"></a>减少视图的数目。</h3><p>UITableViewCell包含了textLabel、detailTextLabel和imageView等view，而你还可以自定义一些视图放在它的contentView里。然而view是很大的对象，创建它会消耗较多资源，并且也影响渲染的性能。</p>
-<p>如果你的table cell包含图片，且数目较多，使用默认的UITableViewCell会非常影响性能。奇怪的是，使用自定义的view，而非预定义的view，明显会快些。</p>
-<p>当然，最佳的解决办法还是继承UITableViewCell，并在其drawRect:中自行绘制：</p>
-<pre><code>- (void)drawRect:(CGRect)rect {
-
-if (image) {
-
-[image drawAtPoint:imagePoint];
-
-self.image = nil;
-
-} else {
-
-[placeHolder drawAtPoint:imagePoint];
-
-}
-
-[text drawInRect:textRect withFont:font lineBreakMode:UILineBreakModeTailTruncation];
-
-}
-</code></pre><p>不过这样一来，你会发现选中一行后，这个cell就变蓝了，其中的内容就被挡住了。最简单的方法就是将cell的selectionStyle属性设为UITableViewCellSelectionStyleNone，这样就不会被高亮了。</p>
-<p>此外还可以创建CALayer，将内容绘制到layer上，然后对cell的contentView.layer调用addSublayer:方法。这个例子中，layer并不会显著影响性能，但如果layer透明，或者有圆角、变形等效果，就会影响到绘制速度了。解决办法可参见后面的预渲染图像。</p>
-<h3 id="不要做多余的绘制工作。"><a href="#不要做多余的绘制工作。" class="headerlink" title="不要做多余的绘制工作。"></a>不要做多余的绘制工作。</h3><p>在实现drawRect:的时候，它的rect参数就是需要绘制的区域，这个区域之外的不需要进行绘制。</p>
-<p>例如上例中，就可以用CGRectIntersectsRect、CGRectIntersection或CGRectContainsRect判断是否需要绘制image和text，然后再调用绘制方法。</p>
-<h3 id="不要阻塞主线程。"><a href="#不要阻塞主线程。" class="headerlink" title="不要阻塞主线程。"></a>不要阻塞主线程。</h3><p>做到前几点后，你的table view滚动时应该足够流畅了，不过你仍可能让用户感到不爽。常见的现象就是在更新数据时，整个界面卡住不动，完全不响应用户请求。</p>
-<p>出现这种现象的原因就是主线程执行了耗时很长的函数或方法，在其执行完毕前，无法绘制屏幕和响应用户请求。其中最常见的就是网络请求了，它通常都需要花费数秒的时间，而你不应该让用户等待那么久。</p>
-<p>解决办法就是使用多线程，让子线程去执行这些函数或方法。这里面还有一个学问，当下载线程数超过2时，会显著影响主线程的性能。因此在使用ASIHTTPRequest时，可以用一个NSOperationQueue来维护下载请求，并将其maxConcurrentOperationCount设为2。而NSURLRequest则可以配合GCD来实现，或者使用NSURLConnection的setDelegateQueue:方法。</p>
-<p>当然，在不需要响应用户请求时，也可以增加下载线程数，以加快下载速度：</p>
-<pre><code>- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-
-if (!decelerate) {
-
-queue.maxConcurrentOperationCount = 5;
-
-}
-
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-
-queue.maxConcurrentOperationCount = 5;
-
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-
-queue.maxConcurrentOperationCount = 2;
-
-}
-</code></pre><p>此外，自动载入更新数据对用户来说也很友好，这减少了用户等待下载的时间。例如每次载入50条信息，那就可以在滚动到倒数第10条以内时，加载更多信息：</p>
-<pre><code>- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-
-if (count - indexPath.row &lt; 10 &amp;&amp; !updating) {
-
-updating = YES;
-
-[self update];
-
-}
-
-}
-
-// update方法获取到结果后，设置updating为NO
-</code></pre><p>还有一点要注意的就是当图片下载完成后，如果cell是可见的，还需要更新图像：</p>
-<pre><code>NSArray *indexPaths = [self.tableView indexPathsForVisibleRows];
-
-for (NSIndexPath *visibleIndexPath in indexPaths) {
-
-if (indexPath == visibleIndexPath) {
-
-MyTableViewCell *cell = (MyTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-
-cell.image = image;
-
-[cell setNeedsDisplayInRect:imageRect];
-
-break;
-
-}
-
-}
-</code></pre><p>最后还是前面所说过的</p>
-<p>insertRowsAtIndexPaths:withRowAnimation:方法，插入新行需要在主线程执行，而一次插入很多行的话（例如50行），会长时间阻塞主线程。而换成reloadData方法的话，瞬间就处理完了。</p>
-<h3 id="减少预加载时间"><a href="#减少预加载时间" class="headerlink" title="减少预加载时间"></a>减少预加载时间</h3><p>通常，我会通过缓存来重用图片，同时减少初始化的过程。当OS需要为TableView渲染一个新的cell，会通过调用下面的方法来返回一个新的cell：</p>
-<p>view sourceprint?</p>
-<pre><code>1.
-
-- (UITableViewCell *)tableView:(UITableView *)tableViewcellForRowAtIndexPath:(NSIndexPath *)indexPath {
-
-2.
-
-// Initialize and return the Cell here
-
-3.
-
-}
-</code></pre><p>因此，如果你在这里阻塞了太长的时间，UserInterface渲染的过程就会被阻塞；它将不能做任何事情或显示任何新的东西。这就是为什么用户看到在某个地方滚动停止的原因。</p>
-<p>为了使这个过程尽可能的快，你可以去除一些逻辑，延迟计算，通过重用来缓存数据和图片。另外一个方法是通过首先使用默认的图片和数据来重用cell。当要获取图片或数据的时候，你可以使用多线程，然后稍后进行填充。从用户的角度来看，这种方法将会使得滚动更加流程，加载图片的速度更快。</p>
-<h3 id="缓存高度"><a href="#缓存高度" class="headerlink" title="缓存高度"></a>缓存高度</h3><p>无论是否需要创建一个新的cell，你需要缓存rows的高度，因为这是TableView所需要的信息。如果你的cell的高度是固定的，你不必担心。然而，如果它不是固定的，你需要确保你的cell计算足够的快。</p>
-<p>可以尝试使用如下代码：</p>
-<pre><code>view sourceprint?
-
-1.
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
-
-2.
-
-return 80;
-
-3.
-
-}
-</code></pre><p>避免使用下面的代码：</p>
-<pre><code>view sourceprint?
-
-1.
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
-
-2.
-
-for (int i = 0; i &lt; 100; i++) {
-
-3.
-
-// find the smallest possible height for the row
-
-4.
-
-}
-
-5.
-
-return smallestHeight;
-
-6.
-
-}
-</code></pre><p>当需要渲染cell或者在动画过程中需要编辑/重排序cell的时候，OS会多次运行第一段代码段。xiang像第二段代码中有一个循环，无论是否需要知道cell的高度，OS都会运行一个重复100次的循环。</p>
-<h3 id="避免使用图形特效"><a href="#避免使用图形特效" class="headerlink" title="避免使用图形特效"></a>避免使用图形特效</h3><p>避免在UIImage中使用复杂的图形特效(例如渐变)。</p>
-<p>当然，这个事情好像程序员说了不算！</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/关于tableview的优化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于分类的总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/关于分类的总结/">关于分类的总结</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/关于分类的总结/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:08:58.127Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>可以在不修改原来类的基础上，为一个类扩展方法。</p>
-<h2 id="分类的结构体"><a href="#分类的结构体" class="headerlink" title="分类的结构体"></a>分类的结构体</h2><pre><code>struct _category_t {
-    const char *name;//类名
-    struct _class_t *cls;//类
-    const struct _method_list_t *instance_methods;//category中所有给类添加的实例方法的列表（instanceMethods）
-    const struct _method_list_t *class_methods;//category中所有添加的类方法的列表（classMethods）
-    const struct _protocol_list_t *protocols;//category实现的所有协议的列表（protocols）
-    const struct _prop_list_t *properties;//category中添加的所有属性（instanceProperties）
-};
-
-struct category_t {
-    const char *name; // 类名
-    classref_t cls;   // 分类所属的类
-    struct method_list_t *instanceMethods;  // 实例方法列表
-    struct method_list_t *classMethods;     // 类方法列表
-    struct protocol_list_t *protocols;      // 遵循的协议列表
-    struct property_list_t *instanceProperties; // 属性列表
-
-    // 如果是元类，就返回类方法列表；否则返回实例方法列表
-    method_list_t *methodsForMeta(bool isMeta) {
-        if (isMeta) {
-            return classMethods;
-        } else {
-            return instanceMethods;
-        }
-    }
-
-    // 如果是元类，就返回 nil，因为元类没有属性；否则返回实例属性列表，但是...实例属性
-    property_list_t *propertiesForMeta(bool isMeta) {
-        if (isMeta) {
-            return nil; // classProperties;
-        } else {
-            return instanceProperties;
-        }
-    }
-};
-</code></pre><h2 id="编译时的分类"><a href="#编译时的分类" class="headerlink" title="编译时的分类"></a>编译时的分类</h2><h3 id="分类的属性"><a href="#分类的属性" class="headerlink" title="分类的属性"></a>分类的属性</h3><pre><code>// Person(categoryPerson) 属性列表
-static struct /*_prop_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count_of_properties;
-    struct _prop_t prop_list[1];
-} _OBJC_$_PROP_LIST_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_prop_t),
-    1,
-    {{"categoryPersonName","T@\"NSString\",C,N"}}
-};
-
-// Person 属性列表
-static struct /*_prop_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count_of_properties;
-    struct _prop_t prop_list[1];
-} _OBJC_$_PROP_LIST_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_prop_t),
-    1,
-    {{"presonName","T@\"NSString\",C,N,V_presonName"}}
-};
-</code></pre><p>在分类中可以声明属性，并且同样会生成一个 _prop_list_t 的结构体</p>
-<h3 id="分类的实例变量？"><a href="#分类的实例变量？" class="headerlink" title="分类的实例变量？"></a>分类的实例变量？</h3><pre><code>// Person 实例变量列表
-
-static struct /*_ivar_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count;
-    struct _ivar_t ivar_list[1];
-} _OBJC_$_INSTANCE_VARIABLES_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_ivar_t),
-    1,
-    {{(unsigned long int *)&OBJC_IVAR_$_Person$_presonName, "_presonName", "@\"NSString\"", 3, 8}}
-};
-</code></pre><p>因为 _category_t 这个结构体中并没有 _ivar_list_t<br>所以在编译时系统没有Person(categoryPerson) 没有生成类似的相应结构体，也没有生成  _categoryPersonName。</p>
-<h3 id="分类的实例方法"><a href="#分类的实例方法" class="headerlink" title="分类的实例方法"></a>分类的实例方法</h3><pre><code>// Person 实例方法结构体
-static struct /*_method_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _objc_method)
-    unsigned int method_count;
-    struct _objc_method method_list[3];
-} _OBJC_$_INSTANCE_METHODS_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_objc_method),
-    3,
-    {{(struct objc_selector *)"doSomeThing", "v16@0:8", (void *)_I_Person_doSomeThing},
-	    {(struct objc_selector *)"presonName", "@16@0:8", (void *)_I_Person_presonName},
-	    {(struct objc_selector *)"setPresonName:", "v24@0:8@16", (void *)_I_Person_setPresonName_}}
-};
-
-// Person(categoryPerson )实例方法结构体
-static struct /*_method_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _objc_method)
-    unsigned int method_count;
-    struct _objc_method method_list[1];
-} _OBJC_$_CATEGORY_INSTANCE_METHODS_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_objc_method),
-    1,
-    {{(struct objc_selector *)"doSomeThing", "v16@0:8", (void *)_I_Person_categoryPerson_doSomeThing}}
-};
-</code></pre><p>虽然分类可以声明属性，但是编译时，系统并没有生成分类属性的 get／set 方法，所以，这就是为什么分类要利用</p>
-<h3 id="分类的结构体-1"><a href="#分类的结构体-1" class="headerlink" title="分类的结构体"></a>分类的结构体</h3><pre><code>// Person(categoryPerson ) 结构体
-static struct _category_t _OBJC_$_CATEGORY_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = 
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天犯了一个很低级的问题，而这个问题还让我找了很长时间才发现。<br>我在自定义cell中定义了一个属性</p>
+<pre><code>@property (assign, nonatomic) BOOL isChecked;
+</code></pre><p>并且重写了它的set方法实现了内部一个属性改变</p>
+<pre><code>- (void)setIsChecked:(BOOL)isChecked
 {
-    &quot;Person&quot;,
-    0, // &amp;OBJC_CLASS_$_Person,
-    (const struct _method_list_t *)&amp;_OBJC_$_CATEGORY_INSTANCE_METHODS_Person_$_categoryPerson,
-    0,
-    0,
-    (const struct _prop_list_t *)&amp;_OBJC_$_PROP_LIST_Person_$_categoryPerson,
-};
-</code></pre><p>这是系统在编译时实例化 _category_t 生成的<br><em>OBJC</em>$_CATEGORY_Person_$_categoryPerson</p>
-<h3 id="分类数组"><a href="#分类数组" class="headerlink" title="分类数组"></a>分类数组</h3><pre><code>static struct _category_t *L_OBJC_LABEL_CATEGORY_$ [1] __attribute__((used, section (&quot;__DATA, __objc_catlist,regular,no_dead_strip&quot;)))= {
-    &amp;_OBJC_$_CATEGORY_Person_$_categoryPerson,
-};
-</code></pre><p>编译器最后生成了一个数组，数组的元素就是我们创建的各个分类，用来在运行时加载分类。</p>
-<h2 id="分类的加载"><a href="#分类的加载" class="headerlink" title="分类的加载"></a>分类的加载</h2><h3 id="加载分类调用栈"><a href="#加载分类调用栈" class="headerlink" title="加载分类调用栈"></a>加载分类调用栈</h3><pre><code>_objc_init
-└──map_2_images
-    └──map_images_nolock
-        └──_read_images
-</code></pre><p>分类加载的调用栈如上述</p>
-<p>_objc_init 算是整个 objc4 的入口，进行了一些初始化操作，注册了镜像状态改变时的回调函数</p>
-<p>map_2_images 主要是加锁并调用 map_images_nolock<br>map_images_nolock 在这个函数中，完成所有 class 的注册、fixup等工作，还有初始化自动释放池、初始化 side table 等工作并在函数后端调用了 _read_images</p>
-<p>_read_images 方法干了很多苦力活，比如加载类、Protocol、Category，加载分类的代码就写在 _read_images 函数的尾部</p>
-<p>该调用栈入口函数 void _objc_init(void) 在 objc-os.mm 中</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/关于分类的总结/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-类方法和实例方法的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/类方法和实例方法的区别/">类方法和实例方法的区别</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/类方法和实例方法的区别/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:05:33.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Objective-C里面既有实例方法也类方法。类方法(Class Method) 有时被称为工厂方法(Factory Method)或者方便方法(Convenience method)。工厂方法的称谓明显和一般意义上的工厂方法不同，从本质上来说，类方法可以独立于对象而执行，所以在其他的语言里面类方法有的时候被称为静态方法。</p>
-<p>###注意点一：类方法<br>1，类方法可以调用类方法。</p>
-<p>2，类方法不可以调用实例方法，但是类方法可以通过创建对象来访问实例方法。</p>
-<p>3，类方法不可以使用实例变量。类方法可以使用self，因为self不是实例变量。</p>
-<p>4，类方法作为消息，可以被发送到类或者对象里面去（实际上，就是可以通过类或者对象调用类方法的意思）。</p>
-<p>####注意点二：self的规则</p>
-<p>1，实例方法里面的self，是对象的首地址。</p>
-<p>2，类方法里面的self，是Class.</p>
-<p>尽管在同一个类里面的使用self，但是self却有着不同的解读。在类方法里面的self，可以翻译成class self；在实例方法里面的self，应该被翻译成为object self。在类方法里面的self和实例方法里面的self有着本质上的不同，尽管他们的名字都叫self。</p>
-<p>类方法创造的对象要不要用release释放？</p>
-<p>答 不需要 这个对象被放到自动释放池中</p>
-<p>##区别：<br>1、类方法是属于整个类，而不属于某个对象。 </p>
-<p>2、类方法只能访问类成员变量，不能访问实例变量，而实例方法可以访问类成员变量和实例变量。 </p>
-<p>3、类方法的调用可以通过类名.类方法和对象.类方法，而实例方法只能通过对象.实例方法访问。 </p>
-<p>4、类方法只能访问类方法，而实例方法可以访问类方法和实例方法。 </p>
-<p>5、类方法不能被覆盖，实例方法可以被覆盖。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/类方法和实例方法的区别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-OC中的isa指针" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/OC中的isa指针/">OC中的isa指针</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/OC中的isa指针/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:01:36.931Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="isa指针"><a href="#isa指针" class="headerlink" title="isa指针"></a>isa指针</h2><p>在Objective-C中，任何类的定义都是对象。类和类的实例（对象）没有任何本质上的区别。任何对象都有isa指针。</p>
-<p>Class 是一个 objc_class 结构类型的指针, id是一个 objc_object 结构类型的指针.</p>
-<p>isa：是一个Class 类型的指针. 每个实例对象有个isa的指针,他指向对象的类，而Class里也有个isa的指针, 指向meteClass(元类)。元类保存了类方法的列表。当类方法被调用时，先会从本身查找类方法的实现，如果没有，元类会向他父类查找该方法。同时注意的是：元类（meteClass）也是类，它也是对象。元类也有isa指针,它的isa指针最终指向的是一个根元类(root meteClass).根元类的isa指针指向本身，这样形成了一个封闭的内循环。</p>
-<p>super_class：父类，如果该类已经是最顶层的根类,那么它为NULL。</p>
-<p>version：类的版本信息,默认为0</p>
-<p>info：供运行期使用的一些位标识。</p>
-<p>instance_size：该类的实例变量大小</p>
-<p>ivars：成员变量的数组</p>
-<p>每一个对象本质上都是一个类的实例。其中类定义了成员变量和成员方法的列表。对象通过对象的isa指针指向类。</p>
-<p>每一个类本质上都是一个对象，类其实是元类（meteClass）的实例。元类定义了类方法的列表。类通过类的isa指针指向元类。</p>
-<p>所有的元类最终继承一个根元类，根元类isa指针指向本身，形成一个封闭的内循环。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/OC中的isa指针/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于数组和链表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/关于数组和链表/">关于数组和链表</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/关于数组和链表/" class="archive-article-date">
-  	<time datetime="2018-09-06T14:28:49.016Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>修炼内功，数据结构这东西永远是程序的核心，关于数组，链表，hash这些东西，需要时不时的总结回顾一下。</p>
-<p>大致总结一下特点和区别，拿几个人一起去看电影时坐座位为例。</p>
-<h2 id="数组的特点"><a href="#数组的特点" class="headerlink" title="数组的特点"></a>数组的特点</h2><p>在内存中，数组是一块连续的区域。 拿上面的看电影来说，这几个人在电影院必须坐在一起。</p>
-<p>数组需要预留空间，在使用前要先申请占内存的大小，可能会浪费内存空间。 比如看电影时，为了保证10个人能坐在一起，必须提前订好10个连续的位置。这样的好处就是能保证10个人可以在一起。但是这样的缺点是，如果来的人不够10个，那么剩下的位置就浪费了。如果临时有多来了个人，那么10个就不够用了，这时可能需要将第11个位置上的人挪走，或者是他们11个人重新去找一个11连坐的位置，效率都很低。如果没有找到符合要求的作为，那么就没法坐了。</p>
-<p>插入数据和删除数据效率低，插入数据时，这个位置后面的数据在内存中都要向后移。删除数据时，这个数据后面的数据都要往前移动。 比如原来去了5个人，然后后来又去了一个人要坐在第三个位置上，那么第三个到第五个都要往后移动一个位子，将第三个位置留给新来的人。 当这个人走了的时候，因为他们要连在一起的，所以他后面几个人要往前移动一个位置，把这个空位补上。</p>
-<p>随机读取效率很高。因为数组是连续的，知道每一个数据的内存地址，可以直接找到给地址的数据。</p>
-<p>并且不利于扩展，数组定义的空间不够时要重新定义数组。</p>
-<h2 id="链表的特点"><a href="#链表的特点" class="headerlink" title="链表的特点"></a>链表的特点</h2><p>在内存中可以存在任何地方，不要求连续。 在电影院几个人可以随便坐。</p>
-<p>每一个数据都保存了下一个数据的内存地址，通过这个地址找到下一个数据。 第一个人知道第二个人的座位号，第二个人知道第三个人的座位号……<br>增加数据和删除数据很容易。 再来个人可以随便坐，比如来了个人要做到第三个位置，那他只需要把自己的位置告诉第二个人，然后问第二个人拿到原来第三个人的位置就行了。其他人都不用动。</p>
-<p>查找数据时效率低，因为不具有随机访问性，所以访问某个位置的数据都要从第一个数据开始访问，然后根据第一个数据保存的下一个数据的地址找到第二个数据，以此类推。 要找到第三个人，必须从第一个人开始问起。</p>
-<p>不指定大小，扩展方便。链表大小不用定义，数据随意增删。</p>
-<h2 id="各自的优缺点"><a href="#各自的优缺点" class="headerlink" title="各自的优缺点"></a>各自的优缺点</h2><h3 id="数组的优点"><a href="#数组的优点" class="headerlink" title="数组的优点"></a>数组的优点</h3><p>随机访问性强</p>
-<p>查找速度快</p>
-<h3 id="数组的缺点"><a href="#数组的缺点" class="headerlink" title="数组的缺点"></a>数组的缺点</h3><p>插入和删除效率低</p>
-<p>可能浪费内存</p>
-<p>内存空间要求高，必须有足够的连续内存空间。</p>
-<p>数组大小固定，不能动态拓展</p>
-<h3 id="链表的优点"><a href="#链表的优点" class="headerlink" title="链表的优点"></a>链表的优点</h3><p>插入删除速度快</p>
-<p>内存利用率高，不会浪费内存</p>
-<p>大小没有固定，拓展很灵活。</p>
-<h3 id="链表的缺点"><a href="#链表的缺点" class="headerlink" title="链表的缺点"></a>链表的缺点</h3><p>不能随机查找，必须从第一个开始遍历，查找效率低</p>
-<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><p>   哈希表结合了数组的快速查询的优点又能融合链表方便快捷的增加删除元素的优势</p>
-<p>   所谓的hash，简单的说就是散列，即将输入的数据通过hash函数得到一个key值，输入的数据存储到数组中下标为key值的数组单元中去。</p>
-<p>我们发现，不相同的数据通过hash函数得到相同的key值。这时候，就产生了hash冲突。解决hash冲突的方式有两种。一种是挂链式，也叫拉链法。挂链式的思想在产生冲突的hash地址指向一个链表，将具有相同的key值的数据存放到链表中。另一种是建立一个公共溢出区。将所有产生冲突的数据都存放到公共溢出区，也可以使问题解决。</p>
-<p>hash表其实是结合了数组和链表的优点，进行的折中方案。平衡了数组和链表的优缺点。hash的具体实现有很多种，但是需要解决冲突的问题。​</p>
-<p>不相同的数据通过hash函数得到相同的key值。这时候，就产生了hash冲突。解决hash冲突的方式有两种。一种是挂链式，也叫拉链法。挂链式的思想在产生冲突的hash地址指向一个链表，将具有相同的key值的数据存放到链表中。另一种是建立一个公共溢出区。将所有产生冲突的数据都存放到公共溢出区，也可以使问题解决。​</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/关于数组和链表/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/">iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/" class="archive-article-date">
-  	<time datetime="2018-09-06T13:53:32.378Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>很少有人知道weak表其实是一个hash（哈希）表，Key是所指对象的地址，Value是weak指针的地址数组。更多人的人只是知道weak是弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候自动被设置为nil。</p>
-<h2 id="weak-实现原理的概括"><a href="#weak-实现原理的概括" class="headerlink" title="weak 实现原理的概括"></a>weak 实现原理的概括</h2><p>Runtime维护了一个weak表，用于存储指向某个对象的所有weak指针。weak表其实是一个hash（哈希）表，Key是所指对象的地址，Value是weak指针的地址（这个地址的值是所指对象的地址）数组。</p>
-<p>weak 的实现原理可以概括一下三步：</p>
-<p>1、初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对象的地址。</p>
-<p>2、添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。</p>
-<p>3、释放时，调用clearDeallocating函数。clearDeallocating函数首先根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除，最后清理对象的记录。</p>
-<h3 id="1、初始化时：runtime会调用objc-initWeak函数，objc-initWeak函数会初始化一个新的weak指针指向对象的地址。"><a href="#1、初始化时：runtime会调用objc-initWeak函数，objc-initWeak函数会初始化一个新的weak指针指向对象的地址。" class="headerlink" title="1、初始化时：runtime会调用objc_initWeak函数，objc_initWeak函数会初始化一个新的weak指针指向对象的地址。"></a>1、初始化时：runtime会调用objc_initWeak函数，objc_initWeak函数会初始化一个新的weak指针指向对象的地址。</h3><p>示例代码</p>
-<pre><code>{
-    NSObject *obj = [[NSObject alloc] init];
-    id __weak obj1 = obj;
+    _checkBoxView.checked = isChecked;
 }
-</code></pre><p>当我们初始化一个weak变量时，runtime会调用 NSObject.mm 中的objc_initWeak函数。这个函数在Clang中的声明如下：</p>
-<pre><code>id objc_initWeak(id *object, id value);
-</code></pre><p>而对于 objc_initWeak() 方法的实现</p>
-<pre><code>id objc_initWeak(id *location, id newObj) {
-// 查看对象实例是否有效
-// 无效对象直接导致指针释放
-    if (!newObj) {
-        *location = nil;
-        return nil;
-    }
-    // 这里传递了三个 bool 数值
-    // 使用 template 进行常量参数传递是为了优化性能
-    return storeWeakfalse/*old*/, true/*new*/, true/*crash*/&gt;
-    (location, (objc_object*)newObj);
-}    
-</code></pre><p>可以看出，这个函数仅仅是一个深层函数的调用入口，而一般的入口函数中，都会做一些简单的判断（例如 objc_msgSend 中的缓存判断），这里判断了其指针指向的类对象是否有效，无效直接释放，不再往深层调用函数。否则，object将被注册为一个指向value的__weak对象。而这事应该是objc_storeWeak函数干的。</p>
-<p>注意：objc_initWeak函数有一个前提条件：就是object必须是一个没有被注册为__weak对象的有效指针。而value则可以是null，或者指向一个有效的对象。</p>
-<h3 id="添加引用时：objc-initWeak函数会调用-objc-storeWeak-函数，-objc-storeWeak-的作用是更新指针指向，创建对应的弱引用表。"><a href="#添加引用时：objc-initWeak函数会调用-objc-storeWeak-函数，-objc-storeWeak-的作用是更新指针指向，创建对应的弱引用表。" class="headerlink" title="添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。"></a>添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。</h3><p>objc_storeWeak的函数声明如下：</p>
-<pre><code>id objc_storeWeak(id *location, id value);
-</code></pre><p>objc_storeWeak() 的具体实现如下：</p>
-<pre><code>// HaveOld:     true - 变量有值
-//             false - 需要被及时清理，当前值可能为 nil
-// HaveNew:     true - 需要被分配的新值，当前值可能为 nil
-//             false - 不需要分配新值
-// CrashIfDeallocating: true - 说明 newObj 已经释放或者 newObj 不支持弱引用，该过程需要暂停
-//             false - 用 nil 替代存储
-template bool HaveOld, bool HaveNew, bool CrashIfDeallocating&gt;
-static id storeWeak(id *location, objc_object *newObj) {
-    // 该过程用来更新弱引用指针的指向
-    // 初始化 previouslyInitializedClass 指针
-    Class previouslyInitializedClass = nil;
-    id oldObj;
-    // 声明两个 SideTable
-    // ① 新旧散列创建
-    SideTable *oldTable;
-    SideTable *newTable;
-    // 获得新值和旧值的锁存位置（用地址作为唯一标示）
-    // 通过地址来建立索引标志，防止桶重复
-    // 下面指向的操作会改变旧值
-retry:
-    if (HaveOld) {
-        // 更改指针，获得以 oldObj 为索引所存储的值地址
-        oldObj = *location;
-        oldTable = &amp;SideTables()[oldObj];
-    } else {
-        oldTable = nil;
-    }
-    if (HaveNew) {
-        // 更改新值指针，获得以 newObj 为索引所存储的值地址
-        newTable = &amp;SideTables()[newObj];
-    } else {
-        newTable = nil;
-    }
-    // 加锁操作，防止多线程中竞争冲突
-    SideTable::lockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
-    // 避免线程冲突重处理
-    // location 应该与 oldObj 保持一致，如果不同，说明当前的 location 已经处理过 oldObj 可是又被其他线程所修改
-    if (HaveOld  &amp;&amp;  *location != oldObj) {
-        SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
-        goto retry;
-    }
-    // 防止弱引用间死锁
-    // 并且通过 +initialize 初始化构造器保证所有弱引用的 isa 非空指向
-    if (HaveNew  &amp;&amp;  newObj) {
-        // 获得新对象的 isa 指针
-        Class cls = newObj-&gt;getIsa();
-        // 判断 isa 非空且已经初始化
-        if (cls != previouslyInitializedClass  &amp;&amp;
-            !((objc_class *)cls)-&gt;isInitialized()) {
-            // 解锁
-            SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
-            // 对其 isa 指针进行初始化
-            _class_initialize(_class_getNonMetaClass(cls, (id)newObj));
-            // 如果该类已经完成执行 +initialize 方法是最理想情况
-            // 如果该类 +initialize 在线程中
-            // 例如 +initialize 正在调用 storeWeak 方法
-            // 需要手动对其增加保护策略，并设置 previouslyInitializedClass 指针进行标记
-            previouslyInitializedClass = cls;
-            // 重新尝试
-            goto retry;
-        }
-    }
-    // ② 清除旧值
-    if (HaveOld) {
-        weak_unregister_no_lock(&amp;oldTable-&gt;weak_table, oldObj, location);
-    }
-    // ③ 分配新值
-    if (HaveNew) {
-        newObj = (objc_object *)weak_register_no_lock(&amp;newTable-&gt;weak_table,
-                                                      (id)newObj, location,
-                                                      CrashIfDeallocating);
-        // 如果弱引用被释放 weak_register_no_lock 方法返回 nil
-        // 在引用计数表中设置若引用标记位
-        if (newObj  &amp;&amp;  !newObj-&gt;isTaggedPointer()) {
-            // 弱引用位初始化操作
-            // 引用计数那张散列表的weak引用对象的引用计数中标识为weak引用
-            newObj-&gt;setWeaklyReferenced_nolock();
-        }
-        // 之前不要设置 location 对象，这里需要更改指针指向
-        *location = (id)newObj;
-    }
-    else {
-        // 没有新值，则无需更改
-    }
-    SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
-    return (id)newObj;
+</code></pre><p>当我改变自定义cell中的被选中状态时发现改变不了</p>
+<pre><code>- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+    AddPartnerTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+    FMLog(@&quot;isChecked1:%d&quot;,cell.isChecked);
+    cell.isChecked = !cell.isChecked;
+    FMLog(@&quot;isChecked2:%d&quot;,cell.isChecked);
+
 }
-</code></pre><p>SideTable 这个结构体，我给他起名引用计数和弱引用依赖表，因为它主要用于管理对象的引用计数和 weak 表。在 NSObject.mm 中声明其数据结构：</p>
-<pre><code>struct SideTable {
-// 保证原子操作的自旋锁
-    spinlock_t slock;
-    // 引用计数的 hash 表
-    RefcountMap refcnts;
-    // weak 引用全局 hash 表
-    weak_table_t weak_table;
-}
-</code></pre><p>对于 slock 和 refcnts 两个成员不用多说，第一个是为了防止竞争选择的自旋锁，第二个是协助对象的 isa 指针的 extra_rc 共同引用计数的变量（对于对象结果，在今后的文中提到）。这里主要看 weak 全局 hash 表的结构与作用。</p>
-<p>weak表</p>
-<p>weak表是一个弱引用表，实现为一个weak_table_t结构体，存储了某个对象相关的的所有的弱引用信息。其定义如下(具体定义在objc-weak.h中)：</p>
-<pre><code>   struct weak_table_t {
-    // 保存了所有指向指定对象的 weak 指针
-    weak_entry_t *weak_entries;
-    // 存储空间
-    size_t    num_entries;
-    // 参与判断引用计数辅助量
-    uintptr_t mask;
-    // hash key 最大偏移值
-    uintptr_t max_hash_displacement;
-};
-</code></pre><p>这是一个全局弱引用hash表。使用不定类型对象的地址作为 key ，用 weak_entry_t 类型结构体对象作为 value 。其中的 weak_entries 成员，从字面意思上看，即为弱引用表入口。其实现也是这样的。</p>
-<p>其中weak_entry_t是存储在弱引用表中的一个内部结构体，它负责维护和存储指向一个对象的所有弱引用hash表。其定义如下：</p>
-<pre><code>typedef objc_object ** weak_referrer_t;
-struct weak_entry_t {
-    DisguisedPtrobjc_object&gt; referent;
-    union {
-        struct {
-            weak_referrer_t *referrers;
-            uintptr_t        out_of_line : 1;
-            uintptr_t        num_refs : PTR_MINUS_1;
-            uintptr_t        mask;
-            uintptr_t        max_hash_displacement;
-        };
-        struct {
-            // out_of_line=0 is LSB of one of these (don&apos;t care which)
-            weak_referrer_t  inline_referrers[WEAK_INLINE_COUNT];
-        };
-    }
-}
-</code></pre><p>在 weak_entry_t 的结构中，DisguisedPtr referent 是对泛型对象的指针做了一个封装，通过这个泛型类来解决内存泄漏的问题。从注释中写 out_of_line 成员为最低有效位，当其为0的时候， weak_referrer_t 成员将扩展为多行静态 hash table。其实其中的 weak_referrer_t 是二维 objc_object 的别名，通过一个二维指针地址偏移，用下标作为 hash 的 key，做成了一个弱引用散列。</p>
-<p>那么在有效位未生效的时候，out_of_line 、 num_refs、 mask 、 max_hash_displacement 有什么作用？以下是笔者自身的猜测：</p>
-<p>out_of_line：最低有效位，也是标志位。当标志位 0 时，增加引用表指针纬度。</p>
-<p>num_refs：引用数值。这里记录弱引用表中引用有效数字，因为弱引用表使用的是静态 hash 结构，所以需要使用变量来记录数目。</p>
-<p>mask：计数辅助量。</p>
-<p>max_hash_displacement：hash 元素上限阀值。</p>
-<p>其实 out_of_line 的值通常情况下是等于零的，所以弱引用表总是一个 objc_objective 指针二维数组。一维 objc_objective 指针可构成一张弱引用散列表，通过第三纬度实现了多张散列表，并且表数量为 WEAK_INLINE_COUNT 。</p>
-<p>总结一下 StripedMap[] ： StripedMap 是一个模板类，在这个类中有一个 array 成员，用来存储 PaddedT 对象，并且其中对于 [] 符的重载定义中，会返回这个 PaddedT 的 value 成员，这个 value 就是我们传入的 T 泛型成员，也就是 SideTable 对象。在 array 的下标中，这里使用了 indexForPointer 方法通过位运算计算下标，实现了静态的 Hash Table。而在 weak_table 中，其成员 weak_entry 会将传入对象的地址加以封装起来，并且其中也有访问全局弱引用表的入口。</p>
-<h3 id="旧对象解除注册操作-weak-unregister-no-lock"><a href="#旧对象解除注册操作-weak-unregister-no-lock" class="headerlink" title="旧对象解除注册操作 weak_unregister_no_lock"></a>旧对象解除注册操作 weak_unregister_no_lock</h3><p>该方法主要作用是将旧对象在 weak_table 中接触 weak 指针的对应绑定。根据函数名，称之为解除注册操作。从源码中，可以知道其功能就是从 weak_table 中接触 weak 指针的绑定。而其中的遍历查询，就是针对于 weak_entry 中的多张弱引用散列表。</p>
-<h3 id="新对象添加注册操作-weak-register-no-lock"><a href="#新对象添加注册操作-weak-register-no-lock" class="headerlink" title="新对象添加注册操作 weak_register_no_lock"></a>新对象添加注册操作 weak_register_no_lock</h3><p>这一步与上一步相反，通过 weak_register_no_lock 函数把心的对象进行注册操作，完成与对应的弱引用表进行绑定操作。</p>
-<h2 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h2><p>一个对象A,里面有一个weak属性B, 首先会有一个hash表, 键为A的地址, 值为一个数组, 这个数组里包含了B指针的地址, 当销毁的时候回根据B指针的地址获取到B的指针, 然后置为nil</p>
+</code></pre><p>但是我发现内部是改变了。 </p>
+<p>后来无意中想起来重写这个方法还需要</p>
+<ul>
+<li>(void)setIsChecked:(BOOL)isChecked<br>{<br>  _isChecked = isChecked;<br>  _checkBoxView.checked = isChecked;<br>}</li>
+</ul>
+<p>低级问题用于警醒。</p>
 
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -1163,16 +242,75 @@ struct weak_entry_t {
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/didSelectRowAtIndexPath中改变自定义Cell属性问题/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2018/11/27/iOS时区/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iOS时区</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -1192,304 +330,14 @@ struct weak_entry_t {
 
 
 
-
-  
-    <article id="post-iOS 简单而粗暴的说一说内存管理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/">iOS 简单而粗暴的说一说内存管理</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/" class="archive-article-date">
-  	<time datetime="2018-09-06T05:21:08.050Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>既然是内存管理，首先要知道那么内存是用来干什么的？内存具体管理的东西是什么？当然这些东西基本都是常识了，内存当然是用来存储数据的，内存要管理的东西简单的说也就是如何将数据存储到内存中（比如说我们的声明变量就可以将数据存储到内存中），其次存储到内存中的数据怎样释放，什么时候释放，这都是内存管理需要来关心的</p>
-<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="内存中的五大区域"><a href="#内存中的五大区域" class="headerlink" title="内存中的五大区域"></a>内存中的五大区域</h3><p>内存分为5个区域，分别指的是—–&gt;栈区/堆区/BSS段/数据段/代码段</p>
-<h4 id="栈区"><a href="#栈区" class="headerlink" title="栈区"></a>栈区</h4><p>存储局部变量，当其作用域执行完毕之后，就会被系统立即收回</p>
-<h4 id="堆区"><a href="#堆区" class="headerlink" title="堆区"></a>堆区</h4><p>存储OC对象，手动申请的字节空间，需要调用free来释放</p>
-<h4 id="BSS段"><a href="#BSS段" class="headerlink" title="BSS段"></a>BSS段</h4><p>未初始化的全局变量和静态变量，一旦初始化就会从BSS段中回收掉，转存到数据段中</p>
-<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><p>存储已经初始化的全局变量和静态变量，以及常量数据，直到结束程序时才会被立即收回</p>
-<h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><p>代码，直到结束程序时才会被立即收回</p>
-<h3 id="OC中堆区存储对象的特点"><a href="#OC中堆区存储对象的特点" class="headerlink" title="OC中堆区存储对象的特点"></a>OC中堆区存储对象的特点</h3><p>除了堆区，其他区域的中存储的数据，都是又系统自动释放的</p>
-<p>堆区中的OC对象，是不会自动释放的，如果不主动释放，那么将在程序结束的时候才去释放</p>
-<h3 id="引用计数器"><a href="#引用计数器" class="headerlink" title="引用计数器"></a>引用计数器</h3><p>首先简单来说一下，每一个OC对象都有一个属性，叫做retainCount，翻译过来也就是引用计数器，类型为unsigned long，占据8个字节，每一个对象负责维护对象所引用的记数值，当一个新的引用指向对象，那么这个对象的引用值增加1，当我们新创建出一个对象的时候这个对象的引用计数器的值默认为1，当这个对象被少一次引用的时候那么就先让这个对象的引用记数值减1，当这个对象所引用的记数值为0的时候，代表这个对象没有被使用，这时系统会自动回收掉此对象，回收这个对象的同时自动调用这个对象的dealloc方法</p>
-<h4 id="控制规则："><a href="#控制规则：" class="headerlink" title="控制规则："></a>控制规则：</h4><p>为对象发送一条retain消息，那么对象的引用计数器的值就会+1</p>
-<p>为对象发送一条release消息，那么对象的引用计数器的值就会-1</p>
-<p>为对象发送一条retainCount消息，那么就可以得到这个对象的引用计数器的值</p>
-<h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><p>MRC：Manual Reference Counting 手动引用计数器，需要我们手动管理对象引用计数器的值</p>
-<p>ARC：Autimatic Reference Counting 自动引用计数器，系统自动的改变对象引用计数器的值（iOS5之后），ARC是基于MRC的</p>
-<h3 id="内存管理的原则"><a href="#内存管理的原则" class="headerlink" title="内存管理的原则"></a>内存管理的原则</h3><p>新创建一个对象，这个对象的引用计数器的值为1，有对象的创建，就需要匹配一个release</p>
-<p>是谁来负责retain的，谁就要负责release，使用的时候retain，不是用的时候release</p>
-<p>retain的次数要和release次数想匹配，有加有减，做到平衡</p>
-<h3 id="野指针"><a href="#野指针" class="headerlink" title="野指针"></a>野指针</h3><p>在C中，声明一个指针变量，没有为这个指针变量初始化，那么这个指针变量的值也就是一个垃圾值，指针指向随机的一块空间，那么我们叫做野指针</p>
-<p>在OC中，一个指针指向的对象被释放了，那么这个指针叫野指针</p>
-<h3 id="对象的回收"><a href="#对象的回收" class="headerlink" title="对象的回收"></a>对象的回收</h3><p>对象所占用的字节空间，分配给别人使用，系统未分配这块空间被别人使用之前，这个对象的数据仍然处在内存中</p>
-<h3 id="僵尸对象"><a href="#僵尸对象" class="headerlink" title="僵尸对象"></a>僵尸对象</h3><p>已经被收回但是这个对象的数据仍然处在内存中，像这样的对象叫做僵尸对象</p>
-<p>僵尸对象有可能可以访问也有可能不可以访问，当僵尸对象所占的内存空间还没有分配给别人使用的时候，这个数据的对象其实仍然存在，通过指针仍然可以找到这个对象，所以说这个时候僵尸对象还可以被访问，当这个僵尸对象已经分配给别人使用的时候，这个对象就不存在了，这个时候不可以被访问</p>
-<p>注意：一旦一个对象成为僵尸对象之后，这个对象无论如何都不应该被使用，无论有没有分配给别人使用，都不能用！且不可以复活！</p>
-<h3 id="避免内存泄漏"><a href="#避免内存泄漏" class="headerlink" title="避免内存泄漏"></a>避免内存泄漏</h3><p>有对象的创建，就必须要匹配一个release，retain和release的次数要匹配，不要随便为一个指针赋值为nil，除非这个指针是野指针，在方法中不要随意对传入的对象进行retain</p>
-<p>当我们通过野指针去访问僵尸对象的时候会报错，为了避免报错当一个指针成为野指针后，为这个指针赋值为nil</p>
-<h2 id="循环引用"><a href="#循环引用" class="headerlink" title="循环引用"></a>循环引用</h2><p>@class</p>
-<p>对于循环依赖关系来说，比方A类引用B类，同时B类也引用A类</p>
-<p>这种代码编译会报错。当使用@class在两个类相互声明，就不会出现编译报错</p>
-<p>用法概括</p>
-<p>使用@class 类名; 就可以引用一个类，说明一下它是一个类</p>
-<p>和import的区别</p>
-<p>l  #import方式会包含被引用类的所有信息，包括被引用类的变量和方法；@class方式只是告诉编译器在A.h文件中 B *b 只是类的声明，具体这个类里有什么信息，这里不需要知道，等实现文件中真正要用到时，才会真正去查看B类中信息</p>
-<p>l  如果有上百个头文件都#import了同一个文件，或者这些文件依次被#improt,那么一旦最开始的头文件稍有改动，后面引用到这个文件的所有类都需要重新编译一遍，这样的效率也是可想而知的，而相对来讲，使用@class方式就不会出现这种问题了</p>
-<p>l  在.m实现文件中，如果需要引用到被引用类的实体变量或者方法时，还需要使用#import方式引入被引用类</p>
-<h3 id="如何解决循环引用的内存管理。"><a href="#如何解决循环引用的内存管理。" class="headerlink" title="如何解决循环引用的内存管理。"></a>如何解决循环引用的内存管理。</h3><p>解决方案：一端用assign，一端用retain</p>
-<p>  比如A对象retain了B对象，B对象retain了A对象</p>
-<p>  这样会导致A对象和B对象永远无法释放</p>
-<h3 id="didReceiveMemoryWarning、dealloc方法使用"><a href="#didReceiveMemoryWarning、dealloc方法使用" class="headerlink" title="didReceiveMemoryWarning、dealloc方法使用"></a>didReceiveMemoryWarning、dealloc方法使用</h3><p>####1.didReceiveMemoryWarning方法：</p>
-<p>首先调用[super didReceiveMemoryWarning]方法，然后检查当前视图的父视图是否为空，如果为空，则释放掉一些不需要的数据。关于视图界面的释放不应该在这个方法中，应该放在viewDidUnload方法中。</p>
-<p>####2.dealloc方法：</p>
-<p>对象释放时调用，在这个方法中，要释放掉所有的数据和输出口。比如释放输出口：[xxx release];(不使用self关键字)</p>
-<h2 id="一些注意的地方"><a href="#一些注意的地方" class="headerlink" title="一些注意的地方"></a>一些注意的地方</h2><p>1.向集合(NSArray,NSDictionary等)添加对象时，被添加的对象会被执行retain操作，当从集合中移走对象或者集合对象被释放时，集合中的对象会被执行release操作。</p>
-<p>2.要保证有多少个alloc、copy、multablecopy、retain消息，就要有多少个release或者autorelease，保证代码平衡。</p>
-<p>3.在程序中直接用@””创建的NSString对象，是常量，引用计数是-1，向它发送retain、release没有效果。</p>
-<p>4.在View中使用图片时，大的图片区域尽量使用小的图片数据来填充，减小内存占用。</p>
-<p>5.[UIImage imageNamed:@””]，次方法使用了系统缓存来缓存图像，会长时间占用内存，最好使用imageWithContentsOfFile方法。</p>
-<p>6.数据要延迟加载，只在内存中保留满足需要的最少的数据和视图元素，需要的时候再加载，不需要就马上销毁。</p>
-<p>7.假如一个成员变量在property中使用了retain，当使用self关键字对其赋值时，会对创建的对象再retain一次，造成内存泄露。比如：self.xxx = [[XXXalloc] init];</p>
-<p>  对一个成员变量赋nil值时，self.xxx = nil,会调用xxx的release方法，并且将指针置空，xxx = nil，只是将指针置空。</p>
-<p>9.在控制器中使用NSTimer会使当前控制器引用计数加1，所以在控制器释放之前，必须暂停和使定时器失效，否则控制器将不会被释放。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-AFN为什么添加一条常驻线程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/05/AFN为什么添加一条常驻线程/">AFN为什么添加一条常驻线程</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/05/AFN为什么添加一条常驻线程/" class="archive-article-date">
-  	<time datetime="2018-09-05T08:43:27.761Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天早上看到一个很好的面试题.作为渣渣的我很想尝试这自己捋清楚答案~</p>
-<p>这个问题可以分为两个部分回答</p>
-<p>1为什么要添加一个不退出的线程</p>
-<p>2为什么只添加了一个线程</p>
-<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>AFN 的做法是把网络请求的发起和解析都放在同一个子线程中进行，但由于子线程默认不开启 runloop，它会向一个 C语言程序那样在运行完所有代码后退出线程。而网络请求是异步的，这会导致获取到请求数据时，线程已经退出，代理方法没有机会执行。因此，AFN 的做法是使用一个 runloop 来保证线程不死~</p>
-<p>然而频繁的创建线程并启动runloop肯定会造成内存泄露(runloop 无法停止.线程无法退出)</p>
-<p>所以AFN就创建了一个单例线程,并且保证线程不退出~</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/05/AFN为什么添加一条常驻线程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/05/为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？/">为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/05/为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？/" class="archive-article-date">
-  	<time datetime="2018-09-05T07:38:22.366Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="对于四种变量"><a href="#对于四种变量" class="headerlink" title="对于四种变量"></a>对于四种变量</h2><p>自动变量(局部变量)</p>
-<p>静态变量</p>
-<p>静态全局变量</p>
-<p>全局变量</p>
-<p>首先： Block会捕获哪些变量？如果Block外面还有很多自动变量，静态变量，等等，这些变量在Block里面并不会被使用到。那么这些变量并不会被Block捕获进来，也就是说并不会在构造函数里面传入它们的值。Block捕获外部变量仅仅只捕获Block闭包里面会用到的值，其他用不到的值，它并不会去捕获。</p>
-<p>其次：全局变量和静态全局变量可以在Block内值被修改是为什么呢？全局变量和静态全局变量在执行Block语法的时候，它们被Block捕获进去，这一点很好理解，因为是全局的，作用域很广，所以Block捕获了它们进去之后，在Block里面进行++操作，Block结束之后，它们的值依旧可以得以保存下来。</p>
-<p>然后：对于静态变量Block是如何捕获的呢？静态变量传递给Block是内存地址值，所以能在Block里面直接改变值。在执行Block语法的时候，Block语法表达式所使用的静态变量的地址是被保存进了Block的结构体实例中，也就是Block自身中。所以能够在Block 内部修改静态变量的值。</p>
-<p>最后：为什么自动变量无法在Block内部修改值呢？类似静态变量，自动变量也是在执行Block语法的时候，被block捕获成为Block的结构体实例中，但是Block仅仅捕获了val的值，并没有捕获val的内存地址，所以在Block内部是无法修改自动变量的值。OC可能是基于这一点，在编译的层面就防止开发者可能犯的错误，因为自动变量没法在Block中改变外部变量的值，所以编译过程中就报编译错误。错误：Variable is not assignable(missing __block type specifier)</p>
-<p>总结一下</p>
-<p>在Block中改变变量值有2种方式，一是传递内存地址指针到Block中，二是改变存储区方式(__block)。</p>
-<p>MRC环境下，只有copy，_block才会被复制到堆上，否则，_block一直都在栈上，block也只是 _NSStackBlock，这个时候_forwarding指针就只指向自己了。</p>
-<p>ARC环境下，一旦Block赋值就会触发copy，_block就会copy到堆上，Block也是_NSMallocBlock。ARC环境下也是存在_NSStackBlock的时候，这种情况下，_block就在栈上</p>
-<h2 id="block-与-weak-的区别"><a href="#block-与-weak-的区别" class="headerlink" title="_block 与_weak 的区别"></a>_block 与_weak 的区别</h2><p>1._block不管是ARC还是MRC模式下都可以使用，可以修饰对象，还可以修饰基本数据类型。</p>
-<p>2._weak只能在ARC模式下使用，也只能修饰对象（NSString），不能修饰基本数据类型（int）。</p>
-<p>3._block对象可以在block中被重新赋值，_weak不可以。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/05/为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
-    </nav>
+  
+
+  
+
+  
+
   
 
 
@@ -1512,8 +360,8 @@ struct weak_entry_t {
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
