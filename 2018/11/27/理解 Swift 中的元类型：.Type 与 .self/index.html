@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>关于分类的总结 | Blog</title>
+  <title>理解 Swift 中的元类型：.Type 与 .self | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="作用可以在不修改原来类的基础上，为一个类扩展方法。 分类的结构体struct _category_t {     const char *name;//类名     struct _class_t *cls;//类     const struct _method_list_t *instance_methods;//category中所有给类添加的实例方法的列表（instanceMethods）">
+  <meta name="description" content="元类型元类型就是类型的类型。 比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于分类的总结">
-<meta property="og:url" content="http://yoursite.com/2018/09/06/关于分类的总结/index.html">
+<meta property="og:title" content="理解 Swift 中的元类型：.Type 与 .self">
+<meta property="og:url" content="http://yoursite.com/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="作用可以在不修改原来类的基础上，为一个类扩展方法。 分类的结构体struct _category_t {     const char *name;//类名     struct _class_t *cls;//类     const struct _method_list_t *instance_methods;//category中所有给类添加的实例方法的列表（instanceMethods）">
+<meta property="og:description" content="元类型元类型就是类型的类型。 比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-06T15:12:56.305Z">
+<meta property="og:updated_time" content="2018-11-27T05:53:43.698Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于分类的总结">
-<meta name="twitter:description" content="作用可以在不修改原来类的基础上，为一个类扩展方法。 分类的结构体struct _category_t {     const char *name;//类名     struct _class_t *cls;//类     const struct _method_list_t *instance_methods;//category中所有给类添加的实例方法的列表（instanceMethods）">
+<meta name="twitter:title" content="理解 Swift 中的元类型：.Type 与 .self">
+<meta name="twitter:description" content="元类型元类型就是类型的类型。 比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,145 +155,104 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-关于分类的总结" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-理解 Swift 中的元类型：.Type 与 .self" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      关于分类的总结
+      理解 Swift 中的元类型：.Type 与 .self
     </h1>
   
 
         
-        <a href="/2018/09/06/关于分类的总结/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:08:58.127Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+        <a href="/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/" class="archive-article-date">
+  	<time datetime="2018-11-27T05:47:47.375Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>可以在不修改原来类的基础上，为一个类扩展方法。</p>
-<h2 id="分类的结构体"><a href="#分类的结构体" class="headerlink" title="分类的结构体"></a>分类的结构体</h2><pre><code>struct _category_t {
-    const char *name;//类名
-    struct _class_t *cls;//类
-    const struct _method_list_t *instance_methods;//category中所有给类添加的实例方法的列表（instanceMethods）
-    const struct _method_list_t *class_methods;//category中所有添加的类方法的列表（classMethods）
-    const struct _protocol_list_t *protocols;//category实现的所有协议的列表（protocols）
-    const struct _prop_list_t *properties;//category中添加的所有属性（instanceProperties）
-};
+        <h3 id="元类型"><a href="#元类型" class="headerlink" title="元类型"></a>元类型</h3><p>元类型就是类型的类型。</p>
+<p>比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的类型，术语表述为元类型：metaType。</p>
+<h3 id="Type-与-self"><a href="#Type-与-self" class="headerlink" title=".Type 与 .self"></a>.Type 与 .self</h3><p>Swift 中的元类型用 .Type 表示。比如 Int.Type 就是 Int 的元类型。 类型与值有着不同的形式，就像 Int 与 5 的关系。元类型也是类似，.Type 是类型，类型的 .self 是元类型的值。</p>
+<pre><code>let intMetatype: Int.Type = Int.self
+</code></pre><p>可能大家平时对元类型使用的比较少，加上这两个形式有一些接近，一个元类型只有一个对应的值，所以使用的时候常常写错：</p>
+<pre><code>types.append(Int.Type)
+types.append(Int.self)
+</code></pre><p>如果分清了 Int.Type 是类型的名称，不是值就不会再弄错了。因为你肯定不会这么写：</p>
+<pre><code>numbers.append(Int)
+</code></pre><h3 id="AnyClass"><a href="#AnyClass" class="headerlink" title="AnyClass"></a>AnyClass</h3><p>获得元类型后可以访问静态变量和静态方法。其实我们经常使用元类型，只是有时 Xcode 帮我们隐藏了这些细节。比如我们经常用的 tableView 的一个方法：</p>
+<pre><code>func register(AnyClass?, forCellReuseIdentifier: String)
 
-struct category_t {
-    const char *name; // 类名
-    classref_t cls;   // 分类所属的类
-    struct method_list_t *instanceMethods;  // 实例方法列表
-    struct method_list_t *classMethods;     // 类方法列表
-    struct protocol_list_t *protocols;      // 遵循的协议列表
-    struct property_list_t *instanceProperties; // 属性列表
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cell&quot;)
+</code></pre><p>这里的 AnyClass 其实就是一个元类型：</p>
+<pre><code>typealias AnyClass = AnyObject.Type
+</code></pre><p>通过上面的定义我们可以知道，AnyClass 就是一个任意类型元类型的别名。 当我们访问静态变量的时候其实也是通过元类型的访问的，只是 Xcode 帮我们省略了 .self。下面两个写法是等价的。如果可以不引起歧义，我想没人会愿意多写一个 self。</p>
+<pre><code>Int.max
+Int.self.max
+</code></pre><h3 id="type-of-vs-self"><a href="#type-of-vs-self" class="headerlink" title="type(of:) vs .self"></a>type(of:) vs .self</h3><p>前面提到通过 type(of:) 和 .self都可以获得元类型的值。那么这两种方式的区别是什么呢？</p>
+<pre><code>let instanceMetaType: String.Type = type(of: &quot;string&quot;)
+let staicMetaType: String.Type = String.self
+</code></pre><p>.self 取到的是静态的元类型，声明的时候是什么类型就是什么类型。type(of:) 取的是运行时候的元类型，也就是这个实例 的类型。</p>
+<pre><code>let myNum: Any = 1 
+type(of: myNum) // Int.type
+</code></pre><h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>很多人对 Protocol 的元类型容易理解错。Protocol 自身不是一个类型，只有当一个对象实现了 protocol 后才有了类型对象。所以 Protocol.self 不等于 Protocol.Type。如果你写下面的代码会得到一个错误：</p>
+<pre><code>protocol MyProtocol { }
+let metatype: MyProtocol.Type = MyProtocol.self
+</code></pre><p>正确的理解是 MyProtocol.Type 也是一个有效的元类型，那么就需要是一个可承载的类型的元类型。所以改成这样就可以了：</p>
+<pre><code>struct MyType: MyProtocol { }
+let metatype: MyProtocol.Type = MyType.self 
+</code></pre><p>那么 Protocol.self 是什么类型呢？为了满足你的好奇心苹果为你造了一个类型：</p>
+<pre><code>let protMetatype: MyProtocol.Protocol = MyProtocol.self
+</code></pre><h2 id="一个实战"><a href="#一个实战" class="headerlink" title="一个实战"></a>一个实战</h2><p>为了让大家能够熟悉元类型的使用我举一个例子。 假设我们有两个 Cell 类，想要一个工厂方法可以根据类型初始化对象。下面是两个 Cell 类：</p>
+<pre><code>protocol ContentCell { }
 
-    // 如果是元类，就返回类方法列表；否则返回实例方法列表
-    method_list_t *methodsForMeta(bool isMeta) {
-        if (isMeta) {
-            return classMethods;
-        } else {
-            return instanceMethods;
-        }
+class IntCell: UIView, ContentCell {
+    required init(value: Int) {
+        super.init(frame: CGRect.zero)
     }
 
-    // 如果是元类，就返回 nil，因为元类没有属性；否则返回实例属性列表，但是...实例属性
-    property_list_t *propertiesForMeta(bool isMeta) {
-        if (isMeta) {
-            return nil; // classProperties;
-        } else {
-            return instanceProperties;
-        }
+    required init?(coder aDecoder: NSCoder) {
+        fatalError(&quot;init(coder:) has not been implemented&quot;)
     }
-};
-</code></pre><h2 id="编译时的分类"><a href="#编译时的分类" class="headerlink" title="编译时的分类"></a>编译时的分类</h2><h3 id="分类的属性"><a href="#分类的属性" class="headerlink" title="分类的属性"></a>分类的属性</h3><pre><code>// Person(categoryPerson) 属性列表
-static struct /*_prop_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count_of_properties;
-    struct _prop_t prop_list[1];
-} _OBJC_$_PROP_LIST_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_prop_t),
-    1,
-    {{"categoryPersonName","T@\"NSString\",C,N"}}
-};
+}
 
-// Person 属性列表
-static struct /*_prop_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count_of_properties;
-    struct _prop_t prop_list[1];
-} _OBJC_$_PROP_LIST_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_prop_t),
-    1,
-    {{"presonName","T@\"NSString\",C,N,V_presonName"}}
-};
-</code></pre><p>在分类中可以声明属性，并且同样会生成一个 _prop_list_t 的结构体</p>
-<h3 id="分类的实例变量？"><a href="#分类的实例变量？" class="headerlink" title="分类的实例变量？"></a>分类的实例变量？</h3><pre><code>// Person 实例变量列表
+class StringCell: UIView, ContentCell {
+    required init(value: String) {
+        super.init(frame: CGRect.zero)
+    }
 
-static struct /*_ivar_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count;
-    struct _ivar_t ivar_list[1];
-} _OBJC_$_INSTANCE_VARIABLES_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_ivar_t),
-    1,
-    {{(unsigned long int *)&OBJC_IVAR_$_Person$_presonName, "_presonName", "@\"NSString\"", 3, 8}}
-};
-</code></pre><p>因为 _category_t 这个结构体中并没有 _ivar_list_t<br>所以在编译时系统没有Person(categoryPerson) 没有生成类似的相应结构体，也没有生成  _categoryPersonName。</p>
-<h3 id="分类的实例方法"><a href="#分类的实例方法" class="headerlink" title="分类的实例方法"></a>分类的实例方法</h3><pre><code>// Person 实例方法结构体
-static struct /*_method_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _objc_method)
-    unsigned int method_count;
-    struct _objc_method method_list[3];
-} _OBJC_$_INSTANCE_METHODS_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_objc_method),
-    3,
-    {{(struct objc_selector *)"doSomeThing", "v16@0:8", (void *)_I_Person_doSomeThing},
-	    {(struct objc_selector *)"presonName", "@16@0:8", (void *)_I_Person_presonName},
-	    {(struct objc_selector *)"setPresonName:", "v24@0:8@16", (void *)_I_Person_setPresonName_}}
-};
+    required init?(coder aDecoder: NSCoder) {
+        fatalError(&quot;init(coder:) has not been implemented&quot;)
+    }
+}
+</code></pre><p>工厂方法实现是这样的</p>
+<pre><code>func createCell(type: ContentCell.Type) -&gt; ContentCell? {
+    if let intCell = type as? IntCell.Type {
+        return intCell.init(value: 5)
+    } else if let stringCell = type as? StringCell.Type {
+        return stringCell.init(value: &quot;xx&quot;)
+    }
+    return nil
+}
 
-// Person(categoryPerson )实例方法结构体
-static struct /*_method_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _objc_method)
-    unsigned int method_count;
-    struct _objc_method method_list[1];
-} _OBJC_$_CATEGORY_INSTANCE_METHODS_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_objc_method),
-    1,
-    {{(struct objc_selector *)"doSomeThing", "v16@0:8", (void *)_I_Person_categoryPerson_doSomeThing}}
-};
-</code></pre><p>虽然分类可以声明属性，但是编译时，系统并没有生成分类属性的 get／set 方法，所以，这就是为什么分类要利用</p>
-<h3 id="分类的结构体-1"><a href="#分类的结构体-1" class="headerlink" title="分类的结构体"></a>分类的结构体</h3><pre><code>// Person(categoryPerson ) 结构体
-static struct _category_t _OBJC_$_CATEGORY_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = 
-{
-    &quot;Person&quot;,
-    0, // &amp;OBJC_CLASS_$_Person,
-    (const struct _method_list_t *)&amp;_OBJC_$_CATEGORY_INSTANCE_METHODS_Person_$_categoryPerson,
-    0,
-    0,
-    (const struct _prop_list_t *)&amp;_OBJC_$_PROP_LIST_Person_$_categoryPerson,
-};
-</code></pre><p>这是系统在编译时实例化 _category_t 生成的<br><em>OBJC</em>$_CATEGORY_Person_$_categoryPerson</p>
-<h3 id="分类数组"><a href="#分类数组" class="headerlink" title="分类数组"></a>分类数组</h3><pre><code>static struct _category_t *L_OBJC_LABEL_CATEGORY_$ [1] __attribute__((used, section (&quot;__DATA, __objc_catlist,regular,no_dead_strip&quot;)))= {
-    &amp;_OBJC_$_CATEGORY_Person_$_categoryPerson,
-};
-</code></pre><p>编译器最后生成了一个数组，数组的元素就是我们创建的各个分类，用来在运行时加载分类。</p>
-<h2 id="分类的加载"><a href="#分类的加载" class="headerlink" title="分类的加载"></a>分类的加载</h2><h3 id="加载分类调用栈"><a href="#加载分类调用栈" class="headerlink" title="加载分类调用栈"></a>加载分类调用栈</h3><pre><code>_objc_init
-└──map_2_images
-    └──map_images_nolock
-        └──_read_images
-</code></pre><p>分类加载的调用栈如上述</p>
-<p>_objc_init 算是整个 objc4 的入口，进行了一些初始化操作，注册了镜像状态改变时的回调函数</p>
-<p>map_2_images 主要是加锁并调用 map_images_nolock<br>map_images_nolock 在这个函数中，完成所有 class 的注册、fixup等工作，还有初始化自动释放池、初始化 side table 等工作并在函数后端调用了 _read_images</p>
-<p>_read_images 方法干了很多苦力活，比如加载类、Protocol、Category，加载分类的代码就写在 _read_images 函数的尾部</p>
-<p>该调用栈入口函数 void _objc_init(void) 在 objc-os.mm 中</p>
+let intCell = createCell(type: IntCell.self)
+</code></pre><p>当然我们也可以使用类型推断，再结合泛型来使用：</p>
+<pre><code>func createCell&lt;T: ContentCell&gt;() -&gt; T? {
+    if let intCell = T.self as? IntCell.Type {
+        return intCell.init(value: 5) as? T
+    } else if let stringCell = T.self as? StringCell.Type {
+        return stringCell.init(value: &quot;xx&quot;) as? T
+    }
+    return nil
+}
 
+// 现在就根据返回类型推断需要使用的元类型
+let stringCell: StringCell? = createCell()
+</code></pre>
       
 
       
@@ -383,7 +342,7 @@ static struct _category_t _OBJC_$_CATEGORY_Person_$_categoryPerson __attribute__
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/06/关于分类的总结/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -397,18 +356,9 @@ static struct _category_t _OBJC_$_CATEGORY_Person_$_categoryPerson __attribute__
   
 <nav id="article-nav">
   
-    <a href="/2018/09/06/关于tableview的优化/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          关于tableview的优化
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/09/06/类方法和实例方法的区别/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">类方法和实例方法的区别</div>
+    <a href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Runloop等待条件满足再向下执行但不主卡线程</div>
       <i class="icon-circle-right"></i>
     </a>
   
