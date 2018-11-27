@@ -152,6 +152,388 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-类方法(class method)和实例方法(instance method)有什么区别？ " class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">类方法(class method)和实例方法(instance method)有什么区别？</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /" class="archive-article-date">
+  	<time datetime="2018-09-13T13:26:51.045Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>类方法，也称静态方法，指的是用static关键字修饰的方法。此方法属类本身的方法，不属于类的某一个实例（对象）。类方法中不可直接使用实例变量。其调用方式有三种：可直接调用、类名.方法名、对象名.方法名。实例方法指的是不用static关键字修饰的方法。每个实例对象都有自身的实例方法，互相独立，不共享一个。其调用方式只能是对象名.方法名。</p>
+<h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><p>静态方法在程序开始时生成内存,实例方法在程序运行中生成内存，<br>所以静态方法可以直接调用,实例方法要先成生实例,通过实例调用方法，静态速度很快，但是多了会占内存。<br>静态内存是连续的,因为是在程序开始时就生成了,而实例申请的是离散的空间,所以当然没有静态方法快，<br>而且静态内存是有限制的，太多了程序会启动不了。</p>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>如果需要访问或者修改某个实例的成员变量时，将该方法定义成实例方法。<br>类方法正好相反，它不需要访问或者修改某个实例的成员变量。<br>类方法一般用于实现一些工具方法，比如对某个对象进行扩展，或者实现单例。</p>
+<p>类方法常驻内存，实例方法不是，所以类方法效率高但占内存。<br>类方法在堆上分配内存，实例方法在堆栈上。<br>事实上所有的方法都不可能在堆或者堆栈上分配内存，方法作为代码是被加载到特殊的代码内存区域，这个内存区域是不可写的。<br>实例方法需要先创建实例才可以调用，比较麻烦，类方法不用，比较简单。</p>
+<p>事实上如果一个方法与他所在类型的实例无关，那么它就应该是静态的，决不会有人把它写成实例方法。所以所有的实例方法都与实例有关，既然与实例有关，那么创建实例就是必然的步骤，没有麻烦简单一说。实际上上你可以把所有的实例方法都写成静态的，将实例作为参数传入即可。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/" class="archive-article-date">
+  	<time datetime="2018-09-13T13:05:33.346Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="什么时候会报-unrecognized-selector这个错误"><a href="#什么时候会报-unrecognized-selector这个错误" class="headerlink" title="什么时候会报 unrecognized selector这个错误"></a>什么时候会报 unrecognized selector这个错误</h2><p>1 对象未使用该方法</p>
+<p>2 对象已经被释放。</p>
+<h2 id="iOS有哪些机制来避免走到这一步？"><a href="#iOS有哪些机制来避免走到这一步？" class="headerlink" title="iOS有哪些机制来避免走到这一步？"></a>iOS有哪些机制来避免走到这一步？</h2><p>1 使用[id respondsToSelector:]进行判断。</p>
+<p>2 Method resolution</p>
+<p>objc运行时会调用+resolveInstanceMethod:或者 +resolveClassMethod:，让你有机会提供一个函数实现。如果你添加了函数，那运行时系统就会重新启动一次消息发送的过程，否则 ，运行时就会移到下一步，消息转发（Message Forwarding）。<br>返回Nil和self，去调用第三步methodSignatureForSelector和forwarInvocation；返回receiver，如果receiver有响应就直接处理，如果没有就去对应的对象内去调用第三步；调用子类的函数，子类没有进行这几个方法的重载，在父类处理时返回子类，会死循环。</p>
+<p>3 Fast forwarding</p>
+<p>如果目标对象实现了-forwardingTargetForSelector:，Runtime 这时就会调用这个方法，给你把这个消息转发给其他对象的机会。 只要这个方法返回的不是nil和self，整个消息发送的过程就会被重启，当然发送的对象会变成你返回的那个对象。否则，就会继续Normal Fowarding。 这里叫Fast，只是为了区别下一步的转发机制。因为这一步不会创建任何新的对象，但下一步转发会创建一个NSInvocation对象，所以相对更快点。</p>
+<p>4 Normal forwarding</p>
+<p>这一步是Runtime最后一次给你挽救的机会。首先它会发送-methodSignatureForSelector:消息获得函数的参数和返回值类型。如果-methodSignatureForSelector:返回nil，Runtime则会发出-doesNotRecognizeSelector:消息，程序这时也就挂掉了。如果返回了一个函数签名，Runtime就会创建一个NSInvocation对象并发送-forwardInvocation:消息给目标对象。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Runloop入门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/12/Runloop入门/">Runloop入门</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/12/Runloop入门/" class="archive-article-date">
+  	<time datetime="2018-09-12T15:05:09.896Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>首先，先象征性的讲下RunLoop的概念</p>
+<p>从字面上看，就可以看出就是兜圈圈，就是一个死循环嘛。</p>
+<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>1.保持程序运行</p>
+<p>2.处理app的各种事件（比如触摸，定时器等等）</p>
+<p>3.节省CPU资源，提高性能。</p>
+<h2 id="一些枯燥的知识"><a href="#一些枯燥的知识" class="headerlink" title="一些枯燥的知识"></a>一些枯燥的知识</h2><h3 id="两个api"><a href="#两个api" class="headerlink" title="两个api"></a>两个api</h3><p>首先要知道iOS里面有两套API可以访问和使用RunLoop：</p>
+<h4 id="Foundation"><a href="#Foundation" class="headerlink" title="Foundation"></a>Foundation</h4><p>NSRunLoop</p>
+<h4 id="Core-Foundation"><a href="#Core-Foundation" class="headerlink" title="Core Foundation"></a>Core Foundation</h4><p>CFNSRunLoop</p>
+<p>上面两套都可以使用，但是要知道CFRunLoopRef是用c语言写的，是开源的，相比于NSRunLoop更加底层，而NSRunLoop其实是对CFRunLoopRef的一个简单的封装。便于使用而已。这样说来，显然CFRunLoopRef的性能要高一点。</p>
+<h3 id="RunLoop与线程"><a href="#RunLoop与线程" class="headerlink" title="RunLoop与线程"></a>RunLoop与线程</h3><p>1.每条线程都有唯一的与之对应的RunLoop对象。</p>
+<p>2.主线程的RunLoop已经创建好了，而子线程的需要手动创建。（也就是说子线程的RunLoop默认是关闭的，因为有时候开了个线程但却没有必要开一个RunLoop，不然反而浪费了资源。 ）</p>
+<p>3.RunLoop在第一次获取时创建，在线程结束时销毁。（这就相当于 线程是一个类，RunLoop是类里的实例变量，这样便于理解）</p>
+<h3 id="获取RunLoop对象"><a href="#获取RunLoop对象" class="headerlink" title="获取RunLoop对象"></a>获取RunLoop对象</h3><h4 id="Foundation-1"><a href="#Foundation-1" class="headerlink" title="Foundation"></a>Foundation</h4><pre><code>[NSRunLoop currentRunLoop]; // 获得当前线程的RunLoop对象
+[NSRunLoop mainRunLoop]; // 获得主线程的RunLoop对象
+</code></pre><h4 id="Core-Foundation-1"><a href="#Core-Foundation-1" class="headerlink" title="Core Foundation"></a>Core Foundation</h4><pre><code>CFRunLoopGetCurrent(); // 获得当前线程的RunLoop对象
+CFRunLoopGetMain(); // 获得主线程的RunLoop对象 
+</code></pre><h3 id="RunLoop相关类"><a href="#RunLoop相关类" class="headerlink" title="RunLoop相关类"></a>RunLoop相关类</h3><p>在Core Foundation中有RunLoop的五个类</p>
+<pre><code>CFRunLoopRef
+CFRunLoopModeRef
+CFRunLoopSourceRef
+CFRunLoopTimerRef
+CFRunLoopObserverRef
+</code></pre><p>由图中可以得出以下几点：</p>
+<p>1.CFRunLoopModeRef代表的是RunLoop的运行模式。</p>
+<p>2.一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。</p>
+<p>3.每次调用 RunLoop 的主函数时，只能指定其中一个 Mode，这个Mode被称作 CurrentMode。</p>
+<p>4.如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</p>
+<h3 id="CFRunLoopModeRef"><a href="#CFRunLoopModeRef" class="headerlink" title="CFRunLoopModeRef"></a>CFRunLoopModeRef</h3><p>系统默认注册了5个mode</p>
+<pre><code>kCFRunLoopDefaultMode //App的默认Mode，通常主线程是在这个Mode下运行
+UITrackingRunLoopMode //界面跟踪 Mode，用于 ScrollView 追踪触摸滑动，保证界面滑动时不受其他 Mode 影响
+UIInitializationRunLoopMode // 在刚启动 App 时第进入的第一个 Mode，启动完成后就不再使用
+GSEventReceiveRunLoopMode // 接受系统事件的内部 Mode，通常用不到
+kCFRunLoopCommonModes //这是一个占位用的Mode，不是一种真正的Mode
+</code></pre><h3 id="CFRunLoopSourseRef"><a href="#CFRunLoopSourseRef" class="headerlink" title="CFRunLoopSourseRef"></a>CFRunLoopSourseRef</h3><p>CFRunLoopSourseRef是事件源，分为两种</p>
+<p>sourse0：非基于port的 （port相当于是系统）<br>自己写的方法，响应</p>
+<p>sourse1：基于port的<br>系统提供的</p>
+<p>CFRunLoopObserverRef<br>CFRunLoopObserver是观察者，可以监听runLoop的状态改变<br>监听的状态如下：</p>
+<pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) { 
+kCFRunLoopEntry = (1UL &lt;&lt; 0), //即将进入Runloop
+kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1), //即将处理NSTimer 
+kCFRunLoopBeforeSources = (1UL &lt;&lt; 2), //即将处理Sources 
+kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5), //即将进入休眠 
+kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6), //刚从休眠中唤醒 
+kCFRunLoopExit = (1UL &lt;&lt; 7), //即将退出runloop 
+kCFRunLoopAllActivities = 0x0FFFFFFFU //所有状态改变};
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/12/Runloop入门/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-关于GCD的信号量" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/12/关于GCD的信号量/">关于GCD的信号量</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/12/关于GCD的信号量/" class="archive-article-date">
+  	<time datetime="2018-09-12T14:54:10.618Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当我们在处理一系列线程的时候，当数量达到一定量，在以前我们可能会选择使用NSOperationQueue来处理并发控制，但如何在GCD中快速的控制并发呢？答案就是dispatch_semaphore，对经常做unix开发的人来讲，我所介绍的内容可能就显得非常入门级了，信号量在他们的多线程开发中再平常不过了。</p>
+<p>信号量是一个整形值并且具有一个初始计数值，并且支持两个操作：信号通知和等待。当一个信号量被信号通知，其计数会被增加。当一个线程在一个信号量上等待时，线程会被阻塞（如果有必要的话），直至计数器大于零，然后线程会减少这个计数。</p>
+<p>在GCD中有三个函数是semaphore的操作，分别是：</p>
+<pre><code>dispatch_semaphore_creat 
+
+创建一个semaphore
+
+dispatch_semaphore_signal
+
+发送一个信号
+
+dispathc_semaphore_wait
+
+等待信号
+</code></pre><p>简单的介绍一下这三个函数，第一个函数有一个整形的参数，我们可以理解为信号的总量，dispatch_semaphore_signal是发送一个信号，自然会让信号总量加1，dispatch_semaphore_wait等待信号，当信号总量少于0的时候就会一直等待，否则就可以正常的执行，并让信号总量-1，根据这样的原理，我们便可以快速的创建一个并发控制来同步任务和有限资源访问控制。</p>
+<pre><code>　dispatch_group_t group = dispatch_group_create(); 
+dispatch_semaphore_t semaphore = dispatch_semaphore_create(10); 
+dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0); 
+for (int i = 0; i &lt; 100; i++) 
+{ 
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER); 
+    dispatch_group_async(group, queue, ^{ 
+        NSLog(@&quot;%i&quot;,i); 
+        sleep(2); 
+        dispatch_semaphore_signal(semaphore); 
+    }); 
+} 
+dispatch_group_wait(group, DISPATCH_TIME_FOREVER); 
+dispatch_release(group); 
+dispatch_release(semaphore); 
+</code></pre><p>简单的介绍一下这一段代码，创建了一个初使值为10的semaphore，每一次for循环都会创建一个新的线程，线程结束的时候会发送一个信号，线程创建之前会信号等待，所以当同时创建了10个线程之后，for循环就会阻塞，等待有线程结束之后会增加一个信号才继续执行，如此就形成了对并发的控制，如上就是一个并发数为10的一个线程队列。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/12/关于GCD的信号量/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS程序启动内部过程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -916,472 +1298,9 @@ return smallestHeight;
 
 
   
-    <article id="post-关于分类的总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/关于分类的总结/">关于分类的总结</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/关于分类的总结/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:08:58.127Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>可以在不修改原来类的基础上，为一个类扩展方法。</p>
-<h2 id="分类的结构体"><a href="#分类的结构体" class="headerlink" title="分类的结构体"></a>分类的结构体</h2><pre><code>struct _category_t {
-    const char *name;//类名
-    struct _class_t *cls;//类
-    const struct _method_list_t *instance_methods;//category中所有给类添加的实例方法的列表（instanceMethods）
-    const struct _method_list_t *class_methods;//category中所有添加的类方法的列表（classMethods）
-    const struct _protocol_list_t *protocols;//category实现的所有协议的列表（protocols）
-    const struct _prop_list_t *properties;//category中添加的所有属性（instanceProperties）
-};
-
-struct category_t {
-    const char *name; // 类名
-    classref_t cls;   // 分类所属的类
-    struct method_list_t *instanceMethods;  // 实例方法列表
-    struct method_list_t *classMethods;     // 类方法列表
-    struct protocol_list_t *protocols;      // 遵循的协议列表
-    struct property_list_t *instanceProperties; // 属性列表
-
-    // 如果是元类，就返回类方法列表；否则返回实例方法列表
-    method_list_t *methodsForMeta(bool isMeta) {
-        if (isMeta) {
-            return classMethods;
-        } else {
-            return instanceMethods;
-        }
-    }
-
-    // 如果是元类，就返回 nil，因为元类没有属性；否则返回实例属性列表，但是...实例属性
-    property_list_t *propertiesForMeta(bool isMeta) {
-        if (isMeta) {
-            return nil; // classProperties;
-        } else {
-            return instanceProperties;
-        }
-    }
-};
-</code></pre><h2 id="编译时的分类"><a href="#编译时的分类" class="headerlink" title="编译时的分类"></a>编译时的分类</h2><h3 id="分类的属性"><a href="#分类的属性" class="headerlink" title="分类的属性"></a>分类的属性</h3><pre><code>// Person(categoryPerson) 属性列表
-static struct /*_prop_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count_of_properties;
-    struct _prop_t prop_list[1];
-} _OBJC_$_PROP_LIST_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_prop_t),
-    1,
-    {{"categoryPersonName","T@\"NSString\",C,N"}}
-};
-
-// Person 属性列表
-static struct /*_prop_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count_of_properties;
-    struct _prop_t prop_list[1];
-} _OBJC_$_PROP_LIST_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_prop_t),
-    1,
-    {{"presonName","T@\"NSString\",C,N,V_presonName"}}
-};
-</code></pre><p>在分类中可以声明属性，并且同样会生成一个 _prop_list_t 的结构体</p>
-<h3 id="分类的实例变量？"><a href="#分类的实例变量？" class="headerlink" title="分类的实例变量？"></a>分类的实例变量？</h3><pre><code>// Person 实例变量列表
-
-static struct /*_ivar_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count;
-    struct _ivar_t ivar_list[1];
-} _OBJC_$_INSTANCE_VARIABLES_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_ivar_t),
-    1,
-    {{(unsigned long int *)&OBJC_IVAR_$_Person$_presonName, "_presonName", "@\"NSString\"", 3, 8}}
-};
-</code></pre><p>因为 _category_t 这个结构体中并没有 _ivar_list_t<br>所以在编译时系统没有Person(categoryPerson) 没有生成类似的相应结构体，也没有生成  _categoryPersonName。</p>
-<h3 id="分类的实例方法"><a href="#分类的实例方法" class="headerlink" title="分类的实例方法"></a>分类的实例方法</h3><pre><code>// Person 实例方法结构体
-static struct /*_method_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _objc_method)
-    unsigned int method_count;
-    struct _objc_method method_list[3];
-} _OBJC_$_INSTANCE_METHODS_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_objc_method),
-    3,
-    {{(struct objc_selector *)"doSomeThing", "v16@0:8", (void *)_I_Person_doSomeThing},
-	    {(struct objc_selector *)"presonName", "@16@0:8", (void *)_I_Person_presonName},
-	    {(struct objc_selector *)"setPresonName:", "v24@0:8@16", (void *)_I_Person_setPresonName_}}
-};
-
-// Person(categoryPerson )实例方法结构体
-static struct /*_method_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _objc_method)
-    unsigned int method_count;
-    struct _objc_method method_list[1];
-} _OBJC_$_CATEGORY_INSTANCE_METHODS_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_objc_method),
-    1,
-    {{(struct objc_selector *)"doSomeThing", "v16@0:8", (void *)_I_Person_categoryPerson_doSomeThing}}
-};
-</code></pre><p>虽然分类可以声明属性，但是编译时，系统并没有生成分类属性的 get／set 方法，所以，这就是为什么分类要利用</p>
-<h3 id="分类的结构体-1"><a href="#分类的结构体-1" class="headerlink" title="分类的结构体"></a>分类的结构体</h3><pre><code>// Person(categoryPerson ) 结构体
-static struct _category_t _OBJC_$_CATEGORY_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = 
-{
-    &quot;Person&quot;,
-    0, // &amp;OBJC_CLASS_$_Person,
-    (const struct _method_list_t *)&amp;_OBJC_$_CATEGORY_INSTANCE_METHODS_Person_$_categoryPerson,
-    0,
-    0,
-    (const struct _prop_list_t *)&amp;_OBJC_$_PROP_LIST_Person_$_categoryPerson,
-};
-</code></pre><p>这是系统在编译时实例化 _category_t 生成的<br><em>OBJC</em>$_CATEGORY_Person_$_categoryPerson</p>
-<h3 id="分类数组"><a href="#分类数组" class="headerlink" title="分类数组"></a>分类数组</h3><pre><code>static struct _category_t *L_OBJC_LABEL_CATEGORY_$ [1] __attribute__((used, section (&quot;__DATA, __objc_catlist,regular,no_dead_strip&quot;)))= {
-    &amp;_OBJC_$_CATEGORY_Person_$_categoryPerson,
-};
-</code></pre><p>编译器最后生成了一个数组，数组的元素就是我们创建的各个分类，用来在运行时加载分类。</p>
-<h2 id="分类的加载"><a href="#分类的加载" class="headerlink" title="分类的加载"></a>分类的加载</h2><h3 id="加载分类调用栈"><a href="#加载分类调用栈" class="headerlink" title="加载分类调用栈"></a>加载分类调用栈</h3><pre><code>_objc_init
-└──map_2_images
-    └──map_images_nolock
-        └──_read_images
-</code></pre><p>分类加载的调用栈如上述</p>
-<p>_objc_init 算是整个 objc4 的入口，进行了一些初始化操作，注册了镜像状态改变时的回调函数</p>
-<p>map_2_images 主要是加锁并调用 map_images_nolock<br>map_images_nolock 在这个函数中，完成所有 class 的注册、fixup等工作，还有初始化自动释放池、初始化 side table 等工作并在函数后端调用了 _read_images</p>
-<p>_read_images 方法干了很多苦力活，比如加载类、Protocol、Category，加载分类的代码就写在 _read_images 函数的尾部</p>
-<p>该调用栈入口函数 void _objc_init(void) 在 objc-os.mm 中</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/关于分类的总结/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-类方法和实例方法的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/类方法和实例方法的区别/">类方法和实例方法的区别</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/类方法和实例方法的区别/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:05:33.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Objective-C里面既有实例方法也类方法。类方法(Class Method) 有时被称为工厂方法(Factory Method)或者方便方法(Convenience method)。工厂方法的称谓明显和一般意义上的工厂方法不同，从本质上来说，类方法可以独立于对象而执行，所以在其他的语言里面类方法有的时候被称为静态方法。</p>
-<p>###注意点一：类方法<br>1，类方法可以调用类方法。</p>
-<p>2，类方法不可以调用实例方法，但是类方法可以通过创建对象来访问实例方法。</p>
-<p>3，类方法不可以使用实例变量。类方法可以使用self，因为self不是实例变量。</p>
-<p>4，类方法作为消息，可以被发送到类或者对象里面去（实际上，就是可以通过类或者对象调用类方法的意思）。</p>
-<p>####注意点二：self的规则</p>
-<p>1，实例方法里面的self，是对象的首地址。</p>
-<p>2，类方法里面的self，是Class.</p>
-<p>尽管在同一个类里面的使用self，但是self却有着不同的解读。在类方法里面的self，可以翻译成class self；在实例方法里面的self，应该被翻译成为object self。在类方法里面的self和实例方法里面的self有着本质上的不同，尽管他们的名字都叫self。</p>
-<p>类方法创造的对象要不要用release释放？</p>
-<p>答 不需要 这个对象被放到自动释放池中</p>
-<p>##区别：<br>1、类方法是属于整个类，而不属于某个对象。 </p>
-<p>2、类方法只能访问类成员变量，不能访问实例变量，而实例方法可以访问类成员变量和实例变量。 </p>
-<p>3、类方法的调用可以通过类名.类方法和对象.类方法，而实例方法只能通过对象.实例方法访问。 </p>
-<p>4、类方法只能访问类方法，而实例方法可以访问类方法和实例方法。 </p>
-<p>5、类方法不能被覆盖，实例方法可以被覆盖。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/类方法和实例方法的区别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-OC中的isa指针" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/OC中的isa指针/">OC中的isa指针</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/OC中的isa指针/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:01:36.931Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="isa指针"><a href="#isa指针" class="headerlink" title="isa指针"></a>isa指针</h2><p>在Objective-C中，任何类的定义都是对象。类和类的实例（对象）没有任何本质上的区别。任何对象都有isa指针。</p>
-<p>Class 是一个 objc_class 结构类型的指针, id是一个 objc_object 结构类型的指针.</p>
-<p>isa：是一个Class 类型的指针. 每个实例对象有个isa的指针,他指向对象的类，而Class里也有个isa的指针, 指向meteClass(元类)。元类保存了类方法的列表。当类方法被调用时，先会从本身查找类方法的实现，如果没有，元类会向他父类查找该方法。同时注意的是：元类（meteClass）也是类，它也是对象。元类也有isa指针,它的isa指针最终指向的是一个根元类(root meteClass).根元类的isa指针指向本身，这样形成了一个封闭的内循环。</p>
-<p>super_class：父类，如果该类已经是最顶层的根类,那么它为NULL。</p>
-<p>version：类的版本信息,默认为0</p>
-<p>info：供运行期使用的一些位标识。</p>
-<p>instance_size：该类的实例变量大小</p>
-<p>ivars：成员变量的数组</p>
-<p>每一个对象本质上都是一个类的实例。其中类定义了成员变量和成员方法的列表。对象通过对象的isa指针指向类。</p>
-<p>每一个类本质上都是一个对象，类其实是元类（meteClass）的实例。元类定义了类方法的列表。类通过类的isa指针指向元类。</p>
-<p>所有的元类最终继承一个根元类，根元类isa指针指向本身，形成一个封闭的内循环。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/OC中的isa指针/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于数组和链表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/关于数组和链表/">关于数组和链表</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/关于数组和链表/" class="archive-article-date">
-  	<time datetime="2018-09-06T14:28:49.016Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>修炼内功，数据结构这东西永远是程序的核心，关于数组，链表，hash这些东西，需要时不时的总结回顾一下。</p>
-<p>大致总结一下特点和区别，拿几个人一起去看电影时坐座位为例。</p>
-<h2 id="数组的特点"><a href="#数组的特点" class="headerlink" title="数组的特点"></a>数组的特点</h2><p>在内存中，数组是一块连续的区域。 拿上面的看电影来说，这几个人在电影院必须坐在一起。</p>
-<p>数组需要预留空间，在使用前要先申请占内存的大小，可能会浪费内存空间。 比如看电影时，为了保证10个人能坐在一起，必须提前订好10个连续的位置。这样的好处就是能保证10个人可以在一起。但是这样的缺点是，如果来的人不够10个，那么剩下的位置就浪费了。如果临时有多来了个人，那么10个就不够用了，这时可能需要将第11个位置上的人挪走，或者是他们11个人重新去找一个11连坐的位置，效率都很低。如果没有找到符合要求的作为，那么就没法坐了。</p>
-<p>插入数据和删除数据效率低，插入数据时，这个位置后面的数据在内存中都要向后移。删除数据时，这个数据后面的数据都要往前移动。 比如原来去了5个人，然后后来又去了一个人要坐在第三个位置上，那么第三个到第五个都要往后移动一个位子，将第三个位置留给新来的人。 当这个人走了的时候，因为他们要连在一起的，所以他后面几个人要往前移动一个位置，把这个空位补上。</p>
-<p>随机读取效率很高。因为数组是连续的，知道每一个数据的内存地址，可以直接找到给地址的数据。</p>
-<p>并且不利于扩展，数组定义的空间不够时要重新定义数组。</p>
-<h2 id="链表的特点"><a href="#链表的特点" class="headerlink" title="链表的特点"></a>链表的特点</h2><p>在内存中可以存在任何地方，不要求连续。 在电影院几个人可以随便坐。</p>
-<p>每一个数据都保存了下一个数据的内存地址，通过这个地址找到下一个数据。 第一个人知道第二个人的座位号，第二个人知道第三个人的座位号……<br>增加数据和删除数据很容易。 再来个人可以随便坐，比如来了个人要做到第三个位置，那他只需要把自己的位置告诉第二个人，然后问第二个人拿到原来第三个人的位置就行了。其他人都不用动。</p>
-<p>查找数据时效率低，因为不具有随机访问性，所以访问某个位置的数据都要从第一个数据开始访问，然后根据第一个数据保存的下一个数据的地址找到第二个数据，以此类推。 要找到第三个人，必须从第一个人开始问起。</p>
-<p>不指定大小，扩展方便。链表大小不用定义，数据随意增删。</p>
-<h2 id="各自的优缺点"><a href="#各自的优缺点" class="headerlink" title="各自的优缺点"></a>各自的优缺点</h2><h3 id="数组的优点"><a href="#数组的优点" class="headerlink" title="数组的优点"></a>数组的优点</h3><p>随机访问性强</p>
-<p>查找速度快</p>
-<h3 id="数组的缺点"><a href="#数组的缺点" class="headerlink" title="数组的缺点"></a>数组的缺点</h3><p>插入和删除效率低</p>
-<p>可能浪费内存</p>
-<p>内存空间要求高，必须有足够的连续内存空间。</p>
-<p>数组大小固定，不能动态拓展</p>
-<h3 id="链表的优点"><a href="#链表的优点" class="headerlink" title="链表的优点"></a>链表的优点</h3><p>插入删除速度快</p>
-<p>内存利用率高，不会浪费内存</p>
-<p>大小没有固定，拓展很灵活。</p>
-<h3 id="链表的缺点"><a href="#链表的缺点" class="headerlink" title="链表的缺点"></a>链表的缺点</h3><p>不能随机查找，必须从第一个开始遍历，查找效率低</p>
-<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><p>   哈希表结合了数组的快速查询的优点又能融合链表方便快捷的增加删除元素的优势</p>
-<p>   所谓的hash，简单的说就是散列，即将输入的数据通过hash函数得到一个key值，输入的数据存储到数组中下标为key值的数组单元中去。</p>
-<p>我们发现，不相同的数据通过hash函数得到相同的key值。这时候，就产生了hash冲突。解决hash冲突的方式有两种。一种是挂链式，也叫拉链法。挂链式的思想在产生冲突的hash地址指向一个链表，将具有相同的key值的数据存放到链表中。另一种是建立一个公共溢出区。将所有产生冲突的数据都存放到公共溢出区，也可以使问题解决。</p>
-<p>hash表其实是结合了数组和链表的优点，进行的折中方案。平衡了数组和链表的优缺点。hash的具体实现有很多种，但是需要解决冲突的问题。​</p>
-<p>不相同的数据通过hash函数得到相同的key值。这时候，就产生了hash冲突。解决hash冲突的方式有两种。一种是挂链式，也叫拉链法。挂链式的思想在产生冲突的hash地址指向一个链表，将具有相同的key值的数据存放到链表中。另一种是建立一个公共溢出区。将所有产生冲突的数据都存放到公共溢出区，也可以使问题解决。​</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/关于数组和链表/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
     </nav>
   
 
@@ -1484,19 +1403,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1508,11 +1427,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
             
             <div class="clearfix"></div>
