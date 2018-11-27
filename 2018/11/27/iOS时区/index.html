@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018 | Blog</title>
+  <title>iOS时区 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2018/page/3/index.html">
+  <meta name="description" content="写在前面由于项目之前对时区没有做过统一的处理，导致国外友人使用起来不是很方便，借此机会，咱们聊一聊时区的事。 基础知识1.获取所有已知的时区名称NSArray *zoneArray = [NSTimeZone knownTimeZoneNames];  for(NSString *str in zoneArray){  NSLog(@&amp;quot;%@&amp;quot;,str);  } 主意：没有北京时">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS时区">
+<meta property="og:url" content="http://yoursite.com/2018/11/27/iOS时区/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="写在前面由于项目之前对时区没有做过统一的处理，导致国外友人使用起来不是很方便，借此机会，咱们聊一聊时区的事。 基础知识1.获取所有已知的时区名称NSArray *zoneArray = [NSTimeZone knownTimeZoneNames];  for(NSString *str in zoneArray){  NSLog(@&amp;quot;%@&amp;quot;,str);  } 主意：没有北京时">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-11-27T06:54:52.151Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="iOS时区">
+<meta name="twitter:description" content="写在前面由于项目之前对时区没有做过统一的处理，导致国外友人使用起来不是很方便，借此机会，咱们聊一聊时区的事。 基础知识1.获取所有已知的时区名称NSArray *zoneArray = [NSTimeZone knownTimeZoneNames];  for(NSString *str in zoneArray){  NSLog(@&amp;quot;%@&amp;quot;,str);  } 主意：没有北京时">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,36 +155,119 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-iOS时区" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      iOS时区
+    </h1>
+  
+
+        
+        <a href="/2018/11/27/iOS时区/" class="archive-article-date">
+  	<time datetime="2018-11-27T06:51:44.741Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>由于项目之前对时区没有做过统一的处理，导致国外友人使用起来不是很方便，借此机会，咱们聊一聊时区的事。</p>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="1-获取所有已知的时区名称"><a href="#1-获取所有已知的时区名称" class="headerlink" title="1.获取所有已知的时区名称"></a>1.获取所有已知的时区名称</h3><pre><code>NSArray *zoneArray = [NSTimeZone knownTimeZoneNames];
+
+for(NSString *str in zoneArray){
+
+NSLog(@&quot;%@&quot;,str);
+
+}
+</code></pre><p>主意：没有北京时区</p>
+<h3 id="2-返回时区名称和缩写"><a href="#2-返回时区名称和缩写" class="headerlink" title="2.返回时区名称和缩写"></a>2.返回时区名称和缩写</h3><pre><code>NSTimeZone *zone = [NSTimeZone localTimeZone];
+
+NSString *strZoneName = [zone name];
+
+NSString *strZoneAbbreviation = [zone abbreviation];
+
+NSLog(@&quot;名称 是 %@&quot;,strZoneName);
+
+NSLog(@&quot;缩写 是 %@&quot;,strZoneAbbreviation);
+</code></pre><h3 id="3-系统时区-本地时区"><a href="#3-系统时区-本地时区" class="headerlink" title="3.系统时区 本地时区"></a>3.系统时区 本地时区</h3><pre><code>[NSTimeZone setDefaultTimeZone:[[NSTimeZone alloc] initWithName:@&quot;America/Chicago&quot;]];
+
+NSTimeZone *systemZone = [NSTimeZone systemTimeZone];
+
+NSTimeZone *localZone = [NSTimeZone localTimeZone];
+
+NSLog(@&quot;系统时区%@&quot;,systemZone);
+
+NSLog(@&quot;本地时区%@&quot;,localZone);
+</code></pre><p>其中，系统时区不能通过代码来进行更改。</p>
+<h3 id="4-得到当前时区与零时区的间隔秒数"><a href="#4-得到当前时区与零时区的间隔秒数" class="headerlink" title="4.得到当前时区与零时区的间隔秒数"></a>4.得到当前时区与零时区的间隔秒数</h3><pre><code>NSTimeZone *zone = [NSTimeZone localTimeZone];
+
+NSInteger seconds = [zone secondsFromGMT];
+
+NSLog(@&quot;%ld&quot;,seconds);
+</code></pre><h3 id="5-根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）"><a href="#5-根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）" class="headerlink" title="5.根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）"></a>5.根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）</h3><pre><code>NSTimeZone* timeZone = [NSTimeZone timeZoneForSecondsFromGMT:8*3600];
+</code></pre><h2 id="演练"><a href="#演练" class="headerlink" title="演练"></a>演练</h2><p>无论身在何处，系统时间设置为北京时间</p>
+<pre><code>NSTimeZone *zone = [NSTimeZone localTimeZone];
+
+UILabel *titleLab = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 200, 30)];
+
+titleLab.text =[NSString stringWithFormat:@&quot;当前时区：%@&quot;,[zone name]];
+
+titleLab.backgroundColor = [UIColor grayColor];
+
+[self.view addSubview:titleLab];
+
+NSDate *date = [NSDate date];
+
+NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+
+[dateFormatter setDateFormat:@&quot;yyyy-MM-dd HH:mm&quot;];
+
+//强制设为北京时区
+
+NSTimeZone* timeZone = [NSTimeZone timeZoneForSecondsFromGMT:8*3600];
+
+[dateFormatter setTimeZone:timeZone];
+
+UILabel *dateLab = [[UILabel alloc] initWithFrame:CGRectMake(100, 200, 200, 30)];
+
+dateLab.backgroundColor = [UIColor lightGrayColor];
+
+dateLab.text = [dateFormatter stringFromDate:date];
+
+[self.view addSubview:dateLab];
+</code></pre>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/" class="archive-article-date">
-  	<time datetime="2018-10-12T17:07:25.380Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-13</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/">iOS 和常见的离屏渲染Say Goodbye！</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -191,364 +279,105 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/iOS时区/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/02/无限循环滚动的TableView/" class="archive-article-date">
-  	<time datetime="2018-10-02T14:37:33.938Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/11/27/使用两行代码就能完成80%的缓存需求 /" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">使用两行代码就能完成80%的缓存需求</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/02/无限循环滚动的TableView/">无限循环滚动的TableView</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/27/iOS高并发优化/" class="archive-article-date">
-  	<time datetime="2018-09-27T14:31:57.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/27/iOS高并发优化/">iOS高并发优化</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/22/每个程序员对着电梯都想过调度算法/" class="archive-article-date">
-  	<time datetime="2018-09-22T14:13:11.373Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/22/每个程序员对着电梯都想过调度算法/">每个程序员对着电梯都想过调度算法吧！</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/18/关于swift中的单例模式/" class="archive-article-date">
-  	<time datetime="2018-09-18T15:52:12.784Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/18/关于swift中的单例模式/">关于swift中的单例模式</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/18/关于swift的可选类型/" class="archive-article-date">
-  	<time datetime="2018-09-18T15:08:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/18/关于swift的可选类型/">关于swift的可选类型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/17/iOS关于nsstring的copy和strong/" class="archive-article-date">
-  	<time datetime="2018-09-17T15:38:53.431Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/17/iOS关于nsstring的copy和strong/">iOS关于nsstring的copy和strong</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/16/iOS中的静态库与动态库/" class="archive-article-date">
-  	<time datetime="2018-09-16T14:44:12.089Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/16/iOS中的静态库与动态库/">iOS中的静态库与动态库</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/16/适配iPhone XR/" class="archive-article-date">
-  	<time datetime="2018-09-16T06:24:26.639Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/16/适配iPhone XR/">适配iPhone XR</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/14/iOS分类(category),类扩展(extension)/" class="archive-article-date">
-  	<time datetime="2018-09-14T08:30:59.916Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/14/iOS分类(category),类扩展(extension)/">iOS分类(category),类扩展(extension)</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2018/page/2/">&laquo; Prev</a><a class="page-number" href="/archives/2018/">1</a><a class="page-number" href="/archives/2018/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/2018/page/4/">4</a><a class="page-number" href="/archives/2018/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/archives/2018/page/7/">7</a><a class="extend next" rel="next" href="/archives/2018/page/4/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -572,8 +401,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
