@@ -152,6 +152,284 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-App启动速度优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/15/App启动速度优化/">App启动速度优化</a>
+    </h1>
+  
+
+        
+        <a href="/2018/10/15/App启动速度优化/" class="archive-article-date">
+  	<time datetime="2018-10-15T07:18:39.953Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>应用启动流程</p>
+<p>iOS应用的启动可分为pre-main阶段和main()阶段，其中系统做的事情依次是：</p>
+<p>pre-main阶段</p>
+<p>1.1. 加载应用的可执行文件</p>
+<p>1.2. 加载动态链接库加载器dyld（dynamic loader）</p>
+<p>1.3. dyld递归加载应用所有依赖的dylib（dynamic library 动态链接库）</p>
+<p>main()阶段</p>
+<p>2.1. dyld调用main()</p>
+<p>2.2. 调用UIApplicationMain()</p>
+<p>2.3. 调用applicationWillFinishLaunching</p>
+<p>2.4. 调用didFinishLaunchingWithOptions</p>
+<h2 id="启动耗时的测量"><a href="#启动耗时的测量" class="headerlink" title="启动耗时的测量"></a>启动耗时的测量</h2><p>在进行优化之前，我们首先应该能测量各阶段的耗时。</p>
+<h3 id="1-pre-main阶段"><a href="#1-pre-main阶段" class="headerlink" title="1. pre-main阶段"></a>1. pre-main阶段</h3><p>对于pre-main阶段，Apple提供了一种测量方法，在 Xcode 中 Edit scheme -&gt; Run -&gt; Auguments 将环境变量DYLD_PRINT_STATISTICS 设为1 。之后控制台会输出类似内容：</p>
+<pre><code>Total pre-main time: 228.41 milliseconds (100.0%)
+         dylib loading time:  82.35 milliseconds (36.0%)
+        rebase/binding time:   6.12 milliseconds (2.6%)
+            ObjC setup time:   7.82 milliseconds (3.4%)
+           initializer time: 132.02 milliseconds (57.8%)
+           slowest intializers :
+             libSystem.B.dylib : 122.07 milliseconds (53.4%)
+                CoreFoundation :   5.59 milliseconds (2.4%)
+</code></pre><p>这样我们可以清晰的看到每个耗时了。</p>
+<h3 id="2-main-阶段"><a href="#2-main-阶段" class="headerlink" title="2.main()阶段"></a>2.main()阶段</h3><p>mian()阶段主要是测量mian()函数开始执行到didFinishLaunchingWithOptions执行结束的时间，我们直接插入代码就可以了。</p>
+<pre><code>CFAbsoluteTime StartTime;
+int main(int argc, char * argv[]) {
+      StartTime = CFAbsoluteTimeGetCurrent();
+</code></pre><p>再在AppDelegate.m文件中用extern声明全局变量StartTime</p>
+<pre><code>extern CFAbsoluteTime StartTime;
+</code></pre><p>最后在didFinishLaunchingWithOptions里，再获取一下当前时间，与StartTime的差值即是main()阶段运行耗时。</p>
+<pre><code>double launchTime = (CFAbsoluteTimeGetCurrent() - StartTime);
+</code></pre><h2 id="改善启动时间"><a href="#改善启动时间" class="headerlink" title="改善启动时间"></a>改善启动时间</h2><h3 id="pre-main阶段"><a href="#pre-main阶段" class="headerlink" title="pre-main阶段"></a>pre-main阶段</h3><p>在这一阶段，我们能做的主要是优化dylib</p>
+<h3 id="加载-Dylib"><a href="#加载-Dylib" class="headerlink" title="加载 Dylib"></a>加载 Dylib</h3><p>之前提到过加载系统的 dylib 很快，因为有优化。但加载内嵌（embedded）的 dylib 文件很占时间，所以尽可能把多个内嵌 dylib 合并成一个来加载，或者使用 static archive。</p>
+<p>使用 dlopen() 来在运行时懒加载是不建议的，这么做可能会带来一些问题，并且总的开销更大。</p>
+<h3 id="Rebase-Binding"><a href="#Rebase-Binding" class="headerlink" title="Rebase/Binding"></a>Rebase/Binding</h3><p>之前提过 Rebaing 消耗了大量时间在 I/O 上，而在之后的 Binding 就不怎么需要 I/O 了，而是将时间耗费在计算上。所以这两个步骤的耗时是混在一起的。</p>
+<p>之前说过可以从查看 <strong>DATA 段中需要修正（fix-up）的指针，所以减少指针数量才会减少这部分工作的耗时。对于 ObjC 来说就是减少 Class,selector 和 category 这些元数据的数量。从编码原则和设计模式之类的理论都会鼓励大家多写精致短小的类和方法，并将每部分方法独立出一个类别，其实这会增加启动时间。对于 C++ 来说需要减少虚方法，因为虚方法会创建 vtable，这也会在 </strong>DATA 段中创建结构。虽然 C++ 虚方法对启动耗时的增加要比 ObjC 元数据要少，但依然不可忽视。</p>
+<h3 id="Objc-setup"><a href="#Objc-setup" class="headerlink" title="Objc setup"></a>Objc setup</h3><p>大部分ObjC初始化工作已经在Rebase/Bind阶段做完了，这一步dyld会注册所有声明过的ObjC类，将分类插入到类的方法列表里，再检查每个selector的唯一性。</p>
+<p>在这一步倒没什么优化可做的，Rebase/Bind阶段优化好了，这一步的耗时也会减少。</p>
+<h3 id="Initializers"><a href="#Initializers" class="headerlink" title="Initializers"></a>Initializers</h3><p>到了这一阶段，dyld开始运行程序的初始化函数，调用每个Objc类和分类的+load方法，调用C/C++ 中的构造器函数（用attribute((constructor))修饰的函数），和创建非基本类型的C++静态全局变量。Initializers阶段执行完后，dyld开始调用main()函数。</p>
+<p>在这一步，我们可以做的优化有：</p>
+<p>1.少在类的+load方法里做事情，尽量把这些事情推迟到+initiailize</p>
+<p>2.减少构造器函数个数，在构造器函数里少做些事情</p>
+<p>3.减少C++静态全局变量的个数</p>
+<h2 id="main-阶段的优化"><a href="#main-阶段的优化" class="headerlink" title="main()阶段的优化"></a>main()阶段的优化</h2><p>这一阶段的优化主要是减少didFinishLaunchingWithOptions方法里的工作，在didFinishLaunchingWithOptions方法里，我们会创建应用的window，指定其rootViewController，调用window的makeKeyAndVisible方法让其可见。由于业务需要，我们会初始化各个二方/三方库，设置系统UI风格，检查是否需要显示引导页、是否需要登录、是否有新版本等，由于历史原因，这里的代码容易变得比较庞大，启动耗时难以控制。</p>
+<p>所以，满足业务需要的前提下，didFinishLaunchingWithOptions在主线程里做的事情越少越好。在这一步，我们可以做的优化有：</p>
+<p>1.梳理各个二方/三方库，找到可以延迟加载的库，做延迟加载处理，比如放到首页控制器的viewDidAppear方法里。</p>
+<p>2.梳理业务逻辑，把可以延迟执行的逻辑，做延迟执行处理。比如检查新版本、注册推送通知等逻辑。</p>
+<p>3.避免复杂/多余的计算。</p>
+<p>4.避免在首页控制器的viewDidLoad和viewWillAppear做太多事情，这2个方法执行完，首页控制器才能显示，部分可以延迟创建的视图应做延迟创建/懒加载处理。</p>
+<p>5.首页控制器用纯代码方式来构建。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总结起来，好像启动速度优化就一句话：让系统在启动期间少做一些事。当然我们得先清楚工程里做的哪些事是在启动期间做的、对启动速度的影响有多大，然后case by case地分析工程代码，通过放到子线程、延迟加载、懒加载等方式让系统在启动期间更轻松些。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/10/15/App启动速度优化/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS导航栏的正确隐藏方式 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/15/iOS导航栏的正确隐藏方式 /">iOS导航栏的正确隐藏方式</a>
+    </h1>
+  
+
+        
+        <a href="/2018/10/15/iOS导航栏的正确隐藏方式 /" class="archive-article-date">
+  	<time datetime="2018-10-15T06:51:01.655Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目中经常碰到首页顶部是无限轮播,需要靠最上面显示.有的设置导航栏为透明等一系列的方法,这个可以借助第三方.或者干脆简单粗暴的直接隐藏掉导航栏.可是push到下一个页面的时候是需要导航栏的,如何做了,这里给出两种方法.</p>
+<h2 id="第一种做法"><a href="#第一种做法" class="headerlink" title="第一种做法"></a>第一种做法</h2><p>注意这里一定要用动画的方式隐藏导航栏,这样在使用滑动返回手势的时候效果最好,和上面动图一致.这样做有一个缺点就是在切换tabBar的时候有一个导航栏向上消失的动画.</p>
+<pre><code>- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+}
+</code></pre><h2 id="第二种做法"><a href="#第二种做法" class="headerlink" title="第二种做法"></a>第二种做法</h2><p>设置self为导航控制器的代理,实现代理方法,在将要显示控制器中设置导航栏隐藏和显示,使用这种方式不仅完美切合滑动返回手势,同时也解决了切换tabBar的时候,导航栏动态隐藏的问题。最后要记得在控制器销毁的时候把导航栏的代理设置为nil。</p>
+<pre><code>@interface WLHomePageController () &lt;UINavigationControllerDelegate&gt;
+
+@end
+
+@implementation WLHomePageController 
+
+#pragma mark - lifeCycle
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    // 设置导航控制器的代理为self
+    self.navigationController.delegate = self;
+}
+
+#pragma mark - UINavigationControllerDelegate
+// 将要显示控制器
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    // 判断要显示的控制器是否是自己
+    BOOL isShowHomePage = [viewController isKindOfClass:[self class]];
+
+    [self.navigationController setNavigationBarHidden:isShowHomePage animated:YES];
+}
+
+- (void)dealloc {
+    self.navigationController.delegate = nil;
+}
+</code></pre><h2 id="第三种做法"><a href="#第三种做法" class="headerlink" title="第三种做法"></a>第三种做法</h2><p>主要是针对A隐藏Nav, A push 到B，B也需要隐藏Nav的这种情况</p>
+<p>1、自定义UINavigationController</p>
+<pre><code>#import &quot;WYNavigationController.h&quot;
+#import &quot;ViewController.h&quot;
+#import &quot;WYTargetVC.h&quot;
+
+
+@interface WYNavigationController ()&lt;UINavigationControllerDelegate, UIGestureRecognizerDelegate&gt;
+
+@end
+
+@implementation WYNavigationController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    self.delegate = self;
+    // 设置全屏滑动返回
+    id target = self.interactivePopGestureRecognizer.delegate;
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:target action:@selector(handleNavigationTransition:)];
+    [self.view addGestureRecognizer:pan];
+    self.interactivePopGestureRecognizer.enabled = NO;
+}
+
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    if (self.viewControllers.count &gt; 0) {
+        viewController.hidesBottomBarWhenPushed = YES;
+    }
+    [super pushViewController:viewController animated:animated];
+}
+
+
+#pragma mark - UINavigationControllerDelegate
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    // 判断如果是需要隐藏导航控制器的类，则隐藏
+    BOOL isHideNav = ([viewController isKindOfClass:[ViewController class]] || 
+                      [viewController isKindOfClass:[WYTargetVC class]]);
+
+    [self setNavigationBarHidden:isHideNav animated:YES];
+}
+</code></pre><p>但是注意setNavigationBarHidden:YES设置这行代码后会导致Nav的滑动返回手势失效，这也就是为什么前面我们在自定义导航的时候需要设置全屏滑动返回了。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/10/15/iOS导航栏的正确隐藏方式 /">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-轻松实现Label的全方位对齐" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1433,194 +1711,6 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
 
 
   
-    <article id="post-iOS中的静态库与动态库" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/16/iOS中的静态库与动态库/">iOS中的静态库与动态库</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/16/iOS中的静态库与动态库/" class="archive-article-date">
-  	<time datetime="2018-09-16T14:44:12.089Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>如果我们有些功能要给别人用，但是又不想公开代码实现，比如高德地图、第三方登录分享等等，这时候我们就要打包成库了。库分静态库和动态库两种：</p>
-<p>静态库：以.a 和 .framework为文件后缀名。</p>
-<p>动态库：以.tbd(之前叫.dylib) 和 .framework 为文件后缀名。</p>
-<h2 id="静态库与动态库的区别"><a href="#静态库与动态库的区别" class="headerlink" title="静态库与动态库的区别"></a>静态库与动态库的区别</h2><p>静态库：链接时会被完整的复制到可执行文件中，被多次使用就有多份拷贝。</p>
-<p>动态库：链接时不复制，程序运行时由系统动态加载到内存，系统只加载一次，多个程序共用（如系统的UIKit.framework等），节省内存。</p>
-<p>静态库和动态库是相对编译期和运行期的：静态库在程序编译时会被链接到目标代码中，程序运行时将不再需要改静态库；而动态库在程序编译时并不会被链接到目标代码中，只是在程序运行时才被载入，因为在程序运行期间还需要动态库的存在。</p>
-<h3 id="静态库-好处："><a href="#静态库-好处：" class="headerlink" title="静态库 好处："></a>静态库 好处：</h3><p>模块化，分工合作，提高了代码的复用及核心技术的保密程度</p>
-<p>避免少量改动经常导致大量的重复编译连接</p>
-<p>也可以重用，注意不是共享使用</p>
-<p>###动态库 好处：</p>
-<p>使用动态库，可以将最终可执行文件体积缩小，将整个应用程序分模块，团队合作，进行分工，影响比较小</p>
-<p>使用动态库，多个应用程序共享内存中得同一份库文件，节省资源</p>
-<p>使用动态库，可以不重新编译连接可执行程序的前提下，更新动态库文件达到更新应用程序的目的。</p>
-<p>应用插件化</p>
-<p>软件版本实时模块升级</p>
-<p>在其它大部分平台上，动态库都可以用于不同应用间共享， 共享可执行文件，这就大大节省了内存。</p>
-<p>iOS平台 在 iOS8 之前，苹果不允许第三方框架使用动态方式加载，从 iOS8 开始允许开发者有条件地创建和使用动态框架，这种框架叫做 Cocoa Touch Framework。虽然同样是动态框架，但是和系统 framework 不同，app 中使用 Cocoa Touch Framework 制作的动态库 在打包和提交 app 时会被放到 app  main bundle 的根目录 中，运行在沙盒里，而不是系统中。也就是说，不同的 app 就算使用了同样的 framework，但还是会有多份的框架被分别签名，打包和加载。不过 iOS8 上开放了 App Extension 功能，可以为一个应用创建插件，这样主app和插件之间共享动态库还是可行的。</p>
-<p>苹果系统专属的framework 是共享的（如UIKit）, 但是我们自己使用 Cocoa Touch Framework 制作的动态库是放到 app bundle 中，运行在沙盒中的</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/16/iOS中的静态库与动态库/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-适配iPhone XR" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/16/适配iPhone XR/">适配iPhone XR</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/16/适配iPhone XR/" class="archive-article-date">
-  	<time datetime="2018-09-16T06:24:26.639Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="快速适配"><a href="#快速适配" class="headerlink" title="快速适配"></a>快速适配</h3><p>先说结论，找设计师要2张启动图：</p>
-<p>iPhone XR：828px x 1792px</p>
-<p>iPhone XS Max: 1242px x 2688px</p>
-<h3 id="LaunchImage中只有iPhone-X-iPhone-XS"><a href="#LaunchImage中只有iPhone-X-iPhone-XS" class="headerlink" title="LaunchImage中只有iPhone X/iPhone XS"></a>LaunchImage中只有iPhone X/iPhone XS</h3><p>iPhone XR / XS Max 对老版本兼容请求</p>
-<p>如果没有设置iPhone XR/iPhone XS Max启动图但设置了iPhone X的启动图，iPhone XR / XS Max默认会走iPhone X 的尺寸<br>375ptx812pt，会对内容近乎于等比拉伸放到iPhone XR / XS Max屏幕内，如下图：</p>
-<p><img src="http://op1uxe89i.bkt.clouddn.com/WX20180916-143326@2x.png" alt=""></p>
-<h3 id="1-代码中判断是否是iPhone-X时需要注意"><a href="#1-代码中判断是否是iPhone-X时需要注意" class="headerlink" title="1. 代码中判断是否是iPhone X时需要注意"></a>1. 代码中判断是否是iPhone X时需要注意</h3><p>如果你以前是使用设备尺寸来判断iPhone X那就需要修改了，判断iPhone X主要是因为刘海的原因可能要做些特殊处理。鉴于iPhone X/XS/XR/XS Max底部都会有安全距离，所以可以利用safeAreaInsets.bottom &gt; 0.0来判断是否是iPhone X。</p>
-<p>safeAreaInsets支持iOS11及以后。</p>
-<pre><code>static inline BOOL isIPhoneX() {
-    BOOL iPhoneX = NO;
-    if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) {
-        return iPhoneX;
-    }
-
-    if (@available(iOS 11.0, *)) {
-        UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
-        if (mainWindow.safeAreaInsets.bottom &gt; 0.0) {
-
-            iPhoneX = YES;
-        }
-    }
-
-    return iPhoneX;
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/16/适配iPhone XR/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -1738,7 +1828,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1750,11 +1844,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
             
             <div class="clearfix"></div>
