@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>iOS 给系统日历添加事件 | Blog</title>
+  <title>MySql分页查询优化 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="最重要 添加#import &amp;lt;EventKit/EventKit.h&amp;gt; 库EKEventStore *eventStore = [[EKEventStore alloc] init];             //请求使用用户的日历数据库             if ([eventStore respondsToSelector:@selector(requestAccessToEn">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="写在前面当需要从数据库查询的表有上万条记录的时候，一次性查询所有结果会变得很慢，特别是随着数据量的增加特别明显，这时需要使用分页查询。对于数据库分页查询，也有很多种方法和优化的点。下面简单说一下我知道的一些方法。 一般分页查询一般分页查询采用limit page,pagesize 格式来操作 例如 需要查询user表中的第一页的数据，每一页数据有10个 SELECT * FROM New_info">
+<meta name="keywords" content="MySql">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS 给系统日历添加事件">
-<meta property="og:url" content="http://yoursite.com/2018/11/04/iOS 给系统日历添加事件/index.html">
+<meta property="og:title" content="MySql分页查询优化">
+<meta property="og:url" content="http://yoursite.com/2018/11/30/MySql分页查询优化/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="最重要 添加#import &amp;lt;EventKit/EventKit.h&amp;gt; 库EKEventStore *eventStore = [[EKEventStore alloc] init];             //请求使用用户的日历数据库             if ([eventStore respondsToSelector:@selector(requestAccessToEn">
+<meta property="og:description" content="写在前面当需要从数据库查询的表有上万条记录的时候，一次性查询所有结果会变得很慢，特别是随着数据量的增加特别明显，这时需要使用分页查询。对于数据库分页查询，也有很多种方法和优化的点。下面简单说一下我知道的一些方法。 一般分页查询一般分页查询采用limit page,pagesize 格式来操作 例如 需要查询user表中的第一页的数据，每一页数据有10个 SELECT * FROM New_info">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-04T15:23:17.155Z">
+<meta property="og:updated_time" content="2018-11-30T04:26:49.956Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS 给系统日历添加事件">
-<meta name="twitter:description" content="最重要 添加#import &amp;lt;EventKit/EventKit.h&amp;gt; 库EKEventStore *eventStore = [[EKEventStore alloc] init];             //请求使用用户的日历数据库             if ([eventStore respondsToSelector:@selector(requestAccessToEn">
+<meta name="twitter:title" content="MySql分页查询优化">
+<meta name="twitter:description" content="写在前面当需要从数据库查询的表有上万条记录的时候，一次性查询所有结果会变得很慢，特别是随着数据量的增加特别明显，这时需要使用分页查询。对于数据库分页查询，也有很多种方法和优化的点。下面简单说一下我知道的一些方法。 一般分页查询一般分页查询采用limit page,pagesize 格式来操作 例如 需要查询user表中的第一页的数据，每一页数据有10个 SELECT * FROM New_info">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,94 +155,72 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-iOS 给系统日历添加事件" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-MySql分页查询优化" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      iOS 给系统日历添加事件
+      MySql分页查询优化
     </h1>
   
 
         
-        <a href="/2018/11/04/iOS 给系统日历添加事件/" class="archive-article-date">
-  	<time datetime="2018-11-04T15:22:50.550Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
+        <a href="/2018/11/30/MySql分页查询优化/" class="archive-article-date">
+  	<time datetime="2018-11-30T03:31:42.396Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-30</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="最重要-添加-import-lt-EventKit-EventKit-h-gt-库"><a href="#最重要-添加-import-lt-EventKit-EventKit-h-gt-库" class="headerlink" title="最重要 添加#import &lt;EventKit/EventKit.h&gt; 库"></a>最重要 添加#import &lt;EventKit/EventKit.h&gt; 库</h3><pre><code>EKEventStore *eventStore = [[EKEventStore alloc] init];
-            //请求使用用户的日历数据库
-            if ([eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)])
-            {
-                [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (error){
-                            //错误信息 这里显示错误消息
-                        }else if (!granted){
-                            //被用户拒绝，不允许访问日历 拒绝访问显示错误消息
-                        }else{
-                            // 数据访问权限
-                            // ***** 在这里做重要的事情 *****
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当需要从数据库查询的表有上万条记录的时候，一次性查询所有结果会变得很慢，特别是随着数据量的增加特别明显，这时需要使用分页查询。对于数据库分页查询，也有很多种方法和优化的点。下面简单说一下我知道的一些方法。</p>
+<h2 id="一般分页查询"><a href="#一般分页查询" class="headerlink" title="一般分页查询"></a>一般分页查询</h2><p>一般分页查询采用limit page,pagesize 格式来操作</p>
+<p>例如</p>
+<p>需要查询user表中的第一页的数据，每一页数据有10个</p>
+<pre><code>SELECT * FROM New_info.user limit 1,10;
+</code></pre><p>如果查询user表中第二页的数据，每一页有15个数据</p>
+<pre><code>SELECT * FROM New_info.user limit 2,15;
+</code></pre><p>LIMIT 子句可以被用于指定 SELECT 语句返回的记录数。需注意以下几点：</p>
+<ul>
+<li>第一个参数指定第一个返回记录行的偏移量</li>
+<li>第二个参数指定返回记录行的最大数目</li>
+<li>如果只给定一个参数：它表示返回最大的记录行数目</li>
+<li>第二个参数为 -1 表示检索从某一个偏移量到记录集的结束所有的记录行</li>
+<li>初始记录行的偏移量是 0(而不是 1)</li>
+</ul>
+<p>弊端</p>
+<p>随着查询偏移的增大，尤其查询偏移大于10万以后，查询时间急剧增加。</p>
+<p>这种分页查询方式会从数据库第一条记录开始扫描，所以越往后，查询速度越慢，而且查询的数据越多，也会拖慢总查询速度。</p>
+<h2 id="使用子查询优化"><a href="#使用子查询优化" class="headerlink" title="使用子查询优化"></a>使用子查询优化</h2><p>这种方式先定位偏移位置的 id，然后往后查询，这种方式适用于 id 递增的情况。</p>
+<p>适应场景: 适用于数据量多的情况(元组数上万)</p>
+<pre><code>SELECT * FROM New_info.user where id&gt;10 limit 2,15;
+</code></pre><p>如果id不是递增的，容易漏掉数据</p>
+<h2 id="基于索引再排序"><a href="#基于索引再排序" class="headerlink" title="基于索引再排序"></a>基于索引再排序</h2><p>适应场景：</p>
+<p>适用于数据量多的情况（元祖数上万） 最好PRDER BY后的列对象是主键或者唯一 </p>
+<p>所以，使得ORDER BY操作能够利用索引被消除但结果集是稳定的</p>
+<p>原因：</p>
+<p>索引扫描，速度会很快，但是Mysql的排序操作，只有ASC没有DESC </p>
+<p>代码示例</p>
+<pre><code>SELECT * FROM New_info.user WHERE id&gt;(2*10) ORDER BY id ASC LIMIT 10;
+</code></pre><h2 id="基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）"><a href="#基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）" class="headerlink" title="基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）"></a>基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）</h2><p>适应场景：<br>大数据量</p>
+<p>原因：</p>
+<p>索引扫描，速度会很快，prepare语句比一般的查询语句块一点</p>
+<p>代码示例：</p>
+<pre><code>PREPARE stmt_name FROM SELECT * FROM 表名称 WHERE id_pk &gt; (？* ？) ORDER BY id_pk ASC LIMIT M
+</code></pre><h2 id="利用MySQL支持ORDER操作可以利用索引快速定位部分元组-避免全表扫描"><a href="#利用MySQL支持ORDER操作可以利用索引快速定位部分元组-避免全表扫描" class="headerlink" title="利用MySQL支持ORDER操作可以利用索引快速定位部分元组,避免全表扫描"></a>利用MySQL支持ORDER操作可以利用索引快速定位部分元组,避免全表扫描</h2><p>比如: 读第1000到1019行元组(pk是主键/唯一键).</p>
+<pre><code>SELECT * FROM your_table WHERE pk&gt;=1000 ORDER BY pk ASC LIMIT 0,20
+</code></pre><h2 id="利用”子查询-连接-索引”快速定位元组的位置-然后再读取元组-道理同方法5"><a href="#利用”子查询-连接-索引”快速定位元组的位置-然后再读取元组-道理同方法5" class="headerlink" title="利用”子查询/连接+索引”快速定位元组的位置,然后再读取元组. 道理同方法5"></a>利用”子查询/连接+索引”快速定位元组的位置,然后再读取元组. 道理同方法5</h2><p>例如(id是主键/唯一键,蓝色字体时变量):</p>
+<p>利用子查询示例:</p>
+<pre><code>SELECT * FROM your_table WHERE id &lt;= 
+(SELECT id FROM your_table ORDER BY id desc LIMIT ($page-1)*$pagesize ORDER BY id desc LIMIT $pagesize
+</code></pre><p>利用连接示例:</p>
+<pre><code>SELECT * FROM your_table AS t1 
+JOIN (SELECT id FROM your_table ORDER BY id desc LIMIT ($page-1)*$pagesize AS t2 
+WHERE t1.id &lt;= t2.id ORDER BY t1.id desc LIMIT $pagesize;
+</code></pre><p>mysql大数据量使用limit分页，随着页码的增大，查询效率越低下。</p>
 
-                            //事件保存到日历
-                            //06.07 元素
-                            //title(标题 NSString),
-                            //location(位置NSString),
-                            //startDate(开始时间 2016/06/07 11:14AM),
-                            //endDate(结束时间 2016/06/07 11:14AM),
-                            //addAlarm(提醒时间 2016/06/07 11:14AM),
-                            //notes(备注类容NSString)
-
-                            //创建事件
-                            EKEvent *event  = [EKEvent eventWithEventStore:eventStore];
-                            event.title  = @&quot;测试写入日历事件&quot;;
-                            event.location = @&quot;北京海淀&quot;;
-
-                            NSDateFormatter * dateFormatter = [[NSDateFormatter alloc] init];
-                            [dateFormatter setAMSymbol:@&quot;AM&quot;];
-                            [dateFormatter setPMSymbol:@&quot;PM&quot;];
-                            [dateFormatter setDateFormat:@&quot;yyyy/MM/dd hh:mmaaa&quot;];
-                            NSDate *date = [NSDate date];
-                            NSString * s = [dateFormatter stringFromDate:date];
-                            DLog(@&quot;%@&quot;,s);
-
-                            //开始时间(必须传)
-                            event.startDate = [date dateByAddingTimeInterval:60 * 2];
-                            //结束时间(必须传)
-                            event.endDate   = [date dateByAddingTimeInterval:60 * 5 * 24];
-                            //                    event.endDate   = [[NSDate alloc]init];
-                            //                    event.allDay = YES;//全天
-
-                            //添加提醒
-                            //第一次提醒  (几分钟后)
-                            [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -1.0f]];
-                            //第二次提醒  ()
-                            //                    [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -10.0f * 24]];
-
-                            //06.07 add 事件类容备注
-                            NSString * str = ws.model.remark;
-                            event.notes = [NSString stringWithFormat:@&quot;%@&quot;,str];
-
-                            [event setCalendar:[eventStore defaultCalendarForNewEvents]];
-                            NSError *err;
-
-                            [eventStore saveEvent:event span:EKSpanThisEvent error:&amp;err];
-
-                            DLog(@&quot;保存成功&quot;);
-
-                            //直接杀死进程
-                            exit(2);
-
-                        }
-                    });
-                }];
-            }
-</code></pre>
       
 
       
@@ -276,7 +254,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">MySql</a>
         		</li>
       		
 		</ul>
@@ -332,7 +310,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/04/iOS 给系统日历添加事件/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/30/MySql分页查询优化/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -346,18 +324,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/11/06/关于压缩图片的方法/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          关于压缩图片的方法
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/11/04/一些常见的跳转/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">一些常见的跳转</div>
+    <a href="/2018/11/28/从git add到branch/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">从git add到branch</div>
       <i class="icon-circle-right"></i>
     </a>
   
