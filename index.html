@@ -152,6 +152,212 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-请求转发和重定向" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/12/请求转发和重定向/">请求转发和重定向</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/12/请求转发和重定向/" class="archive-article-date">
+  	<time datetime="2018-12-12T13:15:53.915Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="请求转发和重定向两者之间的区别"><a href="#请求转发和重定向两者之间的区别" class="headerlink" title="请求转发和重定向两者之间的区别"></a>请求转发和重定向两者之间的区别</h3><p>请求转发：一次请求，地址栏信息不变。      </p>
+<p>重定向：两次请求，地址栏信息会发生改变。</p>
+<h3 id="使用时机："><a href="#使用时机：" class="headerlink" title="使用时机："></a>使用时机：</h3><p>1.如果表单中有数据，而数据又比较重要，不能重复提交，建议使用重定向。</p>
+<p>2.如果servlet接受后，无法进行处理，建议使用重定向定位到可以处理的资源。</p>
+<p>请求转发：路径为当前项目的根目录，直接书写跳转的资源路径即可。</p>
+<h3 id="req-getRequestDispatcher-“1-jsp”-forward-req-resp"><a href="#req-getRequestDispatcher-“1-jsp”-forward-req-resp" class="headerlink" title="req.getRequestDispatcher(“1.jsp”).forward(req, resp);"></a>req.getRequestDispatcher(“1.jsp”).forward(req, resp);</h3><p>重定向：/代表服务器地址+服务器的应用目录（类似tomcat的webapps），因此还需要加上/项目名+跳转资源路径。</p>
+<h3 id="resp-sendRedirect-“-sx-2-jsp”"><a href="#resp-sendRedirect-“-sx-2-jsp”" class="headerlink" title="resp.sendRedirect(“/sx/2.jsp”);"></a>resp.sendRedirect(“/sx/2.jsp”);</h3><p>注意：如果req.getRequestDispatcher(“1.jsp”).forward(req, resp);写成了req.getRequestDispatcher(“1.jsp”)；则不会跳转。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">JAVA</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/12/请求转发和重定向/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-response设置响应信息" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/12/response设置响应信息/">response设置响应信息</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/12/response设置响应信息/" class="archive-article-date">
+  	<time datetime="2018-12-12T10:40:20.461Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><p>响应数据到浏览器的一个对象</p>
+<h3 id="响应行"><a href="#响应行" class="headerlink" title="响应行"></a>响应行</h3><pre><code>//设置响应行
+resp.setStatus(200);       
+//设置正确响应的状态码。这个方法被用于当响应结果正常时设置响应码
+resp.sendError(200,&quot;ok&quot;); 
+//设置错误状态码+状态信息，会中断后面的信息
+</code></pre><h3 id="响应体"><a href="#响应体" class="headerlink" title="响应体"></a>响应体</h3><pre><code>//设置响应实体
+resp.getWriter().write(&quot;hello world&quot;);
+</code></pre><h3 id="响应头"><a href="#响应头" class="headerlink" title="响应头"></a>响应头</h3><p>response 设置响应头的常用几种方法</p>
+<pre><code>1.Location  的用法
+
+
+response.setStatus(302)//临时定向响应码
+
+response.setHeader(&quot;Location&quot;, &quot;/day03_00_ResponseHeader/servlet/ResponseHeaderDemo2&quot;);///day03_00_ResponseHeader/servlet/ResponseHeaderDemo2 代表转向的地址
+
+
+
+
+2.response.setHeader(&quot;Content-Encoding&quot;, &quot;gzip&quot;); //告诉响应头以gzip 格式解码
+
+再输入输出流的时候用GZIPOutputStream  缩小文件的大小。
+
+
+
+
+3.//刷新Refersh
+
+ response.setHeader(&quot;Refresh&quot;, &quot;3;url=http://www.baidu.com&quot;); //告诉客户端 三秒后刷新
+
+
+
+
+4.Content-Disposition ////通知客户端已下载的方式接受数据
+
+
+response.setHeader(&quot;Content-Disposition&quot;, &quot;attachment;filename=2.jpg&quot;);
+
+
+
+
+5.Content-Type//告知客户端响应正文类型
+response.setHeader(&quot;Content-Type&quot;, &quot;application/octet-stream&quot;);
+
+6. Expires 控制缓存
+
+        //控制浏览器不要缓存
+        response.setHeader(&quot;Expires&quot;, &quot;-1&quot;);
+        response.setHeader(&quot;Cache-Control&quot;, &quot;no-cache&quot;);
+        response.setHeader(&quot;Pragma&quot;,  &quot;no-cache&quot;);
+
+     //控制缓存时间 response.setDateHeader(&quot;Expires&quot;, System.currentTimeMillis()+1*60*60*1000);
+</code></pre><p>### </p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">JAVA</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/12/response设置响应信息/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Nonnull区域设置(Audited Regions)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1892,556 +2098,9 @@ dateLab.text = [dateFormatter stringFromDate:date];
 
 
   
-    <article id="post-使用两行代码就能完成80%的缓存需求 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/使用两行代码就能完成80%的缓存需求 /">使用两行代码就能完成80%的缓存需求</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/27/使用两行代码就能完成80%的缓存需求 /" class="archive-article-date">
-  	<time datetime="2018-11-27T06:24:38.209Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>由于微信、QQ、微博、这类的应用使用缓存很“重”，使一般的用户也对缓存也非常习惯。缓存已然成为必备。</p>
-<p>缓存的目的是 使用空间换时间</p>
-<p>这句话在动辄就是 300M、600M 的大应用上，得到了很好的诠释。但能有缓存意识的公司，还在少数。</p>
-<p>只有你真正感受到痛的时候，你才会考虑使用缓存。</p>
-<p>这个痛可能是：</p>
-<p>服务器压力、客户端网络优化、用户体验等等。</p>
-<h2 id="当我们在谈论缓存的时候，我们在谈论什么？"><a href="#当我们在谈论缓存的时候，我们在谈论什么？" class="headerlink" title="当我们在谈论缓存的时候，我们在谈论什么？"></a>当我们在谈论缓存的时候，我们在谈论什么？</h2><p>我们今天将站在小白用户的角度，给缓存这个概念进行重新的定义。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>第一种</th>
-<th>第二种</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>目的</td>
-<td>优化型缓存</td>
-<td>功能型缓存</td>
-</tr>
-<tr>
-<td>具体描述</td>
-<td>出于优化考虑：服务器压力、用户体验、为用户剩流量等等。同时优化型缓存也有内存缓存和磁盘缓存之分。</td>
-<td>App离线也能查看，出于功能考虑，属于存储范畴</td>
-</tr>
-<tr>
-<td>常见概念</td>
-<td>GET网络请求缓存、WEB缓存</td>
-<td>离线存储</td>
-</tr>
-<tr>
-<td>典型应用</td>
-<td>微信首页的会话列表、微信头像、朋友圈、网易新闻新闻列表、</td>
-<td>微信聊天记录、</td>
-</tr>
-<tr>
-<td>Parse对应的类</td>
-<td>PFCachedQueryController</td>
-<td>PFOfflineStore</td>
-</tr>
-</tbody>
-</table>
-<p>重度使用缓存的App： 微信、微博、网易新闻、携程、去哪儿等等。</p>
-<h2 id="GET网络请求缓存"><a href="#GET网络请求缓存" class="headerlink" title="GET网络请求缓存"></a>GET网络请求缓存</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>首先要知道，POST请求不能被缓存，只有 GET 请求能被缓存。因为从数学的角度来讲，GET 的结果是 幂等 的，就好像字典里的 key 与 value 就是幂等的，而 POST 不 幂等 。缓存的思路就是将查询的参数组成的值作为 key ，对应结果作为value。从这个意义上说，一个文件的资源链接，也叫 GET 请求，下文也会这样看待。</p>
-<h3 id="80-的缓存需求：两行代码就可满足"><a href="#80-的缓存需求：两行代码就可满足" class="headerlink" title="80%的缓存需求：两行代码就可满足"></a>80%的缓存需求：两行代码就可满足</h3><p>第一个步骤：请使用 GET 请求。</p>
-<p>第二个步骤：</p>
-<p>如果你已经使用 了 GET 请求，iOS 系统 SDK 已经帮你做好了缓存。你需要的仅仅是设置下内存缓存大小、磁盘缓存大小、以及缓存路径。甚至这两行代码不设置也是可以的，会有一个默认值。代码如下：</p>
-<pre><code>NSURLCache *urlCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
-[NSURLCache setSharedURLCache:urlCache];
-</code></pre><p>第三个步骤：没有第三步！</p>
-<p>你只要设置了这两行代码，基本就可满足80%的缓存需求。AFNetworking 的作者 Mattt曾经说过：</p>
-<pre><code>无数开发者尝试自己做一个简陋而脆弱的系统来实现网络缓存的功能
-，殊不知 NSURLCache 只要两行代码就能搞定且好上 100 倍。
-</code></pre><p>（AFN 是不是在暗讽 SDWebImage 复杂又蹩脚的缓存机制？？）</p>
-<p>要注意</p>
-<ul>
-<li>iOS 5.0开始，支持磁盘缓存，但仅支持 HTTP</li>
-<li>iOS 6.0开始，支持 HTTPS 缓存</li>
-</ul>
-<h3 id="控制缓存的有效性"><a href="#控制缓存的有效性" class="headerlink" title="控制缓存的有效性"></a>控制缓存的有效性</h3><p>我们知道：</p>
-<p>只要是缓存，总会过期。</p>
-<p>那么缓存的过期时间如何控制？</p>
-<p>上文中的两行代码，已经给出了一个方法，指定超时时间。但这并也许不能满足我们的需求，如果我们对数据的一致性，时效性要求很高，即使1秒钟后数据更改了，客户端也必须展示更改后的数据。这种情况如何处理？</p>
-<p>下面我们将对这种需求，进行解决方案的介绍。顺序是这样的：先从文件类型的缓存入手，引入两个概念。然后再谈下，一般数据类型比如 JSON 返回值的缓存处理。</p>
-<h2 id="文件缓存：借助ETag或Last-Modified判断文件缓存是否有效"><a href="#文件缓存：借助ETag或Last-Modified判断文件缓存是否有效" class="headerlink" title="文件缓存：借助ETag或Last-Modified判断文件缓存是否有效"></a>文件缓存：借助ETag或Last-Modified判断文件缓存是否有效</h2><h3 id="Last-Modified"><a href="#Last-Modified" class="headerlink" title="Last-Modified"></a>Last-Modified</h3><p>服务器的文件存贮，大多采用资源变动后就重新生成一个链接的做法。而且如果你的文件存储采用的是第三方的服务，比如七牛、青云等服务，则一定是如此。</p>
-<p>这种做法虽然是推荐做法，但同时也不排除不同文件使用同一个链接。那么如果服务端的file更改了，本地已经有了缓存。如何更新缓存？</p>
-<p>这种情况下需要借助 ETag 或 Last-Modified 判断图片缓存是否有效。</p>
-<p>Last-Modified 顾名思义，是资源最后修改的时间戳，往往与缓存时间进行对比来判断缓存是否过期。</p>
-<p>在浏览器第一次请求某一个URL时，服务器端的返回状态会是200，内容是你请求的资源，同时有一个Last-Modified的属性标记此文件在服务期端最后被修改的时间，格式类似这样：</p>
-<pre><code>Last-Modified: Fri, 12 May 2006 18:53:33 GMT
-</code></pre><p>客户端第二次请求此URL时，根据 HTTP 协议的规定，浏览器会向服务器传送 If-Modified-Since 报头，询问该时间之后文件是否有被修改过：</p>
-<pre><code>If-Modified-Since: Fri, 12 May 2006 18:53:33 GMT
-</code></pre><p>总结下来它的结构如下：</p>
-<p>请求 HeaderValue    响应 HeaderValue<br>Last-Modified    If-Modified-Since</p>
-<p>如果服务器端的资源没有变化，则自动返回 HTTP 304 （Not Changed.）状态码，内容为空，这样就节省了传输数据量。当服务器端代码发生改变或者重启服务器时，则重新发出资源，返回和第一次请求时类似。从而保证不向客户端重复发出资源，也保证当服务器有变化时，客户端能够得到最新的资源。</p>
-<p>判断方法用伪代码表示：</p>
-<pre><code>if ETagFromServer != ETagOnClient || LastModifiedFromServer != LastModifiedOnClient
-  GetFromServer
-else
-  GetFromCache
-</code></pre><p>NSURLConnection 和 NSURLSession 两个版本：</p>
-<p>/*!<br>@brief 如果本地缓存资源为最新，则使用使用本地缓存。如果服务器已经更新或本地无缓存则从服务器请求资源。</p>
-<p>@details</p>
-<p>步骤：</p>
-<ol>
-<li>请求是可变的，缓存策略要每次都从服务器加载</li>
-<li>每次得到响应后，需要记录住 LastModified</li>
-<li><p>下次发送请求的同时，将LastModified一起发送给服务器（由服务器比较内容是否发生变化）</p>
-<p> @return 图片资源<br> */</p>
-<ul>
-<li><p>(void)getData:(GetDataCompletion)completion {<br> NSURL <em>url = [NSURL URLWithString:kLastModifiedImageURL];<br> NSMutableURLRequest </em>request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15.0];</p>
-<p> //    // 发送 etag<br> //    if (self.etag.length &gt; 0) {<br> //        [request setValue:self.etag forHTTPHeaderField:@”If-None-Match”];<br> //    }<br> // 发送 LastModified<br> if (self.localLastModified.length &gt; 0) {</p>
-<pre><code>[request setValue:self.localLastModified forHTTPHeaderField:@&quot;If-Modified-Since&quot;];
-</code></pre><p> }</p>
-<p> [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData <em>data, NSURLResponse </em>response, NSError *error) {</p>
-<pre><code>// NSLog(@&quot;%@ %tu&quot;, response, data.length);
-// 类型转换（如果将父类设置给子类，需要强制转换）
-NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-NSLog(@&quot;statusCode == %@&quot;, @(httpResponse.statusCode));
-// 判断响应的状态码是否是 304 Not Modified （更多状态码含义解释： https://github.com/ChenYilong/iOSDevelopmentTips）
-if (httpResponse.statusCode == 304) {
-    NSLog(@&quot;加载本地缓存图片&quot;);
-    // 如果是，使用本地缓存
-    // 根据请求获取到`被缓存的响应`！
-    NSCachedURLResponse *cacheResponse =  [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
-    // 拿到缓存的数据
-    data = cacheResponse.data;
-}
-
-// 获取并且纪录 etag，区分大小写
-//        self.etag = httpResponse.allHeaderFields[@&quot;Etag&quot;];
-// 获取并且纪录 LastModified
-self.localLastModified = httpResponse.allHeaderFields[@&quot;Last-Modified&quot;];
-//        NSLog(@&quot;%@&quot;, self.etag);
-NSLog(@&quot;%@&quot;, self.localLastModified);
-dispatch_async(dispatch_get_main_queue(), ^{
-    !completion ?: completion(data);
-});
-</code></pre><p> }] resume];<br>}</p>
-</li>
-</ul>
-</li>
-</ol>
-<h3 id="ETag"><a href="#ETag" class="headerlink" title="ETag"></a>ETag</h3><p>ETag 是什么？</p>
-<p>HTTP 协议规格说明定义ETag为“被请求变量的实体值” （参见 —— 章节 14.19）。 另一种说法是，ETag是一个可以与Web资源关联的记号（token）。它是一个 hash 值，用作 Request 缓存请求头，每一个资源文件都对应一个唯一的  ETag 值，<br>服务器单独负责判断记号是什么及其含义，并在HTTP响应头中将其传送到客户端，以下是服务器端返回的格式：</p>
-<pre><code>ETag: &quot;50b1c1d4f775c61:df3&quot;
-
-
-客户端的查询更新格式是这样的：
-
-If-None-Match: W/&quot;50b1c1d4f775c61:df3&quot;
-</code></pre><p>其中：</p>
-<p>If-None-Match - 与响应头的 Etag 相对应，可以判断本地缓存数据是否发生变化</p>
-<pre><code>如果ETag没改变，则返回状态304然后不返回，这也和Last-Modified一样。
-</code></pre><p>ETag 是的功能与 Last-Modified 类似：服务端不会每次都会返回文件资源。客户端每次向服务端发送上次服务器返回的 ETag 值，服务器会根据客户端与服务端的  ETag 值是否相等，来决定是否返回 data，同时总是返回对应的 HTTP 状态码。客户端通过 HTTP 状态码来决定是否使用缓存。比如：服务端与客户端的 ETag 值相等，则 HTTP 状态码为 304，不返回 data。服务端文件一旦修改，服务端与客户端的 ETag 值不等，并且状态值会变为200，同时返回 data。</p>
-<p>因为修改资源文件后该值会立即变更。这也决定了 ETag 在断点下载时非常有用。<br>比如 AFNetworking 在进行断点下载时，就是借助它来检验数据的。详见在 AFHTTPRequestOperation 类中的用法:</p>
-<pre><code>//下载暂停时提供断点续传功能，修改请求的HTTP头，记录当前下载的文件位置，下次可以从这个位置开始下载。
-- (void)pause {
-   unsigned long long offset = 0;
-   if ([self.outputStream propertyForKey:NSStreamFileCurrentOffsetKey]) {
-       offset = [[self.outputStream propertyForKey:NSStreamFileCurrentOffsetKey] unsignedLongLongValue];
-   } else {
-       offset = [[self.outputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey] length];
-   }
-
-   NSMutableURLRequest *mutableURLRequest = [self.request mutableCopy];
-   if ([self.response respondsToSelector:@selector(allHeaderFields)] &amp;&amp; [[self.response allHeaderFields] valueForKey:@&quot;ETag&quot;]) {
-   //若请求返回的头部有ETag，则续传时要带上这个ETag，
-   //ETag用于放置文件的唯一标识，比如文件MD5值
-   //续传时带上ETag服务端可以校验相对上次请求，文件有没有变化，
-   //若有变化则返回200，回应新文件的全数据，若无变化则返回206续传。
-       [mutableURLRequest setValue:[[self.response allHeaderFields] valueForKey:@&quot;ETag&quot;] forHTTPHeaderField:@&quot;If-Range&quot;];
-   }
-   //给当前request加Range头部，下次请求带上头部，可以从offset位置继续下载
-   [mutableURLRequest setValue:[NSString stringWithFormat:@&quot;bytes=%llu-&quot;, offset] forHTTPHeaderField:@&quot;Range&quot;];
-   self.request = mutableURLRequest;
-
-   [super pause];
-}
-</code></pre><p>七牛等第三方文件存储商现在都已经支持ETag，Demo8和9 中给出的演示图片就是使用的七牛的服务，见：</p>
-<pre><code>static NSString *const kETagImageURL = @&quot;http://ac-g3rossf7.clouddn.com/xc8hxXBbXexA8LpZEHbPQVB.jpg&quot;;
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/使用两行代码就能完成80%的缓存需求 /">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-避免使用 GCD Global队列创建Runloop常驻线程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/">避免使用 GCD Global队列创建Runloop常驻线程</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/" class="archive-article-date">
-  	<time datetime="2018-11-27T06:10:53.369Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="GCD-Global队列创建线程进行耗时操作的风险"><a href="#GCD-Global队列创建线程进行耗时操作的风险" class="headerlink" title="GCD Global队列创建线程进行耗时操作的风险"></a>GCD Global队列创建线程进行耗时操作的风险</h2><p>先思考下如下几个问题：</p>
-<p>新建线程的方式有哪些？各自的优缺点是什么？</p>
-<p>dispatch_async 函数分发到全局队列一定会新建线程执行任务么？</p>
-<p>如果全局队列对应的线程池如果满了，后续的派发的任务会怎么处置？有什么风险？</p>
-<p>答案大致是这样的：</p>
-<p>dispatch_async 函数分发到全局队列不一定会新建线程执行任务，全局队列底层有一个的线程池，如果线程池满了，那么后续的任务会被 block 住，等待前面的任务执行完成，才会继续执行。如果线程池中的线程长时间不结束，后续堆积的任务会越来越多，此时就会存在 APP crash的风险。</p>
-<pre><code>- (void)dispatchTest1 {
-    for (NSInteger i = 0; i&lt; 10000 ; i++) {
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self dispatchTask:i];
-        });
-    }
-}
-
-- (void)dispatchTask:(NSInteger)index {
-        //模拟耗时操作，比如DB,网络，文件读写等等
-        sleep(30);
-        NSLog(@&quot;----:%ld&quot;,index);
-}
-</code></pre><p>以上逻辑用真机测试会有卡死的几率，并非每次都会发生，但多尝试几次就会复现，伴随前后台切换，crash几率增大。</p>
-<p>下面做一下分析：</p>
-<p>参看 GCD 源码我们可以看到全局队列的相关源码如下：</p>
-<pre><code>DISPATCH_NOINLINE
-static void
-_dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
-{
-   dispatch_root_queue_context_t qc = dq-&gt;do_ctxt;
-   uint32_t i = n;
-   int r;
-
-   _dispatch_debug_root_queue(dq, __func__);
-   dispatch_once_f(&amp;_dispatch_root_queues_pred, NULL,
-           _dispatch_root_queues_init);
-
-#if HAVE_PTHREAD_WORKQUEUES
-#if DISPATCH_USE_PTHREAD_POOL
-   if (qc-&gt;dgq_kworkqueue != (void*)(~0ul))
-#endif
-   {
-       _dispatch_root_queue_debug(&quot;requesting new worker thread for global &quot;
-               &quot;queue: %p&quot;, dq);
-#if DISPATCH_USE_LEGACY_WORKQUEUE_FALLBACK
-       if (qc-&gt;dgq_kworkqueue) {
-           pthread_workitem_handle_t wh;
-           unsigned int gen_cnt;
-           do {
-               r = pthread_workqueue_additem_np(qc-&gt;dgq_kworkqueue,
-                       _dispatch_worker_thread4, dq, &amp;wh, &amp;gen_cnt);
-               (void)dispatch_assume_zero(r);
-           } while (--i);
-           return;
-       }
-#endif // DISPATCH_USE_LEGACY_WORKQUEUE_FALLBACK
-#if HAVE_PTHREAD_WORKQUEUE_SETDISPATCH_NP
-       if (!dq-&gt;dq_priority) {
-           r = pthread_workqueue_addthreads_np(qc-&gt;dgq_wq_priority,
-                   qc-&gt;dgq_wq_options, (int)i);
-           (void)dispatch_assume_zero(r);
-           return;
-       }
-#endif
-#if HAVE_PTHREAD_WORKQUEUE_QOS
-       r = _pthread_workqueue_addthreads((int)i, dq-&gt;dq_priority);
-       (void)dispatch_assume_zero(r);
-#endif
-       return;
-   }
-#endif // HAVE_PTHREAD_WORKQUEUES
-#if DISPATCH_USE_PTHREAD_POOL
-   dispatch_pthread_root_queue_context_t pqc = qc-&gt;dgq_ctxt;
-   if (fastpath(pqc-&gt;dpq_thread_mediator.do_vtable)) {
-       while (dispatch_semaphore_signal(&amp;pqc-&gt;dpq_thread_mediator)) {
-           if (!--i) {
-               return;
-           }
-       }
-   }
-   uint32_t j, t_count;
-   // seq_cst with atomic store to tail &lt;rdar://problem/16932833&gt;
-   t_count = dispatch_atomic_load2o(qc, dgq_thread_pool_size, seq_cst);
-   do {
-       if (!t_count) {
-           _dispatch_root_queue_debug(&quot;pthread pool is full for root queue: &quot;
-                   &quot;%p&quot;, dq);
-           return;
-       }
-       j = i &gt; t_count ? t_count : i;
-   } while (!dispatch_atomic_cmpxchgvw2o(qc, dgq_thread_pool_size, t_count,
-           t_count - j, &amp;t_count, acquire));
-
-   pthread_attr_t *attr = &amp;pqc-&gt;dpq_thread_attr;
-   pthread_t tid, *pthr = &amp;tid;
-#if DISPATCH_ENABLE_PTHREAD_ROOT_QUEUES
-   if (slowpath(dq == &amp;_dispatch_mgr_root_queue)) {
-       pthr = _dispatch_mgr_root_queue_init();
-   }
-#endif
-   do {
-       _dispatch_retain(dq);
-       while ((r = pthread_create(pthr, attr, _dispatch_worker_thread, dq))) {
-           if (r != EAGAIN) {
-               (void)dispatch_assume_zero(r);
-           }
-           _dispatch_temporary_resource_shortage();
-       }
-   } while (--j);
-#endif // DISPATCH_USE_PTHREAD_POOL
-}
-</code></pre><p>对于执行的任务来说，所执行的线程具体是哪个线程，则是通过 GCD 的线程池（Thread Pool）来进行调度</p>
-<p>上面贴的源码，我们关注如下的部分：</p>
-<p>其中有一个用来记录线程池大小的字段 dgq_thread_pool_size。这个字段标记着GCD线程池的大小。摘录上面源码的一部分：</p>
-<pre><code>uint32_t j, t_count;
-  // seq_cst with atomic store to tail &lt;rdar://problem/16932833&gt;
-  t_count = dispatch_atomic_load2o(qc, dgq_thread_pool_size, seq_cst);
-  do {
-      if (!t_count) {
-          _dispatch_root_queue_debug(&quot;pthread pool is full for root queue: &quot;
-                  &quot;%p&quot;, dq);
-          return;
-      }
-      j = i &gt; t_count ? t_count : i;
-  } while (!dispatch_atomic_cmpxchgvw2o(qc, dgq_thread_pool_size, t_count,
-          t_count - j, &amp;t_count, acquire));
-</code></pre><p>全局队列的底层是一个线程池，向全局队列中提交的 block，都会被放到这个线程池中执行，如果线程池已满，后续再提交 block 就不会再重新创建线程。这就是为什么 Demo 会造成卡顿甚至冻屏的原因。</p>
-<h2 id="避免使用-GCD-Global-队列创建-Runloop-常驻线程"><a href="#避免使用-GCD-Global-队列创建-Runloop-常驻线程" class="headerlink" title="避免使用 GCD Global 队列创建 Runloop 常驻线程"></a>避免使用 GCD Global 队列创建 Runloop 常驻线程</h2><p>在做网路请求时我们常常创建一个 Runloop 常驻线程用来接收、响应后续的服务端回执，比如NSURLConnection、AFNetworking等等，我们可以称这种线程为 Runloop 常驻线程。</p>
-<p>正如上文所述，用 GCD Global 队列创建线程进行耗时操作是存在风险的。那么我们可以试想下，如果这个耗时操作变成了 runloop 常驻线程，会是什么结果？下面做一下分析：</p>
-<p>先介绍下 Runloop 常驻线程的原理，在开发中一般有两种用法：</p>
-<ul>
-<li><p>单一 Runloop 常驻线程：在 APP 的生命周期中开启了唯一的常驻线程来进行网络请求，常用于网络库，或者有维持长连接需求的库，比如： AFNetworking 、 SocketRocket。</p>
-</li>
-<li><p>多个 Runloop 常驻线程：每进行一次网络请求就开启一条 Runloop 常驻线程，这条线程的生命周期的起点是网络请求开始，终点是网络请求结束，或者网络请求超时。</p>
-</li>
-</ul>
-<h2 id="单一-Runloop-常驻线程"><a href="#单一-Runloop-常驻线程" class="headerlink" title="单一 Runloop 常驻线程"></a>单一 Runloop 常驻线程</h2><p>先说第一种用法：</p>
-<p>以 AFNetworking 为例，AFURLConnectionOperation 这个类是基于 NSURLConnection 构建的，其希望能在后台线程接收 Delegate 回调。为此 AFNetworking 单独创建了一个线程，并在这个线程中启动了一个 RunLoop：</p>
-<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object {
-    @autoreleasepool {
-        [[NSThread currentThread] setName:@&quot;AFNetworking&quot;];
-        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-        [runLoop run];
-    }
-}
-
-+ (NSThread *)networkRequestThread {
-    static NSThread *_networkRequestThread = nil;
-    static dispatch_once_t oncePredicate;
-    dispatch_once(&amp;oncePredicate, ^{
-        _networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];
-        [_networkRequestThread start];
-    });
-    return _networkRequestThread;
-}
-</code></pre><h2 id="多个-Runloop-常驻线程"><a href="#多个-Runloop-常驻线程" class="headerlink" title="多个 Runloop 常驻线程"></a>多个 Runloop 常驻线程</h2><p>第二种用法，我写了一个小 Demo 来模拟这种场景，</p>
-<p>我们模拟了一个场景：假设所有的网络请求全部超时，或者服务端根本不响应，然后网络库超时检测机制的做法：</p>
-<pre><code>#import &quot;Foo.h&quot;
-
-@interface Foo()  {
-    NSRunLoop *_runloop;
-    NSTimer *_timeoutTimer;
-    NSTimeInterval _timeoutInterval;
-    dispatch_semaphore_t _sem;
-}
-@end
-
-@implementation Foo
-
-- (instancetype)init {
-    if (!(self = [super init])) {
-        return nil;
-    }
-    _timeoutInterval = 1 ;
-    _sem = dispatch_semaphore_create(0);
-    // Do any additional setup after loading the view, typically from a nib.
-    return self;
-}
-
-- (id)test {
-    // 第一种方式：
-    // NSThread *networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint0:) object:nil];
-    // [networkRequestThread start];
-    //第二种方式:
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        [self networkRequestThreadEntryPoint0:nil];
-    });
-    dispatch_semaphore_wait(_sem, DISPATCH_TIME_FOREVER);
-    return @(YES);
-}
-
-- (void)networkRequestThreadEntryPoint0:(id)__unused object {
-    @autoreleasepool {
-        [[NSThread currentThread] setName:@&quot;CYLTest&quot;];
-        _runloop = [NSRunLoop currentRunLoop];
-        [_runloop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-        _timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(stopLoop) userInfo:nil repeats:NO];
-        [_runloop addTimer:_timeoutTimer forMode:NSRunLoopCommonModes];
-        [_runloop run];//在实际开发中最好使用这种方式来确保能runloop退出，做双重的保障[runloop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:(timeoutInterval+5)]];
-    }
-}
-
-- (void)stopLoop {
-    CFRunLoopStop([_runloop getCFRunLoop]);
-    dispatch_semaphore_signal(_sem);
-}
-
-@end
-</code></pre><p>如果</p>
-<pre><code>for (int i = 0; i &lt; 300 ; i++) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-            [[Foo new] test];
-            NSLog(@&quot;🔴类名与方法名：%@（在第%@行），描述：%@&quot;, @(__PRETTY_FUNCTION__), @(__LINE__), @&quot;&quot;);
-        });
-    }
-</code></pre><p>以上逻辑用真机测试会有卡死的几率，并非每次都会发生，但多尝试几次就会复现，伴随前后台切换，crash几率增大。</p>
-<p>其中我们采用了 GCD 全局队列的方式来创建常驻线程，因为在创建时可能已经出现了全局队列的线程池满了的情况，所以 GCD 派发的任务，无法执行，而且我们把超时检测的逻辑放进了这个任务中，所以导致的情况就是，有很多任务的超时检测功能失效了。此时就只能依赖于服务端响应来结束该任务（服务端响应能结束该任务的逻辑在 Demo 中未给出），但是如果再加之服务端不响应，那么任务就永远不会结束。后续的网络请求也会就此 block 住，造成 crash。</p>
-<p>如果我们把 GCD 全局队列换成 NSThread 的方式，那么就可以保证每次都会创建新的线程。</p>
-<p>注意：文章中只演示的是超时 cancel runloop 的操作，实际项目中一定有其他主动 cancel runloop 的操作，就比如网络请求成功或失败后需要进行cancel操作。代码中没有展示网络请求成功或失败后的 cancel 操作。</p>
-<p>Demo 的这种模拟可能比较极端，但是如果你维护的是一个像 AFNetworking 这样的一个网络库，你会放心把创建常驻线程这样的操作交给 GCD 全局队列吗？因为整个 APP 是在共享一个全局队列的线程池，那么如果 APP 把线程池沾满了，甚至线程池长时间占满且不结束，那么 AFNetworking 就自然不能再执行任务了，所以我们看到，即使是只会创建一条常驻线程， AFNetworking 依然采用了 NSThread 的方式而非 GCD 全局队列这种方式。</p>
-<p>注释：以下方法存在于老版本AFN 2.x 中。</p>
-<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object {
-    @autoreleasepool {
-        [[NSThread currentThread] setName:@&quot;AFNetworking&quot;];
-        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-        [runLoop run];
-    }
-}
-
-+ (NSThread *)networkRequestThread {
-    static NSThread *_networkRequestThread = nil;
-    static dispatch_once_t oncePredicate;
-    dispatch_once(&amp;oncePredicate, ^{
-        _networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];
-        [_networkRequestThread start];
-    });
-    return _networkRequestThread;
-}
-</code></pre><p>正如你所看到的，没有任何一个库会用 GCD 全局队列来创建常驻线程，而你也应该</p>
-<p>避免使用 GCD Global 队列来创建 Runloop 常驻线程。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 
@@ -2556,11 +2215,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2568,11 +2231,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
