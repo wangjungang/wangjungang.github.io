@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018/9 | Blog</title>
+  <title>监听reloadData刷新列表完毕的时机 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2018/09/index.html">
+  <meta name="description" content="写在前面reloadData是一个异步方法，并不会等待UITableView或者UICollectionView（后面统称listView）真正刷新完毕后才执行后续代码，而是立即执行后续代码。我们执行reloadData的本意是刷新listView，随后会进入一系列的DataSource和Delegate回调，有些是和reloadData同步发生的，有些是异步发生的。  同步：numberOfSe">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="监听reloadData刷新列表完毕的时机">
+<meta property="og:url" content="http://yoursite.com/2018/12/13/监听reloadData刷新列表完毕的时机/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="写在前面reloadData是一个异步方法，并不会等待UITableView或者UICollectionView（后面统称listView）真正刷新完毕后才执行后续代码，而是立即执行后续代码。我们执行reloadData的本意是刷新listView，随后会进入一系列的DataSource和Delegate回调，有些是和reloadData同步发生的，有些是异步发生的。  同步：numberOfSe">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-12-13T07:33:55.485Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="监听reloadData刷新列表完毕的时机">
+<meta name="twitter:description" content="写在前面reloadData是一个异步方法，并不会等待UITableView或者UICollectionView（后面统称listView）真正刷新完毕后才执行后续代码，而是立即执行后续代码。我们执行reloadData的本意是刷新listView，随后会进入一系列的DataSource和Delegate回调，有些是和reloadData同步发生的，有些是异步发生的。  同步：numberOfSe">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,36 +155,132 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-监听reloadData刷新列表完毕的时机" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      监听reloadData刷新列表完毕的时机
+    </h1>
+  
+
+        
+        <a href="/2018/12/13/监听reloadData刷新列表完毕的时机/" class="archive-article-date">
+  	<time datetime="2018-12-13T07:31:30.939Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>reloadData是一个异步方法，并不会等待UITableView或者UICollectionView（后面统称listView）真正刷新完毕后才执行后续代码，而是立即执行后续代码。我们执行reloadData的本意是刷新listView，随后会进入一系列的DataSource和Delegate回调，有些是和reloadData同步发生的，有些是异步发生的。</p>
+<ul>
+<li>同步：numberOfSectionsInCollectionView和numberOfItemsInSection</li>
+<li>异步：cellForItemAtIndexPath</li>
+<li>同步+异步：sizeForItemAtIndexPath</li>
+</ul>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>由于cell复用的原因，直接在reloadData后执行代码是有可能出问题的。比如在reloadData前保留了一个cell，在reloadData后，对这个cell（已经不是原来的cell了）进行某些操作，会出现一些异常问题。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>在reloadData前不是保留cell，二是保留当前cell对应的NSIndexPath，然后在reloadData完毕（listView真正刷新完毕）后通过方法cellForItemAtIndexPath:重新获取cell，然后进行相应的操作。</p>
+<h2 id="获取listView真正刷新完毕的时机的几种方法"><a href="#获取listView真正刷新完毕的时机的几种方法" class="headerlink" title="获取listView真正刷新完毕的时机的几种方法"></a>获取listView真正刷新完毕的时机的几种方法</h2><h3 id="方法1、通过layoutIfNeeded方法，强制重绘并等待完成。"><a href="#方法1、通过layoutIfNeeded方法，强制重绘并等待完成。" class="headerlink" title="方法1、通过layoutIfNeeded方法，强制重绘并等待完成。"></a>方法1、通过layoutIfNeeded方法，强制重绘并等待完成。</h3><pre><code>[self.collectionView reloadData];
+[self.collectionView layoutIfNeeded];
+// 刷新完成，执行后续需要执行的代码
+if ( self.didPlayIdx ) {
+    MyCell* cell = (MyCell*)[self.collectionView cellForItemAtIndexPath:self.didPlayIdx];
+    if (cell) {
+    [cell playWithPlayer:self.player];
+    }
+}
+</code></pre><h3 id="方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD-dispatch-main-queue中的任务，分别在休眠前和被唤醒后。设置listView-的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。"><a href="#方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD-dispatch-main-queue中的任务，分别在休眠前和被唤醒后。设置listView-的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。" class="headerlink" title="方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD dispatch main queue中的任务，分别在休眠前和被唤醒后。设置listView 的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。"></a>方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD dispatch main queue中的任务，分别在休眠前和被唤醒后。设置listView 的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。</h3><pre><code>[self.collectionView reloadData];  
+dispatch_async(dispatch_get_main_queue(), ^{  
+    // 刷新完成，执行后续代码
+    if ( self.didPlayIdx ) {
+        MyCell* cell = (MyCell*)[self.collectionView cellForItemAtIndexPath:self.didPlayIdx];
+        if (cell) {
+            [cell playWithPlayer:self.player];
+        }
+    }
+});
+</code></pre><p>知识点关联：GCD死锁、Runloop</p>
+<pre><code>// 发生死锁，永远不会执行任务2和3
+NSLog(@&quot;1&quot;);
+dispatch_sync(dispatch_get_main_queue(), ^{
+   NSLog(@&quot;2&quot;);
+});
+NSLog(@&quot;3&quot;);
+</code></pre><h3 id="方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成-复杂，但可以更好的理解方法一"><a href="#方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成-复杂，但可以更好的理解方法一" class="headerlink" title="方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成(复杂，但可以更好的理解方法一)"></a>方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成(复杂，但可以更好的理解方法一)</h3><pre><code>#import &quot;MyTableView.h&quot;
+
+@interface MyTableView()
+@property (nonatomic, copy) void (^reloadDataCompletionBlock)();
+@end
+
+@implementation MyTableView
+- (void)reloadDataWithCompletion:(void (^)())completionBlock {
+    self.reloadDataCompletionBlock = completionBlock;
+    [super reloadData];
+}
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if (self.reloadDataCompletionBlock) {
+        self.reloadDataCompletionBlock();
+        self.reloadDataCompletionBlock = nil;
+    }
+}
+@end
+
+// 调用的时候
+[self.tableView reloadDataWithCompletion:^{
+     NSLog(@&quot;完成刷新&quot;);
+}];
+</code></pre><h2 id="引申：更新UI放在主线程的原因"><a href="#引申：更新UI放在主线程的原因" class="headerlink" title="引申：更新UI放在主线程的原因"></a>引申：更新UI放在主线程的原因</h2><h3 id="原因一：安全-效率"><a href="#原因一：安全-效率" class="headerlink" title="原因一：安全+效率"></a>原因一：安全+效率</h3><p>因为UIKit框架不是线程安全的，当多个线程同时操作UI的时候，抢夺资源，导致崩溃，UI异常等问题。假如在两个线程中设置了同一张背景图片，很有可能就会由于背景图片被释放两次，使得程序崩溃。或者某一个线程中遍历找寻某个subView，然而在另一个线程中删除了该subView，那么就会造成错乱。apple有对大部分的绘图方法和诸如UIColor等类改写成线程安全可用，可还是建议将UI操作保证在主线程中。例如说，我们需要在子线程中读取一个image对象，使用接口[UIImage imageNamed:]，但imageNamed:实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取image，然后再切回子线程拿到这个image，这里我们必须使用sync。</p>
+<pre><code>__block UIImage *image;
+dispatch_sync_on_main_queue(^{
+    image = [UIImage imageNamed:@&quot;Resource/img&quot;];
+});
+attachment.image = image;
+
+// YYKit中提供了一个同步扔任务到主线程的安全方法：
+/**
+ Submits a block for execution on a main queue and waits until the block completes.
+*/
+static inline void dispatch_sync_on_main_queue(void (^block)()) {
+    if (pthread_main_np()) {
+        block();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
+}
+</code></pre><h3 id="原因二：用户体验"><a href="#原因二：用户体验" class="headerlink" title="原因二：用户体验"></a>原因二：用户体验</h3><p>iOS中只有主线程才能立即刷新UI。在子线程中是不能够更新UI，我们看到的子线程能够更新UI的原因是，等到子线程执行完毕，自动进入了主线程去执行子线程中更新UI的代码。由于子线程执行时间非常短暂，让我们误以为子线程可以更新UI。如果子线程一直在运行，则无法更新UI，因为没有办法进入主线程。</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/27/iOS高并发优化/" class="archive-article-date">
-  	<time datetime="2018-09-27T14:31:57.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-27</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/27/iOS高并发优化/">iOS高并发优化</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -191,364 +292,105 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/13/监听reloadData刷新列表完毕的时机/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/22/每个程序员对着电梯都想过调度算法/" class="archive-article-date">
-  	<time datetime="2018-09-22T14:13:11.373Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-22</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/12/13/Swift的时区处理/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Swift的时区处理</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/22/每个程序员对着电梯都想过调度算法/">每个程序员对着电梯都想过调度算法吧！</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/18/关于swift中的单例模式/" class="archive-article-date">
-  	<time datetime="2018-09-18T15:52:12.784Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/18/关于swift中的单例模式/">关于swift中的单例模式</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/18/关于swift的可选类型/" class="archive-article-date">
-  	<time datetime="2018-09-18T15:08:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/18/关于swift的可选类型/">关于swift的可选类型</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/17/iOS关于nsstring的copy和strong/" class="archive-article-date">
-  	<time datetime="2018-09-17T15:38:53.431Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/17/iOS关于nsstring的copy和strong/">iOS关于nsstring的copy和strong</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/16/iOS中的静态库与动态库/" class="archive-article-date">
-  	<time datetime="2018-09-16T14:44:12.089Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/16/iOS中的静态库与动态库/">iOS中的静态库与动态库</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/16/适配iPhone XR/" class="archive-article-date">
-  	<time datetime="2018-09-16T06:24:26.639Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/16/适配iPhone XR/">适配iPhone XR</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/14/iOS分类(category),类扩展(extension)/" class="archive-article-date">
-  	<time datetime="2018-09-14T08:30:59.916Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/14/iOS分类(category),类扩展(extension)/">iOS分类(category),类扩展(extension)</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/13/关于分类的总结 /" class="archive-article-date">
-  	<time datetime="2018-09-13T13:49:46.950Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/13/关于分类的总结 /">关于分类的总结</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /" class="archive-article-date">
-  	<time datetime="2018-09-13T13:26:51.045Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">类方法(class method)和实例方法(instance method)有什么区别？</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/2018/09/page/2/">2</a><a class="page-number" href="/archives/2018/09/page/3/">3</a><a class="page-number" href="/archives/2018/09/page/4/">4</a><a class="extend next" rel="next" href="/archives/2018/09/page/2/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -572,8 +414,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
