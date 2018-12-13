@@ -152,6 +152,143 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS时区" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/27/iOS时区/">iOS时区</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/27/iOS时区/" class="archive-article-date">
+  	<time datetime="2018-11-27T06:51:44.741Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>由于项目之前对时区没有做过统一的处理，导致国外友人使用起来不是很方便，借此机会，咱们聊一聊时区的事。</p>
+<h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="1-获取所有已知的时区名称"><a href="#1-获取所有已知的时区名称" class="headerlink" title="1.获取所有已知的时区名称"></a>1.获取所有已知的时区名称</h3><pre><code>NSArray *zoneArray = [NSTimeZone knownTimeZoneNames];
+
+for(NSString *str in zoneArray){
+
+NSLog(@&quot;%@&quot;,str);
+
+}
+</code></pre><p>主意：没有北京时区</p>
+<h3 id="2-返回时区名称和缩写"><a href="#2-返回时区名称和缩写" class="headerlink" title="2.返回时区名称和缩写"></a>2.返回时区名称和缩写</h3><pre><code>NSTimeZone *zone = [NSTimeZone localTimeZone];
+
+NSString *strZoneName = [zone name];
+
+NSString *strZoneAbbreviation = [zone abbreviation];
+
+NSLog(@&quot;名称 是 %@&quot;,strZoneName);
+
+NSLog(@&quot;缩写 是 %@&quot;,strZoneAbbreviation);
+</code></pre><h3 id="3-系统时区-本地时区"><a href="#3-系统时区-本地时区" class="headerlink" title="3.系统时区 本地时区"></a>3.系统时区 本地时区</h3><pre><code>[NSTimeZone setDefaultTimeZone:[[NSTimeZone alloc] initWithName:@&quot;America/Chicago&quot;]];
+
+NSTimeZone *systemZone = [NSTimeZone systemTimeZone];
+
+NSTimeZone *localZone = [NSTimeZone localTimeZone];
+
+NSLog(@&quot;系统时区%@&quot;,systemZone);
+
+NSLog(@&quot;本地时区%@&quot;,localZone);
+</code></pre><p>其中，系统时区不能通过代码来进行更改。</p>
+<h3 id="4-得到当前时区与零时区的间隔秒数"><a href="#4-得到当前时区与零时区的间隔秒数" class="headerlink" title="4.得到当前时区与零时区的间隔秒数"></a>4.得到当前时区与零时区的间隔秒数</h3><pre><code>NSTimeZone *zone = [NSTimeZone localTimeZone];
+
+NSInteger seconds = [zone secondsFromGMT];
+
+NSLog(@&quot;%ld&quot;,seconds);
+</code></pre><h3 id="5-根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）"><a href="#5-根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）" class="headerlink" title="5.根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）"></a>5.根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）</h3><pre><code>NSTimeZone* timeZone = [NSTimeZone timeZoneForSecondsFromGMT:8*3600];
+</code></pre><h2 id="演练"><a href="#演练" class="headerlink" title="演练"></a>演练</h2><p>无论身在何处，系统时间设置为北京时间</p>
+<pre><code>NSTimeZone *zone = [NSTimeZone localTimeZone];
+
+UILabel *titleLab = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 200, 30)];
+
+titleLab.text =[NSString stringWithFormat:@&quot;当前时区：%@&quot;,[zone name]];
+
+titleLab.backgroundColor = [UIColor grayColor];
+
+[self.view addSubview:titleLab];
+
+NSDate *date = [NSDate date];
+
+NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+
+[dateFormatter setDateFormat:@&quot;yyyy-MM-dd HH:mm&quot;];
+
+//强制设为北京时区
+
+NSTimeZone* timeZone = [NSTimeZone timeZoneForSecondsFromGMT:8*3600];
+
+[dateFormatter setTimeZone:timeZone];
+
+UILabel *dateLab = [[UILabel alloc] initWithFrame:CGRectMake(100, 200, 200, 30)];
+
+dateLab.backgroundColor = [UIColor lightGrayColor];
+
+dateLab.text = [dateFormatter stringFromDate:date];
+
+[self.view addSubview:dateLab];
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/27/iOS时区/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-使用两行代码就能完成80%的缓存需求 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2289,135 +2426,6 @@ tableView.estimatedSectionFooterHeight = 0
 
 
   
-    <article id="post-iOS 对象数组的深拷贝(NSCoding协议)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/">iOS 对象数组的深拷贝(NSCoding协议)</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/" class="archive-article-date">
-  	<time datetime="2018-11-26T03:19:48.342Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>项目过程中遇到了对象数组的使用：联系人界面——需要分区显示，如果我存放在一个数组然后每次显示都重新分组发现会有一个计算的延迟，所有我先进行分区放在了一个单例类中的字典中。当我需要用到这个联系人的界面额外定义一个NSDictionary对它赋值，试图修改NSDictionary时发现存放在单例类中的数组对象也被修改了。感觉很无语啊。当时我的嵌套是这样的</p>
-<pre><code>NSDictionary@{key1:NSMutableArray@[对象1，对象2],key2:NSMutableArray@[对象3，对象4],...}
-</code></pre><p>就是在一个单例类中定义了一个不可变字典NSDictionary的属性，存放了n个可变数组NSMutableArray，而这些可变数组可以动态增加或者删除数组内存放的对象。</p>
-<p>在网上看了很多对象的深拷贝，浅拷贝copy/mutableCopy。并且我已经实现了NSCoding协议。可是发现全部无效。于是我写了一个Test工程发现一个问题</p>
-<pre><code>NSArray *array1 = [NSArray arrayWithObjects:@&quot;a&quot;, nil];
-
- NSMutableArray *arry2 = [array1 mutableCopy];
-
- [arry2 replaceObjectAtIndex:0 withObject:@&quot;b&quot;];
-
- NSLog(@&quot;%@&quot;,array1);
-</code></pre><p>这样输出结果依然是@[a]</p>
-<p>但是当我定义两个一个实现了NSCoding协议并且有一个name属性的Person对象并且放到数组中时</p>
-<pre><code>Person *person1 = [[Person alloc] init];
-
-person1.name = @&quot;a&quot;;
-
-NSArray *array1 = [NSArray arrayWithObjects:person1, nil];
-
-NSArray *arry2 = [NSArray arrayWithArray:array1];
-
-[arry2 enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-    Person *person = obj;
-    person.name = @&quot;c&quot;;
- }];
-
-NSLog(@&quot;%@&quot;,array1);
-</code></pre><p>并且遍历的时候对象必须copy，不然还是难以达到深拷贝。 </p>
-<p>后来找到另一种方法，就是通过[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:]];</p>
-<pre><code>Person *person1 = [[Person alloc] init];
-    person1.name = @&quot;a&quot;;
-
-    Person *person2 = [[Person alloc] init];
-    person2.name = @&quot;b&quot;;
-
-    NSArray *array1 = [NSArray arrayWithObjects:person1, nil];
-
-    NSArray *array2 = [NSArray arrayWithObjects:person2, nil];
-
-    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:array1,@&quot;a&quot;,array2,@&quot;b&quot;, nil];
-
-    [Object shareObject].dict = dict;
-
-    NSLog(@&quot;1:%@&quot;,[Object shareObject].dict);
-
-    NSDictionary *temDict = [[Object shareObject].dict mutableCopy];
-
-    NSMutableArray *arrayM = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[temDict objectForKey:@&quot;a&quot;]]];
-
-    [arrayM enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        Person *person = obj;
-        person.name = @&quot;c&quot;;
-    }];
-
-    NSLog(@&quot;2:%@&quot;,[Object shareObject].dict);
-</code></pre><p>并且不管你嵌套了多少层，只要每一层都实现了NSCoding协议也可以实现深拷贝。后来我就放弃了把联系人放在单例类中，直接放在了本地文件中。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Cocoapods</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -2527,7 +2535,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2535,11 +2543,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2551,11 +2563,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
