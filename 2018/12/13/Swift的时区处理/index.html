@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>iOS 给系统日历添加事件 | Blog</title>
+  <title>Swift的时区处理 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="最重要 添加#import &amp;lt;EventKit/EventKit.h&amp;gt; 库EKEventStore *eventStore = [[EKEventStore alloc] init];             //请求使用用户的日历数据库             if ([eventStore respondsToSelector:@selector(requestAccessToEn">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="取当前时区TimeZone.current.identifier 时区名：Asia/Shanghai TimeZone.current.abbreviation() GMT：GMT+8 TimeZone.current.secondsFromGMT() GMT偏移秒数：28800 模拟数据以下是一个美国时间字符串，方便下面的转换 let src = &amp;quot;2018-12-12 10:48:4">
+<meta name="keywords" content="swift">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS 给系统日历添加事件">
-<meta property="og:url" content="http://yoursite.com/2018/11/04/iOS 给系统日历添加事件/index.html">
+<meta property="og:title" content="Swift的时区处理">
+<meta property="og:url" content="http://yoursite.com/2018/12/13/Swift的时区处理/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="最重要 添加#import &amp;lt;EventKit/EventKit.h&amp;gt; 库EKEventStore *eventStore = [[EKEventStore alloc] init];             //请求使用用户的日历数据库             if ([eventStore respondsToSelector:@selector(requestAccessToEn">
+<meta property="og:description" content="取当前时区TimeZone.current.identifier 时区名：Asia/Shanghai TimeZone.current.abbreviation() GMT：GMT+8 TimeZone.current.secondsFromGMT() GMT偏移秒数：28800 模拟数据以下是一个美国时间字符串，方便下面的转换 let src = &amp;quot;2018-12-12 10:48:4">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-04T15:23:17.155Z">
+<meta property="og:updated_time" content="2018-12-13T07:23:08.799Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS 给系统日历添加事件">
-<meta name="twitter:description" content="最重要 添加#import &amp;lt;EventKit/EventKit.h&amp;gt; 库EKEventStore *eventStore = [[EKEventStore alloc] init];             //请求使用用户的日历数据库             if ([eventStore respondsToSelector:@selector(requestAccessToEn">
+<meta name="twitter:title" content="Swift的时区处理">
+<meta name="twitter:description" content="取当前时区TimeZone.current.identifier 时区名：Asia/Shanghai TimeZone.current.abbreviation() GMT：GMT+8 TimeZone.current.secondsFromGMT() GMT偏移秒数：28800 模拟数据以下是一个美国时间字符串，方便下面的转换 let src = &amp;quot;2018-12-12 10:48:4">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,94 +155,77 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-iOS 给系统日历添加事件" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-Swift的时区处理" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      iOS 给系统日历添加事件
+      Swift的时区处理
     </h1>
   
 
         
-        <a href="/2018/11/04/iOS 给系统日历添加事件/" class="archive-article-date">
-  	<time datetime="2018-11-04T15:22:50.550Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
+        <a href="/2018/12/13/Swift的时区处理/" class="archive-article-date">
+  	<time datetime="2018-12-13T07:19:47.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="最重要-添加-import-lt-EventKit-EventKit-h-gt-库"><a href="#最重要-添加-import-lt-EventKit-EventKit-h-gt-库" class="headerlink" title="最重要 添加#import &lt;EventKit/EventKit.h&gt; 库"></a>最重要 添加#import &lt;EventKit/EventKit.h&gt; 库</h3><pre><code>EKEventStore *eventStore = [[EKEventStore alloc] init];
-            //请求使用用户的日历数据库
-            if ([eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)])
-            {
-                [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (error){
-                            //错误信息 这里显示错误消息
-                        }else if (!granted){
-                            //被用户拒绝，不允许访问日历 拒绝访问显示错误消息
-                        }else{
-                            // 数据访问权限
-                            // ***** 在这里做重要的事情 *****
+        <h3 id="取当前时区"><a href="#取当前时区" class="headerlink" title="取当前时区"></a>取当前时区</h3><pre><code>TimeZone.current.identifier
+</code></pre><p>时区名：Asia/Shanghai</p>
+<pre><code>TimeZone.current.abbreviation()
+</code></pre><p>GMT：GMT+8</p>
+<pre><code>TimeZone.current.secondsFromGMT()
+</code></pre><p>GMT偏移秒数：28800</p>
+<h3 id="模拟数据"><a href="#模拟数据" class="headerlink" title="模拟数据"></a>模拟数据</h3><p>以下是一个美国时间字符串，方便下面的转换</p>
+<pre><code>let src = &quot;2018-12-12 10:48:46&quot;
+let timeZone = &quot;GMT-05:00&quot; // USA
+let string = src + &quot; &quot; + timeZone
+复制代码
+</code></pre><p>原始字符串src为: 2018-12-12 10:48:46</p>
+<h3 id="字符串转换成当前时区的时间"><a href="#字符串转换成当前时区的时间" class="headerlink" title="字符串转换成当前时区的时间"></a>字符串转换成当前时区的时间</h3><pre><code>let formatter = DateFormatter()
+formatter.dateFormat = &quot;yyyy-MM-dd HH:mm:ss ZZZZ&quot;
+let date = formatter.date(from: string)
+formatter.dateFormat = &quot;yyyy-MM-dd HH:mm:ss&quot;
+formatter.string(from: date!)
+</code></pre><p>2018-12-12 23:48:46</p>
+<p>当前系统是中国时区，故比美国快了13小时</p>
+<h3 id="自动化时间样式（交由iOS-API处理）"><a href="#自动化时间样式（交由iOS-API处理）" class="headerlink" title="自动化时间样式（交由iOS API处理）"></a>自动化时间样式（交由iOS API处理）</h3><p>实战中会用Locale.current.identifier初始化Locale，以下为测试写死了几个常见时区。</p>
+<ul>
+<li><p>中国：年月日 上下午 时间</p>
+<pre><code>let chineseLocaleFormatter = DateFormatter()
+chineseLocaleFormatter.locale = Locale(identifier: &quot;zh_CN&quot;)
+chineseLocaleFormatter.dateStyle = DateFormatter.Style.medium
+chineseLocaleFormatter.timeStyle = DateFormatter.Style.medium
+chineseLocaleFormatter.string(from: date!) 
+</code></pre></li>
+</ul>
+<p>2018年12月12日 下午11:48:46</p>
+<ul>
+<li><p>美国：月日年 时间 上下午</p>
+<pre><code>let usLocaleFormatter = DateFormatter()
+usLocaleFormatter.locale = Locale(identifier: &quot;en_US&quot;)
+usLocaleFormatter.dateStyle = DateFormatter.Style.medium
+usLocaleFormatter.timeStyle = DateFormatter.Style.medium
+usLocaleFormatter.string(from: date!) 
+</code></pre></li>
+</ul>
+<p>Dec 12, 2018 at 11:48:46 PM</p>
+<ul>
+<li><p>英国：日月年 时间（24小时制）</p>
+<pre><code>let ukLocaleFormatter = DateFormatter()
+ukLocaleFormatter.locale = Locale(identifier: &quot;en_GB&quot;)
+ukLocaleFormatter.dateStyle = DateFormatter.Style.medium
+ukLocaleFormatter.timeStyle = DateFormatter.Style.medium
+ukLocaleFormatter.string(from: date!)
+</code></pre></li>
+</ul>
+<p>12 Dec 2018 at 23:48:46</p>
 
-                            //事件保存到日历
-                            //06.07 元素
-                            //title(标题 NSString),
-                            //location(位置NSString),
-                            //startDate(开始时间 2016/06/07 11:14AM),
-                            //endDate(结束时间 2016/06/07 11:14AM),
-                            //addAlarm(提醒时间 2016/06/07 11:14AM),
-                            //notes(备注类容NSString)
-
-                            //创建事件
-                            EKEvent *event  = [EKEvent eventWithEventStore:eventStore];
-                            event.title  = @&quot;测试写入日历事件&quot;;
-                            event.location = @&quot;北京海淀&quot;;
-
-                            NSDateFormatter * dateFormatter = [[NSDateFormatter alloc] init];
-                            [dateFormatter setAMSymbol:@&quot;AM&quot;];
-                            [dateFormatter setPMSymbol:@&quot;PM&quot;];
-                            [dateFormatter setDateFormat:@&quot;yyyy/MM/dd hh:mmaaa&quot;];
-                            NSDate *date = [NSDate date];
-                            NSString * s = [dateFormatter stringFromDate:date];
-                            DLog(@&quot;%@&quot;,s);
-
-                            //开始时间(必须传)
-                            event.startDate = [date dateByAddingTimeInterval:60 * 2];
-                            //结束时间(必须传)
-                            event.endDate   = [date dateByAddingTimeInterval:60 * 5 * 24];
-                            //                    event.endDate   = [[NSDate alloc]init];
-                            //                    event.allDay = YES;//全天
-
-                            //添加提醒
-                            //第一次提醒  (几分钟后)
-                            [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -1.0f]];
-                            //第二次提醒  ()
-                            //                    [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -10.0f * 24]];
-
-                            //06.07 add 事件类容备注
-                            NSString * str = ws.model.remark;
-                            event.notes = [NSString stringWithFormat:@&quot;%@&quot;,str];
-
-                            [event setCalendar:[eventStore defaultCalendarForNewEvents]];
-                            NSError *err;
-
-                            [eventStore saveEvent:event span:EKSpanThisEvent error:&amp;err];
-
-                            DLog(@&quot;保存成功&quot;);
-
-                            //直接杀死进程
-                            exit(2);
-
-                        }
-                    });
-                }];
-            }
-</code></pre>
       
 
       
@@ -276,7 +259,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">swift</a>
         		</li>
       		
 		</ul>
@@ -332,7 +315,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/04/iOS 给系统日历添加事件/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/13/Swift的时区处理/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -346,18 +329,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/11/06/关于压缩图片的方法/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          关于压缩图片的方法
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/11/04/一些常见的跳转/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">一些常见的跳转</div>
+    <a href="/2018/12/13/SWIFT中的GCD使用/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">SWIFT中的GCD使用</div>
       <i class="icon-circle-right"></i>
     </a>
   
