@@ -6,20 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>iOS高并发优化 | Blog</title>
+  <title>Tag: iOS | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一.消息列表页面的优化：首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化： 1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。 2.如果消息已经显示过">
-<meta name="keywords" content="iOS">
-<meta property="og:type" content="article">
-<meta property="og:title" content="iOS高并发优化">
-<meta property="og:url" content="http://yoursite.com/2018/09/27/iOS高并发优化/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Blog">
+<meta property="og:url" content="http://yoursite.com/tags/iOS/page/7/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="一.消息列表页面的优化：首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化： 1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。 2.如果消息已经显示过">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-27T14:46:15.687Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS高并发优化">
-<meta name="twitter:description" content="一.消息列表页面的优化：首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化： 1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。 2.如果消息已经显示过">
+<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,88 +150,36 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-iOS高并发优化" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      iOS高并发优化
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/07/31/浅谈iOS 开发中的界面通信/" class="archive-article-date">
+  	<time datetime="2018-07-31T05:58:01.437Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/07/31/浅谈iOS 开发中的界面通信/">浅谈iOS 开发中的界面通信</a>
     </h1>
   
 
-        
-        <a href="/2018/09/27/iOS高并发优化/" class="archive-article-date">
-  	<time datetime="2018-09-27T14:31:57.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一-消息列表页面的优化："><a href="#一-消息列表页面的优化：" class="headerlink" title="一.消息列表页面的优化："></a>一.消息列表页面的优化：</h2><p>首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化：</p>
-<p>1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。</p>
-<p>2.如果消息已经显示过了，但是并不是第一位，则需要刷新列表。</p>
-<p>3.如果消息已经显示，并且是第一位，则只需要cell的内容变化。</p>
-<p>4.只修改cell里的内容，不进行刷新cell整体，这里要注意的是，一定要最小化刷新。刷新点越小，性能损耗越小。我们项目架构是MVVM,采用了ReactiveCocoa框架,针对每个cell上的可变化的控件数据进行了监听，每一个cell上对应一个vm，这样当vm上的数据变化时候，cell上的数据也就跟着变了。做到了最小化刷新。</p>
-<p>5.避免使用autolayout计算位置，这个很重要，在性能要求高的情况下，autolayout计算会很耗时间，尤其在算tableview高度的时候可见一斑。可喜的是消息列表的高度是固定的，所以在计算高度时候我们并未花费时间。</p>
-<p>6.使用(<strong>kindof UITableViewCell <em>)dequeueReusableCellWithIdentifier:(NSString </em>)identifier forIndexPath:(NSIndexPath *)indexPath而不使用-(nullable </strong>kindof UITableViewCell <em>)dequeueReusableCellWithIdentifier:(NSString </em>)identifier来查找cell,因为下边的方法会多查一次，耗时更长一点。</p>
-<p>7.cellForRowAtIndexPath方法只负责创建cell,willDisplayCell方法才给cell进行赋值操作。从方法名字就可以看出来原因</p>
-<p>8.当来消息轰炸时候，必然会是不同的人发来的消息，会导致tableview不可避免的刷新，如果不加处理必然会卡顿，要知道，机器也是有瓶颈的。这里我们做的优化是根据cpu的使用率选择性的刷新tableview。后来我们发现微信也是有这个现象，并不是实时的刷新，我们猜测也是类似处理。</p>
-<p>9.重绘制系统控件，相信你也发现了消息列表里，主要有两个控件，一个是头像，一个是label。而系统的UIImageView用来显示头像，未免有点重。我们的处理是使用UIView，设置View得layer.content来处理。针对layer层做的setImageWithUrl的第三方库也不少，大家可以自行查询。另一个就是label，如果你能集成UIView自己绘制一个label,我想也许会有一点效果。</p>
-<p>以上我们对消息列表做的优化，写的并不全，只记得大概有这些吧。</p>
-<h2 id="二-聊天界面的优化："><a href="#二-聊天界面的优化：" class="headerlink" title="二.聊天界面的优化："></a>二.聊天界面的优化：</h2><p>聊天界面的优化算是比较繁琐的了，但是优化点跟回话列表的优化差不多。上边提到回话列表里最耗时的tableview的高度是固定的，而聊天界面的几乎每条消息的高度都可能不一样，所以我们在优化聊天界面时候最重要的一点就是计算tableviewcell的高度。而我们在计算tableview的高度是怎么做的呢？</p>
-<p>其实这个网上千篇一律的优化tableview的方式是大同小异的。</p>
-<p>主要有两个准则：</p>
-<p>第一个是能在后台线程执行的都放在后台线程里。</p>
-<p>第二个计算高度要放在显示之前。</p>
-<p>上边提到我们使用的ReactiveCocoa基于事件流来处理消息，这个确实是为开发带来了很大的好处，处理层次非常清晰，开发效率的提升，代码复杂度降低，多人员开发分工分明，低耦合等这些好处充分让你感受到编程的乐趣，之后我们会出一篇关于架构的文章，这里只是稍提一嘴。当然即使你不用ReactiveCocoa也没关系，思路都是一样的。首先是你从底层异步接收到消息，进行消息的处理，包括数据库的处理，提供给View显示的对象处理，这里我们是用的VM层，其中也包括了消息的高度的计算，这些都是放在线程队列里，当所有的处理完成，然后进行主线程消息列表更新，进行插入一个cell和向上滚动一条消息的距离。我们之前把VM的创建放在了主线程，发现在32位机器上掉了10fps，这是让人不能忍受的事情。当然还有一点是尽量保证你的对象不要太大，如果太大也会影响性能，我们的vm就比较大，这也是以后性能上的隐患。优化tableView的另外一点就是cell的制作了，要说的跟上边第九条提到的也差不多，这里我也总结了一下几个原则：</p>
-<p>1.巧妙的选择控件。比如上边提到的，如果只是显示一个图片，那么用View的layer.content性能自然是好一些。图片加点击也可以用view,然后监听view的touch事件，像button这种重量级的控件在性能为主的app面前，我对他们都是弃之如敝履。</p>
-<p>2.减少使用layer层的cornerRadius，mask等圆角的绘制，这会引发离屏渲染，增加cpu的占用率。如果业务需要的话，我们可以通过UIBezierPath来drawInRect它。</p>
-<p>3.避免设置透明</p>
-<p>4.避免autolayout设定控件位置</p>
-<p>5.尽可能的减少视图的层级，如果你能把所有的控件都绘制到一个View上，可想而知性能会爆棚。</p>
-<h2 id="三-其他优化"><a href="#三-其他优化" class="headerlink" title="三.其他优化"></a>三.其他优化</h2><p>还有两大优化点不容忽视。</p>
-<p>一是数据持久层的优化，就是所谓的数据库优化。</p>
-<p>二就是内存优化。</p>
-<p>关于持久层的优化严格来性能上通常不会有太大出入，只不过我们之前是直接针对底层sqlite数据库很简单的封装，后来用了fmdb，发现在插入性能上有了明显的提升。几乎用过的小伙伴都说好。持久化这边我们将fmdb,jsonModel进行封装了一个库，提供了友好的api,通常像这样使用[message findAll],[message save]等基本上都不需要写sql语句。回头我们会开源化。关于sql优化的我们总结了几点：</p>
-<p>1.大批量插入时候，用事务可以几何倍的减少插入时间，原因是会把sql都加入内存，然后一次性提交。</p>
-<p>2.针对经常变化的表、字段避免使用索引，当然索引带来的查询性能也是几何倍的增加，这里要说的一点是like并不会使用到索引</p>
-<p>3.巧妙使用sql语句增删改查，能够用一条语句解决的事就不要使用两条，比如之前我们发现一个设置已读消息，是把这个人的消息取出来，然后再设置进去，后来我们直接进行了这个人的update语句，发现这块的处理性能高了很多。</p>
-<p>4.当单条数据小于 20K 时，数据越小 SQLite 读取性能越高；单条数据大于 20K 时，直接写为文件速度会更快一些。</p>
-<p>5.ibireme.com提到过在官网下载源码编译的sqlite性能会高几倍，我确实编译了一下，但是编译出来的是dylib,现在的系统是tbd,我没转过去，并且pods里依赖的也是tbd的，所以也就作罢了，主要放弃原因还是发现我们将很多数据库操作的部分去掉了，cpu占用率也没有发生变动。如果有搞定的同学记得分享一下。</p>
-<p>数据库的大概能记住的也就这几点吧。</p>
-<p>大最后说一嘴，多用Instuments来检测你的方法执行时间，以及CPU GPU占用率，这能够很好的帮你优化你的程序。</p>
-
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -248,114 +191,22 @@
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/27/iOS高并发优化/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2018/10/02/无限循环滚动的TableView/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          无限循环滚动的TableView
-        
-      </div>
-    </a>
   
   
-    <a href="/2018/09/22/每个程序员对着电梯都想过调度算法/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">每个程序员对着电梯都想过调度算法吧！</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
+    
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/tags/iOS/page/6/">&laquo; Prev</a><a class="page-number" href="/tags/iOS/">1</a><span class="space">&hellip;</span><a class="page-number" href="/tags/iOS/page/5/">5</a><a class="page-number" href="/tags/iOS/page/6/">6</a><span class="page-number current">7</span>
+    </nav>
   
 
 
@@ -379,9 +230,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
