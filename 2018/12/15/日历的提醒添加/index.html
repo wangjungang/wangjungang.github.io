@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>iOS导航栏的正确隐藏方式 | Blog</title>
+  <title>日历的提醒添加 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面在项目中经常碰到首页顶部是无限轮播,需要靠最上面显示.有的设置导航栏为透明等一系列的方法,这个可以借助第三方.或者干脆简单粗暴的直接隐藏掉导航栏.可是push到下一个页面的时候是需要导航栏的,如何做了,这里给出两种方法. 第一种做法注意这里一定要用动画的方式隐藏导航栏,这样在使用滑动返回手势的时候效果最好,和上面动图一致.这样做有一个缺点就是在切换tabBar的时候有一个导航栏向上消失的动">
+  <meta name="description" content="写在前面最近NBA赛季的比赛日程已经公布出来，作为一个”资深的”NBA球迷、篮球迷，怎么能不赶紧把自己喜欢的球队给比赛日给记下来呢？之前看到过一个JRS()把日历做成链接的形式可以直接把自己比赛直接写入到手机的日历中去，受到这个启发，干嘛不自己亲自动手写一个App，直接把赛程写到手机日历中去呢，而且还可以锻炼自己的编码能力。有了兴趣，然后开始动手，一切就水到渠成了。下面就简单记录一下这个小App的">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS导航栏的正确隐藏方式">
-<meta property="og:url" content="http://yoursite.com/2018/10/15/iOS导航栏的正确隐藏方式 /index.html">
+<meta property="og:title" content="日历的提醒添加">
+<meta property="og:url" content="http://yoursite.com/2018/12/15/日历的提醒添加/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面在项目中经常碰到首页顶部是无限轮播,需要靠最上面显示.有的设置导航栏为透明等一系列的方法,这个可以借助第三方.或者干脆简单粗暴的直接隐藏掉导航栏.可是push到下一个页面的时候是需要导航栏的,如何做了,这里给出两种方法. 第一种做法注意这里一定要用动画的方式隐藏导航栏,这样在使用滑动返回手势的时候效果最好,和上面动图一致.这样做有一个缺点就是在切换tabBar的时候有一个导航栏向上消失的动">
+<meta property="og:description" content="写在前面最近NBA赛季的比赛日程已经公布出来，作为一个”资深的”NBA球迷、篮球迷，怎么能不赶紧把自己喜欢的球队给比赛日给记下来呢？之前看到过一个JRS()把日历做成链接的形式可以直接把自己比赛直接写入到手机的日历中去，受到这个启发，干嘛不自己亲自动手写一个App，直接把赛程写到手机日历中去呢，而且还可以锻炼自己的编码能力。有了兴趣，然后开始动手，一切就水到渠成了。下面就简单记录一下这个小App的">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-10-15T06:54:08.256Z">
+<meta property="og:updated_time" content="2018-12-15T13:52:19.776Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS导航栏的正确隐藏方式">
-<meta name="twitter:description" content="写在前面在项目中经常碰到首页顶部是无限轮播,需要靠最上面显示.有的设置导航栏为透明等一系列的方法,这个可以借助第三方.或者干脆简单粗暴的直接隐藏掉导航栏.可是push到下一个页面的时候是需要导航栏的,如何做了,这里给出两种方法. 第一种做法注意这里一定要用动画的方式隐藏导航栏,这样在使用滑动返回手势的时候效果最好,和上面动图一致.这样做有一个缺点就是在切换tabBar的时候有一个导航栏向上消失的动">
+<meta name="twitter:title" content="日历的提醒添加">
+<meta name="twitter:description" content="写在前面最近NBA赛季的比赛日程已经公布出来，作为一个”资深的”NBA球迷、篮球迷，怎么能不赶紧把自己喜欢的球队给比赛日给记下来呢？之前看到过一个JRS()把日历做成链接的形式可以直接把自己比赛直接写入到手机的日历中去，受到这个启发，干嘛不自己亲自动手写一个App，直接把赛程写到手机日历中去呢，而且还可以锻炼自己的编码能力。有了兴趣，然后开始动手，一切就水到渠成了。下面就简单记录一下这个小App的">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,109 +155,149 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-iOS导航栏的正确隐藏方式 " class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-日历的提醒添加" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      iOS导航栏的正确隐藏方式
+      日历的提醒添加
     </h1>
   
 
         
-        <a href="/2018/10/15/iOS导航栏的正确隐藏方式 /" class="archive-article-date">
-  	<time datetime="2018-10-15T06:51:01.655Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
+        <a href="/2018/12/15/日历的提醒添加/" class="archive-article-date">
+  	<time datetime="2018-12-15T13:46:46.774Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目中经常碰到首页顶部是无限轮播,需要靠最上面显示.有的设置导航栏为透明等一系列的方法,这个可以借助第三方.或者干脆简单粗暴的直接隐藏掉导航栏.可是push到下一个页面的时候是需要导航栏的,如何做了,这里给出两种方法.</p>
-<h2 id="第一种做法"><a href="#第一种做法" class="headerlink" title="第一种做法"></a>第一种做法</h2><p>注意这里一定要用动画的方式隐藏导航栏,这样在使用滑动返回手势的时候效果最好,和上面动图一致.这样做有一个缺点就是在切换tabBar的时候有一个导航栏向上消失的动画.</p>
-<pre><code>- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近NBA赛季的比赛日程已经公布出来，作为一个”资深的”NBA球迷、篮球迷，怎么能不赶紧把自己喜欢的球队给比赛日给记下来呢？之前看到过一个JRS()把日历做成链接的形式可以直接把自己比赛直接写入到手机的日历中去，受到这个启发，干嘛不自己亲自动手写一个App，直接把赛程写到手机日历中去呢，而且还可以锻炼自己的编码能力。有了兴趣，然后开始动手，一切就水到渠成了。下面就简单记录一下这个小App的制作过程。</p>
+<h2 id="确定需求"><a href="#确定需求" class="headerlink" title="确定需求"></a>确定需求</h2><p>球队列表，能够选择自己喜欢的NBA球队。</p>
+<p>①按照正常的NBA联盟分区，分为东部球队以及西部球队</p>
+<p>②每个球队展示的信息有名称、Logo、所在分区</p>
+<p>球队赛程列表</p>
+<p>①每场比赛展示主场、客场球队的信息以及比赛的北京日期、比赛地点等</p>
+<p>②提供导入日历按钮，点击后将当前展示球队的赛程导入到苹果手机的日历中</p>
+<h2 id="分析需求、确定数据来源（接口API）"><a href="#分析需求、确定数据来源（接口API）" class="headerlink" title="分析需求、确定数据来源（接口API）"></a>分析需求、确定数据来源（接口API）</h2><p>通过分析上面的需求，可以得出主要有两个页面，球队列表页面和球队比赛赛程列表页面。通过查找数据得出需要下面三个接口：</p>
+<p><a href="http://china.nba.com/static/data/league/conferenceteamlist.json" target="_blank" rel="noopener">获取球队列表数据</a></p>
+<p><a href="http://china.nba.com/static/data/team/schedule_celtics.json" target="_blank" rel="noopener">获取某球队的比赛赛程信息</a></p>
+<p><a href="http://mat1.gtimg.com/sports/nba/logo/1602/2.png" target="_blank" rel="noopener">获取球队logo</a></p>
+<h2 id="动手开发，写Code"><a href="#动手开发，写Code" class="headerlink" title="动手开发，写Code"></a>动手开发，写Code</h2><h3 id="开发球队列表页面"><a href="#开发球队列表页面" class="headerlink" title="开发球队列表页面"></a>开发球队列表页面</h3><p>当前页面是一个列表页面，实现方式为一个tableView的group形式。<br>①定义模型Team，包含名称、代号、城市、分区、联盟分区、联盟分区显示字段、球队logo等字段</p>
+<pre><code>class Team: Mappable {
 
-    [self.navigationController setNavigationBarHidden:YES animated:animated];
+  var name:String?  //名称
+  var code:String?  //代号
+  var city:String?  //日期
+  var division:String?  //分区
+  var conference:String?  //联盟分区
+  var displayConference:String? //联盟分区显示
+  var imageUrl:String? //球队图片
+
+  required init?(map: Map) {
+
+  }
+
+  func mapping(map: Map) {
+      name &lt;- map[&quot;name&quot;]
+      code &lt;- map[&quot;code&quot;]
+      city &lt;- map[&quot;city&quot;]
+      division &lt;- map[&quot;division&quot;]
+      conference &lt;- map[&quot;conference&quot;]
+      displayConference &lt;- map[&quot;displayConference&quot;]
+  }
+
 }
+</code></pre><p>自定义Cell,展示Demo tableView</p>
+<p>通过上面的获取球队列表的接口，使用Alamofire拿到球队列表数据，使用SwiftJson、ObjectMapper将返回的结果转化为Team模型数组。注意以为获取到的球队数据中不包含球队Logo Url,可以通过自定义的Json文件team_logo.json来进行配置，然后通过获取球队Logo的接口获取到对于的球队Logo 的url。</p>
+<pre><code>Alamofire.request(&quot;http://china.nba.com/static/data/league/conferenceteamlist.json&quot;).responseJSON { (response) in
+        let result = JSON(response.result.value as Any)
+//            print(result)
+        let listGroups = result[&quot;payload&quot;][&quot;listGroups&quot;].arrayValue
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-
-    [self.navigationController setNavigationBarHidden:NO animated:animated];
-}
-</code></pre><h2 id="第二种做法"><a href="#第二种做法" class="headerlink" title="第二种做法"></a>第二种做法</h2><p>设置self为导航控制器的代理,实现代理方法,在将要显示控制器中设置导航栏隐藏和显示,使用这种方式不仅完美切合滑动返回手势,同时也解决了切换tabBar的时候,导航栏动态隐藏的问题。最后要记得在控制器销毁的时候把导航栏的代理设置为nil。</p>
-<pre><code>@interface WLHomePageController () &lt;UINavigationControllerDelegate&gt;
-
-@end
-
-@implementation WLHomePageController 
-
-#pragma mark - lifeCycle
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    // 设置导航控制器的代理为self
-    self.navigationController.delegate = self;
-}
-
-#pragma mark - UINavigationControllerDelegate
-// 将要显示控制器
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    // 判断要显示的控制器是否是自己
-    BOOL isShowHomePage = [viewController isKindOfClass:[self class]];
-
-    [self.navigationController setNavigationBarHidden:isShowHomePage animated:YES];
-}
-
-- (void)dealloc {
-    self.navigationController.delegate = nil;
-}
-</code></pre><h2 id="第三种做法"><a href="#第三种做法" class="headerlink" title="第三种做法"></a>第三种做法</h2><p>主要是针对A隐藏Nav, A push 到B，B也需要隐藏Nav的这种情况</p>
-<p>1、自定义UINavigationController</p>
-<pre><code>#import &quot;WYNavigationController.h&quot;
-#import &quot;ViewController.h&quot;
-#import &quot;WYTargetVC.h&quot;
-
-
-@interface WYNavigationController ()&lt;UINavigationControllerDelegate, UIGestureRecognizerDelegate&gt;
-
-@end
-
-@implementation WYNavigationController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    self.delegate = self;
-    // 设置全屏滑动返回
-    id target = self.interactivePopGestureRecognizer.delegate;
-    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:target action:@selector(handleNavigationTransition:)];
-    [self.view addGestureRecognizer:pan];
-    self.interactivePopGestureRecognizer.enabled = NO;
-}
-
-- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
-{
-    if (self.viewControllers.count &gt; 0) {
-        viewController.hidesBottomBarWhenPushed = YES;
+        for teams in listGroups{
+            var tempArray = [Team]()
+            for teamJson in teams[&quot;teams&quot;].arrayValue{
+//                    print(teamJson[&quot;profile&quot;].rawString()!)
+                let team = Team(JSONString: teamJson[&quot;profile&quot;].rawString()!)
+                tempArray.append(team!)
+            }
+            self.teamsData.append(tempArray)
+        }
+        self.tableView.reloadData()
     }
-    [super pushViewController:viewController animated:animated];
-}
+</code></pre><h3 id="开发球队赛程列表页面"><a href="#开发球队赛程列表页面" class="headerlink" title="开发球队赛程列表页面"></a>开发球队赛程列表页面</h3><p>当前页面是一个列表页面，实现方式为一个tableView的plain形式。实现方式类似上面的球队列表页面。</p>
+<p>①定义模型Game，包含日期、比赛地址、主场城市、主场球队、客场球队、客场城市<br>②自定义Cell,展示Demo tableView</p>
+<p>③通过上面的获取球队赛程列表的接口，使用Alamofire拿到球队列表数据，使用SwiftJson、ObjectMapper将返回的结果转化为Game模型数组。</p>
+<p>④展示球队赛程列表，完善细节。</p>
+<h3 id="导入比赛到手机日历中"><a href="#导入比赛到手机日历中" class="headerlink" title="导入比赛到手机日历中"></a>导入比赛到手机日历中</h3><p>点击导入日历按钮，确定后开始执行导入日历功能<br>这就要用到iOS提供的EventKit框架来实现将比赛写入到日历的功能了。<br>首先要去获取授权，没有被授权的话是不能使用EventKit框架的，iOS自身框架大部分都有这个限制。而且在iOS 10以上的系统还要添加访问calendar的隐私说明，否则会引起崩溃。</p>
+<pre><code>lazy var eventStore = EKEventStore()
+// 获取访问日历的权限
+self.eventStore .requestAccess(to: .event, completion: { (granted, error) in
 
+        //授权过可以访问日历
+        if granted{
+            let tempArray = self.eventStore.calendars(for: .event)
+            var inserted = false
+            for calendar in tempArray{
+                print(calendar)
 
-#pragma mark - UINavigationControllerDelegate
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    // 判断如果是需要隐藏导航控制器的类，则隐藏
-    BOOL isHideNav = ([viewController isKindOfClass:[ViewController class]] || 
-                      [viewController isKindOfClass:[WYTargetVC class]]);
+                //判断是否已经导入了比赛内容
+                if calendar.title == self.team.name {
+                    inserted = true
+                }
+            }
 
-    [self setNavigationBarHidden:isHideNav animated:YES];
-}
-</code></pre><p>但是注意setNavigationBarHidden:YES设置这行代码后会导致Nav的滑动返回手势失效，这也就是为什么前面我们在自定义导航的时候需要设置全屏滑动返回了。</p>
+            if !inserted {
+                self.saveEvent()
+            }else{
+                DispatchQueue.main.async {
+                    CDAlertView(title: &quot;&quot;, message: &quot;已经导入过该队比赛!&quot;, type: .notification).show()
+                }
+            }
+        }
+    })
+</code></pre><p>接下来就可以执行导入时间到日历的功能了。</p>
+<pre><code>self.startAnimating(CGSize(width: 30, height: 30),type:.ballBeat,color: UIColor.init(hexString: &quot;#E0486C&quot;),backgroundColor:UIColor.white)
 
+    //    因为是读写操作，比较耗时，需要放到后台去执行。
+        DispatchQueue.global().async {
+        //把比赛写入日历
+  //            print(self.eventStore)
+            for game in self.datas{
+
+                let event = EKEvent(eventStore: self.eventStore)
+
+                // 标题
+                let title = game.homeTeamName! + &quot;VS&quot; + game.awayTeamName!
+                event.title = title
+
+                //时间
+                let date = Date.init(timeIntervalSince1970: TimeInterval(Int64(game.gameDate!)!/1000))
+
+                //开始时间、结束时间
+                event.startDate = date
+                event.endDate = date.addingTimeInterval(150*60)
+                //日历
+                let calendar = self.eventStore.defaultCalendarForNewEvents
+                calendar.title = self.team.name! + &quot;赛程&quot;
+                calendar.cgColor = UIColor.purple.cgColor
+                event.calendar = calendar
+
+                do{
+                    try self.eventStore.save(event, span: EKSpan.thisEvent)
+                }catch let error as NSError{
+                    print(error)
+                }
+            }
+            //结束后，主线程刷新UI
+            DispatchQueue.main.async {
+                self.stopAnimating()
+            }
+</code></pre>
       
 
       
@@ -347,7 +387,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/10/15/iOS导航栏的正确隐藏方式 /" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/15/日历的提醒添加/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -361,18 +401,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/10/15/App启动速度优化/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          App启动速度优化
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/10/15/轻松实现Label的全方位对齐/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">轻松实现Label的全方位对齐</div>
+    <a href="/2018/12/15/swift构造过程、析构过程/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">swift构造过程、析构过程</div>
       <i class="icon-circle-right"></i>
     </a>
   
