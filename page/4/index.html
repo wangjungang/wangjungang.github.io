@@ -152,6 +152,167 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS子线程更新UI到主线程的三种方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/">iOS子线程更新UI到主线程的三种方法</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/" class="archive-article-date">
+  	<time datetime="2018-11-27T06:00:05.548Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>简单说将代码同步到主线程执行的三种方法如下</p>
+<pre><code>// 1.NSThread
+[self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
+
+- (void)updateUI {
+    // UI更新代码
+    self.alert.text = @&quot;Thanks!&quot;;
+}
+
+// 2.NSOperationQueue
+[[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    // UI更新代码
+    self.alert.text = @&quot;Thanks!&quot;;
+    }];
+
+// 3.GCD
+dispatch_async(dispatch_get_main_queue(), ^{
+   // UI更新代码
+   self.alert.text = @&quot;Thanks!&quot;;
+});
+</code></pre><p>看下面的例子： </p>
+<p>以下代码有什么问题？如何修复？</p>
+<pre><code>@interface TTWaitController : UIViewController
+
+@property (strong, nonatomic) UILabel *alert;
+
+@end
+
+@implementation TTWaitController
+
+- (void)viewDidLoad
+{
+    CGRect frame = CGRectMake(20, 200, 200, 20);
+    self.alert = [[UILabel alloc] initWithFrame:frame];
+    self.alert.text = @&quot;Please wait 10 seconds...&quot;;
+    self.alert.textColor = [UIColor whiteColor];
+    [self.view addSubview:self.alert];
+
+    NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
+    [waitQueue addOperationWithBlock:^{
+        [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
+        self.alert.text = @&quot;Thanks!&quot;;
+    }];
+}
+
+@end
+
+@implementation TTAppDelegate
+
+- (BOOL)application:(UIApplication *)application
+  didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = [[TTWaitController alloc] init];
+    [self.window makeKeyAndVisible];
+    return YES;
+}
+</code></pre><p>这段代码是想提醒用户等待10s，10s后在标签上显示“Thanks”，但多线程代码部分NSOperationQueue的addOperationWithBlock函数不能保证block里面的语句是在主线程中运行的，UILabel显示文字属于UI更新，必须要在主线程进行，否则会有未知的操作，无法在界面上及时正常显示。</p>
+<p>解决方法是将UI更新的代码写在主线程上即可，代码同步到主线程上主要有三种方法：NSThread、NSOperationQueue和GCD，三个层次的多线程都可以获取主线程并同步。</p>
+<h4 id="NSThread级主线程同步：performSelectorOnMainThread"><a href="#NSThread级主线程同步：performSelectorOnMainThread" class="headerlink" title="NSThread级主线程同步：performSelectorOnMainThread"></a>NSThread级主线程同步：performSelectorOnMainThread</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
+[waitQueue addOperationWithBlock:^{
+    [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
+    // 同步到主线程
+    [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
+}];
+
+/**
+ * UI更新函数
+ */
+- (void)updateUI {
+    self.alert.text = @&quot;Thanks!&quot;;
+}
+</code></pre><h4 id="NSOperationQueue级主线程同步：-NSOperationQueue-mainQueue"><a href="#NSOperationQueue级主线程同步：-NSOperationQueue-mainQueue" class="headerlink" title="NSOperationQueue级主线程同步：[NSOperationQueue mainQueue]"></a>NSOperationQueue级主线程同步：[NSOperationQueue mainQueue]</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
+[waitQueue addOperationWithBlock:^{
+    [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
+    // 同步到主线程
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        self.alert.text = @&quot;Thanks!&quot;;
+    }];
+}];
+</code></pre><h4 id="GCD级主线程同步：dispatch-get-main-queue"><a href="#GCD级主线程同步：dispatch-get-main-queue" class="headerlink" title="GCD级主线程同步：dispatch_get_main_queue"></a>GCD级主线程同步：dispatch_get_main_queue</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
+[waitQueue addOperationWithBlock:^{
+    [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:3]];
+    // 同步到主线程
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.alert.text = @&quot;Thanks!&quot;;
+    });
+}];
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-利用消息转发机制防止Crach" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2170,146 +2331,6 @@ UIGraphicsEndImageContext();
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/11/06/关于压缩图片的方法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS 给系统日历添加事件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/04/iOS 给系统日历添加事件/">iOS 给系统日历添加事件</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/04/iOS 给系统日历添加事件/" class="archive-article-date">
-  	<time datetime="2018-11-04T15:22:50.550Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="最重要-添加-import-lt-EventKit-EventKit-h-gt-库"><a href="#最重要-添加-import-lt-EventKit-EventKit-h-gt-库" class="headerlink" title="最重要 添加#import &lt;EventKit/EventKit.h&gt; 库"></a>最重要 添加#import &lt;EventKit/EventKit.h&gt; 库</h3><pre><code>EKEventStore *eventStore = [[EKEventStore alloc] init];
-            //请求使用用户的日历数据库
-            if ([eventStore respondsToSelector:@selector(requestAccessToEntityType:completion:)])
-            {
-                [eventStore requestAccessToEntityType:EKEntityTypeEvent completion:^(BOOL granted, NSError *error) {
-                    dispatch_async(dispatch_get_main_queue(), ^{
-                        if (error){
-                            //错误信息 这里显示错误消息
-                        }else if (!granted){
-                            //被用户拒绝，不允许访问日历 拒绝访问显示错误消息
-                        }else{
-                            // 数据访问权限
-                            // ***** 在这里做重要的事情 *****
-
-                            //事件保存到日历
-                            //06.07 元素
-                            //title(标题 NSString),
-                            //location(位置NSString),
-                            //startDate(开始时间 2016/06/07 11:14AM),
-                            //endDate(结束时间 2016/06/07 11:14AM),
-                            //addAlarm(提醒时间 2016/06/07 11:14AM),
-                            //notes(备注类容NSString)
-
-                            //创建事件
-                            EKEvent *event  = [EKEvent eventWithEventStore:eventStore];
-                            event.title  = @&quot;测试写入日历事件&quot;;
-                            event.location = @&quot;北京海淀&quot;;
-
-                            NSDateFormatter * dateFormatter = [[NSDateFormatter alloc] init];
-                            [dateFormatter setAMSymbol:@&quot;AM&quot;];
-                            [dateFormatter setPMSymbol:@&quot;PM&quot;];
-                            [dateFormatter setDateFormat:@&quot;yyyy/MM/dd hh:mmaaa&quot;];
-                            NSDate *date = [NSDate date];
-                            NSString * s = [dateFormatter stringFromDate:date];
-                            DLog(@&quot;%@&quot;,s);
-
-                            //开始时间(必须传)
-                            event.startDate = [date dateByAddingTimeInterval:60 * 2];
-                            //结束时间(必须传)
-                            event.endDate   = [date dateByAddingTimeInterval:60 * 5 * 24];
-                            //                    event.endDate   = [[NSDate alloc]init];
-                            //                    event.allDay = YES;//全天
-
-                            //添加提醒
-                            //第一次提醒  (几分钟后)
-                            [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -1.0f]];
-                            //第二次提醒  ()
-                            //                    [event addAlarm:[EKAlarm alarmWithRelativeOffset:60.0f * -10.0f * 24]];
-
-                            //06.07 add 事件类容备注
-                            NSString * str = ws.model.remark;
-                            event.notes = [NSString stringWithFormat:@&quot;%@&quot;,str];
-
-                            [event setCalendar:[eventStore defaultCalendarForNewEvents]];
-                            NSError *err;
-
-                            [eventStore saveEvent:event span:EKSpanThisEvent error:&amp;err];
-
-                            DLog(@&quot;保存成功&quot;);
-
-                            //直接杀死进程
-                            exit(2);
-
-                        }
-                    });
-                }];
-            }
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/04/iOS 给系统日历添加事件/">展开全文 >></a>
         </p>
       
 
