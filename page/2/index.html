@@ -152,6 +152,143 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Swift命名空间" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/14/Swift命名空间/">Swift命名空间</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/14/Swift命名空间/" class="archive-article-date">
+  	<time datetime="2018-12-14T06:17:52.561Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>命名空间namespace在C++、C#里面是一个常见概念，Swift中也引入了这样一个机制，下面来探索一下这个命名空间的来龙去脉。</p>
+<p>Objective-C没有命名空间，为了避免冲突，Objective-C的类型一般都会加上两到三个字母的前缀，比如Apple保留的NS和UI前缀，各个系统框架的前缀，各个系统框架的前缀SK（StoreKit），CG（CoreGraphic）等。</p>
+<p>Swift的命名空间是基于module而不是在代码中显示地指明，每个module代表了Swift中的一个命名空间。也就是说，同一个target里的类型名称还是不能相同的。</p>
+<h2 id="为什么需要命名空间"><a href="#为什么需要命名空间" class="headerlink" title="为什么需要命名空间"></a>为什么需要命名空间</h2><p>为了防止代码冲突</p>
+<p>在开发中，尤其是在多模块开发中，很难保证模块之间的类名不会重复，为了保证不同模块下同名的类可以正常使用而不报错，引入命名空间来保证即使创建的类名一样，只要命名空间不一样，这些类也是不一样的，所以，这是一种安全机制，用命名空间来防止冲突。可以看出，Swift中的类名的完整形式其实是“命名空间+类名”。我们可以尝试在类中打印当前类来查看一下完整名字：</p>
+<pre><code>override func viewDidLoad() {
+    super.viewDidLoad()
+    print(self)
+}
+//打印结果是：&lt;aa.viewcontroller: 0x7fec6a00e5c0&gt;&lt;/aa.viewcontroller: 0x7fec6a00e5c0&gt;
+</code></pre><h2 id="命名空间查看与修改"><a href="#命名空间查看与修改" class="headerlink" title="命名空间查看与修改"></a>命名空间查看与修改</h2><p>从上面的打印结果来看，命名空间是我们项目的名字，那么如果查看呢？我们需要用源代码的形式打开Info.plist，可以看到里面有一个字段CFBundleExecutable，它对应的值就是命名空间。</p>
+<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688598233397.png" alt=""></p>
+<p>如果要修改命名空间，注意不要直接编辑Info.plist，可以进入Build Settings中搜索Product Name，然后进行修改。</p>
+<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688648110559.png" alt=""></p>
+<h2 id="命名空间如何获取"><a href="#命名空间如何获取" class="headerlink" title="命名空间如何获取"></a>命名空间如何获取</h2><p>既然知道可以通过Info.plist获取命名空间，那么如何在程序中获取呢？很显然需要解析Info.plist文件，拿到CFBundleExecutable对应的value值。</p>
+<pre><code>let namespace = Bundle.main.infoDictionary![&quot;CFBundleExecutable&quot;]
+// 返回的是一个可选型      
+print(namespace!)
+</code></pre><h2 id="命名空间在开发中的使用"><a href="#命名空间在开发中的使用" class="headerlink" title="命名空间在开发中的使用"></a>命名空间在开发中的使用</h2><ul>
+<li><p>由于Objective-C中没有命名空间，所以写起来很轻松。</p>
+<pre><code>//viewDidLoad中添加一个个控制器
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self addNavigationChildVC:@&quot;ContactViewController&quot; :@&quot;联系人&quot; :@&quot;tabbar_contacts&quot; :@&quot;tabbar_contactsHL&quot;];
+}
+
+//自定的方法中根据传进来的字符串创建控制器
+-(void)addNavigationChildVC: (NSString *) vcName :(NSString *)title :(NSString *)nomalImageName :(NSString *)selectedImageName {
+    //创建控制器
+    Class class = NSClassFromString(vcName);
+    UIViewController *vc = [[class alloc]init];
+    ...
+}
+</code></pre></li>
+<li><p>Swift中命名空间的存在，如果按照上述做法得不到想要的结果，这时候就需要想办法进行处理</p>
+<pre><code>//viewDidLoad中添加一个个控制器
+override func viewDidLoad() {
+    super.viewDidLoad()
+    addChildViewController(vcName: &quot;ContactsViewController&quot;, title: &quot;联系人&quot;, image: &quot;tabbar_contacts&quot;, selectedImage: &quot;tabbar_contactsHL&quot;)
+}
+
+//创建一个函数来将控制器的名字转成具体的类
+func stringToVC(vcName:String) -&gt; UIViewController? {
+    //获取命名空间
+    guard let namespace = Bundle.main.infoDictionary![&quot;CFBundleExecutable&quot;] as? String else {
+        print(&quot;获取失败&quot;)
+        return nil
+    }        
+    //拼接完整的类
+    guard let vcClass = NSClassFromString(namespace + &quot;.&quot; + vcName) else {
+        print(&quot;拼接失败&quot;)
+        return nil
+    }   
+    //转换成UIViewController
+    guard let vcType = vcClass as? UIViewController.Type else {
+        print(&quot;转换失败&quot;)
+        return nil
+    }  
+    //根据类型创建对应的控制器
+    let vc = vcType.init()
+    return vc
+}
+</code></pre></li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/14/Swift命名空间/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-什么是RESTful API" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1932,343 +2069,6 @@ NS_ASSUME_NONNULL_END
 
 
   
-    <article id="post-Keychain的介绍和使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/06/Keychain的介绍和使用/">Keychain的介绍和使用</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/06/Keychain的介绍和使用/" class="archive-article-date">
-  	<time datetime="2018-12-06T03:24:01.448Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Keychain 是苹果公司 Mac OS(也包含 Mac OSX) 中的密码管理系统。</p>
-<p>Keychain 在 Mac 上大家都比较熟悉, 主要进行一些敏感信息存储使用 如用户名，密码，网络密码，认证令牌, Wi-Fi网络密码，VPN凭证等. iOS 中 Keychain, 也有相同的功能实现 , 保存的信息存储在设备中, 独立于每个App沙盒之外.</p>
-<p>特点</p>
-<ul>
-<li>更安全. 对比 NSUserDefault 存储一些数据, 会更加安全.</li>
-<li>即便 App 被卸载, 存储的信息依旧存在, 再次安装App, 存储是信息依旧可以使用.</li>
-<li>相同的 Team ID 开发, 可实现多个App 共享数据</li>
-</ul>
-<h2 id="Keychain-结构说明"><a href="#Keychain-结构说明" class="headerlink" title="Keychain 结构说明"></a>Keychain 结构说明</h2><p>Keychain 结构是由 key-value 组成.</p>
-<p>多个 key-value 标签的作用 : 表明该钥匙的唯一性.</p>
-<p>当我们对 Keychain 进行操作时, 就可以定义一个包含该 key-value 字典, 调用API, 对 Keychain 进行操作</p>
-<h2 id="Keychain-增-删-改-查"><a href="#Keychain-增-删-改-查" class="headerlink" title="Keychain 增 / 删 / 改 / 查"></a>Keychain 增 / 删 / 改 / 查</h2><h3 id="主要API"><a href="#主要API" class="headerlink" title="主要API"></a>主要API</h3><pre><code>/** 添加 */
-OSStatus SecItemAdd(CFDictionaryRef attributes, CFTypeRef * __nullable CF_RETURNS_RETAINED result);
-/** 查询 */
-OSStatus SecItemCopyMatching(CFDictionaryRef query, CFTypeRef * __nullable CF_RETURNS_RETAINED result);
-/** 更新 */
-OSStatus SecItemUpdate(CFDictionaryRef query, CFDictionaryRef attributesToUpdate);
-/** 删除 */
-OSStatus SecItemDelete(CFDictionaryRef query);
-
-/** 增/改 */
-- (IBAction)insertAndUpdate:(id)sender {
-
-    /**
-     说明：当添加的时候我们一般需要判断一下当前钥匙串里面是否已经存在我们要添加的钥匙。如果已经存在我们就更新好了，不存在再添加，所以这两个操作一般写成一个函数搞定吧。
-
-     过程关键：1.检查是否已经存在 构建的查询用的操作字典：kSecAttrService，kSecAttrAccount，kSecClass（标明存储的数据是什么类型，值为kSecClassGenericPassword 就代表一般的密码）
-
-     　　　2.添加用的操作字典：　kSecAttrService，kSecAttrAccount，kSecClass，kSecValueData
-
-     　　　3.更新用的操作字典1（用于定位需要更改的钥匙）：kSecAttrService，kSecAttrAccount，kSecClass
-
-     　　　　　　　　操作字典2（新信息）kSecAttrService，kSecAttrAccount，kSecClass ,kSecValueData
-     */
-
-    NSLog(@&quot;插入 : %d&quot;,  [self addItemWithService:@&quot;com.tencent&quot; account:@&quot;李雷&quot; password:@&quot;911&quot;]);
-}
-
--(BOOL)addItemWithService:(NSString *)service account:(NSString *)account password:(NSString *)password{
-
-    //先查查是否已经存在
-    //构造一个操作字典用于查询
-
-    NSMutableDictionary *queryDic = [NSMutableDictionary dictionary];
-
-    [queryDic setObject:service forKey:(__bridge id)kSecAttrService];                         //标签service
-    [queryDic setObject:account forKey:(__bridge id)kSecAttrAccount];                         //标签account
-    [queryDic setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];//表明存储的是一个密码
-
-    OSStatus status = -1;
-    CFTypeRef result = NULL;
-
-    status = SecItemCopyMatching((__bridge CFDictionaryRef)queryDic, &amp;result);
-
-    if (status == errSecItemNotFound) {                                              //没有找到则添加
-
-        NSData *passwordData = [password dataUsingEncoding:NSUTF8StringEncoding];    //把password 转换为 NSData
-
-        [queryDic setObject:passwordData forKey:(__bridge id)kSecValueData];       //添加密码
-
-        status = SecItemAdd((__bridge CFDictionaryRef)queryDic, NULL);             //!!!!!关键的添加API
-
-    }else if (status == errSecSuccess){                                              //成功找到，说明钥匙已经存在则进行更新
-
-        NSData *passwordData = [password dataUsingEncoding:NSUTF8StringEncoding];    //把password 转换为 NSData
-
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithDictionary:queryDic];
-
-        [dict setObject:passwordData forKey:(__bridge id)kSecValueData];             //添加密码
-
-        status = SecItemUpdate((__bridge CFDictionaryRef)queryDic, (__bridge CFDictionaryRef)dict);//!!!!关键的更新API
-
-    }
-
-    return (status == errSecSuccess);
-}
-
-
-/** 查 */
-- (IBAction)select:(id)sender {
-
-    /**
-     过程：
-     1.(关键)先配置一个操作字典内容有:
-     kSecAttrService(属性),kSecAttrAccount(属性) 这些属性or标签是查找的依据
-     kSecReturnData(值为@YES 表明返回类型为data),kSecClass(值为kSecClassGenericPassword 表示重要数据为“一般密码”类型) 这些限制条件是返回结果类型的依据
-
-     2.然后用查找的API 得到查找状态和返回数据（密码）
-
-     3.最后如果状态成功那么将数据（密码）转换成string 返回
-     */
-
-    NSLog(@&quot;%@&quot;, [self passwordForService:@&quot;com.tencent&quot; account:@&quot;李雷&quot;]);
-
-}
-
-//用原生的API 实现查询密码
-- (NSString *)passwordForService:(nonnull NSString *)service account:(nonnull NSString *)account{
-
-    //生成一个查询用的 可变字典
-    NSMutableDictionary *queryDic = [NSMutableDictionary dictionary];
-
-    //首先添加获取密码所需的搜索键和类属性：
-    [queryDic setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass]; //表明为一般密码可能是证书或者其他东西
-    [queryDic setObject:(__bridge id)kCFBooleanTrue  forKey:(__bridge id)kSecReturnData];     //返回Data
-
-    [queryDic setObject:service forKey:(__bridge id)kSecAttrService];    //输入service
-    [queryDic setObject:account forKey:(__bridge id)kSecAttrAccount];  //输入account
-
-    //查询
-    OSStatus status = -1;
-    CFTypeRef result = NULL;
-    status = SecItemCopyMatching((__bridge CFDictionaryRef)queryDic,&amp;result);//核心API 查找是否匹配 和返回密码！
-    if (status != errSecSuccess) { //判断状态
-
-        return nil;
-    }
-    //返回数据
-//    NSString *password = [[NSString alloc] initWithData:(__bridge_transfer NSData *)result encoding:NSUTF8StringEncoding];//转换成string
-
-    //删除kSecReturnData键; 我们不需要它了：
-    [queryDic removeObjectForKey:(__bridge id)kSecReturnData];
-    //将密码转换为NSString并将其添加到返回字典：
-    NSString *password = [[NSString alloc] initWithBytes:[(__bridge_transfer NSData *)result bytes] length:[(__bridge NSData *)result length] encoding:NSUTF8StringEncoding];
-
-    [queryDic setObject:password forKey:(__bridge id)kSecValueData];
-
-    NSLog(@&quot;查询 : %@&quot;, queryDic);
-
-
-    return password;
-}
-
-
-/** 删 */
-- (IBAction)delete:(id)sender {
-
-    NSLog(@&quot;删除 : %d&quot;, [self deleteItemWithService:@&quot;com.tencent&quot; account:@&quot;李雷&quot;]);    
-}
-
-
--(BOOL)deleteItemWithService:(NSString *)service account:(NSString *)account{
-
-    NSMutableDictionary *queryDic = [NSMutableDictionary dictionary];
-
-    [queryDic setObject:service forKey:(__bridge id)kSecAttrService];                         //标签service
-    [queryDic setObject:account forKey:(__bridge id)kSecAttrAccount];                         //标签account
-    [queryDic setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];//表明存储的是一个密码
-
-
-    OSStatus status = SecItemDelete((CFDictionaryRef)queryDic);
-
-    return (status == errSecSuccess);
-}
-</code></pre><h2 id="Keychain-封装"><a href="#Keychain-封装" class="headerlink" title="Keychain 封装"></a>Keychain 封装</h2><pre><code>#import &quot;UserInfo.h&quot;
-
-@implementation UserInfo
-
-+ (NSMutableDictionary *)getKeychainQuery:(NSString *)service {
-
-    return [NSMutableDictionary dictionaryWithObjectsAndKeys:(id)kSecClassGenericPassword,(id)kSecClass,
-                                                             service, (id)kSecAttrService,
-                                                             service, (id)kSecAttrAccount,
-                                                             (id)kSecAttrAccessibleAfterFirstUnlock,(id)kSecAttrAccessible,
-                                                             nil];
-
-}
-
-#pragma mark 写入
-// 说明: 该封装 添加与更新 为同一方法, 不进行判断, 直接先删除后添加
-+ (void)save:(NSString *)service data:(id)data {
-
-    //Get search dictionary
-    NSMutableDictionary *keychainQuery = [self getKeychainQuery:service];
-    //Delete old item before add new item
-    SecItemDelete((CFDictionaryRef)keychainQuery);
-    //Add new object to search dictionary(Attention:the data format)
-    [keychainQuery setObject:[NSKeyedArchiver archivedDataWithRootObject:data] forKey:(id)kSecValueData];
-    //Add item to keychain with the search dictionary
-    SecItemAdd((CFDictionaryRef)keychainQuery, NULL);
-}
-
-
-
-
-#pragma mark 读取
-+ (id)load:(NSString *)service {
-
-    id ret = nil;
-    NSMutableDictionary *keychainQuery = [self getKeychainQuery:service];
-    //Configure the search setting
-    //Since in our simple case we are expecting only a single attribute to be returned (the password) we can set the attribute kSecReturnData to kCFBooleanTrue
-    [keychainQuery setObject:(id)kCFBooleanTrue forKey:(id)kSecReturnData];
-    [keychainQuery setObject:(id)kSecMatchLimitOne forKey:(id)kSecMatchLimit];
-    CFDataRef keyData = NULL;
-    if (SecItemCopyMatching((CFDictionaryRef)keychainQuery, (CFTypeRef *)&amp;keyData) == noErr) {
-        @try {
-            ret = [NSKeyedUnarchiver unarchiveObjectWithData:(__bridge NSData *)keyData];
-        } @catch (NSException *e) {
-            NSLog(@&quot;Unarchive of %@ failed: %@&quot;, service, e);
-        } @finally {
-        }
-    }
-    if (keyData)
-        CFRelease(keyData);
-    return ret;
-}
-
-#pragma mark 删除
-+ (void)delete:(NSString *)service {
-
-    NSMutableDictionary *keychainQuery = [self getKeychainQuery:service];
-    SecItemDelete((CFDictionaryRef)keychainQuery);
-}
-
-
-
-
-@end
-</code></pre><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><pre><code>NSString * const KEY_USERNAME_PASSWORD = @&quot;com.company.app.usernamepassword&quot;;
-NSString * const KEY_USERNAME = @&quot;com.company.app.username&quot;;
-NSString * const KEY_PASSWORD = @&quot;com.company.app.password&quot;;
-
-// 调用
-   NSMutableDictionary *userNamePasswordKVPairs = [NSMutableDictionary dictionary];
-    [userNamePasswordKVPairs setObject:@&quot;userName&quot; forKey:KEY_USERNAME];
-    [userNamePasswordKVPairs setObject:@&quot;password&quot; forKey:KEY_PASSWORD];
-    NSLog(@&quot;%@&quot;, userNamePasswordKVPairs); //有KV值
-
-    // A、将用户名和密码写入keychain
-    [UserInfo save:KEY_USERNAME_PASSWORD data:userNamePasswordKVPairs];
-
-    // B、从keychain中读取用户名和密码
-    NSMutableDictionary *readUsernamePassword = (NSMutableDictionary *)[UserInfo load:KEY_USERNAME_PASSWORD];
-    NSString *userName = [readUsernamePassword objectForKey:KEY_USERNAME];
-    NSString *password = [readUsernamePassword objectForKey:KEY_PASSWORD];
-    NSLog(@&quot;username = %@&quot;, userName);
-    NSLog(@&quot;password = %@&quot;, password);
-
-    // C、将用户名和密码从keychain中删除
-    [UserInfo delete:KEY_USERNAME_PASSWORD];
-</code></pre><h2 id="Keychain-App间共享数据"><a href="#Keychain-App间共享数据" class="headerlink" title="Keychain App间共享数据"></a>Keychain App间共享数据</h2><p>开发者ID 为Apple developer中的Membership =&gt; Team ID, 或者可以使用 $(AppIdentifierPrefix) 代替, 也可以 用代码获取</p>
-<pre><code>- (NSString *)bundleSeedID {
-    NSDictionary *query = [NSDictionary dictionaryWithObjectsAndKeys:
-                           kSecClassGenericPassword, kSecClass,
-                           @&quot;bundleSeedID&quot;, kSecAttrAccount,
-                           @&quot;&quot;, kSecAttrService,
-                           (id)kCFBooleanTrue, kSecReturnAttributes,
-                           nil];
-    CFDictionaryRef result = nil;
-    OSStatus status = SecItemCopyMatching((CFDictionaryRef)query, (CFTypeRef *)&amp;result);
-    if (status == errSecItemNotFound)
-        status = SecItemAdd((CFDictionaryRef)query, (CFTypeRef *)&amp;result);
-    if (status != errSecSuccess)
-        return nil;
-    NSString *accessGroup = [(__bridge NSDictionary *)result objectForKey:kSecAttrAccessGroup];
-    NSArray *components = [accessGroup componentsSeparatedByString:@&quot;.&quot;];
-    NSString *bundleSeedID = [[components objectEnumerator] nextObject];
-    CFRelease(result);
-    return bundleSeedID;
-}
-</code></pre><h2 id="Keychain-的安全性"><a href="#Keychain-的安全性" class="headerlink" title="Keychain 的安全性"></a>Keychain 的安全性</h2><p>Keychain 并不是十分安全，在越狱的设备上，可以通过一些相应的工具很轻松的 dump 所有的 Keychain 数据，比如Keychain-Dumper，通过 ssh 登录设备，下载 keychain_dumper 至 /tmp 目录，然后 chmox +x keychain_dumper<br>赋予执行权限，直接 ./keychain_dumper &gt; keychain_content.txt<br>，即可查看到相应的数据</p>
-<p>Keychain 数据可以通过 iTunes 备份，iTunes 备份可以让用户选择是否加密备份，不加密的备份可以恢复到任何设备，而加密的备份不能恢复到其它设备。虽然 ThisDeviceOnly 类型的 Item 不会备份，但是 Item 则会备份</p>
-<p>总而言之，考虑到 iCloud 服务器端、设备越狱等情况、甚至某些 Wi-FI 漏洞攻击，都有可能会泄露 Keychain 数据，最好是加密存储</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/06/Keychain的介绍和使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -2398,11 +2198,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
