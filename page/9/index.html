@@ -152,6 +152,122 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS关于属性的整理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/05/iOS关于属性的整理/">iOS关于属性的整理</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/05/iOS关于属性的整理/" class="archive-article-date">
+  	<time datetime="2018-09-05T05:29:27.932Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-属性的实质是什么？包括哪几个部分"><a href="#1-属性的实质是什么？包括哪几个部分" class="headerlink" title="1.属性的实质是什么？包括哪几个部分"></a>1.属性的实质是什么？包括哪几个部分</h2><p>@property = ivar + getter + setter;</p>
+<p>利用class_copyPropertyList 查看类的所有属性</p>
+<p>利用class_copyIvarList查看类的所有成员变量</p>
+<p>利用class_copyMethodList查看类的所有方法
+  
+  </p>
+<h2 id="2-属性默认的关键字都有哪些？"><a href="#2-属性默认的关键字都有哪些？" class="headerlink" title="2.属性默认的关键字都有哪些？"></a>2.属性默认的关键字都有哪些？</h2><h3 id="1-property"><a href="#1-property" class="headerlink" title="1.@property"></a>1.@property</h3><p>prpperty其实就是在编译阶段由编译器自动帮我们生成ivar成员变量getter方法，setter方法。</p>
+<p>使用“自动合成”（ auto synthesis）这个过程由编译器在编译阶段执行自动合成，所以编译器里看不到这些“合成方法”（synthesized method）的源代码。除了生成getter、setter方法之外，编译器还要自动向类中添加成员变量（在属性名前面加下划线,以此作为实例变量的名字）反编译相关的代码大致生成：</p>
+<pre><code>OBJC_IVAR_$类名$属性名称        // 该属性的“偏移量” (offset),这个偏移量是“硬编码” (hardcode),表 示该变量距离存放对象的内存区域的起始地址有多远
+</code></pre><h3 id="2-readwrite-readonly-assign-retain-copy-nonatomic-atomic-strong-weak属性的作用分别是什么。"><a href="#2-readwrite-readonly-assign-retain-copy-nonatomic-atomic-strong-weak属性的作用分别是什么。" class="headerlink" title="2.readwrite,readonly,assign,retain,copy,nonatomic,atomic,strong,weak属性的作用分别是什么。"></a>2.readwrite,readonly,assign,retain,copy,nonatomic,atomic,strong,weak属性的作用分别是什么。</h3><p>readwrite 可读可写 此标记说明属性会被当成读写的，这也是默认属性。</p>
+<p>readonly 只读 此标记说明属性只可以读，也就是不能设置，可以获取。</p>
+<p>assign  不会引用数加1，也就是直接赋值</p>
+<p>retain 会使引用计数加1。</p>
+<p>copy 建立一个索引计数为1的对象，在赋值时使用传入值的一份拷贝。</p>
+<p>nonatomic  非原子性访问，多线程并发访问会提高性能。</p>
+<p>atomic 原子性访问</p>
+<p>strong 打开arc的时候使用，相当于retain</p>
+<p>weak 打开ARC时才会使用，相当于assign，可以把对应的指针变量置为nil</p>
+<h3 id="3-什么情况使用-weak-关键字-相比-assign-有什么不同？"><a href="#3-什么情况使用-weak-关键字-相比-assign-有什么不同？" class="headerlink" title="3.什么情况使用 weak 关键字,相比 assign 有什么不同？"></a>3.什么情况使用 weak 关键字,相比 assign 有什么不同？</h3><p>在 ARC 中,在有可能出现循环引用的时候,往往要通过让其中一端使用 weak 来解决,比如:</p>
+<p>delegate 代理属性,代理属性也可使用<br>assign自身已经对它进行一次强引用,没有必要再强引用一次,此时也会使用 weak<br>自定义IBOutlet 控件属性一般也使用weak;当然,也可以使用 strong,但是建议使用 weak</p>
+<p>weak 和 assign 的不同点:</p>
+<p>weak 策略在属性所指的对象遭到摧毁时,系统会将 weak 修饰的属性对象的指针指向 nil,在 OC 给 nil 发消息是不会有什么问题的;如果使用 assign 策略在属性所指的对象遭到摧毁时,属性对象指针还指向原来的对象,由于对象已经被销毁,这时候就产生了野指针,如果这时候在给此对象发送消息,很容造成程序奔溃assigin 可以用于修饰非 OC 对象,而 weak 必须用于 OC 对象。</p>
+<p>使用atomic线程一定是安全的吗</p>
+<p>不是，atomic的本意是属性的读取是线程安全的，并不保证整个属性的线程安全</p>
+<p>@synthesize 和 @dynamic 分别有什么作用</p>
+<p>@property 有两个对应的词,一个是@synthesize,一个是@dynamic。<br>如果@synthesize 和@dynamic 都没写,那么默认的就是</p>
+<p>@syntheszie var = _var;</p>
+<p>@synthesize 的语义是如果你没有手动实现 setter 方法和 getter 方法,那么编译器会自动为你加上这两个方法。</p>
+<p>@dynamic 告诉编译器:属性的 setter 与 getter 方法由用户自己实现,不自动生成。(当然对于 readonly 的属性只需提供 getter 即可)<br>假如一个属性被声明为</p>
+<p>@dynamic var；然后你没有提供@setter 方法和@getter 方法,编译的时候没问题,但是当程序运行到 instance.var = someVar,由于缺 setter方法会导致程序崩溃;</p>
+<p>或者当运行到 someVar = instance.var 时,由于缺 getter 方法同样会导致</p>
+<p>ARC 下,不显式指定任何属性关键字时,默认的关键字都有哪些?</p>
+<p>基本数据：  atomic,readwrite,assign</p>
+<p>普通的 OC 对象: atomic,readwrite,strong</p>
+<p>怎么用 copy 关键字?</p>
+<p>NSString、NSArray、NSDictionary 等等经常使用 copy 关键字,是因为他们有对应的可变类型:NSMutableString、NSMutableArray、NSMutableDictionary.<br>为确保对象中的属性值不会无意间变动,应该在设置新属性值时拷贝一份,保护其封装性block，也经常使用 copy，关键字block。</p>
+<p>使用 copy 是从 MRC 遗留下来的“传统”,在 MRC 中,方法内部的 block 是在栈区的,使用 copy 可以把它放到堆区.<br>在 ARC 中写不写都行:对于 block 使用 copy 还是 strong 效果是一样的,但是建议写上 copy,因为这样显示告知调用者“编译器会自动对 block 进行了 copy 操作。</p>
+<p>用@property 声明的 NSString(或 NSArray,NSDictionary)经常使用 copy 关键字,为什么?如果改用 strong 关键字,可能造成什么问题?</p>
+<p>因为父类指针可以指向子类对象,使用 copy 的目的是为了让本对象的属性不受外界影响,使用 copy 无论给我传入是一个可变对象还是不可对象,我本身持有的就是一个不可变的副本.</p>
+<p>如果我们使用是 strong,那么这个属性就有可能指向一个可变对象,如果这个可变对象在外部被修改了,那么会影响该属性.</p>
+<h2 id="3-dynamic关键字"><a href="#3-dynamic关键字" class="headerlink" title="3.@dynamic关键字"></a>3.@dynamic关键字</h2><p>@dynamic告诉编译器,属性的setter与getter方法由用户自己实现。</p>
+<h2 id="4-synthesize关键字"><a href="#4-synthesize关键字" class="headerlink" title="4.@synthesize关键字"></a>4.@synthesize关键字</h2><p>@synthesize的语义是如果你没有手动实现setter方法和getter方法，那么编译器会自动为你加上这两个方法。</p>
+<p>  </p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/05/iOS关于属性的整理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS关于delegate的整理内容" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1590,94 +1706,6 @@ self.secondLabel.text = dataHandle.str;
 
 
   
-    <article id="post-Vim的简单使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/27/Vim的简单使用/">Vim的简单使用</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/27/Vim的简单使用/" class="archive-article-date">
-  	<time datetime="2018-07-27T15:32:00.875Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="vim的使用"><a href="#vim的使用" class="headerlink" title="vim的使用"></a>vim的使用</h1><p>为配合教程, 所以简单的介绍下vim的基础使用.</p>
-<p>当你在终端输入vi xxx或者vim xxx的后.会进入下图的状态, 请多注意左下角, 每一个步骤左下角都会有变化.</p>
-<p>1.未编辑状态</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221338@2x.png" alt=""></p>
-<p>2.按键盘上的i进入编辑状态, 然后输入内容</p>
-<p>输入前</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221348@2x.png" alt=""></p>
-<p>输入后</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221354@2x.png" alt=""></p>
-<p>3.按esc退出编辑状态</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221401@2x.png" alt=""></p>
-<p>4.输入:wq保存并退出</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221412@2x.png" alt=""></p>
-<p>5.保存并退出后</p>
-<p><img src="http://zedxpp.com/images/20170225221630/QQ20170225-221420@2x.png" alt=""></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Vim</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/27/Vim的简单使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
@@ -1775,11 +1803,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1787,7 +1815,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1807,11 +1835,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1819,7 +1847,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
