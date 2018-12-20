@@ -152,6 +152,176 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS YYWebImage" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/04/iOS YYWebImage/">iOS YYWebImaage</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/04/iOS YYWebImage/" class="archive-article-date">
+  	<time datetime="2018-11-04T15:00:49.401Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>YYWebImage 是一个异步图片加载框架 (YYKit 组件之一).</p>
+<p>其设计目的是试图替代 SDWebImage、PINRemoteImage、FLAnimatedImage 等开源框架，它支持这些开源框架的大部分功能，同时增加了大量新特性、并且有不小的性能提升。</p>
+<p>它底层用 YYCache 实现了内存和磁盘缓存, 用 YYImage 实现了 WebP/APNG/GIF 动图的解码和播放。<br>你可以查看这些项目以获得更多信息。</p>
+<h2 id="特性"><a href="#特性" class="headerlink" title="特性"></a>特性</h2><p>异步的图片加载，支持 HTTP 和本地文件。</p>
+<p>支持 GIF、APNG、WebP 动画（动态缓存，低内存占用）。</p>
+<p>支持逐行扫描、隔行扫描、渐进式图像加载。</p>
+<p>UIImageView、UIButton、MKAnnotationView、CALayer 的 Category 方法支持。</p>
+<p>常见图片处理：模糊、圆角、大小调整、裁切、旋转、色调等。<br>高性能的内存和磁盘缓存。</p>
+<p>高性能的图片设置方式，以避免主线程阻塞。</p>
+<p>每个类和方法都有完善的文档注释。</p>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><h3 id="从-URL-加载图片"><a href="#从-URL-加载图片" class="headerlink" title="从 URL 加载图片"></a>从 URL 加载图片</h3><pre><code>// 加载网络图片
+imageView.yy_imageURL = [NSURL URLWithString:@&quot;http://github.com/logo.png&quot;];
+
+// 加载本地图片
+imageView.yy_imageURL = [NSURL fileURLWithPath:@&quot;/tmp/logo.png&quot;];
+</code></pre><h3 id="加载动图"><a href="#加载动图" class="headerlink" title="加载动图"></a>加载动图</h3><pre><code>// 只需要把 `UIImageView` 替换为 `YYAnimatedImageView` 即可。
+UIImageView *imageView = [YYAnimatedImageView new];
+imageView.yy_imageURL = [NSURL URLWithString:@&quot;http://github.com/ani.webp&quot;];
+</code></pre><h3 id="渐进式图片加载"><a href="#渐进式图片加载" class="headerlink" title="渐进式图片加载"></a>渐进式图片加载</h3><pre><code>// 渐进式：边下载边显示
+[imageView yy_setImageWithURL:url options:YYWebImageOptionProgressive];
+
+// 渐进式加载，增加模糊效果和渐变动画 
+[imageView yy_setImageWithURL:url options:YYWebImageOptionProgressiveBlur ｜ YYWebImageOptionSetImageWithFadeAnimation];
+</code></pre><h3 id="加载、处理图片"><a href="#加载、处理图片" class="headerlink" title="加载、处理图片"></a>加载、处理图片</h3><p>// 1. 下载图片<br>// 2. 获得图片下载进度<br>// 3. 调整图片大小、加圆角<br>// 4. 显示图片时增加一个淡入动画，以获得更好的用户体验</p>
+<pre><code>[imageView yy_setImageWithURL:url
+    placeholder:nil
+    options:YYWebImageOptionSetImageWithFadeAnimation
+    progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+        progress = (float)receivedSize / expectedSize;
+    }
+    transform:^UIImage *(UIImage *image, NSURL *url) {
+        image = [image yy_imageByResizeToSize:CGSizeMake(100, 100) contentMode:UIViewContentModeCenter];
+        return [image yy_imageByRoundCornerRadius:10];
+    }
+    completion:^(UIImage *image, NSURL *url, YYWebImageFromType from, YYWebImageStage stage, NSError *error) {
+        if (from == YYWebImageFromDiskCache) {
+            NSLog(@&quot;load from disk cache&quot;);
+        }
+    }];
+</code></pre><h3 id="图片缓存"><a href="#图片缓存" class="headerlink" title="图片缓存"></a>图片缓存</h3><pre><code>YYImageCache *cache = [YYWebImageManager sharedManager].cache;
+
+// 获取缓存大小
+cache.memoryCache.totalCost;
+cache.memoryCache.totalCount;
+cache.diskCache.totalCost;
+cache.diskCache.totalCount;
+
+// 清空缓存
+[cache.memoryCache removeAllObjects];
+[cache.diskCache removeAllObjects];
+
+// 清空磁盘缓存，带进度回调
+[cache.diskCache removeAllObjectsWithProgressBlock:^(int removedCount, int totalCount) {
+    // progress
+} endBlock:^(BOOL error) {
+    // end
+}];
+</code></pre><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><pre><code>CocoaPods
+
+将 cocoapods 更新至最新版本.
+在 Podfile 中添加 pod &apos;YYWebImage&apos;。
+执行 pod install 或 pod update。
+导入 &lt;YYWebImage/YYWebImage.h&gt;。
+注意：pod 配置并没有包含 WebP 组件, 如果你需要支持 WebP，可以在 Podfile 中添加 pod &apos;YYImage/WebP&apos;。你可以调用 YYImageWebPAvailable() 来检查一下 WebP 组件是否被正确安装。
+Carthage
+
+在 Cartfile 中添加 github &quot;ibireme/YYWebImage&quot;。
+执行 carthage update --platform ios 并将生成的 framework 添加到你的工程。
+导入 &lt;YYWebImage/YYWebImage.h&gt;。
+注意: carthage framework 并没有包含 webp 组件。如果你需要支持 WebP，可以用 CocoaPods 安装，或者手动安装。
+手动安装
+
+下载 YYWebImage 文件夹内的所有内容。
+将 YYWebImage 内的源文件添加(拖放)到你的工程。
+链接以下 frameworks:
+UIKit
+CoreFoundation
+QuartzCore
+AssetsLibrary
+ImageIO
+Accelerate
+MobileCoreServices
+sqlite3
+libz
+导入 YYWebImage.h。
+注意：如果你需要支持 WebP，可以将 Vendor/WebP.framework(静态库) 加入你的工程。你可以调用 YYImageWebPAvailable() 来检查一下 WebP 组件是否被正确安装。
+文档
+
+你可以在 CocoaDocs 查看在线 API 文档，也可以用 appledoc 本地生成文档。
+
+系统要求
+
+该项目最低支持 iOS 6.0 和 Xcode 7.0。
+
+许可证
+
+YYWebImage 使用 MIT 许可证，详情见 LICENSE 文件。
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/04/iOS YYWebImage/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-App启动速度优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1632,85 +1802,6 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
 
 
   
-    <article id="post-iOS关于nsstring的copy和strong" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/17/iOS关于nsstring的copy和strong/">iOS关于nsstring的copy和strong</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/17/iOS关于nsstring的copy和strong/" class="archive-article-date">
-  	<time datetime="2018-09-17T15:38:53.431Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这个问题是一个很经典的面试问题，每天都会遇到的问题，一般情况下不会出问题，但是需要总结记录一下。</p>
-<p>由于NSMutableString是NSString的子类，所以一个NSString指针可以指向NSMutableString对象.</p>
-<p>当原字符串是NSString时，由于字符串是不可变的，所以，不管是strong还是copy属性的对象，都是指向原对象，copy操作只是做了次浅拷贝。</p>
-<p>当原字符串是NSMutableString时，strong属性只是增加了原字符串的引用计数，而copy属性则是对源字符串做了次深拷贝，产生一个新的对象，且copy属性对象指向这个新的对象。另外需要注意的是，这个copy属性对象的类型始终是NSString，而不是NSMutableString，因此其是不可变的。</p>
-<p>这里还有一个性能问题，即在原字符串是NSMutableString，strong是单纯的增加对象的引用计数，而copy操作是执行了一深拷贝，所以性能上会有所差异。而如果原字符串是NSString时，则没有这个问题。</p>
-<p>所以，我们一般采用copy修饰字符串,防止修改NSMutableString类型的字符串导致原来的数据被修改掉.</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/17/iOS关于nsstring的copy和strong/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -1832,11 +1923,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">

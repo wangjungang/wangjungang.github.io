@@ -152,6 +152,134 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-java连接Mysql8.0.11" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/07/31/java连接Mysql8.0.11/">java连接Mysql8.0.11</a>
+    </h1>
+  
+
+        
+        <a href="/2018/07/31/java连接Mysql8.0.11/" class="archive-article-date">
+  	<time datetime="2018-07-31T15:32:24.531Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>java连接Mysql8.0.11与之前版本有些不同。</p>
+<p>最近也是踩了很多的坑，总结一下。</p>
+<pre><code>其中driver为com.mysql.cj.jdbc.Driver
+
+url为jdbc:mysql://localhost/net_tableinfo?useSSL=FALSE&amp;serverTimezone=UTC（net_tableinfo为数据库的名字）
+</code></pre><h2 id="测试代码如下"><a href="#测试代码如下" class="headerlink" title="测试代码如下"></a>测试代码如下</h2><pre><code>package com.dgd.test;
+
+import java.sql.*;
+
+
+/**
+ * @author Dgd
+ * @create 2017-10-16-21:25
+ * 测试数据库
+ */
+
+public class Test {
+    //mysql驱动包名
+    private static final String DRIVER_NAME = &quot;com.mysql.cj.jdbc.Driver&quot;;
+    //数据库连接地址
+    private static final String URL = &quot;jdbc:mysql://localhost/New_info?useSSL=FALSE&amp;serverTimezone=UTC&quot;;
+    //用户名
+    private static final String USER_NAME = &quot;root&quot;;
+    //密码
+    private static final String PASSWORD = &quot;password&quot;;
+    public static void main(String[] args){
+        Connection connection = null;
+        try {
+            //加载mysql的驱动类
+            Class.forName(DRIVER_NAME);
+            //获取数据库连接
+            connection = DriverManager.getConnection(URL, USER_NAME, PASSWORD);
+            //mysql查询语句
+            String sql = &quot;SELECT name FROM net_tableinfo&quot;;
+            PreparedStatement prst = connection.prepareStatement(sql);
+            //结果集
+            ResultSet rs = prst.executeQuery();
+            while (rs.next()) {
+                System.out.println(&quot;用户名:&quot; + rs.getString(&quot;name&quot;));
+            }
+            rs.close();
+            prst.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/07/31/java连接Mysql8.0.11/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-浅谈iOS 开发中的界面通信" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -946,11 +1074,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
