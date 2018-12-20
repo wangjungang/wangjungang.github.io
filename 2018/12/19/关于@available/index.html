@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018 | Blog</title>
+  <title>关于@available | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2018/page/7/index.html">
+  <meta name="description" content="写在前面Swift 2.0 中，引入了可用性的概念。对于函数，类，协议等，可以使用@available声明这些类型的生命周期依赖于特定的平台和操作系统版本。而#available用在判断语句中（if, guard, while等），在不同的平台上做不同的逻辑。 @available用法@available放在函数（方法），类或者协议前面。表明这些类型适用的平台和操作系统。看下面一个例子： @ava">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于@available">
+<meta property="og:url" content="http://yoursite.com/2018/12/19/关于@available/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="写在前面Swift 2.0 中，引入了可用性的概念。对于函数，类，协议等，可以使用@available声明这些类型的生命周期依赖于特定的平台和操作系统版本。而#available用在判断语句中（if, guard, while等），在不同的平台上做不同的逻辑。 @available用法@available放在函数（方法），类或者协议前面。表明这些类型适用的平台和操作系统。看下面一个例子： @ava">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-12-20T04:20:38.613Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="关于@available">
+<meta name="twitter:description" content="写在前面Swift 2.0 中，引入了可用性的概念。对于函数，类，协议等，可以使用@available声明这些类型的生命周期依赖于特定的平台和操作系统版本。而#available用在判断语句中（if, guard, while等），在不同的平台上做不同的逻辑。 @available用法@available放在函数（方法），类或者协议前面。表明这些类型适用的平台和操作系统。看下面一个例子： @ava">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,36 +155,97 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-关于@available" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      关于@available
+    </h1>
+  
+
+        
+        <a href="/2018/12/19/关于@available/" class="archive-article-date">
+  	<time datetime="2018-12-19T11:02:25.066Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-19</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Swift 2.0 中，引入了可用性的概念。对于函数，类，协议等，可以使用@available声明这些类型的生命周期依赖于特定的平台和操作系统版本。而#available用在判断语句中（if, guard, while等），在不同的平台上做不同的逻辑。</p>
+<h2 id="available"><a href="#available" class="headerlink" title="@available"></a>@available</h2><h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><p>@available放在函数（方法），类或者协议前面。表明这些类型适用的平台和操作系统。看下面一个例子：</p>
+<pre><code>@available(iOS 9, *)
+func myMethod() {
+    // do something
+}
+</code></pre><p>@available(iOS 9, <em>)必须包含至少2个特性参数，其中iOS 9表示必须在 iOS 9 版本以上才可用。如果你部署的平台包括 iOS 8 , 在调用此方法后，编译器会报错。<br>另外一个特性参数：星号（</em>），表示包含了所有平台，目前有以下几个平台：</p>
+<ul>
+<li>iOS</li>
+<li>iOSApplicationExtension</li>
+<li>OSX</li>
+<li>OSXApplicationExtension</li>
+<li>watchOS</li>
+<li>watchOSApplicationExtension</li>
+<li>tvOS</li>
+<li>tvOSApplicationExtension</li>
+</ul>
+<p>一般来讲，如果没有特殊的情况，都使用*表示全平台。</p>
+<p>@available(iOS 9, <em>)是一种简写形式。全写形式是@available(iOS, introduced=9.0)。introduced=9.0参数表示指定平台(iOS)从 9.0 开始引入该声明。为什么可以采用简写形式呢？当只有introduced这样一种参数时，就可以简写成以上简写形式。同理：@available(iOS 8.0, OSX 10.10, </em>) 这样也是可以的。表示同时在多个平台上（iOS 8.0 及其以上；OSX 10.10及其以上）的可用性。</p>
+<p>另外，@available还有其他一些参数可以使用，分别是：</p>
+<ul>
+<li><p>deprecated=版本号：从指定平台某个版本开始过期该声明</p>
+</li>
+<li><p>obsoleted=版本号：从指定平台某个版本开始废弃（注意弃用的区别，deprecated是还可以继续使用，只不过是不推荐了，obsoleted是调用就会编译错误）该声明</p>
+</li>
+<li><p>message=信息内容：给出一些附加信息</p>
+</li>
+<li><p>unavailable：指定平台上是无效的</p>
+</li>
+<li><p>renamed=新名字：重命名声明</p>
+</li>
+</ul>
+<h2 id="available-1"><a href="#available-1" class="headerlink" title="#available"></a>#available</h2><h3 id="用法-1"><a href="#用法-1" class="headerlink" title="用法"></a>用法</h3><pre><code>#available 用在条件语句代码块中，判断不同的平台下，做不同的逻辑处理，比如：
+
+if #available(iOS 8, *) {
+        // iOS 8 及其以上系统运行
+}
+
+
+guard #available(iOS 8, *) else {
+    return //iOS 8 以下系统就直接返回
+}
+</code></pre>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/14/iOS分类(category),类扩展(extension)/" class="archive-article-date">
-  	<time datetime="2018-09-14T08:30:59.916Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/14/iOS分类(category),类扩展(extension)/">iOS分类(category),类扩展(extension)</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -191,364 +257,114 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/19/关于@available/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/13/关于分类的总结 /" class="archive-article-date">
-  	<time datetime="2018-09-13T13:49:46.950Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2018/12/20/Swift中 ！和 ？的区别及使用/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          Swift中 ！和 ？的区别及使用
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/12/18/flutter框架概述/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">flutter Widget框架概述</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/13/关于分类的总结 /">关于分类的总结</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /" class="archive-article-date">
-  	<time datetime="2018-09-13T13:26:51.045Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">类方法(class method)和实例方法(instance method)有什么区别？</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/" class="archive-article-date">
-  	<time datetime="2018-09-13T13:05:33.346Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/Runloop入门/" class="archive-article-date">
-  	<time datetime="2018-09-12T15:05:09.896Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/Runloop入门/">Runloop入门</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/关于GCD的信号量/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:54:10.618Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/关于GCD的信号量/">关于GCD的信号量</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/iOS程序启动内部过程/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:43:06.341Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/iOS程序启动内部过程/">iOS程序启动内部过程</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/12/关于TCP Socket http的一些东西/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:34:05.510Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/12/关于TCP Socket http的一些东西/">关于TCP Sockte HTTP的一些东西</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/08/UIBezierPath设置图片圆角/" class="archive-article-date">
-  	<time datetime="2018-09-08T15:25:13.677Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-08</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/08/UIBezierPath设置图片圆角/">UIBezierPath设置图片圆角</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/07/BOOL和bool的区别/" class="archive-article-date">
-  	<time datetime="2018-09-07T03:26:53.657Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/07/BOOL和bool的区别/">BOOL和bool的区别</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2018/page/6/">&laquo; Prev</a><a class="page-number" href="/archives/2018/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/2018/page/5/">5</a><a class="page-number" href="/archives/2018/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/archives/2018/page/8/">8</a><a class="page-number" href="/archives/2018/page/9/">9</a><a class="page-number" href="/archives/2018/page/10/">10</a><a class="extend next" rel="next" href="/archives/2018/page/8/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -572,8 +388,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
