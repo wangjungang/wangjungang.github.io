@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Tag: 随笔 | Blog</title>
+  <title>swift中as!和as?和as的区别 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/tags/随笔/index.html">
+  <meta name="description" content="写在前面as操作符用来把某个实例转型为另外的类型，由于实例转型可能失败，因此Swift为as操作符提供了两种形式：选项形式as?和强制形式as as使用场合从派生类转换为基类，向上转型（upcasts）class Animal {} class Cat: Animal {} let cat = Cat() let animal = cat as Animal 消除二义性，数值类型转换let num">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="swift中as!和as?和as的区别">
+<meta property="og:url" content="http://yoursite.com/2018/12/21/swift中as!和as">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="写在前面as操作符用来把某个实例转型为另外的类型，由于实例转型可能失败，因此Swift为as操作符提供了两种形式：选项形式as?和强制形式as as使用场合从派生类转换为基类，向上转型（upcasts）class Animal {} class Cat: Animal {} let cat = Cat() let animal = cat as Animal 消除二义性，数值类型转换let num">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-12-21T09:13:31.854Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="swift中as!和as?和as的区别">
+<meta name="twitter:description" content="写在前面as操作符用来把某个实例转型为另外的类型，由于实例转型可能失败，因此Swift为as操作符提供了两种形式：选项形式as?和强制形式as as使用场合从派生类转换为基类，向上转型（upcasts）class Animal {} class Cat: Animal {} let cat = Cat() let animal = cat as Animal 消除二义性，数值类型转换let num">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,60 +155,197 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-swift中as!和as?和as的区别" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/13/关于分类的总结 /" class="archive-article-date">
-  	<time datetime="2018-09-13T13:49:46.950Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/13/关于分类的总结 /">关于分类的总结</a>
+    <h1 class="article-title" itemprop="name">
+      swift中as!和as?和as的区别
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2018/12/21/swift中as!和as?和as的区别/" class="archive-article-date">
+  	<time datetime="2018-12-21T08:56:28.637Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>as操作符用来把某个实例转型为另外的类型，由于实例转型可能失败，因此Swift为as操作符提供了两种形式：选项形式as?和强制形式as</p>
+<h2 id="as使用场合"><a href="#as使用场合" class="headerlink" title="as使用场合"></a>as使用场合</h2><h3 id="从派生类转换为基类，向上转型（upcasts）"><a href="#从派生类转换为基类，向上转型（upcasts）" class="headerlink" title="从派生类转换为基类，向上转型（upcasts）"></a>从派生类转换为基类，向上转型（upcasts）</h3><pre><code>class Animal {}
+class Cat: Animal {}
+let cat = Cat()
+let animal = cat as Animal
+</code></pre><h3 id="消除二义性，数值类型转换"><a href="#消除二义性，数值类型转换" class="headerlink" title="消除二义性，数值类型转换"></a>消除二义性，数值类型转换</h3><pre><code>let num1 = 42 as CGFloat
+let num2 = 42 as Int
+let num3 = 42.5 as Int
+let num4 = (42 / 2) as Double
+</code></pre><h3 id="switch-语句中进行模式匹配"><a href="#switch-语句中进行模式匹配" class="headerlink" title="switch 语句中进行模式匹配"></a>switch 语句中进行模式匹配</h3><p>如果不知道一个对象是什么类型，你可以通过switch语法检测它的类型，并且尝试在不同的情况下使用对应的类型进行相应的处理。</p>
+<pre><code>switch animal {
+case let cat as Cat:
+    print(&quot;如果是Cat类型对象，则做相应处理&quot;)
+case let dog as Dog:
+    print(&quot;如果是Dog类型对象，则做相应处理&quot;)
+default: break
+}
+</code></pre><h2 id="as-使用场合"><a href="#as-使用场合" class="headerlink" title="as!使用场合"></a>as!使用场合</h2><p>向下转型（Downcasting）时使用。由于是强制类型转换，如果转换失败会报 runtime 运行错误。</p>
+<pre><code>class Animal {}
+class Cat: Animal {}
+let animal :Animal  = Cat()
+let cat = animal as! Cat
+</code></pre><h2 id="as-使用场合-1"><a href="#as-使用场合-1" class="headerlink" title="as?使用场合"></a>as?使用场合</h2><p>as? 和 as! 操作符的转换规则完全一样。但 as? 如果转换不成功的时候便会返回一个 nil 对象。成功的话返回可选类型值（optional），需要我们拆包使用。</p>
+<p>由于 as? 在转换失败的时候也不会出现错误，所以对于如果能确保100%会成功的转换则可使用 as!，否则使用 as?</p>
+<pre><code>let animal:Animal = Cat()
+
+if let cat = animal as? Cat{
+    print(&quot;cat is not nil&quot;)
+} else {
+    print(&quot;cat is nil&quot;)
+}
+</code></pre>
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/21/swift中as!和as" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
   
   
-    </div></section>
+    <a href="/2018/12/20/tabbar和nav的黑线/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">tabbar和nav的黑线</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+  
+  
   
 
-    
+  
+
+  
+
+  
 
 
           </div>
@@ -226,9 +368,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
+		isPost: true,
 		isArchive: false,
-		isTag: true,
+		isTag: false,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
