@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018 | Blog</title>
+  <title>iOS10 跳转系统设置 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2018/page/2/index.html">
+  <meta name="description" content="Objective-cNSString * urlString = @&amp;quot;App-Prefs:root=WIFI&amp;quot;;  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) {  if (iOS10) {  [[UIApplication sharedApplicat">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS10 跳转系统设置">
+<meta property="og:url" content="http://yoursite.com/2018/12/21/iOS10 跳转系统设置/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="Objective-cNSString * urlString = @&amp;quot;App-Prefs:root=WIFI&amp;quot;;  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) {  if (iOS10) {  [[UIApplication sharedApplicat">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-12-21T10:48:14.493Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="iOS10 跳转系统设置">
+<meta name="twitter:description" content="Objective-cNSString * urlString = @&amp;quot;App-Prefs:root=WIFI&amp;quot;;  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) {  if (iOS10) {  [[UIApplication sharedApplicat">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,36 +155,101 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-iOS10 跳转系统设置" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      iOS10 跳转系统设置
+    </h1>
+  
+
+        
+        <a href="/2018/12/21/iOS10 跳转系统设置/" class="archive-article-date">
+  	<time datetime="2018-12-21T10:46:03.645Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-21</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Objective-c"><a href="#Objective-c" class="headerlink" title="Objective-c"></a>Objective-c</h2><pre><code>NSString * urlString = @&quot;App-Prefs:root=WIFI&quot;;
+
+if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) {
+
+if (iOS10) {
+
+[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString] options:@{} completionHandler:nil];
+
+} else {
+
+[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
+
+}
+
+}
+</code></pre><h2 id="Swift"><a href="#Swift" class="headerlink" title="Swift"></a>Swift</h2><pre><code>if let url = URL(string:&quot;App-Prefs:root=WIFI&quot;)
+ {if #available(iOS 10.0, *) 
+ {
+ UIApplication.shared.open(url, options: [:], completionHandler: nil)} 
+
+ else 
+ {
+
+     UIApplication.shared.openURL(url)
+ }
+
+}
+</code></pre><h2 id="跳转-写法"><a href="#跳转-写法" class="headerlink" title="跳转 写法"></a>跳转 写法</h2><ul>
+<li>无线局域网 App-Prefs:root=WIFI</li>
+<li>蓝牙 App-Prefs:root=Bluetooth</li>
+<li>蜂窝移动网络 App-Prefs:root=MOBILE_DATA_SETTINGS_ID</li>
+<li>个人热点 App-Prefs:root=INTERNET_TETHERING</li>
+<li>运营商 App-Prefs:root=Carrier</li>
+<li>通知 App-Prefs:root=NOTIFICATIONS_ID</li>
+<li>通用 App-Prefs:root=General</li>
+<li>通用-关于本机 App-Prefs:root=General&amp;path=About</li>
+<li>通用-键盘 App-Prefs:root=General&amp;path=Keyboard</li>
+<li>通用-辅助功能 App-Prefs:root=General&amp;path=ACCESSIBILITY</li>
+<li>通用-语言与地区 App-Prefs:root=General&amp;path=INTERNATIONAL</li>
+<li>通用-还原 App-Prefs:root=Reset</li>
+<li>墙纸 App-Prefs:root=WallpaperSiri App-Prefs:root=SIRI</li>
+<li>隐私 App-Prefs:root=PrivacySafari App-Prefs:root=SAFARI</li>
+<li>音乐 App-Prefs:root=MUSIC</li>
+<li>音乐-均衡器 App-Prefs:root=MUSIC&amp;path=com.apple.Music:</li>
+<li>EQ照片与相机 App-Prefs:root=PhotosFaceTime App-Prefs:root=FACETIME</li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/17/swift Notification通知的使用/" class="archive-article-date">
-  	<time datetime="2018-12-17T12:23:30.155Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/17/swift Notification通知的使用/">swift Notification通知的使用</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -191,364 +261,105 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/21/iOS10 跳转系统设置/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/17/performSelector传递参数/" class="archive-article-date">
-  	<time datetime="2018-12-17T06:39:11.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/12/21/持续震动，想停就停/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">持续震动，想停就停</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/17/performSelector传递参数/">performSelector传递参数</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/17/UIImage图片性能优化/" class="archive-article-date">
-  	<time datetime="2018-12-17T03:24:37.183Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/17/UIImage图片性能优化/">UIImage图片性能优化</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/16/imagewithnamed渲染优化/" class="archive-article-date">
-  	<time datetime="2018-12-16T12:04:07.793Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-16</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/16/imagewithnamed渲染优化/">imagewithnamed渲染优化</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/15/轮子阅读之SDAutoLayout/" class="archive-article-date">
-  	<time datetime="2018-12-15T13:53:49.350Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/15/轮子阅读之SDAutoLayout/">轮子阅读之SDAutoLayout</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/15/日历的提醒添加/" class="archive-article-date">
-  	<time datetime="2018-12-15T13:46:46.774Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/15/日历的提醒添加/">日历的提醒添加</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/15/swift构造过程、析构过程/" class="archive-article-date">
-  	<time datetime="2018-12-15T12:36:06.300Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/15/swift构造过程、析构过程/">swift构造过程、析构过程</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/15/swift下标，继承/" class="archive-article-date">
-  	<time datetime="2018-12-15T12:17:28.021Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/15/swift下标，继承/">swift下标，继承</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/15/swift之协议/" class="archive-article-date">
-  	<time datetime="2018-12-15T12:04:38.237Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/15/swift之协议/">swift之协议</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/12/14/Swift泛型/" class="archive-article-date">
-  	<time datetime="2018-12-14T12:35:29.137Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-14</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/12/14/Swift泛型/">Swift泛型</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2018/">&laquo; Prev</a><a class="page-number" href="/archives/2018/">1</a><span class="page-number current">2</span><a class="page-number" href="/archives/2018/page/3/">3</a><a class="page-number" href="/archives/2018/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/archives/2018/page/10/">10</a><a class="extend next" rel="next" href="/archives/2018/page/3/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -572,8 +383,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
