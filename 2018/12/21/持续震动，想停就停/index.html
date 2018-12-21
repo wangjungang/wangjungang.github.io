@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>避免使用 GCD Global队列创建Runloop常驻线程 | Blog</title>
+  <title>持续震动，想停就停 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="GCD Global队列创建线程进行耗时操作的风险先思考下如下几个问题： 新建线程的方式有哪些？各自的优缺点是什么？ dispatch_async 函数分发到全局队列一定会新建线程执行任务么？ 如果全局队列对应的线程池如果满了，后续的派发的任务会怎么处置？有什么风险？ 答案大致是这样的： dispatch_async 函数分发到全局队列不一定会新建线程执行任务，全局队列底层有一个的线程池，如果线程">
+  <meta name="description" content="写在前面最近要做一个项目,需要持续响铃并振动,知道有私有api可以使用,但无奈要上线,为了保险起见,果断放弃,在网上找了一个方法可以实现如下: 在播放振动的代码前面注册写下面一句代码: AudioServicesAddSystemSoundCompletion(kSystemSoundID_Vibrate, NULL, NULL, soundCompleteCallback, NULL);   其">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="避免使用 GCD Global队列创建Runloop常驻线程">
-<meta property="og:url" content="http://yoursite.com/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/index.html">
+<meta property="og:title" content="持续震动，想停就停">
+<meta property="og:url" content="http://yoursite.com/2018/12/21/持续震动，想停就停/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="GCD Global队列创建线程进行耗时操作的风险先思考下如下几个问题： 新建线程的方式有哪些？各自的优缺点是什么？ dispatch_async 函数分发到全局队列一定会新建线程执行任务么？ 如果全局队列对应的线程池如果满了，后续的派发的任务会怎么处置？有什么风险？ 答案大致是这样的： dispatch_async 函数分发到全局队列不一定会新建线程执行任务，全局队列底层有一个的线程池，如果线程">
+<meta property="og:description" content="写在前面最近要做一个项目,需要持续响铃并振动,知道有私有api可以使用,但无奈要上线,为了保险起见,果断放弃,在网上找了一个方法可以实现如下: 在播放振动的代码前面注册写下面一句代码: AudioServicesAddSystemSoundCompletion(kSystemSoundID_Vibrate, NULL, NULL, soundCompleteCallback, NULL);   其">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-27T06:14:51.956Z">
+<meta property="og:updated_time" content="2018-12-21T09:27:08.246Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="避免使用 GCD Global队列创建Runloop常驻线程">
-<meta name="twitter:description" content="GCD Global队列创建线程进行耗时操作的风险先思考下如下几个问题： 新建线程的方式有哪些？各自的优缺点是什么？ dispatch_async 函数分发到全局队列一定会新建线程执行任务么？ 如果全局队列对应的线程池如果满了，后续的派发的任务会怎么处置？有什么风险？ 答案大致是这样的： dispatch_async 函数分发到全局队列不一定会新建线程执行任务，全局队列底层有一个的线程池，如果线程">
+<meta name="twitter:title" content="持续震动，想停就停">
+<meta name="twitter:description" content="写在前面最近要做一个项目,需要持续响铃并振动,知道有私有api可以使用,但无奈要上线,为了保险起见,果断放弃,在网上找了一个方法可以实现如下: 在播放振动的代码前面注册写下面一句代码: AudioServicesAddSystemSoundCompletion(kSystemSoundID_Vibrate, NULL, NULL, soundCompleteCallback, NULL);   其">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,265 +155,90 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-避免使用 GCD Global队列创建Runloop常驻线程" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-持续震动，想停就停" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      避免使用 GCD Global队列创建Runloop常驻线程
+      持续震动，想停就停
     </h1>
   
 
         
-        <a href="/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/" class="archive-article-date">
-  	<time datetime="2018-11-27T06:10:53.369Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
+        <a href="/2018/12/21/持续震动，想停就停/" class="archive-article-date">
+  	<time datetime="2018-12-21T09:24:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-21</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="GCD-Global队列创建线程进行耗时操作的风险"><a href="#GCD-Global队列创建线程进行耗时操作的风险" class="headerlink" title="GCD Global队列创建线程进行耗时操作的风险"></a>GCD Global队列创建线程进行耗时操作的风险</h2><p>先思考下如下几个问题：</p>
-<p>新建线程的方式有哪些？各自的优缺点是什么？</p>
-<p>dispatch_async 函数分发到全局队列一定会新建线程执行任务么？</p>
-<p>如果全局队列对应的线程池如果满了，后续的派发的任务会怎么处置？有什么风险？</p>
-<p>答案大致是这样的：</p>
-<p>dispatch_async 函数分发到全局队列不一定会新建线程执行任务，全局队列底层有一个的线程池，如果线程池满了，那么后续的任务会被 block 住，等待前面的任务执行完成，才会继续执行。如果线程池中的线程长时间不结束，后续堆积的任务会越来越多，此时就会存在 APP crash的风险。</p>
-<pre><code>- (void)dispatchTest1 {
-    for (NSInteger i = 0; i&lt; 10000 ; i++) {
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self dispatchTask:i];
-        });
-    }
-}
-
-- (void)dispatchTask:(NSInteger)index {
-        //模拟耗时操作，比如DB,网络，文件读写等等
-        sleep(30);
-        NSLog(@&quot;----:%ld&quot;,index);
-}
-</code></pre><p>以上逻辑用真机测试会有卡死的几率，并非每次都会发生，但多尝试几次就会复现，伴随前后台切换，crash几率增大。</p>
-<p>下面做一下分析：</p>
-<p>参看 GCD 源码我们可以看到全局队列的相关源码如下：</p>
-<pre><code>DISPATCH_NOINLINE
-static void
-_dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近要做一个项目,需要持续响铃并振动,知道有私有api可以使用,但无奈要上线,为了保险起见,果断放弃,在网上找了一个方法可以实现如下:</p>
+<p>在播放振动的代码前面注册写下面一句代码:</p>
+<pre><code>AudioServicesAddSystemSoundCompletion(kSystemSoundID_Vibrate, NULL, NULL, soundCompleteCallback, NULL);  
+</code></pre><p>其中soundCompleteCallback为播放系统振动或者声音后的回调,可以在里面继续播放振动实现持续振动的功能如下:</p>
+<pre><code>void soundCompleteCallback(SystemSoundID sound,voidvoid * clientData) { 
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);  //震动 
+    AudioServicesPlaySystemSound(sound); 
+} 
+</code></pre><p> 但是问题来了,如何停止,其实之前我参考了别人做的,是直接调用如下代码停止:</p>
+<pre><code>AudioServicesRemoveSystemSoundCompletion(sound);
+AudioServicesDisposeSystemSoundID(sound); AudioServicesRemoveSystemSoundCompletion(kSystemSoundID_Vibrate);
+AudioSer
+</code></pre><p> 但我遇到了个奇葩的问题,是在ios10上测试,其它版本我没有手机没有进行测试,问题是我发现调用停止方法后,并没有立即停止,停止的时间和你播放振动的时间成正比,振动时间越长,调用停止后,还要继续振动一段时间才停止,让人很头疼所以我进行了一下改造后,实现了需要的功能,用计时器实现,仅供初学者参考,大神勿喷,直接拷贝工程可用:</p>
+<pre><code> @interface ViewController ()
 {
-   dispatch_root_queue_context_t qc = dq-&gt;do_ctxt;
-   uint32_t i = n;
-   int r;
-
-   _dispatch_debug_root_queue(dq, __func__);
-   dispatch_once_f(&amp;_dispatch_root_queues_pred, NULL,
-           _dispatch_root_queues_init);
-
-#if HAVE_PTHREAD_WORKQUEUES
-#if DISPATCH_USE_PTHREAD_POOL
-   if (qc-&gt;dgq_kworkqueue != (void*)(~0ul))
-#endif
-   {
-       _dispatch_root_queue_debug(&quot;requesting new worker thread for global &quot;
-               &quot;queue: %p&quot;, dq);
-#if DISPATCH_USE_LEGACY_WORKQUEUE_FALLBACK
-       if (qc-&gt;dgq_kworkqueue) {
-           pthread_workitem_handle_t wh;
-           unsigned int gen_cnt;
-           do {
-               r = pthread_workqueue_additem_np(qc-&gt;dgq_kworkqueue,
-                       _dispatch_worker_thread4, dq, &amp;wh, &amp;gen_cnt);
-               (void)dispatch_assume_zero(r);
-           } while (--i);
-           return;
-       }
-#endif // DISPATCH_USE_LEGACY_WORKQUEUE_FALLBACK
-#if HAVE_PTHREAD_WORKQUEUE_SETDISPATCH_NP
-       if (!dq-&gt;dq_priority) {
-           r = pthread_workqueue_addthreads_np(qc-&gt;dgq_wq_priority,
-                   qc-&gt;dgq_wq_options, (int)i);
-           (void)dispatch_assume_zero(r);
-           return;
-       }
-#endif
-#if HAVE_PTHREAD_WORKQUEUE_QOS
-       r = _pthread_workqueue_addthreads((int)i, dq-&gt;dq_priority);
-       (void)dispatch_assume_zero(r);
-#endif
-       return;
-   }
-#endif // HAVE_PTHREAD_WORKQUEUES
-#if DISPATCH_USE_PTHREAD_POOL
-   dispatch_pthread_root_queue_context_t pqc = qc-&gt;dgq_ctxt;
-   if (fastpath(pqc-&gt;dpq_thread_mediator.do_vtable)) {
-       while (dispatch_semaphore_signal(&amp;pqc-&gt;dpq_thread_mediator)) {
-           if (!--i) {
-               return;
-           }
-       }
-   }
-   uint32_t j, t_count;
-   // seq_cst with atomic store to tail &lt;rdar://problem/16932833&gt;
-   t_count = dispatch_atomic_load2o(qc, dgq_thread_pool_size, seq_cst);
-   do {
-       if (!t_count) {
-           _dispatch_root_queue_debug(&quot;pthread pool is full for root queue: &quot;
-                   &quot;%p&quot;, dq);
-           return;
-       }
-       j = i &gt; t_count ? t_count : i;
-   } while (!dispatch_atomic_cmpxchgvw2o(qc, dgq_thread_pool_size, t_count,
-           t_count - j, &amp;t_count, acquire));
-
-   pthread_attr_t *attr = &amp;pqc-&gt;dpq_thread_attr;
-   pthread_t tid, *pthr = &amp;tid;
-#if DISPATCH_ENABLE_PTHREAD_ROOT_QUEUES
-   if (slowpath(dq == &amp;_dispatch_mgr_root_queue)) {
-       pthr = _dispatch_mgr_root_queue_init();
-   }
-#endif
-   do {
-       _dispatch_retain(dq);
-       while ((r = pthread_create(pthr, attr, _dispatch_worker_thread, dq))) {
-           if (r != EAGAIN) {
-               (void)dispatch_assume_zero(r);
-           }
-           _dispatch_temporary_resource_shortage();
-       }
-   } while (--j);
-#endif // DISPATCH_USE_PTHREAD_POOL
+    SystemSoundID sound;
 }
-</code></pre><p>对于执行的任务来说，所执行的线程具体是哪个线程，则是通过 GCD 的线程池（Thread Pool）来进行调度</p>
-<p>上面贴的源码，我们关注如下的部分：</p>
-<p>其中有一个用来记录线程池大小的字段 dgq_thread_pool_size。这个字段标记着GCD线程池的大小。摘录上面源码的一部分：</p>
-<pre><code>uint32_t j, t_count;
-  // seq_cst with atomic store to tail &lt;rdar://problem/16932833&gt;
-  t_count = dispatch_atomic_load2o(qc, dgq_thread_pool_size, seq_cst);
-  do {
-      if (!t_count) {
-          _dispatch_root_queue_debug(&quot;pthread pool is full for root queue: &quot;
-                  &quot;%p&quot;, dq);
-          return;
-      }
-      j = i &gt; t_count ? t_count : i;
-  } while (!dispatch_atomic_cmpxchgvw2o(qc, dgq_thread_pool_size, t_count,
-          t_count - j, &amp;t_count, acquire));
-</code></pre><p>全局队列的底层是一个线程池，向全局队列中提交的 block，都会被放到这个线程池中执行，如果线程池已满，后续再提交 block 就不会再重新创建线程。这就是为什么 Demo 会造成卡顿甚至冻屏的原因。</p>
-<h2 id="避免使用-GCD-Global-队列创建-Runloop-常驻线程"><a href="#避免使用-GCD-Global-队列创建-Runloop-常驻线程" class="headerlink" title="避免使用 GCD Global 队列创建 Runloop 常驻线程"></a>避免使用 GCD Global 队列创建 Runloop 常驻线程</h2><p>在做网路请求时我们常常创建一个 Runloop 常驻线程用来接收、响应后续的服务端回执，比如NSURLConnection、AFNetworking等等，我们可以称这种线程为 Runloop 常驻线程。</p>
-<p>正如上文所述，用 GCD Global 队列创建线程进行耗时操作是存在风险的。那么我们可以试想下，如果这个耗时操作变成了 runloop 常驻线程，会是什么结果？下面做一下分析：</p>
-<p>先介绍下 Runloop 常驻线程的原理，在开发中一般有两种用法：</p>
-<ul>
-<li><p>单一 Runloop 常驻线程：在 APP 的生命周期中开启了唯一的常驻线程来进行网络请求，常用于网络库，或者有维持长连接需求的库，比如： AFNetworking 、 SocketRocket。</p>
-</li>
-<li><p>多个 Runloop 常驻线程：每进行一次网络请求就开启一条 Runloop 常驻线程，这条线程的生命周期的起点是网络请求开始，终点是网络请求结束，或者网络请求超时。</p>
-</li>
-</ul>
-<h2 id="单一-Runloop-常驻线程"><a href="#单一-Runloop-常驻线程" class="headerlink" title="单一 Runloop 常驻线程"></a>单一 Runloop 常驻线程</h2><p>先说第一种用法：</p>
-<p>以 AFNetworking 为例，AFURLConnectionOperation 这个类是基于 NSURLConnection 构建的，其希望能在后台线程接收 Delegate 回调。为此 AFNetworking 单独创建了一个线程，并在这个线程中启动了一个 RunLoop：</p>
-<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object {
-    @autoreleasepool {
-        [[NSThread currentThread] setName:@&quot;AFNetworking&quot;];
-        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-        [runLoop run];
-    }
-}
-
-+ (NSThread *)networkRequestThread {
-    static NSThread *_networkRequestThread = nil;
-    static dispatch_once_t oncePredicate;
-    dispatch_once(&amp;oncePredicate, ^{
-        _networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];
-        [_networkRequestThread start];
-    });
-    return _networkRequestThread;
-}
-</code></pre><h2 id="多个-Runloop-常驻线程"><a href="#多个-Runloop-常驻线程" class="headerlink" title="多个 Runloop 常驻线程"></a>多个 Runloop 常驻线程</h2><p>第二种用法，我写了一个小 Demo 来模拟这种场景，</p>
-<p>我们模拟了一个场景：假设所有的网络请求全部超时，或者服务端根本不响应，然后网络库超时检测机制的做法：</p>
-<pre><code>#import &quot;Foo.h&quot;
-
-@interface Foo()  {
-    NSRunLoop *_runloop;
-    NSTimer *_timeoutTimer;
-    NSTimeInterval _timeoutInterval;
-    dispatch_semaphore_t _sem;
-}
+//振动计时器
+@property (nonatomic,strong)NSTimer *_vibrationTimer;
 @end
 
-@implementation Foo
+@implementation ViewController
+@synthesize _vibrationTimer;
 
-- (instancetype)init {
-    if (!(self = [super init])) {
-        return nil;
-    }
-    _timeoutInterval = 1 ;
-    _sem = dispatch_semaphore_create(0);
+- (void)viewDidLoad {
+    [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
-    return self;
-}
 
-- (id)test {
-    // 第一种方式：
-    // NSThread *networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint0:) object:nil];
-    // [networkRequestThread start];
-    //第二种方式:
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        [self networkRequestThreadEntryPoint0:nil];
-    });
-    dispatch_semaphore_wait(_sem, DISPATCH_TIME_FOREVER);
-    return @(YES);
 }
+//开始响铃及振动
+-(IBAction)startShakeSound:(id)sender{
 
-- (void)networkRequestThreadEntryPoint0:(id)__unused object {
-    @autoreleasepool {
-        [[NSThread currentThread] setName:@&quot;CYLTest&quot;];
-        _runloop = [NSRunLoop currentRunLoop];
-        [_runloop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-        _timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(stopLoop) userInfo:nil repeats:NO];
-        [_runloop addTimer:_timeoutTimer forMode:NSRunLoopCommonModes];
-        [_runloop run];//在实际开发中最好使用这种方式来确保能runloop退出，做双重的保障[runloop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:(timeoutInterval+5)]];
-    }
-}
+    NSString *path = [[NSBundle mainBundle] pathForResource:@&quot;2125&quot; ofType:@&quot;wav&quot;];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)[NSURL fileURLWithPath:path], &amp;sound);
+    AudioServicesAddSystemSoundCompletion(sound, NULL, NULL, soundCompleteCallback, NULL);
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    AudioServicesPlaySystemSound(sound);
 
-- (void)stopLoop {
-    CFRunLoopStop([_runloop getCFRunLoop]);
-    dispatch_semaphore_signal(_sem);
-}
 
-@end
-</code></pre><p>如果</p>
-<pre><code>for (int i = 0; i &lt; 300 ; i++) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-            [[Foo new] test];
-            NSLog(@&quot;🔴类名与方法名：%@（在第%@行），描述：%@&quot;, @(__PRETTY_FUNCTION__), @(__LINE__), @&quot;&quot;);
-        });
-    }
-</code></pre><p>以上逻辑用真机测试会有卡死的几率，并非每次都会发生，但多尝试几次就会复现，伴随前后台切换，crash几率增大。</p>
-<p>其中我们采用了 GCD 全局队列的方式来创建常驻线程，因为在创建时可能已经出现了全局队列的线程池满了的情况，所以 GCD 派发的任务，无法执行，而且我们把超时检测的逻辑放进了这个任务中，所以导致的情况就是，有很多任务的超时检测功能失效了。此时就只能依赖于服务端响应来结束该任务（服务端响应能结束该任务的逻辑在 Demo 中未给出），但是如果再加之服务端不响应，那么任务就永远不会结束。后续的网络请求也会就此 block 住，造成 crash。</p>
-<p>如果我们把 GCD 全局队列换成 NSThread 的方式，那么就可以保证每次都会创建新的线程。</p>
-<p>注意：文章中只演示的是超时 cancel runloop 的操作，实际项目中一定有其他主动 cancel runloop 的操作，就比如网络请求成功或失败后需要进行cancel操作。代码中没有展示网络请求成功或失败后的 cancel 操作。</p>
-<p>Demo 的这种模拟可能比较极端，但是如果你维护的是一个像 AFNetworking 这样的一个网络库，你会放心把创建常驻线程这样的操作交给 GCD 全局队列吗？因为整个 APP 是在共享一个全局队列的线程池，那么如果 APP 把线程池沾满了，甚至线程池长时间占满且不结束，那么 AFNetworking 就自然不能再执行任务了，所以我们看到，即使是只会创建一条常驻线程， AFNetworking 依然采用了 NSThread 的方式而非 GCD 全局队列这种方式。</p>
-<p>注释：以下方法存在于老版本AFN 2.x 中。</p>
-<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object {
-    @autoreleasepool {
-        [[NSThread currentThread] setName:@&quot;AFNetworking&quot;];
-        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
-        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
-        [runLoop run];
-    }
-}
+    /**
+     初始化计时器  每一秒振动一次
 
-+ (NSThread *)networkRequestThread {
-    static NSThread *_networkRequestThread = nil;
-    static dispatch_once_t oncePredicate;
-    dispatch_once(&amp;oncePredicate, ^{
-        _networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];
-        [_networkRequestThread start];
-    });
-    return _networkRequestThread;
+     @param playkSystemSound 振动方法
+     @return
+     */
+    _vibrationTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(playkSystemSound) userInfo:nil repeats:YES];
 }
-</code></pre><p>正如你所看到的，没有任何一个库会用 GCD 全局队列来创建常驻线程，而你也应该</p>
-<p>避免使用 GCD Global 队列来创建 Runloop 常驻线程。</p>
+//振动
+- (void)playkSystemSound{
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+}
+//停止响铃及振动
+-(IBAction)stopShakeSound:(id)sender{
+
+    [_vibrationTimer invalidate];
+    AudioServicesRemoveSystemSoundCompletion(sound);
+    AudioServicesDisposeSystemSoundID(sound);
+
+}
+//响铃回调方法
+void soundCompleteCallback(SystemSoundID sound,void * clientData) {
+    AudioServicesPlaySystemSound(sound);
+}
+</code></pre><p>其中铃声需要替换掉,或者去掉响铃</p>
 
       
 
@@ -504,7 +329,7 @@ _dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/21/持续震动，想停就停/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -518,18 +343,9 @@ _dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
   
 <nav id="article-nav">
   
-    <a href="/2018/11/27/使用两行代码就能完成80%的缓存需求 /" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          使用两行代码就能完成80%的缓存需求
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">iOS子线程更新UI到主线程的三种方法</div>
+    <a href="/2018/12/21/swift中as!和as?和as的区别/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">swift中as!和as?和as的区别</div>
       <i class="icon-circle-right"></i>
     </a>
   
