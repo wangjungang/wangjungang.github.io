@@ -152,6 +152,103 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-tabbar和nav的黑线" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/20/tabbar和nav的黑线/">tabbar和nav的黑线</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/20/tabbar和nav的黑线/" class="archive-article-date">
+  	<time datetime="2018-12-20T08:52:58.590Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>有的时候因为项目需求，对tabbar以及navigationbar，需要去掉或者改变顶部及底部细线的颜色，对于这个问题，笔者在这里总结一下，方法不难，至于导航栏底部和tabbar顶部的黑线从何而来呢？通过层次结构会发现，是由于导航栏或者tabbar设置的默认图片导致的，要消除这种效果，就要摒弃系统自带的图片，自己生成一张图片，或者设置空的图片，下面就来上代码：</p>
+<h3 id="1-改变或者消除tabbar底部细线及其颜色"><a href="#1-改变或者消除tabbar底部细线及其颜色" class="headerlink" title="1.改变或者消除tabbar底部细线及其颜色"></a>1.改变或者消除tabbar底部细线及其颜色</h3><pre><code>[self.tabBar setBackgroundImage:[UIImage new]];
+[self.tabBar setShadowImage:[self.tabBar lineImageWithColor:[UIColor colorWithHexString:@&quot;#fb9966&quot;]]];
+</code></pre><p>第一步是设置背景图片，第二部设置阴影图片，上面的是改变细线的颜色，我们可以自己画一张图片，画图片的方法如下：</p>
+<pre><code>- (UIImage *)lineImageWithColor:(UIColor *)lineColor {
+
+    CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 0.5);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+
+    CGContextSetFillColorWithColor(ctx, lineColor.CGColor);
+    CGContextFillRect(ctx, rect);
+
+    UIImage *lineImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    return lineImage;
+
+}
+</code></pre><p>当然，如果想要去除黑线，只需要将shadowImage也设置未空白图片就可以了</p>
+<h3 id="2-去除或者改变navigationbar底部黑线"><a href="#2-去除或者改变navigationbar底部黑线" class="headerlink" title="2.去除或者改变navigationbar底部黑线"></a>2.去除或者改变navigationbar底部黑线</h3><p>原理类似，直接上代码吧</p>
+<pre><code>[self.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+[self.navigationBar setShadowImage:[self.navigationBar lineImageWithColor:[UIColor colorWithHexString:@&quot;#fb9966&quot;]]];
+</code></pre><p>至于导航栏比较多变，这一点完全可以隐藏掉系统的导航栏，自己做一个就行了</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/20/tabbar和nav的黑线/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关于内购需要注意的一些坑" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1631,93 +1728,6 @@ deinit {
 
 
   
-    <article id="post-imagewithnamed渲染优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/16/imagewithnamed渲染优化/">imagewithnamed渲染优化</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/16/imagewithnamed渲染优化/" class="archive-article-date">
-  	<time datetime="2018-12-16T12:04:07.793Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>参考SDWebImage的图片编解码的思路，SD在拿到图片data的时候并没有将它直接转为image对象，而是在子线程里面做了一个解码的操作，这样已经被解码的图片就赋值给imageView的时候就不会再进行解码，也就不会妨碍主线程了。</p>
-<pre><code>- (void)decodedImageWithImageName:(NSString *)imageName block:(void(^)(UIImage *image))block {
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        @autoreleasepool{
-            UIImage *image = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-            image = [UIImage decodedImageWithImage:image];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if(block)
-                block(image);
-            });
-        }
-    });
-}
-</code></pre><p>代码实现很简单，就是将图片的操作放入到一个全局队列中，当然也可以自己创建一个队列去执行这个异步操作。decodedImageWithImage:为SD的代码，需要#import “SDWebImageDecoder.h”，具体实现网上对这一块的源码解释的比较多，很容易理解。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/16/imagewithnamed渲染优化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1831,11 +1841,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">

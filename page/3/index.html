@@ -152,6 +152,93 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-imagewithnamed渲染优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/16/imagewithnamed渲染优化/">imagewithnamed渲染优化</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/16/imagewithnamed渲染优化/" class="archive-article-date">
+  	<time datetime="2018-12-16T12:04:07.793Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>参考SDWebImage的图片编解码的思路，SD在拿到图片data的时候并没有将它直接转为image对象，而是在子线程里面做了一个解码的操作，这样已经被解码的图片就赋值给imageView的时候就不会再进行解码，也就不会妨碍主线程了。</p>
+<pre><code>- (void)decodedImageWithImageName:(NSString *)imageName block:(void(^)(UIImage *image))block {
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        @autoreleasepool{
+            UIImage *image = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+            image = [UIImage decodedImageWithImage:image];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if(block)
+                block(image);
+            });
+        }
+    });
+}
+</code></pre><p>代码实现很简单，就是将图片的操作放入到一个全局队列中，当然也可以自己创建一个队列去执行这个异步操作。decodedImageWithImage:为SD的代码，需要#import “SDWebImageDecoder.h”，具体实现网上对这一块的源码解释的比较多，很容易理解。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/16/imagewithnamed渲染优化/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-轮子阅读之SDAutoLayout" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -3271,174 +3358,6 @@ func stringToVC(vcName:String) -&gt; UIViewController? {
 
 
   
-    <article id="post-什么是RESTful API" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/13/什么是RESTful API/">什么是RESTful API</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/13/什么是RESTful API/" class="archive-article-date">
-  	<time datetime="2018-12-13T09:07:52.264Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>REST，即Representational State Transfer的缩写。直接翻译的意思是”表现层状态转化”。</p>
-<p>它是一种互联网应用程序的API设计理念：URL定位资源，用HTTP动词（GET,POST,DELETE,DETC）描述操作。</p>
-<p>近年来移动互联网的发展，前端设备层出不穷（手机、平板、桌面电脑、其他专用设备……），因此，必须有一种统一的机制，方便不同的前端设备与后端进行通信,于是RESTful诞生了，它可以通过一套统一的接口为 Web，iOS和Android提供服务。</p>
-<h3 id="URI"><a href="#URI" class="headerlink" title="URI"></a>URI</h3><p>即统一资源标识符，服务器上每一种资源，比如文档、图像、视频片段、程序 都由一个通用资源标识符（Uniform Resource Identifier, 简称”URI”）进行定位。</p>
-<h3 id="HTTP动词"><a href="#HTTP动词" class="headerlink" title="HTTP动词"></a>HTTP动词</h3><p>常用的HTTP动词有下面五个</p>
-<ul>
-<li>GET（SELECT）：从服务器取出资源（一项或多项）。</li>
-<li>POST（CREATE）：在服务器新建一个资源。</li>
-<li>PUT（UPDATE）：在服务器更新资源（客户端提供改变后的完整资源）。</li>
-<li>PATCH（UPDATE）：在服务器更新资源（客户端提供改变的属性）。</li>
-<li>DELETE（DELETE）：从服务器删除资源。</li>
-</ul>
-<h3 id="RESTful架构"><a href="#RESTful架构" class="headerlink" title="RESTful架构"></a>RESTful架构</h3><p>服务器上每一种资源，比如一个文件，一张图片，一部电影，都有对应的url地址，如果我们的客户端需要对服务器上的这个资源进行操作，就需要通过http协议执行相应的动作来操作它，比如进行获取，更新，删除。</p>
-<p>简单来说就是url地址中只包含名词表示资源，使用http动词表示动作进行操作资源</p>
-<p>举个例子：左边是错误的设计，而右边是正确的</p>
-<pre><code>GET /blog/getArticles --&gt; GET /blog/Articles  获取所有文章
-GET /blog/addArticles --&gt; POST /blog/Articles  添加一篇文章
-GET /blog/editArticles --&gt; PUT /blog/Articles  修改一篇文章 
-GET /rest/api/deleteArticles?id=1 --&gt; DELETE /blog/Articles/1  删除一篇文章
-</code></pre><h3 id="统一资源接口"><a href="#统一资源接口" class="headerlink" title="统一资源接口"></a>统一资源接口</h3><p>RESTful架构应该遵循统一接口原则，统一接口包含了一组受限的预定义的操作，不论什么样的资源，都是通过使用相同的接口进行资源的访问。接口应该使用标准的HTTP方法如GET，PUT和POST，并遵循这些方法的语义。</p>
-<p>如果按照HTTP方法的语义来暴露资源，那么接口将会拥有安全性和幂等性的特性，例如GET和HEAD请求都是安全的， 无论请求多少次，都不会改变服务器状态。而GET、HEAD、PUT和DELETE请求都是幂等的，无论对资源操作多少次， 结果总是一样的，后面的请求并不会产生比第一次更多的影响。</p>
-<p>下面列出了GET，DELETE，PUT和POST的典型用法:</p>
-<h4 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h4><ul>
-<li>安全且幂等</li>
-<li>获取表示</li>
-<li>变更时获取表示（缓存）</li>
-<li>200（OK） - 表示已在响应中发出</li>
-<li>204（无内容） - 资源有空表示</li>
-<li>301（Moved Permanently） - 资源的URI已被更新</li>
-<li>303（See Other） - 其他（如，负载均衡）</li>
-<li>304（not modified）- 资源未更改（缓存）</li>
-<li>400 （bad request）- 指代坏请求（如，参数错误）</li>
-<li>404 （not found）- 资源不存在</li>
-<li>406 （not acceptable）- 服务端不支持所需表示</li>
-<li>500 （internal server error）- 通用错误响应</li>
-<li>503 （Service Unavailable）- 服务端当前无法处理请求</li>
-</ul>
-<h4 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h4><ul>
-<li>不安全且不幂等</li>
-<li>使用服务端管理的（自动产生）的实例号创建资源</li>
-<li>创建子资源</li>
-<li>部分更新资源</li>
-<li>如果没有被修改，则不过更新资源（乐观锁）</li>
-<li>200（OK）- 如果现有资源已被更改</li>
-<li>201（created）- 如果新资源被创建</li>
-<li>202（accepted）- 已接受处理请求但尚未完成（异步处理）</li>
-<li>301（Moved Permanently）- 资源的URI被更新</li>
-<li>303（See Other）- 其他（如，负载均衡）</li>
-<li>400（bad request）- 指代坏请求</li>
-<li>404 （not found）- 资源不存在</li>
-<li>406 （not acceptable）- 服务端不支持所需表示</li>
-<li>409 （conflict）- 通用冲突</li>
-<li>412 （Precondition Failed）- 前置条件失败（如执行条件更新时的冲突）</li>
-<li>415 （unsupported media type）- 接受到的表示不受支持</li>
-<li>500 （internal server error）- 通用错误响应</li>
-<li>503 （Service Unavailable）- 服务当前无法处理请求</li>
-</ul>
-<h4 id="PUT"><a href="#PUT" class="headerlink" title="PUT"></a>PUT</h4><ul>
-<li>不安全但幂等</li>
-<li>用客户端管理的实例号创建一个资源</li>
-<li>通过替换的方式更新资源</li>
-<li>如果未被修改，则更新资源（乐观锁）</li>
-<li>200 （OK）- 如果已存在资源被更改</li>
-<li>201 （created）- 如果新资源被创建</li>
-<li>301（Moved Permanently）- 资源的URI已更改</li>
-<li>303 （See Other）- 其他（如，负载均衡）</li>
-<li>400 （bad request）- 指代坏请求</li>
-<li>404 （not found）- 资源不存在</li>
-<li>406 （not acceptable）- 服务端不支持所需表示</li>
-<li>409 （conflict）- 通用冲突</li>
-<li>412 （Precondition Failed）- 前置条件失败（如执行条件更新时的冲突）</li>
-<li>415 （unsupported media type）- 接受到的表示不受支持</li>
-<li>500 （internal server error）- 通用错误响应</li>
-<li>503 （Service Unavailable）- 服务当前无法处理请求</li>
-</ul>
-<h4 id="DELETE"><a href="#DELETE" class="headerlink" title="DELETE"></a>DELETE</h4><ul>
-<li>不安全但幂等</li>
-<li>删除资源</li>
-<li>200 （OK）- 资源已被删除</li>
-<li>301 （Moved Permanently）- 资源的URI已更改</li>
-<li>303 （See Other）- 其他，如负载均衡</li>
-<li>400 （bad request）- 指代坏请求</li>
-<li>404 （not found）- 资源不存在</li>
-<li>409 （conflict）- 通用冲突</li>
-<li>500 （internal server error）- 通用错误响应</li>
-<li>503 （Service Unavailable）- 服务端当前无法处理请求</li>
-</ul>
-<h3 id="POST和PUT用于创建资源时有什么区别"><a href="#POST和PUT用于创建资源时有什么区别" class="headerlink" title="POST和PUT用于创建资源时有什么区别?"></a>POST和PUT用于创建资源时有什么区别?</h3><p>POST和PUT在创建资源的区别在于，所创建的资源的名称(URI)是否由客户端决定。 例如为我的博文增加一个java的分类，生成的路径就是分类名/categories/java，那么就可以采用PUT方法。不过很多人直接把POST、GET、PUT、DELETE直接对应上CRUD，例如在一个典型的rails实现的RESTful应用中就是这么做的。</p>
-<p>我认为，这是因为rails默认使用服务端生成的ID作为URI的缘故，而不少人就是通过rails实践REST的，所以很容易造成这种误解。</p>
-<h3 id="客户端不一定都支持这些HTTP方法吧"><a href="#客户端不一定都支持这些HTTP方法吧" class="headerlink" title="客户端不一定都支持这些HTTP方法吧?"></a>客户端不一定都支持这些HTTP方法吧?</h3><p>的确有这种情况，特别是一些比较古老的基于浏览器的客户端，只能支持GET和POST两种方法。</p>
-<p>在实践上，客户端和服务端都可能需要做一些妥协。例如rails框架就支持通过隐藏参数_method=DELETE来传递真实的请求方法， 而像Backbone这样的客户端MVC框架则允许传递_method传输和设置X-HTTP-Method-Override头来规避这个问题。</p>
-<h3 id="统一接口是否意味着不能扩展带特殊语义的方法"><a href="#统一接口是否意味着不能扩展带特殊语义的方法" class="headerlink" title="统一接口是否意味着不能扩展带特殊语义的方法?"></a>统一接口是否意味着不能扩展带特殊语义的方法?</h3><p>统一接口并不阻止你扩展方法，只要方法对资源的操作有着具体的、可识别的语义即可，并能够保持整个接口的统一性。</p>
-<p>像WebDAV就对HTTP方法进行了扩展，增加了LOCK、UPLOCK等方法。而github的API则支持使用PATCH方法来进行issue的更新，例如:</p>
-<pre><code>PATCH /repos/:owner/:repo/issues/:number
-</code></pre><p>不过，需要注意的是，像PATCH这种不是HTTP标准方法的，服务端需要考虑客户端是否能够支持的问题。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/13/什么是RESTful API/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -3552,11 +3471,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
