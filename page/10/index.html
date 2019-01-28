@@ -152,6 +152,94 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/05/为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？/">为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/05/为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？/" class="archive-article-date">
+  	<time datetime="2018-09-05T07:38:22.366Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="对于四种变量"><a href="#对于四种变量" class="headerlink" title="对于四种变量"></a>对于四种变量</h2><p>自动变量(局部变量)</p>
+<p>静态变量</p>
+<p>静态全局变量</p>
+<p>全局变量</p>
+<p>首先： Block会捕获哪些变量？如果Block外面还有很多自动变量，静态变量，等等，这些变量在Block里面并不会被使用到。那么这些变量并不会被Block捕获进来，也就是说并不会在构造函数里面传入它们的值。Block捕获外部变量仅仅只捕获Block闭包里面会用到的值，其他用不到的值，它并不会去捕获。</p>
+<p>其次：全局变量和静态全局变量可以在Block内值被修改是为什么呢？全局变量和静态全局变量在执行Block语法的时候，它们被Block捕获进去，这一点很好理解，因为是全局的，作用域很广，所以Block捕获了它们进去之后，在Block里面进行++操作，Block结束之后，它们的值依旧可以得以保存下来。</p>
+<p>然后：对于静态变量Block是如何捕获的呢？静态变量传递给Block是内存地址值，所以能在Block里面直接改变值。在执行Block语法的时候，Block语法表达式所使用的静态变量的地址是被保存进了Block的结构体实例中，也就是Block自身中。所以能够在Block 内部修改静态变量的值。</p>
+<p>最后：为什么自动变量无法在Block内部修改值呢？类似静态变量，自动变量也是在执行Block语法的时候，被block捕获成为Block的结构体实例中，但是Block仅仅捕获了val的值，并没有捕获val的内存地址，所以在Block内部是无法修改自动变量的值。OC可能是基于这一点，在编译的层面就防止开发者可能犯的错误，因为自动变量没法在Block中改变外部变量的值，所以编译过程中就报编译错误。错误：Variable is not assignable(missing __block type specifier)</p>
+<p>总结一下</p>
+<p>在Block中改变变量值有2种方式，一是传递内存地址指针到Block中，二是改变存储区方式(__block)。</p>
+<p>MRC环境下，只有copy，_block才会被复制到堆上，否则，_block一直都在栈上，block也只是 _NSStackBlock，这个时候_forwarding指针就只指向自己了。</p>
+<p>ARC环境下，一旦Block赋值就会触发copy，_block就会copy到堆上，Block也是_NSMallocBlock。ARC环境下也是存在_NSStackBlock的时候，这种情况下，_block就在栈上</p>
+<h2 id="block-与-weak-的区别"><a href="#block-与-weak-的区别" class="headerlink" title="_block 与_weak 的区别"></a>_block 与_weak 的区别</h2><p>1._block不管是ARC还是MRC模式下都可以使用，可以修饰对象，还可以修饰基本数据类型。</p>
+<p>2._weak只能在ARC模式下使用，也只能修饰对象（NSString），不能修饰基本数据类型（int）。</p>
+<p>3._block对象可以在block中被重新赋值，_weak不可以。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/05/为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-NSCache优于NSDictionary的几点？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1549,152 +1637,6 @@ self.secondLabel.text = dataHandle.str;
 
 
   
-    <article id="post-iTerm2 + Oh My Zsh 打造舒适终端体验" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/31/iTerm2 + Oh My Zsh 打造舒适终端体验/">iTerm2 + Oh My Zsh 打造舒适终端体验</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/31/iTerm2 + Oh My Zsh 打造舒适终端体验/" class="archive-article-date">
-  	<time datetime="2018-07-31T05:10:45.456Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最终效果图</p>
-<p><img src="http://op1uxe89i.bkt.clouddn.com/WX20180731-131307@2x.png" alt=""></p>
-<p>本文默认各位已经安装了git环境和xcode（command line tools），遇到提示找不到git命令或需要安装command line tool的地方，文中不再赘述了。</p>
-<h3 id="下载iTerm2"><a href="#下载iTerm2" class="headerlink" title="下载iTerm2"></a>下载iTerm2</h3><p>可以直接去官网下载：<a href="https://www.iterm2.com/" target="_blank" rel="noopener">地址</a></p>
-<p>安装完成后，在/bin目录下会多出一个zsh的文件。</p>
-<p>Mac系统默认使用dash作为终端，可以使用命令修改默认使用zsh：</p>
-<pre><code>chsh -s /bin/zsh
-</code></pre><p>如果想修改回默认dash，同样使用chsh命令即可：</p>
-<pre><code>chsh -s /bin/bash
-</code></pre><p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/1.png" alt=""></p>
-<h3 id="安装Oh-my-zsh"><a href="#安装Oh-my-zsh" class="headerlink" title="安装Oh my zsh"></a>安装Oh my zsh</h3><p>安装方法有两种，可以使用curl或wget，看自己环境或喜好：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># curl 安装方式</span></span><br><span class="line">sh -c <span class="string">"<span class="variable">$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)</span>"</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># wget 安装方式</span></span><br><span class="line">sh -c <span class="string">"<span class="variable">$(wget https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh -O -)</span>"</span></span><br></pre></td></tr></table></figure>
-<p>安装命令和安装完成后的截图：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/2.png" alt="ImageInitIterm"></p>
-<p>oh-my-zsh开源地址：<a href="https://github.com/robbyrussell/oh-my-zsh" target="_blank" rel="noopener">https://github.com/robbyrussell/oh-my-zsh</a></p>
-<h3 id="安装PowerLine"><a href="#安装PowerLine" class="headerlink" title="安装PowerLine"></a>安装PowerLine</h3><p>powerline官网：<a href="http://powerline.readthedocs.io/en/latest/installation.html" target="_blank" rel="noopener">http://powerline.readthedocs.io/en/latest/installation.html</a></p>
-<p>安装powerline的方式依然简单，也只需要一条命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install powerline-status --user</span><br></pre></td></tr></table></figure>
-<p>没有安装pip的同学可能会碰到zsh: command not found: pip。</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/3.png" alt="ImageInitIterm"></p>
-<p>使用命令安装pip即可：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo easy_install pip</span><br></pre></td></tr></table></figure>
-<p>安装后再次执行安装powerline的命令即可。</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/4.png" alt="ImageInitIterm"></p>
-<h3 id="安装PowerFonts"><a href="#安装PowerFonts" class="headerlink" title="安装PowerFonts"></a>安装PowerFonts</h3><p>安装字体库需要首先将项目git clone至本地，然后执行源码中的install.sh。</p>
-<p>在你习惯的位置新建一个文件夹，如：~/Desktop/OpenSource/</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/5.png" alt="ImageInitIterm"></p>
-<p>在此文件夹下执行git clone命令：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># git clone</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/powerline/fonts.git --depth=1</span><br><span class="line"><span class="comment"># cd to folder</span></span><br><span class="line"><span class="built_in">cd</span> fonts</span><br><span class="line"><span class="comment"># run install shell</span></span><br><span class="line">./install.sh</span><br></pre></td></tr></table></figure>
-<p>执行结果如下：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/6.png" alt="ImageInitIterm"></p>
-<p>安装好字体库之后，我们来设置iTerm2的字体，具体的操作是iTerm2 -&gt; Preferences -&gt; Profiles -&gt; Text，在Font区域选中Change Font，然后找到Meslo LG字体。有L、M、S可选，看个人喜好：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/7.png" alt="ImageInitIterm"></p>
-<h3 id="安装配色方案"><a href="#安装配色方案" class="headerlink" title="安装配色方案"></a>安装配色方案</h3><p>配色方案在使用VIM或Colorful Log时会变得非常有用，同时界面也不会一片黑绿一样死板。</p>
-<p>同样使用git clone的方式下载源码进行安装：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/Desktop/OpenSource</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/altercation/solarized</span><br><span class="line"><span class="built_in">cd</span> solarized/iterm2-colors-solarized/</span><br><span class="line">open .</span><br></pre></td></tr></table></figure>
-<p>在打开的finder窗口中，双击Solarized Dark.itermcolors和Solarized Light.itermcolors即可安装明暗两种配色：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/8.png" alt="ImageInitIterm"></p>
-<p>再次进入iTerm2 -&gt; Preferences -&gt; Profiles -&gt; Colors -&gt; Color Presets中根据个人喜好选择这两种配色中的一种即可：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/9.png" alt="ImageInitIterm"></p>
-<h3 id="安装主题"><a href="#安装主题" class="headerlink" title="安装主题"></a>安装主题</h3><p>下载agnoster主题，执行脚本安装：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/Desktop/OpenSource</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/fcamblor/oh-my-zsh-agnoster-fcamblor.git</span><br><span class="line"><span class="built_in">cd</span> oh-my-zsh-agnoster-fcamblor/</span><br><span class="line">./install</span><br></pre></td></tr></table></figure>
-<p>执行上面的命令会将主题拷贝到oh my zsh的themes中：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/10.png" alt="ImageInitIterm"></p>
-<p>拷贝完成后，执行命令打开zshrc配置文件，将ZSH_THEME后面的字段改为agnoster。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi ~/.zshrc</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/11.png" alt="ImageInitIterm"></p>
-<p>修改完成后按一下esc调出vi命令，输入:wq保存并退出vi模式。</p>
-<p>此时command+Q或source配置文件后，iTerm2变了模样：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/12.png" alt="ImageInitIterm"></p>
-<h3 id="安装高亮插件"><a href="#安装高亮插件" class="headerlink" title="安装高亮插件"></a>安装高亮插件</h3><p>这是oh my zsh的一个插件，安装方式与theme大同小异：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/.oh-my-zsh/custom/plugins/</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-syntax-highlighting.git</span><br><span class="line">vi ~/.zshrc</span><br></pre></td></tr></table></figure>
-<p>这时我们再次打开zshrc文件进行编辑。找到plugins，此时plugins中应该已经有了git，我们需要把高亮插件也加上：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/13.png" alt="ImageInitIterm"></p>
-<p>请务必保证插件顺序，zsh-syntax-highlighting必须在最后一个。</p>
-<p>然后在文件的最后一行添加：source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh</p>
-<p>按一下esc调出vi命令，输入:wq保存并退出vi模式。</p>
-<p>执行命令使刚才的修改生效：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/.zshrc</span><br></pre></td></tr></table></figure>
-<p>至此大功告成，请看最终效果图：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/14.png" alt="ImageInitIterm"></p>
-<p>背景图片取自微软Surface Studio的4K壁纸(将近12MB大小)，非常漂亮，需要的可以自取：</p>
-<p><a href="https://pan.baidu.com/s/18jNrULbr05npD0Z_ht28Kg" target="_blank" rel="noopener">https://pan.baidu.com/s/18jNrULbr05npD0Z_ht28Kg</a></p>
-<p>更换背景图片方式：iTerm2 -&gt; Preferences -&gt; Profiles -&gt; Window -&gt; BackGround Image勾选图片即可。</p>
-<h4 id="可选择、命令补全"><a href="#可选择、命令补全" class="headerlink" title="可选择、命令补全"></a>可选择、命令补全</h4><p>跟代码高亮的安装方式一样，这也是一个zsh的插件，叫做zsh-autosuggestion，用于命令建议和补全。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/.oh-my-zsh/custom/plugins/</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/zsh-users/zsh-autosuggestions</span><br><span class="line">vi ~/.zshrc</span><br></pre></td></tr></table></figure>
-<p>找到plugins，加上这个插件即可：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/15.png" alt="ImageInitIterm"></p>
-<p>插件效果：</p>
-<p><img src="https://raw.githubusercontent.com/sirius1024/pubimgs/master/blogs/iterm2/16.png" alt="ImageInitIterm"></p>
-<p>有同学说补全命令的字体不太清晰，与背景颜色太过相近，其实可以自己调整一下字体颜色。</p>
-<p>Preferences -&gt; Profiles -&gt; Colors 中有Foreground是标准字体颜色，ANSI Colors中Bright的第一个是补全的字体颜色。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">MAC OS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/31/iTerm2 + Oh My Zsh 打造舒适终端体验/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/9/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/11/">Next &raquo;</a>
@@ -1816,11 +1758,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
