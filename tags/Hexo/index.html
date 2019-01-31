@@ -6,20 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>tabbar和nav的黑线 | Blog</title>
+  <title>Tag: Hexo | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面有的时候因为项目需求，对tabbar以及navigationbar，需要去掉或者改变顶部及底部细线的颜色，对于这个问题，笔者在这里总结一下，方法不难，至于导航栏底部和tabbar顶部的黑线从何而来呢？通过层次结构会发现，是由于导航栏或者tabbar设置的默认图片导致的，要消除这种效果，就要摒弃系统自带的图片，自己生成一张图片，或者设置空的图片，下面就来上代码： 1.改变或者消除tabbar">
-<meta name="keywords" content="iOS">
-<meta property="og:type" content="article">
-<meta property="og:title" content="tabbar和nav的黑线">
-<meta property="og:url" content="http://yoursite.com/2018/12/20/tabbar和nav的黑线/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Blog">
+<meta property="og:url" content="http://yoursite.com/tags/Hexo/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面有的时候因为项目需求，对tabbar以及navigationbar，需要去掉或者改变顶部及底部细线的颜色，对于这个问题，笔者在这里总结一下，方法不难，至于导航栏底部和tabbar顶部的黑线从何而来呢？通过层次结构会发现，是由于导航栏或者tabbar设置的默认图片导致的，要消除这种效果，就要摒弃系统自带的图片，自己生成一张图片，或者设置空的图片，下面就来上代码： 1.改变或者消除tabbar">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-20T08:54:46.380Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="tabbar和nav的黑线">
-<meta name="twitter:description" content="写在前面有的时候因为项目需求，对tabbar以及navigationbar，需要去掉或者改变顶部及底部细线的颜色，对于这个问题，笔者在这里总结一下，方法不难，至于导航栏底部和tabbar顶部的黑线从何而来呢？通过层次结构会发现，是由于导航栏或者tabbar设置的默认图片导致的，要消除这种效果，就要摒弃系统自带的图片，自己生成一张图片，或者设置空的图片，下面就来上代码： 1.改变或者消除tabbar">
+<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,199 +150,60 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-tabbar和nav的黑线" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      tabbar和nav的黑线
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2019" class="archive-year">2019</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2019/01/31/Hexo博客多台电脑设备同步管理/" class="archive-article-date">
+  	<time datetime="2019-01-31T08:55:51.207Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-31</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/01/31/Hexo博客多台电脑设备同步管理/">Hexo博客多台电脑设备同步管理</a>
     </h1>
   
 
-        
-        <a href="/2018/12/20/tabbar和nav的黑线/" class="archive-article-date">
-  	<time datetime="2018-12-20T08:52:58.590Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>有的时候因为项目需求，对tabbar以及navigationbar，需要去掉或者改变顶部及底部细线的颜色，对于这个问题，笔者在这里总结一下，方法不难，至于导航栏底部和tabbar顶部的黑线从何而来呢？通过层次结构会发现，是由于导航栏或者tabbar设置的默认图片导致的，要消除这种效果，就要摒弃系统自带的图片，自己生成一张图片，或者设置空的图片，下面就来上代码：</p>
-<h3 id="1-改变或者消除tabbar底部细线及其颜色"><a href="#1-改变或者消除tabbar底部细线及其颜色" class="headerlink" title="1.改变或者消除tabbar底部细线及其颜色"></a>1.改变或者消除tabbar底部细线及其颜色</h3><pre><code>[self.tabBar setBackgroundImage:[UIImage new]];
-[self.tabBar setShadowImage:[self.tabBar lineImageWithColor:[UIColor colorWithHexString:@&quot;#fb9966&quot;]]];
-</code></pre><p>第一步是设置背景图片，第二部设置阴影图片，上面的是改变细线的颜色，我们可以自己画一张图片，画图片的方法如下：</p>
-<pre><code>- (UIImage *)lineImageWithColor:(UIColor *)lineColor {
-
-    CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 0.5);
-    UIGraphicsBeginImageContext(rect.size);
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
-
-    CGContextSetFillColorWithColor(ctx, lineColor.CGColor);
-    CGContextFillRect(ctx, rect);
-
-    UIImage *lineImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return lineImage;
-
-}
-</code></pre><p>当然，如果想要去除黑线，只需要将shadowImage也设置未空白图片就可以了</p>
-<h3 id="2-去除或者改变navigationbar底部黑线"><a href="#2-去除或者改变navigationbar底部黑线" class="headerlink" title="2.去除或者改变navigationbar底部黑线"></a>2.去除或者改变navigationbar底部黑线</h3><p>原理类似，直接上代码吧</p>
-<pre><code>[self.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-[self.navigationBar setShadowImage:[self.navigationBar lineImageWithColor:[UIColor colorWithHexString:@&quot;#fb9966&quot;]]];
-</code></pre><p>至于导航栏比较多变，这一点完全可以隐藏掉系统的导航栏，自己做一个就行了</p>
-
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Hexo</a>
         		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/20/tabbar和nav的黑线/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2018/12/21/swift中as!和as?和as的区别/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          swift中as!和as?和as的区别
-        
-      </div>
-    </a>
   
   
-    <a href="/2018/12/20/关于内购需要注意的一些坑/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">关于内购需要注意的一些坑</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
-  
+    
 
 
           </div>
@@ -370,9 +226,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,
