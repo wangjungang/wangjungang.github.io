@@ -17,7 +17,7 @@
 <meta property="og:description" content="写在前面今天探讨Swift中的通知，代理，闭包(Block)三种方式进行传值  闭包传值第一步 首先建立两个控制器  第一个控制器 ViewController.swift  import UIKit class ViewController: UIViewController { //创建一个label     //申明一个全局的label     var fistLab:UILabel = U">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://img.wangjungang.cn/WX20190214-180208@2x.png">
-<meta property="og:updated_time" content="2019-02-14T11:44:33.542Z">
+<meta property="og:updated_time" content="2019-02-15T02:23:40.669Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Swift通知，代理，闭包">
 <meta name="twitter:description" content="写在前面今天探讨Swift中的通知，代理，闭包(Block)三种方式进行传值  闭包传值第一步 首先建立两个控制器  第一个控制器 ViewController.swift  import UIKit class ViewController: UIViewController { //创建一个label     //申明一个全局的label     var fistLab:UILabel = U">
@@ -223,10 +223,10 @@ extension ViewController{
     }
 }
 </code></pre><ul>
-<li><p>secondViewconteroller.swift</p>
-<pre><code>import UIKit
-
-//定义一个闭包函数
+<li>secondViewconteroller.swift</li>
+</ul>
+<p>import UIKit</p>
+<pre><code>//定义一个闭包函数
 typealias SecondValueToFist = (vlaue: String)-&gt;Void
 
 class SecondViewController: UIViewController {
@@ -269,9 +269,7 @@ func click(){
               self.navigationController?.popToRootViewControllerAnimated(true)
     }
 }
-</code></pre></li>
-</ul>
-<p><img src="http://img.wangjungang.cn/WX20190214-180208@2x.png" alt=""></p>
+</code></pre><p><img src="http://img.wangjungang.cn/WX20190214-180208@2x.png" alt=""></p>
 <h2 id="代理传值"><a href="#代理传值" class="headerlink" title="代理传值"></a>代理传值</h2><p>第一步 在第二个控制器里面制定协议</p>
 <pre><code>//定义一个代理
 
@@ -557,11 +555,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -597,11 +595,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -609,11 +607,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
             
             <div class="clearfix"></div>
