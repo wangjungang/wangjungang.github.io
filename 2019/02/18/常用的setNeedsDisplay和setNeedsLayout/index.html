@@ -6,26 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>iOS 关于启动app播放视频功能 | Blog</title>
+  <title>常用的setNeedsDisplay和setNeedsLayout | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面我们经常会看到我们在第一次使用app的时候，会播放一段视频，以便我们来了解app。如何实现呢  1、我们要在LaunchScreen.storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。  2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频">
+  <meta name="description" content="1.UIView的setNeedsDisplay和setNeedsLayout方法首先两个方法都是异步执行的。而setNeedsDisplay会调用自动调用drawRect方法，这样可以拿到  UIGraphicsGetCurrentContext，就可以画画了。而setNeedsLayout会默认调用layoutSubViews，就可以  处理子视图中的一些数据。 综上所诉，setNeedsDi">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS 关于启动app播放视频功能">
-<meta property="og:url" content="http://yoursite.com/2019/01/28/iOS 关于启动app播放视频功能/index.html">
+<meta property="og:title" content="常用的setNeedsDisplay和setNeedsLayout">
+<meta property="og:url" content="http://yoursite.com/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面我们经常会看到我们在第一次使用app的时候，会播放一段视频，以便我们来了解app。如何实现呢  1、我们要在LaunchScreen.storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。  2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频">
+<meta property="og:description" content="1.UIView的setNeedsDisplay和setNeedsLayout方法首先两个方法都是异步执行的。而setNeedsDisplay会调用自动调用drawRect方法，这样可以拿到  UIGraphicsGetCurrentContext，就可以画画了。而setNeedsLayout会默认调用layoutSubViews，就可以  处理子视图中的一些数据。 综上所诉，setNeedsDi">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://img.wangjungang.cn/WX20190128-154354@2x.png">
-<meta property="og:image" content="http://img.wangjungang.cn/WX20190128-160237@2x.png">
-<meta property="og:image" content="http://img.wangjungang.cn/WX20190128-160322@2x.png">
-<meta property="og:image" content="http://img.wangjungang.cn/WX20190128-160421@2x.png">
-<meta property="og:image" content="http://img.wangjungang.cn/WX20190128-160508@2x.png">
-<meta property="og:updated_time" content="2019-01-28T08:14:39.314Z">
+<meta property="og:updated_time" content="2019-02-18T07:46:34.354Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS 关于启动app播放视频功能">
-<meta name="twitter:description" content="写在前面我们经常会看到我们在第一次使用app的时候，会播放一段视频，以便我们来了解app。如何实现呢  1、我们要在LaunchScreen.storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。  2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频">
-<meta name="twitter:image" content="http://img.wangjungang.cn/WX20190128-154354@2x.png">
+<meta name="twitter:title" content="常用的setNeedsDisplay和setNeedsLayout">
+<meta name="twitter:description" content="1.UIView的setNeedsDisplay和setNeedsLayout方法首先两个方法都是异步执行的。而setNeedsDisplay会调用自动调用drawRect方法，这样可以拿到  UIGraphicsGetCurrentContext，就可以画画了。而setNeedsLayout会默认调用layoutSubViews，就可以  处理子视图中的一些数据。 综上所诉，setNeedsDi">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -161,249 +155,55 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-iOS 关于启动app播放视频功能" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-常用的setNeedsDisplay和setNeedsLayout" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      iOS 关于启动app播放视频功能
+      常用的setNeedsDisplay和setNeedsLayout
     </h1>
   
 
         
-        <a href="/2019/01/28/iOS 关于启动app播放视频功能/" class="archive-article-date">
-  	<time datetime="2019-01-28T07:41:05.044Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
+        <a href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/" class="archive-article-date">
+  	<time datetime="2019-02-18T07:43:18.890Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>我们经常会看到我们在第一次使用app的时候，会播放一段视频，以便我们来了解app。如何实现呢</p>
-<p><img src="http://img.wangjungang.cn/WX20190128-154354@2x.png" alt=""></p>
-<h3 id="1、我们要在LaunchScreen-storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。"><a href="#1、我们要在LaunchScreen-storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。" class="headerlink" title="1、我们要在LaunchScreen.storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。"></a>1、我们要在LaunchScreen.storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。</h3><p><img src="http://img.wangjungang.cn/WX20190128-160237@2x.png" alt=""></p>
-<p><img src="http://img.wangjungang.cn/WX20190128-160322@2x.png" alt=""></p>
-<h3 id="2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器"><a href="#2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器" class="headerlink" title="2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器"></a>2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器</h3><pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-ZYLauchMovieViewController *vc = [[ZYLauchMovieViewController alloc] init];
-window.rootViewController = vc;
-self.window = window;
-[self.window makeKeyAndVisible];
-return YES;
-}
-</code></pre><p>注意</p>
-<p><img src="http://img.wangjungang.cn/WX20190128-160421@2x.png" alt=""></p>
-<p><img src="http://img.wangjungang.cn/WX20190128-160508@2x.png" alt=""></p>
-<h3 id="3、设置四个属性，"><a href="#3、设置四个属性，" class="headerlink" title="3、设置四个属性，"></a>3、设置四个属性，</h3><p>1、播放开始之前的图片startPlayerImageView，防止出现留黑的问题，</p>
-<p>2、播放中断的图片pausePlayerImageView，也是防止跳转的时候出现问题，</p>
-<p>3、定时器timer，为了在进入app3秒之后显示进入应用按钮，</p>
-<p>4、结束按钮也就是进入应用的按钮enterMainButton，为了让用户跳过视频。</p>
-<pre><code>/** 播放开始之前的图片 */
-@property (nonatomic , strong)UIImageView *startPlayerImageView;
-/** 播放中断时的图片 */
-@property (nonatomic , strong)UIImageView *pausePlayerImageView;
-/** 定时器 */
-@property (nonatomic , strong)NSTimer *timer;
-/** 结束按钮 */
-@property (nonatomic , strong)UIButton *enterMainButton;
-</code></pre><h3 id="4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮"><a href="#4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮" class="headerlink" title="4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮"></a>4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮</h3><pre><code>// 设置界面
-- (void)setupView {
-self.startPlayerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@&quot;lauch&quot;]];
-_startPlayerImageView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
-[self.contentOverlayView addSubview:_startPlayerImageView];
-//是否是第一次进入视频
-if (![self isFirstLauchApp]) {
-//设置进入主界面的按钮
-[self setupEnterMainButton];
-}
-}
-
-//设置进入主界面的按钮
-- (void)setupEnterMainButton {
-self.enterMainButton = [UIButton buttonWithType:UIButtonTypeCustom];
-_enterMainButton.frame = CGRectMake(24, kScreenHeight - 32 - 48, kScreenWidth - 48, 48);
-_enterMainButton.layer.borderWidth =1;
-_enterMainButton.layer.cornerRadius = 24;
-_enterMainButton.layer.borderColor = [UIColor whiteColor].CGColor;
-[_enterMainButton setTitle:@&quot;进入应用&quot; forState:UIControlStateNormal];
-_enterMainButton.hidden = YES;
-[self.view addSubview:_enterMainButton];
-[_enterMainButton addTarget:self action:@selector(enterMainAction:) forControlEvents:UIControlEventTouchUpInside];
-//设置定时器当视频播放到第三秒时 展示进入应用
-self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(showEnterMainButton) userInfo:nil repeats:YES];
-}
-</code></pre><p>在这里我们开一个定时器，让按钮在3s之后再显示</p>
-<p>//显示进入按钮（定时器的方法）</p>
-<pre><code>- (void)showEnterMainButton {
-AVAssetImageGenerator *gen = [[AVAssetImageGenerator alloc] initWithAsset:self.player.currentItem.asset];
-gen.appliesPreferredTrackTransform = YES;
-NSError *error = nil;
-CMTime actualTime;
-CMTime now = self.player.currentTime;
-[gen setRequestedTimeToleranceAfter:kCMTimeZero];
-[gen setRequestedTimeToleranceBefore:kCMTimeZero];
-[gen copyCGImageAtTime:now actualTime:&amp;actualTime error:&amp;error];
-NSInteger currentPlayBackTime = (NSInteger)CMTimeGetSeconds(actualTime);
-if (currentPlayBackTime &gt;= 3) {
-self.enterMainButton.hidden = NO;
-static dispatch_once_t onceToken;
-dispatch_once(&amp;onceToken, ^{
-self.enterMainButton.alpha = 0;
-[UIView animateWithDuration:0.5 animations:^{
-self.enterMainButton.alpha = 1;
-} completion:nil];
-});
-}
-if (currentPlayBackTime &gt; 5) {
-//防止没有显现出来
-self.enterMainButton.alpha = 1;
-self.enterMainButton.hidden = NO;
-[self.timer invalidate];
-self.timer = nil;
-}
-}
-</code></pre><p>//进入应用的按钮点击事件</p>
-<pre><code>- (void)enterMainAction:(UIButton *)btn {
-//视频暂停
-[self.player pause];
-self.pausePlayerImageView = [[UIImageView alloc] init];
-_pausePlayerImageView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
-[self.contentOverlayView addSubview:_pausePlayerImageView];
-self.pausePlayerImageView.contentMode = UIViewContentModeScaleAspectFit;
-//获取当前暂停时的截图,也就是设置结束时候的图片
-[self getoverPlayerImage];
-}
-</code></pre><p>//截图的获取方法</p>
-<pre><code>- (void)getoverPlayerImage {
-AVAssetImageGenerator *gen = [[AVAssetImageGenerator alloc] initWithAsset:self.player.currentItem.asset];
-gen.appliesPreferredTrackTransform = YES;
-NSError *error = nil;
-CMTime actualTime;
-CMTime now = self.player.currentTime;
-[gen setRequestedTimeToleranceAfter:kCMTimeZero];
-[gen setRequestedTimeToleranceBefore:kCMTimeZero];
-CGImageRef image = [gen copyCGImageAtTime:now actualTime:&amp;actualTime error:&amp;error];
-if (!error) {
-UIImage *thumb = [[UIImage alloc] initWithCGImage:image];
-self.pausePlayerImageView.image = thumb;
-}
-NSLog(@&quot;%f , %f&quot;,CMTimeGetSeconds(now),CMTimeGetSeconds(actualTime));
-NSLog(@&quot;%@&quot;,error);
-//视频播放结束
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-[self moviePlaybackComplete];
-});
-}
-</code></pre><h3 id="5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次"><a href="#5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次" class="headerlink" title="5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次"></a>5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次</h3><pre><code>//设置监听
-
-
-- (void)addNotification {
-[[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
-[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillEnterForeground) name:UIApplicationDidBecomeActiveNotification object:nil];//进入前台
-if ([self isFirstLauchApp]) {
-//第二次进入app视频需要直接结束
-[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackComplete) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];//视频播放结束
-}else {
-//第一次进入app视频需要轮播
-[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackAgain) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];//视频播放结束
-}
-[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackStart) name:AVPlayerItemTimeJumpedNotification object:nil];//播放开始
-}
-</code></pre><p>//实现监听的方法</p>
-<p>//开始播放移除我们刚开始加的图片，不然无法看到视频</p>
-<pre><code>- (void)moviePlaybackStart {
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-[self.startPlayerImageView removeFromSuperview];
-self.startPlayerImageView = nil;
-});
-}
-</code></pre><p>//视频播放完成移除图片，进入主界面</p>
-<pre><code>- (void)moviePlaybackComplete {
-//发送推送之后就删除  否则 界面显示有问题
-[[NSNotificationCenter defaultCenter] removeObserver:self
-name:AVPlayerItemDidPlayToEndTimeNotification
-object:nil];
-[self.startPlayerImageView removeFromSuperview];
-self.startPlayerImageView = nil;
-[self.pausePlayerImageView removeFromSuperview];
-self.pausePlayerImageView = nil;
-if (self.timer){
-[self.timer invalidate];
-self.timer = nil;
-}
-//进入主界面
-[self enterMain];
-}
-</code></pre><p>//app进入活动时播放视频</p>
-<pre><code>- (void)viewWillEnterForeground
-
-{
-
-NSLog(@&quot;app enter foreground&quot;);
-
-if (!self.player) {
-
-[self prepareMovie];
-
-}
-
-//播放视频
-
-[self.player play];
-
-}
-</code></pre><p>//第一次进入app的时候，再一次播放视频</p>
-<pre><code>- (void)moviePlaybackAgain {
-self.startPlayerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@&quot;lauchAgain&quot;]];
-_startPlayerImageView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
-[self.contentOverlayView addSubview:_startPlayerImageView];
-[self.pausePlayerImageView removeFromSuperview];
-self.pausePlayerImageView = nil;
-NSString *filePath = [[NSBundle mainBundle] pathForResource:@&quot;opening_long_1080*1920.mp4&quot; ofType:nil];
-//初始化player
-self.player = [AVPlayer playerWithURL:[NSURL fileURLWithPath:filePath]];
-self.showsPlaybackControls = NO;
-//播放视频
-[self.player play];
-}
-</code></pre><h3 id="6、在viewDidLoad中初始化视频"><a href="#6、在viewDidLoad中初始化视频" class="headerlink" title="6、在viewDidLoad中初始化视频"></a>6、在viewDidLoad中初始化视频</h3><pre><code>- (void)prepareMovie {
-//首次运行
-NSString *filePath = nil;
-if (![self isFirstLauchApp]) {
-//第一次安装
-filePath = [[NSBundle mainBundle] pathForResource:@&quot;opening_long_1080*1920.mp4&quot; ofType:nil];
-[self setIsFirstLauchApp:YES];
-}else {
-filePath = [[NSBundle mainBundle] pathForResource:@&quot;opening_short_1080*1920.mp4&quot; ofType:nil];
-}
-//初始化player
-self.player = [AVPlayer playerWithURL:[NSURL fileURLWithPath:filePath]];
-self.showsPlaybackControls = NO;
-//播放视频
-[self.player play];
-}
-</code></pre><h3 id="7、进入主界面的方法以及判断是否第一次进入app"><a href="#7、进入主界面的方法以及判断是否第一次进入app" class="headerlink" title="7、进入主界面的方法以及判断是否第一次进入app"></a>7、进入主界面的方法以及判断是否第一次进入app</h3><p>//进入主界面</p>
-<pre><code>- (void)enterMain {
-AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-UIViewController *main = [[UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:[NSBundle mainBundle]] instantiateInitialViewController];
-delegate.window.rootViewController = main;
-[delegate.window makeKeyWindow];
-}
-
-#pragma mark -- 是否第一次进入app
-- (BOOL)isFirstLauchApp {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kIsFirstLauchApp];
-}
-- (void)setIsFirstLauchApp:(BOOL)isFirstLauchApp
-{
-    [[NSUserDefaults standardUserDefaults] setBool:isFirstLauchApp forKey:kIsFirstLauchApp];
-}
-</code></pre><p>第一步：先给一张初始的图片，然后判断是不是第一次进入app，第一次就设置一个进入应用的按钮，点击截图一张放在视频上方进入主界面，然后开一个定时器，当视频播放到第3s的时候显示按钮。</p>
-<p>第二步:监听视频的开始播放、结束播放，以及app是否进入活动状态；开始播放的时候移除第一张图片；结束播放的时候移除图片，移除定时器，进入主界面；进入活动状态时候播放视频。</p>
-<p>第三步：初始化player，加载本地视频，播放视频</p>
-<p><a href="https://github.com/zhangyqyx/startMovie" target="_blank" rel="noopener">Demo</a></p>
+        <h2 id="1-UIView的setNeedsDisplay和setNeedsLayout方法"><a href="#1-UIView的setNeedsDisplay和setNeedsLayout方法" class="headerlink" title="1.UIView的setNeedsDisplay和setNeedsLayout方法"></a>1.UIView的setNeedsDisplay和setNeedsLayout方法</h2><p>首先两个方法都是异步执行的。而setNeedsDisplay会调用自动调用drawRect方法，这样可以拿到  UIGraphicsGetCurrentContext，就可以画画了。而setNeedsLayout会默认调用layoutSubViews，<br>就可以  处理子视图中的一些数据。</p>
+<p>综上所诉，setNeedsDisplay方便绘图，而layoutSubViews方便出来数据。</p>
+<h2 id="layoutSubviews在以下情况下会被调用："><a href="#layoutSubviews在以下情况下会被调用：" class="headerlink" title="layoutSubviews在以下情况下会被调用："></a>layoutSubviews在以下情况下会被调用：</h2><ul>
+<li>1、init初始化不会触发layoutSubviews。</li>
+<li>2、addSubview会触发layoutSubviews。</li>
+<li>3、设置view的Frame会触发layoutSubviews，当然前提是frame的值设置前后发生了变化。</li>
+<li>4、滚动一个UIScrollView会触发layoutSubviews。</li>
+<li>5、旋转Screen会触发父UIView上的layoutSubviews事件。</li>
+<li>6、改变一个UIView大小的时候也会触发父UIView上的layoutSubviews事件。</li>
+<li>7、直接调用setLayoutSubviews。</li>
+</ul>
+<h2 id="drawRect在以下情况下会被调用："><a href="#drawRect在以下情况下会被调用：" class="headerlink" title="drawRect在以下情况下会被调用："></a>drawRect在以下情况下会被调用：</h2><ul>
+<li><p>1、如果在UIView初始化时没有设置rect大小，将直接导致drawRect不被自动调用。drawRect调用是在Controller-&gt;loadView, Controller-&gt;viewDidLoad 两方法之后掉用的.所以不用担心在控制器中,这些View的drawRect就开始画了.这样可以在控制器中设置一些值给View(如果这些View draw的时候需要用到某些变量值).</p>
+</li>
+<li><p>2、该方法在调用sizeToFit后被调用，所以可以先调用sizeToFit计算出size。然后系统自动调用drawRect:方法</p>
+</li>
+<li><p>3、通过设置contentMode属性值为UIViewContentModeRedraw。那么将在每次设置或更改frame的时候自动调用drawRect:。</p>
+</li>
+<li><p>4、直接调用setNeedsDisplay，或者setNeedsDisplayInRect:触发drawRect:，但是有个前提条件是rect不能为0。<br>以上1,2推荐；而3,4不提倡</p>
+</li>
+</ul>
+<h2 id="drawRect方法使用注意点："><a href="#drawRect方法使用注意点：" class="headerlink" title="drawRect方法使用注意点："></a>drawRect方法使用注意点：</h2><ul>
+<li><p>1、若使用UIView绘图，只能在drawRect：方法中获取相应的contextRef并绘图。如果在其他方法中获取将获取到一个invalidate的ref并且不能用于画图。drawRect：方法不能手动显示调用，必须通过调用setNeedsDisplay 或者 setNeedsDisplayInRect，让系统自动调该方法。</p>
+</li>
+<li><p>2、若使用CAlayer绘图，只能在drawInContext: 中（类似于drawRect）绘制，或者在delegate中的相应方法绘制。同样也是调用setNeedDisplay等间接调用以上方法</p>
+</li>
+<li><p>3、若要实时画图，不能使用gestureRecognizer，只能使用touchbegan等方法来掉用setNeedsDisplay实时刷新屏幕</p>
+</li>
+</ul>
 
       
 
@@ -494,7 +294,7 @@ delegate.window.rootViewController = main;
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/01/28/iOS 关于启动app播放视频功能/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -508,18 +308,9 @@ delegate.window.rootViewController = main;
   
 <nav id="article-nav">
   
-    <a href="/2019/01/28/五星好评刮刮乐/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          五星好评刮刮乐
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/01/25/textView的字数输入限制/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">textView的字数输入限制</div>
+    <a href="/2019/02/18/关于UUID和UDID的区别/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">关于UUID和UDID的区别</div>
       <i class="icon-circle-right"></i>
     </a>
   
