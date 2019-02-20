@@ -152,6 +152,137 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-UIBezierPath设置图片圆角" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/08/UIBezierPath设置图片圆角/">UIBezierPath设置图片圆角</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/08/UIBezierPath设置图片圆角/" class="archive-article-date">
+  	<time datetime="2018-09-08T15:25:13.677Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>一般我们都会通过Layer设置图片圆角，这种方法在iOS9以前可能会发生离屏渲染，</p>
+<p>比较消耗性能，比如当一个页面上有十几头像这样设置了圆角会明显感觉到卡顿。这种就是最常用的，也是最耗性能的。</p>
+<pre><code>imageView.layer.cornerRadius=20;
+imageView.layer.masksToBounds=YES;
+</code></pre><p>ios9.0之后对UIImageView的圆角设置做了优化，UIImageView这样设置圆角不会触发离屏渲染，ios9.0之前还是会触发离屏渲染。而UIButton还是都会触发离屏渲染。</p>
+<p>现在优化方案就是先把图片处理成圆角，处理后再渲染；</p>
+<pre><code>//1.先写一个切圆角的方法，方便调用
+
+- (void)setGraphicsCutRoundCornersWithView:(UIImageView *) imageview roundCornersSize:(CGFloat )cornersSize
+{
+    //开始上下文
+    UIGraphicsBeginImageContextWithOptions(imageview.bounds.size, NO, 0.0);
+    [[UIBezierPath bezierPathWithRoundedRect:imageview.bounds cornerRadius:cornersSize] addClip];
+    [imageview drawRect:imageview.bounds];
+    //当前上下文
+    imageview.image = UIGraphicsGetImageFromCurrentImageContext();
+    // 结束上下文
+    UIGraphicsEndImageContext();
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+ UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
+  [imageView setImage:[UIImage imageNamed:@&quot;aaa&quot;]];
+  [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];//调用方法
+
+ [self.view addSubview:imageView];
+}
+</code></pre><p>我上面的方法是加载的本地图片，如果是网络请求的，就不行了。。。我在AFNetworking里看了看不容易实现，因为他没有completed回调方法，所以我就用SD_WebImage实现了一下。</p>
+<pre><code>- (void)viewDidLoad {
+    [super viewDidLoad];
+ NSString *path=@&quot;http://pic.yesky.com/uploadImages/2015/211/46/Y9QRRQ94U8C3.jpg&quot;;
+
+    UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
+
+    [imageView sd_setImageWithURL:[NSURL URLWithString:path] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+         [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];
+    }];
+
+     [self.view addSubview:imageView];
+
+}
+</code></pre><p>如果是普通视图，不包含图片，可通过如下方式处理： 把背景图设置成clearColor, layer 的背景color和要渲染的视图颜色一致，设置好角度，通过颜色差异来显示出圆角的效果； 关键是把masksToBounds设置NO,就是这个家伙消耗性能；</p>
+<pre><code>   self.view.backgroundColor = [UIColor clearColor];
+
+// Set view.layer.backgroundColor not view.backgroundColor otherwise the background is not masked to the rounded border.
+
+    self.view.layer.backgroundColor = [UIColor whiteColor].CGColor;
+
+    self.view.layer.cornerRadius = 8;
+
+// Huge change in performance by explicitly setting the below (even though default is supposedly NO)
+    self.view.layer.masksToBounds = NO;   
+
+// Performance improvement here depends on the size of your view
+
+    self.view.layer.shouldRasterize = YES; 
+    [self.view.layer setRasterizationScale:[UIScreen mainScreen].scale];
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/08/UIBezierPath设置图片圆角/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-BOOL和bool的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1407,86 +1538,6 @@ struct weak_entry_t {
 
 
   
-    <article id="post-AFN为什么添加一条常驻线程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/05/AFN为什么添加一条常驻线程/">AFN为什么添加一条常驻线程</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/05/AFN为什么添加一条常驻线程/" class="archive-article-date">
-  	<time datetime="2018-09-05T08:43:27.761Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天早上看到一个很好的面试题.作为渣渣的我很想尝试这自己捋清楚答案~</p>
-<p>这个问题可以分为两个部分回答</p>
-<p>1为什么要添加一个不退出的线程</p>
-<p>2为什么只添加了一个线程</p>
-<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>AFN 的做法是把网络请求的发起和解析都放在同一个子线程中进行，但由于子线程默认不开启 runloop，它会向一个 C语言程序那样在运行完所有代码后退出线程。而网络请求是异步的，这会导致获取到请求数据时，线程已经退出，代理方法没有机会执行。因此，AFN 的做法是使用一个 runloop 来保证线程不死~</p>
-<p>然而频繁的创建线程并启动runloop肯定会造成内存泄露(runloop 无法停止.线程无法退出)</p>
-<p>所以AFN就创建了一个单例线程,并且保证线程不退出~</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/05/AFN为什么添加一条常驻线程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/9/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/11/">Next &raquo;</a>
@@ -1584,19 +1635,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1628,11 +1679,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1640,11 +1691,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
               </li>
             
             <div class="clearfix"></div>
