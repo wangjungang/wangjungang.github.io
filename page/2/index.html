@@ -152,6 +152,220 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Swift通知，代理，闭包" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/14/Swift通知，代理，闭包/">Swift通知，代理，闭包</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/14/Swift通知，代理，闭包/" class="archive-article-date">
+  	<time datetime="2019-02-14T07:41:45.917Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-14</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天探讨Swift中的通知，代理，闭包(Block)三种方式进行传值 </p>
+<h2 id="闭包传值"><a href="#闭包传值" class="headerlink" title="闭包传值"></a>闭包传值</h2><p>第一步 首先建立两个控制器 </p>
+<p>第一个控制器 ViewController.swift </p>
+<pre><code>import UIKit
+class ViewController: UIViewController {
+//创建一个label
+    //申明一个全局的label
+    var fistLab:UILabel = UILabel()
+    //声明一个全局的button
+    var fistBut:UIButton = UIButton()
+
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.navigationController?.navigationBar.translucent = false
+        //设置label,button的大小
+        initLabAndBut()
+
+    }
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+    }
+}
+
+extension ViewController{
+    func initLabAndBut(){
+        fistLab = UILabel(frame: CGRectMake(50, 50, 300, 40))
+        fistLab.backgroundColor = UIColor.redColor()
+        view.addSubview(fistLab)
+
+        fistBut = UIButton(frame: CGRectMake(100, 100, 200, 50))
+        fistBut.backgroundColor = UIColor.purpleColor()
+        fistBut.setTitle(&quot;点击我啊&quot;, forState: UIControlState.Normal)
+        fistBut.addTarget(self, action: Selector(&quot;click&quot;), forControlEvents: UIControlEvents.TouchUpInside)
+        view.addSubview(fistBut)
+    }
+
+    func click(){
+        let secV = SecondViewController()
+        secV.initWithMyPassValue { (vlaue) -&gt; Void in
+            self.fistLab.text = vlaue
+        }
+        self.navigationController?.pushViewController(secV, animated: true)
+    }
+}
+</code></pre><ul>
+<li>secondViewconteroller.swift</li>
+</ul>
+<p>import UIKit</p>
+<pre><code>//定义一个闭包函数
+typealias SecondValueToFist = (vlaue: String)-&gt;Void
+
+class SecondViewController: UIViewController {
+    //创建一个label
+    //申明一个全局的label
+    var fistLab:UITextField = UITextField()
+    //声明一个全局的button
+    var fistBut:UIButton = UIButton()
+    //定义闭包函数
+    var myValue:SecondValueToFist?//可以为nil
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.view.backgroundColor = UIColor.darkGrayColor()
+        initLabAndBut()
+}
+//在定义个传值函数
+func initWithMyPassValue(value:SecondValueToFist?){
+    myValue = value
+    }
+
+}
+extension SecondViewController{
+    func initLabAndBut(){
+        fistLab = UITextField(frame: CGRectMake(50, 50, 300, 40))
+        fistLab.backgroundColor = UIColor.redColor()
+        view.addSubview(fistLab)
+
+    fistBut = UIButton(frame: CGRectMake(100, 100, 200, 50))
+    fistBut.backgroundColor = UIColor.purpleColor()
+    fistBut.setTitle(&quot;点击我啊&quot;, forState: UIControlState.Normal)
+    fistBut.addTarget(self, action: Selector(&quot;click&quot;), forControlEvents: UIControlEvents.TouchUpInside)
+    view.addSubview(fistBut)
+}
+
+func click(){
+//闭包传值
+    if(myValue != nil){
+        myValue!(vlaue: fistLab.text!)
+    }
+              self.navigationController?.popToRootViewControllerAnimated(true)
+    }
+}
+</code></pre><p><img src="http://img.wangjungang.cn/WX20190214-180208@2x.png" alt=""></p>
+<h2 id="代理传值"><a href="#代理传值" class="headerlink" title="代理传值"></a>代理传值</h2><p>第一步 在第二个控制器里面制定协议</p>
+<pre><code>//定义一个代理
+
+protocol SecondViewControllerDelegate{
+    func SecToFistValue(value:String)
+}
+</code></pre><p>第二步 在第二个控制器定义一个全局的接受协议的变量</p>
+<pre><code>var delegate:SecondViewControllerDelegate?
+</code></pre><p>第三步 在第二个控制器的button点击时间里面调用协议方法</p>
+<pre><code>func click(){
+    if self.delegate != nil{
+        delegate?.SecToFistValue(fistLab.text!)
+    }    self.navigationController?.popToRootViewControllerAnimated(true)
+}
+</code></pre><p>第四步 在第一个控制器里进行指定代理，并实现代理的方法</p>
+<pre><code>func click(){
+   let secV = SecondViewController()
+   secV.delegate = self
+      self.navigationController?.pushViewController(secV, animated: true)
+ }
+ //实现代理方法
+ func SecToFistValue(value: String) {
+     self.fistLab.text = value
+ }
+</code></pre><h2 id="通知传值"><a href="#通知传值" class="headerlink" title="通知传值"></a>通知传值</h2><p>第一步 在第二个控制器的button点击时间 发送消息</p>
+<pre><code>func click(){
+
+        if self.delegate != nil{
+            delegate?.SecToFistValue(fistLab.text!)
+        }
+        let dic:NSDictionary = NSDictionary()
+        dic.setValue(fistLab.text, forKey: &quot;K1&quot;)
+        NSNotificationCenter.defaultCenter().postNotificationName(&quot;abc&quot;, object: self, userInfo:dic as [NSObject : AnyObject])
+       self.navigationController?.popToRootViewControllerAnimated(true)
+    }
+</code></pre><p>第二步 在第一个控制器里面进行通知的接受</p>
+<pre><code>func click(){
+        let secV = SecondViewController()
+        secV.delegate = self
+        self.navigationController?.pushViewController(secV, animated: true)
+         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector(&quot;getInfo:&quot;), name: &quot;abc&quot;, object: nil)
+
+}
+
+@objc func getInfo(info: NSNotification){
+    let dic:NSDictionary = info.object! as! NSDictionary
+    print(dic)
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/14/Swift通知，代理，闭包/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Swift中的willSet与didSet" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1649,158 +1863,9 @@ delegate.window.rootViewController = main;
 
 
   
-    <article id="post-iOS开发之APP内部切换语言" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/24/iOS开发之APP内部切换语言/">iOS开发之APP内部切换语言</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/24/iOS开发之APP内部切换语言/" class="archive-article-date">
-  	<time datetime="2018-12-24T03:14:10.130Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS开发中，随着APP越来越完善，很多APP都做了国际化，也实现了APP内部切换语言。</p>
-<p>国际化都会走到NSBundle的- (NSString <em>)localizedStringForKey:(NSString </em>)key value:(nullable NSString <em>)value table:(nullable NSString </em>)tableName方法，使用自定义Bundle替换NSBundle，通过切换根控制器来完成APP内部切换语言。</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="1-拦截国际化方法"><a href="#1-拦截国际化方法" class="headerlink" title="1.拦截国际化方法"></a>1.拦截国际化方法</h3><p>通过分类和runtime来实现拦截，将Bundle替换为自定义CLBundle。</p>
-<pre><code>+ (void)load {
-    static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
-        //动态继承、交换，方法类似KVO，通过修改[NSBundle mainBundle]对象的isa指针，使其指向它的子类CLBundle，这样便可以调用子类的方法；其实这里也可以使用method_swizzling来交换mainBundle的实现，来动态判断，可以同样实现。
-        object_setClass([NSBundle mainBundle], [CLBundle class]);
-    });
-}
-</code></pre><h3 id="2-重写方法判断加载哪一种语言"><a href="#2-重写方法判断加载哪一种语言" class="headerlink" title="2.重写方法判断加载哪一种语言"></a>2.重写方法判断加载哪一种语言</h3><p>重写mainBundle方法，通过语言管理类获取当前应该加载哪一种语言。</p>
-<pre><code>- (NSString *)localizedStringForKey:(NSString *)key value:(NSString *)value table:(NSString *)tableName {
-    if ([CLBundle cl_mainBundle]) {
-        return [[CLBundle cl_mainBundle] localizedStringForKey:key value:value table:tableName];
-    } else {
-        return [super localizedStringForKey:key value:value table:tableName];
-    }
-}
-
-+ (NSBundle *)cl_mainBundle {
-    if ([NSBundle currentLanguage].length) {
-        NSString *path = [[NSBundle mainBundle] pathForResource:[NSBundle currentLanguage] ofType:@&quot;lproj&quot;];
-        if (path.length) {
-            return [NSBundle bundleWithPath:path];
-        }
-    }
-    return nil;
-}
-
-+ (NSString *)currentLanguage {
-    return [CLLanguageManager userLanguage] ? : [NSLocale preferredLanguages].firstObject;
-}
-</code></pre><h3 id="3-语言管理类"><a href="#3-语言管理类" class="headerlink" title="3.语言管理类"></a>3.语言管理类</h3><p>将语言切换调用设置简单封装，方便调用。</p>
-<pre><code>+ (void)setUserLanguage:(NSString *)userLanguage {
-    //跟随手机系统
-    if (!userLanguage.length) {
-        [self resetSystemLanguage];
-        return;
-    }
-    //用户自定义
-    [[NSUserDefaults standardUserDefaults] setValue:userLanguage forKey:CLUserLanguageKey];
-    [[NSUserDefaults standardUserDefaults] setValue:@[userLanguage] forKey:@&quot;AppleLanguages&quot;];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-+ (NSString *)userLanguage {
-    return [[NSUserDefaults standardUserDefaults] valueForKey:CLUserLanguageKey];
-}
-
-/**
- 重置系统语言
- */
-+ (void)resetSystemLanguage {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:CLUserLanguageKey];
-    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:@&quot;AppleLanguages&quot;];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-</code></pre><h3 id="4-切换根控制器来切换语言"><a href="#4-切换根控制器来切换语言" class="headerlink" title="4.切换根控制器来切换语言"></a>4.切换根控制器来切换语言</h3><p>为了减少工作量，直接切换根控制器来达到语言切换。</p>
-<pre><code>[CLLanguageManager setUserLanguage:@&quot;en&quot;];
- CLTabbarController *tabbarController = [[CLTabbarController alloc] init];
-tabbarController.selectedIndex = 3;
-UINavigationController *navigationController = tabbarController.selectedViewController;
-NSMutableArray *viewControllers = navigationController.viewControllers.mutableCopy;
-    //取出我的页面，提前加载，解决返回按钮不变化
- CLMyController *me = (CLMyController *)[viewControllers firstObject];
-[me loadViewIfNeeded];
-    //新建设置语言页面
-CLChangeLanguageController *languageController = [[CLChangeLanguageController alloc] init];
-languageController.hidesBottomBarWhenPushed = YES;
-[viewControllers addObject:languageController];
-    //解决奇怪的动画bug。
-dispatch_async(dispatch_get_main_queue(), ^{
-    [UIApplication sharedApplication].keyWindow.rootViewController = tabbarController;
-    navigationController.viewControllers = viewControllers;
-    CLLog(@&quot;已切换到语言 %@&quot;, [NSBundle currentLanguage]);
-});
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/24/iOS开发之APP内部切换语言/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 
@@ -1899,15 +1964,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1919,6 +1980,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
@@ -1927,15 +1992,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1943,11 +2004,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
