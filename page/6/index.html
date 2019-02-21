@@ -152,6 +152,97 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Nonnull区域设置(Audited Regions)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/09/Nonnull区域设置(Audited Regions)/">Nonnull区域设置(Audited Regions)</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/09/Nonnull区域设置(Audited Regions)/" class="archive-article-date">
+  	<time datetime="2018-12-09T09:43:35.246Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>如果需要每个属性或每个方法都去指定nonnull和nullable，是一件非常繁琐的事。苹果为了减轻我们的工作量，专门提供了两个宏：NS_ASSUME_NONNULL_BEGIN和NS_ASSUME_NONNULL_END。在这两个宏之间的代码，所有简单指针对象都被假定为nonnull，因此我们只需要去指定那些nullable的指针。如下代码所示：</p>
+<pre><code>NS_ASSUME_NONNULL_BEGIN
+@interface TestNullabilityClass () 
+
+@property (nonatomic, copy) NSArray * items; 
+
+
+- (id)itemWithName:(nullable NSString *)name; 
+
+@end 
+NS_ASSUME_NONNULL_END
+</code></pre><p>在上面的代码中，items属性默认是nonnull的，itemWithName:方法的返回值也是nonnull，而参数是指定为nullable的。</p>
+<p>不过，为了安全起见，苹果还制定了几条规则：</p>
+<ul>
+<li>typedef定义的类型的nullability特性通常依赖于上下文，即使是在Audited Regions中，也不能假定它为nonnull。</li>
+<li>复杂的指针类型(如id <em>)必须显示去指定是nonnull还是nullable。例如，指定一个指向nullable对象的nonnull指针，可以使用”__nullable id </em> __nonnull”。</li>
+<li>我们经常使用的NSError **通常是被假定为一个指向nullable NSError对象的nullable指针。</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/09/Nonnull区域设置(Audited Regions)/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS无痕埋点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2348,167 +2439,6 @@ _dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
 
 
   
-    <article id="post-iOS子线程更新UI到主线程的三种方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/">iOS子线程更新UI到主线程的三种方法</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/" class="archive-article-date">
-  	<time datetime="2018-11-27T06:00:05.548Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>简单说将代码同步到主线程执行的三种方法如下</p>
-<pre><code>// 1.NSThread
-[self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
-
-- (void)updateUI {
-    // UI更新代码
-    self.alert.text = @&quot;Thanks!&quot;;
-}
-
-// 2.NSOperationQueue
-[[NSOperationQueue mainQueue] addOperationWithBlock:^{
-    // UI更新代码
-    self.alert.text = @&quot;Thanks!&quot;;
-    }];
-
-// 3.GCD
-dispatch_async(dispatch_get_main_queue(), ^{
-   // UI更新代码
-   self.alert.text = @&quot;Thanks!&quot;;
-});
-</code></pre><p>看下面的例子： </p>
-<p>以下代码有什么问题？如何修复？</p>
-<pre><code>@interface TTWaitController : UIViewController
-
-@property (strong, nonatomic) UILabel *alert;
-
-@end
-
-@implementation TTWaitController
-
-- (void)viewDidLoad
-{
-    CGRect frame = CGRectMake(20, 200, 200, 20);
-    self.alert = [[UILabel alloc] initWithFrame:frame];
-    self.alert.text = @&quot;Please wait 10 seconds...&quot;;
-    self.alert.textColor = [UIColor whiteColor];
-    [self.view addSubview:self.alert];
-
-    NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
-    [waitQueue addOperationWithBlock:^{
-        [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
-        self.alert.text = @&quot;Thanks!&quot;;
-    }];
-}
-
-@end
-
-@implementation TTAppDelegate
-
-- (BOOL)application:(UIApplication *)application
-  didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.window.rootViewController = [[TTWaitController alloc] init];
-    [self.window makeKeyAndVisible];
-    return YES;
-}
-</code></pre><p>这段代码是想提醒用户等待10s，10s后在标签上显示“Thanks”，但多线程代码部分NSOperationQueue的addOperationWithBlock函数不能保证block里面的语句是在主线程中运行的，UILabel显示文字属于UI更新，必须要在主线程进行，否则会有未知的操作，无法在界面上及时正常显示。</p>
-<p>解决方法是将UI更新的代码写在主线程上即可，代码同步到主线程上主要有三种方法：NSThread、NSOperationQueue和GCD，三个层次的多线程都可以获取主线程并同步。</p>
-<h4 id="NSThread级主线程同步：performSelectorOnMainThread"><a href="#NSThread级主线程同步：performSelectorOnMainThread" class="headerlink" title="NSThread级主线程同步：performSelectorOnMainThread"></a>NSThread级主线程同步：performSelectorOnMainThread</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
-[waitQueue addOperationWithBlock:^{
-    [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
-    // 同步到主线程
-    [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
-}];
-
-/**
- * UI更新函数
- */
-- (void)updateUI {
-    self.alert.text = @&quot;Thanks!&quot;;
-}
-</code></pre><h4 id="NSOperationQueue级主线程同步：-NSOperationQueue-mainQueue"><a href="#NSOperationQueue级主线程同步：-NSOperationQueue-mainQueue" class="headerlink" title="NSOperationQueue级主线程同步：[NSOperationQueue mainQueue]"></a>NSOperationQueue级主线程同步：[NSOperationQueue mainQueue]</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
-[waitQueue addOperationWithBlock:^{
-    [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
-    // 同步到主线程
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        self.alert.text = @&quot;Thanks!&quot;;
-    }];
-}];
-</code></pre><h4 id="GCD级主线程同步：dispatch-get-main-queue"><a href="#GCD级主线程同步：dispatch-get-main-queue" class="headerlink" title="GCD级主线程同步：dispatch_get_main_queue"></a>GCD级主线程同步：dispatch_get_main_queue</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
-[waitQueue addOperationWithBlock:^{
-    [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:3]];
-    // 同步到主线程
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.alert.text = @&quot;Thanks!&quot;;
-    });
-}];
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -2610,7 +2540,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2618,7 +2548,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2630,15 +2560,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2646,11 +2572,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">

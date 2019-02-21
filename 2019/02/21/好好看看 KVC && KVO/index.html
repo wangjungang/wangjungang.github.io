@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>理解 Swift 中的元类型：.Type 与 .self | Blog</title>
+  <title>好好看看 KVC &amp;&amp; KVO | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="元类型元类型就是类型的类型。 比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的">
+  <meta name="description" content="基本用法字典快速赋值KVC 可以将字典里面和 model 同名的 property 进行快速赋值 setValuesForKeysWithDictionary //前提：model 中的各个 property 必须和 NSDictionary 中的属性一致 - (instancetype)initWithDic:(NSDictionary *)dic{     BannerModel *model">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="理解 Swift 中的元类型：.Type 与 .self">
-<meta property="og:url" content="http://yoursite.com/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/index.html">
+<meta property="og:title" content="好好看看 KVC &amp;&amp; KVO">
+<meta property="og:url" content="http://yoursite.com/2019/02/21/好好看看 KVC && KVO/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="元类型元类型就是类型的类型。 比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的">
+<meta property="og:description" content="基本用法字典快速赋值KVC 可以将字典里面和 model 同名的 property 进行快速赋值 setValuesForKeysWithDictionary //前提：model 中的各个 property 必须和 NSDictionary 中的属性一致 - (instancetype)initWithDic:(NSDictionary *)dic{     BannerModel *model">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-27T05:53:43.698Z">
+<meta property="og:updated_time" content="2019-02-21T07:48:30.700Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="理解 Swift 中的元类型：.Type 与 .self">
-<meta name="twitter:description" content="元类型元类型就是类型的类型。 比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的">
+<meta name="twitter:title" content="好好看看 KVC &amp;&amp; KVO">
+<meta name="twitter:description" content="基本用法字典快速赋值KVC 可以将字典里面和 model 同名的 property 进行快速赋值 setValuesForKeysWithDictionary //前提：model 中的各个 property 必须和 NSDictionary 中的属性一致 - (instancetype)initWithDic:(NSDictionary *)dic{     BannerModel *model">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,104 +155,109 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-理解 Swift 中的元类型：.Type 与 .self" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-好好看看 KVC &amp;&amp; KVO" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      理解 Swift 中的元类型：.Type 与 .self
+      好好看看 KVC &amp;&amp; KVO
     </h1>
   
 
         
-        <a href="/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/" class="archive-article-date">
-  	<time datetime="2018-11-27T05:47:47.375Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
+        <a href="/2019/02/21/好好看看 KVC && KVO/" class="archive-article-date">
+  	<time datetime="2019-02-21T07:34:53.020Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="元类型"><a href="#元类型" class="headerlink" title="元类型"></a>元类型</h3><p>元类型就是类型的类型。</p>
-<p>比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的类型，术语表述为元类型：metaType。</p>
-<h3 id="Type-与-self"><a href="#Type-与-self" class="headerlink" title=".Type 与 .self"></a>.Type 与 .self</h3><p>Swift 中的元类型用 .Type 表示。比如 Int.Type 就是 Int 的元类型。 类型与值有着不同的形式，就像 Int 与 5 的关系。元类型也是类似，.Type 是类型，类型的 .self 是元类型的值。</p>
-<pre><code>let intMetatype: Int.Type = Int.self
-</code></pre><p>可能大家平时对元类型使用的比较少，加上这两个形式有一些接近，一个元类型只有一个对应的值，所以使用的时候常常写错：</p>
-<pre><code>types.append(Int.Type)
-types.append(Int.self)
-</code></pre><p>如果分清了 Int.Type 是类型的名称，不是值就不会再弄错了。因为你肯定不会这么写：</p>
-<pre><code>numbers.append(Int)
-</code></pre><h3 id="AnyClass"><a href="#AnyClass" class="headerlink" title="AnyClass"></a>AnyClass</h3><p>获得元类型后可以访问静态变量和静态方法。其实我们经常使用元类型，只是有时 Xcode 帮我们隐藏了这些细节。比如我们经常用的 tableView 的一个方法：</p>
-<pre><code>func register(AnyClass?, forCellReuseIdentifier: String)
-
-tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cell&quot;)
-</code></pre><p>这里的 AnyClass 其实就是一个元类型：</p>
-<pre><code>typealias AnyClass = AnyObject.Type
-</code></pre><p>通过上面的定义我们可以知道，AnyClass 就是一个任意类型元类型的别名。 当我们访问静态变量的时候其实也是通过元类型的访问的，只是 Xcode 帮我们省略了 .self。下面两个写法是等价的。如果可以不引起歧义，我想没人会愿意多写一个 self。</p>
-<pre><code>Int.max
-Int.self.max
-</code></pre><h3 id="type-of-vs-self"><a href="#type-of-vs-self" class="headerlink" title="type(of:) vs .self"></a>type(of:) vs .self</h3><p>前面提到通过 type(of:) 和 .self都可以获得元类型的值。那么这两种方式的区别是什么呢？</p>
-<pre><code>let instanceMetaType: String.Type = type(of: &quot;string&quot;)
-let staicMetaType: String.Type = String.self
-</code></pre><p>.self 取到的是静态的元类型，声明的时候是什么类型就是什么类型。type(of:) 取的是运行时候的元类型，也就是这个实例 的类型。</p>
-<pre><code>let myNum: Any = 1 
-type(of: myNum) // Int.type
-</code></pre><h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>很多人对 Protocol 的元类型容易理解错。Protocol 自身不是一个类型，只有当一个对象实现了 protocol 后才有了类型对象。所以 Protocol.self 不等于 Protocol.Type。如果你写下面的代码会得到一个错误：</p>
-<pre><code>protocol MyProtocol { }
-let metatype: MyProtocol.Type = MyProtocol.self
-</code></pre><p>正确的理解是 MyProtocol.Type 也是一个有效的元类型，那么就需要是一个可承载的类型的元类型。所以改成这样就可以了：</p>
-<pre><code>struct MyType: MyProtocol { }
-let metatype: MyProtocol.Type = MyType.self 
-</code></pre><p>那么 Protocol.self 是什么类型呢？为了满足你的好奇心苹果为你造了一个类型：</p>
-<pre><code>let protMetatype: MyProtocol.Protocol = MyProtocol.self
-</code></pre><h2 id="一个实战"><a href="#一个实战" class="headerlink" title="一个实战"></a>一个实战</h2><p>为了让大家能够熟悉元类型的使用我举一个例子。 假设我们有两个 Cell 类，想要一个工厂方法可以根据类型初始化对象。下面是两个 Cell 类：</p>
-<pre><code>protocol ContentCell { }
-
-class IntCell: UIView, ContentCell {
-    required init(value: Int) {
-        super.init(frame: CGRect.zero)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError(&quot;init(coder:) has not been implemented&quot;)
-    }
+        <h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><h3 id="字典快速赋值"><a href="#字典快速赋值" class="headerlink" title="字典快速赋值"></a>字典快速赋值</h3><p>KVC 可以将字典里面和 model 同名的 property 进行快速赋值 setValuesForKeysWithDictionary</p>
+<pre><code>//前提：model 中的各个 property 必须和 NSDictionary 中的属性一致
+- (instancetype)initWithDic:(NSDictionary *)dic{
+    BannerModel *model = [BannerModel new];
+    [model setValuesForKeysWithDictionary:dic];
+    return model;  
 }
+</code></pre><p>但是这里会有2种特殊情况。</p>
+<ul>
+<li>情况一 在 model 里面有 property 但是在 NSDictionary 里面没有这个值</li>
+</ul>
+<p>运行上面的代码，代码不崩溃，只不过在输出值的时候输出了 null</p>
+<ul>
+<li>情况二 在 NSDictionary 中存在某个值，但是在 model 里面没有值</li>
+</ul>
+<p>运行后编译成功，但是代码奔溃掉。原因是 KVC 。所以我们只需要实现这么一个方法。甚至不需要写函数体部分</p>
+<pre><code>- (void)setValue:(id)value forUndefinedKey:(NSString *)key{
 
-class StringCell: UIView, ContentCell {
-    required init(value: String) {
-        super.init(frame: CGRect.zero)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError(&quot;init(coder:) has not been implemented&quot;)
-    }
 }
-</code></pre><p>工厂方法实现是这样的</p>
-<pre><code>func createCell(type: ContentCell.Type) -&gt; ContentCell? {
-    if let intCell = type as? IntCell.Type {
-        return intCell.init(value: 5)
-    } else if let stringCell = type as? StringCell.Type {
-        return stringCell.init(value: &quot;xx&quot;)
-    }
-    return nil
-}
+</code></pre><ul>
+<li>情况三 如果 Dictionary 和 Model 中的 property 不同名</li>
+</ul>
+<p>我们照样可以利用 setValue:forUndefinedKey: 去处理</p>
+<pre><code>//model
+@property (nonatomic,copy)NSString *name;
+@property (nonatomic,copy)NSString *sex;
+@property (nonatomic,copy) NSString* age;
+//NSDictionary
+NSDictionary *dic = @{@&quot;username&quot;:@&quot;张三&quot;,@&quot;sex&quot;:@&quot;男&quot;,@&quot;id&quot;:@&quot;22&quot;};
 
-let intCell = createCell(type: IntCell.self)
-</code></pre><p>当然我们也可以使用类型推断，再结合泛型来使用：</p>
-<pre><code>func createCell&lt;T: ContentCell&gt;() -&gt; T? {
-    if let intCell = T.self as? IntCell.Type {
-        return intCell.init(value: 5) as? T
-    } else if let stringCell = T.self as? StringCell.Type {
-        return stringCell.init(value: &quot;xx&quot;) as? T
+-(void)setValue:(id)value forUndefinedKey:(NSString *)key{
+    if([key isEqualToString:@&quot;id&quot;]){
+        self.age=value;
     }
-    return nil
-}
+    if([key isEqualToString:@&quot;username&quot;]){
+        self.name=value;
+    }
+}    
+</code></pre><ul>
+<li><p>情况四 如果我们观察对象的属性是数组，我们经常会观察不到变化，因为 KVO 是观察 setter 方法。我们可以用 mutableArrayValueForKeyPath 进行属性的操作</p>
+<pre><code>NSMutableArray *hobbies = [_person mutableArrayValueForKeyPath:@&quot;hobbies&quot;];
+[hobbies addObject:@&quot;Web&quot;];
+</code></pre></li>
+<li>情况五 注册依赖键.</li>
+</ul>
+<p>KVO 可以观察属性的二级属性对象的所有属性变化。说人话就是“假如 Person 类有个 Dog 类，Dog 类有 name、fur、weight 等属性，我们给 Person 的 Dog 属性观察，假如 Dog 的任何属性变化是，Person 的观察者对象都可以拿到当前的变化值。我们只需要在 Person 中写下面的方法即可”</p>
+<pre><code>[self.person  addObserver:self
+        forKeyPath:NSStringFromSelector(@selector(dog))
+           options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+           context:ContextMark];
 
-// 现在就根据返回类型推断需要使用的元类型
-let stringCell: StringCell? = createCell()
-</code></pre>
+self.person.dog.name = @&quot;啸天犬&quot;;
+self.person.dog.weight = 50;
+
+
+// Person.m
++ (NSSet&lt;NSString *&gt; *)keyPathsForValuesAffectingValueForKey:(NSString *)key {
+    NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
+
+    if ([key isEqualToString:@&quot;dog&quot;]) {
+        NSArray *affectingKeys = @[@&quot;name&quot;, @&quot;fur&quot;, @&quot;weight&quot;];
+        keyPaths = [keyPaths setByAddingObjectsFromArray:affectingKeys];
+    }
+    return keyPaths;
+}
+</code></pre><h2 id="KVO的本质"><a href="#KVO的本质" class="headerlink" title="KVO的本质"></a>KVO的本质</h2><p>kVO 是Objective-C 对观察者模式的实现。也是 Cocoa Binding 的基础。</p>
+<h3 id="几个基本的知识点"><a href="#几个基本的知识点" class="headerlink" title="几个基本的知识点"></a>几个基本的知识点</h3><ul>
+<li><p>1 KVO 观察者和属性被观察的对象之间不是强引用的关系</p>
+</li>
+<li><p>2 KVO 的触发分为自动触发模式和手动触发模式2种。通常我们使用的都是自动通知，注册观察者之后，当条件触发的时候会自动调用-(void)observeValueForKeyPath…  如果需要实现手动通知，我们需要使用下面的方法</p>
+<pre><code>+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
+    return NO;
+}
+</code></pre></li>
+<li><p>3 若类有实例变量 NSString *_foo， 调用 setValue:forKey: 是以 foo 还是 _foo 作为 key ？<br>都可以</p>
+</li>
+<li><p>4 KVC 的 keyPath 中的集合运算符如何使用</p>
+</li>
+<li><p>5 KVO 和 KVC 的 keyPath 一定是属性吗？ 可以是成员变量</p>
+</li>
+</ul>
+<h3 id="KVO的缺陷"><a href="#KVO的缺陷" class="headerlink" title="KVO的缺陷"></a>KVO的缺陷</h3><p>KVO 虽然很强大，你只能重写 -<br>observeValueForKeyPath:ofObject:change:context: 来获得通知，想要提供自定义的 selector ，不行；想要传入一个 block，没门儿。感觉如果加入 block 就更棒了。</p>
+
       
 
       
@@ -342,7 +347,7 @@ let stringCell: StringCell? = createCell()
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/21/好好看看 KVC && KVO/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -356,18 +361,9 @@ let stringCell: StringCell? = createCell()
   
 <nav id="article-nav">
   
-    <a href="/2018/11/27/利用消息转发机制防止Crach/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          利用消息转发机制与Try Catch代码块防止崩溃
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Runloop等待条件满足再向下执行但不主卡线程</div>
+    <a href="/2019/02/21/iOS改变图片颜色/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iOS改变图片颜色</div>
       <i class="icon-circle-right"></i>
     </a>
   
