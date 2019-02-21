@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>关于分类的总结 | Blog</title>
+  <title>iOS改变图片颜色 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="类别(Category)主要有3个作用： 将类的实现分散到多个不同文件或多个不同框架中。 创建对私有方法的前向引用。 向对象添加非正式协议。 声明：@interface 类名(分类名称) @end 实现：@implementation 类名(分类名称) @end 注意: (1)在分类只能增加方法,不能增加成员变量，如果要增加成员变量的话该考虑用继承去实现 (2)在分类实现方法中可以访问类中的成员变">
-<meta name="keywords" content="随笔">
+  <meta name="description" content="写在前面在做项目的时候碰到了一个需求，就是设计做的图片的颜色和需求不符合，需要把图片的颜色改变一下。下面是改变图片颜色的方法。 方法首先我们创建一个UIImage的Category，名为ChangeColor。这个名为ChangeColor的Category只有一个方法，即-(UIImage)imageChangeColor:(UIColor)color。这个方法的具体实现如下： #import">
+<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于分类的总结">
-<meta property="og:url" content="http://yoursite.com/2018/09/13/关于分类的总结 /index.html">
+<meta property="og:title" content="iOS改变图片颜色">
+<meta property="og:url" content="http://yoursite.com/2019/02/21/iOS改变图片颜色/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="类别(Category)主要有3个作用： 将类的实现分散到多个不同文件或多个不同框架中。 创建对私有方法的前向引用。 向对象添加非正式协议。 声明：@interface 类名(分类名称) @end 实现：@implementation 类名(分类名称) @end 注意: (1)在分类只能增加方法,不能增加成员变量，如果要增加成员变量的话该考虑用继承去实现 (2)在分类实现方法中可以访问类中的成员变">
+<meta property="og:description" content="写在前面在做项目的时候碰到了一个需求，就是设计做的图片的颜色和需求不符合，需要把图片的颜色改变一下。下面是改变图片颜色的方法。 方法首先我们创建一个UIImage的Category，名为ChangeColor。这个名为ChangeColor的Category只有一个方法，即-(UIImage)imageChangeColor:(UIColor)color。这个方法的具体实现如下： #import">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-16T14:04:27.009Z">
+<meta property="og:updated_time" content="2019-02-21T07:26:04.485Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于分类的总结">
-<meta name="twitter:description" content="类别(Category)主要有3个作用： 将类的实现分散到多个不同文件或多个不同框架中。 创建对私有方法的前向引用。 向对象添加非正式协议。 声明：@interface 类名(分类名称) @end 实现：@implementation 类名(分类名称) @end 注意: (1)在分类只能增加方法,不能增加成员变量，如果要增加成员变量的话该考虑用继承去实现 (2)在分类实现方法中可以访问类中的成员变">
+<meta name="twitter:title" content="iOS改变图片颜色">
+<meta name="twitter:description" content="写在前面在做项目的时候碰到了一个需求，就是设计做的图片的颜色和需求不符合，需要把图片的颜色改变一下。下面是改变图片颜色的方法。 方法首先我们创建一个UIImage的Category，名为ChangeColor。这个名为ChangeColor的Category只有一个方法，即-(UIImage)imageChangeColor:(UIColor)color。这个方法的具体实现如下： #import">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,60 +155,46 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-关于分类的总结 " class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-iOS改变图片颜色" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      关于分类的总结
+      iOS改变图片颜色
     </h1>
   
 
         
-        <a href="/2018/09/13/关于分类的总结 /" class="archive-article-date">
-  	<time datetime="2018-09-13T13:49:46.950Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
+        <a href="/2019/02/21/iOS改变图片颜色/" class="archive-article-date">
+  	<time datetime="2019-02-21T07:24:36.731Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>类别(Category)主要有3个作用：</p>
-<p>将类的实现分散到多个不同文件或多个不同框架中。</p>
-<p>创建对私有方法的前向引用。</p>
-<p>向对象添加非正式协议。</p>
-<p>声明：@interface 类名(分类名称) @end</p>
-<p>实现：@implementation 类名(分类名称) @end</p>
-<p>注意:</p>
-<p>(1)在分类只能增加方法,不能增加成员变量，如果要增加成员变量的话该考虑用继承去实现</p>
-<p>(2)在分类实现方法中可以访问类中的成员变量但是不能访问类中的属性@property</p>
-<p>(3)在分类中可以重新实现原类中的方法，但会将原类中的方法覆盖而失效。</p>
-<p>因为在执行对象成员方法的时候会优先去分类中查找，然后再去原类中去查找，最后去父类中去查找</p>
-<p>(4)如果一个类有多个分类，而且分类中有同名的方法那么最后编译的分类会将前面编译的分类覆盖而执行输出</p>
-<pre><code>// 另外一份解释来自《招聘一个靠谱的 iOS》—参考答案（上）---24
-// 类方法：
-   - 类方法是属于类对象的
-   - 类方法只能通过类对象调用
-   - 类方法中的self是类对象
-   - 类方法可以调用其他的类方法
-   - 类方法中不能访问成员变量
-   - 类方法中不能直接调用对象方法
-
-//  实例方法：
-   -  实例方法是属于实例对象的
-   -  实例方法只能通过实例对象调用
-   -  实例方法中的self是实例对象
-   -  实例方法中可以访问成员变量
-   -  实例方法中直接调用实例方法
-   -  实例方法中也可以调用类方法(通过类名)
-</code></pre><p>4 运行时能增加成员变量么？能增加属性么？如果能，如何增加？如果不能，为什么？</p>
-<p>Category中不能动态添加成员变量;</p>
-<p>在Objective-C提供的runtime函数中，确实有一个class_addIvar()函数用于给类添加成员变量，但是阅读过苹果的官方文档的人应该会看到：</p>
-<p>大概的意思说，这个函数只能在“构建一个类的过程中”调用。一旦完成类定义，就不能再添加成员变量了。经过编译的类在程序启动后就被runtime加载，没有机会调用addIvar。程序在运行时动态构建的类需要在调用objc_registerClassPair之后才可以被使用，同样没有机会再添加成员变量。</p>
-<p>因为方法和属性并不“属于”类实例，而成员变量“属于”类实例。我们所说的“类实例”概念，指的是一块内存区域，包含了isa指针和所有的成员变量。所以假如允许动态修改类成员变量布局，已经创建出的类实例就不符合类定义了，变成了无效对象。但方法定义是在objc_class中管理的，不管如何增删类方法，都不影响类实例的内存布局，已经创建出的类实例仍然可正常使用。</p>
-
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在做项目的时候碰到了一个需求，就是设计做的图片的颜色和需求不符合，需要把图片的颜色改变一下。下面是改变图片颜色的方法。</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>首先我们创建一个UIImage的Category，名为ChangeColor。这个名为ChangeColor的Category只有一个方法，即-(UIImage<em>)imageChangeColor:(UIColor</em>)color。这个方法的具体实现如下：</p>
+<pre><code>#import &quot;UIImage+ChangeColor.h&quot;@implementation UIImage (ChangeColor)//绘图-(UIImage*)imageChangeColor:(UIColor*)color
+{    //获取画布
+    UIGraphicsBeginImageContextWithOptions(self.size, NO, 0.0f);    //画笔沾取颜色
+    [color setFill];    
+    CGRect bounds = CGRectMake(0, 0, self.size.width, self.size.height);    UIRectFill(bounds);    //绘制一次
+    [self drawInRect:bounds blendMode:kCGBlendModeOverlay alpha:1.0f];    //再绘制一次
+    [self drawInRect:bounds blendMode:kCGBlendModeDestinationIn alpha:1.0f];    //获取图片
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();    UIGraphicsEndImageContext();    return img;
+}
+</code></pre><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>首先我们看一下不改变颜色时，真实的图片颜色</p>
+<pre><code>UIImage *image = [UIImage imageNamed:@&quot;qr-code&quot;];UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+[imageView setFrame:CGRectMake(100, 100, 100, 100)];
+[self.view addSubview:imageView];
+</code></pre><p>然后我们改变图片的颜色为绿色：</p>
+<pre><code>UIImage *image = [UIImage imageNamed:@&quot;qr-code&quot;];UIImageView *imageView = [[UIImageView alloc] initWithImage:[image imageChangeColor:[UIColor blueColor]]];
+[imageView setFrame:CGRectMake(100, 100, 100, 100)];
+[self.view addSubview:imageView];
+</code></pre>
       
 
       
@@ -242,7 +228,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
         		</li>
       		
 		</ul>
@@ -298,7 +284,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/13/关于分类的总结 /" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/21/iOS改变图片颜色/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -312,18 +298,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/09/14/iOS分类(category),类扩展(extension)/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          iOS分类(category),类扩展(extension)
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">类方法(class method)和实例方法(instance method)有什么区别？</div>
+    <a href="/2019/02/21/JavaBean及其用法/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">JavaBean及其用法</div>
       <i class="icon-circle-right"></i>
     </a>
   
