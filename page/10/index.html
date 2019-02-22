@@ -152,6 +152,84 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-类方法(class method)和实例方法(instance method)有什么区别？ " class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">类方法(class method)和实例方法(instance method)有什么区别？</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /" class="archive-article-date">
+  	<time datetime="2018-09-13T13:26:51.045Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>类方法，也称静态方法，指的是用static关键字修饰的方法。此方法属类本身的方法，不属于类的某一个实例（对象）。类方法中不可直接使用实例变量。其调用方式有三种：可直接调用、类名.方法名、对象名.方法名。实例方法指的是不用static关键字修饰的方法。每个实例对象都有自身的实例方法，互相独立，不共享一个。其调用方式只能是对象名.方法名。</p>
+<h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><p>静态方法在程序开始时生成内存,实例方法在程序运行中生成内存，<br>所以静态方法可以直接调用,实例方法要先成生实例,通过实例调用方法，静态速度很快，但是多了会占内存。<br>静态内存是连续的,因为是在程序开始时就生成了,而实例申请的是离散的空间,所以当然没有静态方法快，<br>而且静态内存是有限制的，太多了程序会启动不了。</p>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>如果需要访问或者修改某个实例的成员变量时，将该方法定义成实例方法。<br>类方法正好相反，它不需要访问或者修改某个实例的成员变量。<br>类方法一般用于实现一些工具方法，比如对某个对象进行扩展，或者实现单例。</p>
+<p>类方法常驻内存，实例方法不是，所以类方法效率高但占内存。<br>类方法在堆上分配内存，实例方法在堆栈上。<br>事实上所有的方法都不可能在堆或者堆栈上分配内存，方法作为代码是被加载到特殊的代码内存区域，这个内存区域是不可写的。<br>实例方法需要先创建实例才可以调用，比较麻烦，类方法不用，比较简单。</p>
+<p>事实上如果一个方法与他所在类型的实例无关，那么它就应该是静态的，决不会有人把它写成实例方法。所以所有的实例方法都与实例有关，既然与实例有关，那么创建实例就是必然的步骤，没有麻烦简单一说。实际上上你可以把所有的实例方法都写成静态的，将实例作为参数传入即可。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1220,197 +1298,6 @@ return smallestHeight;
 
 
   
-    <article id="post-关于分类的总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/关于分类的总结/">关于分类的总结</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/关于分类的总结/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:08:58.127Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><p>可以在不修改原来类的基础上，为一个类扩展方法。</p>
-<h2 id="分类的结构体"><a href="#分类的结构体" class="headerlink" title="分类的结构体"></a>分类的结构体</h2><pre><code>struct _category_t {
-    const char *name;//类名
-    struct _class_t *cls;//类
-    const struct _method_list_t *instance_methods;//category中所有给类添加的实例方法的列表（instanceMethods）
-    const struct _method_list_t *class_methods;//category中所有添加的类方法的列表（classMethods）
-    const struct _protocol_list_t *protocols;//category实现的所有协议的列表（protocols）
-    const struct _prop_list_t *properties;//category中添加的所有属性（instanceProperties）
-};
-
-struct category_t {
-    const char *name; // 类名
-    classref_t cls;   // 分类所属的类
-    struct method_list_t *instanceMethods;  // 实例方法列表
-    struct method_list_t *classMethods;     // 类方法列表
-    struct protocol_list_t *protocols;      // 遵循的协议列表
-    struct property_list_t *instanceProperties; // 属性列表
-
-    // 如果是元类，就返回类方法列表；否则返回实例方法列表
-    method_list_t *methodsForMeta(bool isMeta) {
-        if (isMeta) {
-            return classMethods;
-        } else {
-            return instanceMethods;
-        }
-    }
-
-    // 如果是元类，就返回 nil，因为元类没有属性；否则返回实例属性列表，但是...实例属性
-    property_list_t *propertiesForMeta(bool isMeta) {
-        if (isMeta) {
-            return nil; // classProperties;
-        } else {
-            return instanceProperties;
-        }
-    }
-};
-</code></pre><h2 id="编译时的分类"><a href="#编译时的分类" class="headerlink" title="编译时的分类"></a>编译时的分类</h2><h3 id="分类的属性"><a href="#分类的属性" class="headerlink" title="分类的属性"></a>分类的属性</h3><pre><code>// Person(categoryPerson) 属性列表
-static struct /*_prop_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count_of_properties;
-    struct _prop_t prop_list[1];
-} _OBJC_$_PROP_LIST_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_prop_t),
-    1,
-    {{"categoryPersonName","T@\"NSString\",C,N"}}
-};
-
-// Person 属性列表
-static struct /*_prop_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count_of_properties;
-    struct _prop_t prop_list[1];
-} _OBJC_$_PROP_LIST_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_prop_t),
-    1,
-    {{"presonName","T@\"NSString\",C,N,V_presonName"}}
-};
-</code></pre><p>在分类中可以声明属性，并且同样会生成一个 _prop_list_t 的结构体</p>
-<h3 id="分类的实例变量？"><a href="#分类的实例变量？" class="headerlink" title="分类的实例变量？"></a>分类的实例变量？</h3><pre><code>// Person 实例变量列表
-
-static struct /*_ivar_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _prop_t)
-    unsigned int count;
-    struct _ivar_t ivar_list[1];
-} _OBJC_$_INSTANCE_VARIABLES_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_ivar_t),
-    1,
-    {{(unsigned long int *)&OBJC_IVAR_$_Person$_presonName, "_presonName", "@\"NSString\"", 3, 8}}
-};
-</code></pre><p>因为 _category_t 这个结构体中并没有 _ivar_list_t<br>所以在编译时系统没有Person(categoryPerson) 没有生成类似的相应结构体，也没有生成  _categoryPersonName。</p>
-<h3 id="分类的实例方法"><a href="#分类的实例方法" class="headerlink" title="分类的实例方法"></a>分类的实例方法</h3><pre><code>// Person 实例方法结构体
-static struct /*_method_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _objc_method)
-    unsigned int method_count;
-    struct _objc_method method_list[3];
-} _OBJC_$_INSTANCE_METHODS_Person __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_objc_method),
-    3,
-    {{(struct objc_selector *)"doSomeThing", "v16@0:8", (void *)_I_Person_doSomeThing},
-	    {(struct objc_selector *)"presonName", "@16@0:8", (void *)_I_Person_presonName},
-	    {(struct objc_selector *)"setPresonName:", "v24@0:8@16", (void *)_I_Person_setPresonName_}}
-};
-
-// Person(categoryPerson )实例方法结构体
-static struct /*_method_list_t*/ {
-    unsigned int entsize;  // sizeof(struct _objc_method)
-    unsigned int method_count;
-    struct _objc_method method_list[1];
-} _OBJC_$_CATEGORY_INSTANCE_METHODS_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = {
-    sizeof(_objc_method),
-    1,
-    {{(struct objc_selector *)"doSomeThing", "v16@0:8", (void *)_I_Person_categoryPerson_doSomeThing}}
-};
-</code></pre><p>虽然分类可以声明属性，但是编译时，系统并没有生成分类属性的 get／set 方法，所以，这就是为什么分类要利用</p>
-<h3 id="分类的结构体-1"><a href="#分类的结构体-1" class="headerlink" title="分类的结构体"></a>分类的结构体</h3><pre><code>// Person(categoryPerson ) 结构体
-static struct _category_t _OBJC_$_CATEGORY_Person_$_categoryPerson __attribute__ ((used, section (&quot;__DATA,__objc_const&quot;))) = 
-{
-    &quot;Person&quot;,
-    0, // &amp;OBJC_CLASS_$_Person,
-    (const struct _method_list_t *)&amp;_OBJC_$_CATEGORY_INSTANCE_METHODS_Person_$_categoryPerson,
-    0,
-    0,
-    (const struct _prop_list_t *)&amp;_OBJC_$_PROP_LIST_Person_$_categoryPerson,
-};
-</code></pre><p>这是系统在编译时实例化 _category_t 生成的<br><em>OBJC</em>$_CATEGORY_Person_$_categoryPerson</p>
-<h3 id="分类数组"><a href="#分类数组" class="headerlink" title="分类数组"></a>分类数组</h3><pre><code>static struct _category_t *L_OBJC_LABEL_CATEGORY_$ [1] __attribute__((used, section (&quot;__DATA, __objc_catlist,regular,no_dead_strip&quot;)))= {
-    &amp;_OBJC_$_CATEGORY_Person_$_categoryPerson,
-};
-</code></pre><p>编译器最后生成了一个数组，数组的元素就是我们创建的各个分类，用来在运行时加载分类。</p>
-<h2 id="分类的加载"><a href="#分类的加载" class="headerlink" title="分类的加载"></a>分类的加载</h2><h3 id="加载分类调用栈"><a href="#加载分类调用栈" class="headerlink" title="加载分类调用栈"></a>加载分类调用栈</h3><pre><code>_objc_init
-└──map_2_images
-    └──map_images_nolock
-        └──_read_images
-</code></pre><p>分类加载的调用栈如上述</p>
-<p>_objc_init 算是整个 objc4 的入口，进行了一些初始化操作，注册了镜像状态改变时的回调函数</p>
-<p>map_2_images 主要是加锁并调用 map_images_nolock<br>map_images_nolock 在这个函数中，完成所有 class 的注册、fixup等工作，还有初始化自动释放池、初始化 side table 等工作并在函数后端调用了 _read_images</p>
-<p>_read_images 方法干了很多苦力活，比如加载类、Protocol、Category，加载分类的代码就写在 _read_images 函数的尾部</p>
-<p>该调用栈入口函数 void _objc_init(void) 在 objc-os.mm 中</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/关于分类的总结/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/9/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/11/">Next &raquo;</a>
@@ -1512,11 +1399,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1540,19 +1427,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
