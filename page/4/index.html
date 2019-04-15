@@ -152,6 +152,207 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-swift中as!和as?和as的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/21/swift中as!和as?和as的区别/">swift中as!和as?和as的区别</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/21/swift中as!和as?和as的区别/" class="archive-article-date">
+  	<time datetime="2018-12-21T08:56:28.637Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>as操作符用来把某个实例转型为另外的类型，由于实例转型可能失败，因此Swift为as操作符提供了两种形式：选项形式as?和强制形式as</p>
+<h2 id="as使用场合"><a href="#as使用场合" class="headerlink" title="as使用场合"></a>as使用场合</h2><h3 id="从派生类转换为基类，向上转型（upcasts）"><a href="#从派生类转换为基类，向上转型（upcasts）" class="headerlink" title="从派生类转换为基类，向上转型（upcasts）"></a>从派生类转换为基类，向上转型（upcasts）</h3><pre><code>class Animal {}
+class Cat: Animal {}
+let cat = Cat()
+let animal = cat as Animal
+</code></pre><h3 id="消除二义性，数值类型转换"><a href="#消除二义性，数值类型转换" class="headerlink" title="消除二义性，数值类型转换"></a>消除二义性，数值类型转换</h3><pre><code>let num1 = 42 as CGFloat
+let num2 = 42 as Int
+let num3 = 42.5 as Int
+let num4 = (42 / 2) as Double
+</code></pre><h3 id="switch-语句中进行模式匹配"><a href="#switch-语句中进行模式匹配" class="headerlink" title="switch 语句中进行模式匹配"></a>switch 语句中进行模式匹配</h3><p>如果不知道一个对象是什么类型，你可以通过switch语法检测它的类型，并且尝试在不同的情况下使用对应的类型进行相应的处理。</p>
+<pre><code>switch animal {
+case let cat as Cat:
+    print(&quot;如果是Cat类型对象，则做相应处理&quot;)
+case let dog as Dog:
+    print(&quot;如果是Dog类型对象，则做相应处理&quot;)
+default: break
+}
+</code></pre><h2 id="as-使用场合"><a href="#as-使用场合" class="headerlink" title="as!使用场合"></a>as!使用场合</h2><p>向下转型（Downcasting）时使用。由于是强制类型转换，如果转换失败会报 runtime 运行错误。</p>
+<pre><code>class Animal {}
+class Cat: Animal {}
+let animal :Animal  = Cat()
+let cat = animal as! Cat
+</code></pre><h2 id="as-使用场合-1"><a href="#as-使用场合-1" class="headerlink" title="as?使用场合"></a>as?使用场合</h2><p>as? 和 as! 操作符的转换规则完全一样。但 as? 如果转换不成功的时候便会返回一个 nil 对象。成功的话返回可选类型值（optional），需要我们拆包使用。</p>
+<p>由于 as? 在转换失败的时候也不会出现错误，所以对于如果能确保100%会成功的转换则可使用 as!，否则使用 as?</p>
+<pre><code>let animal:Animal = Cat()
+
+if let cat = animal as? Cat{
+    print(&quot;cat is not nil&quot;)
+} else {
+    print(&quot;cat is nil&quot;)
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/21/swift中as!和as?和as的区别/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-tabbar和nav的黑线" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/20/tabbar和nav的黑线/">tabbar和nav的黑线</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/20/tabbar和nav的黑线/" class="archive-article-date">
+  	<time datetime="2018-12-20T08:52:58.590Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>有的时候因为项目需求，对tabbar以及navigationbar，需要去掉或者改变顶部及底部细线的颜色，对于这个问题，笔者在这里总结一下，方法不难，至于导航栏底部和tabbar顶部的黑线从何而来呢？通过层次结构会发现，是由于导航栏或者tabbar设置的默认图片导致的，要消除这种效果，就要摒弃系统自带的图片，自己生成一张图片，或者设置空的图片，下面就来上代码：</p>
+<h3 id="1-改变或者消除tabbar底部细线及其颜色"><a href="#1-改变或者消除tabbar底部细线及其颜色" class="headerlink" title="1.改变或者消除tabbar底部细线及其颜色"></a>1.改变或者消除tabbar底部细线及其颜色</h3><pre><code>[self.tabBar setBackgroundImage:[UIImage new]];
+[self.tabBar setShadowImage:[self.tabBar lineImageWithColor:[UIColor colorWithHexString:@&quot;#fb9966&quot;]]];
+</code></pre><p>第一步是设置背景图片，第二部设置阴影图片，上面的是改变细线的颜色，我们可以自己画一张图片，画图片的方法如下：</p>
+<pre><code>- (UIImage *)lineImageWithColor:(UIColor *)lineColor {
+
+    CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 0.5);
+    UIGraphicsBeginImageContext(rect.size);
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+
+    CGContextSetFillColorWithColor(ctx, lineColor.CGColor);
+    CGContextFillRect(ctx, rect);
+
+    UIImage *lineImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    return lineImage;
+
+}
+</code></pre><p>当然，如果想要去除黑线，只需要将shadowImage也设置未空白图片就可以了</p>
+<h3 id="2-去除或者改变navigationbar底部黑线"><a href="#2-去除或者改变navigationbar底部黑线" class="headerlink" title="2.去除或者改变navigationbar底部黑线"></a>2.去除或者改变navigationbar底部黑线</h3><p>原理类似，直接上代码吧</p>
+<pre><code>[self.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+[self.navigationBar setShadowImage:[self.navigationBar lineImageWithColor:[UIColor colorWithHexString:@&quot;#fb9966&quot;]]];
+</code></pre><p>至于导航栏比较多变，这一点完全可以隐藏掉系统的导航栏，自己做一个就行了</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/20/tabbar和nav的黑线/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关于内购需要注意的一些坑" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1479,245 +1680,6 @@ deinit {
 
 
   
-    <article id="post-UIImage图片性能优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/17/UIImage图片性能优化/">UIImage图片性能优化</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/17/UIImage图片性能优化/" class="archive-article-date">
-  	<time datetime="2018-12-17T03:24:37.183Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当你用 UIImage 或 CGImageSource 的那几个方法创建图片时，图片数据并不会立刻解码。图片设置到 UIImageView 或者 CALayer.contents 中去，并且 CALayer 被提交到 GPU 前，CGImage 中的数据才会得到解码。这一步是发生在主线程的，并且不可避免。如果想要绕开这个机制，常见的做法是在后台线程先把图片绘制到 CGBitmapContext 中，然后从 Bitmap 直接创建图片。目前常见的网络图片库都自带这个功能。</p>
-<p>这就是说图片解码需要消耗比较多的时间，在即将显示前，图片才会得到解码显示。</p>
-<h2 id="图片解码产生的性能问题"><a href="#图片解码产生的性能问题" class="headerlink" title="图片解码产生的性能问题"></a>图片解码产生的性能问题</h2><p>下面我试试图片解码到底有多卡，我拿了10张超过1MB的图片进行测试。</p>
-<p>代码很简单，就是一个tableView，在cell里面显示图片。</p>
-<pre><code>- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;cell&quot;];
-    if(!cell)
-    {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@&quot;cell&quot;];
-
-        UIImageView *headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 6, 80, 100-12)];
-        headImageView.tag = 10;
-        [cell.contentView addSubview:headImageView];
-    }
-
-    NSString *fileName = [NSString stringWithFormat:@&quot;Start%zi&quot;,indexPath.row%12];
-    @autoreleasepool{
-        UIImage *image = [UIImage imageNamed:fileName];
-        UIImageView *imageView = [cell.contentView viewWithTag:10];
-        imageView.image = image;
-    }
-    return cell;
-}
-</code></pre><p>1、通过imageNamed加载图</p>
-<pre><code>@autoreleasepool{
-        UIImage *image = [UIImage imageNamed:fileName];
-        UIImageView *imageView = [cell.contentView viewWithTag:10];
-        imageView.image = image;
-    }
-</code></pre><p>2、通过imageWithContentsOfFile加载图片</p>
-<pre><code>@autoreleasepool{
-//        UIImage *image = [UIImage imageNamed:fileName];
-        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@&quot;png&quot;];
-        UIImage *image = [UIImage imageWithContentsOfFile:path];
-        UIImageView *imageView = [cell.contentView viewWithTag:10];
-        imageView.image = image;
-    }
-</code></pre><p>两种加载方式，一开始都是比较卡，好像imageNamed方式有缓存，后面再滑动tableView不卡了，因为缓存了解码后的图片。但imageWithContentsOfFile这种方式，一直都是卡顿，证明没有缓存，每次显示都进行了一次解码。</p>
-<p>给imageView.image赋值时候，才会发生图片解码，如果不执行这代码，发现没产生什么卡顿，证明imageNamed等的图片加载方法耗时不多，主要的耗时操作是在解码阶段。</p>
-<h2 id="二、图片解码的性能优化"><a href="#二、图片解码的性能优化" class="headerlink" title="二、图片解码的性能优化"></a>二、图片解码的性能优化</h2><p>对图片解码的性能优化，可以考虑把图片解码操作放到子线程执行。然后再把解码后的图片赋值给imageView.image，如果发现图片已经是解码过的，就不会再发生解码操作，就可以达到优化效果。</p>
-<p>SDWebImage的实现思路就是这样，从网络获取图片后，进行了一次解码操作，再缓存到内存和磁盘，以供显示</p>
-<p>SDWebImageDecoder的解码方法decodedImageWithImage，里面代码也不难，有兴趣可以详细看看，当然，网上也有一大堆源码分析。<br>下面，我就要用这方法优化上面的代码：</p>
-<pre><code>- (void)queryImageCache:(NSString *)filename block:(void(^)(UIImage *image))block
-{
-    //从内存去取，如果没取到，就直接读取文件，在缓存起来
-    UIImage *image = [self.memCache objectForKey:filename];
-    if(image)
-    {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if(block)
-                block(image);
-        });
-    }
-    else
-    {
-        dispatch_async(_ioQueue, ^{
-
-            @autoreleasepool{
-                NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:@&quot;png&quot;];
-                UIImage *image = [UIImage imageWithContentsOfFile:path];
-                //把解压操作放到子线程
-                image = [UIImage decodedImageWithImage:image];
-                [self.memCache setObject:image forKey:filename];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if(block)
-                        block(image);
-                });
-            }
-        });
-    }
-}
-</code></pre><p>我把解码操作放到了子线程，解码完成后就缓存到内存，以供下次直接使用，执行如下：</p>
-<pre><code>[self queryImageCache:fileName block:^(UIImage *image) {
-        UIImageView *imageView = [cell.contentView viewWithTag:10];
-        imageView.image = image;
-    }];
- return cell;
-</code></pre><p>不会出现卡顿现象，而且占用的内存比直接使用imageNamed少。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/17/UIImage图片性能优化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-imagewithnamed渲染优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/16/imagewithnamed渲染优化/">imagewithnamed渲染优化</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/16/imagewithnamed渲染优化/" class="archive-article-date">
-  	<time datetime="2018-12-16T12:04:07.793Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>参考SDWebImage的图片编解码的思路，SD在拿到图片data的时候并没有将它直接转为image对象，而是在子线程里面做了一个解码的操作，这样已经被解码的图片就赋值给imageView的时候就不会再进行解码，也就不会妨碍主线程了。</p>
-<pre><code>- (void)decodedImageWithImageName:(NSString *)imageName block:(void(^)(UIImage *image))block {
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        @autoreleasepool{
-            UIImage *image = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-            image = [UIImage decodedImageWithImage:image];
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if(block)
-                block(image);
-            });
-        }
-    });
-}
-</code></pre><p>代码实现很简单，就是将图片的操作放入到一个全局队列中，当然也可以自己创建一个队列去执行这个异步操作。decodedImageWithImage:为SD的代码，需要#import “SDWebImageDecoder.h”，具体实现网上对这一块的源码解释的比较多，很容易理解。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/16/imagewithnamed渲染优化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -1819,11 +1781,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1875,11 +1837,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
             
             <div class="clearfix"></div>
