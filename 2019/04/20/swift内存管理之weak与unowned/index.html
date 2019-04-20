@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Swift中的高阶函数 | Blog</title>
+  <title>swift内存管理之weak与unowned | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 // 计算字符串的长度 let stringArray = [&amp;quot;Objective-C&amp;quot;, &amp;quot;Swift&amp;quot;, &amp;quot;HTML&amp;quo">
+  <meta name="description" content="在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。 weak日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。 weak var delegate: SomeDelegate?  lazy var someClosure: () -&amp;gt; Void">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Swift中的高阶函数">
-<meta property="og:url" content="http://yoursite.com/2019/04/15/Swift中的高阶函数/index.html">
+<meta property="og:title" content="swift内存管理之weak与unowned">
+<meta property="og:url" content="http://yoursite.com/2019/04/20/swift内存管理之weak与unowned/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 // 计算字符串的长度 let stringArray = [&amp;quot;Objective-C&amp;quot;, &amp;quot;Swift&amp;quot;, &amp;quot;HTML&amp;quo">
+<meta property="og:description" content="在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。 weak日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。 weak var delegate: SomeDelegate?  lazy var someClosure: () -&amp;gt; Void">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-15T09:46:50.405Z">
+<meta property="og:updated_time" content="2019-04-20T14:51:34.995Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift中的高阶函数">
-<meta name="twitter:description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 // 计算字符串的长度 let stringArray = [&amp;quot;Objective-C&amp;quot;, &amp;quot;Swift&amp;quot;, &amp;quot;HTML&amp;quo">
+<meta name="twitter:title" content="swift内存管理之weak与unowned">
+<meta name="twitter:description" content="在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。 weak日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。 weak var delegate: SomeDelegate?  lazy var someClosure: () -&amp;gt; Void">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,109 +155,46 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Swift中的高阶函数" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-swift内存管理之weak与unowned" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Swift中的高阶函数
+      swift内存管理之weak与unowned
     </h1>
   
 
         
-        <a href="/2019/04/15/Swift中的高阶函数/" class="archive-article-date">
-  	<time datetime="2019-04-15T09:13:52.846Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-15</time>
+        <a href="/2019/04/20/swift内存管理之weak与unowned/" class="archive-article-date">
+  	<time datetime="2019-04-20T14:50:27.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。</p>
-<h2 id="map"><a href="#map" class="headerlink" title="map"></a>map</h2><p>可以对数组中的每一个元素做一次处理</p>
-<pre><code>// 计算字符串的长度
-let stringArray = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&quot;, &quot;CSS&quot;, &quot;JavaScript&quot;]
-func stringCount(string: String) -&gt; Int {
-    return string.characters.count
+        <p>在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。</p>
+<h2 id="weak"><a href="#weak" class="headerlink" title="weak"></a>weak</h2><p>日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。</p>
+<pre><code>weak var delegate: SomeDelegate?
+
+lazy var someClosure: () -&gt; Void = { [weak self] in
+    guard let self = self else { retrun }
+    self.balabala
 }
-stringArray.map(stringCount)
+</code></pre><p>当我们赋值给一个被标记 weak 的变量时，它的引用计数不会被改变。而且当这个弱引用变量所引用的对象被释放时，这个变量将被自动设为 nil。这也是弱引用必须被声明为 Optional 的原因。</p>
+<h2 id="unowned"><a href="#unowned" class="headerlink" title="unowned"></a>unowned</h2><pre><code>unowned let someInstance: SomeClass
 
-stringArray.map({string -&gt; Int in
-    return string.characters.count
-})
-
-// $0代表数组中的每一个元素
-stringArray.map{
-    return $0.characters.count
+lazy var someClosure: () -&gt; Void = { [unowned self] in
+    self.balabala
 }
-</code></pre><h2 id="flatMap与map不同之处："><a href="#flatMap与map不同之处：" class="headerlink" title="flatMap与map不同之处："></a>flatMap与map不同之处：</h2><h3 id="（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包"><a href="#（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包" class="headerlink" title="（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包"></a>（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包</h3><pre><code>let array = [&quot;Apple&quot;, &quot;Orange&quot;, &quot;Puple&quot;, &quot;&quot;]
+</code></pre><p>在使用 unowned 时，我们不需要将变量声明为 Optional。</p>
+<p>需要注意的是。对于被 unowned 标记的变量，即使它的原来引用已经被释放，它仍然会保持对被已经释放了的对象的一个 “无效的” 引用，它不是 Optional ，也不会被指向 nil。所以，当我们试图访问这样的 unowned 引用时，程序就会发生错误。</p>
+<p>根据苹果的官方文档的建议。当我们知道两个对象的生命周期并不相关，那么我们必须使用 weak。相反，非强引用对象拥有和强引用对象同样或者更长的生命周期的话，则应该使用 unowned。</p>
+<p>例如，ViewControler 对它的 SubView 的引用可以使用 unowned。因为 ViewControler 的生命周期一定比对它的 SubView 长。</p>
+<p>而在使用服务时，则需要看情况使用 weak。因为服务的初始化方法可能是被工厂模式或 Service Locator 所封装。这些服务可能在某些时候被重构为单例，此时它们的生命周期发生了改变。</p>
 
-let arr1 = array.map { a -&gt; Int? in
-    let length = a.characters.count
-    guard length &gt; 0 else { return nil }
-    return length  
-}
-arr1 // [{some 5}, {some 6}, {some 5}, nil]
-
-let arr2 = array.flatMap { a-&gt; Int? in
-    let length = a.characters.count
-    guard length &gt; 0 else { return nil}
-    return length    
-}    
-arr2 // [5, 6, 5]
-</code></pre><h3 id="flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组"><a href="#flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组" class="headerlink" title="flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组"></a>flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组</h3><pre><code>let array = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-
-let arr1 = array.map{ $0 }
-arr1 // [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-
-let arr2 = array.flatMap{ $0 }
-arr2 // [1, 2, 3, 4, 5, 6, 7, 8, 9]
-</code></pre><h3 id="flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积"><a href="#flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积" class="headerlink" title="flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积"></a>flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积</h3><pre><code>let fruits = [&quot;Apple&quot;, &quot;Orange&quot;, &quot;Puple&quot;]
-let counts = [2, 3, 5]
-
-let array = counts.flatMap { count in
-    fruits.map ({ fruit in
-         return fruit + &quot;  \(count)&quot;            
-    })   
-}
-array // [&quot;Apple 2&quot;, &quot;Orange 2&quot;, &quot;Puple 2&quot;, &quot;Apple 3&quot;, &quot;Orange 3&quot;, &quot;Puple 3&quot;, &quot;Apple 5&quot;, &quot;Orange 5&quot;, &quot;Puple 5&quot;]
-</code></pre><h2 id="filer："><a href="#filer：" class="headerlink" title="filer："></a>filer：</h2><p>过滤，可以对数组中的元素按照某种规则进行一次过滤</p>
-<pre><code>// 筛选出字符串的长度小于10的字符串
-let stringArray = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&quot;, &quot;CSS&quot;, &quot;JavaScript&quot;]
-func stringCountLess10(string: String) -&gt; Bool {
-    return string.characters.count &lt; 10
-}
-stringArray.filter(stringCountLess10)
-
-stringArray.filter({string -&gt; Bool in
-    return string.characters.count &lt; 10
-})
-
-// $0表示数组中的每一个元素
-stringArray.filter{
-    return $0.characters.count &lt; 10
-}
-</code></pre><h2 id="reduce："><a href="#reduce：" class="headerlink" title="reduce："></a>reduce：</h2><p>计算，可以对数组的元素进行计算</p>
-<pre><code>// 将数组中的每个字符串用‘、’拼接
-let stringArray = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&quot;, &quot;CSS&quot;, &quot;JavaScript&quot;]
-
-func appendString(string1: String, string2: String) -&gt; String {
-    return string1 == &quot;&quot; ? string2 : string1 + &quot;、&quot; + string2
-}
-// reduce方法中的第一个参数是初始值
-stringArray.reduce(&quot;&quot;, appendString)
-
-stringArray.reduce(&quot;&quot;, {(string1, string2) -&gt; String in
-    return string1 == &quot;&quot; ? string2 : string1 + &quot;、&quot; + string2
-})
-
-// $0表示计算后的结果, $1表示数组中的每一个元素
-stringArray.reduce(&quot;&quot;, {
-    return $0 == &quot;&quot; ? $1 : $0 + &quot;、&quot; + $1
-})
-</code></pre>
       
 
       
@@ -347,7 +284,7 @@ stringArray.reduce(&quot;&quot;, {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/15/Swift中的高阶函数/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/20/swift内存管理之weak与unowned/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -361,18 +298,9 @@ stringArray.reduce(&quot;&quot;, {
   
 <nav id="article-nav">
   
-    <a href="/2019/04/20/多类型Cell的tableView实现/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          多类型Cell的tableView实现
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/04/15/Swift 中的 map 和 flatMap/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Swift 中的 map 和 flatMap</div>
+    <a href="/2019/04/20/swift中的枚举/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">swift中的枚举</div>
       <i class="icon-circle-right"></i>
     </a>
   

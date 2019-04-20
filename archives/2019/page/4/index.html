@@ -6,20 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Swift中的高阶函数 | Blog</title>
+  <title>Archives: 2019 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 // 计算字符串的长度 let stringArray = [&amp;quot;Objective-C&amp;quot;, &amp;quot;Swift&amp;quot;, &amp;quot;HTML&amp;quo">
-<meta name="keywords" content="iOS">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Swift中的高阶函数">
-<meta property="og:url" content="http://yoursite.com/2019/04/15/Swift中的高阶函数/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Blog">
+<meta property="og:url" content="http://yoursite.com/archives/2019/page/4/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 // 计算字符串的长度 let stringArray = [&amp;quot;Objective-C&amp;quot;, &amp;quot;Swift&amp;quot;, &amp;quot;HTML&amp;quo">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-15T09:46:50.405Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift中的高阶函数">
-<meta name="twitter:description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 // 计算字符串的长度 let stringArray = [&amp;quot;Objective-C&amp;quot;, &amp;quot;Swift&amp;quot;, &amp;quot;HTML&amp;quo">
+<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,137 +150,36 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Swift中的高阶函数" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      Swift中的高阶函数
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2019" class="archive-year">2019</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2019/01/25/textView的字数输入限制/" class="archive-article-date">
+  	<time datetime="2019-01-25T09:08:16.770Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-25</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2019/01/25/textView的字数输入限制/">textView的字数输入限制</a>
     </h1>
   
 
-        
-        <a href="/2019/04/15/Swift中的高阶函数/" class="archive-article-date">
-  	<time datetime="2019-04-15T09:13:52.846Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。</p>
-<h2 id="map"><a href="#map" class="headerlink" title="map"></a>map</h2><p>可以对数组中的每一个元素做一次处理</p>
-<pre><code>// 计算字符串的长度
-let stringArray = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&quot;, &quot;CSS&quot;, &quot;JavaScript&quot;]
-func stringCount(string: String) -&gt; Int {
-    return string.characters.count
-}
-stringArray.map(stringCount)
-
-stringArray.map({string -&gt; Int in
-    return string.characters.count
-})
-
-// $0代表数组中的每一个元素
-stringArray.map{
-    return $0.characters.count
-}
-</code></pre><h2 id="flatMap与map不同之处："><a href="#flatMap与map不同之处：" class="headerlink" title="flatMap与map不同之处："></a>flatMap与map不同之处：</h2><h3 id="（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包"><a href="#（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包" class="headerlink" title="（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包"></a>（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包</h3><pre><code>let array = [&quot;Apple&quot;, &quot;Orange&quot;, &quot;Puple&quot;, &quot;&quot;]
-
-let arr1 = array.map { a -&gt; Int? in
-    let length = a.characters.count
-    guard length &gt; 0 else { return nil }
-    return length  
-}
-arr1 // [{some 5}, {some 6}, {some 5}, nil]
-
-let arr2 = array.flatMap { a-&gt; Int? in
-    let length = a.characters.count
-    guard length &gt; 0 else { return nil}
-    return length    
-}    
-arr2 // [5, 6, 5]
-</code></pre><h3 id="flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组"><a href="#flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组" class="headerlink" title="flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组"></a>flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组</h3><pre><code>let array = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-
-let arr1 = array.map{ $0 }
-arr1 // [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-
-let arr2 = array.flatMap{ $0 }
-arr2 // [1, 2, 3, 4, 5, 6, 7, 8, 9]
-</code></pre><h3 id="flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积"><a href="#flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积" class="headerlink" title="flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积"></a>flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积</h3><pre><code>let fruits = [&quot;Apple&quot;, &quot;Orange&quot;, &quot;Puple&quot;]
-let counts = [2, 3, 5]
-
-let array = counts.flatMap { count in
-    fruits.map ({ fruit in
-         return fruit + &quot;  \(count)&quot;            
-    })   
-}
-array // [&quot;Apple 2&quot;, &quot;Orange 2&quot;, &quot;Puple 2&quot;, &quot;Apple 3&quot;, &quot;Orange 3&quot;, &quot;Puple 3&quot;, &quot;Apple 5&quot;, &quot;Orange 5&quot;, &quot;Puple 5&quot;]
-</code></pre><h2 id="filer："><a href="#filer：" class="headerlink" title="filer："></a>filer：</h2><p>过滤，可以对数组中的元素按照某种规则进行一次过滤</p>
-<pre><code>// 筛选出字符串的长度小于10的字符串
-let stringArray = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&quot;, &quot;CSS&quot;, &quot;JavaScript&quot;]
-func stringCountLess10(string: String) -&gt; Bool {
-    return string.characters.count &lt; 10
-}
-stringArray.filter(stringCountLess10)
-
-stringArray.filter({string -&gt; Bool in
-    return string.characters.count &lt; 10
-})
-
-// $0表示数组中的每一个元素
-stringArray.filter{
-    return $0.characters.count &lt; 10
-}
-</code></pre><h2 id="reduce："><a href="#reduce：" class="headerlink" title="reduce："></a>reduce：</h2><p>计算，可以对数组的元素进行计算</p>
-<pre><code>// 将数组中的每个字符串用‘、’拼接
-let stringArray = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&quot;, &quot;CSS&quot;, &quot;JavaScript&quot;]
-
-func appendString(string1: String, string2: String) -&gt; String {
-    return string1 == &quot;&quot; ? string2 : string1 + &quot;、&quot; + string2
-}
-// reduce方法中的第一个参数是初始值
-stringArray.reduce(&quot;&quot;, appendString)
-
-stringArray.reduce(&quot;&quot;, {(string1, string2) -&gt; String in
-    return string1 == &quot;&quot; ? string2 : string1 + &quot;、&quot; + string2
-})
-
-// $0表示计算后的结果, $1表示数组中的每一个元素
-stringArray.reduce(&quot;&quot;, {
-    return $0 == &quot;&quot; ? $1 : $0 + &quot;、&quot; + $1
-})
-</code></pre>
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -297,114 +191,22 @@ stringArray.reduce(&quot;&quot;, {
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/15/Swift中的高阶函数/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2019/04/20/多类型Cell的tableView实现/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          多类型Cell的tableView实现
-        
-      </div>
-    </a>
   
   
-    <a href="/2019/04/15/Swift 中的 map 和 flatMap/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Swift 中的 map 和 flatMap</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
+    
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/archives/2019/page/3/">&laquo; Prev</a><a class="page-number" href="/archives/2019/">1</a><a class="page-number" href="/archives/2019/page/2/">2</a><a class="page-number" href="/archives/2019/page/3/">3</a><span class="page-number current">4</span>
+    </nav>
   
 
 
@@ -428,8 +230,8 @@ stringArray.reduce(&quot;&quot;, {
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
-		isArchive: false,
+		isPost: false,
+		isArchive: true,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
