@@ -6,20 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>轮子阅读之SDAutoLayout | Blog</title>
+  <title>多类型Cell的tableView实现 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面几乎在我们所有的iOS App 项目中我们都为了开发方便，为了Deadline都会在我们的项目中使用一些别人造好的轮子。使用这些轮子一般都很简单，但是我们也要好好学习别人造的这些轮子背后的原因，大神们为什么要这么造？阅读大神们的代码来理解他们的造这些轮子的思想与方法对我们能力的提示也会有很大帮助。这篇文章就简单写一下我阅读SDAutoLayout这个自动布局开源库的源码之后的理解吧。 代码">
+  <meta name="description" content="写在前面 这种风格的tableView内容基本是固定且简单，如果要用MVVM去实现会比较繁琐。或者像我之前我都是直接根据indexPath去一一对应生成，这在开发阶段会很快很容易，但是后期如果要修改，比如增加一列或者删除一列，这时候就需要同时修改下面代理中的代码 - tableView: numberOfRowsInSection: - tableView: cellForRowAtIndexPa">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="轮子阅读之SDAutoLayout">
-<meta property="og:url" content="http://yoursite.com/2018/12/15/轮子阅读之SDAutoLayout/index.html">
+<meta property="og:title" content="多类型Cell的tableView实现">
+<meta property="og:url" content="http://yoursite.com/2019/04/20/多类型Cell的tableView实现/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面几乎在我们所有的iOS App 项目中我们都为了开发方便，为了Deadline都会在我们的项目中使用一些别人造好的轮子。使用这些轮子一般都很简单，但是我们也要好好学习别人造的这些轮子背后的原因，大神们为什么要这么造？阅读大神们的代码来理解他们的造这些轮子的思想与方法对我们能力的提示也会有很大帮助。这篇文章就简单写一下我阅读SDAutoLayout这个自动布局开源库的源码之后的理解吧。 代码">
+<meta property="og:description" content="写在前面 这种风格的tableView内容基本是固定且简单，如果要用MVVM去实现会比较繁琐。或者像我之前我都是直接根据indexPath去一一对应生成，这在开发阶段会很快很容易，但是后期如果要修改，比如增加一列或者删除一列，这时候就需要同时修改下面代理中的代码 - tableView: numberOfRowsInSection: - tableView: cellForRowAtIndexPa">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-15T13:55:21.410Z">
+<meta property="og:image" content="http://img.wangjungang.cn/WX20190420-205233@2x.png">
+<meta property="og:updated_time" content="2019-04-20T12:58:12.517Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="轮子阅读之SDAutoLayout">
-<meta name="twitter:description" content="写在前面几乎在我们所有的iOS App 项目中我们都为了开发方便，为了Deadline都会在我们的项目中使用一些别人造好的轮子。使用这些轮子一般都很简单，但是我们也要好好学习别人造的这些轮子背后的原因，大神们为什么要这么造？阅读大神们的代码来理解他们的造这些轮子的思想与方法对我们能力的提示也会有很大帮助。这篇文章就简单写一下我阅读SDAutoLayout这个自动布局开源库的源码之后的理解吧。 代码">
+<meta name="twitter:title" content="多类型Cell的tableView实现">
+<meta name="twitter:description" content="写在前面 这种风格的tableView内容基本是固定且简单，如果要用MVVM去实现会比较繁琐。或者像我之前我都是直接根据indexPath去一一对应生成，这在开发阶段会很快很容易，但是后期如果要修改，比如增加一列或者删除一列，这时候就需要同时修改下面代理中的代码 - tableView: numberOfRowsInSection: - tableView: cellForRowAtIndexPa">
+<meta name="twitter:image" content="http://img.wangjungang.cn/WX20190420-205233@2x.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,50 +157,222 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-轮子阅读之SDAutoLayout" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-多类型Cell的tableView实现" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      轮子阅读之SDAutoLayout
+      多类型Cell的tableView实现
     </h1>
   
 
         
-        <a href="/2018/12/15/轮子阅读之SDAutoLayout/" class="archive-article-date">
-  	<time datetime="2018-12-15T13:53:49.350Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
+        <a href="/2019/04/20/多类型Cell的tableView实现/" class="archive-article-date">
+  	<time datetime="2019-04-20T12:50:11.401Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>几乎在我们所有的iOS App 项目中我们都为了开发方便，为了Deadline都会在我们的项目中使用一些别人造好的轮子。使用这些轮子一般都很简单，但是我们也要好好学习别人造的这些轮子背后的原因，大神们为什么要这么造？阅读大神们的代码来理解他们的造这些轮子的思想与方法对我们能力的提示也会有很大帮助。这篇文章就简单写一下我阅读SDAutoLayout这个自动布局开源库的源码之后的理解吧。</p>
-<h2 id="代码阅读"><a href="#代码阅读" class="headerlink" title="代码阅读"></a>代码阅读</h2><pre><code>UILabel *titleLabel = [[UILabel alloc]init];
-titleLabel.text = @&quot;test string&quot;;
-[self.view addSubview:titleLabel];
-titleLabel.sd_layout
-             .leftSpaceToView(self.view,20)
-             .topSpaceToView(self.view,100)
-             .rightSpaceToView(self.view,20)
-             .heightIs(20);
-</code></pre><p>上面这段代码就是就是用SDAutoLayout对一个Label进行适配不同屏幕的简单例子。很简单、很暴力，并且是我们用起来很方便的链式调用方式。我们进行断点调试进入到SDAutoLayout的源代码中。</p>
-<p>首先执行sd_layout这个方法，这个方法的作用就是创建并初始化一些参数返回SDAutoLayoutModel这个对象的实例，然后就真正的开始进行自动布局的代码。</p>
-<p>接下来查看leftSpaceToView()这个方法会看到这个方法是一个懒加载的方法，在懒加载的方法中会执行这个方法marginToViewblockWithKey，这个方法很有意思，其中的key与SDAutoLayoutModel的私有属性left相同。</p>
-<p>进入到这个方法就可以看到返回值为一个block，而且在block中会通过KVC的方式设置SDAutoLayoutModel实例的属性（与这个方法的key名字相同）的value为SDAutoLayoutModelItem的实例对象，仔细发现SDAutoLayoutModel实例的私有属性的类型就是SDAutoLayoutModelItem。咋下面中我们也可到作者提供了这些属性的set方法，我们刚学KVC的时候大家都知道，KVC的机制是首先从调用setter方法，找不到setter方法就查找对象是否存在属性等的直到找不到任何相关的就会报错。我们查看这些setter方法就可以看到这写setter方法就是设置当前view的frame的属性。</p>
-<p>到这个时候我们就明白了这个第三方库的核心还是设置view的frame来进行适配。但是还有一点不同，在这个方法中还使用了黑魔法(runtime)Method Swizzing，在load方法中替换了layoutSubViews。因为在iOS中设置view的frame就会自动调用layoutSubViews这个方法，下面是会调用layoutSubViews方法的情况：</p>
-<pre><code>1. 直接调用setLayoutSubviews。（这个在上面苹果官方文档里有说明）
-2. addSubview的时候。
-3. 当view的frame发生改变的时候。
-4. 滑动UIScrollView的时候。
-5. 旋转Screen会触发父UIView上的layoutSubviews事件。
-6. 改变一个UIView大小的时候也会触发父UIView上的layoutSubviews事件。
-</code></pre><p>在替换的sd_layoutSubviews中执行了sd_layoutSubviewsHandle这个方法，这个方法就是针对不同的view及情况进行宽度、高度等属性进行计算，并且会缓存tableViewCell的高度等。</p>
-<p>接下来的topSpaceToView、rightSpaceToView、heightIs等方法跟leftSpaceToView方法类似，大同小异，我就不做一一解释了。</p>
-<p>总结一下这个开源库的原理就是通过KVC、链式调用、Runtime的Method Swizzing等技术创造的轮子。这个库还提供了一些其他功能，我们平时开发使用起来还是很简单方便的，能很大程度上提高我们的开发效率。工作之余可以多学学作者怎么使用这些技术创造轮子以及为什么这样写也是一件很有趣的事情。</p>
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><img src="http://img.wangjungang.cn/WX20190420-205233@2x.png" alt=""></p>
+<p>这种风格的tableView内容基本是固定且简单，如果要用MVVM去实现会比较繁琐。或者像我之前我都是直接根据indexPath去一一对应生成，这在开发阶段会很快很容易，但是后期如果要修改，比如增加一列或者删除一列，这时候就需要同时修改下面代理中的代码</p>
+<pre><code>- tableView: numberOfRowsInSection:
+- tableView: cellForRowAtIndexPath:
+- tableView: didSelectRowAtIndexPath:
+</code></pre><p>对于能躺着绝不坐着的个人习惯，我就想是不是可以改进下。</p>
+<h2 id="生成Model"><a href="#生成Model" class="headerlink" title="生成Model"></a>生成Model</h2><p> model的生成大同小异，基本是http获取json后转为model。这里我自己创建了json然后本地获取模拟了下。</p>
+<pre><code> {
+    &quot;photo&quot;:&quot;Audrey&quot;,
+    &quot;username&quot;:&quot;奥黛丽&quot;,
+    &quot;userCode&quot;:&quot;formyicarus222&quot;,
+    &quot;QRCode&quot;:&quot;ico&quot;,
+    &quot;sex&quot;:1
+}
+</code></pre><p>model 代码</p>
+<pre><code>@interface MultipeTypeModel : NSObject
 
+@property (strong, nonatomic) NSString *photo;
+@property (strong, nonatomic) NSString *username;
+@property (strong, nonatomic) NSString *userCode;
+@property (strong, nonatomic) NSString *qrCode;
+@property (assign, nonatomic) NSInteger sex;
+
++ (void)requestForData:(void(^)(MultipeTypeModel *model))completion;
+@end
+
+- (instancetype)initWithDict:(NSDictionary *)dict
+{
+    self = [super init];
+    if (self) {
+        self.photo = dict[@&quot;photo&quot;];
+        self.username = dict[@&quot;username&quot;];
+        self.userCode = dict[@&quot;userCode&quot;];
+        self.qrCode = dict[@&quot;QRCode&quot;];
+    }
+    return self;
+}
+
++ (void)requestForData:(void (^)(MultipeTypeModel * _Nonnull))completion {
+    NSString *path = [[NSBundle mainBundle] pathForResource:@&quot;MultipleCell&quot; ofType:@&quot;json&quot;];
+    NSString *json= [[NSString alloc] initWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSDictionary *jsonDict = [json jsonValueDecoded];
+    MultipeTypeModel *model = [[MultipeTypeModel alloc] initWithDict:jsonDict];
+    completion(model);
+}
+</code></pre><p>在vc里调用</p>
+<pre><code>- (void)geteData {
+    [MultipeTypeModel requestForData:^(MultipeTypeModel * _Nonnull model) {
+        self.muModel = model;
+    }];
+}
+</code></pre><h2 id="Model生成数组"><a href="#Model生成数组" class="headerlink" title="Model生成数组"></a>Model生成数组</h2><p>之前我说使用indexPath一一指定的方式去实现有个问题，就是后期需要增加或者删除cell需要修改多处代码。而解决这个问题的办法就是将tableView的数据统一和一个数组关联，那么之后有需求变动，我只需要修改这个数组就可以了。</p>
+<p>model转数组代码：</p>
+<pre><code>- (NSArray *)tableArrayFromModel:(MultipeTypeModel *)model {
+    NSArray *arr = @[
+                     @[
+                         @{
+                             @&quot;title&quot;:@&quot;头像&quot;,
+                             @&quot;image&quot;:model.photo?:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeHeader),
+                             @&quot;selector&quot;:NSStringFromSelector(@selector(doHeaderPhotoAction:))
+                             },
+
+                         @{
+                             @&quot;title&quot;:@&quot;用户名&quot;,
+                             @&quot;content&quot;:model.username?:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeName),
+                             @&quot;selector&quot;:NSStringFromSelector(@selector(doUsernameAction:))
+                             },
+//                         
+//                         @{
+//                             @&quot;title&quot;:@&quot;性别&quot;,
+//                             @&quot;content&quot;:model.sex==1?@&quot;男&quot;:@&quot;女&quot;,
+//                             @&quot;type&quot;:@2
+//                             },
+
+                         @{
+                             @&quot;title&quot;:@&quot;微信号&quot;,
+                             @&quot;content&quot;:model.userCode?:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeNameNoAccessory)
+                             },
+
+                         @{
+                             @&quot;title&quot;:@&quot;二维码&quot;,
+                             @&quot;image&quot;:model.qrCode?:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeHeader),
+                             @&quot;selector&quot;:NSStringFromSelector(@selector(doQRCodeAction:))
+                             },
+
+                         @{
+                             @&quot;title&quot;:@&quot;更多&quot;,
+                             @&quot;content&quot;:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeName),
+                             @&quot;selector&quot;:NSStringFromSelector(@selector(doMoreAction:))
+                             }
+                         ],
+
+                     @[
+                         @{
+                             @&quot;title&quot;:@&quot;我的地址&quot;,
+                             @&quot;content&quot;:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeName),
+                             @&quot;selector&quot;:NSStringFromSelector(@selector(doAddressAction:))
+                             }
+                         ]
+
+                     ];
+
+        return arr;
+        }
+</code></pre><p>这是一个二维数组，第一维表示section，第二维表示row。selector表示点击cell的事件，type表示cell的类型。cell的类型我是创建一个枚举来指定的：</p>
+<pre><code>typedef NS_ENUM(NSInteger,MUTableCellType) {
+    MUTableCellTypeHeader=1,
+    MUTableCellTypeName,
+    MUTableCellTypeNameNoAccessory
+};
+</code></pre><p>一般来说这种tableView的数据是可以修改的。我按如下思路修改：</p>
+<p>1.直接修改self.muModel实例的属性值。</p>
+<p>2.重新将model转为数组</p>
+<p>3.reloadData</p>
+<pre><code>- (void)reloadTableWithModel:(MultipeTypeModel *)model atIndexPath:(NSIndexPath *)indexPath {
+
+    self.tableArray = [self tableArrayFromModel:model];
+    if (indexPath) {
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    else {
+        [self.tableView reloadData];
+    }
+}
+</code></pre><h2 id="TableView数据展示"><a href="#TableView数据展示" class="headerlink" title="TableView数据展示"></a>TableView数据展示</h2><p>到这里，tableView相关数据就处理完，接下来就是将数据填充进tableView:</p>
+<pre><code>- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSArray *arr = self.tableArray[section];
+    return arr.count;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return self.tableArray.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSArray *sectionArr = self.tableArray[indexPath.section];
+    NSDictionary *dict = sectionArr[indexPath.row];
+    NSInteger type = [dict[@&quot;type&quot;] integerValue];
+    switch (type) {
+        case MUTableCellTypeHeader:
+            {
+                MUPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;MUPhotoCell&quot; forIndexPath:indexPath];
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                [cell bindDict:dict];
+                return cell;
+            }
+            break;
+        case MUTableCellTypeName:
+        {
+            MUNameCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;MUNameCell&quot; forIndexPath:indexPath];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            [cell bindDict:dict];
+            return cell;
+        }
+            break;
+        case MUTableCellTypeNameNoAccessory:
+        {
+            MUNameCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;MUNameCell&quot; forIndexPath:indexPath];
+            [cell bindDict:dict];
+            return cell;
+        }
+            break;
+
+        default:
+            break;
+    }
+
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;cell&quot; forIndexPath:indexPath];
+    cell.backgroundColor = [UIColor redColor];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:true];
+
+    NSArray *sectionArr = self.tableArray[indexPath.section];
+    NSDictionary *dict = sectionArr[indexPath.row];
+    NSString *selector = dict[@&quot;selector&quot;];
+    SEL sel = NSSelectorFromString(selector);
+    if ([self respondsToSelector:sel]) {
+        [self performSelector:sel withObject:indexPath];
+    }
+}
+</code></pre><p>这样，当我后续接到需求变动，比如上面要添加一个cell，我只需要在- (NSArray <em>)tableArrayFromModel:(MultipeTypeModel </em>)model方法添加一个元素就可以了。</p>
+<pre><code>@{
+@&quot;title&quot;:@&quot;性别&quot;,
+@&quot;content&quot;:model.sex==1?@&quot;男&quot;:@&quot;女&quot;,
+@&quot;type&quot;:@(MUTableCellTypeName)
+}
+</code></pre>
       
 
       
@@ -288,7 +462,7 @@ titleLabel.sd_layout
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/15/轮子阅读之SDAutoLayout/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/20/多类型Cell的tableView实现/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -302,18 +476,9 @@ titleLabel.sd_layout
   
 <nav id="article-nav">
   
-    <a href="/2018/12/16/imagewithnamed渲染优化/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          imagewithnamed渲染优化
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/12/15/日历的提醒添加/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">日历的提醒添加</div>
+    <a href="/2019/04/15/Swift中的高阶函数/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Swift中的高阶函数</div>
       <i class="icon-circle-right"></i>
     </a>
   

@@ -152,6 +152,136 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-关于swift中的单例模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/18/关于swift中的单例模式/">关于swift中的单例模式</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/18/关于swift中的单例模式/" class="archive-article-date">
+  	<time datetime="2018-09-18T15:52:12.784Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>单例模式是设计模式中最简单的一种，甚至有些模式大师都不称其为模式，称其为一种实现技巧，因为设计模式讲究对象之间的关系的抽象，而单例模式只有自己一个对象。</p>
+<p>当你只需要一个实例的时候需要使用单例，如UIApplication.sharedApplication() 等 ，windows的任务管理器，回收站 都是只能同时存在一个。</p>
+<p>下面看看swift中的几种实现方式：</p>
+<pre><code>import Foundation
+
+class SingleOne {
+
+    //单例
+    static let shareSingleOne = SingleOne()
+
+}
+</code></pre><p>一句话搞定，静态常理。所有地方用到的都是同一个</p>
+<pre><code>import Foundation
+
+class SingleTwo {
+
+    //单例
+    class func shareSingleTwo()-&gt;SingleTwo{
+        struct Singleton{
+            static var onceToken : dispatch_once_t = 0
+            static var single:SingleTwo?
+        }
+        dispatch_once(&amp;Singleton.onceToken,{
+            Singleton.single=shareSingleTwo()
+        }
+        )
+        return Singleton.single!
+    }
+
+}
+</code></pre><p>使用dispatch_once可以保证其中的代码只执行一次</p>
+<pre><code>import Foundation
+
+//全局的常量
+let single = SingleThree()
+
+class SingleThree {
+
+    class var sharedInstance : SingleThree {
+        return single
+    }
+}
+
+
+import Foundation
+
+class SingleFour {
+
+    static var sharedInstance : SingleFour {
+        struct Static {
+            static let instance : SingleFour = SingleFour()
+        }
+        return Static.instance
+    }
+}
+
+在方法内定义静态常量
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/18/关于swift中的单例模式/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关于swift的可选类型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1094,110 +1224,6 @@ kCFRunLoopAllActivities = 0x0FFFFFFFU //所有状态改变};
 
 
   
-    <article id="post-关于GCD的信号量" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/关于GCD的信号量/">关于GCD的信号量</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/关于GCD的信号量/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:54:10.618Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当我们在处理一系列线程的时候，当数量达到一定量，在以前我们可能会选择使用NSOperationQueue来处理并发控制，但如何在GCD中快速的控制并发呢？答案就是dispatch_semaphore，对经常做unix开发的人来讲，我所介绍的内容可能就显得非常入门级了，信号量在他们的多线程开发中再平常不过了。</p>
-<p>信号量是一个整形值并且具有一个初始计数值，并且支持两个操作：信号通知和等待。当一个信号量被信号通知，其计数会被增加。当一个线程在一个信号量上等待时，线程会被阻塞（如果有必要的话），直至计数器大于零，然后线程会减少这个计数。</p>
-<p>在GCD中有三个函数是semaphore的操作，分别是：</p>
-<pre><code>dispatch_semaphore_creat 
-
-创建一个semaphore
-
-dispatch_semaphore_signal
-
-发送一个信号
-
-dispathc_semaphore_wait
-
-等待信号
-</code></pre><p>简单的介绍一下这三个函数，第一个函数有一个整形的参数，我们可以理解为信号的总量，dispatch_semaphore_signal是发送一个信号，自然会让信号总量加1，dispatch_semaphore_wait等待信号，当信号总量少于0的时候就会一直等待，否则就可以正常的执行，并让信号总量-1，根据这样的原理，我们便可以快速的创建一个并发控制来同步任务和有限资源访问控制。</p>
-<pre><code>　dispatch_group_t group = dispatch_group_create(); 
-dispatch_semaphore_t semaphore = dispatch_semaphore_create(10); 
-dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0); 
-for (int i = 0; i &lt; 100; i++) 
-{ 
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER); 
-    dispatch_group_async(group, queue, ^{ 
-        NSLog(@&quot;%i&quot;,i); 
-        sleep(2); 
-        dispatch_semaphore_signal(semaphore); 
-    }); 
-} 
-dispatch_group_wait(group, DISPATCH_TIME_FOREVER); 
-dispatch_release(group); 
-dispatch_release(semaphore); 
-</code></pre><p>简单的介绍一下这一段代码，创建了一个初使值为10的semaphore，每一次for循环都会创建一个新的线程，线程结束的时候会发送一个信号，线程创建之前会信号等待，所以当同时创建了10个线程之后，for循环就会阻塞，等待有线程结束之后会增加一个信号才继续执行，如此就形成了对并发的控制，如上就是一个并发数为10的一个线程队列。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/关于GCD的信号量/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/9/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="extend next" rel="next" href="/page/11/">Next &raquo;</a>
@@ -1295,19 +1321,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
