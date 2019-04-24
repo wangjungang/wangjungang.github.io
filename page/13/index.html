@@ -152,6 +152,82 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-NSCache优于NSDictionary的几点？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/05/NSCache优于NSDictionary的几点？/">NSCache优于NSDictionary的几点？</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/05/NSCache优于NSDictionary的几点？/" class="archive-article-date">
+  	<time datetime="2018-09-05T07:32:41.638Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>NSCache 是一个容器类，类似于NSDIctionary,通过key-value 形式存储和查询值，用于临时存储对象。</p>
+<p>注意一点它和NSDictionary区别就是，NSCache 中的key不必实现copy，NSDictionary中的key必须实现copy</p>
+<p>NSCache中存储的对象也不必实现NSCoding协议，因为毕竟是临时存储，类似于内存缓存，程序退出后就被释放了</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/05/NSCache优于NSDictionary的几点？/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS关于属性的整理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1619,93 +1695,6 @@ self.secondLabel.text = dataHandle.str;
 
 
   
-    <article id="post-正确的使用pod install 和 pod update - CocoaPods" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/28/正确的使用pod install 和 pod update - CocoaPods/">正确的使用pod install 和 pod update - CocoaPods</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/28/正确的使用pod install 和 pod update - CocoaPods/" class="archive-article-date">
-  	<time datetime="2018-07-27T16:00:16.151Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-28</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="pod-install"><a href="#pod-install" class="headerlink" title="pod install"></a>pod install</h2><p>在项目中第一次使用CocoaPods, 进行安装的时候使用这个命令.</p>
-<p>在Podfile中增加或删除某个pod后, 也是使用这个命令. 而不是pod update.</p>
-<p>每次运行pod install命令, 下载并安装新的pod时, 它会为Podfile.lock文件中的每个pod写入已安装的版本. 此文件跟踪每个pod的已安装版本并锁定这些版本(.lock命名因此而来).</p>
-<p>当运行pod install，它只解析Podfile.lock中尚未列在其中的pod的依赖库.</p>
-<p>对于已经在Podfile.lock中列出的pod, Podfile.lock不会尝试检查是否有更新的版本.</p>
-<p>对于尚未在Podfile.lock中列出的pod, 会搜索与Podfile（如中所述pod ‘MyPod’, ‘~&gt;1.2’）匹配的版本或最新的版本.</p>
-<p>注: 第一次运行pod install的时候, .xcworkspace项目和Pods目录还不存在, pod install命令也会创建.xcworkspace和Pods目录, 但这是pod install命令的顺带作用，而不是它的主要作用.</p>
-<h2 id="pod-outdated"><a href="#pod-outdated" class="headerlink" title="pod outdated"></a>pod outdated</h2><p>当运行pod outdated时, CocoaPods将列出所有比Podfile.lock（每个pod当前安装的版本）中, 已经列出的版本更新的pod版本. 这意味着如果你在这些pod上运行pod update PODNAME, 它将会把指定的pod更新到最新版本.</p>
-<h2 id="pod-update"><a href="#pod-update" class="headerlink" title="pod update"></a>pod update</h2><p>当运行pod update PODNAME时, CocoaPods将尝试查找PODNAME更新的pod版本, 会忽略掉Podfile.lock中已经存在的版本.</p>
-<p>如果直接运行pod update, 没有指定PODNAME, CocoaPods会把Podfile中所有的pod都更新到最新版本.(如果已经是最新版本了, 则不更新)</p>
-<h2 id="预期用途"><a href="#预期用途" class="headerlink" title="预期用途"></a>预期用途</h2><p>使用pod update PODNAME, 将只能更新特定的pod(检查是否存在新版本并相应地更新pod). 相反, pod install不会尝试更新已安装的pod的版本.</p>
-<p>当向Podfile中添加一个pod时, 应该运行pod install, 而不是用pod update来安装这个新pod.</p>
-<p>只有在想要更新特定pod（或所有的pod）的版本时才会使用pod update.</p>
-<h2 id="必须提交的Podfile-lock"><a href="#必须提交的Podfile-lock" class="headerlink" title="必须提交的Podfile.lock"></a>必须提交的Podfile.lock</h2><p>有时候可能你不想提交Pods目录到源代码管理中. 但是在多人开发的情况下, 一定要提交Podfile.lock这个文件, 因为这个文件里面记录了你的Podfile中所有pod的版本信息. 为避免你的Podfile中的pod版本和别人的Podfile中的pod发生版本不一样的情况, 而导致出现函数找不到或者其他的错误.</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">CocoaPods</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/28/正确的使用pod install 和 pod update - CocoaPods/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/12/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/14/">Next &raquo;</a>
@@ -1803,11 +1792,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1827,11 +1816,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">

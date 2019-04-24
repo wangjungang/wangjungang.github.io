@@ -152,6 +152,129 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Swift的时区处理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/13/Swift的时区处理/">Swift的时区处理</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/13/Swift的时区处理/" class="archive-article-date">
+  	<time datetime="2018-12-13T07:19:47.463Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="取当前时区"><a href="#取当前时区" class="headerlink" title="取当前时区"></a>取当前时区</h3><pre><code>TimeZone.current.identifier
+</code></pre><p>时区名：Asia/Shanghai</p>
+<pre><code>TimeZone.current.abbreviation()
+</code></pre><p>GMT：GMT+8</p>
+<pre><code>TimeZone.current.secondsFromGMT()
+</code></pre><p>GMT偏移秒数：28800</p>
+<h3 id="模拟数据"><a href="#模拟数据" class="headerlink" title="模拟数据"></a>模拟数据</h3><p>以下是一个美国时间字符串，方便下面的转换</p>
+<pre><code>let src = &quot;2018-12-12 10:48:46&quot;
+let timeZone = &quot;GMT-05:00&quot; // USA
+let string = src + &quot; &quot; + timeZone
+复制代码
+</code></pre><p>原始字符串src为: 2018-12-12 10:48:46</p>
+<h3 id="字符串转换成当前时区的时间"><a href="#字符串转换成当前时区的时间" class="headerlink" title="字符串转换成当前时区的时间"></a>字符串转换成当前时区的时间</h3><pre><code>let formatter = DateFormatter()
+formatter.dateFormat = &quot;yyyy-MM-dd HH:mm:ss ZZZZ&quot;
+let date = formatter.date(from: string)
+formatter.dateFormat = &quot;yyyy-MM-dd HH:mm:ss&quot;
+formatter.string(from: date!)
+</code></pre><p>2018-12-12 23:48:46</p>
+<p>当前系统是中国时区，故比美国快了13小时</p>
+<h3 id="自动化时间样式（交由iOS-API处理）"><a href="#自动化时间样式（交由iOS-API处理）" class="headerlink" title="自动化时间样式（交由iOS API处理）"></a>自动化时间样式（交由iOS API处理）</h3><p>实战中会用Locale.current.identifier初始化Locale，以下为测试写死了几个常见时区。</p>
+<ul>
+<li><p>中国：年月日 上下午 时间</p>
+<pre><code>let chineseLocaleFormatter = DateFormatter()
+chineseLocaleFormatter.locale = Locale(identifier: &quot;zh_CN&quot;)
+chineseLocaleFormatter.dateStyle = DateFormatter.Style.medium
+chineseLocaleFormatter.timeStyle = DateFormatter.Style.medium
+chineseLocaleFormatter.string(from: date!) 
+</code></pre></li>
+</ul>
+<p>2018年12月12日 下午11:48:46</p>
+<ul>
+<li><p>美国：月日年 时间 上下午</p>
+<pre><code>let usLocaleFormatter = DateFormatter()
+usLocaleFormatter.locale = Locale(identifier: &quot;en_US&quot;)
+usLocaleFormatter.dateStyle = DateFormatter.Style.medium
+usLocaleFormatter.timeStyle = DateFormatter.Style.medium
+usLocaleFormatter.string(from: date!) 
+</code></pre></li>
+</ul>
+<p>Dec 12, 2018 at 11:48:46 PM</p>
+<ul>
+<li><p>英国：日月年 时间（24小时制）</p>
+<pre><code>let ukLocaleFormatter = DateFormatter()
+ukLocaleFormatter.locale = Locale(identifier: &quot;en_GB&quot;)
+ukLocaleFormatter.dateStyle = DateFormatter.Style.medium
+ukLocaleFormatter.timeStyle = DateFormatter.Style.medium
+ukLocaleFormatter.string(from: date!)
+</code></pre></li>
+</ul>
+<p>12 Dec 2018 at 23:48:46</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">swift</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/13/Swift的时区处理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-SWIFT中的GCD使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2287,103 +2410,6 @@ kill 183665
 
 
   
-    <article id="post-didSelectRowAtIndexPath中改变自定义Cell属性问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/didSelectRowAtIndexPath中改变自定义Cell属性问题/">didSelectRowAtIndexPath中改变自定义Cell属性问题</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/27/didSelectRowAtIndexPath中改变自定义Cell属性问题/" class="archive-article-date">
-  	<time datetime="2018-11-27T09:21:14.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天犯了一个很低级的问题，而这个问题还让我找了很长时间才发现。<br>我在自定义cell中定义了一个属性</p>
-<pre><code>@property (assign, nonatomic) BOOL isChecked;
-</code></pre><p>并且重写了它的set方法实现了内部一个属性改变</p>
-<pre><code>- (void)setIsChecked:(BOOL)isChecked
-{
-    _checkBoxView.checked = isChecked;
-}
-</code></pre><p>当我改变自定义cell中的被选中状态时发现改变不了</p>
-<pre><code>- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
-    AddPartnerTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    FMLog(@&quot;isChecked1:%d&quot;,cell.isChecked);
-    cell.isChecked = !cell.isChecked;
-    FMLog(@&quot;isChecked2:%d&quot;,cell.isChecked);
-
-}
-</code></pre><p>但是我发现内部是改变了。 </p>
-<p>后来无意中想起来重写这个方法还需要</p>
-<ul>
-<li>(void)setIsChecked:(BOOL)isChecked<br>{<br>  _isChecked = isChecked;<br>  _checkBoxView.checked = isChecked;<br>}</li>
-</ul>
-<p>低级问题用于警醒。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/didSelectRowAtIndexPath中改变自定义Cell属性问题/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/6/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/8/">Next &raquo;</a>
@@ -2481,11 +2507,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2505,11 +2531,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
