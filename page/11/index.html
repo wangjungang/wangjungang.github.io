@@ -152,6 +152,103 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-适配iPhone XR" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/16/适配iPhone XR/">适配iPhone XR</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/16/适配iPhone XR/" class="archive-article-date">
+  	<time datetime="2018-09-16T06:24:26.639Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="快速适配"><a href="#快速适配" class="headerlink" title="快速适配"></a>快速适配</h3><p>先说结论，找设计师要2张启动图：</p>
+<p>iPhone XR：828px x 1792px</p>
+<p>iPhone XS Max: 1242px x 2688px</p>
+<h3 id="LaunchImage中只有iPhone-X-iPhone-XS"><a href="#LaunchImage中只有iPhone-X-iPhone-XS" class="headerlink" title="LaunchImage中只有iPhone X/iPhone XS"></a>LaunchImage中只有iPhone X/iPhone XS</h3><p>iPhone XR / XS Max 对老版本兼容请求</p>
+<p>如果没有设置iPhone XR/iPhone XS Max启动图但设置了iPhone X的启动图，iPhone XR / XS Max默认会走iPhone X 的尺寸<br>375ptx812pt，会对内容近乎于等比拉伸放到iPhone XR / XS Max屏幕内，如下图：</p>
+<p><img src="http://op1uxe89i.bkt.clouddn.com/WX20180916-143326@2x.png" alt=""></p>
+<h3 id="1-代码中判断是否是iPhone-X时需要注意"><a href="#1-代码中判断是否是iPhone-X时需要注意" class="headerlink" title="1. 代码中判断是否是iPhone X时需要注意"></a>1. 代码中判断是否是iPhone X时需要注意</h3><p>如果你以前是使用设备尺寸来判断iPhone X那就需要修改了，判断iPhone X主要是因为刘海的原因可能要做些特殊处理。鉴于iPhone X/XS/XR/XS Max底部都会有安全距离，所以可以利用safeAreaInsets.bottom &gt; 0.0来判断是否是iPhone X。</p>
+<p>safeAreaInsets支持iOS11及以后。</p>
+<pre><code>static inline BOOL isIPhoneX() {
+    BOOL iPhoneX = NO;
+    if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) {
+        return iPhoneX;
+    }
+
+    if (@available(iOS 11.0, *)) {
+        UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
+        if (mainWindow.safeAreaInsets.bottom &gt; 0.0) {
+
+            iPhoneX = YES;
+        }
+    }
+
+    return iPhoneX;
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/16/适配iPhone XR/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS分类(category),类扩展(extension)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1091,95 +1188,6 @@ imageView.layer.masksToBounds=YES;
 
 
   
-    <article id="post-BOOL和bool的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/07/BOOL和bool的区别/">BOOL和bool的区别</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/07/BOOL和bool的区别/" class="archive-article-date">
-  	<time datetime="2018-09-07T03:26:53.657Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1、类型不同"><a href="#1、类型不同" class="headerlink" title="1、类型不同"></a>1、类型不同</h2><p>BOOL为int型 </p>
-<p>bool为布尔型 </p>
-<h2 id="2、长度不同"><a href="#2、长度不同" class="headerlink" title="2、长度不同"></a>2、长度不同</h2><p>bool只有一个字节 </p>
-<p>BOOL长度视实际环境来定，一般可认为是4个字节 </p>
-<h2 id="3、取值不同"><a href="#3、取值不同" class="headerlink" title="3、取值不同"></a>3、取值不同</h2><p>bool取值false和true，是0和1的区别 </p>
-<p>BOOL取值FALSE和TRUE，是0和非0的区别 </p>
-<p>bool是标准C++数据类型，可取值true和false。单独占一个字节，<br>如果数个bool对象列在一起，可能会各占一个bit，这取决于编译器。 </p>
-<p>BOOL是微软定义的typedef int BOOL。与bool不同，它是一个三值逻辑， </p>
-<p>TRUE/FALSE/ERROR，返回值为&gt;0的整数为TRUE，0为FALSE，-1为ERROR。 </p>
-<p>Win32 API中很多返回值为BOOL的函数都是三值逻辑。比如GetMessage(). </p>
-<h2 id="大BOOL和小bool之间的区别："><a href="#大BOOL和小bool之间的区别：" class="headerlink" title="大BOOL和小bool之间的区别："></a>大BOOL和小bool之间的区别：</h2><h3 id="1、类型不同-1"><a href="#1、类型不同-1" class="headerlink" title="1、类型不同"></a>1、类型不同</h3><p>BOOL为int型 </p>
-<p>bool为布尔型 </p>
-<h3 id="2、长度不同-1"><a href="#2、长度不同-1" class="headerlink" title="2、长度不同"></a>2、长度不同</h3><p>bool只有一个字节 </p>
-<p>BOOL长度视实际环境来定，一般可认为是4个字节 </p>
-<h3 id="3、取值不同-1"><a href="#3、取值不同-1" class="headerlink" title="3、取值不同"></a>3、取值不同</h3><p>bool取值false和true，是0和1的区别 </p>
-<p>BOOL取值FALSE和TRUE，是0和非0的区别 </p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/07/BOOL和bool的区别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/10/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/12/">Next &raquo;</a>
@@ -1277,11 +1285,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">

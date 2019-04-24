@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>iOS NSConding 协议归档 | Blog</title>
+  <title>iOS中的Promise | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面1.归档是将数据持久化的一种方式，一般针对于比较复杂对象，比如自定义的对象，来进行数据持久化操作。 2.归档的对象需要遵循NSCoding协议，存储的时候调用encodeWithCoder：方法，读取的时候调用initWithCoder：方法。 3.将数据写入本地需要调用 [NSKeyedArchiver archiveRootObject:per toFile:filePath]，fil">
+  <meta name="description" content="写在前面在iOS中我们一般使用delegate(代理)或者block(闭包)来进行异步操作，当要执行多个异步操作，必须将第二个嵌套在第一个的完成内，并且还要正常处理错误。这使得代码结构异常的混乱，不方便查看。 相信码过JS的同学都清楚，在es6中新增promise的语法，从此异步操作更加的灵活，它使得回调与事件进行了组合，而且写法优美。谷歌在18年上半年开源了promises库，使iOS上的异步编">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS NSConding 协议归档">
-<meta property="og:url" content="http://yoursite.com/2018/11/24/iOS NSConding 协议归档/index.html">
+<meta property="og:title" content="iOS中的Promise">
+<meta property="og:url" content="http://yoursite.com/2019/04/24/iOS中的Promise/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面1.归档是将数据持久化的一种方式，一般针对于比较复杂对象，比如自定义的对象，来进行数据持久化操作。 2.归档的对象需要遵循NSCoding协议，存储的时候调用encodeWithCoder：方法，读取的时候调用initWithCoder：方法。 3.将数据写入本地需要调用 [NSKeyedArchiver archiveRootObject:per toFile:filePath]，fil">
+<meta property="og:description" content="写在前面在iOS中我们一般使用delegate(代理)或者block(闭包)来进行异步操作，当要执行多个异步操作，必须将第二个嵌套在第一个的完成内，并且还要正常处理错误。这使得代码结构异常的混乱，不方便查看。 相信码过JS的同学都清楚，在es6中新增promise的语法，从此异步操作更加的灵活，它使得回调与事件进行了组合，而且写法优美。谷歌在18年上半年开源了promises库，使iOS上的异步编">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-24T14:32:27.261Z">
+<meta property="og:updated_time" content="2019-04-24T13:23:52.403Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS NSConding 协议归档">
-<meta name="twitter:description" content="写在前面1.归档是将数据持久化的一种方式，一般针对于比较复杂对象，比如自定义的对象，来进行数据持久化操作。 2.归档的对象需要遵循NSCoding协议，存储的时候调用encodeWithCoder：方法，读取的时候调用initWithCoder：方法。 3.将数据写入本地需要调用 [NSKeyedArchiver archiveRootObject:per toFile:filePath]，fil">
+<meta name="twitter:title" content="iOS中的Promise">
+<meta name="twitter:description" content="写在前面在iOS中我们一般使用delegate(代理)或者block(闭包)来进行异步操作，当要执行多个异步操作，必须将第二个嵌套在第一个的完成内，并且还要正常处理错误。这使得代码结构异常的混乱，不方便查看。 相信码过JS的同学都清楚，在es6中新增promise的语法，从此异步操作更加的灵活，它使得回调与事件进行了组合，而且写法优美。谷歌在18年上半年开源了promises库，使iOS上的异步编">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,251 +155,373 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-iOS NSConding 协议归档" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-iOS中的Promise" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      iOS NSConding 协议归档
+      iOS中的Promise
     </h1>
   
 
         
-        <a href="/2018/11/24/iOS NSConding 协议归档/" class="archive-article-date">
-  	<time datetime="2018-11-24T14:20:42.496Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-24</time>
+        <a href="/2019/04/24/iOS中的Promise/" class="archive-article-date">
+  	<time datetime="2019-04-24T13:15:27.728Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-24</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>1.归档是将数据持久化的一种方式，一般针对于比较复杂对象，比如自定义的对象，来进行数据持久化操作。</p>
-<p>2.归档的对象需要遵循NSCoding协议，存储的时候调用encodeWithCoder：方法，读取的时候调用initWithCoder：方法。</p>
-<p>3.将数据写入本地需要调用 [NSKeyedArchiver archiveRootObject:per toFile:filePath]，filePath为存储的路径。</p>
-<p>4.从本地读取数据需要调用[NSKeyedUnarchiver unarchiveObjectWithFile:filePath]，filePath为存储的路径。</p>
-<h2 id="对自定义对象进行归档"><a href="#对自定义对象进行归档" class="headerlink" title="对自定义对象进行归档"></a>对自定义对象进行归档</h2><h3 id="1-自定义Person类服从NSCoding协议"><a href="#1-自定义Person类服从NSCoding协议" class="headerlink" title="1.自定义Person类服从NSCoding协议"></a>1.自定义Person类服从NSCoding协议</h3><pre><code>#import &lt;Foundation/Foundation.h&gt;
-#import &lt;UIKit/UIKit.h&gt;
-
-@interface Person : NSObject &lt;NSCoding&gt;
-@property (nonatomic, copy) NSString *name;
-@property (nonatomic, assign) int age;
-@property (nonatomic, assign)  CGFloat height;
-@end
-</code></pre><h3 id="2-实现协议方法encodeWithCoder：和initWithCoder："><a href="#2-实现协议方法encodeWithCoder：和initWithCoder：" class="headerlink" title="2.实现协议方法encodeWithCoder：和initWithCoder："></a>2.实现协议方法encodeWithCoder：和initWithCoder：</h3><pre><code>#import &quot;Person.h&quot;
-
-@implementation Person
-//写入文件时调用 -- 将需要存储的属性写在里面
-- (void)encodeWithCoder:(NSCoder *)aCoder {
-    [aCoder encodeObject:self.name forKey:@&quot;name&quot;];
-    [aCoder encodeInt:self.age forKey:@&quot;age&quot;];
-    [aCoder encodeFloat:self.height forKey:@&quot;height&quot;];
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS中我们一般使用delegate(代理)或者block(闭包)来进行异步操作，当要执行多个异步操作，必须将第二个嵌套在第一个的完成内，并且还要正常处理错误。这使得代码结构异常的混乱，不方便查看。</p>
+<p>相信码过JS的同学都清楚，在es6中新增promise的语法，从此异步操作更加的灵活，它使得回调与事件进行了组合，而且写法优美。谷歌在18年上半年开源了promises库，使iOS上的异步编程更加便捷，其使用方式与JS中的promise一致，并支持OC与Swift。</p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Promise代表异步执行的结果或者错误信息。其拥有以下三种状态</p>
+<ul>
+<li>pending 正在处理</li>
+<li>fulfilled 处理完成得到的结果</li>
+<li>rejected 发生错误的信息</li>
+</ul>
+<p>当状态发生变更后，就无法再次变更其状态。同时promise不限制其订阅者，当状态发生变化后，所有的订阅者都能接收到通知。同时订阅者可以返回另一个promise对象，从而形成管道通信。</p>
+<p>管道通信过程可以自由的使用线程</p>
+<h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>我们可以在FBLPromise文件查找Promise的实现原理</p>
+<h3 id="声明状态、闭包"><a href="#声明状态、闭包" class="headerlink" title="声明状态、闭包"></a>声明状态、闭包</h3><pre><code>//三种状态类型
+typedef NS_ENUM(NSInteger, FBLPromiseState) {
+  FBLPromiseStatePending = 0,
+  FBLPromiseStateFulfilled,
+  FBLPromiseStateRejected,
+};
+//闭包的回调类型
+typedef void (^FBLPromiseObserver)(FBLPromiseState state, id __nullable resolution);```
+</code></pre><h3 id="相关的缓存"><a href="#相关的缓存" class="headerlink" title="相关的缓存"></a>相关的缓存</h3><pre><code>@implementation FBLPromise {
+  //当前promise的状态
+  FBLPromiseState _state;
+  //存放执行相关逻辑的结果存储
+  id __nullable _value;
+  //存放执行相关逻辑的错误
+  NSError *__nullable _error;
+  //存放订阅者的信息
+  NSMutableArray&lt;FBLPromiseObserver&gt; *_observers;
 }
-
-//从文件中读取时调用 -- 将需要存储的属性写在里面
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if (self = [super init]) {
-        self.name = [aDecoder decodeObjectForKey:@&quot;name&quot;];
-        self.age = [aDecoder decodeIntForKey:@&quot;age&quot;];
-        self.height = [aDecoder decodeFloatForKey:@&quot;height&quot;];
+</code></pre><h3 id="完成或失败的操作"><a href="#完成或失败的操作" class="headerlink" title="完成或失败的操作"></a>完成或失败的操作</h3><p>完成或失败的操作其实是遍历所有订阅者，将当前的状态和执行后的结果通知订阅者。执行完毕后改变缓存的状态值，就算后期再次调用也不会响应。达到只要状态变更就无法再次启动的效果。</p>
+<pre><code>- (void)fulfill:(nullable id)value {
+  if ([value isKindOfClass:[NSError class]]) {
+    [self reject:(NSError *)value];
+  } else {
+    @synchronized(self) {
+      if (_state == FBLPromiseStatePending) {
+        //变更状态
+        _state = FBLPromiseStateFulfilled;
+        _value = value;
+        _pendingObjects = nil;
+        //通知订阅者所订阅的信息
+        for (FBLPromiseObserver observer in _observers) {
+          observer(_state, _value);
+        }
+        _observers = nil;
+        dispatch_group_leave(FBLPromise.dispatchGroup);
+      }
     }
-    return self;
+  }
 }
-@end
-</code></pre><h3 id="3-写入与读取"><a href="#3-写入与读取" class="headerlink" title="3.写入与读取"></a>3.写入与读取</h3><p>写入：[NSKeyedArchiver archiveRootObject:per toFile:filePath]</p>
-<p>读取： [NSKeyedUnarchiver unarchiveObjectWithFile:filePath]</p>
-<pre><code>#import &quot;ViewController.h&quot;
-#import &quot;Person.h&quot;
-@interface ViewController ()
-
-@end
-
-@implementation ViewController
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self saveModel];
-    [self readModel];
-}
-
-//存储数据
-- (void)saveModel {
-    Person *per = [Person new];
-    per.name = @&quot;xiaoming&quot;;
-    per.age = 18;
-    per.height = 180;
-
-    NSString *filePath = [self getFilePath];
-
-    //将对象per写入
-    [NSKeyedArchiver archiveRootObject:per toFile:filePath];
-
-}
-//读取数据
-- (void)readModel {
-    NSString *filePath = [self getFilePath];
-
-    //取出per对象
-    Person *per = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
-    NSLog(@&quot;%@ -- %@ -- %d -- %.0f&quot;, per, per.name, per.age, per.height);
-}
-//获得全路径
-- (NSString *)getFilePath {
-    //获取Documents
-    NSString *doc = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-    //在Documents下创建Person.data文件
-    NSString *filePath = [doc stringByAppendingPathComponent:@&quot;Person.data&quot;];
-    return filePath;
-}
-@end
-</code></pre><p>readModel：方法中打印出存储的per对象相关信息，则对自定义对象Person数据持久化成功</p>
-<h2 id="运用runtime优化"><a href="#运用runtime优化" class="headerlink" title="运用runtime优化"></a>运用runtime优化</h2><p>当该类拥有上百个属性时，那将会花费更多的功夫在重复代码上，所以使用运行时机制截取类的成员变量，进行赋值</p>
-<p>Animal 类</p>
-<pre><code>@property (nonatomic,copy) NSString *name;
-@property (nonatomic,assign) int age;
-//成员变量
-@property (nonatomic,assign) double weight;
-
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-
-    if (self = [super init]) {
-        Class c = self.class;
-        // 截取类和父类的成员变量
-        while (c &amp;&amp; c != [NSObject class]) {
-            unsigned int count = 0;
-            Ivar *ivars = class_copyIvarList(c, &amp;count);
-            for (int i = 0; i &lt; count; i++) {
-
-                NSString *key = [NSString stringWithUTF8String:ivar_getName(ivars[i])];
-
-                id value = [aDecoder decodeObjectForKey:key];
-
-                [self setValue:value forKey:key];
-
+</code></pre><h3 id="订阅者"><a href="#订阅者" class="headerlink" title="订阅者"></a>订阅者</h3><p>订阅相关信息时，先去判断当前的状态类型，当此时已经执行完毕后，会马上回调相关的执行结果。</p>
+<pre><code>- (void)observeOnQueue:(dispatch_queue_t)queue
+               fulfill:(FBLPromiseOnFulfillBlock)onFulfill
+                reject:(FBLPromiseOnRejectBlock)onReject {
+  @synchronized(self) {
+    //先判断当前的状态，只有正在执行的过程中才可以订阅
+    switch (_state) {
+      case FBLPromiseStatePending: {
+        if (!_observers) {
+          _observers = [[NSMutableArray alloc] init];
+        }
+        //增加一个闭包,采用闭包的方式保存外部变量环境
+        [_observers addObject:^(FBLPromiseState state, id __nullable resolution) {
+          dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
+            switch (state) {
+              case FBLPromiseStatePending:
+                break;
+              case FBLPromiseStateFulfilled:
+                onFulfill(resolution);
+                break;
+              case FBLPromiseStateRejected:
+                onReject(resolution);
+                break;
             }
-            // 获得c的父类
-            c = [c superclass];
-            free(ivar);
-        }
-
-
+          });
+        }];
+        break;
+      }
+      case FBLPromiseStateFulfilled: {
+        dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
+          onFulfill(self-&gt;_value);
+        });
+        break;
+      }
+      case FBLPromiseStateRejected: {
+        dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
+          onReject(self-&gt;_error);
+        });
+        break;
+      }
     }
-    return self;
+  }
 }
+</code></pre><p>此处是整个promise操作的重中之重，也是我们promise中使用最多的原理所在，从FBLPromise+Then中可以看出该方法是then的原理，也是实现管道通信的原理</p>
+<pre><code>- (FBLPromise *)chainOnQueue:(dispatch_queue_t)queue
+              chainedFulfill:(FBLPromiseChainedFulfillBlock)chainedFulfill
+               chainedReject:(FBLPromiseChainedRejectBlock)chainedReject {
 
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
-
-     Class c = self.class;
-    // 截取类和父类的成员变量
-    while (c &amp;&amp; c != [NSObject class]) {
-        unsigned int count = 0;
-
-        Ivar *ivars = class_copyIvarList(c, &amp;count);
-
-        for (int i = 0; i &lt; count; i++) {
-            Ivar ivar = ivars[i];
-            NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
-
-            id value = [self valueForKey:key];
-
-            [aCoder encodeObject:value forKey:key];
-        }
-        c = [c superclass];
-        // 释放内存
-        free(ivar);
+  //创建新的promise
+  FBLPromise *promise = [[FBLPromise alloc] initPending];
+  //定义执行的闭包,该闭包是管道通信的精华，也是为什么下一个then中能收到当前then中返回promise执行结果的关键
+  __auto_type resolver = ^(id __nullable value) {
+    //判断then返回的是否是promise
+    if ([value isKindOfClass:[FBLPromise class]]) {
+      //订阅then返回的promise，主要是为了调用下一个then
+      [(FBLPromise *)value observeOnQueue:queue
+          fulfill:^(id __nullable value) {
+            [promise fulfill:value];
+          }
+          reject:^(NSError *error) {
+            [promise reject:error];
+          }];
+    } else {
+      //若返回的不是promise中，则马上传给下一个then
+      [promise fulfill:value];
     }
-
+  };
+  //订阅当前的promise
+  [self observeOnQueue:queue
+      fulfill:^(id __nullable value) {
+        //执行then操作后的返回值，可能是promise也可能是其他值
+        value = chainedFulfill ? chainedFulfill(value) : value;
+        //调用上面创建的闭包
+        resolver(value);
+      }
+      reject:^(NSError *error) {
+        id value = chainedReject ? chainedReject(error) : error;
+        resolver(value);
+      }];
+  return promise;
 }
-</code></pre><p>代码测试</p>
-<pre><code>- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    CXDog *d = [[CXDog alloc] init];
-    d.name = @&quot;cx&quot;;
-    d.age = 12;
-    d.weight = 1.55;
-    // 将对象归档
-    [NSKeyedArchiverarchiveRootObject:d toFile:@&quot;/Users/c_xie/Desktop/wj.xxoo&quot;];
-    // 将对象解档
-    CXDog *dog = [NSKeyedUnarchiverunarchiveObjectWithFile:@&quot;/Users/c_xie/Desktop/wj.xxoo&quot;];
-    NSLog(@&quot;%@,%d,%f&quot;,dog.name,dog.age,d.weight);
-
-}
-</code></pre><h2 id="runtime自动归档和解档"><a href="#runtime自动归档和解档" class="headerlink" title="runtime自动归档和解档"></a>runtime自动归档和解档</h2><pre><code>#import &lt;Foundation/Foundation.h&gt;
-
-@interface Person : NSObject
-
-@property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) NSNumber *age;
-@property (nonatomic, strong) NSString *address;
-@property (nonatomic, strong) NSString *company;
-@property (nonatomic, strong) NSString *job;
-
-@end
-
-#import &quot;Person.h&quot;
-#import &lt;objc/runtime.h&gt;
-
-@implementation Person
-
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    if (self = [super init])
-    {
-        unsigned int outCount;
-        Ivar *ivars = class_copyIvarList([self class], &amp;outCount);
-        for (int i = 0; i &lt; outCount; i ++)
-        {
-            Ivar ivar = ivars[i];
-            NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
-            [self setValue:[aDecoder decodeObjectForKey:key] forKey:key];
-        }
-        free(ivars)
+</code></pre><h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>此处仅展示swift的语法，oc上的使用请参考FBL前缀的类，或者直接阅读官方文档</p>
+<h3 id="创建方式"><a href="#创建方式" class="headerlink" title="创建方式"></a>创建方式</h3><p>默认是在主线程中使用，如需在其他线程中使用，可以设置on: DispatchQueue，此处不作介绍</p>
+<h3 id="异步方式"><a href="#异步方式" class="headerlink" title="异步方式"></a>异步方式</h3><pre><code>let promise = Promise&lt;Int&gt; { fulfill, reject in
+    let vail = true
+    if vail {
+        fulfil(12)
+    }else {
+        reject(error)
     }
-    return self;
 }
-
-- (void)encodeWithCoder:(NSCoder *)aCoder
-{
-    unsigned int outCount;
-    Ivar *ivars = class_copyIvarList([self class], &amp;outCount);
-    for (int i = 0; i &lt; outCount; i ++)
-    {
-        Ivar ivar = ivars[i];
-        NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
-        [aCoder encodeObject:[self valueForKey:key] forKey:key];
-    }
-    free(ivars)
-}
-
-@end
-</code></pre><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><pre><code>// 自动归档/解档
-NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:@&quot;PersonInfo&quot;];
-if (data) {
-        // 解档使用
-        Person *person = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-        NSLog(@&quot;name: %@&quot;, person.name);
+</code></pre><h3 id="同步方式"><a href="#同步方式" class="headerlink" title="同步方式"></a>同步方式</h3><pre><code>//采用预先定义方式
+let promise = Promise&lt;Int&gt;.pending()
+...
+if success {
+  promise.fulfill(12)
 } else {
-        Person *person = [Person new];
-        person.name = @&quot;devZhang&quot;;
-        person.age = @(35);
-        person.company = @&quot;ShengXue&quot;;
-        person.job = @&quot;iOSDev&quot;;
-        person.address = @&quot;龙岗坂田国际中心&quot;;
-        // 归档存储
-        data = [NSKeyedArchiver archivedDataWithRootObject:person];
-        [[NSUserDefaults standardUserDefaults] setObject:data forKey:@&quot;PersonInfo&quot;];
+  promise.reject(error)
 }
-</code></pre><p>未进行归档、解档时报错</p>
-<pre><code>// 归档错误
-Terminating app due to uncaught exception &apos;NSInvalidArgumentException&apos;, reason: &apos;-[Person encodeWithCoder:]: unrecognized selector sent to instance 0x600000450d40&apos;
 
-// 解档错误
-Terminating app due to uncaught exception &apos;NSInvalidArgumentException&apos;, reason: &apos;-[Person initWithCoder:]: unrecognized selector sent to instance 0x60000005d760&apos;
-</code></pre><p>使用自动归档、解档后，自定义类型数据处理正常</p>
-<pre><code>2018-07-07 00:26:20.023737+0800 DemoRuntime[1850:81640] name: devZhang
+//直接发起结果的方式
+let promise = Promise(12)
+let promise = Promise(error)
+</code></pre><h3 id="then使用"><a href="#then使用" class="headerlink" title="then使用"></a>then使用</h3><pre><code>let numberPromise = Promise { fulfill, _ in
+    fulfill(42)
+}
+let stringPromise = numberPromise.then { number in
+    return Promise { fulfill, _ in
+        fulfill(String(number))
+    }
+}
+typealias Block = (Int) -&gt; [Int]
+let blockPromise = stringPromise.then { value in
+    return Promise&lt;Block&gt; { fulfill, _ in
+        fulfill({ number in
+            return [number + (Int(value) ?? 0)]
+        })
+    }
+}
+let finalPromise = blockPromise.then { (value: @escaping Block) -&gt; Int? in
+    return value(42).first
+}
+let postFinalPromise = finalPromise.then { number in
+    return number ?? 0
+}
+</code></pre><h3 id="catch"><a href="#catch" class="headerlink" title="catch"></a>catch</h3><p>catch是处理promise中出现错误的情况，在promise管道中，当其中一个promise执行出现错误时，会忽略这个之后的管道直接将错误传输到catch中处理。</p>
+<pre><code>let promise = Promise&lt;AnyObject&gt; {
+    return error
+}.catch { error in
+    //处理错误
+}
+</code></pre><h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><h4 id="All"><a href="#All" class="headerlink" title="All"></a>All</h4><p>只有当all中所有的promise否成功执行后才回调，回调参数未all中所有执行结果的元组，当其中一个调用rejected时，都直接回调错误</p>
+<pre><code>let promise1 = Promise&lt;Int?&gt; { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
+        fulfill(42)
+    })
+}
+let promise2 = Promise&lt;Int?&gt; { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
+        fulfill(13)
+     })
+}
+let promise3 = Promise&lt;Int?&gt; { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
+        fulfill(nil)
+    })
+}
+
+let combinedPromise = all([promise1, promise2, promise3]).then { value in
+    print(value) //[Optional(42), Optional(13), nil]
+}
+</code></pre><h4 id="Always"><a href="#Always" class="headerlink" title="Always"></a>Always</h4><p>无论管道中是顺利成功执行还是出现错误，最终都会执行always的闭包</p>
+<pre><code>var count = 0
+let promise = Promise&lt;Void&gt; { _, reject in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
+        reject(DYError.promise)
+    })
+}.always {
+    count += 1
+}.catch { error in
+    count += 1
+}.always {
+    print(count)
+}
+</code></pre><h4 id="Any"><a href="#Any" class="headerlink" title="Any"></a>Any</h4><p>与all操作类型，但是Any中即便有其中的出现了错误也会返回元组数据吗，其元组类型是Maybe，包含error与value相关信息</p>
+<pre><code>let promise1 = Promise&lt;Int?&gt; { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
+        fulfill(42)
+    })
+}
+let promise2 = Promise&lt;Int?&gt; { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
+        fulfill(13)
+    })
+}
+let promise3 = Promise&lt;Int?&gt; { _, reject in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
+        reject(DYError.promise)
+    })
+}
+
+let combinedPromise = any([promise1, promise2, promise3]).then { value in
+    let item = value.first
+    print(value.first?.value)
+}
+</code></pre><h4 id="Await"><a href="#Await" class="headerlink" title="Await"></a>Await</h4><p>使用该操作，可以同步等待在不同线程上执行的promise。该语法与ES8中async/await的使用时类似的</p>
+<pre><code>Promise&lt;Int&gt; {
+  let minusFive = try await(calculator.negate(5))
+  let twentyFive = try await(calculator.multiply(minusFive, minusFive))
+  let twenty = try await(calculator.add(twentyFive, minusFive))
+  let five = try await(calculator.subtract(twentyFive, twenty))
+  let zero = try await(calculator.add(minusFive, five))
+  return try await(calculator.multiply(zero, five))
+}.then { result in
+
+}.catch { error in
+
+}
+</code></pre><h4 id="Delay"><a href="#Delay" class="headerlink" title="Delay"></a>Delay</h4><p>该操作返回一个预先定义的promise，等到给定的时间后执行，或者立即执行错误</p>
+<pre><code>let promise = Promise(42).delay(2)
+promise.catch { err in
+    print(err)
+}.then { value in
+    print(value)
+}
+
+DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
+    promise.reject(DYError.promise)
+})
+</code></pre><h4 id="Race"><a href="#Race" class="headerlink" title="Race"></a>Race</h4><p>该操作与all相似，但是返回的是先执行完成的promise结果或者错误</p>
+<pre><code>let promise1 = Promise&lt;Any?&gt; { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
+        fulfill(42)
+    })
+}
+let promise2 = Promise&lt;Any?&gt; { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
+        fulfill(&quot;hello world&quot;)
+    })
+}
+let promise3 = Promise&lt;Any?&gt; { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
+        fulfill([44])
+    })
+}
+let promise4 = Promise&lt;Any?&gt; { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
+        fulfill(nil)
+    })
+}
+
+race([promise1,promise2,promise3,promise4]).then { (value) in
+    print(value)
+}
+</code></pre><h4 id="Recover"><a href="#Recover" class="headerlink" title="Recover"></a>Recover</h4><p>与Catch效果相同，但是该操作符不会隔断管道中其他promise的执行</p>
+<pre><code>let promise = Promise&lt;Int&gt; { _, reject in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
+        reject(DYError.promise)
+    })
+}.recover { error -&gt; Promise&lt;Int&gt; in
+    print(error)
+    return Promise { fulfill, _ in
+            DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
+                    fulfill(1)
+             })
+    }
+}.catch { err in
+    print(err)
+}.then { value in
+    print(value)
+}
+</code></pre><h4 id="Reduce"><a href="#Reduce" class="headerlink" title="Reduce"></a>Reduce</h4><p>结合其他数据进行变换</p>
+<pre><code>let numbers = [1, 2, 3]
+Promise(&quot;0&quot;).reduce(numbers) { partialString, nextNumber in
+  Promise(partialString + &quot;, &quot; + String(nextNumber))
+}.then { string in
+  // Final result = 0, 1, 2, 3
+  print(&quot;Final result = \(string)&quot;)
+}
+</code></pre><h4 id="Retry"><a href="#Retry" class="headerlink" title="Retry"></a>Retry</h4><p>promise执行失败时，尝试重新执行。在未设置时间的前提下，默认延迟1s重新执行</p>
+<pre><code>var count = 0
+retry(attempts: 3, delay: 5, condition: { (num, error) -&gt; Bool in
+    print(&quot;\(num)&quot; + error.localizedDescription)
+    if num == 2 {
+        //马上执行错误
+        return false
+    }
+    return true
+}) { () -&gt; Promise&lt;Int&gt; in
+    return count == 3 ? Promise(42) : Promise(DYError.promise)
+}.then { (value) in
+    print(value)
+}.catch { (error) in
+    print(error)
+}
+</code></pre><h4 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h4><p>在指定的时间内如果没有执行完成或者发送错误,则自发错误</p>
+<pre><code>let promise = Promise { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
+        fulfill(42)
+    })
+}.timeout(1).catch { err in
+    print(err) //timedOut
+}.then { value in
+    print(value) 
+}
+</code></pre><h4 id="Validate"><a href="#Validate" class="headerlink" title="Validate"></a>Validate</h4><p>判断是否有效，如果无效则自发错误</p>
+<pre><code>let promise = Promise { fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
+        fulfill(42)
+    })
+}.validate { value in
+    return value == 1
+}.catch { err in
+    print(err) //validationFailure
+}.then { value in
+    print(value)
+}
 </code></pre>
       
 
@@ -490,7 +612,7 @@ Terminating app due to uncaught exception &apos;NSInvalidArgumentException&apos;
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/24/iOS NSConding 协议归档/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/24/iOS中的Promise/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -504,18 +626,9 @@ Terminating app due to uncaught exception &apos;NSInvalidArgumentException&apos;
   
 <nav id="article-nav">
   
-    <a href="/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          iOS 对象数组的深拷贝(NSCoding协议)
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/11/06/关于压缩图片的方法/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">关于压缩图片的方法</div>
+    <a href="/2019/04/24/如何查找内存泄漏/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">如何查找内存泄漏</div>
       <i class="icon-circle-right"></i>
     </a>
   
