@@ -152,6 +152,245 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Rxswift总结(一)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/21/Rxswift总结(一)/">Rxswift总结（一）</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/21/Rxswift总结(一)/" class="archive-article-date">
+  	<time datetime="2019-02-21T11:02:04.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>RxSwift 是 ReactiveX 家族的重要一员, ReactiveX 是 Reactive Extensions 的缩写，一般简写为Rx。</p>
+<p>ReactiveX 官方给Rx的定义是，Rx是一个使用可观察数据流进行异步编程的编程接口。</p>
+<p>ReactiveX结合了观察者模式、迭代器模式和函数式编程的精华。</p>
+<h2 id="RX模式"><a href="#RX模式" class="headerlink" title="RX模式"></a>RX模式</h2><ul>
+<li>创建：Rx可以方便的创建事件流和数据流</li>
+<li>组合：Rx使用查询式的操作符组合和变换数据流</li>
+<li>监听：Rx可以订阅任何可观察的数据流并执行操作</li>
+</ul>
+<h2 id="简化代码"><a href="#简化代码" class="headerlink" title="简化代码"></a>简化代码</h2><ul>
+<li>函数式风格：对可观察数据流使用无副作用的输入输出函数，避免了程序里错综复杂的状态</li>
+<li>简化代码：Rx的操作符通通常可以将复杂的难题简化为很少的几行代码</li>
+<li>异步错误处理：传统的try/catch没办法处理异步计算，Rx提供了合适的错误处理机制</li>
+<li>轻松使用并发：Rx的Observables和Schedulers让开发者可以摆脱底层的线程同步和各种并发问题</li>
+</ul>
+<h2 id="为什么要使用"><a href="#为什么要使用" class="headerlink" title="为什么要使用"></a>为什么要使用</h2><p>我们编写的绝大部分代码都涉及到外部事件的响应。当一个用户操作控制的时候，我们需要写一个@IBAction来处理。我们需要观察通知来监测键盘如何更改位置。URL回话响应数据时，我们需要用闭包来执行。我们使用KVO来监听变量的改变。所有这些不同的系统都让我们的代码不必要的复杂。如果有一个一致统一的系统来处理这些呼叫／响应，那岂不是很好。RX就是这样一个系统。</p>
+<h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>所有Observable实例只是一个队列。</p>
+<p>Observable队列比swift队列的好处就是他可以异步接受元素。这是RXSwift的核心，所有扩展都是在这个概念基础上的。</p>
+<ul>
+<li><p>Observable(ObservableType)跟Sequence一样</p>
+</li>
+<li><p>ObservableType.subscribe(_:)和Sequence.makeIterator()类似</p>
+</li>
+<li><p>ObservableType.subscribe(_:)拥有一个观察者对象(ObserverType)的参数，这个对象将被订阅自动接受队列事件和Observable所发出的元素，而不是手动的调用next()</p>
+</li>
+</ul>
+<p>如果一个Observable发出一个next事件Event.next(Element)，她可以继续发出更多的事件。当然如果发出一个error事件Event.error(ErrorType)或者一个完成事件Event.completed,Observable队列不会再给订阅者发送额外的事件。源代码里是一个递归枚举</p>
+<pre><code>public enum Event&lt;Element&gt; {
+
+    /// Next element is produced.
+    case next(Element)
+
+    /// Sequence terminated with an error.
+    case error(Error)
+
+    /// Sequence completed successfully.
+    case completed
+}
+</code></pre><h3 id="Observables-and-observers"><a href="#Observables-and-observers" class="headerlink" title="Observables and observers"></a>Observables and observers</h3><p>Observables不会执行订阅的闭包除非有一个订阅者。下面的例子中，Observable的订阅闭包不会执行，因为她并没有订阅者。她只是一个可被订阅者。</p>
+<pre><code>_ = Observable&lt;String&gt;.create { observerOfString -&gt; Disposable in
+     print(&quot;This will never be printed&quot;)
+     observerOfString.on(.next(&quot;😬&quot;))
+     observerOfString.on(.completed)
+     return Disposables.create
+  }
+</code></pre><p>下面这种情况，当调用subscribe(_:)方法了，闭包就会被执行了</p>
+<pre><code>_ = Observable&lt;String&gt;.create { observerOfString in
+         print(&quot;Observable created&quot;)
+         observerOfString.on(.next(&quot;😉&quot;))
+         observerOfString.on(.completed)
+         return Disposables.create()
+     }
+     .subscribe { event in
+         print(event)
+}
+</code></pre><p>subscribe(_:)这个方法返回Disposable实例。这种类型以后会讨论。就是一个可以被释放的类型，需要释放。</p>
+<h2 id="构建和订阅Observables"><a href="#构建和订阅Observables" class="headerlink" title="构建和订阅Observables"></a>构建和订阅Observables</h2><h3 id="never"><a href="#never" class="headerlink" title="never"></a>never</h3><p>构建一个从不终止和发出任何事件的队列</p>
+<pre><code>let disposeBag = DisposeBag()
+let neverSequence = Observable&lt;String&gt;.never()
+
+let neverSequenceSubscription = neverSequence
+     .subscribe { _ in
+          print(&quot;This will never be printed&quot;)
+}
+neverSequenceSubscription.disposed(by: disposeBag)
+</code></pre><h3 id="empty"><a href="#empty" class="headerlink" title="empty"></a>empty</h3><p>构建一个空的Observable队列，只发出完成事件</p>
+<pre><code>let disposeBag = DisposeBag()
+ Observable&lt;Int&gt;.empty()
+     .subscribe { event in
+         print(event)
+     }
+     .disposed(by: disposeBag)
+</code></pre><h3 id="just"><a href="#just" class="headerlink" title="just"></a>just</h3><p>构建一个只有一个元素的Observable队列</p>
+<pre><code>let disposeBag = DisposeBag()
+Observable.just(&quot;🔴&quot;)
+   .subscribe { event in
+       print(event)
+    }
+    .disposed(by: disposeBag)
+</code></pre><h3 id="of"><a href="#of" class="headerlink" title="of"></a>of</h3><p>构建一个拥有固定数量元素的Observable序列</p>
+<pre><code>let disposeBag = DisposeBag()
+
+Observable.of(&quot;🐶&quot;, &quot;🐱&quot;, &quot;🐭&quot;, &quot;🐹&quot;)
+    .subscribe(onNext: { element in
+        print(element)
+    })
+    .disposed(by: disposeBag)
+</code></pre><p>subscribe(_:)方法接受事件参数，下面这个例子接受元素参数</p>
+<pre><code>someObservable.subscribe(
+    onNext: { print(&quot;Element:&quot;, $0) },
+    onError: { print(&quot;Error:&quot;, $0) },
+    onCompleted: { print(&quot;Completed&quot;) },
+    onDisposed: { print(&quot;Disposed&quot;) }
+)
+</code></pre><h3 id="from"><a href="#from" class="headerlink" title="from"></a>from</h3><p>从序列中创建可观察到的序列，如数组、字典或集合。</p>
+<pre><code>let disposeBag = DisposeBag()
+
+Observable.from([&quot;🐶&quot;, &quot;🐱&quot;, &quot;🐭&quot;, &quot;🐹&quot;])
+    .subscribe(onNext: { print($0) })
+    .disposed(by: disposeBag)
+</code></pre><h3 id="create"><a href="#create" class="headerlink" title="create"></a>create</h3><p>构建一个自定义的可观察序列</p>
+<pre><code>let disposeBag = DisposeBag()
+  let myJust = { (element: String) -&gt; Observable&lt;String&gt; in
+      return Observable.create { observer in
+          observer.on(.next(element))
+          observer.on(.completed)
+          return Disposables.create()
+      }
+  }
+ myJust(&quot;🔴&quot;)
+     .subscribe { print($0) }
+     .disposed(by: disposeBag)
+</code></pre><h3 id="range"><a href="#range" class="headerlink" title="range"></a>range</h3><p>创建一个可观察序列，该序列释放一系列连续整数，然后终止</p>
+<pre><code>let disposeBag = DisposeBag()
+ Observable.range(start: 1, count: 10)
+    .subscribe { print($0) }
+    .disposed(by: disposeBag)
+</code></pre><h3 id="repeatElement"><a href="#repeatElement" class="headerlink" title="repeatElement"></a>repeatElement</h3><p>创建一个可观察到的序列，它无限地释放给定的元素</p>
+<pre><code>let disposeBag = DisposeBag()
+Observable.repeatElement(&quot;🔴&quot;)
+     .take(3)
+     .subscribe(onNext: { print($0) })
+     .disposed(by: disposeBag)
+</code></pre><h3 id="generate"><a href="#generate" class="headerlink" title="generate"></a>generate</h3><p>创建一个可观察的序列，只要所提供的条件求值为true，就生成值。</p>
+<pre><code>let disposeBag = DisposeBag()
+ Observable.generate(
+        initialState: 0,
+        condition: { $0 &lt; 3 },
+        iterate: { $0 + 1 }
+    )
+    .subscribe(onNext: { print($0) })
+    .disposed(by: disposeBag)
+</code></pre><h3 id="deferred"><a href="#deferred" class="headerlink" title="deferred"></a>deferred</h3><p>为每个订阅者创建一个新的可观察序列。</p>
+<pre><code>let disposeBag = DisposeBag()
+var count = 1
+ let deferredSequence = Observable&lt;String&gt;.deferred {
+    print(&quot;Creating \(count)&quot;)
+    count += 1
+
+    return Observable.create { observer in
+        print(&quot;Emitting...&quot;)
+        observer.onNext(&quot;🐶&quot;)
+        observer.onNext(&quot;🐱&quot;)
+        observer.onNext(&quot;🐵&quot;)
+        return Disposables.create()
+    }
+}
+
+deferredSequence
+    .subscribe(onNext: { print($0) })
+    .disposed(by: disposeBag)
+
+deferredSequence
+    .subscribe(onNext: { print($0) })
+    .disposed(by: disposeBag)
+</code></pre><h3 id="error"><a href="#error" class="headerlink" title="error"></a>error</h3><p>创建一个没有任何元素的可观察序列，并立即以错误结束。</p>
+<pre><code>let disposeBag = DisposeBag()
+Observable&lt;Int&gt;.error(TestError.test)
+   .subscribe { print($0) }
+   .disposed(by: disposeBag)
+</code></pre><h3 id="doOn"><a href="#doOn" class="headerlink" title="doOn"></a>doOn</h3><p>为每个发出的事件调用副作用动作并返回（传递）原始事件。</p>
+<pre><code>let disposeBag = DisposeBag()
+
+Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&quot;)
+    .do(onNext: { print(&quot;Intercepted:&quot;, $0) }, onError: { print(&quot;Intercepted error:&quot;, $0) }, onCompleted: { print(&quot;Completed&quot;)  })
+    .subscribe(onNext: { print($0) })
+    .disposed(by: disposeBag)
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/21/Rxswift总结(一)/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-好好看看 KVC &amp;&amp; KVO" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1469,223 +1708,9 @@ hexo deploy
 
 
   
-    <article id="post-Swift通知，代理，闭包" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/14/Swift通知，代理，闭包/">Swift通知，代理，闭包</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/14/Swift通知，代理，闭包/" class="archive-article-date">
-  	<time datetime="2019-02-14T07:41:45.917Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天探讨Swift中的通知，代理，闭包(Block)三种方式进行传值 </p>
-<h2 id="闭包传值"><a href="#闭包传值" class="headerlink" title="闭包传值"></a>闭包传值</h2><p>第一步 首先建立两个控制器 </p>
-<p>第一个控制器 ViewController.swift </p>
-<pre><code>import UIKit
-class ViewController: UIViewController {
-//创建一个label
-    //申明一个全局的label
-    var fistLab:UILabel = UILabel()
-    //声明一个全局的button
-    var fistBut:UIButton = UIButton()
-
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.navigationController?.navigationBar.translucent = false
-        //设置label,button的大小
-        initLabAndBut()
-
-    }
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-}
-
-extension ViewController{
-    func initLabAndBut(){
-        fistLab = UILabel(frame: CGRectMake(50, 50, 300, 40))
-        fistLab.backgroundColor = UIColor.redColor()
-        view.addSubview(fistLab)
-
-        fistBut = UIButton(frame: CGRectMake(100, 100, 200, 50))
-        fistBut.backgroundColor = UIColor.purpleColor()
-        fistBut.setTitle(&quot;点击我啊&quot;, forState: UIControlState.Normal)
-        fistBut.addTarget(self, action: Selector(&quot;click&quot;), forControlEvents: UIControlEvents.TouchUpInside)
-        view.addSubview(fistBut)
-    }
-
-    func click(){
-        let secV = SecondViewController()
-        secV.initWithMyPassValue { (vlaue) -&gt; Void in
-            self.fistLab.text = vlaue
-        }
-        self.navigationController?.pushViewController(secV, animated: true)
-    }
-}
-</code></pre><ul>
-<li>secondViewconteroller.swift</li>
-</ul>
-<p>import UIKit</p>
-<pre><code>//定义一个闭包函数
-typealias SecondValueToFist = (vlaue: String)-&gt;Void
-
-class SecondViewController: UIViewController {
-    //创建一个label
-    //申明一个全局的label
-    var fistLab:UITextField = UITextField()
-    //声明一个全局的button
-    var fistBut:UIButton = UIButton()
-    //定义闭包函数
-    var myValue:SecondValueToFist?//可以为nil
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.view.backgroundColor = UIColor.darkGrayColor()
-        initLabAndBut()
-}
-//在定义个传值函数
-func initWithMyPassValue(value:SecondValueToFist?){
-    myValue = value
-    }
-
-}
-extension SecondViewController{
-    func initLabAndBut(){
-        fistLab = UITextField(frame: CGRectMake(50, 50, 300, 40))
-        fistLab.backgroundColor = UIColor.redColor()
-        view.addSubview(fistLab)
-
-    fistBut = UIButton(frame: CGRectMake(100, 100, 200, 50))
-    fistBut.backgroundColor = UIColor.purpleColor()
-    fistBut.setTitle(&quot;点击我啊&quot;, forState: UIControlState.Normal)
-    fistBut.addTarget(self, action: Selector(&quot;click&quot;), forControlEvents: UIControlEvents.TouchUpInside)
-    view.addSubview(fistBut)
-}
-
-func click(){
-//闭包传值
-    if(myValue != nil){
-        myValue!(vlaue: fistLab.text!)
-    }
-              self.navigationController?.popToRootViewControllerAnimated(true)
-    }
-}
-</code></pre><p><img src="http://img.wangjungang.cn/WX20190214-180208@2x.png" alt=""></p>
-<h2 id="代理传值"><a href="#代理传值" class="headerlink" title="代理传值"></a>代理传值</h2><p>第一步 在第二个控制器里面制定协议</p>
-<pre><code>//定义一个代理
-
-protocol SecondViewControllerDelegate{
-    func SecToFistValue(value:String)
-}
-</code></pre><p>第二步 在第二个控制器定义一个全局的接受协议的变量</p>
-<pre><code>var delegate:SecondViewControllerDelegate?
-</code></pre><p>第三步 在第二个控制器的button点击时间里面调用协议方法</p>
-<pre><code>func click(){
-    if self.delegate != nil{
-        delegate?.SecToFistValue(fistLab.text!)
-    }    self.navigationController?.popToRootViewControllerAnimated(true)
-}
-</code></pre><p>第四步 在第一个控制器里进行指定代理，并实现代理的方法</p>
-<pre><code>func click(){
-   let secV = SecondViewController()
-   secV.delegate = self
-      self.navigationController?.pushViewController(secV, animated: true)
- }
- //实现代理方法
- func SecToFistValue(value: String) {
-     self.fistLab.text = value
- }
-</code></pre><h2 id="通知传值"><a href="#通知传值" class="headerlink" title="通知传值"></a>通知传值</h2><p>第一步 在第二个控制器的button点击时间 发送消息</p>
-<pre><code>func click(){
-
-        if self.delegate != nil{
-            delegate?.SecToFistValue(fistLab.text!)
-        }
-        let dic:NSDictionary = NSDictionary()
-        dic.setValue(fistLab.text, forKey: &quot;K1&quot;)
-        NSNotificationCenter.defaultCenter().postNotificationName(&quot;abc&quot;, object: self, userInfo:dic as [NSObject : AnyObject])
-       self.navigationController?.popToRootViewControllerAnimated(true)
-    }
-</code></pre><p>第二步 在第一个控制器里面进行通知的接受</p>
-<pre><code>func click(){
-        let secV = SecondViewController()
-        secV.delegate = self
-        self.navigationController?.pushViewController(secV, animated: true)
-         NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector(&quot;getInfo:&quot;), name: &quot;abc&quot;, object: nil)
-
-}
-
-@objc func getInfo(info: NSNotification){
-    let dic:NSDictionary = info.object! as! NSDictionary
-    print(dic)
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/14/Swift通知，代理，闭包/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
     </nav>
   
 
@@ -1804,11 +1829,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1832,11 +1857,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
