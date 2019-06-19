@@ -6,15 +6,23 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2018 | Blog</title>
+  <title>抖音点赞动画的实现 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2018/page/9/index.html">
+  <meta name="description" content="写在前面主要技术点 1.CAShapeLayer和贝赛尔曲线绘制三角形 2.组合动画的时间技巧 实现原理我们可以看到 它是一个 三角形的贝塞尔曲线  这样的动画需要经过: 2π (360°)旋转一周 圆一周一共有六个 三角形的贝赛尔曲线图形形状. 一个动画组 内部包含缩放动画 从0~1的放大 ,动画如果执行10秒,那么 scale缩放动画执行 10*0.2 = 2秒, 动画组中还包含另一个动画是">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="抖音点赞动画的实现">
+<meta property="og:url" content="http://yoursite.com/2019/06/18/抖音点赞动画的实现/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="写在前面主要技术点 1.CAShapeLayer和贝赛尔曲线绘制三角形 2.组合动画的时间技巧 实现原理我们可以看到 它是一个 三角形的贝塞尔曲线  这样的动画需要经过: 2π (360°)旋转一周 圆一周一共有六个 三角形的贝赛尔曲线图形形状. 一个动画组 内部包含缩放动画 从0~1的放大 ,动画如果执行10秒,那么 scale缩放动画执行 10*0.2 = 2秒, 动画组中还包含另一个动画是">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://img.wangjungang.cn/WX20190619-092448@2x.png">
+<meta property="og:image" content="http://img.wangjungang.cn/WX20190619-092448@2x.png">
+<meta property="og:updated_time" content="2019-06-19T01:54:24.835Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="抖音点赞动画的实现">
+<meta name="twitter:description" content="写在前面主要技术点 1.CAShapeLayer和贝赛尔曲线绘制三角形 2.组合动画的时间技巧 实现原理我们可以看到 它是一个 三角形的贝塞尔曲线  这样的动画需要经过: 2π (360°)旋转一周 圆一周一共有六个 三角形的贝赛尔曲线图形形状. 一个动画组 内部包含缩放动画 从0~1的放大 ,动画如果执行10秒,那么 scale缩放动画执行 10*0.2 = 2秒, 动画组中还包含另一个动画是">
+<meta name="twitter:image" content="http://img.wangjungang.cn/WX20190619-092448@2x.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,74 +158,148 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-抖音点赞动画的实现" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      抖音点赞动画的实现
+    </h1>
+  
+
+        
+        <a href="/2019/06/18/抖音点赞动画的实现/" class="archive-article-date">
+  	<time datetime="2019-06-18T04:37:47.755Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-18</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>主要技术点</p>
+<p>1.CAShapeLayer和贝赛尔曲线绘制三角形</p>
+<p>2.组合动画的时间技巧</p>
+<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>我们可以看到 它是一个 三角形的贝塞尔曲线</p>
+<p><img src="http://img.wangjungang.cn/WX20190619-092448@2x.png" alt=""></p>
+<p>这样的动画需要经过:</p>
+<p>2π (360°)旋转一周</p>
+<p>圆一周一共有六个 三角形的贝赛尔曲线图形形状.</p>
+<p>一个动画组 内部包含缩放动画 从0~1的放大 ,动画如果执行10秒,那么 scale缩放动画执行 10*0.2 = 2秒, 动画组中还包含另一个动画是 从结束位置的动画到结尾消失的位置大小变化直到动画消失.</p>
+<p>沿着圆形每 60°角度 创建一个上图的三角形图形.</p>
+<p>说了这么多 实际就是用CABasicAnimation的keypath是path和CABasicAnimation的keypath是transform.scale的动画组合在一起作用于一个三角形上,并且一共创建6个三角形图形.<br>结束的时候大概是这样的</p>
+<p>结束的时候实际上是一个从 上一次动画执行完成的path向 一条线上三个点的path过渡的过程,直到最后隐藏消失.</p>
+<p>好下面我们来实现一下这个动画</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>首先我们子类话一个ZanLikeView继承自UIView并设置底部的图片和点击变换的❤️图片,就是两张UIImageView加手势,当点击的时候区分不同view的tag就知道哪个imageview点击,这样就可以做两张动画不同的效果了,不过这些可以参考demo.</p>
+<p>我主要介绍核心代码</p>
+<p>创建 CAShapeLayer用于做形状图形相关的图形动画.</p>
+<pre><code>CAShapeLayer *layer = [[CAShapeLayer alloc]init];
+layer.position = _likeBefore.center;
+layer.fillColor = [UIColor redColor].CGColor;
+</code></pre><p>颜色为暴露在外面的接口</p>
+<p>for循环每 30°角创建一个上述的三角形.我们需要创建 6个 就循环6次</p>
+<p>创建初始位置的贝塞尔path</p>
+<pre><code>CGFloat length = 30;
+CGFloat duration = 0.5f;
+for(int i = 0 ; i &lt; 6; i++) {
+    CAShapeLayer *layer = [[CAShapeLayer alloc]init];
+    layer.position = _likeBefore.center;
+    layer.fillColor = [[UIColor redColor].CGColor;
+
+    //...  1
+    //...  2
+    //...  3
+}
+</code></pre><p>这里我们一共创建6个shapeLayer的实例并填充成颜色,我们这里填充的是红色 其它的颜色可自行封装.</p>
+<p>_likeBefore 是我们看到白色的❤️背景视图(UIImageView)</p>
+<p>下面 在//… 1的地方加入如下代码</p>
+<pre><code>UIBezierPath *startPath = [UIBezierPath bezierPath];
+[startPath moveToPoint:CGPointMake(-2, -length)];
+[startPath addLineToPoint:CGPointMake(2, -length)];
+[startPath addLineToPoint:CGPointMake(0, 0)];
+</code></pre><p>这行代码加完就是这样的图形</p>
+<p><img src="http://img.wangjungang.cn/WX20190619-092448@2x.png" alt=""></p>
+<p>然后创建完成我们需要把path给layer.path. 记得转成CGPath</p>
+<pre><code>layer.path = startPath.CGPath;
+layer.transform = CATransform3DMakeRotation(M_PI / 3.0f * i, 0.0, 0.0, 1.0);
+[self.layer addSublayer:layer]
+</code></pre><p>注: CATransform3DMakeRotation()函数 当x,y,z值为0时,代表在该轴方向上不进行旋转,当值为-1时,代表在该轴方向上进行逆时针旋转,当值为1时,代表在该轴方向上进行顺时针旋转</p>
+<p>因为我们是需要60°创建一个layer所以需要顺时针 M_PI / 3.0f = 60°. 每循环一次则创建第N个角度乘60°.</p>
+<p>接着在//… 2添加如下代码</p>
+<pre><code>//动画组
+CAAnimationGroup *group = [[CAAnimationGroup alloc] init];
+group.removedOnCompletion = NO;
+group.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+group.fillMode = kCAFillModeForwards;
+group.duration = duration;
+//缩放动画
+CABasicAnimation *scaleAnim = [CABasicAnimation animationWithKeyPath:@&quot;transform.scale&quot;];
+scaleAnim.fromValue = @(0.0);
+scaleAnim.toValue = @(1.0);
+scaleAnim.duration = duration * 0.2f; //注意这里是在给定时长的地方前0.2f的时间里执行缩放
+</code></pre><p>这里说下duration <em>0.2f. 比如我给定 10秒的duration,那么 duration </em>0.2 = 2 秒执行缩放.</p>
+<p>最后在//… 3的代码出加上如下代码</p>
+<pre><code>//结束点
+UIBezierPath *endPath = [UIBezierPath bezierPath];
+[endPath moveToPoint:CGPointMake(-2, -length)];
+[endPath addLineToPoint:CGPointMake(2, -length)];
+[endPath addLineToPoint:CGPointMake(0, -length)];
+
+CABasicAnimation *pathAnim = [CABasicAnimation animationWithKeyPath:@&quot;path&quot;];
+pathAnim.fromValue = (__bridge id)layer.path;
+pathAnim.toValue = (__bridge id)endPath.CGPath;
+pathAnim.beginTime = duration * 0.2f;
+pathAnim.duration = duration * 0.8f;
+
+[group setAnimations:@[scaleAnim, pathAnim]];
+[layer addAnimation:group forKey:nil];
+</code></pre><p>这几行代码的意识是 从我们上一个layer的path位置开始向我们结束位置的path过渡,并且注意开始时间</p>
+<p>pathAnim.beginTime是 duration <em>0.2也就是说 在上一个动画结束的时间点才开始结束过渡,过渡的时长剩余是duration </em>0.8.这样两个连贯在一起的动画就执行完了,最后把动画加到动画组 天加给layer.</p>
+<p>剩余的工作就是做个普通的动画的 基本没什么了.</p>
+<pre><code>[UIView animateWithDuration:0.35f
+                      delay:0.0f
+                    options:UIViewAnimationOptionCurveEaseIn
+                 animations:^{
+                     self.likeAfter.transform = CGAffineTransformScale(CGAffineTransformMakeRotation(-M_PI_4), 0.1f, 0.1f);
+                 }
+                 completion:^(BOOL finished) {
+                     [self.likeAfter setHidden:YES];
+                     self.likeBefore.userInteractionEnabled = YES;
+                     self.likeAfter.userInteractionEnabled = YES;
+                 }];
+</code></pre><p>技巧</p>
+<p>结束动画的开始时间和结束时间控制,恰到好处.</p>
+<h2 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h2><p><a href="https://github.com/iwenyupinlun01/zanDemo" target="_blank" rel="noopener">demo</a></p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/类方法和实例方法的区别/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:05:33.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/类方法和实例方法的区别/">类方法和实例方法的区别</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/OC中的isa指针/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:01:36.931Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/OC中的isa指针/">OC中的isa指针</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -229,326 +311,105 @@
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/06/18/抖音点赞动画的实现/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/关于数组和链表/" class="archive-article-date">
-  	<time datetime="2018-09-06T14:28:49.016Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/06/16/通过单例、归档存储多个用户数据 /" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">通过单例、归档存储多个用户数据</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/关于数组和链表/">关于数组和链表</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/" class="archive-article-date">
-  	<time datetime="2018-09-06T13:53:32.378Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/">iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/" class="archive-article-date">
-  	<time datetime="2018-09-06T05:21:08.050Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/">iOS 简单而粗暴的说一说内存管理</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/05/AFN为什么添加一条常驻线程/" class="archive-article-date">
-  	<time datetime="2018-09-05T08:43:27.761Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/05/AFN为什么添加一条常驻线程/">AFN为什么添加一条常驻线程</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/05/为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？/" class="archive-article-date">
-  	<time datetime="2018-09-05T07:38:22.366Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/05/为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？/">为什么在默认情况下无法修改被block捕获的变量？ __block都做了什么？</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/05/NSCache优于NSDictionary的几点？/" class="archive-article-date">
-  	<time datetime="2018-09-05T07:32:41.638Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/05/NSCache优于NSDictionary的几点？/">NSCache优于NSDictionary的几点？</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/05/iOS关于属性的整理/" class="archive-article-date">
-  	<time datetime="2018-09-05T05:29:27.932Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-05</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/05/iOS关于属性的整理/">iOS关于属性的整理</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/04/iOS关于delegate的整理内容/" class="archive-article-date">
-  	<time datetime="2018-09-04T09:58:13.408Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/04/iOS关于delegate的整理内容/">iOS关于delegate的整理内容</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/archives/2018/page/8/">&laquo; Prev</a><a class="page-number" href="/archives/2018/">1</a><span class="space">&hellip;</span><a class="page-number" href="/archives/2018/page/7/">7</a><a class="page-number" href="/archives/2018/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/archives/2018/page/10/">10</a><a class="page-number" href="/archives/2018/page/11/">11</a><a class="extend next" rel="next" href="/archives/2018/page/10/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -572,8 +433,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
