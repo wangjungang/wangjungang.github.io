@@ -152,6 +152,199 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-使用贝塞尔曲线绘制水波纹" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/23/使用贝塞尔曲线绘制水波纹/">使用贝塞尔曲线绘制水波纹</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/23/使用贝塞尔曲线绘制水波纹/" class="archive-article-date">
+  	<time datetime="2019-06-23T13:48:06.223Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="思路："><a href="#思路：" class="headerlink" title="思路："></a>思路：</h2><p>使用贝塞尔曲线绘制正弦曲线；使用CAShapeLayer绘制形状；使用CADisplayLink做刷屏；</p>
+<p>CADisplayLink是一个能让我们以和屏幕刷新率相同的频率将内容画到屏幕上的定时器。一但 CADisplayLink以特定的模式注册到runloop之后，每当屏幕需要刷新的时候，runloop就会调用CADisplayLink绑定的target上的selector；iOS设备的刷新频率事60HZ也就是每秒60次。那么每一次刷新的时间就是1/60秒 大概16.7毫秒；下面直接上代码：</p>
+<h2 id="一-创建THWave类，继承于UIView"><a href="#一-创建THWave类，继承于UIView" class="headerlink" title="一. 创建THWave类，继承于UIView"></a>一. 创建THWave类，继承于UIView</h2><pre><code>/** 浪宽： 一个完整的浪的宽度 */
+@property (nonatomic, assign) CGFloat waveWidth;
+
+/** 浪高： 波峰到波谷的距离 */
+@property (nonatomic, assign) CGFloat waveHeight;
+
+/** 浪速： 浪线的移动速度 */
+@property (nonatomic, assign) CGFloat waveSpeed;
+
+/** 浪速： 浪的内填充颜色 */
+@property (nonatomic, strong) UIColor *waveColor;
+
+/** 返回浪的Y点 */
+@property (nonatomic, copy) WaveYBlock waveY;
+
+
+/** 开始波动 */
+- (void)startWaveAnimation;
+/** 结束波动 */
+- (void)endWaveAnimation;
+</code></pre><h2 id="二-创建CAShapeLayer"><a href="#二-创建CAShapeLayer" class="headerlink" title="二. 创建CAShapeLayer"></a>二. 创建CAShapeLayer</h2><pre><code>#pragma mark - initUI
+- (void)initUI{
+    // 设置底色
+    self.backgroundColor = [UIColor whiteColor];
+
+    // 创建layer
+    _waveLayer = [CAShapeLayer layer];
+    [self.layer addSublayer:_waveLayer];
+}
+
+#pragma mark - 设置浪高
+- (void)setWaveHeight:(CGFloat)waveHeight{
+    _waveHeight = waveHeight;
+
+    CGRect frame = self.bounds;
+    frame.origin.y = frame.size.height - self.waveHeight;
+    frame.size.height = self.waveHeight;
+    _waveLayer.frame = frame;
+
+}
+#pragma mark - 设置浪色
+- (void)setWaveColor:(UIColor *)waveColor{
+    _waveColor = waveColor;
+    _waveLayer.fillColor = waveColor.CGColor;
+}
+</code></pre><h2 id="三-创建刷屏器"><a href="#三-创建刷屏器" class="headerlink" title="三. 创建刷屏器"></a>三. 创建刷屏器</h2><pre><code>#pragma mark - 开始和结束动画
+- (void)startWaveAnimation{
+    self.timer = [CADisplayLink displayLinkWithTarget:self selector:@selector(wave)];
+    [self.timer addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+}
+- (void)endWaveAnimation{
+    [self.timer invalidate];
+    self.timer = nil;
+}
+</code></pre><h2 id="四-绘制"><a href="#四-绘制" class="headerlink" title="四. 绘制"></a>四. 绘制</h2><pre><code>// 动画实现
+- (void)wave{
+
+    // 1. 随机
+    int speed = [@(self.waveSpeed) intValue];
+    int num = arc4random() % speed;
+    self.offset += num;
+
+    CGFloat width = self.bounds.size.width;
+    CGFloat height = self.waveHeight;
+    CGFloat y = 0.f;
+    // 2. 绘线
+    UIBezierPath *path = [UIBezierPath bezierPath];
+    [path moveToPoint:CGPointMake(0, height)];
+    for (CGFloat x = 0.f; x &lt;= width; x++) {
+        y = height * sinf(2*M_PI/self.waveWidth *x - self.offset * 0.0045);
+        [path addLineToPoint:CGPointMake(x, y)];
+    }
+
+    // 3. 返回x等于中心点时的Y值
+    CGFloat centerX = self.bounds.size.width / 2.0;
+    CGFloat centerY = height * sinf(2*M_PI/self.waveWidth * centerX - self.offset * 0.0045);
+    if (self.waveY) {
+        self.waveY(centerY);
+    }
+
+    // 4. 闭合曲线
+    [path addLineToPoint:CGPointMake(width, height)];
+    [path addLineToPoint:CGPointMake(0, height)];
+    [path closePath];
+    self.waveLayer.path = path.CGPath;
+}
+</code></pre><h2 id="五-外部引用-顺便加条小船"><a href="#五-外部引用-顺便加条小船" class="headerlink" title="五. 外部引用,顺便加条小船"></a>五. 外部引用,顺便加条小船</h2><pre><code>#pragma mark - creatWave
+-(void)creatWave{
+    // 1. view 增加浪
+    [self.view addSubview: ({
+        THWave *wave = [[THWave alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 300)];
+        wave.waveHeight = 18;
+        wave.waveSpeed = 15;
+        wave.waveWidth = 300;
+        wave.waveColor = [UIColor colorWithRed:48/255.0 green:204/255.0 blue:249/255.0 alpha:1];
+
+        // 2. 浪增加船
+        UIImageView *boat;
+        [wave addSubview:({
+            boat = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@&quot;boat&quot;]];
+            boat.bounds = CGRectMake(0, 0, 123.3, 106.6);
+            boat.contentMode = UIViewContentModeScaleToFill;
+            boat;
+        })];
+
+        // 3. 弱化，调整船的位置
+        __weak typeof(self)weakSelf = self;
+        __weak typeof(wave)weakWave = wave;
+        wave.waveY = ^(CGFloat waveY){
+            CGRect frame = boat.bounds;
+            frame.origin.x = CGRectGetWidth(weakSelf.view.frame)/2.0 - CGRectGetWidth(frame)/2.0;
+            frame.origin.y = weakWave.bounds.size.height - boat.bounds.size.height - weakWave.waveHeight + waveY;
+            boat.frame = frame;
+        };
+        [wave startWaveAnimation];
+        wave;
+    })];
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/23/使用贝塞尔曲线绘制水波纹/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-MVP模式的学习" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1519,125 +1712,6 @@ static func postNotification(name: String,
 
 
   
-    <article id="post-你应该定期更新Homebrew" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/15/你应该定期更新Homebrew/">你应该定期更新Homebrew</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/15/你应该定期更新Homebrew/" class="archive-article-date">
-  	<time datetime="2019-06-15T08:56:52.028Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这篇文章是关于定期更新 Homebrew 的话题。它会告诉你定期更新的好处，常用的命令，以及用 brew pin 尽可能无痛地更新。</p>
-<h2 id="为什么要定期更新"><a href="#为什么要定期更新" class="headerlink" title="为什么要定期更新"></a>为什么要定期更新</h2><p>我发现不少人都不会经常更新，或者只在必须用某个工具的新版本的时候才更新。他们的看法是，更新有可能产生一些意外的问题，反正当前环境足够稳定可以用，干嘛自找麻烦呢？</p>
-<p>这个看法对也不对。对是因为，更新产生的潜在问题不可避免。不对是因为总有一天你需要升级的，也许是为了某个工具的新特性，也许是为了修复软件的漏洞，也许你安装的包非要依赖另一个包的新版本，等等。如果隔了很长一段时间才升级，那潜在的小问题可能就会变成大问题。</p>
-<p>另一个有意思的现象是，当碰到比较破坏性的事情，比如 Mac OS 大版本更新后，很多人会选择重装 Homebrew 然后顺带安装最新版的包。很少人会去装一个指定的旧版本（除了特殊项目需要）。这说明他们不是不想用新版本，而是不想痛苦地更新。</p>
-<p>既然总有一天需要更新，而更新带来问题不可避免，那为什么不更新得频繁点呢？这个道理跟 Git 的冲突解决有相似性。长时间不 pull/push 的代码更容易产生冲突，一个解决方法就是频繁地 commit &amp; merge 。</p>
-<p>我现在试着一个月更新一次，两次下来发现这些好处：</p>
-<p>1.每次更新的包很少，更新风险也小。</p>
-<p>2.更容易发现不需要的包，便于清理，不为不需要的东西买单。</p>
-<p>3.定期清理旧版本，释放空间。</p>
-<p>更新流程其实都差不多，下面列一下我常用的命令。</p>
-<h2 id="更新-Homebrew"><a href="#更新-Homebrew" class="headerlink" title="更新 Homebrew"></a>更新 Homebrew</h2><p>要获取最新的包的列表，首先得更新 Homebrew 自己。这可以用 brew update 办到。</p>
-<pre><code>brew update
-</code></pre><p>完后会显示可以更新的包列表，其中打钩的是已经安装的包。输出类似下面这样：</p>
-<pre><code>Updated Homebrew from fe93aa3 to 6ae64c3.
-Updated 1 tap (homebrew/versions).
-==&gt; Updated Formulae
-awscli      cmake ✔     homebrew/versions/libmongoclient-legacy
-</code></pre><h2 id="更新包-formula"><a href="#更新包-formula" class="headerlink" title="更新包 (formula)"></a>更新包 (formula)</h2><p>更新之前，我会用 brew outdated 查看哪些包可以更新。</p>
-<pre><code>brew outdated
-</code></pre><p>然后就可以用 brew upgrade 去更新了。Homebrew 会安装新版本的包，但旧版本仍然会保留。</p>
-<pre><code>brew upgrade             # 更新所有的包
-brew upgrade $FORMULA    # 更新指定的包
-</code></pre><h2 id="清理旧版本"><a href="#清理旧版本" class="headerlink" title="清理旧版本"></a>清理旧版本</h2><p>一般情况下，新版本安装了，旧版本就不需要了。我会用 brew cleanup 清理旧版本和缓存文件。Homebrew 只会清除比当前安装的包更老的版本，所以不用担心有些包没更新但被删了。</p>
-<pre><code>brew cleanup             # 清理所有包的旧版本
-brew cleanup $FORMULA    # 清理指定包的旧版本
-brew cleanup -n          # 查看可清理的旧版本包，不执行实际操作
-</code></pre><p>这样一套下来，该更新的都更新了，旧版本也被清理了。</p>
-<h2 id="锁定不想更新的包"><a href="#锁定不想更新的包" class="headerlink" title="锁定不想更新的包"></a>锁定不想更新的包</h2><p>如果经常更新的话，brew update 一次更新所有的包是非常方便的。但我们有时候会担心自动升级把一些不希望更新的包更新了。数据库就属于这一类，尤其是 PostgreSQL 跨 minor 版本升级都要迁移数据库的。我们更希望找个时间单独处理它。这时可用 brew pin 去锁定这个包，然后 brew update 就会略过它了。</p>
-<pre><code>brew pin $FORMULA      # 锁定某个包
-brew unpin $FORMULA    # 取消锁定
-</code></pre><h2 id="其他几个常用命令"><a href="#其他几个常用命令" class="headerlink" title="其他几个常用命令"></a>其他几个常用命令</h2><p>brew info 可以查看包的相关信息，最有用的应该是包依赖和相应的命令。比如 Nginx 会提醒你怎么加 launchctl ，PostgreSQL 会告诉你如何迁移数据库。这些信息会在包安装完成后自动显示，如果忘了的话可以用这个命令很方便地查看。</p>
-<pre><code>brew info $FORMULA    # 显示某个包的信息
-brew info             # 显示安装了包数量，文件数量，和总占用空间
-</code></pre><p>brew deps 可以显示包的依赖关系，我常用它来查看已安装的包的依赖，然后判断哪些包是可以安全删除的。</p>
-<p>brew deps –installed –tree # 查看已安装的包的依赖，树形显示<br>输出如下：</p>
-<pre><code>elixir (required dependencies)
-└── :erlang
-
-wxmac (required dependencies)
-├── jpeg
-├── libpng
-│   └── xz
-└── libtiff
-    └── jpeg
-</code></pre><p>还有很多有用的命令和参数，没事 man brew 一下可以涨不少知识。</p>
-<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>不想更新 Homebrew 往往有两个原因，害怕潜在的风险和对工具的不熟悉，我之前也是这样。写这篇文章最开始是为了帮我记录常用的命令方便以后查阅的。希望它也能帮到你。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Other</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/15/你应该定期更新Homebrew/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1759,11 +1833,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1787,11 +1861,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
