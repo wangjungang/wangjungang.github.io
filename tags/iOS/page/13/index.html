@@ -6,20 +6,15 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Swift 中的 map 和 flatMap | Blog</title>
+  <title>Tag: iOS | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面map 和 flatMap 是 Swift 中两个常用的函数，它们体现了 Swift 中很多的特性。对于简单的使用来说，它们的接口并不复杂，但它们内部的机制还是非常值得研究的，能够帮助我们够好的理解 Swift 语言。 map 简介首先，咱们说说 map 函数如何使用。 let numbers = [1,2,3,4] let result = numbers.map { $0 + 2 }">
-<meta name="keywords" content="iOS">
-<meta property="og:type" content="article">
-<meta property="og:title" content="Swift 中的 map 和 flatMap">
-<meta property="og:url" content="http://yoursite.com/2019/04/15/Swift 中的 map 和 flatMap/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Blog">
+<meta property="og:url" content="http://yoursite.com/tags/iOS/page/13/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面map 和 flatMap 是 Swift 中两个常用的函数，它们体现了 Swift 中很多的特性。对于简单的使用来说，它们的接口并不复杂，但它们内部的机制还是非常值得研究的，能够帮助我们够好的理解 Swift 语言。 map 简介首先，咱们说说 map 函数如何使用。 let numbers = [1,2,3,4] let result = numbers.map { $0 + 2 }">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-15T09:12:53.660Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift 中的 map 和 flatMap">
-<meta name="twitter:description" content="写在前面map 和 flatMap 是 Swift 中两个常用的函数，它们体现了 Swift 中很多的特性。对于简单的使用来说，它们的接口并不复杂，但它们内部的机制还是非常值得研究的，能够帮助我们够好的理解 Swift 语言。 map 简介首先，咱们说说 map 函数如何使用。 let numbers = [1,2,3,4] let result = numbers.map { $0 + 2 }">
+<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,122 +150,36 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Swift 中的 map 和 flatMap" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      Swift 中的 map 和 flatMap
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/07/31/浅谈iOS 开发中的界面通信/" class="archive-article-date">
+  	<time datetime="2018-07-31T05:58:01.437Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/07/31/浅谈iOS 开发中的界面通信/">浅谈iOS 开发中的界面通信</a>
     </h1>
   
 
-        
-        <a href="/2019/04/15/Swift 中的 map 和 flatMap/" class="archive-article-date">
-  	<time datetime="2019-04-15T07:50:08.343Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>map 和 flatMap 是 Swift 中两个常用的函数，它们体现了 Swift 中很多的特性。对于简单的使用来说，它们的接口并不复杂，但它们内部的机制还是非常值得研究的，能够帮助我们够好的理解 Swift 语言。</p>
-<h2 id="map-简介"><a href="#map-简介" class="headerlink" title="map 简介"></a>map 简介</h2><p>首先，咱们说说 map 函数如何使用。</p>
-<pre><code>let numbers = [1,2,3,4]
-let result = numbers.map { $0 + 2 }
-print(result)  // [3,4,5,6]
-</code></pre><p>map 方法接受一个闭包作为参数， 然后它会遍历整个 numbers 数组，并对数组中每一个元素执行闭包中定义的操作。 相当于对数组中的所有元素做了一个映射。 比如咱们这个例子里面的闭包是讲所有元素都加 2 。 这样它产生的结果数据就是 [3,4,5,6]。</p>
-<p>初步了解之后，我们来看一下 map 的定义：</p>
-<pre><code>func map
-(@noescape transform: (Self.Generator.Element) throws -&gt; T) rethrows -&gt; [T]
-</code></pre><p>咱们抛开一些和关键逻辑无关的修饰符 @noescape,throws 这些，在整理一下就是这样</p>
-<pre><code>func map
-(transform: (Self.Generator.Element) -&gt; T) rethrows -&gt; [T]
-</code></pre><p>map 函数接受一个闭包， 这个闭包的定义是这样的：</p>
-<pre><code>(Self.Generator.Element) -&gt; T
-</code></pre><p>它接受 Self.Generator.Element 类型的参数， 这个类型代表数组中当前元素的类型。 而这个闭包的返回值，是可以和传递进来的值不同的。 比如我们可以这样：</p>
-<pre><code>let stringResult = numbers.map { &quot;No. \($0)&quot; }
-// [&quot;No. 1&quot;, &quot;No. 2&quot;, &quot;No. 3&quot;, &quot;No. 4&quot;]
-</code></pre><p>这次我们在闭包装把传递进来的数字拼接到一个字符串中， 然后返回一个组数， 这个数组中包含的数据类型，就是我们拼接好的字符串。<br>这就是关于 map 的初步了解， 我们继续来看 flatMap。</p>
-<h2 id="flatMap"><a href="#flatMap" class="headerlink" title="flatMap"></a>flatMap</h2><p>map 可以对一个集合类型的所有元素做一个映射操作。 那么 flatMap 呢？</p>
-<p>让我们来看一个 flatMap 的例子：</p>
-<pre><code>result = numbers.flatMap { $0 + 2 }
-// [3,4,5,6]
-</code></pre><p>我们对同样的数组使用 flatMap 进行处理， 得到了同样的结果。 那 flatMap 和 map 到底有什么区别呢？</p>
-<p>咱们再来看另一个例子：</p>
-<pre><code>let numbersCompound = [[1,2,3],[4,5,6]];
-var res = numbersCompound.map { $0.map{ $0 + 2 } }
-// [[3, 4, 5], [6, 7, 8]]
-var flatRes = numbersCompound.flatMap { $0.map{ $0 + 2 } }
-// [3, 4, 5, 6, 7, 8]
-</code></pre><p>这里就看出差别了。 对于二维数组， map 和 flatMap 的结果就不同了。 我们先来看第一个调用：</p>
-<pre><code>var res = numbersCompound.map { $0.map{ $0 + 2 } }
-// [[3, 4, 5], [6, 7, 8]]
-</code></pre><p>numbersCompound.map { … } 这个调用实际上是遍历了这里两个数组元素 [1,2,3] 和 [4,5,6]。 因为这两个元素依然是数组，所以我们可以对他们再次调用 map 函数：$0.map{ $0 + 2 }。 这个内部的调用最终将数组中所有的元素加 2。</p>
-<p>再来看看 flatMap 的调用：</p>
-<p>flatMap 依然会遍历数组的元素，并对这些元素执行闭包中定义的操作。 但唯一不同的是，它对最终的结果进行了所谓的 “降维” 操作。 本来原始数组是一个二维的， 但经过 flatMap 之后，它变成一维的了。</p>
-<p>flatMap 是如何做到的呢，它的原理是什么，为什么会存在这样一个函数呢？ 相信此时你脑海中肯定会浮现出类似的问题。</p>
-<p>下面咱们再来看一下 flatMap 的定义, 还是抛去 @noescape, rethrows 这些无关逻辑的关键字：</p>
-<pre><code>func flatMap(transform: (Self.Generator.Element) throws -&gt; T?) -&gt; [T]
-func flatMap(transform: (Self.Generator.Element) -&gt; S) -&gt; [S.Generator.Element]
-</code></pre><p>和 map 不同， flatMap 有两个重载。 参照我们刚才的示例， 我们调用的其实是第二个重载：</p>
-<pre><code>func flatMap(transform: (Self.Generator.Element) -&gt; S) -&gt; [S.Generator.Element]
-</code></pre><p>flatMap 的闭包接受的是数组的元素，但返回的是一个 SequenceType 类型，也就是另外一个数组。 这从我们刚才这个调用中不难看出：</p>
-<pre><code>numbersCompound.flatMap { $0.map{ $0 + 2 } }
-</code></pre><h4 id="flatMap-的另一个重载"><a href="#flatMap-的另一个重载" class="headerlink" title="flatMap 的另一个重载"></a>flatMap 的另一个重载</h4><p>我们刚才分析了半天， 其实只分析到 flatMap 的一种重载情况， 那么另外一种重载又是怎么回事呢：</p>
-<pre><code>func flatMap(transform: (Self.Generator.Element) -&gt; T?) -&gt; [T]
-</code></pre><p>从定义中我们看出， 它的闭包接收的是 Self.Generator.Element 类型， 返回的是一个 T? 。 我们都知道，在 Swift 中类型后面跟随一个 ?， 代表的是 Optional 值。 也就是说这个重载中接收的闭包返回的是一个 Optional 值。 更进一步来说，就是闭包可以返回 nil。</p>
-<p>那么 flatMap 是如何实现过滤掉 nil 值的呢？ 我们还是来看一下源码：</p>
-<pre><code>extension Sequence {
-// ...
-public func flatMap(
-@noescape transform: (${GElement}) throws -&gt; T?
-) rethrows -&gt; [T] {
-var result: [T] = []
-for element in self {
-if let newElement = try transform(element) {
-result.append(newElement)
-}
-}
-return result
-}
-// ...
-}
-</code></pre><p>依然是遍历所有元素，并应用 try transform(element) 闭包的调用， 但关键一点是，这里面用到了 if let 语句， 对那些只有解包成功的元素，才会添加到结果集中:</p>
-<pre><code>if let newElement = try transform(element) {
-result.append(newElement)
-}
-</code></pre><p>这样， 就实现了我们刚才看到的自动去掉 nil 值的效果了。</p>
-
-      
-
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
-        </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -282,114 +191,22 @@ result.append(newElement)
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/15/Swift 中的 map 和 flatMap/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
-  
-<nav id="article-nav">
-  
-    <a href="/2019/04/15/Swift中的高阶函数/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Swift中的高阶函数
-        
-      </div>
-    </a>
   
   
-    <a href="/2019/02/22/录音、音频的拼接剪切以及边录边压缩转码/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">录音、音频的拼接剪切以及边录边压缩转码</div>
-      <i class="icon-circle-right"></i>
-    </a>
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-  
-  
+    </div></section>
   
 
-  
-
-  
-
+    
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/tags/iOS/page/12/">&laquo; Prev</a><a class="page-number" href="/tags/iOS/">1</a><span class="space">&hellip;</span><a class="page-number" href="/tags/iOS/page/11/">11</a><a class="page-number" href="/tags/iOS/page/12/">12</a><span class="page-number current">13</span>
+    </nav>
   
 
 
@@ -413,9 +230,9 @@ result.append(newElement)
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,

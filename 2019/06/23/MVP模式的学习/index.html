@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Swift 中的 map 和 flatMap | Blog</title>
+  <title>MVP模式的学习 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面map 和 flatMap 是 Swift 中两个常用的函数，它们体现了 Swift 中很多的特性。对于简单的使用来说，它们的接口并不复杂，但它们内部的机制还是非常值得研究的，能够帮助我们够好的理解 Swift 语言。 map 简介首先，咱们说说 map 函数如何使用。 let numbers = [1,2,3,4] let result = numbers.map { $0 + 2 }">
+  <meta name="description" content="写在前面这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo 打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。MVP似乎有好多的变种，作者所说的这种有如下特点：（原文如下：） the view part of the MVP consists of both UI">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Swift 中的 map 和 flatMap">
-<meta property="og:url" content="http://yoursite.com/2019/04/15/Swift 中的 map 和 flatMap/index.html">
+<meta property="og:title" content="MVP模式的学习">
+<meta property="og:url" content="http://yoursite.com/2019/06/23/MVP模式的学习/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面map 和 flatMap 是 Swift 中两个常用的函数，它们体现了 Swift 中很多的特性。对于简单的使用来说，它们的接口并不复杂，但它们内部的机制还是非常值得研究的，能够帮助我们够好的理解 Swift 语言。 map 简介首先，咱们说说 map 函数如何使用。 let numbers = [1,2,3,4] let result = numbers.map { $0 + 2 }">
+<meta property="og:description" content="写在前面这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo 打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。MVP似乎有好多的变种，作者所说的这种有如下特点：（原文如下：） the view part of the MVP consists of both UI">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-15T09:12:53.660Z">
+<meta property="og:updated_time" content="2019-06-23T12:05:49.913Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift 中的 map 和 flatMap">
-<meta name="twitter:description" content="写在前面map 和 flatMap 是 Swift 中两个常用的函数，它们体现了 Swift 中很多的特性。对于简单的使用来说，它们的接口并不复杂，但它们内部的机制还是非常值得研究的，能够帮助我们够好的理解 Swift 语言。 map 简介首先，咱们说说 map 函数如何使用。 let numbers = [1,2,3,4] let result = numbers.map { $0 + 2 }">
+<meta name="twitter:title" content="MVP模式的学习">
+<meta name="twitter:description" content="写在前面这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo 打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。MVP似乎有好多的变种，作者所说的这种有如下特点：（原文如下：） the view part of the MVP consists of both UI">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,93 +155,98 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-Swift 中的 map 和 flatMap" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-MVP模式的学习" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      Swift 中的 map 和 flatMap
+      MVP模式的学习
     </h1>
   
 
         
-        <a href="/2019/04/15/Swift 中的 map 和 flatMap/" class="archive-article-date">
-  	<time datetime="2019-04-15T07:50:08.343Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-15</time>
+        <a href="/2019/06/23/MVP模式的学习/" class="archive-article-date">
+  	<time datetime="2019-06-23T12:02:00.876Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>map 和 flatMap 是 Swift 中两个常用的函数，它们体现了 Swift 中很多的特性。对于简单的使用来说，它们的接口并不复杂，但它们内部的机制还是非常值得研究的，能够帮助我们够好的理解 Swift 语言。</p>
-<h2 id="map-简介"><a href="#map-简介" class="headerlink" title="map 简介"></a>map 简介</h2><p>首先，咱们说说 map 函数如何使用。</p>
-<pre><code>let numbers = [1,2,3,4]
-let result = numbers.map { $0 + 2 }
-print(result)  // [3,4,5,6]
-</code></pre><p>map 方法接受一个闭包作为参数， 然后它会遍历整个 numbers 数组，并对数组中每一个元素执行闭包中定义的操作。 相当于对数组中的所有元素做了一个映射。 比如咱们这个例子里面的闭包是讲所有元素都加 2 。 这样它产生的结果数据就是 [3,4,5,6]。</p>
-<p>初步了解之后，我们来看一下 map 的定义：</p>
-<pre><code>func map
-(@noescape transform: (Self.Generator.Element) throws -&gt; T) rethrows -&gt; [T]
-</code></pre><p>咱们抛开一些和关键逻辑无关的修饰符 @noescape,throws 这些，在整理一下就是这样</p>
-<pre><code>func map
-(transform: (Self.Generator.Element) -&gt; T) rethrows -&gt; [T]
-</code></pre><p>map 函数接受一个闭包， 这个闭包的定义是这样的：</p>
-<pre><code>(Self.Generator.Element) -&gt; T
-</code></pre><p>它接受 Self.Generator.Element 类型的参数， 这个类型代表数组中当前元素的类型。 而这个闭包的返回值，是可以和传递进来的值不同的。 比如我们可以这样：</p>
-<pre><code>let stringResult = numbers.map { &quot;No. \($0)&quot; }
-// [&quot;No. 1&quot;, &quot;No. 2&quot;, &quot;No. 3&quot;, &quot;No. 4&quot;]
-</code></pre><p>这次我们在闭包装把传递进来的数字拼接到一个字符串中， 然后返回一个组数， 这个数组中包含的数据类型，就是我们拼接好的字符串。<br>这就是关于 map 的初步了解， 我们继续来看 flatMap。</p>
-<h2 id="flatMap"><a href="#flatMap" class="headerlink" title="flatMap"></a>flatMap</h2><p>map 可以对一个集合类型的所有元素做一个映射操作。 那么 flatMap 呢？</p>
-<p>让我们来看一个 flatMap 的例子：</p>
-<pre><code>result = numbers.flatMap { $0 + 2 }
-// [3,4,5,6]
-</code></pre><p>我们对同样的数组使用 flatMap 进行处理， 得到了同样的结果。 那 flatMap 和 map 到底有什么区别呢？</p>
-<p>咱们再来看另一个例子：</p>
-<pre><code>let numbersCompound = [[1,2,3],[4,5,6]];
-var res = numbersCompound.map { $0.map{ $0 + 2 } }
-// [[3, 4, 5], [6, 7, 8]]
-var flatRes = numbersCompound.flatMap { $0.map{ $0 + 2 } }
-// [3, 4, 5, 6, 7, 8]
-</code></pre><p>这里就看出差别了。 对于二维数组， map 和 flatMap 的结果就不同了。 我们先来看第一个调用：</p>
-<pre><code>var res = numbersCompound.map { $0.map{ $0 + 2 } }
-// [[3, 4, 5], [6, 7, 8]]
-</code></pre><p>numbersCompound.map { … } 这个调用实际上是遍历了这里两个数组元素 [1,2,3] 和 [4,5,6]。 因为这两个元素依然是数组，所以我们可以对他们再次调用 map 函数：$0.map{ $0 + 2 }。 这个内部的调用最终将数组中所有的元素加 2。</p>
-<p>再来看看 flatMap 的调用：</p>
-<p>flatMap 依然会遍历数组的元素，并对这些元素执行闭包中定义的操作。 但唯一不同的是，它对最终的结果进行了所谓的 “降维” 操作。 本来原始数组是一个二维的， 但经过 flatMap 之后，它变成一维的了。</p>
-<p>flatMap 是如何做到的呢，它的原理是什么，为什么会存在这样一个函数呢？ 相信此时你脑海中肯定会浮现出类似的问题。</p>
-<p>下面咱们再来看一下 flatMap 的定义, 还是抛去 @noescape, rethrows 这些无关逻辑的关键字：</p>
-<pre><code>func flatMap(transform: (Self.Generator.Element) throws -&gt; T?) -&gt; [T]
-func flatMap(transform: (Self.Generator.Element) -&gt; S) -&gt; [S.Generator.Element]
-</code></pre><p>和 map 不同， flatMap 有两个重载。 参照我们刚才的示例， 我们调用的其实是第二个重载：</p>
-<pre><code>func flatMap(transform: (Self.Generator.Element) -&gt; S) -&gt; [S.Generator.Element]
-</code></pre><p>flatMap 的闭包接受的是数组的元素，但返回的是一个 SequenceType 类型，也就是另外一个数组。 这从我们刚才这个调用中不难看出：</p>
-<pre><code>numbersCompound.flatMap { $0.map{ $0 + 2 } }
-</code></pre><h4 id="flatMap-的另一个重载"><a href="#flatMap-的另一个重载" class="headerlink" title="flatMap 的另一个重载"></a>flatMap 的另一个重载</h4><p>我们刚才分析了半天， 其实只分析到 flatMap 的一种重载情况， 那么另外一种重载又是怎么回事呢：</p>
-<pre><code>func flatMap(transform: (Self.Generator.Element) -&gt; T?) -&gt; [T]
-</code></pre><p>从定义中我们看出， 它的闭包接收的是 Self.Generator.Element 类型， 返回的是一个 T? 。 我们都知道，在 Swift 中类型后面跟随一个 ?， 代表的是 Optional 值。 也就是说这个重载中接收的闭包返回的是一个 Optional 值。 更进一步来说，就是闭包可以返回 nil。</p>
-<p>那么 flatMap 是如何实现过滤掉 nil 值的呢？ 我们还是来看一下源码：</p>
-<pre><code>extension Sequence {
-// ...
-public func flatMap(
-@noescape transform: (${GElement}) throws -&gt; T?
-) rethrows -&gt; [T] {
-var result: [T] = []
-for element in self {
-if let newElement = try transform(element) {
-result.append(newElement)
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo</p>
+<p>打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。<br>MVP似乎有好多的变种，作者所说的这种有如下特点：<br>（原文如下：）</p>
+<pre><code>the view part of the MVP consists of both UIViews and UIViewController
+the view delegates user interactions to the presenter
+the presenter contains the logic to handle user interactions
+the presenter communicates with model layer, converts the data to UI friendly format, and updates the view
+the presenter has no dependencies to UIKit
+the view is passive (dump)
+稍微翻译一下
+MVP的 V 层是由UIViewController 和UIView 共同组成
+view 将委托presenter 对它自己的操作，（简单来说就是presenter发命令来控制view的交互，要你隐藏就隐藏，叫你show 你就乖乖的show）
+presenter拥有对 view交互的逻辑（就是上面说的意思）
+presenter跟model层通信，并将数据转化成对适应UI的数据并更新view
+presenter不需要依赖UIKit
+view层是单一，因为它是被动接受命令，没有主动能力
+</code></pre><p>presenter 作为业务逻辑的处理者，首先要向model层拿数据，所以它将可以向model层通信。其次，UI的处理权移交给了它，所以它需要与view成通讯，发送命令改变UI。同时，UI的响应将触发业务逻辑的处理，所以view 层向presenter层通讯，告诉他用户做了什么操作，需要你反馈对应的数据来更新UI。这样就完成了从用户交互获得交互反馈到整个业务逻辑。</p>
+<h2 id="先看看结构"><a href="#先看看结构" class="headerlink" title="先看看结构"></a>先看看结构</h2><p>UserViewProtocol 协议定义了一下方法，这些方法其实就是presenter对view层发送的命令</p>
+<pre><code>#import &lt;Foundation/Foundation.h&gt;
+@protocol UserViewProtocol &lt;NSObject&gt;
+-(void) userViewDataSource:(NSArray*)data;
+-(void) showIndicator;
+-(void) hideIndicator;
+-(void) showEmptyView;
+@end
+</code></pre><p>UserService 类是用来请求数据给presenter的，也能算是model层吧。我就只定义了一个方法。</p>
+<pre><code>-(void)getUserInfosSuccess:(SuccessHandler )success andFail:(FailHandler) failure
+</code></pre><p>这一层，其实也可以很复杂，这就涉及网络层的架构了</p>
+<p>ViewController类则是UI层，它实现了tableview自己的协议，还实现了用户交互的协议 UserViewProtocol，也就说，presenter向UI层发送命令，其实是发给UI层的viewController，实际上是控制器来被动的更新UI。这个不管是MVC还是MVP，view的实际控制权应该都是viewController，这个理解应该没错吧。<br>协议中的几个方法实现如下。</p>
+<pre><code>-(void)userViewDataSource:(NSArray*)data{
+ self.friendlyUIData = data;
+ [self.tableview reloadData];
 }
+-(void) showIndicator{
+ self.indicator.hidden = NO;
 }
-return result
+-(void) hideIndicator{
+ self.indicator.hidden = YES;
 }
-// ...
+-(void) showEmptyView{
+ UIAlertController *alertView = [UIAlertController alertControllerWithTitle:@&quot;Alert&quot; message:@&quot;show empty view&quot; preferredStyle:UIAlertControllerStyleAlert];
+ [alertView addAction:[UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:nil]];
+ [self presentViewController:alertView animated:YES completion:^{
+ }];
 }
-</code></pre><p>依然是遍历所有元素，并应用 try transform(element) 闭包的调用， 但关键一点是，这里面用到了 if let 语句， 对那些只有解包成功的元素，才会添加到结果集中:</p>
-<pre><code>if let newElement = try transform(element) {
-result.append(newElement)
+</code></pre><p>另外，在viewDidload中，调用了presenter的两个public 方法</p>
+<pre><code>self.presenter = [Presenter new];
+[self.presenter attachView:self];
+[self.presenter fetchData];
+</code></pre><p>那就来看看Presenter类，这个类我在demo中加了不少的注释，主要是为了理清自己的思路</p>
+<p>先说attachView 方法，这个方法是对外公开的，目的就是为了将实现了UserViewProtocol 协议的对象（其实应该就是控制器，因为view的直接操作者就是view Controller）绑定到presenter 上，说白了就是presenter 可以直接拿到实现了UserViewProtocol 协议的对象，并且向他发送命令（协议实现的方法，前面有说到），具体该方法的实现</p>
+<pre><code>@interface Presenter()
+@property (nonatomic,strong) UserService *userService;
+@property (nonatomic,weak) id&lt;UserViewProtocol&gt; attachView;
+@end
+-(void)attachView:(id &lt;UserViewProtocol&gt;)view{
+ self.attachView = view;
+ self.userService  = [UserService new];
 }
-</code></pre><p>这样， 就实现了我们刚才看到的自动去掉 nil 值的效果了。</p>
+</code></pre><p>注意这里用了weak 来修饰attachView 树形，因为presenter和 viewController相互持有，所以必须要通过weak 来打破循环引用，这跟我们平时使用委托协议（ delegate）是一样的，只是名字换成了attachView 而已。</p>
+<p>再来说fetchData方法，公开这个方法，只是为了数据请求有个统一的接口，而不需要presenter分开多次调用，presenter自己处理所有事情，不让viewController参和进来。具体实现就看demo</p>
+<p>最后说一下</p>
+<pre><code>-(NSArray *)processOriginDataToUIFriendlyData:(NSArray *) originData{
+ NSMutableArray *friendlyUIData = [NSMutableArray new];
+ for (NSDictionary *dic in originData) {
+  if ([[dic valueForKey:@&quot;gender&quot;] isEqualToString:@&quot;males&quot;]) {
+   [friendlyUIData addObject:dic];
+  }
+ }
+ return friendlyUIData;
+}
+</code></pre><p>这个私有方法是将原始数据转换成UI所需要的数据，这样UI拿到数据就可以直接使用，而不用做各种判断，逻辑依然放在了presenter中。而且，这个数据处理可以做成协议，输出不同UI需要的数据，这个也可以看casatwy大神 关于view架构的文章。</p>
+<p><a href="https://github.com/HecvStyle/MVPDemo" target="_blank" rel="noopener">Demo</a></p>
 
       
 
@@ -332,7 +337,7 @@ result.append(newElement)
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/15/Swift 中的 map 和 flatMap/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/06/23/MVP模式的学习/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -346,18 +351,9 @@ result.append(newElement)
   
 <nav id="article-nav">
   
-    <a href="/2019/04/15/Swift中的高阶函数/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          Swift中的高阶函数
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/02/22/录音、音频的拼接剪切以及边录边压缩转码/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">录音、音频的拼接剪切以及边录边压缩转码</div>
+    <a href="/2019/06/23/runtime万能跳转界面/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">runtime万能跳转界面</div>
       <i class="icon-circle-right"></i>
     </a>
   
