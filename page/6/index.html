@@ -152,6 +152,143 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-持续震动，想停就停" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/21/持续震动，想停就停/">持续震动，想停就停</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/21/持续震动，想停就停/" class="archive-article-date">
+  	<time datetime="2018-12-21T09:24:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近要做一个项目,需要持续响铃并振动,知道有私有api可以使用,但无奈要上线,为了保险起见,果断放弃,在网上找了一个方法可以实现如下:</p>
+<p>在播放振动的代码前面注册写下面一句代码:</p>
+<pre><code>AudioServicesAddSystemSoundCompletion(kSystemSoundID_Vibrate, NULL, NULL, soundCompleteCallback, NULL);  
+</code></pre><p>其中soundCompleteCallback为播放系统振动或者声音后的回调,可以在里面继续播放振动实现持续振动的功能如下:</p>
+<pre><code>void soundCompleteCallback(SystemSoundID sound,voidvoid * clientData) { 
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);  //震动 
+    AudioServicesPlaySystemSound(sound); 
+} 
+</code></pre><p> 但是问题来了,如何停止,其实之前我参考了别人做的,是直接调用如下代码停止:</p>
+<pre><code>AudioServicesRemoveSystemSoundCompletion(sound);
+AudioServicesDisposeSystemSoundID(sound); AudioServicesRemoveSystemSoundCompletion(kSystemSoundID_Vibrate);
+AudioSer
+</code></pre><p> 但我遇到了个奇葩的问题,是在ios10上测试,其它版本我没有手机没有进行测试,问题是我发现调用停止方法后,并没有立即停止,停止的时间和你播放振动的时间成正比,振动时间越长,调用停止后,还要继续振动一段时间才停止,让人很头疼所以我进行了一下改造后,实现了需要的功能,用计时器实现,仅供初学者参考,大神勿喷,直接拷贝工程可用:</p>
+<pre><code> @interface ViewController ()
+{
+    SystemSoundID sound;
+}
+//振动计时器
+@property (nonatomic,strong)NSTimer *_vibrationTimer;
+@end
+
+@implementation ViewController
+@synthesize _vibrationTimer;
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view, typically from a nib.
+
+}
+//开始响铃及振动
+-(IBAction)startShakeSound:(id)sender{
+
+    NSString *path = [[NSBundle mainBundle] pathForResource:@&quot;2125&quot; ofType:@&quot;wav&quot;];
+    AudioServicesCreateSystemSoundID((__bridge CFURLRef)[NSURL fileURLWithPath:path], &amp;sound);
+    AudioServicesAddSystemSoundCompletion(sound, NULL, NULL, soundCompleteCallback, NULL);
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+    AudioServicesPlaySystemSound(sound);
+
+
+    /**
+     初始化计时器  每一秒振动一次
+
+     @param playkSystemSound 振动方法
+     @return
+     */
+    _vibrationTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(playkSystemSound) userInfo:nil repeats:YES];
+}
+//振动
+- (void)playkSystemSound{
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+}
+//停止响铃及振动
+-(IBAction)stopShakeSound:(id)sender{
+
+    [_vibrationTimer invalidate];
+    AudioServicesRemoveSystemSoundCompletion(sound);
+    AudioServicesDisposeSystemSoundID(sound);
+
+}
+//响铃回调方法
+void soundCompleteCallback(SystemSoundID sound,void * clientData) {
+    AudioServicesPlaySystemSound(sound);
+}
+</code></pre><p>其中铃声需要替换掉,或者去掉响铃</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/21/持续震动，想停就停/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-swift中as!和as?和as的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1505,181 +1642,6 @@ deinit {
 
 
   
-    <article id="post-performSelector传递参数" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/17/performSelector传递参数/">performSelector传递参数</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/17/performSelector传递参数/" class="archive-article-date">
-  	<time datetime="2018-12-17T06:39:11.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>performSelector有两个缺陷：</p>
-<ul>
-<li>1、最多只能传递两个参数</li>
-<li>2、无法传递数值参数，如整形、浮点型等</li>
-</ul>
-<p>经过我的探索，我在网上一段代码上进行了修改，整合如下：</p>
-<pre><code>- (id)performSelector:(SEL)aSelector withTheObjects:(NSArray*)objects{
-    //1、创建签名对象
-    //  NSMethodSignature*signature = [self methodSignatureForSelector:aSelector];
-    NSMethodSignature*signature = [[self class] instanceMethodSignatureForSelector:aSelector];
-    //2、判断传入的方法是否存在
-    if (!signature) {
-        //传入的方法不存在 就抛异常
-        NSString*info = [NSString stringWithFormat:@&quot;-[%@ %@]:unrecognized selector sent to instance&quot;,[self class],NSStringFromSelector(aSelector)];
-        @throw [[NSException alloc] initWithName:@&quot;方法没有&quot; reason:info userInfo:nil];
-        return nil;
-    }
-    //3、创建NSInvocation对象
-    NSInvocation*invocation = [NSInvocation invocationWithMethodSignature:signature];
-    //4、保存方法所属的对象
-    invocation.target = self;           // index 0
-    invocation.selector = aSelector;    // index 1
-
-    //5、设置参数
-    NSInteger arguments = signature.numberOfArguments -2;
-    NSUInteger objectsCount = objects.count;
-    NSInteger count = MIN(arguments, objectsCount);
-    [self setInv:invocation andArgs:objects argsCount:count];
-
-    //6、调用NSinvocation对象
-    [invocation invoke];
-
-    //7、获取返回值
-    id res = nil;
-    if (signature.methodReturnLength ==0) return nil;
-    //getReturnValue获取返回值
-    [invocation getReturnValue:&amp;res];
-    return res;
-}
-
-- (void)setInv:(NSInvocation *)inv andArgs:(NSArray *)args argsCount:(NSUInteger)count{
-    for (int i = 0; i&lt;count; i++) {
-        NSObject*obj = args[i];
-        //处理参数是NULL类型的情况
-        if ([obj isKindOfClass:[NSNull class]]) {
-            obj = nil;
-        }
-        //对整形数值等的处理
-        if([obj isKindOfClass:[NSNumber class]])      //对数值数据的处理
-        {
-            void *p;
-            NSNumber *num = (NSNumber *)obj;
-            if(strcmp([num objCType], @encode(float)) == 0)
-            {
-                float v = [num floatValue];
-                p = &amp;v;
-            }
-            else if(strcmp([num objCType], @encode(double)) == 0)
-            {
-                double v = [num doubleValue];
-                p = &amp;v;
-            }
-            else
-            {
-                long v = [num longValue];
-                p = &amp;v;
-            }
-
-            [inv setArgument:p atIndex:i+2];
-            continue;
-        }
-
-        [inv setArgument:&amp;obj atIndex:i+2];
-    }
-}
-</code></pre><p>其实没有做什么改动，就加了下面的代码</p>
-<pre><code>//对整形数值等的处理
-        if([obj isKindOfClass:[NSNumber class]])      //对数值数据的处理
-        {
-            void *p;
-            NSNumber *num = (NSNumber *)obj;
-            if(strcmp([num objCType], @encode(float)) == 0)
-            {
-                float v = [num floatValue];
-                p = &amp;v;
-            }
-            else if(strcmp([num objCType], @encode(double)) == 0)
-            {
-                double v = [num doubleValue];
-                p = &amp;v;
-            }
-            else
-            {
-                long v = [num longValue];
-                p = &amp;v;
-            }
-
-            [inv setArgument:p atIndex:i+2];
-            return;
-        }
-</code></pre><p>使用：<br>上面是NSObject的类别，传整形数值：</p>
-<pre><code>[_bledataMana performSelector:@selector(sendMsg:)withTheObjects:@[@10]];
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/17/performSelector传递参数/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -1789,11 +1751,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1825,7 +1787,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1833,7 +1795,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
