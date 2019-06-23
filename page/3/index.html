@@ -152,6 +152,365 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-UITableView + Refresh" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/22/UITableView + Refresh/">UITableView + Refresh</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/22/UITableView + Refresh/" class="archive-article-date">
+  	<time datetime="2019-02-22T07:37:28.676Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="TableView-通常要和-Refresh功能结合使用-Refresh-大都从网络获取数据然后进行刷新"><a href="#TableView-通常要和-Refresh功能结合使用-Refresh-大都从网络获取数据然后进行刷新" class="headerlink" title="TableView 通常要和 Refresh功能结合使用, Refresh 大都从网络获取数据然后进行刷新"></a>TableView 通常要和 Refresh功能结合使用, Refresh 大都从网络获取数据然后进行刷新</h3><h2 id="数据获取-返回列表数据"><a href="#数据获取-返回列表数据" class="headerlink" title="数据获取, 返回列表数据"></a>数据获取, 返回列表数据</h2><pre><code>/// 获取数据
+func getRandomResult() -&gt; Observable&lt;[SectionModel&lt;String, Int&gt;]&gt; {
+    let items = (0..&lt;5).map { _ in Int(arc4random()) }
+    let observable = Observable.just([SectionModel(model: &quot;S&quot;, items: items)])
+    return observable.delay(2, scheduler: MainScheduler.instance) // 模拟网络请求 延迟2秒钟
+}
+</code></pre><h2 id="创建表格并绑定数据"><a href="#创建表格并绑定数据" class="headerlink" title="创建表格并绑定数据"></a>创建表格并绑定数据</h2><pre><code>/// 设置导航栏右侧按钮为刷新
+let refreshButton = UIBarButtonItem()
+refreshButton.title = &quot;刷新&quot;
+self.navigationItem.rightBarButtonItem = refreshButton
+
+// 创建表格
+tableView = UITableView(frame: view.bounds, style: .plain)
+// 注册单元格
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
+view.addSubview(tableView)
+
+// 初始化数据
+let randomResult = refreshButton.rx.tap.asObservable()
+    .throttle(1, scheduler: MainScheduler.instance) // 在主线程中操作, 若1秒钟多次改变, 取最后一次
+    .startWith(()) // 加这个是为了一开始就能自动请求一次数据
+    .flatMapLatest(getRandomResult) // 连续请求时只取最后一次数据
+    .share(replay: 1)
+
+
+// 创建数据源
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, Int&gt;&gt;( configureCell: {
+    (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
+    let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
+    cell.textLabel?.text = &quot;条目\(indexPath.row): \(element)&quot;
+    return cell
+})
+
+// 数据绑定
+randomResult.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+</code></pre><h2 id="停止数据请求"><a href="#停止数据请求" class="headerlink" title="停止数据请求"></a>停止数据请求</h2><p>使用 takeUntil 来停止数据请求</p>
+<pre><code>let cancelButton = UIBarButtonItem()
+cancelButton.title = &quot;取消&quot;
+self.navigationItem.leftBarButtonItem = cancelButton
+
+`
+`
+`
+// 初始化数据
+let randomResult = refreshButton.rx.tap.asObservable()
+    .throttle(1, scheduler: MainScheduler.instance) // 在主线程中操作, 若1秒钟多次改变, 取最后一次
+    .startWith(()) // 加这个是为了一开始就能自动请求一次数据
+    .flatMapLatest({
+    // 核心代码
+    self.getRandomResult().takeUntil(self.cancelButton.rx.tap) }) // 停止数据请求
+    .share(replay: 1)
+
+`
+</code></pre><p><code></code></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/22/UITableView + Refresh/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-UITableView + RxDataSources" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/22/UITableView + RxDataSources/">UITableView + RxDataSources</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/22/UITableView + RxDataSources/" class="archive-article-date">
+  	<time datetime="2019-02-22T07:32:54.645Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>官方介绍</p>
+<pre><code>UITableView and UICollectionView Data Sources for RxSwift (sections, animated updates, editing ...)
+</code></pre><p>特点</p>
+<ul>
+<li><p>1、RxDataSource 的本质就是使用 RxSwift 对 UITableView 和 UICollectionView 的数据源做了一层包装。使用它可以大大减少我们的工作量</p>
+</li>
+<li><p>2、RxDataSources 是以 section 来做为数据结构的。所以不管我们的 tableView 是单分区还是多分区，在使用 RxDataSources 的过程中，都需要返回一个 section 的数组</p>
+</li>
+</ul>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li><p>CocoaPods</p>
+<pre><code>pod &apos;RxDataSources&apos;
+</code></pre></li>
+<li><p>Carthage</p>
+<pre><code>github &quot;RxSwiftCommunity/RxDataSources&quot;
+</code></pre></li>
+</ul>
+<h2 id="单分区-TableView"><a href="#单分区-TableView" class="headerlink" title="单分区 TableView"></a>单分区 TableView</h2><h3 id="方式一：使用自带的Section"><a href="#方式一：使用自带的Section" class="headerlink" title="方式一：使用自带的Section"></a>方式一：使用自带的Section</h3><pre><code>// 创建表格
+tableView = UITableView(frame: view.bounds, style: .plain)
+// 注册单元格
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
+view.addSubview(tableView)
+
+// 初始化数据
+let items = Observable.just([
+    SectionModel(model: &quot;&quot;,
+                 items: [&quot;UILabel的用法&quot;,
+                         &quot;UIButton的用法&quot;,
+                         &quot;UITextField的用法&quot;])
+    ])
+
+// 创建数据源
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;(configureCell: {
+    (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
+    let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
+    cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
+    return cell
+})
+
+// 数据绑定
+items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+</code></pre><h3 id="方式二：使用自定义的Section"><a href="#方式二：使用自定义的Section" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><p>自定义 SectionModel</p>
+<pre><code>struct XMSessionModel {
+    var header: String
+    var items: [Item]
+}
+
+extension XMSessionModel: AnimatableSectionModelType {
+
+    typealias Item = String
+
+    var identity: String {
+        return header
+    }
+
+    init(original: XMSessionModel, items: [Item]) {
+        self = original
+        self.items = items
+    }
+}
+
+// 创建表格
+tableView = UITableView(frame: view.bounds, style: .plain)
+// 注册单元格
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
+view.addSubview(tableView)
+
+// 初始化数据
+let sections = Observable.just([
+    XMSessionModel(header: &quot;&quot;,
+                   items: [&quot;UILabel的用法&quot;,
+                           &quot;UIButton的用法&quot;,
+                           &quot;UITextField的用法&quot;])
+    ])
+
+// 创建数据源
+let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: {
+    (dataSource, tableView, indexPath, item) -&gt; UITableViewCell in
+    let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;) ?? UITableViewCell(style: .default, reuseIdentifier: &quot;cellID&quot;)
+    cell.textLabel?.text = &quot;\(indexPath.row): \(item)&quot;
+    return cell
+})
+
+// 数据绑定
+sections.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+</code></pre><h2 id="多分区的-TableView"><a href="#多分区的-TableView" class="headerlink" title="多分区的 TableView"></a>多分区的 TableView</h2><h3 id="方式一：使用自带的Section-1"><a href="#方式一：使用自带的Section-1" class="headerlink" title="方式一：使用自带的Section"></a>方式一：使用自带的Section</h3><pre><code>// 创建表格
+tableView = UITableView(frame: view.bounds, style: .plain)
+// 注册单元格
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
+view.addSubview(tableView)
+
+// 初始化数据
+let items = Observable.just([
+    SectionModel(model: &quot;基本控件&quot;,
+                   items: [&quot;UILabel的用法&quot;,
+                           &quot;UIButton的用法&quot;,
+                           &quot;UITextField的用法&quot;]),
+    SectionModel(model: &quot;高级i控件&quot;,
+                   items: [&quot;UITableView的用法&quot;,
+                           &quot;UICollectionView的用法&quot;])
+    ])
+
+// 创建数据源
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;( configureCell: {
+    (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
+    let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
+    cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
+    return cell
+})
+
+// 设置分区头标题
+dataSource.titleForHeaderInSection = { dataSource, index in
+    return dataSource.sectionModels[index].model
+}
+
+// 设置分区尾部标题
+dataSource.titleForFooterInSection = { dataSource, index in
+    return &quot;footer&quot;
+}
+
+// 数据绑定
+items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+</code></pre><h3 id="方式二：使用自定义的Section-1"><a href="#方式二：使用自定义的Section-1" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><pre><code>// 创建表格
+tableView = UITableView(frame: view.bounds, style: .plain)
+// 注册单元格
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
+view.addSubview(tableView)
+
+// 初始化数据
+let items = Observable.just([
+    XMSessionModel(header: &quot;基本控件&quot;,
+                   items: [&quot;UILabel的用法&quot;,
+                           &quot;UIButton的用法&quot;,
+                           &quot;UITextField的用法&quot;]),
+    XMSessionModel(header: &quot;高级i控件&quot;,
+                   items: [&quot;UITableView的用法&quot;,
+                           &quot;UICollectionView的用法&quot;])
+    ])
+
+// 创建数据源
+let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: {
+    (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
+    let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
+    cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
+    return cell
+})
+
+// 设置分区头标题
+dataSource.titleForHeaderInSection = { dataSource, index in
+    return dataSource.sectionModels[index].header
+}
+
+// 设置分区尾部标题
+dataSource.titleForFooterInSection = { dataSource, index in
+    return &quot;footer&quot;
+}
+
+// 数据绑定
+items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/22/UITableView + RxDataSources/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-RXSwift-TableView" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1631,189 +1990,6 @@ hexo deploy
 
 
   
-    <article id="post-自动释放池工作原理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/18/自动释放池工作原理/">自动释放池工作原理</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/18/自动释放池工作原理/" class="archive-article-date">
-  	<time datetime="2019-02-18T08:06:56.260Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="什么是自动释放池"><a href="#什么是自动释放池" class="headerlink" title="什么是自动释放池"></a>什么是自动释放池</h2><p>自动释放池(autorelease pool)是OC的一种内存自动回收机制.<br>当你向一个对象发送一个autorelease消息的时候,cocoa就会将对象的一个引用放入<br>到最新的自动释放池中(当前线程栈顶位置),它任然是一个正当的对象,因此自动释放池<br>定义的作用域内的其他对象都可以向他发送消息.</p>
-<h2 id="如何工作"><a href="#如何工作" class="headerlink" title="如何工作"></a>如何工作</h2><ul>
-<li>objective-C是通过一种”referring counting”(引用计数)的方式管理内存的<br>对象在开始分配内存(alloc)的时候引用计数为1,以后如果有copy,retain的时候<br>都会加1,每当release和autorelease的时候引用计数就会减1,如果一个对象的引<br>用计数为0,就会被系统销毁.</li>
-<li>NSAutoreleasePool 就是用来做引用计数的管理工作的,这个东西一般不用你管的</li>
-<li>autorelease和release没什么区别,只是引用计数减1的时机不同而已.autorelease<br>会在对象的使用真正结束的时候才做引用计数减1.</li>
-</ul>
-<h3 id="自动释放池什么时候创建，什么时候销毁？"><a href="#自动释放池什么时候创建，什么时候销毁？" class="headerlink" title="自动释放池什么时候创建，什么时候销毁？"></a>自动释放池什么时候创建，什么时候销毁？</h3><p>每一次运行循环执行后，也就是每当事件被触发时都会创建自动释放池。在程序执行的过程中，所有autorelease的对象在出了作用域之后会被添加到最近创建的自动释放池中。运行循环结束前会释放自动释放池，还有池子满了也会销毁。</p>
-<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p>自动释放池被销毁或耗尽时会向池中的所有对象发送release消息，释放所有autorelease对象。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/18/自动释放池工作原理/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-常用的setNeedsDisplay和setNeedsLayout" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/">常用的setNeedsDisplay和setNeedsLayout</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/" class="archive-article-date">
-  	<time datetime="2019-02-18T07:43:18.890Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1-UIView的setNeedsDisplay和setNeedsLayout方法"><a href="#1-UIView的setNeedsDisplay和setNeedsLayout方法" class="headerlink" title="1.UIView的setNeedsDisplay和setNeedsLayout方法"></a>1.UIView的setNeedsDisplay和setNeedsLayout方法</h2><p>首先两个方法都是异步执行的。而setNeedsDisplay会调用自动调用drawRect方法，这样可以拿到  UIGraphicsGetCurrentContext，就可以画画了。而setNeedsLayout会默认调用layoutSubViews，<br>就可以  处理子视图中的一些数据。</p>
-<p>综上所诉，setNeedsDisplay方便绘图，而layoutSubViews方便出来数据。</p>
-<h2 id="layoutSubviews在以下情况下会被调用："><a href="#layoutSubviews在以下情况下会被调用：" class="headerlink" title="layoutSubviews在以下情况下会被调用："></a>layoutSubviews在以下情况下会被调用：</h2><ul>
-<li>1、init初始化不会触发layoutSubviews。</li>
-<li>2、addSubview会触发layoutSubviews。</li>
-<li>3、设置view的Frame会触发layoutSubviews，当然前提是frame的值设置前后发生了变化。</li>
-<li>4、滚动一个UIScrollView会触发layoutSubviews。</li>
-<li>5、旋转Screen会触发父UIView上的layoutSubviews事件。</li>
-<li>6、改变一个UIView大小的时候也会触发父UIView上的layoutSubviews事件。</li>
-<li>7、直接调用setLayoutSubviews。</li>
-</ul>
-<h2 id="drawRect在以下情况下会被调用："><a href="#drawRect在以下情况下会被调用：" class="headerlink" title="drawRect在以下情况下会被调用："></a>drawRect在以下情况下会被调用：</h2><ul>
-<li><p>1、如果在UIView初始化时没有设置rect大小，将直接导致drawRect不被自动调用。drawRect调用是在Controller-&gt;loadView, Controller-&gt;viewDidLoad 两方法之后掉用的.所以不用担心在控制器中,这些View的drawRect就开始画了.这样可以在控制器中设置一些值给View(如果这些View draw的时候需要用到某些变量值).</p>
-</li>
-<li><p>2、该方法在调用sizeToFit后被调用，所以可以先调用sizeToFit计算出size。然后系统自动调用drawRect:方法</p>
-</li>
-<li><p>3、通过设置contentMode属性值为UIViewContentModeRedraw。那么将在每次设置或更改frame的时候自动调用drawRect:。</p>
-</li>
-<li><p>4、直接调用setNeedsDisplay，或者setNeedsDisplayInRect:触发drawRect:，但是有个前提条件是rect不能为0。<br>以上1,2推荐；而3,4不提倡</p>
-</li>
-</ul>
-<h2 id="drawRect方法使用注意点："><a href="#drawRect方法使用注意点：" class="headerlink" title="drawRect方法使用注意点："></a>drawRect方法使用注意点：</h2><ul>
-<li><p>1、若使用UIView绘图，只能在drawRect：方法中获取相应的contextRef并绘图。如果在其他方法中获取将获取到一个invalidate的ref并且不能用于画图。drawRect：方法不能手动显示调用，必须通过调用setNeedsDisplay 或者 setNeedsDisplayInRect，让系统自动调该方法。</p>
-</li>
-<li><p>2、若使用CAlayer绘图，只能在drawInContext: 中（类似于drawRect）绘制，或者在delegate中的相应方法绘制。同样也是调用setNeedDisplay等间接调用以上方法</p>
-</li>
-<li><p>3、若要实时画图，不能使用gestureRecognizer，只能使用touchbegan等方法来掉用setNeedsDisplay实时刷新屏幕</p>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -1911,15 +2087,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1947,10 +2123,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
@@ -1959,7 +2131,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1968,6 +2140,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">网络</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">

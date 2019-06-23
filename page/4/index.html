@@ -152,6 +152,189 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-自动释放池工作原理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/18/自动释放池工作原理/">自动释放池工作原理</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/18/自动释放池工作原理/" class="archive-article-date">
+  	<time datetime="2019-02-18T08:06:56.260Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="什么是自动释放池"><a href="#什么是自动释放池" class="headerlink" title="什么是自动释放池"></a>什么是自动释放池</h2><p>自动释放池(autorelease pool)是OC的一种内存自动回收机制.<br>当你向一个对象发送一个autorelease消息的时候,cocoa就会将对象的一个引用放入<br>到最新的自动释放池中(当前线程栈顶位置),它任然是一个正当的对象,因此自动释放池<br>定义的作用域内的其他对象都可以向他发送消息.</p>
+<h2 id="如何工作"><a href="#如何工作" class="headerlink" title="如何工作"></a>如何工作</h2><ul>
+<li>objective-C是通过一种”referring counting”(引用计数)的方式管理内存的<br>对象在开始分配内存(alloc)的时候引用计数为1,以后如果有copy,retain的时候<br>都会加1,每当release和autorelease的时候引用计数就会减1,如果一个对象的引<br>用计数为0,就会被系统销毁.</li>
+<li>NSAutoreleasePool 就是用来做引用计数的管理工作的,这个东西一般不用你管的</li>
+<li>autorelease和release没什么区别,只是引用计数减1的时机不同而已.autorelease<br>会在对象的使用真正结束的时候才做引用计数减1.</li>
+</ul>
+<h3 id="自动释放池什么时候创建，什么时候销毁？"><a href="#自动释放池什么时候创建，什么时候销毁？" class="headerlink" title="自动释放池什么时候创建，什么时候销毁？"></a>自动释放池什么时候创建，什么时候销毁？</h3><p>每一次运行循环执行后，也就是每当事件被触发时都会创建自动释放池。在程序执行的过程中，所有autorelease的对象在出了作用域之后会被添加到最近创建的自动释放池中。运行循环结束前会释放自动释放池，还有池子满了也会销毁。</p>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p>自动释放池被销毁或耗尽时会向池中的所有对象发送release消息，释放所有autorelease对象。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/18/自动释放池工作原理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-常用的setNeedsDisplay和setNeedsLayout" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/">常用的setNeedsDisplay和setNeedsLayout</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/" class="archive-article-date">
+  	<time datetime="2019-02-18T07:43:18.890Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-UIView的setNeedsDisplay和setNeedsLayout方法"><a href="#1-UIView的setNeedsDisplay和setNeedsLayout方法" class="headerlink" title="1.UIView的setNeedsDisplay和setNeedsLayout方法"></a>1.UIView的setNeedsDisplay和setNeedsLayout方法</h2><p>首先两个方法都是异步执行的。而setNeedsDisplay会调用自动调用drawRect方法，这样可以拿到  UIGraphicsGetCurrentContext，就可以画画了。而setNeedsLayout会默认调用layoutSubViews，<br>就可以  处理子视图中的一些数据。</p>
+<p>综上所诉，setNeedsDisplay方便绘图，而layoutSubViews方便出来数据。</p>
+<h2 id="layoutSubviews在以下情况下会被调用："><a href="#layoutSubviews在以下情况下会被调用：" class="headerlink" title="layoutSubviews在以下情况下会被调用："></a>layoutSubviews在以下情况下会被调用：</h2><ul>
+<li>1、init初始化不会触发layoutSubviews。</li>
+<li>2、addSubview会触发layoutSubviews。</li>
+<li>3、设置view的Frame会触发layoutSubviews，当然前提是frame的值设置前后发生了变化。</li>
+<li>4、滚动一个UIScrollView会触发layoutSubviews。</li>
+<li>5、旋转Screen会触发父UIView上的layoutSubviews事件。</li>
+<li>6、改变一个UIView大小的时候也会触发父UIView上的layoutSubviews事件。</li>
+<li>7、直接调用setLayoutSubviews。</li>
+</ul>
+<h2 id="drawRect在以下情况下会被调用："><a href="#drawRect在以下情况下会被调用：" class="headerlink" title="drawRect在以下情况下会被调用："></a>drawRect在以下情况下会被调用：</h2><ul>
+<li><p>1、如果在UIView初始化时没有设置rect大小，将直接导致drawRect不被自动调用。drawRect调用是在Controller-&gt;loadView, Controller-&gt;viewDidLoad 两方法之后掉用的.所以不用担心在控制器中,这些View的drawRect就开始画了.这样可以在控制器中设置一些值给View(如果这些View draw的时候需要用到某些变量值).</p>
+</li>
+<li><p>2、该方法在调用sizeToFit后被调用，所以可以先调用sizeToFit计算出size。然后系统自动调用drawRect:方法</p>
+</li>
+<li><p>3、通过设置contentMode属性值为UIViewContentModeRedraw。那么将在每次设置或更改frame的时候自动调用drawRect:。</p>
+</li>
+<li><p>4、直接调用setNeedsDisplay，或者setNeedsDisplayInRect:触发drawRect:，但是有个前提条件是rect不能为0。<br>以上1,2推荐；而3,4不提倡</p>
+</li>
+</ul>
+<h2 id="drawRect方法使用注意点："><a href="#drawRect方法使用注意点：" class="headerlink" title="drawRect方法使用注意点："></a>drawRect方法使用注意点：</h2><ul>
+<li><p>1、若使用UIView绘图，只能在drawRect：方法中获取相应的contextRef并绘图。如果在其他方法中获取将获取到一个invalidate的ref并且不能用于画图。drawRect：方法不能手动显示调用，必须通过调用setNeedsDisplay 或者 setNeedsDisplayInRect，让系统自动调该方法。</p>
+</li>
+<li><p>2、若使用CAlayer绘图，只能在drawInContext: 中（类似于drawRect）绘制，或者在delegate中的相应方法绘制。同样也是调用setNeedDisplay等间接调用以上方法</p>
+</li>
+<li><p>3、若要实时画图，不能使用gestureRecognizer，只能使用touchbegan等方法来掉用setNeedsDisplay实时刷新屏幕</p>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关于UUID和UDID的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1364,316 +1547,6 @@ label.frame = CGRectMake(100, 100, adaptionSize.width, adaptionSize.height);
 
 
   
-    <article id="post-iOS拦截器" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/28/iOS拦截器/">iOS拦截器</a>
-    </h1>
-  
-
-        
-        <a href="/2019/01/28/iOS拦截器/" class="archive-article-date">
-  	<time datetime="2019-01-28T09:11:10.436Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目中我们可能都需要判断断网的情况，然后进行一下提示，或者我们需要在每个控制器中都需要初始一些东西，那么我们可以在项目中用一个基类去做这些事情，可是，如果我们的项目想要后面添加这些东西，我们再去用基类，改起来就比较麻烦了，或者可能改出问题来。这时候我们可能会用到拦截器来进行一些操作。下面是我用拦截器来进行一些网络的提示</p>
-<h3 id="1、导入头文件-import-“ZYInterceptorWithNetwork-h”"><a href="#1、导入头文件-import-“ZYInterceptorWithNetwork-h”" class="headerlink" title="1、导入头文件#import “ZYInterceptorWithNetwork.h”"></a>1、导入头文件#import “ZYInterceptorWithNetwork.h”</h3><h3 id="2、在需要使用的地方写入下面的代码"><a href="#2、在需要使用的地方写入下面的代码" class="headerlink" title="2、在需要使用的地方写入下面的代码"></a>2、在需要使用的地方写入下面的代码</h3><pre><code>ZYInterceptorWithNetwork *network = [ZYInterceptorWithNetwork sharedInstance];
-network.promptStr = @&quot;网络有错&quot;; //网络提示内容
-network.btnText = @&quot;确定&quot;;//网络提示按钮文字
-network.title = @&quot;提示&quot;;//标题
-[network loadInterceptorWithActionName:@&quot;viewWillAppear:&quot; optionType:AspectPositionAfter error:^(NSError *interceptorError) {
-    NSLog(@&quot;拦截错误&quot;);
-}];//拦截代码
-</code></pre><h3 id="3、假如有的地方我们不需要拦截，那么我们可以这么做"><a href="#3、假如有的地方我们不需要拦截，那么我们可以这么做" class="headerlink" title="3、假如有的地方我们不需要拦截，那么我们可以这么做"></a>3、假如有的地方我们不需要拦截，那么我们可以这么做</h3><p>1)、导入头文件#import “ZYInterceptorWithNetwork.h”</p>
-<p>2)、 跳转界面的地方写入下面的代码</p>
-<pre><code>ZYThreeViewController *three= [[ZYThreeViewController alloc] init];
-three.isDisabledInterceptor = YES;    //跳转的地方设置失去作用
-[self.navigationController pushViewController:three animated:YES];
-</code></pre><p>这就是基本的用法。当然，我们也可以去扩充这些东西，我只是做了网络的操作，我们也可以去做别的一些操作，只要在下面这个方法中修改一些东西即可：</p>
-<pre><code>// 通过这种方式可以代替原来框架中的基类，不必每个 ViewController 再去继续原框架的基类
-#pragma mark - alternative methods
-- (void)action:(BOOL)animated viewController:(UIViewController *)viewController
- {
-if (!viewController.isInitTheme) {
-    // 去做基础业务相关的内容
-    viewController.isInitTheme = YES;
-}
-if (![ZYInterceptorWithNetwork isConnectionAvailableWithStatus:nil]) {
-    //设置提示框或者什么操作
-    UIViewController *currentVc = [self getCurrentController];
-    if (self.promptStr.length != 0 &amp;&amp; self.title.length != 0 &amp;&amp; self.btnText.length != 0 ) {
-        UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:_title message:_promptStr preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *sureBtn = [UIAlertAction actionWithTitle:_btnText style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        }];
-        [alertVc addAction:sureBtn];
-        [currentVc presentViewController:alertVc animated:YES completion:nil];
-    }else {
-        UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:@&quot;提示&quot; message:@&quot;网络状况不太好，请检查网络...&quot; preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *sureBtn = [UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        }];
-        [alertVc addAction:sureBtn];
-        [currentVc presentViewController:alertVc animated:YES completion:nil];
-    }
-}
-}
-</code></pre><p><a href="https://github.com/zhangyqyx/Interceptor" target="_blank" rel="noopener">封装demo</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/01/28/iOS拦截器/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-五星好评刮刮乐" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/28/五星好评刮刮乐/">五星好评刮刮乐</a>
-    </h1>
-  
-
-        
-        <a href="/2019/01/28/五星好评刮刮乐/" class="archive-article-date">
-  	<time datetime="2019-01-28T08:35:49.272Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>项目中我们可能会遇到,在订单完成后评价的界面，以及刮奖的界面，我简单的说一下我的实现方法</p>
-<h2 id="五星好评界面"><a href="#五星好评界面" class="headerlink" title="五星好评界面"></a>五星好评界面</h2><h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>这其实就是五张图片，通过监听手指移动的位置，来进行图片的变化<br>主要就是三个方法</p>
-<pre><code>- (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(nullable UIEvent *)event;//手指开始点击
-- (void)touchesMoved:(NSSet&lt;UITouch *&gt; *)touches withEvent:(nullable UIEvent *)event;//手指开始移动
-- (void)touchesEnded:(NSSet&lt;UITouch *&gt; *)touches withEvent:(nullable UIEvent *)event；//手指离开
-</code></pre><h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><pre><code>//手指开始点击，点击的位置判断是否添加星星
-- (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event {
-UITouch *touch = [touches  anyObject];
-CGPoint point = [touch locationInView:self];
-//判断点击的位置是否在视图上
-if (point.x &gt;= self.firstStarImage.x &amp;&amp; point.x &lt;= (self.width) &amp;&amp; (point.y &gt; self.firstStarImage.y &amp; point.y&lt; self.height )) {
-//使用变量来判断是否添加星星
-    self.isAddStar = YES;
-   }else {
-    self.isAddStar = NO;
-   }
-}
-//手指开始移动，在移动到的位置添加星星
-- (void)touchesMoved:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event {
-if(self.isAddStar){
-    UITouch *touch = [touches anyObject];
-    CGPoint point = [touch locationInView:self];
-    //添加星星
-    [self setStarForegroundViewWithPoint:point];
-    }
-}
-//添加星星计算分数
-- (void)setStarForegroundViewWithPoint:(CGPoint)point {
-//添加星星
-float score = 0;
-score += [self changeImg:point.x image:self.firstStarImage];
-score += [self changeImg:point.x image:self.secondStarImage];
-score += [self changeImg:point.x image:self.threeStarImage];
-score += [self changeImg:point.x image:self.fourStarImage];
-score += [self changeImg:point.x image:self.fiveStarImage];
-//最少得半个星星
-if (score == 0) {
-    score = 0.5;
-    if (!self.halfImageStr) {
-        self.halfImageStr = @&quot;StarSelectHalf&quot;;
-    }
-    [self.firstStarImage setImage:[UIImage imageNamed:self.halfImageStr]];
- }
-self.score = score;
-}
-//设置添加星星,返回分数
--(CGFloat)changeImg:(float)x image:(UIImageView*)imgView{
-if (!self.normalStr) {
-    self.normalStr = @&quot;StarNormal&quot;;
-}
-if (!self.selectStr) {
-    self.selectStr = @&quot;StarSelected&quot;;
-}
-if (!self.halfImageStr) {
-    self.halfImageStr = @&quot;StarSelectHalf&quot;;
-}
-
-if(x &gt; (imgView.x + imgView.width/2)){
-    imgView.image =  [UIImage imageNamed:self.selectStr];
-    return 1;
-}else if(x &gt; imgView.x){
-    imgView.image =  [UIImage imageNamed:self.halfImageStr];
-    return 0.5;
-}else{
-    imgView.image =  [UIImage imageNamed: self.normalStr];
-    return 0;
-}
-}
-//结束的时候，将是否添加星星变为NO;
--(void)touchesEnded:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event {
-self.isAddStar = NO;
-}
-</code></pre><h2 id="刮奖的实现。"><a href="#刮奖的实现。" class="headerlink" title="刮奖的实现。"></a>刮奖的实现。</h2><h3 id="思路-1"><a href="#思路-1" class="headerlink" title="思路"></a>思路</h3><p>主要就是两张图片和一个label，刮开遮盖图片就可以看到label上的文字了。</p>
-<h3 id="实现-1"><a href="#实现-1" class="headerlink" title="实现"></a>实现</h3><pre><code>- (void)touchesMoved:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event {
-//得到移动时候的点
-UITouch *touch = [touches anyObject];
-CGPoint contentPoint = [touch locationInView:coverImageView];
-//清除的大小
-CGRect rect = CGRectZero;
-if (pointSize.width) {
-   rect = CGRectMake(contentPoint.x, contentPoint.y, pointSize.width, pointSize.height);
-}else{
-   rect = CGRectMake(contentPoint.x, contentPoint.y, 10, 10);
-}
-//得到图片的一个视图
-UIGraphicsBeginImageContextWithOptions(coverImageView.bounds.size, NO, 0);
-//获取上下文
-CGContextRef ref = UIGraphicsGetCurrentContext();
-//将图片映射到上下文中
-[coverImageView.layer renderInContext:ref];
-//清除划过的区域
-CGContextClearRect(ref, rect);
-//获取图片
-UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-//关闭上下文
-UIGraphicsEndImageContext();
-coverImageView.image = image;
-}
-//点击结束，判断文字的四个角是否都完全显示出来，显示出来就回调，然后执行刮开后的代码
-- (void)touchesEnded:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event {
-CGPoint leftTopPoint =  [self convertPoint:_textLabel.frame.origin toView:coverImageView];
-CGPoint leftBottomPoint = [self convertPoint:CGPointMake(_textLabel.frame.origin.x, _textLabel.y + _textLabel.height * 0.5) toView:coverImageView];
-CGPoint rightTopPoint =  [self convertPoint:CGPointMake(_textLabel.x +_textLabel.width * 0.5, _textLabel.y) toView:coverImageView];
-CGPoint rightBottomPoint = [self convertPoint:CGPointMake(_textLabel.x +_textLabel.width * 0.5, _textLabel.y + _textLabel.height * 0.5) toView:coverImageView];
-if ([self isOpaqueWithPoint:leftTopPoint]&amp;&amp;[self isOpaqueWithPoint:leftBottomPoint]&amp;&amp;[self isOpaqueWithPoint:rightBottomPoint]&amp;&amp;[self isOpaqueWithPoint:rightTopPoint]) {
-    if ([self.delegate respondsToSelector:@selector(scratchViewTextShow:)]) {
-        [self.delegate scratchViewTextShow:self];
-    }
-  }
-}
-//判断某个点是否透明
--(BOOL)isOpaqueWithPoint:(CGPoint)point{
-unsigned char pixel[1]={0};
-CGContextRef context = CGBitmapContextCreate(pixel,1,1,8,1,NULL,kCGImageAlphaOnly);
-UIGraphicsPushContext(context);
-[coverImageView.image drawAtPoint: CGPointMake(-point.x,-point.y)];
-UIGraphicsPopContext();
-CGContextRelease(context);
-CGFloat alpha = pixel[0]/255.0f;
-BOOL transparent = alpha&lt;0.01f;
-return transparent;
-}
-</code></pre><p><a href="https://github.com/zhangyqyx/EvaluationWithTombola" target="_blank" rel="noopener">Demo</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/01/28/五星好评刮刮乐/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -1771,15 +1644,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1807,10 +1680,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
@@ -1819,7 +1688,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1828,6 +1697,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">网络</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -152,6 +152,324 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-KVO监听数组" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/23/KVO监听数组/">KVO监听数组</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/23/KVO监听数组/" class="archive-article-date">
+  	<time datetime="2019-06-23T11:48:48.015Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近遇到一个新的需求，要求在某个页面中添加一个collectionView，collectionView的高度随着数据源的长度来改变，从而达到改变父View的高度，如下图红框部分则为collectionView，整个视图布局在scrollview上，由collectionView的高度去撑父视图的高度。楼主试图通过监听collectionView的数据源长度来改变视图高度。</p>
+<p>但我们知道，KVO监听的是指针变化，可变数组里加了个元素，这个数组的内容变了，但是指针没有变，所以不会调用KVO</p>
+<p>首先，数组不能直接使用KVO使用监听。当我们想要使用KVO监听数组的状态时改变然后尽心操作时，我们需要进行一下几部。</p>
+<p>1.KVO不能监听UIViewController中的数组。我们需要先创建一个模型，将数组添加值模型中。</p>
+<pre><code>@interface SelectedsArr : NSObject
+
+@property (nonatomic, strong) NSMutableArray *selecteds;///&lt;选中的选项集合
+
+@end
+</code></pre><p>2.建立观察者以及观察者对象</p>
+<pre><code>[self.selectedsArr addObserver:self forKeyPath:@&quot;selecteds&quot; options:NSKeyValueObservingOptionNew context:nil];
+</code></pre><p>3.处理Key的变化</p>
+<p>这里，很重要，当向模型中的可变数组添加新成员时，不能直接用[self.selectedsArr.selecteds addObject:]方法。而使用该用下面的方法</p>
+<pre><code>[self.selectedsArr mutableArrayValueForKey:@&quot;selecteds&quot;] addObject:]];
+</code></pre><p>4.在下面的方法添加监听到变化后要执行的语句</p>
+<pre><code>- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void *)context{
+
+}
+</code></pre><p>5.移除监听</p>
+<pre><code>[self removeObserver:self forKeyPath:@&quot;selecteds&quot;];
+</code></pre><h2 id="改进一下"><a href="#改进一下" class="headerlink" title="改进一下"></a>改进一下</h2><p>我们只要每次都变更我们要监听数据的地址就好了。因此简化版操作如下，mediaUploadView是包含了collectionView的直接父视图，seleteImagesArray为collectionView的数据源</p>
+<pre><code>//1.建立观察者以及观察者对象
+[self.mediaUploadView addObserver:self forKeyPath:@&quot;seleteImagesArray&quot; options:NSKeyValueObservingOptionNew context:nil];
+
+//2.数组的增删方法（注意这里的写法，用mutableArrayValueForKey，这个不仅把元素加进去了， 而且还重新生成了一个可变数组来赋值给控制器属性的那个数组，这样就能被KVO检测到指针变化）
+[[weakself mutableArrayValueForKey:@&quot;seleteImagesArray&quot;] addObject:weakself.addImageModel];
+[[weakself mutableArrayValueForKey:@&quot;seleteImagesArray&quot;] removeLastObject];
+[[weakself mutableArrayValueForKey:@&quot;seleteImagesArray&quot;] addObjectsFromArray:tempArray];
+
+//3.处理Key的变化
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSString *,id&gt; *)change context:(void *)context
+{
+    NSInteger rows = ceilf(self.mediaUploadView.seleteImagesArray.count/3.0);
+    self.meadiaUploadViewHeight.constant = (ITEM_WIDTH_HEIGHT+20)*rows;
+}
+
+//4.最后一步也很重要，否则引起崩溃
+- (void)dealloc {
+    [self.mediaUploadView removeObserver:self forKeyPath:@&quot;seleteImagesArray&quot; context:nil];
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/23/KVO监听数组/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS中Cookie的存取" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/23/iOS中Cookie的存取/">iOS中Cookie的存取</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/23/iOS中Cookie的存取/" class="archive-article-date">
+  	<time datetime="2019-06-23T11:43:59.094Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当前一些公司为了快速出一款app，很多时候采用UINavigationController+WebView或者NavigationController+UITabbarVC+WebView的方式，这样就不可避免的需要使用cookie与Html5交互，下面讲述几种常用情景下cookie的添加方法：</p>
+<h2 id="UIWebView"><a href="#UIWebView" class="headerlink" title="UIWebView"></a>UIWebView</h2><pre><code>// 工厂类中存储cookie的方法
++ (void)saveCookies {
+    // 创建一个可变字典存放cookie
+    NSMutableDictionary *fromappDict = [NSMutableDictionary dictionary];
+    [fromappDict setObject:@&quot;fromapp&quot; forKey:NSHTTPCookieName];
+    [fromappDict setObject:@&quot;ios&quot; forKey:NSHTTPCookieValue];
+    // kDomain是公司app网址
+    [fromappDict setObject:kDomain forKey:NSHTTPCookieDomain];
+    [fromappDict setObject:kDomain forKey:NSHTTPCookieOriginURL];
+    [fromappDict setObject:@&quot;/&quot; forKey:NSHTTPCookiePath];
+    [fromappDict setObject:@&quot;0&quot; forKey:NSHTTPCookieVersion];
+
+    // 将可变字典转化为cookie
+    NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:fromappDict];
+
+    // 获取cookieStorage
+    NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage]
+
+    // 存储cookie
+    [cookieStorage setCookie:cookie];
+}
+</code></pre><p>UIWebView使用时间较长，只要在cookieStorage中设置了相应的cookie，每次就会自动带上；</p>
+<p>但是这样的弊端是随着与H5的交互增加，Cookie占用的空间越来越大，每次交互都夹带大量的cookie，不仅增加服务器端压力，也浪费用户的流量。比如每次交互都夹带5kb的cookie内容，但是真正用到的只有两三百字节。</p>
+<h2 id="WKWebView"><a href="#WKWebView" class="headerlink" title="WKWebView"></a>WKWebView</h2><p>WKWebView相比于UIWebView：</p>
+<p>速度快了一倍，内存却减少为原来的一半；</p>
+<p>cookie不再是自动携带，需要手动设置；</p>
+<p>交互更加顺畅，比如app底部四个tabBar也都是网页的，在UIWebView下点击，整个H5页面都会闪白一下，但是在WKWebView下点击，四个tabBar效果与原生app效果更加类似，不会有闪白现象。</p>
+<p>增减了一些代理方法，更方便的进行协议拦截和进度条展示</p>
+<ul>
+<li><p>1.在创建的时候存放到WKUserScript中进行添加cookie</p>
+<pre><code>WKWebViewConfiguration *webConfig = [[WKWebViewConfiguration alloc] init];
+// 设置偏好设置
+webConfig.preferences = [[WKPreferences alloc] init];
+// 默认为0
+webConfig.preferences.minimumFontSize = 10;
+// 默认认为YES
+webConfig.preferences.javaScriptEnabled = YES;
+// 在iOS上默认为NO，表示不能自动通过窗口打开
+webConfig.preferences.javaScriptCanOpenWindowsAutomatically = NO;
+
+// web内容处理池
+webConfig.processPool = [[WKProcessPool alloc] init];
+// 将所有cookie以document.cookie = &apos;key=value&apos;;形式进行拼接
+#warning 然而这里的单引号一定要注意是英文的，不要问我为什么告诉你这个(手动微笑)
+NSString *cookieValue = @&quot;document.cookie = &apos;fromapp=ios&apos;;document.cookie = &apos;channel=appstore&apos;;&quot;;
+
+// 加cookie给h5识别，表明在ios端打开该地址
+WKUserContentController* userContentController = WKUserContentController.new;
+WKUserScript * cookieScript = [[WKUserScript alloc]
+                               initWithSource: cookieValue
+                               injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
+[userContentController addUserScript:cookieScript];
+webConfig.userContentController = userContentController;
+
+WKWebView *wkWebView = [[WKWebView alloc] initWithFrame:frame configuration:webConfig];
+
+wkWebView.UIDelegate = wkWebView;
+wkWebView.navigationDelegate = wkWebView;
+</code></pre></li>
+</ul>
+<ul>
+<li>2 .加载某个url的时候添加cookie</li>
+</ul>
+<p>如果WKWebView在加载url的时候需要添加cookie，需要先手动获取当前NSHTTPCookieStorage中的所有cookie，然后将cookie放到NSMutableURLRequest请求头中</p>
+<pre><code>- (void)loadRequestWithUrlString:(NSString *)urlString {
+
+    // 在此处获取返回的cookie
+    NSMutableDictionary *cookieDic = [NSMutableDictionary dictionary];
+
+    NSMutableString *cookieValue = [NSMutableString stringWithFormat:@&quot;&quot;];
+    NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+
+    for (NSHTTPCookie *cookie in [cookieJar cookies]) {
+        [cookieDic setObject:cookie.value forKey:cookie.name];
+    }
+
+    // cookie重复，先放到字典进行去重，再进行拼接
+    for (NSString *key in cookieDic) {
+        NSString *appendString = [NSString stringWithFormat:@&quot;%@=%@;&quot;, key, [cookieDic valueForKey:key]];
+        [cookieValue appendString:appendString];
+    }
+
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
+    [request addValue:cookieValue forHTTPHeaderField:@&quot;Cookie&quot;];
+
+    [self loadRequest:request];
+}
+</code></pre><h2 id="AFNetworking"><a href="#AFNetworking" class="headerlink" title="AFNetworking"></a>AFNetworking</h2><p>AFNetworking存取cookie就比较常见了，话不多说，都在代码里了</p>
+<pre><code>// 获取AFHTTPRequestOperationManager
+AFHTTPRequestOperationManager *operationManager = [AFHTTPRequestOperationManager manager];
+
+// 创建可变字典用于存放Cookie
+NSMutableDictionary *cookieDic = [NSMutableDictionary dictionary];
+
+// 存放新添加的cookie
+#warning 单个的Cookie还好，但是楼主在工厂类方法中拼接了一个包含6个设备信息的value值，最后忘记加分号了，测试也没测出来
+#warning 因为不影响功能，但是后面的cookie就自动拼接上了，H5那边也识别不到，险造成重大事故(涉及金融。。)，望后来者看到，提前做好准备(就凭这个坑，你得给我个赞)
+NSMutableString *cookieValue = [NSMutableString stringWithFormat:@&quot;fromapp=ios;&quot;];
+
+// 获取
+NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+
+for (NSHTTPCookie *cookie in [cookieJar cookies]) {
+    [cookieDic setObject:cookie.value forKey:cookie.name];
+}
+
+// cookie重复，先放到字典去重，再进行拼接
+for (NSString *key in cookieDic) {
+    NSString *appendString = [NSString stringWithFormat:@&quot;%@=%@;&quot;, key, [cookieDic valueForKey:key]];
+    [cookieValue appendString:appendString];
+}
+
+// 将cookie存到请求头中
+[operationManager.requestSerializer setValue:cookieValue forHTTPHeaderField:@&quot;Cookie&quot;];
+
+//  拼接url地址
+NSString *urlStr = [NSString stringWithFormat:@&quot;%@%@&quot;, kHostIP, kPath];
+
+// 设置参数字典
+NSDictionary *paraDict = @{
+                              @&quot;key&quot; : value
+                              };
+// 发送请求，处理结果
+[operationManager POST:urlStr parameters:paraDict success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+
+     NSLog(@&quot;responseObject--&gt;%@&quot;, responseObject);
+
+} failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
+
+     NSLog(@&quot;error--&gt;%@&quot;, error);
+}];
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/23/iOS中Cookie的存取/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-抖音点赞动画的实现" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1216,543 +1534,6 @@ UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait
 
 
   
-    <article id="post-iOS中的Promise" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/24/iOS中的Promise/">iOS中的Promise</a>
-    </h1>
-  
-
-        
-        <a href="/2019/04/24/iOS中的Promise/" class="archive-article-date">
-  	<time datetime="2019-04-24T13:15:27.728Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS中我们一般使用delegate(代理)或者block(闭包)来进行异步操作，当要执行多个异步操作，必须将第二个嵌套在第一个的完成内，并且还要正常处理错误。这使得代码结构异常的混乱，不方便查看。</p>
-<p>相信码过JS的同学都清楚，在es6中新增promise的语法，从此异步操作更加的灵活，它使得回调与事件进行了组合，而且写法优美。谷歌在18年上半年开源了promises库，使iOS上的异步编程更加便捷，其使用方式与JS中的promise一致，并支持OC与Swift。</p>
-<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Promise代表异步执行的结果或者错误信息。其拥有以下三种状态</p>
-<ul>
-<li>pending 正在处理</li>
-<li>fulfilled 处理完成得到的结果</li>
-<li>rejected 发生错误的信息</li>
-</ul>
-<p>当状态发生变更后，就无法再次变更其状态。同时promise不限制其订阅者，当状态发生变化后，所有的订阅者都能接收到通知。同时订阅者可以返回另一个promise对象，从而形成管道通信。</p>
-<p>管道通信过程可以自由的使用线程</p>
-<h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>我们可以在FBLPromise文件查找Promise的实现原理</p>
-<h3 id="声明状态、闭包"><a href="#声明状态、闭包" class="headerlink" title="声明状态、闭包"></a>声明状态、闭包</h3><pre><code>//三种状态类型
-typedef NS_ENUM(NSInteger, FBLPromiseState) {
-  FBLPromiseStatePending = 0,
-  FBLPromiseStateFulfilled,
-  FBLPromiseStateRejected,
-};
-//闭包的回调类型
-typedef void (^FBLPromiseObserver)(FBLPromiseState state, id __nullable resolution);```
-</code></pre><h3 id="相关的缓存"><a href="#相关的缓存" class="headerlink" title="相关的缓存"></a>相关的缓存</h3><pre><code>@implementation FBLPromise {
-  //当前promise的状态
-  FBLPromiseState _state;
-  //存放执行相关逻辑的结果存储
-  id __nullable _value;
-  //存放执行相关逻辑的错误
-  NSError *__nullable _error;
-  //存放订阅者的信息
-  NSMutableArray&lt;FBLPromiseObserver&gt; *_observers;
-}
-</code></pre><h3 id="完成或失败的操作"><a href="#完成或失败的操作" class="headerlink" title="完成或失败的操作"></a>完成或失败的操作</h3><p>完成或失败的操作其实是遍历所有订阅者，将当前的状态和执行后的结果通知订阅者。执行完毕后改变缓存的状态值，就算后期再次调用也不会响应。达到只要状态变更就无法再次启动的效果。</p>
-<pre><code>- (void)fulfill:(nullable id)value {
-  if ([value isKindOfClass:[NSError class]]) {
-    [self reject:(NSError *)value];
-  } else {
-    @synchronized(self) {
-      if (_state == FBLPromiseStatePending) {
-        //变更状态
-        _state = FBLPromiseStateFulfilled;
-        _value = value;
-        _pendingObjects = nil;
-        //通知订阅者所订阅的信息
-        for (FBLPromiseObserver observer in _observers) {
-          observer(_state, _value);
-        }
-        _observers = nil;
-        dispatch_group_leave(FBLPromise.dispatchGroup);
-      }
-    }
-  }
-}
-</code></pre><h3 id="订阅者"><a href="#订阅者" class="headerlink" title="订阅者"></a>订阅者</h3><p>订阅相关信息时，先去判断当前的状态类型，当此时已经执行完毕后，会马上回调相关的执行结果。</p>
-<pre><code>- (void)observeOnQueue:(dispatch_queue_t)queue
-               fulfill:(FBLPromiseOnFulfillBlock)onFulfill
-                reject:(FBLPromiseOnRejectBlock)onReject {
-  @synchronized(self) {
-    //先判断当前的状态，只有正在执行的过程中才可以订阅
-    switch (_state) {
-      case FBLPromiseStatePending: {
-        if (!_observers) {
-          _observers = [[NSMutableArray alloc] init];
-        }
-        //增加一个闭包,采用闭包的方式保存外部变量环境
-        [_observers addObject:^(FBLPromiseState state, id __nullable resolution) {
-          dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
-            switch (state) {
-              case FBLPromiseStatePending:
-                break;
-              case FBLPromiseStateFulfilled:
-                onFulfill(resolution);
-                break;
-              case FBLPromiseStateRejected:
-                onReject(resolution);
-                break;
-            }
-          });
-        }];
-        break;
-      }
-      case FBLPromiseStateFulfilled: {
-        dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
-          onFulfill(self-&gt;_value);
-        });
-        break;
-      }
-      case FBLPromiseStateRejected: {
-        dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
-          onReject(self-&gt;_error);
-        });
-        break;
-      }
-    }
-  }
-}
-</code></pre><p>此处是整个promise操作的重中之重，也是我们promise中使用最多的原理所在，从FBLPromise+Then中可以看出该方法是then的原理，也是实现管道通信的原理</p>
-<pre><code>- (FBLPromise *)chainOnQueue:(dispatch_queue_t)queue
-              chainedFulfill:(FBLPromiseChainedFulfillBlock)chainedFulfill
-               chainedReject:(FBLPromiseChainedRejectBlock)chainedReject {
-
-  //创建新的promise
-  FBLPromise *promise = [[FBLPromise alloc] initPending];
-  //定义执行的闭包,该闭包是管道通信的精华，也是为什么下一个then中能收到当前then中返回promise执行结果的关键
-  __auto_type resolver = ^(id __nullable value) {
-    //判断then返回的是否是promise
-    if ([value isKindOfClass:[FBLPromise class]]) {
-      //订阅then返回的promise，主要是为了调用下一个then
-      [(FBLPromise *)value observeOnQueue:queue
-          fulfill:^(id __nullable value) {
-            [promise fulfill:value];
-          }
-          reject:^(NSError *error) {
-            [promise reject:error];
-          }];
-    } else {
-      //若返回的不是promise中，则马上传给下一个then
-      [promise fulfill:value];
-    }
-  };
-  //订阅当前的promise
-  [self observeOnQueue:queue
-      fulfill:^(id __nullable value) {
-        //执行then操作后的返回值，可能是promise也可能是其他值
-        value = chainedFulfill ? chainedFulfill(value) : value;
-        //调用上面创建的闭包
-        resolver(value);
-      }
-      reject:^(NSError *error) {
-        id value = chainedReject ? chainedReject(error) : error;
-        resolver(value);
-      }];
-  return promise;
-}
-</code></pre><h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>此处仅展示swift的语法，oc上的使用请参考FBL前缀的类，或者直接阅读官方文档</p>
-<h3 id="创建方式"><a href="#创建方式" class="headerlink" title="创建方式"></a>创建方式</h3><p>默认是在主线程中使用，如需在其他线程中使用，可以设置on: DispatchQueue，此处不作介绍</p>
-<h3 id="异步方式"><a href="#异步方式" class="headerlink" title="异步方式"></a>异步方式</h3><pre><code>let promise = Promise&lt;Int&gt; { fulfill, reject in
-    let vail = true
-    if vail {
-        fulfil(12)
-    }else {
-        reject(error)
-    }
-}
-</code></pre><h3 id="同步方式"><a href="#同步方式" class="headerlink" title="同步方式"></a>同步方式</h3><pre><code>//采用预先定义方式
-let promise = Promise&lt;Int&gt;.pending()
-...
-if success {
-  promise.fulfill(12)
-} else {
-  promise.reject(error)
-}
-
-//直接发起结果的方式
-let promise = Promise(12)
-let promise = Promise(error)
-</code></pre><h3 id="then使用"><a href="#then使用" class="headerlink" title="then使用"></a>then使用</h3><pre><code>let numberPromise = Promise { fulfill, _ in
-    fulfill(42)
-}
-let stringPromise = numberPromise.then { number in
-    return Promise { fulfill, _ in
-        fulfill(String(number))
-    }
-}
-typealias Block = (Int) -&gt; [Int]
-let blockPromise = stringPromise.then { value in
-    return Promise&lt;Block&gt; { fulfill, _ in
-        fulfill({ number in
-            return [number + (Int(value) ?? 0)]
-        })
-    }
-}
-let finalPromise = blockPromise.then { (value: @escaping Block) -&gt; Int? in
-    return value(42).first
-}
-let postFinalPromise = finalPromise.then { number in
-    return number ?? 0
-}
-</code></pre><h3 id="catch"><a href="#catch" class="headerlink" title="catch"></a>catch</h3><p>catch是处理promise中出现错误的情况，在promise管道中，当其中一个promise执行出现错误时，会忽略这个之后的管道直接将错误传输到catch中处理。</p>
-<pre><code>let promise = Promise&lt;AnyObject&gt; {
-    return error
-}.catch { error in
-    //处理错误
-}
-</code></pre><h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><h4 id="All"><a href="#All" class="headerlink" title="All"></a>All</h4><p>只有当all中所有的promise否成功执行后才回调，回调参数未all中所有执行结果的元组，当其中一个调用rejected时，都直接回调错误</p>
-<pre><code>let promise1 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
-        fulfill(42)
-    })
-}
-let promise2 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
-        fulfill(13)
-     })
-}
-let promise3 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
-        fulfill(nil)
-    })
-}
-
-let combinedPromise = all([promise1, promise2, promise3]).then { value in
-    print(value) //[Optional(42), Optional(13), nil]
-}
-</code></pre><h4 id="Always"><a href="#Always" class="headerlink" title="Always"></a>Always</h4><p>无论管道中是顺利成功执行还是出现错误，最终都会执行always的闭包</p>
-<pre><code>var count = 0
-let promise = Promise&lt;Void&gt; { _, reject in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
-        reject(DYError.promise)
-    })
-}.always {
-    count += 1
-}.catch { error in
-    count += 1
-}.always {
-    print(count)
-}
-</code></pre><h4 id="Any"><a href="#Any" class="headerlink" title="Any"></a>Any</h4><p>与all操作类型，但是Any中即便有其中的出现了错误也会返回元组数据吗，其元组类型是Maybe，包含error与value相关信息</p>
-<pre><code>let promise1 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
-        fulfill(42)
-    })
-}
-let promise2 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
-        fulfill(13)
-    })
-}
-let promise3 = Promise&lt;Int?&gt; { _, reject in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
-        reject(DYError.promise)
-    })
-}
-
-let combinedPromise = any([promise1, promise2, promise3]).then { value in
-    let item = value.first
-    print(value.first?.value)
-}
-</code></pre><h4 id="Await"><a href="#Await" class="headerlink" title="Await"></a>Await</h4><p>使用该操作，可以同步等待在不同线程上执行的promise。该语法与ES8中async/await的使用时类似的</p>
-<pre><code>Promise&lt;Int&gt; {
-  let minusFive = try await(calculator.negate(5))
-  let twentyFive = try await(calculator.multiply(minusFive, minusFive))
-  let twenty = try await(calculator.add(twentyFive, minusFive))
-  let five = try await(calculator.subtract(twentyFive, twenty))
-  let zero = try await(calculator.add(minusFive, five))
-  return try await(calculator.multiply(zero, five))
-}.then { result in
-
-}.catch { error in
-
-}
-</code></pre><h4 id="Delay"><a href="#Delay" class="headerlink" title="Delay"></a>Delay</h4><p>该操作返回一个预先定义的promise，等到给定的时间后执行，或者立即执行错误</p>
-<pre><code>let promise = Promise(42).delay(2)
-promise.catch { err in
-    print(err)
-}.then { value in
-    print(value)
-}
-
-DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
-    promise.reject(DYError.promise)
-})
-</code></pre><h4 id="Race"><a href="#Race" class="headerlink" title="Race"></a>Race</h4><p>该操作与all相似，但是返回的是先执行完成的promise结果或者错误</p>
-<pre><code>let promise1 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
-        fulfill(42)
-    })
-}
-let promise2 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
-        fulfill(&quot;hello world&quot;)
-    })
-}
-let promise3 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
-        fulfill([44])
-    })
-}
-let promise4 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-        fulfill(nil)
-    })
-}
-
-race([promise1,promise2,promise3,promise4]).then { (value) in
-    print(value)
-}
-</code></pre><h4 id="Recover"><a href="#Recover" class="headerlink" title="Recover"></a>Recover</h4><p>与Catch效果相同，但是该操作符不会隔断管道中其他promise的执行</p>
-<pre><code>let promise = Promise&lt;Int&gt; { _, reject in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-        reject(DYError.promise)
-    })
-}.recover { error -&gt; Promise&lt;Int&gt; in
-    print(error)
-    return Promise { fulfill, _ in
-            DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-                    fulfill(1)
-             })
-    }
-}.catch { err in
-    print(err)
-}.then { value in
-    print(value)
-}
-</code></pre><h4 id="Reduce"><a href="#Reduce" class="headerlink" title="Reduce"></a>Reduce</h4><p>结合其他数据进行变换</p>
-<pre><code>let numbers = [1, 2, 3]
-Promise(&quot;0&quot;).reduce(numbers) { partialString, nextNumber in
-  Promise(partialString + &quot;, &quot; + String(nextNumber))
-}.then { string in
-  // Final result = 0, 1, 2, 3
-  print(&quot;Final result = \(string)&quot;)
-}
-</code></pre><h4 id="Retry"><a href="#Retry" class="headerlink" title="Retry"></a>Retry</h4><p>promise执行失败时，尝试重新执行。在未设置时间的前提下，默认延迟1s重新执行</p>
-<pre><code>var count = 0
-retry(attempts: 3, delay: 5, condition: { (num, error) -&gt; Bool in
-    print(&quot;\(num)&quot; + error.localizedDescription)
-    if num == 2 {
-        //马上执行错误
-        return false
-    }
-    return true
-}) { () -&gt; Promise&lt;Int&gt; in
-    return count == 3 ? Promise(42) : Promise(DYError.promise)
-}.then { (value) in
-    print(value)
-}.catch { (error) in
-    print(error)
-}
-</code></pre><h4 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h4><p>在指定的时间内如果没有执行完成或者发送错误,则自发错误</p>
-<pre><code>let promise = Promise { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-        fulfill(42)
-    })
-}.timeout(1).catch { err in
-    print(err) //timedOut
-}.then { value in
-    print(value) 
-}
-</code></pre><h4 id="Validate"><a href="#Validate" class="headerlink" title="Validate"></a>Validate</h4><p>判断是否有效，如果无效则自发错误</p>
-<pre><code>let promise = Promise { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-        fulfill(42)
-    })
-}.validate { value in
-    return value == 1
-}.catch { err in
-    print(err) //validationFailure
-}.then { value in
-    print(value)
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/04/24/iOS中的Promise/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-如何查找内存泄漏" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/24/如何查找内存泄漏/">如何查找内存泄漏</a>
-    </h1>
-  
-
-        
-        <a href="/2019/04/24/如何查找内存泄漏/" class="archive-article-date">
-  	<time datetime="2019-04-24T13:01:40.282Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>内存泄漏（Memory Leak）是指程序中己动态分配的堆内存由于某种原因程序未释放或无法释放，造成系统内存的浪费，导致程序运行速度减慢甚至系统崩溃等严重后果。 – 百度百科</p>
-<h2 id="内存泄漏的原因"><a href="#内存泄漏的原因" class="headerlink" title="内存泄漏的原因"></a>内存泄漏的原因</h2><pre><code>1. 使用的 Timer ,并且 Timer 的 target 为 self
-self.timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer(_ :)), userInfo: nil, repeats: true)
-解决方式: 在需要释放 self 时调用 Timer 的 invalidate
-2. 两对象的互相强引用 (一般出现在delegate,所以 delegate 要用 weak 修饰)
-class A {
-    var b: B
-}
-class B {
-    var a: A
-}
-
-let a = A()
-let b = B()
-a.b = b
-b.a = a
-两者互相强引用谁都释放不掉
-解决方式: a 或 b 其中一个用 weak 修饰 
-weak var a: A
-3. 闭包内部的强引用 (循环引用)
-
-class A {
-    var avtion: (()-&gt;())?
-}
-class B{
-    var a: A = A()
-    func xx(){
-        a.action = {
-            self.xxx//(使用 self 做了一些操作)
-        }
-    }
-}
-解决方式:
-使用[weak self] 或者 [unowned self] 来避免循环引用
-a.action = { [weak self] in
-    guard let `self` = self else {return}//(黑魔法,闭包内可以继续使用 self )
-}
-unowned修饰类似于 OC 中的 assign,self 指向的是当前对象的地址,如果对象已经释放这个 self 不会自动置为 nil,此时一定要确保 self 没有释放,否则会有野指针的错误.
-</code></pre><h2 id="查找内存泄露的方法"><a href="#查找内存泄露的方法" class="headerlink" title="查找内存泄露的方法"></a>查找内存泄露的方法</h2><h3 id="静态分析-预防针"><a href="#静态分析-预防针" class="headerlink" title="静态分析(预防针):"></a>静态分析(预防针):</h3><p>在 Xcode 菜单栏点击 Product 选择 Analyze (Command + Shift + B)<br>Xcode 会分析可能会造成泄露的语句<br>(Swift 的项目没有跑出来泄露的,就用 OC 的项目看吧)</p>
-<p><img src="http://img.wangjungang.cn/WX20190424-210419@2x.png" alt=""></p>
-<h3 id="内存泄露分析工具Leaks"><a href="#内存泄露分析工具Leaks" class="headerlink" title="内存泄露分析工具Leaks"></a>内存泄露分析工具Leaks</h3><p>Product =&gt; Profile(Command+I) =&gt; Leaks<br>点击左上角像录制一样的按钮 开始检测</p>
-<p><img src="http://img.wangjungang.cn/WX20190424-210503@2x.png" alt=""></p>
-<h3 id="Debug-Memory-Graph"><a href="#Debug-Memory-Graph" class="headerlink" title="Debug Memory Graph"></a>Debug Memory Graph</h3><p><img src="http://img.wangjungang.cn/WX20190424-210559@2x.png" alt=""></p>
-<h3 id="人工检索"><a href="#人工检索" class="headerlink" title="人工检索"></a>人工检索</h3><p>在知道没有释放掉的控制器中 Command + F  搜索 self,然后 检索下是不是在 block 中有你不小心使用的 没有 weak 处理的 self 吧.简单暴力傻瓜式(事了拂衣去,深藏身与名)</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/04/24/如何查找内存泄漏/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1850,15 +1631,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1886,10 +1667,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
@@ -1898,7 +1675,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1907,6 +1684,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">网络</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
