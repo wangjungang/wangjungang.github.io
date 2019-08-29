@@ -152,6 +152,131 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-通过优雅的方式强制旋转屏幕" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/05/12/通过优雅的方式强制旋转屏幕/">通过优雅的方式强制旋转屏幕</a>
+    </h1>
+  
+
+        
+        <a href="/2019/05/12/通过优雅的方式强制旋转屏幕/" class="archive-article-date">
+  	<time datetime="2019-05-12T07:47:18.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>方向旋转在日常App上基本都会用到，用的时候可能会因为赶工期而以实现功能为主，认真思考了为啥去这样做有没有bug或者后续的开发中是否还会用到。不只是屏幕旋转，还有其他的东西也是这样，导致之前做的时候感觉也会了，实际开发的时候，有时就会像喝断片一样。</p>
+<p>此文的目的是为了加深理解和巩固一下知识记忆，另外此文也附带了对屏幕旋转的一些理解和一些需要注意的地方，小心驶得万年船哇。</p>
+<h2 id="三个方向的枚举"><a href="#三个方向的枚举" class="headerlink" title="三个方向的枚举"></a>三个方向的枚举</h2><p>1.UIDeviceOrientation：是描述设备的方向，含有以下值：</p>
+<pre><code>UIDeviceOrientationUnknown,
+UIDeviceOrientationPortrait,            // 竖立
+UIDeviceOrientationPortraitUpsideDown,  // 倒竖
+UIDeviceOrientationLandscapeLeft,       // 横屏，home键在右边
+UIDeviceOrientationLandscapeRight,      // 横屏，home键在左边
+UIDeviceOrientationFaceUp,              // 屏幕朝上
+UIDeviceOrientationFaceDown             // 屏幕朝下
+</code></pre><p>其中UIDeviceOrientationLandscapeLeft可以这样理解：以home键或Home Indicator（下文仅用home键形容同等）为参照物，UIDeviceOrientationLandscapeRight就是设备向右旋转了，所以home键在左侧。反之亦然。</p>
+<p>2。UIInterfaceOrientation：描述的是页面的方向，含有以下值：</p>
+<pre><code>UIInterfaceOrientationUnknown            = UIDeviceOrientationUnknown,
+UIInterfaceOrientationPortrait           = UIDeviceOrientationPortrait,
+UIInterfaceOrientationPortraitUpsideDown = UIDeviceOrientationPortraitUpsideDown,
+UIInterfaceOrientationLandscapeLeft      = UIDeviceOrientationLandscapeRight,
+UIInterfaceOrientationLandscapeRight     = UIDeviceOrientationLandscapeLeft
+</code></pre><p>其中之所以UIInterfaceOrientationLandscapeLeft和UIDeviceOrientationLandscapeRight等价，就是因为设备旋转后，页面需要向反方向旋转才能符合正常使用的规范。</p>
+<p>3 UIInterfaceOrientationMask: 作用是在指定的视图控制器中支持的页面多种方向的集合，含有以下值</p>
+<pre><code>UIInterfaceOrientationMaskPortrait = (1 &lt;&lt; UIInterfaceOrientationPortrait),
+UIInterfaceOrientationMaskLandscapeLeft = (1 &lt;&lt; UIInterfaceOrientationLandscapeLeft),
+UIInterfaceOrientationMaskLandscapeRight = (1 &lt;&lt; UIInterfaceOrientationLandscapeRight),
+UIInterfaceOrientationMaskPortraitUpsideDown = (1 &lt;&lt; UIInterfaceOrientationPortraitUpsideDown),
+
+UIInterfaceOrientationMaskLandscape = (UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight),
+
+UIInterfaceOrientationMaskAll = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight | UIInterfaceOrientationMaskPortraitUpsideDown),
+
+UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight),
+</code></pre><p>第一个枚举是用来描述设备的方向；第二个枚举是用来描述页面的方向；第三个枚举则是用来描述页面可支持的方向集合。另外设备面朝上和朝下两种情况通常不做考虑。</p>
+<h2 id="获取设备的方向"><a href="#获取设备的方向" class="headerlink" title="获取设备的方向"></a>获取设备的方向</h2><p>1 可以通过获取设备的orientation属性值来判断当前设备的方向。</p>
+<p>2 有些时候需要通过监听来获取设备的方向，需要通过使用通知来监听，但是有个注意的地方就是从设备方向改变的通知中获取数据前后需要调用一对方法：<br>beginGeneratingDeviceOrientationNotifications和endGeneratingDeviceOrientationNotifications</p>
+<pre><code>// 通过通知名：UIDeviceOrientationDidChangeNotification 来获取
+// 调用生成设备方向变化的通知方法
+[[NSNotificationCenter defaultCenter] beginGeneratingDeviceOrientationNotifications];
+[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:UIDeviceOrientationDidChangeNotification object:nil];
+
+// ...
+
+// 移除通知前需调用结束生成设备方向变化的通知
+[[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+[[NSNotificationCenter defaultCenter] removeObserver:self];
+</code></pre><p>3 有点需要非常注意的是：如果用户在控制栏锁定了屏幕方向，收不到方向改变的通知，包括即使你所在的试图控制器支持多个方向，也只会强转第一个方向。</p>
+<p>4 还有一点就是状态栏的问题，如果没有设置状态的样式，在强转横屏时将会隐藏状态栏。</p>
+<p>5 另外使用此种方式时可能会收到状态UIDeviceOrientationUnknown，比如第一次进入app的过程中以及只支持竖屏的情况时，但是一般跳转时会有几次的方向回调的，当出现这个状态时可以返回竖屏的状态。</p>
+<h2 id="设备旋转的设置的几种方式"><a href="#设备旋转的设置的几种方式" class="headerlink" title="设备旋转的设置的几种方式"></a>设备旋转的设置的几种方式</h2><p>1 因为设备支持的方向旋转有几种方式</p>
+<p>项目工程的设置：在工程的General和info.plist中设置都是一样的，因为数据都存储在info.plist中</p>
+<p>AppDelegate中的设置：通过在代理中- (UIInterfaceOrientationMask)application:(UIApplication <em>)application supportedInterfaceOrientationsForWindow:(UIWindow </em>)window设置支持的方向。</p>
+<p>单个视图控制控制器的设置：需要其父控制器UITabBarController或UINavigationController也支持当前控制器的方向才行。</p>
+<p>2 上述方式设置可以简单理解为：项目工程的设置为App默认设置；AppDelegate中的设置为你当前设置的，所以会覆盖项目工程的设置；而单个视图控制器的设置为当前页面设置，但是受AppDelegate中的影响。</p>
+<p>3 默认创建应用将会默认勾选除 Portrait Upside down这个选项外的方向。</p>
+<p>4 即使你一个都不勾选，应用还是会默认以 Portrait 的方式。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/05/12/通过优雅的方式强制旋转屏幕/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS响应链(Responder Chain)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2076,146 +2201,6 @@ stringArray.reduce(&quot;&quot;, {
 
 
   
-    <article id="post-Swift 中的 map 和 flatMap" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/15/Swift 中的 map 和 flatMap/">Swift 中的 map 和 flatMap</a>
-    </h1>
-  
-
-        
-        <a href="/2019/04/15/Swift 中的 map 和 flatMap/" class="archive-article-date">
-  	<time datetime="2019-04-15T07:50:08.343Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>map 和 flatMap 是 Swift 中两个常用的函数，它们体现了 Swift 中很多的特性。对于简单的使用来说，它们的接口并不复杂，但它们内部的机制还是非常值得研究的，能够帮助我们够好的理解 Swift 语言。</p>
-<h2 id="map-简介"><a href="#map-简介" class="headerlink" title="map 简介"></a>map 简介</h2><p>首先，咱们说说 map 函数如何使用。</p>
-<pre><code>let numbers = [1,2,3,4]
-let result = numbers.map { $0 + 2 }
-print(result)  // [3,4,5,6]
-</code></pre><p>map 方法接受一个闭包作为参数， 然后它会遍历整个 numbers 数组，并对数组中每一个元素执行闭包中定义的操作。 相当于对数组中的所有元素做了一个映射。 比如咱们这个例子里面的闭包是讲所有元素都加 2 。 这样它产生的结果数据就是 [3,4,5,6]。</p>
-<p>初步了解之后，我们来看一下 map 的定义：</p>
-<pre><code>func map
-(@noescape transform: (Self.Generator.Element) throws -&gt; T) rethrows -&gt; [T]
-</code></pre><p>咱们抛开一些和关键逻辑无关的修饰符 @noescape,throws 这些，在整理一下就是这样</p>
-<pre><code>func map
-(transform: (Self.Generator.Element) -&gt; T) rethrows -&gt; [T]
-</code></pre><p>map 函数接受一个闭包， 这个闭包的定义是这样的：</p>
-<pre><code>(Self.Generator.Element) -&gt; T
-</code></pre><p>它接受 Self.Generator.Element 类型的参数， 这个类型代表数组中当前元素的类型。 而这个闭包的返回值，是可以和传递进来的值不同的。 比如我们可以这样：</p>
-<pre><code>let stringResult = numbers.map { &quot;No. \($0)&quot; }
-// [&quot;No. 1&quot;, &quot;No. 2&quot;, &quot;No. 3&quot;, &quot;No. 4&quot;]
-</code></pre><p>这次我们在闭包装把传递进来的数字拼接到一个字符串中， 然后返回一个组数， 这个数组中包含的数据类型，就是我们拼接好的字符串。<br>这就是关于 map 的初步了解， 我们继续来看 flatMap。</p>
-<h2 id="flatMap"><a href="#flatMap" class="headerlink" title="flatMap"></a>flatMap</h2><p>map 可以对一个集合类型的所有元素做一个映射操作。 那么 flatMap 呢？</p>
-<p>让我们来看一个 flatMap 的例子：</p>
-<pre><code>result = numbers.flatMap { $0 + 2 }
-// [3,4,5,6]
-</code></pre><p>我们对同样的数组使用 flatMap 进行处理， 得到了同样的结果。 那 flatMap 和 map 到底有什么区别呢？</p>
-<p>咱们再来看另一个例子：</p>
-<pre><code>let numbersCompound = [[1,2,3],[4,5,6]];
-var res = numbersCompound.map { $0.map{ $0 + 2 } }
-// [[3, 4, 5], [6, 7, 8]]
-var flatRes = numbersCompound.flatMap { $0.map{ $0 + 2 } }
-// [3, 4, 5, 6, 7, 8]
-</code></pre><p>这里就看出差别了。 对于二维数组， map 和 flatMap 的结果就不同了。 我们先来看第一个调用：</p>
-<pre><code>var res = numbersCompound.map { $0.map{ $0 + 2 } }
-// [[3, 4, 5], [6, 7, 8]]
-</code></pre><p>numbersCompound.map { … } 这个调用实际上是遍历了这里两个数组元素 [1,2,3] 和 [4,5,6]。 因为这两个元素依然是数组，所以我们可以对他们再次调用 map 函数：$0.map{ $0 + 2 }。 这个内部的调用最终将数组中所有的元素加 2。</p>
-<p>再来看看 flatMap 的调用：</p>
-<p>flatMap 依然会遍历数组的元素，并对这些元素执行闭包中定义的操作。 但唯一不同的是，它对最终的结果进行了所谓的 “降维” 操作。 本来原始数组是一个二维的， 但经过 flatMap 之后，它变成一维的了。</p>
-<p>flatMap 是如何做到的呢，它的原理是什么，为什么会存在这样一个函数呢？ 相信此时你脑海中肯定会浮现出类似的问题。</p>
-<p>下面咱们再来看一下 flatMap 的定义, 还是抛去 @noescape, rethrows 这些无关逻辑的关键字：</p>
-<pre><code>func flatMap(transform: (Self.Generator.Element) throws -&gt; T?) -&gt; [T]
-func flatMap(transform: (Self.Generator.Element) -&gt; S) -&gt; [S.Generator.Element]
-</code></pre><p>和 map 不同， flatMap 有两个重载。 参照我们刚才的示例， 我们调用的其实是第二个重载：</p>
-<pre><code>func flatMap(transform: (Self.Generator.Element) -&gt; S) -&gt; [S.Generator.Element]
-</code></pre><p>flatMap 的闭包接受的是数组的元素，但返回的是一个 SequenceType 类型，也就是另外一个数组。 这从我们刚才这个调用中不难看出：</p>
-<pre><code>numbersCompound.flatMap { $0.map{ $0 + 2 } }
-</code></pre><h4 id="flatMap-的另一个重载"><a href="#flatMap-的另一个重载" class="headerlink" title="flatMap 的另一个重载"></a>flatMap 的另一个重载</h4><p>我们刚才分析了半天， 其实只分析到 flatMap 的一种重载情况， 那么另外一种重载又是怎么回事呢：</p>
-<pre><code>func flatMap(transform: (Self.Generator.Element) -&gt; T?) -&gt; [T]
-</code></pre><p>从定义中我们看出， 它的闭包接收的是 Self.Generator.Element 类型， 返回的是一个 T? 。 我们都知道，在 Swift 中类型后面跟随一个 ?， 代表的是 Optional 值。 也就是说这个重载中接收的闭包返回的是一个 Optional 值。 更进一步来说，就是闭包可以返回 nil。</p>
-<p>那么 flatMap 是如何实现过滤掉 nil 值的呢？ 我们还是来看一下源码：</p>
-<pre><code>extension Sequence {
-// ...
-public func flatMap(
-@noescape transform: (${GElement}) throws -&gt; T?
-) rethrows -&gt; [T] {
-var result: [T] = []
-for element in self {
-if let newElement = try transform(element) {
-result.append(newElement)
-}
-}
-return result
-}
-// ...
-}
-</code></pre><p>依然是遍历所有元素，并应用 try transform(element) 闭包的调用， 但关键一点是，这里面用到了 if let 语句， 对那些只有解包成功的元素，才会添加到结果集中:</p>
-<pre><code>if let newElement = try transform(element) {
-result.append(newElement)
-}
-</code></pre><p>这样， 就实现了我们刚才看到的自动去掉 nil 值的效果了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/04/15/Swift 中的 map 和 flatMap/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -2349,10 +2334,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
@@ -2361,15 +2342,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">

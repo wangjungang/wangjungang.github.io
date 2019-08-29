@@ -152,6 +152,164 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS适配Dark模式（swift）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/08/29/iOS适配Dark模式（swift）/">iOS适配Dark模式（swift）</a>
+    </h1>
+  
+
+        
+        <a href="/2019/08/29/iOS适配Dark模式（swift）/" class="archive-article-date">
+  	<time datetime="2019-08-29T04:04:01.216Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天的 WWDC 19 上发布了 iOS 13，我们来看下如何适配 DarkMode</p>
+<p>DarkMode 主要从两个方面来适配，一是颜色，二是图片，适配的代码不是很多，接下来让我们一起来看看具体是怎么操作的吧。</p>
+<h2 id="颜色"><a href="#颜色" class="headerlink" title="颜色"></a>颜色</h2><p>iOS 13 之前 UIColor 只能表示一种颜色，从 iOS 13 开始 UIColor 是一个动态的颜色，它可以在 LightMode 和 DarkMode 拥有不同的颜色。</p>
+<p>iOS 13 下 UIColor 增加了很多动态颜色，我们来看下用系统提供的颜色能实现怎么样的效果。</p>
+<pre><code>// UIColor 增加的颜色
+@available(iOS 13.0, *)
+open class var systemBackground: UIColor { get }
+@available(iOS 13.0, *)
+open class var label: UIColor { get }
+@available(iOS 13.0, *)
+open class var placeholderText: UIColor { get }
+...
+
+view.backgroundColor = UIColor.systemBackground
+label.textColor = UIColor.label
+placeholderLabel.textColor = UIColor.placeholderText
+</code></pre><p><img src="http://img.wangjungang.cn/4k9GcY.png" alt=""></p>
+<p>怎么样，看起来和 iOS 13 之前设置一个颜色的方法一样吧，用这种动态颜色，系统直接替我们完成了适配的工作，是不是很方便呢。</p>
+<h3 id="如何自己创建一个动态的-UIColor"><a href="#如何自己创建一个动态的-UIColor" class="headerlink" title="如何自己创建一个动态的 UIColor"></a>如何自己创建一个动态的 UIColor</h3><p>上面我们说到系统提供了一些动态的颜色供我们使用，但是在正常开发中，系统提供的颜色肯定是不够用的，所以我们要自己创建动态颜色。</p>
+<p>iOS 13 下 UIColor 增加了一个初始化方法，我们可以用这个初始化方法来创建动态颜色。</p>
+<pre><code>@available(iOS 13.0, *)
+public init(dynamicProvider: @escaping (UITraitCollection) -&gt; UIColor)
+</code></pre><p>这个方法要求传一个闭包进去，当系统从 LightMode 和 DarkMode 之间切换的时候就会触发这个回调。</p>
+<p>这个闭包返回一个 UITraitCollection 类，我们要用这个类的 userInterfaceStyle 属性。<br>userInterfaceStyle 是一个枚举，声明如下</p>
+<pre><code>@available(iOS 12.0, *)
+public enum UIUserInterfaceStyle : Int {
+    case unspecified
+    case light
+    case dark
+}
+</code></pre><p>这个枚举会告诉我们当前是 LightMode or DarkMode</p>
+<p>现在我们创建两个 UIColor 并赋值给 view.backgroundColor 和 label，代码如下</p>
+<h2 id="图片适配"><a href="#图片适配" class="headerlink" title="图片适配"></a>图片适配</h2><p>打开 Assets.xcassets 把图片拖拽进去，我们可以看到这样的页面</p>
+<p><img src="http://img.wangjungang.cn/TfjhVe.png" alt=""></p>
+<p>然后我们在右侧工具栏中点击最后一栏，点击 Appearances 选择 Any, Dark，如图所示</p>
+<p><img src="http://img.wangjungang.cn/odW7Fi.png" alt=""></p>
+<p>我们把 DarkMode 的图片拖进去，如图所示</p>
+<p><img src="http://img.wangjungang.cn/rUnCyF.png" alt=""></p>
+<p>最后我们加上 ImageView 的代码</p>
+<pre><code>imageView.image = UIImage(named: &quot;icon&quot;)
+</code></pre><p>现在我们就已经完成颜色和图片的 DarkMode 适配，是不是很简单呢 (手动滑稽)</p>
+<h2 id="如何获取当前模式-Light-or-Dark"><a href="#如何获取当前模式-Light-or-Dark" class="headerlink" title="如何获取当前模式 (Light or Dark)"></a>如何获取当前模式 (Light or Dark)</h2><p>我们可以看到，不管是颜色还是图片，适配都是系统完成的，我们不用关心现在是什么样的样式。</p>
+<p>但是在某些场景下，我们可能会有根据当前样式来做一些其他适配的需求，这时我们就需要知道现在什么样式。</p>
+<p>我们可以在 UIViewController 或 UIView 中调用 traitCollection.userInterfaceStyle 来获取当前视图的样式，代码如下</p>
+<pre><code>if trainCollection.userInterfaceStyle == .dark {
+    // Dark
+} else {
+    // Light
+}
+</code></pre><p>那么我们什么时候需要用这样的方法做适配呢，比如说当我们使用 CGColor 的时候，上面说到 UIColor 在 iOS 13 下变成了一个动态颜色，但是 CGColor 仍然只能表示单一的颜色，所以当我们使用到 CGColor 的时候，我们就可以用上面的方法做适配。</p>
+<h3 id="颜色-1"><a href="#颜色-1" class="headerlink" title="颜色"></a>颜色</h3><p>对于 CGColor 我们还有还有另一种适配方法，代码如下</p>
+<pre><code>let resolvedColor = labelColor.resolvedColor(with: traitCollection)
+layer.borderColor = resolvedColor.cgColor
+</code></pre><p>resolvedColor 方法会根据传递进去的 traitCollection 返回对应的颜色。</p>
+<h3 id="对于-UIImage-我们也有类似的方法，代码如下"><a href="#对于-UIImage-我们也有类似的方法，代码如下" class="headerlink" title="对于 UIImage 我们也有类似的方法，代码如下"></a>对于 UIImage 我们也有类似的方法，代码如下</h3><pre><code>let image = UIImage(named: &quot;icon&quot;)
+let resovledImage = image?.imageAsset?.image(with: traitCollection)
+</code></pre><h2 id="如何监听模式变化"><a href="#如何监听模式变化" class="headerlink" title="如何监听模式变化"></a>如何监听模式变化</h2><p>上面我们说了如何获取当前模式，但是我们要搭配监听方法一起使用，当 light dark 模式切换的时候，要把上面的代码再执行一遍。系统为我们提供了一个回调方法，当 light dark 切换时就会触发这个方法。</p>
+<pre><code>override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+    if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+        // 适配代码
+    }
+}
+</code></pre><p>题外话<br>如果你觉得这样为 CGColor 做适配很麻烦，那么不妨试试 XYColor 这个框架。</p>
+<h2 id="如何改变当前模式"><a href="#如何改变当前模式" class="headerlink" title="如何改变当前模式"></a>如何改变当前模式</h2><p>我们可以看到在动图中是直接改系统的模式，从而让 App 的模式修改，但是对于某些有夜间模式功能的 App 来说，如果用户打开了夜间模式，那么即使现在系统是 light 模式，也要强制用 dark 模式。</p>
+<p>我们可以用以下代码将当前 UIViewController 或 UIView 的模式。</p>
+<pre><code>overrideUserInterfaceStyle = .dark
+print(traitCollection.userInterfaceStyle)  // dark
+</code></pre><p>我们可以看到设置了 overrideUserInterfaceStyle 之后，traitCollection.userInterfaceStyle 就是我们设置后的模式了。</p>
+<h4 id="需要给每一个-Controller-和-View-都设置一遍吗"><a href="#需要给每一个-Controller-和-View-都设置一遍吗" class="headerlink" title="需要给每一个 Controller 和 View 都设置一遍吗"></a>需要给每一个 Controller 和 View 都设置一遍吗</h4><p>答案是不需要，我们先来看一张图。</p>
+<p><img src="http://img.wangjungang.cn/FtsSoE.png" alt=""></p>
+<p>当我们设置一个 controller 为 dark 之后，这个 controller 下的 view，都会是 dark mode，但是后续推出的 controller 仍然是跟随系统的样式。</p>
+<p>因为苹果对 overrideUserInterfaceStyle 属性的解释是这样的。</p>
+<p>当我们在一个普通的 controlle, view 上重写这个属性，只会影响当前的视图，不会影响前面的 controller 和后续推出的  controller。</p>
+<p>但是当我们在 window 上设置 overrideUserInterfaceStyle 的时候，就会影响 window 下所有的 controller, view，包括后续推出的 controller。</p>
+<p>我们回到刚刚的问题上，如果 App 打开夜间模式，那么很简单我们只需要设置 window 的 overrideUserInterfaceStyle 属性就好了。</p>
+<p>题外话： 当我们用 Xcode11 创建项目，我们会发现项目结构发生了变化，window 从 AppDelegate 移到 SceneDelegate 中。那么如何获取 SceneDelegate 中的 window 呢，代码如下</p>
+<pre><code>// 这里就简单介绍一下，实际项目中，如果是iOS应用这么写没问题，但是对于iPadOS应用还需要判断scene的状态是否激活
+let scene = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
+scene?.window?.overrideUserInterfaceStyle = .dark
+</code></pre><h2 id="其他内容"><a href="#其他内容" class="headerlink" title="其他内容"></a>其他内容</h2><h3 id="Status-Bar"><a href="#Status-Bar" class="headerlink" title="Status Bar"></a>Status Bar</h3><p>之前 Status Bar 有两种状态，default 和 lightContent</p>
+<p>现在 Status Bar 有三种状态，default,  darkContent 和 lightContent</p>
+<p>现在的 darkContent 对应之前的 default，现在的 default 会根据情况自动选择 darkContent 和 lightContent</p>
+<h3 id="UIActivityIndicatorView"><a href="#UIActivityIndicatorView" class="headerlink" title="UIActivityIndicatorView"></a>UIActivityIndicatorView</h3><p>之前的 UIActivityIndicatorView 有三种 style 分别为 whiteLarge, white 和 gray，现在全部废弃。</p>
+<p>增加两种 style 分别为 medium 和 large，指示器颜色用 color 属性修改。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/08/29/iOS适配Dark模式（swift）/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS获取内存使用请尽快" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2210,151 +2368,6 @@ static inline bool isCircle(float cx, float cy, float r, float px, float py) {
 
 
   
-    <article id="post-MVP模式的学习" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/MVP模式的学习/">MVP模式的学习</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/23/MVP模式的学习/" class="archive-article-date">
-  	<time datetime="2019-06-23T12:02:00.876Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo</p>
-<p>打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。<br>MVP似乎有好多的变种，作者所说的这种有如下特点：<br>（原文如下：）</p>
-<pre><code>the view part of the MVP consists of both UIViews and UIViewController
-the view delegates user interactions to the presenter
-the presenter contains the logic to handle user interactions
-the presenter communicates with model layer, converts the data to UI friendly format, and updates the view
-the presenter has no dependencies to UIKit
-the view is passive (dump)
-稍微翻译一下
-MVP的 V 层是由UIViewController 和UIView 共同组成
-view 将委托presenter 对它自己的操作，（简单来说就是presenter发命令来控制view的交互，要你隐藏就隐藏，叫你show 你就乖乖的show）
-presenter拥有对 view交互的逻辑（就是上面说的意思）
-presenter跟model层通信，并将数据转化成对适应UI的数据并更新view
-presenter不需要依赖UIKit
-view层是单一，因为它是被动接受命令，没有主动能力
-</code></pre><p>presenter 作为业务逻辑的处理者，首先要向model层拿数据，所以它将可以向model层通信。其次，UI的处理权移交给了它，所以它需要与view成通讯，发送命令改变UI。同时，UI的响应将触发业务逻辑的处理，所以view 层向presenter层通讯，告诉他用户做了什么操作，需要你反馈对应的数据来更新UI。这样就完成了从用户交互获得交互反馈到整个业务逻辑。</p>
-<h2 id="先看看结构"><a href="#先看看结构" class="headerlink" title="先看看结构"></a>先看看结构</h2><p>UserViewProtocol 协议定义了一下方法，这些方法其实就是presenter对view层发送的命令</p>
-<pre><code>#import &lt;Foundation/Foundation.h&gt;
-@protocol UserViewProtocol &lt;NSObject&gt;
--(void) userViewDataSource:(NSArray*)data;
--(void) showIndicator;
--(void) hideIndicator;
--(void) showEmptyView;
-@end
-</code></pre><p>UserService 类是用来请求数据给presenter的，也能算是model层吧。我就只定义了一个方法。</p>
-<pre><code>-(void)getUserInfosSuccess:(SuccessHandler )success andFail:(FailHandler) failure
-</code></pre><p>这一层，其实也可以很复杂，这就涉及网络层的架构了</p>
-<p>ViewController类则是UI层，它实现了tableview自己的协议，还实现了用户交互的协议 UserViewProtocol，也就说，presenter向UI层发送命令，其实是发给UI层的viewController，实际上是控制器来被动的更新UI。这个不管是MVC还是MVP，view的实际控制权应该都是viewController，这个理解应该没错吧。<br>协议中的几个方法实现如下。</p>
-<pre><code>-(void)userViewDataSource:(NSArray*)data{
- self.friendlyUIData = data;
- [self.tableview reloadData];
-}
--(void) showIndicator{
- self.indicator.hidden = NO;
-}
--(void) hideIndicator{
- self.indicator.hidden = YES;
-}
--(void) showEmptyView{
- UIAlertController *alertView = [UIAlertController alertControllerWithTitle:@&quot;Alert&quot; message:@&quot;show empty view&quot; preferredStyle:UIAlertControllerStyleAlert];
- [alertView addAction:[UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:nil]];
- [self presentViewController:alertView animated:YES completion:^{
- }];
-}
-</code></pre><p>另外，在viewDidload中，调用了presenter的两个public 方法</p>
-<pre><code>self.presenter = [Presenter new];
-[self.presenter attachView:self];
-[self.presenter fetchData];
-</code></pre><p>那就来看看Presenter类，这个类我在demo中加了不少的注释，主要是为了理清自己的思路</p>
-<p>先说attachView 方法，这个方法是对外公开的，目的就是为了将实现了UserViewProtocol 协议的对象（其实应该就是控制器，因为view的直接操作者就是view Controller）绑定到presenter 上，说白了就是presenter 可以直接拿到实现了UserViewProtocol 协议的对象，并且向他发送命令（协议实现的方法，前面有说到），具体该方法的实现</p>
-<pre><code>@interface Presenter()
-@property (nonatomic,strong) UserService *userService;
-@property (nonatomic,weak) id&lt;UserViewProtocol&gt; attachView;
-@end
--(void)attachView:(id &lt;UserViewProtocol&gt;)view{
- self.attachView = view;
- self.userService  = [UserService new];
-}
-</code></pre><p>注意这里用了weak 来修饰attachView 树形，因为presenter和 viewController相互持有，所以必须要通过weak 来打破循环引用，这跟我们平时使用委托协议（ delegate）是一样的，只是名字换成了attachView 而已。</p>
-<p>再来说fetchData方法，公开这个方法，只是为了数据请求有个统一的接口，而不需要presenter分开多次调用，presenter自己处理所有事情，不让viewController参和进来。具体实现就看demo</p>
-<p>最后说一下</p>
-<pre><code>-(NSArray *)processOriginDataToUIFriendlyData:(NSArray *) originData{
- NSMutableArray *friendlyUIData = [NSMutableArray new];
- for (NSDictionary *dic in originData) {
-  if ([[dic valueForKey:@&quot;gender&quot;] isEqualToString:@&quot;males&quot;]) {
-   [friendlyUIData addObject:dic];
-  }
- }
- return friendlyUIData;
-}
-</code></pre><p>这个私有方法是将原始数据转换成UI所需要的数据，这样UI拿到数据就可以直接使用，而不用做各种判断，逻辑依然放在了presenter中。而且，这个数据处理可以做成协议，输出不同UI需要的数据，这个也可以看casatwy大神 关于view架构的文章。</p>
-<p><a href="https://github.com/HecvStyle/MVPDemo" target="_blank" rel="noopener">Demo</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/MVP模式的学习/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -2488,10 +2501,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
@@ -2500,15 +2509,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
