@@ -152,6 +152,185 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-关于swift的可选类型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/18/关于swift的可选类型/">关于swift的可选类型</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/18/关于swift的可选类型/" class="archive-article-date">
+  	<time datetime="2018-09-18T15:08:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。</p>
+<h3 id="关于objcet-c和swift中对于nil的处理"><a href="#关于objcet-c和swift中对于nil的处理" class="headerlink" title="关于objcet-c和swift中对于nil的处理"></a>关于objcet-c和swift中对于nil的处理</h3><p>Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNotFound)</p>
+<p>Swift中的nil:表示任意类型的值缺失，是一个确定的值，要么是该类型的一个值要么什么都没有(即为nil)</p>
+<h3 id="一、申明可选常量或变量"><a href="#一、申明可选常量或变量" class="headerlink" title="一、申明可选常量或变量"></a>一、申明可选常量或变量</h3><pre><code>let status: Int? = 1   // 申明可选Int类型的常量,初始值为1 
+var defaultAddress: String? = &quot;江苏南京&quot;   // 申明可选String类型的变量,初始值为&quot;江苏南京&quot;
+var student: Person? // 申明可选Person(自定义的类)的变量，初始值为nil
+</code></pre><p>注意：Int?与Int不相同，Int?表示可选的Int类型，可以赋值为nil，而Int不可以赋值为nil</p>
+<h3 id="二、使用”-”强制解析获取可选类型的值-不建议直接使用"><a href="#二、使用”-”强制解析获取可选类型的值-不建议直接使用" class="headerlink" title="二、使用”!”强制解析获取可选类型的值(不建议直接使用)"></a>二、使用”!”强制解析获取可选类型的值(不建议直接使用)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
+if defaultAddress != nil { // !=或==可以用来判断是否为nil
+    print(&quot;您的地址是\(defaultAddress!)&quot;) // 使用!强制解析
+} else {
+    print(&quot;对不起，您不存在地址信息&quot;)
+}
+
+var student: Person?
+print(&quot;学生为\(student!)&quot;) // XCode会提示运行错误，因为student初始值为nil，强制解析不行
+</code></pre><h3 id="三、使用可选绑定获取可选类型的值-建议的用法"><a href="#三、使用可选绑定获取可选类型的值-建议的用法" class="headerlink" title="三、使用可选绑定获取可选类型的值(建议的用法)"></a>三、使用可选绑定获取可选类型的值(建议的用法)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
+if let address = defaultAddress { // 如果defaultAddress有值或类型转换成功，则将值赋值给address直接使用
+    print(&quot;您的地址是\(address)&quot;)  // 使用address代替defaultAddress，且不需要加!强制解析
+} else {
+    print(&quot;对不起，您不存在地址信息&quot;)
+}
+</code></pre><h3 id="四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><a href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil" class="headerlink" title="四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)"></a>四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</h3><pre><code>var mobileNumber: Int64! = 13912345678 // 第一次申明有初始值
+print(&quot;您的电话号码是\(mobileNumber)&quot;) // 不需要使用!强制解析
+// 打印内容:**您的电话号码是****Optional(13912345678)**
+// 还是不建议直接强制解析，因为实际项目中可能中间已经对该值做了改变，若为nil则会运行错误导致APP崩溃
+if let number = mobileNumber { // 建议的做法
+    print(&quot;您的电话号码是\(number)&quot;)
+// 打印内容:**您的电话号码是****13912345678**
+} else {
+    print(&quot;您没有记录电话号码&quot;)
+}
+</code></pre><h3 id="空合运算符-用于判断变量或常量是否为nil"><a href="#空合运算符-用于判断变量或常量是否为nil" class="headerlink" title="空合运算符(用于判断变量或常量是否为nil)"></a>空合运算符(用于判断变量或常量是否为nil)</h3><pre><code>// 空合运算符：a ?? b 判断a是否为nil，若a不为nil对a解封，否则返回b的值
+var status: Int? // 申明可选Int类型的变量status，初始值为nil
+status ?? 0 // 因为status为nil，则返回0
+// ?? 即为以下if else的缩写
+func testOption() -&gt; Int {
+    let status: Int? = 1
+    if status == nil {
+        return 0
+    } else {
+        return status!
+    }
+}
+</code></pre><h3 id="六、函数-方法返回类型为可选类型"><a href="#六、函数-方法返回类型为可选类型" class="headerlink" title="六、函数/方法返回类型为可选类型"></a>六、函数/方法返回类型为可选类型</h3><h4 id="A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等"><a href="#A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等" class="headerlink" title="A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)"></a>A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)</h4><pre><code>func returnPossibleValue(value: Bool) -&gt; String? { // 返回类型为可选String类型
+    if value {
+        return &quot;返回类型是可选类型值&quot; // 如果为真，返回Int类型的值1
+    } else {
+        return nil // 如果为假，返回nil
+    }
+}
+
+let possibleValue = returnPossibleValue(value: true) // 要用可选绑定判断再使用，因为possibleValue为String？可选类型
+if let value = possibleValue {
+    print(value)
+} else {
+    print(&quot;none value&quot;)
+}
+</code></pre><h4 id="B-返回值为可选类型的类-如URL-、自定义Person-等"><a href="#B-返回值为可选类型的类-如URL-、自定义Person-等" class="headerlink" title="B:返回值为可选类型的类(如URL?、自定义Person?等)"></a>B:返回值为可选类型的类(如URL?、自定义Person?等)</h4><pre><code>class SomeClass {
+    var someValue: Int
+    init?(someValue: Int) { // 可失败构造器
+        if someValue == 1 { return nil }
+        self.someValue = someValue
+    }
+}
+
+func returnPossibleClass(value: Bool) -&gt; SomeClass? { // 返回的类实例可能为nil
+    if value {
+        return SomeClass(someValue: 1) // 返回的为nil
+    } else {
+        return SomeClass(someValue: 2) // 返回的SomeClass?实例，不为nil
+    }
+}
+</code></pre><h4 id="C-返回值为可选类型的闭包-如-gt-void"><a href="#C-返回值为可选类型的闭包-如-gt-void" class="headerlink" title="C:返回值为可选类型的闭包(如(()-&gt; (void))? )"></a>C:返回值为可选类型的闭包(如(()-&gt; (void))? )</h4><pre><code>func returnOptionalFunc(value: Bool) -&gt; (() -&gt; (Void))? { // 返回类型为可选类型的闭包
+    if value {
+        return { () in
+            print(&quot;返回类型是可选类型闭包&quot;)
+        }
+    } else {
+        return nil
+    }
+}
+
+let possibleFunc = returnOptionalFunc(value: true) // 要用可选绑定判断再使用，因为possibleFunc 为可选类型的闭包，类型为() -&gt; (Void)
+if let aFunc = possibleFunc {
+    print(aFunc())  // 注意增加()调用闭包，因为没有参数则是空括号
+} else {
+    print(&quot;none func&quot;)
+}
+</code></pre><h3 id="七、可选类型在类或结构体中的运用"><a href="#七、可选类型在类或结构体中的运用" class="headerlink" title="七、可选类型在类或结构体中的运用"></a>七、可选类型在类或结构体中的运用</h3><h4 id="A-可选类型在类中的运用"><a href="#A-可选类型在类中的运用" class="headerlink" title="A:可选类型在类中的运用"></a>A:可选类型在类中的运用</h4><pre><code>class PossibleClass {
+    var someValue: Int
+    var possibleValue: String? // 可选存储属性，默认值为nil
+    init(someValue: Int) { // 构造方法中可以不对possibleValue属性初始化
+        self.someValue = someValue
+    }
+}
+
+let someClass = PossibleClass(someValue: 4) // 实例化对象时不需要对possibleValue初始化，someClass实例中：someValue为4，possibleValue为nil
+</code></pre><p>注意：类中所有属性都需要有默认值。属性可以在申明时赋予初始值，也可以在构造方法中赋予初始值；子类继承父类时，必须先给自身属性先初始化后再继承父类构造方法初始化。一般的，出于安全的因素，子类的属性都赋予初始值或直接定义为可选类型。</p>
+<h4 id="B-可选类型在结构体中的运用"><a href="#B-可选类型在结构体中的运用" class="headerlink" title="B:可选类型在结构体中的运用"></a>B:可选类型在结构体中的运用</h4><pre><code>struct PossibleStruct {
+    var someValue: Int
+    var possibleValue: String? // 可选存储属性，默认值为nil
+    // 结构体中可以自定义一个init构造器对属性初始化，也可以不自定义
+}
+
+let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/18/关于swift的可选类型/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS关于nsstring的copy和strong" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1019,124 +1198,6 @@ dispatch_release(semaphore);
 
 
   
-    <article id="post-iOS程序启动内部过程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/iOS程序启动内部过程/">iOS程序启动内部过程</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/12/iOS程序启动内部过程/" class="archive-article-date">
-  	<time datetime="2018-09-12T14:43:06.341Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>之前面试遇到过这种问题，总结记录一下</p>
-<p>1.用户点击应用程序图标；</p>
-<p>2.程序执行main()函数；</p>
-<p>3.main函数中直接返回的是UIApplicationMain，所以接下来执行UIApplicationMain；</p>
-<p>4.根据UIApplicationMain中的第三、第四个参数分别设置UIApplication对象及其代理；第三个参数是UIApplication的类名或者子类名，如果为nil则默认是UIApplication，第四个参数代表代理的类名，该代理负责处理应用程序状态切换过程中所产生的事件；</p>
-<p>5.开启循环监听系统事件（Event Loop）；</p>
-<p>6.此处分有storyboard和没有storyboard两种情况，</p>
-<p>(1)有stroyboard</p>
-<blockquote>
-<p>应用程创建一个UIWindow对象(继承自UIView),并设置为AppDelegate的window属性。</p>
-</blockquote>
-<blockquote>
-<p>加载Info.plist文件，读取最主要storyboard文件的名称。</p>
-</blockquote>
-<blockquote>
-<p>加载最主要的storyboard文件，创建白色箭头所指的控制器对象。并且设置控制器为UIWindow的rootViewController属性(根控制器)。</p>
-</blockquote>
-<blockquote>
-<p>展示UIWindow,展示之前会将添加rootViewController的view到UIWindow上面(在这一步才会创建控制器的view),其内部会执行该行代码:[window addSubview: window.rootViewControler.view];</p>
-</blockquote>
-<p>(2)没有stroyboard</p>
-<blockquote>
-<p>首先会调用delegate对象的application:didFinishLaunchingWithOptions:方法。</p>
-</blockquote>
-<blockquote>
-<p>在application:didFinishLaunchingWithOptions:方法中需要主动创建 UIWindow对象。并设置为AppDelegate的window属性。</p>
-</blockquote>
-<blockquote>
-<p>主动创建一个 UIViewController对象，并赋值给window的rootViewController属性。</p>
-</blockquote>
-<blockquote>
-<p>调用 window的makeKeyAndVisible方法显示窗口。</p>
-</blockquote>
-<pre><code>//创建窗口对象
-    self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
-
-    //创建主控制器对象（控制器的View是延时加载的，等到用到的时候再用loadView方法加载）
-    self.HITViewController = [[UIViewController alloc]initWithNibName:@&quot;HITViewController&quot; bundle:nil];
-
-    //设置窗口的根控制器为该主控制器
-    self.window.rootViewController = self.HITViewController;
-
-    //让窗口成为主窗口并可见
-    [self.window makeKeyAndVisible];
-</code></pre><p>程序加载的顺序是先在程序中找storyboard，若果没有找到则找相应的xib，若是都没找到并且代理中没有手动添加代码，则默认用代码创建一个黑色的界面；</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/iOS程序启动内部过程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/12/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/page/14/">14</a><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/14/">Next &raquo;</a>
@@ -1238,11 +1299,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1270,7 +1331,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1278,7 +1339,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1286,11 +1347,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">

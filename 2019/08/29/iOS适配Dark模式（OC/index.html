@@ -6,20 +6,28 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>关于UUID和UDID的区别 | Blog</title>
+  <title>iOS适配Dark模式（OC） | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="1 UDID（Unique Device Identifier）UDID是Unique Device Identifier的缩写,中文意思是设备唯一标识. 在很多需要限制一台设备一个账号的应用中经常会用到,在Symbian时代,我们是使用IMEI作为设备的唯一标识的,可惜的是Apple官方不允许开发者获得设备的IMEI. iOS5 sdk中的获取方法: [UIDevice currentDevic">
+  <meta name="description" content="写在前面iOS 13终于引来了暗黑模式。 每当新特性的到来，iOS开发者们既紧张又有点小兴奋，怀揣着被虐的心态，让我们来看看暗黑模式到底是个啥。 虽然这是一个设计驱动的需求，但是本着一颗虔诚(暴躁)的心，我们还是要一步步来，“工欲善其事、必先利其器”，搞清楚应该怎么做。 下载 Xcode11，跑起来你的项目。模拟器启动后，在“设置”-“开发者”中打开“Dark Appearance”后，你的项目就">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于UUID和UDID的区别">
-<meta property="og:url" content="http://yoursite.com/2019/02/18/关于UUID和UDID的区别/index.html">
+<meta property="og:title" content="iOS适配Dark模式（OC）">
+<meta property="og:url" content="http://yoursite.com/2019/08/29/iOS适配Dark模式（OC/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="1 UDID（Unique Device Identifier）UDID是Unique Device Identifier的缩写,中文意思是设备唯一标识. 在很多需要限制一台设备一个账号的应用中经常会用到,在Symbian时代,我们是使用IMEI作为设备的唯一标识的,可惜的是Apple官方不允许开发者获得设备的IMEI. iOS5 sdk中的获取方法: [UIDevice currentDevic">
+<meta property="og:description" content="写在前面iOS 13终于引来了暗黑模式。 每当新特性的到来，iOS开发者们既紧张又有点小兴奋，怀揣着被虐的心态，让我们来看看暗黑模式到底是个啥。 虽然这是一个设计驱动的需求，但是本着一颗虔诚(暴躁)的心，我们还是要一步步来，“工欲善其事、必先利其器”，搞清楚应该怎么做。 下载 Xcode11，跑起来你的项目。模拟器启动后，在“设置”-“开发者”中打开“Dark Appearance”后，你的项目就">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-02-18T07:42:51.022Z">
+<meta property="og:image" content="http://img.wangjungang.cn/Lpkxxs.png">
+<meta property="og:image" content="http://img.wangjungang.cn/JQQHYK.png">
+<meta property="og:image" content="http://img.wangjungang.cn/sXRNaH.png">
+<meta property="og:image" content="http://img.wangjungang.cn/Q2JXtr.png">
+<meta property="og:image" content="http://img.wangjungang.cn/dgaWfi.png">
+<meta property="og:image" content="http://img.wangjungang.cn/BXxZgC.png">
+<meta property="og:image" content="http://img.wangjungang.cn/SUAYYg.png">
+<meta property="og:updated_time" content="2019-08-29T06:22:34.218Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于UUID和UDID的区别">
-<meta name="twitter:description" content="1 UDID（Unique Device Identifier）UDID是Unique Device Identifier的缩写,中文意思是设备唯一标识. 在很多需要限制一台设备一个账号的应用中经常会用到,在Symbian时代,我们是使用IMEI作为设备的唯一标识的,可惜的是Apple官方不允许开发者获得设备的IMEI. iOS5 sdk中的获取方法: [UIDevice currentDevic">
+<meta name="twitter:title" content="iOS适配Dark模式（OC）">
+<meta name="twitter:description" content="写在前面iOS 13终于引来了暗黑模式。 每当新特性的到来，iOS开发者们既紧张又有点小兴奋，怀揣着被虐的心态，让我们来看看暗黑模式到底是个啥。 虽然这是一个设计驱动的需求，但是本着一颗虔诚(暴躁)的心，我们还是要一步步来，“工欲善其事、必先利其器”，搞清楚应该怎么做。 下载 Xcode11，跑起来你的项目。模拟器启动后，在“设置”-“开发者”中打开“Dark Appearance”后，你的项目就">
+<meta name="twitter:image" content="http://img.wangjungang.cn/Lpkxxs.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,44 +163,205 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-关于UUID和UDID的区别" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-iOS适配Dark模式（OC" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      关于UUID和UDID的区别
+      iOS适配Dark模式（OC）
     </h1>
   
 
         
-        <a href="/2019/02/18/关于UUID和UDID的区别/" class="archive-article-date">
-  	<time datetime="2019-02-18T07:34:08.159Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
+        <a href="/2019/08/29/iOS适配Dark模式（OC/" class="archive-article-date">
+  	<time datetime="2019-08-29T04:25:47.552Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="1-UDID（Unique-Device-Identifier）"><a href="#1-UDID（Unique-Device-Identifier）" class="headerlink" title="1 UDID（Unique Device Identifier）"></a>1 UDID（Unique Device Identifier）</h2><p>UDID是Unique Device Identifier的缩写,中文意思是设备唯一标识.</p>
-<p>在很多需要限制一台设备一个账号的应用中经常会用到,在Symbian时代,我们是使用IMEI作为设备的唯一标识的,可惜的是Apple官方不允许开发者获得设备的IMEI.</p>
-<p>iOS5 sdk中的获取方法:</p>
-<pre><code>[UIDevice currentDevice] uniqueIdentifier]
-</code></pre><p>uniqueIdentifier在UIDevice.h中的定义如下:@property(nonatomic,readonly,retain) NSString    *uniqueIdentifier  <strong>OSX_AVAILABLE_BUT_DEPRECATED(</strong>MAC意思是iOS2.0以上及iOS5.0以下的系统可用,但不建议使用.Apple有可能在iOS5.0之后删除该函数.</p>
-<p>iOS6之后 换成 </p>
-<pre><code>[[UIDevice currentDevice] identifierForVendor]；
-</code></pre><p>但是我们需要注意的一点是,对于已越狱了的设备,UDID并不是唯一的.使用Cydia插件UDIDFaker,可以为每一个应用分配不同的UDID.</p>
-<p>所以UDID作为标识唯一设备的用途已经不大了</p>
-<h2 id="UUID-Universally-Unique-Identifier"><a href="#UUID-Universally-Unique-Identifier" class="headerlink" title="UUID(Universally Unique Identifier)"></a>UUID(Universally Unique Identifier)</h2><p>UUID是Universally Unique Identifier的缩写,中文意思是通用唯一识别码.</p>
-<p>由网上资料显示,UUID是一个软件建构的标准,也是被开源软件基金会(Open Software Foundation,OSF)的组织在分布式计算环境(Distributed Computing Environment,DCE)领域的一部份.UUID的目的,是让分布式系统中的所有元素,都能有唯一的辨识资讯,而不需要透过中央控制端来做辨识资讯的指定.</p>
-<p>根据以上定义可知,同一设备上的不同应用的UUID是互斥的,即能在改设备上标识应用.但是并没有明确指出能标识出装有同一应用的不同设备,但是根据我推测,这个UUID应该是根据设备标识和应用标识生成唯一标识,再经过加密而来的(纯推测).</p>
-<p>UUID（Universally UniqueIDentifier）</p>
-<p>是基于iOS设备上面某个单个的应用程序，只要用户没有完全删除应用程序，则这个UUID在用户使用该应用程序的时候一直保持不变。如果用户删除了这个应用程序，然后再重新安装，那么这个UUID已经发生了改变。通过调用[[UIDevice currentDevice]identifierForVendor];方法可以获取UUID。UUID不好的地方就是用户删除了你开发的程序以后，基本上你就不可能获取之前的数据了。</p>
-<p>UDID（Unique Device</p>
-<p>Identifier）是一串由40位16进制数组成的字符串，用以标识唯一的设备，现在想通过代码获取是不可能的了，如果你想看看你设备的UDID，可以通过iTunes来查看。苹果从iOS5开始就移除了通过代码访问UDID的权限，所以码农啊，想知道用户设备的UDID，是不行的喽。</p>
-<p>那么有没有另外的办法来获取用户设备的唯一标识符呢？答案是有的，当然这样的标识符不是苹果隐藏的UDID了，使用OpenUDID开源代码，这个代码通过一些特殊的算法，创建了每一个设备的唯一标识符，你可以拿过来用来识别设备了。</p>
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS 13终于引来了暗黑模式。</p>
+<p>每当新特性的到来，iOS开发者们既紧张又有点小兴奋，怀揣着被虐的心态，让我们来看看暗黑模式到底是个啥。</p>
+<p>虽然这是一个设计驱动的需求，但是本着一颗虔诚(暴躁)的心，我们还是要一步步来，“工欲善其事、必先利其器”，搞清楚应该怎么做。</p>
+<p>下载 Xcode11，跑起来你的项目。模拟器启动后，在“设置”-“开发者”中打开“Dark Appearance”后，你的项目就自动运行在暗黑模式了。</p>
+<p>有些界面会很奇怪，这很正常，可以从一个界面入手，一步步优化它。</p>
+<p>开发者主要从颜色和图片两个方面进行适配，我们不需要关心切换模式时该如何操作，这些都由系统帮我们实现</p>
+<h2 id="颜色适配"><a href="#颜色适配" class="headerlink" title="颜色适配"></a>颜色适配</h2><p>iOS13 之前 UIColor只能表示一种颜色，而从 iOS13 开始UIColor是一个动态的颜色，在Light Mode和Dark Mode可以分别设置不同的颜色。</p>
+<p>iOS13系统提供了一些动态颜色</p>
+<pre><code>@property (class, nonatomic, readonly) UIColor *systemBrownColor        API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *systemIndigoColor       API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *systemGray2Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemGray3Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemGray4Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemGray5Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemGray6Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *labelColor              API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *secondaryLabelColor     API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *tertiaryLabelColor      API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *quaternaryLabelColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *linkColor               API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *placeholderTextColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *separatorColor          API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *opaqueSeparatorColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *systemBackgroundColor                   API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *secondarySystemBackgroundColor          API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *tertiarySystemBackgroundColor           API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemGroupedBackgroundColor            API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *secondarySystemGroupedBackgroundColor   API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *tertiarySystemGroupedBackgroundColor    API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemFillColor                         API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *secondarySystemFillColor                API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *tertiarySystemFillColor                 API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *quaternarySystemFillColor               API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+</code></pre><p>实例</p>
+<p>[self.view setBackgroundColor:[UIColor systemBackgroundColor]];<br>[self.titleLabel setTextColor:[UIColor labelColor]];<br>[self.detailLabel setTextColor:[UIColor placeholderTextColor]];</p>
+<h3 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h3><p><img src="http://img.wangjungang.cn/Lpkxxs.png" alt=""></p>
+<p>用法和iOS13之前的一样，使用系统提供的这些动态颜色，不需要其他的适配操作</p>
+<h3 id="自定义动态UIColor"><a href="#自定义动态UIColor" class="headerlink" title="自定义动态UIColor"></a>自定义动态UIColor</h3><p>在实际开发过程，系统提供的这些颜色还远远不够，因此我们需要创建更多的动态颜色</p>
+<h4 id="初始化动态UIColor方法"><a href="#初始化动态UIColor方法" class="headerlink" title="初始化动态UIColor方法"></a>初始化动态UIColor方法</h4><p>iOS13 UIColor增加了两个初始化方法，使用以下方法可以创建动态UIColor</p>
+<p>注:一个是类方法，一个是实例方法</p>
+<pre><code>+ (UIColor *)colorWithDynamicProvider:(UIColor * (^)(UITraitCollection *))dynamicProvider API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+- (UIColor *)initWithDynamicProvider:(UIColor * (^)(UITraitCollection *))dynamicProvider API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+</code></pre><ul>
+<li>这两个方法要求传一个block进去</li>
+<li>当系统在LightMode和DarkMode之间相互切换时就会触发此回调</li>
+<li>这个block会返回一个UITraitCollection类</li>
+<li><p>我们需要使用其属性userInterfaceStyle，它是一个枚举类型，会告诉我们当前是LightMode还是DarkMode</p>
+<pre><code>typedef NS_ENUM(NSInteger, UIUserInterfaceStyle) {
+    UIUserInterfaceStyleUnspecified,
+    UIUserInterfaceStyleLight,
+    UIUserInterfaceStyleDark,
+} API_AVAILABLE(tvos(10.0)) API_AVAILABLE(ios(12.0)) API_UNAVAILABLE(watchos);
+</code></pre></li>
+</ul>
+<h4 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h4><pre><code>UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
+        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
+            return [UIColor redColor];
+        }
+        else {
+            return [UIColor greenColor];
+        }
+    }];
 
+ [self.bgView setBackgroundColor:dyColor];
+</code></pre><h4 id="效果展示-1"><a href="#效果展示-1" class="headerlink" title="效果展示"></a>效果展示</h4><p><img src="http://img.wangjungang.cn/JQQHYK.png" alt=""></p>
+<h2 id="图片适配"><a href="#图片适配" class="headerlink" title="图片适配"></a>图片适配</h2><ul>
+<li>打开Assets.xcassets</li>
+<li>新建一个Image set</li>
+</ul>
+<p><img src="http://img.wangjungang.cn/sXRNaH.png" alt=""></p>
+<ul>
+<li><p>打开右侧工具栏，点击最后一栏，找到Appearances，选择Any，Dark<br><img src="http://img.wangjungang.cn/Q2JXtr.png" alt=""></p>
+</li>
+<li><p>将两种模式下不同的图片资源都拖进去</p>
+</li>
+</ul>
+<p><img src="http://img.wangjungang.cn/dgaWfi.png" alt=""></p>
+<ul>
+<li><p>使用该图片</p>
+<pre><code>[_logoImage setImage:[UIImage imageNamed:@&quot;icon_logo&quot;]];
+</code></pre></li>
+</ul>
+<p><img src="http://img.wangjungang.cn/BXxZgC.png" alt=""></p>
+<p>大功告成，完成颜色和图片的Dark Mode适配</p>
+<h2 id="获取当前模式-Light-or-Dark"><a href="#获取当前模式-Light-or-Dark" class="headerlink" title="获取当前模式(Light or Dark)"></a>获取当前模式(Light or Dark)</h2><p>有时候我们需要知道当前处于什么模式，并根据不同的模式执行不同的操作</p>
+<p>iOS13中CGColor依然只能表示单一的颜色</p>
+<p>通过调用UITraitCollection.currentTraitCollection.userInterfaceStyle<br>获取当前模式</p>
+<h4 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h4><pre><code>if (UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+      [self.titleLabel setText:@&quot;DarkMode&quot;];
+ }
+  else {
+      [self.titleLabel setText:@&quot;LightMode&quot;];
+  }
+</code></pre><h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="监听模式切换"><a href="#监听模式切换" class="headerlink" title="监听模式切换"></a>监听模式切换</h3><p>有时我们需要监听系统模式的变化，并作出响应</p>
+<p>那么我们就需要在需要监听的viewController中，重写下列函数</p>
+<pre><code>// 注意:参数为变化前的traitCollection
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection;
+
+// 判断两个UITraitCollection对象是否不同
+- (BOOL)hasDifferentColorAppearanceComparedToTraitCollection:(UITraitCollection *)traitCollection;
+</code></pre><h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    // trait发生了改变
+    if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
+    // 执行操作
+    }
+    }
+</code></pre><h3 id="CGColor适配"><a href="#CGColor适配" class="headerlink" title="CGColor适配"></a>CGColor适配</h3><p>我们知道iOS13后，UIColor能够表示动态颜色，但是CGColor依然只能表示一种颜色，那么对于CALayer等对象如何适配暗黑模式呢?当然是利用上一节提到的监听模式切换的方法啦。</p>
+<h4 id="方式一-resolvedColor"><a href="#方式一-resolvedColor" class="headerlink" title="方式一:resolvedColor"></a>方式一:resolvedColor</h4><pre><code>// 通过当前traitCollection得到对应UIColor
+// 将UIColor转换为CGColor
+- (UIColor *)resolvedColorWithTraitCollection:(UITraitCollection *)traitCollection;
+</code></pre><p>示例</p>
+<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+
+    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
+        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
+            return [UIColor redColor];
+        }
+        else {
+            return [UIColor greenColor];
+        }
+    }];
+    UIColor *resolvedColor = [dyColor resolvedColorWithTraitCollection:previousTraitCollection];
+    layer.backgroundColor = resolvedColor.CGColor;
+</code></pre><h4 id="方式二-performAsCurrent"><a href="#方式二-performAsCurrent" class="headerlink" title="方式二:performAsCurrent"></a>方式二:performAsCurrent</h4><pre><code>// 使用当前trainCollection调用此方法
+- (void)performAsCurrentTraitCollection:(void (^)(void))actions;
+</code></pre><p>示例</p>
+<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+
+    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
+        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
+            return [UIColor redColor];
+        }
+        else {
+            return [UIColor greenColor];
+        }
+    }];
+    [self.traitCollection performAsCurrentTraitCollection:^{
+        layer.backgroundColor = dyColor.CGColor;
+    }];
+
+}
+</code></pre><h4 id="最简单的方法"><a href="#最简单的方法" class="headerlink" title="最简单的方法"></a>最简单的方法</h4><p>直接设置为一个动态UIColor的CGColor即可</p>
+<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
+        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
+            return [UIColor redColor];
+        }
+        else {
+            return [UIColor greenColor];
+        }
+    }];
+        layer.backgroundColor = dyColor.CGColor;
+}
+</code></pre><p>!!! 设置layer颜色都是在traitCollectionDidChange中，意味着如果没有发生模式切换，layer将会没有颜色，需要设置一个基本颜色</p>
+<h3 id="模式切换时打印log"><a href="#模式切换时打印log" class="headerlink" title="模式切换时打印log"></a>模式切换时打印log</h3><p>模式切换时自动打印log，就不需要我们一次又一次的执行po命令了</p>
+<p>在Xcode菜单栏Product-&gt;Scheme-&gt;Edit Scheme</p>
+<p>选择Run-&gt;Arguments-&gt;Arguments Passed On Launch</p>
+<p>添加以下命令即可</p>
+<p>-UITraitCollectionChangeLoggingEnabled YES</p>
+<p><img src="http://img.wangjungang.cn/SUAYYg.png" alt=""></p>
+<h2 id="强行设置App模式"><a href="#强行设置App模式" class="headerlink" title="强行设置App模式"></a>强行设置App模式</h2><p>当系统设置为Light Mode时，对某些App的个别页面希望一直显示Dark Mode下的样式，这个时候就需要强行设置当前ViewController的模式了</p>
+<pre><code>// 设置当前view或viewCongtroller的模式
+@property(nonatomic) UIUserInterfaceStyle overrideUserInterfaceStyle;
+</code></pre><h4 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h4><pre><code>// 设置为Dark Mode即可
+[self setOverrideUserInterfaceStyle:UIUserInterfaceStyleDark];
+</code></pre><p>注意!!!</p>
+<p>当我们强行设置当前viewController为Dark Mode后，这个viewController下的view都是Dark Mode</p>
+<p>由这个ViewController present出的ViewController不会受到影响，依然跟随系统的模式<br>要想一键设置App下所有的ViewController都是Dark Mode，请直接在Window上执行<br>overrideUserInterfaceStyle</p>
+<p>对window.rootViewController强行设置Dark Mode也不会影响后续present出的ViewController的模式</p>
+<h2 id="NSAttributedString优化"><a href="#NSAttributedString优化" class="headerlink" title="NSAttributedString优化"></a>NSAttributedString优化</h2><h3 id="不建议的做法"><a href="#不建议的做法" class="headerlink" title="不建议的做法"></a>不建议的做法</h3><pre><code>NSDictionary *dic = @{NSFontAttributeName:[UIFont systemFontOfSize:16]};
+NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富文本文案&quot; attributes:dic];
+</code></pre><h3 id="推荐的做法"><a href="#推荐的做法" class="headerlink" title="推荐的做法"></a>推荐的做法</h3><pre><code>// 添加一个NSForegroundColorAttributeName属性
+NSDictionary *dic = @{NSFontAttributeName:[UIFont systemFontOfSize:16],NSForegroundColorAttributeName:[UIColor labelColor]};
+NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富文本文案&quot; attributes:dic];
+</code></pre>
       
 
       
@@ -282,7 +451,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/18/关于UUID和UDID的区别/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/08/29/iOS适配Dark模式（OC/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -296,18 +465,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          常用的setNeedsDisplay和setNeedsLayout
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/02/15/精确还原UI稿多行文字间距/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">精确还原UI稿多行文字间距</div>
+    <a href="/2019/08/29/iOS适配Dark模式（swift）/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iOS适配Dark模式（swift）</div>
       <i class="icon-circle-right"></i>
     </a>
   
