@@ -152,6 +152,241 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-圆角头像的几种裁剪" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/23/圆角头像的几种裁剪/">圆角头像的几种裁剪</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/23/圆角头像的几种裁剪/" class="archive-article-date">
+  	<time datetime="2019-06-23T13:52:36.054Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>h 我就不写了</p>
+<p>.m</p>
+<pre><code>#import &quot;UIImage+Extension.h&quot;
+
+@implementation UIImage (Extension)
++ (instancetype)sw_icon:(UIImage *)image
+{
+    UIGraphicsBeginImageContext(image.size);
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
+    CGContextAddEllipseInRect(ctx, rect);
+    CGContextClip(ctx);
+    [image drawInRect:rect];
+    UIImage *icon = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return icon;
+}
+@end
+</code></pre><p>以下方法 是我在控制器里写的, 如需写在分类, 需稍加改动</p>
+<pre><code>// CGContext 裁剪
+- (UIImage *)CGContextClip:(UIImage *)img cornerRadius:(CGFloat)c {
+    int w = img.size.width * img.scale;
+    int h = img.size.height * img.scale;
+
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(w, h), false, 1.0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    CGContextMoveToPoint(context, 0, c);
+    CGContextAddArcToPoint(context, 0, 0, c, 0, c);
+    CGContextAddLineToPoint(context, w-c, 0);
+    CGContextAddArcToPoint(context, w, 0, w, c, c);
+    CGContextAddLineToPoint(context, w, h-c);
+    CGContextAddArcToPoint(context, w, h, w-c, h, c);
+    CGContextAddLineToPoint(context, c, h);
+    CGContextAddArcToPoint(context, 0, h, 0, h-c, c);
+    CGContextAddLineToPoint(context, 0, c);
+    CGContextClosePath(context);
+
+    CGContextClip(context);     // 先裁剪 context，再画图，就会在裁剪后的 path 中画
+    [img drawInRect:CGRectMake(0, 0, w, h)];       // 画图
+    CGContextDrawPath(context, kCGPathFill);
+
+    UIImage *ret = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    return ret;
+}
+</code></pre><p>方法二</p>
+<pre><code>// UIBezierPath 裁剪
+- (UIImage *)UIBezierPathClip:(UIImage *)img cornerRadius:(CGFloat)c {
+    int w = img.size.width * img.scale;
+    int h = img.size.height * img.scale;
+    CGRect rect = CGRectMake(0, 0, w, h);
+
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(w, h), false, 1.0);
+    [[UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:c] addClip];
+    [img drawInRect:rect];
+    UIImage *ret = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+
+    return ret;
+}
+</code></pre><p>方法三</p>
+<pre><code>// 自定义裁剪算法
+- (UIImage *)dealImage:(UIImage *)img cornerRadius:(CGFloat)c {
+    // 1.CGDataProviderRef 把 CGImage 转 二进制流
+    CGDataProviderRef provider = CGImageGetDataProvider(img.CGImage);
+    void *imgData = (void *)CFDataGetBytePtr(CGDataProviderCopyData(provider));
+    int width = img.size.width * img.scale;
+    int height = img.size.height * img.scale;
+
+    // 2.处理 imgData
+//    dealImage(imgData, width, height);
+    cornerImage(imgData, width, height, c);
+
+    // 3.CGDataProviderRef 把 二进制流 转 CGImage
+    CGDataProviderRef pv = CGDataProviderCreateWithData(NULL, imgData, width * height * 4, releaseData);
+    CGImageRef content = CGImageCreate(width , height, 8, 32, 4 * width, CGColorSpaceCreateDeviceRGB(), kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast, pv, NULL, true, kCGRenderingIntentDefault);
+    UIImage *result = [UIImage imageWithCGImage:content];
+    CGDataProviderRelease(pv);      // 释放空间
+    CGImageRelease(content);
+
+    return result;
+}
+
+void releaseData(void *info, const void *data, size_t size) {
+    free((void *)data);
+}
+
+// 在 img 上处理图片, 测试用
+void dealImage(UInt32 *img, int w, int h) {
+    int num = w * h;
+    UInt32 *cur = img;
+    for (int i=0; i&lt;num; i++, cur++) {
+        UInt8 *p = (UInt8 *)cur;
+        // RGBA 排列
+        // f(x) = 255 - g(x) 求负片
+        p[0] = 255 - p[0];
+        p[1] = 255 - p[1];
+        p[2] = 255 - p[2];
+        p[3] = 255;
+    }
+}
+
+// 裁剪圆角
+void cornerImage(UInt32 *const img, int w, int h, CGFloat cornerRadius) {
+    CGFloat c = cornerRadius;
+    CGFloat min = w &gt; h ? h : w;
+
+    if (c &lt; 0) { c = 0; }
+    if (c &gt; min * 0.5) { c = min * 0.5; }
+
+    // 左上 y:[0, c), x:[x, c-y)
+    for (int y=0; y&lt;c; y++) {
+        for (int x=0; x&lt;c-y; x++) {
+            UInt32 *p = img + y * w + x;    // p 32位指针，RGBA排列，各8位
+            if (isCircle(c, c, c, x, y) == false) {
+                *p = 0;
+            }
+        }
+    }
+    // 右上 y:[0, c), x:[w-c+y, w)
+    int tmp = w-c;
+    for (int y=0; y&lt;c; y++) {
+        for (int x=tmp+y; x&lt;w; x++) {
+            UInt32 *p = img + y * w + x;
+            if (isCircle(w-c, c, c, x, y) == false) {
+                *p = 0;
+            }
+        }
+    }
+    // 左下 y:[h-c, h), x:[0, y-h+c)
+    tmp = h-c;
+    for (int y=h-c; y&lt;h; y++) {
+        for (int x=0; x&lt;y-tmp; x++) {
+            UInt32 *p = img + y * w + x;
+            if (isCircle(c, h-c, c, x, y) == false) {
+                *p = 0;
+            }
+        }
+    }
+    // 右下 y~[h-c, h), x~[w-c+h-y, w)
+    tmp = w-c+h;
+    for (int y=h-c; y&lt;h; y++) {
+        for (int x=tmp-y; x&lt;w; x++) {
+            UInt32 *p = img + y * w + x;
+            if (isCircle(w-c, h-c, c, x, y) == false) {
+                *p = 0;
+            }
+        }
+    }
+}
+
+// 判断点 (px, py) 在不在圆心 (cx, cy) 半径 r 的圆内
+static inline bool isCircle(float cx, float cy, float r, float px, float py) {
+    if ((px-cx) * (px-cx) + (py-cy) * (py-cy) &gt; r * r) {
+        return false;
+    }
+    return true;
+}
+</code></pre><p>自定义裁剪 裁剪10000张图片 用时平均 11.3</p>
+<p>GContext裁剪 裁剪10000张图片 用时平均 12.7</p>
+<p>贝塞尔裁剪 裁剪10000张图片 用时平均 13.0</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/23/圆角头像的几种裁剪/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-使用贝塞尔曲线绘制水波纹" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1522,196 +1757,6 @@ wifeModel.name = nil;
 
 
   
-    <article id="post-用Swift写一个通知中心" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/16/用Swift写一个通知中心/">用Swift写一个通知中心</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/16/用Swift写一个通知中心/" class="archive-article-date">
-  	<time datetime="2019-06-15T17:02:55.879Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>NotificationCenter - 一个非常古老传统，但是我们还经常遇到的东西。古老体现在它的API和用法上，在Swift这样的高级语言看来，是比较让人抓狂的。</p>
-<p>当你想要进行全局的监听与传值，你很大可能会选择用一个通知中心。<br>比如你需要在首页监听一个从个人中心传来的String和Int值。接下来你便开始写下了这样的代码：</p>
-<pre><code>func addObserve() {
-    NotificationCenter.default.addObserver(self, selector: #selector(receiveNotification(noti:)), name: NSNotification.Name(rawValue: oneNotificationName), object: nil)
-}
-
-@objc func receiveNotification(noti: Notification) {
-    guard let info = noti.userInfo as? [String: Any] else { return }
-    let strValue = info[&quot;name&quot;] as? String
-    let intValue = info[&quot;age&quot;] as? Int
-}
-</code></pre><p>看看仅仅是注册的函数长度和可读性吧😰 好不容易写完了.<br>为位了拿到我想要的String和Int还要去解析一个Dictionary..<br>Wait..它们的key值是不是name和age啊，这需要去发送端看一看😓</p>
-<pre><code>/// 发送端
-func postNotification() {
-    NotificationCenter.default.post(name: NSNotification.Name(rawValue: oneNotificationName), object: nil, userInfo: [&quot;name&quot;: &quot;jack&quot;, &quot;age&quot;: 5])
-}
-</code></pre><p>长长的难以找到重点的函数，并且传一个字典需要指定不安全的字符串key值。<br>将key值也声明为常量在一个文件管理是个注意，不过那又增加了一个通知的维护成本和时间成本。</p>
-<p>如果你要想要及时的移除通知，你还需要这样：</p>
-<pre><code>deinit {
-    NotificationCenter.default.removeObserver(self)
-}
-</code></pre><h2 id="SwiftyNotification"><a href="#SwiftyNotification" class="headerlink" title="SwiftyNotification"></a>SwiftyNotification</h2><p>我的思路是完全抛弃系统的API，自己去实现一套通知机制，其实就是先将一段代码块存起来，延迟执行，再加上如何识别对应的代码块，就是一个简易的通知中心了。</p>
-<p>既然是在原先的基础上改进，解决掉注册和执行时不明确具体类型这个痛点我觉得是有必要的。为每一个通知指定类型，但又不能每一个通知写一个函数丢掉复用性，利用泛型就可以做到这一点。</p>
-<p>注册通知，发生通知的函数是要公用的，所以我选择用协议来进行抽象。</p>
-<pre><code>/// 每个通知要遵循的协议
-public protocol INewNotifioncation {
-    associatedtype InfoType
-    static var name: String { get }
-}
-</code></pre><p>公共的抽出来，需要各个通知所提供的就是传值的类型和用来识别哪一个通知所用的name.</p>
-<p>接下来定义一个通知来遵循这个协议.</p>
-<pre><code>/// 用来管理所有通知的类
-class NewNotifications {
-
-    /// 某一个通知,遵循协议后,指定类型和name
-    struct MarketChangeNoti: INewNotifioncation {
-        typealias InfoType = (name: String, age: Int)
-        static var name: String = &quot;marketChangeNoti&quot;
-    }
-}
-</code></pre><p>写一个通知写这些看起来代码有些多，但是随着通知的增多，这样更方便管理查阅。重点是为了使用起来更简单。</p>
-<h3 id="注册通知："><a href="#注册通知：" class="headerlink" title="注册通知："></a>注册通知：</h3><pre><code> NewNotifications.MarketChangeNoti.addObserve(.always) { (result) in
-
-    print(result.name, result.age) 
-}
-</code></pre><p>函数已经简洁了很多，并且我们在函数末尾直接跟上回调，result的类型就是在刚才声明通知时候指定的类型，直接就可以拿到String类型的name和Int类型的age了。</p>
-<p>.always代表这个通知一直不会销毁，传入一个dispose变量注册会跟随者dispose的销毁而取消订阅。</p>
-<h3 id="发送通知"><a href="#发送通知" class="headerlink" title="发送通知:"></a>发送通知:</h3><pre><code>NewNotifications.MarketChangeNoti.post((&quot;zzf&quot;, 18))
-</code></pre><p>编译器会根据你调用哪一个通知对应的在post后面的参数指定具体的类型，这样我们忘了这个通知要传什么值，编译器也会提醒我们，也不需要传入一个字典了。而且可读性明显更加好了。</p>
-<h3 id="核心代码"><a href="#核心代码" class="headerlink" title="核心代码"></a>核心代码</h3><p>首先需要一个数组，里面装着每一个注册通知对应的事件闭包，当发送一个通知的时候，可能有多个注册的地方，所以会触发多个闭包。如果是同一个地点的重复注册，下一次的要覆盖上一次的。</p>
-<p>所以我创建了这样几个类。</p>
-<pre><code>class NewNotiHandler {
-    /// 用来识别哪一个对象注册的
-    weak var notiDispose: NewNotiDispose?
-    /// 事件闭包
-    var handler: NotiHandler
-
-    init(dispose: NewNotiDispose,
-         handler: @escaping NotiHandler) {
-        self.notiDispose = dispose
-        self.handler = handler
-    }
-}
-
-/// 某一个通知，存储着一个名称与对应所有注册它的闭包
-class NewNotification {
-
-    var name: String
-    var handlers: [NewNotiHandler]
-
-    init(name: String, handlers: [NewNotiHandler]) {
-        self.name = name
-        self.handlers = handlers
-    }
-}
-
-class NewNotificationCenter {
-/// 所有的通知
-static var newNotis = [NewNotification]()
-
-/// 注册一个通知
-static func addObserve(dispose: NewNotiDispose,
-                       name: String,
-                       handler: @escaping NotiHandler) {
-
-    if let noti = newNotis.first(where: { $0.name == name }) {
-        if let exitNoti = noti.handlers.first(where: { $0.notiDispose == dispose }) {
-            exitNoti.handler = handler
-        } else {
-            noti.handlers.append(NewNotiHandler(dispose: dispose, handler: handler))
-        }
-    }
-
-    let newNoti = NewNotification(name: name, handlers: [NewNotiHandler(dispose: dispose, handler: handler)])
-    newNotis.append(newNoti)
-}
-
-static func postNotification(name: String,
-                             info: AnyObject) {
-    guard let theNoti = newNotis.first(where: { $0.name == name }) else { return }
-    theNoti.handlers.forEach { $0.handler(info) }
-}
-}    
-</code></pre><p>最终通过协议扩展，给诸多声明的通知添加方法。</p>
-<pre><code>extension INewNotifioncation {
-    static func addObserve(_ dispose: NewNotiDispose, response: @escaping (InfoType) -&gt; ()) {
-        NewNotificationCenter.addObserve(dispose: dispose, name: Self.name) { (object) in
-            guard let info = object as? InfoType else { return }
-            response(info)
-        }
-    }
-
-    static func post(_ info: InfoType) {
-        NewNotificationCenter.postNotification(name: Self.name, info: info as AnyObject)
-    }
-}
-</code></pre><p>通过Swift强大的协议进行抽象，再配合泛型来确定函数中的具体类型来达到最终目的。 简洁快捷易维护。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/16/用Swift写一个通知中心/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1813,6 +1858,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
@@ -1833,19 +1882,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1861,11 +1910,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
