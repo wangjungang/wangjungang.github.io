@@ -152,6 +152,147 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-多个网络请求的处理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/08/27/多个网络请求的处理/">多个网络请求的处理</a>
+    </h1>
+  
+
+        
+        <a href="/2019/08/27/多个网络请求的处理/" class="archive-article-date">
+  	<time datetime="2019-08-27T08:31:20.113Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-dispatch-semaphore-信号量"><a href="#1-dispatch-semaphore-信号量" class="headerlink" title="1. dispatch_semaphore 信号量"></a>1. dispatch_semaphore 信号量</h2><p>信号量是一个整型值并且具有初始计数值，信号量通常支持两个操作：通知和等待。当信号被通知的时候计数值会增加，当信号量在线程上等待的时候，必要的情况下线程会被阻塞掉，直至信号被通知时计数值大于0，然后线程会减少这个计数继续工作。</p>
+<p>GCD中又3个信号量有关的操作：</p>
+<pre><code>dispatch_semaphore_create 信号量创建
+
+dispatch_semaphore_signal 发送通知
+
+dispatch_semaphore_wait 信号量等待
+
+dispatch_semaphore_create创建一个信号量
+</code></pre><ul>
+<li>dispatch_semaphore_create创建一个信号量</li>
+</ul>
+<p>传入的参数为long，输出一个dispatch_semaphore_t类型且值为value的信号量。<br>值得注意的是，这里的传入的参数value必须大于或等于0，否则dispatch_semaphore_create会返回NULL</p>
+<ul>
+<li>dispatch_semaphore_signal等待一个信号</li>
+</ul>
+<p>这个函数会使传入的信号量dsema的值加1。<br>返回值为long类型，当返回值为0时表示当前并没有线程等待其处理的信号量，其处理的信号量的值加1即可。<br>当返回值不为0时，表示其当前有（一个或多个）线程等待其处理的信号量，并且该函数唤醒了一个等待的线程（当线程有优先级时，唤醒优先级最高的线程；否则随机唤醒）。</p>
+<ul>
+<li>dispatch_semaphore_wait 等待一个信号</li>
+</ul>
+<p>这个函数会使传入的信号量dsema的值减1；<br>如果dsema信号量的值大于0，该函数所处线程就继续执行下面的语句，并且将信号量的值减1；<br>如果desema的值为0，那么这个函数就阻塞当前线程等待timeout（注意timeout的类型为dispatch_time_t，<br>不能直接传入整形或float型数），如果等待的期间desema的值被dispatch_semaphore_signal函数加1了，<br>且该函数（即dispatch_semaphore_wait）所处线程获得了信号量，那么就继续向下执行并将信号量减1。<br>如果等待期间没有获取到信号量或者信号量的值一直为0，那么等到timeout时，其所处线程自动执行其后语句</p>
+<ul>
+<li>timeout</li>
+</ul>
+<p>在设置timeout时，比较有用的两个宏:<br>DISPATCH_TIME_NOW 　　　　表示当前；<br>DISPATCH_TIME_FOREVER　　 表示未来；</p>
+<pre><code>// 创建信号量
+dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+// 创建队列
+dispatch_queue_t testQueue = dispatch_queue_create(&quot;test&quot;, NULL);
+    dispatch_async(testQueue, ^{
+
+        for (int i = 0; i &lt; 10; i ++) {
+            NSLog(@&quot;i的值是-----&gt;%d&quot;,i);
+        }
+        // 发送一个信号
+        dispatch_semaphore_signal(sem);
+    });
+
+    // 信号量等待
+    dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+    for (int j = 0; j &lt; 10; j ++) {
+        NSLog(@&quot;j 的值是-----&gt;%d&quot;,j);
+}
+</code></pre><h2 id="2-dispatch-group"><a href="#2-dispatch-group" class="headerlink" title="2. dispatch group"></a>2. dispatch group</h2><pre><code>dispatch_group_t group = dispatch_group_create();
+dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
+// 进入组（进入组和离开组必须成对出现,否则会造成死锁）
+dispatch_group_enter(group);
+dispatch_group_async(group, queue, ^{
+    // 执行异步任务1
+    for (int i = 0; i&lt;10; i++) {
+        NSLog(@&quot;i的值是:%d&quot;,i);
+    }
+    dispatch_group_leave(group);
+
+});
+dispatch_group_enter(group);
+dispatch_group_async(group, queue, ^{
+
+    // 执行异步任务2
+    for (int j = 0; j&lt;20; j++) {
+        NSLog(@&quot;j的值是:%d&quot;,j);
+    }
+    dispatch_group_leave(group);
+});
+
+dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+    NSLog(@&quot;完成...&quot;);
+});
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/08/27/多个网络请求的处理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-看完就懂的无痕埋点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2013,172 +2154,6 @@ NSDictionary *paraDict = @{
 
 
   
-    <article id="post-抖音点赞动画的实现" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/18/抖音点赞动画的实现/">抖音点赞动画的实现</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/18/抖音点赞动画的实现/" class="archive-article-date">
-  	<time datetime="2019-06-18T04:37:47.755Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>主要技术点</p>
-<p>1.CAShapeLayer和贝赛尔曲线绘制三角形</p>
-<p>2.组合动画的时间技巧</p>
-<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>我们可以看到 它是一个 三角形的贝塞尔曲线</p>
-<p><img src="http://img.wangjungang.cn/WX20190619-092448@2x.png" alt=""></p>
-<p>这样的动画需要经过:</p>
-<p>2π (360°)旋转一周</p>
-<p>圆一周一共有六个 三角形的贝赛尔曲线图形形状.</p>
-<p>一个动画组 内部包含缩放动画 从0~1的放大 ,动画如果执行10秒,那么 scale缩放动画执行 10*0.2 = 2秒, 动画组中还包含另一个动画是 从结束位置的动画到结尾消失的位置大小变化直到动画消失.</p>
-<p>沿着圆形每 60°角度 创建一个上图的三角形图形.</p>
-<p>说了这么多 实际就是用CABasicAnimation的keypath是path和CABasicAnimation的keypath是transform.scale的动画组合在一起作用于一个三角形上,并且一共创建6个三角形图形.<br>结束的时候大概是这样的</p>
-<p>结束的时候实际上是一个从 上一次动画执行完成的path向 一条线上三个点的path过渡的过程,直到最后隐藏消失.</p>
-<p>好下面我们来实现一下这个动画</p>
-<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>首先我们子类话一个ZanLikeView继承自UIView并设置底部的图片和点击变换的❤️图片,就是两张UIImageView加手势,当点击的时候区分不同view的tag就知道哪个imageview点击,这样就可以做两张动画不同的效果了,不过这些可以参考demo.</p>
-<p>我主要介绍核心代码</p>
-<p>创建 CAShapeLayer用于做形状图形相关的图形动画.</p>
-<pre><code>CAShapeLayer *layer = [[CAShapeLayer alloc]init];
-layer.position = _likeBefore.center;
-layer.fillColor = [UIColor redColor].CGColor;
-</code></pre><p>颜色为暴露在外面的接口</p>
-<p>for循环每 30°角创建一个上述的三角形.我们需要创建 6个 就循环6次</p>
-<p>创建初始位置的贝塞尔path</p>
-<pre><code>CGFloat length = 30;
-CGFloat duration = 0.5f;
-for(int i = 0 ; i &lt; 6; i++) {
-    CAShapeLayer *layer = [[CAShapeLayer alloc]init];
-    layer.position = _likeBefore.center;
-    layer.fillColor = [[UIColor redColor].CGColor;
-
-    //...  1
-    //...  2
-    //...  3
-}
-</code></pre><p>这里我们一共创建6个shapeLayer的实例并填充成颜色,我们这里填充的是红色 其它的颜色可自行封装.</p>
-<p>_likeBefore 是我们看到白色的❤️背景视图(UIImageView)</p>
-<p>下面 在//… 1的地方加入如下代码</p>
-<pre><code>UIBezierPath *startPath = [UIBezierPath bezierPath];
-[startPath moveToPoint:CGPointMake(-2, -length)];
-[startPath addLineToPoint:CGPointMake(2, -length)];
-[startPath addLineToPoint:CGPointMake(0, 0)];
-</code></pre><p>这行代码加完就是这样的图形</p>
-<p><img src="http://img.wangjungang.cn/WX20190619-092448@2x.png" alt=""></p>
-<p>然后创建完成我们需要把path给layer.path. 记得转成CGPath</p>
-<pre><code>layer.path = startPath.CGPath;
-layer.transform = CATransform3DMakeRotation(M_PI / 3.0f * i, 0.0, 0.0, 1.0);
-[self.layer addSublayer:layer]
-</code></pre><p>注: CATransform3DMakeRotation()函数 当x,y,z值为0时,代表在该轴方向上不进行旋转,当值为-1时,代表在该轴方向上进行逆时针旋转,当值为1时,代表在该轴方向上进行顺时针旋转</p>
-<p>因为我们是需要60°创建一个layer所以需要顺时针 M_PI / 3.0f = 60°. 每循环一次则创建第N个角度乘60°.</p>
-<p>接着在//… 2添加如下代码</p>
-<pre><code>//动画组
-CAAnimationGroup *group = [[CAAnimationGroup alloc] init];
-group.removedOnCompletion = NO;
-group.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
-group.fillMode = kCAFillModeForwards;
-group.duration = duration;
-//缩放动画
-CABasicAnimation *scaleAnim = [CABasicAnimation animationWithKeyPath:@&quot;transform.scale&quot;];
-scaleAnim.fromValue = @(0.0);
-scaleAnim.toValue = @(1.0);
-scaleAnim.duration = duration * 0.2f; //注意这里是在给定时长的地方前0.2f的时间里执行缩放
-</code></pre><p>这里说下duration <em>0.2f. 比如我给定 10秒的duration,那么 duration </em>0.2 = 2 秒执行缩放.</p>
-<p>最后在//… 3的代码出加上如下代码</p>
-<pre><code>//结束点
-UIBezierPath *endPath = [UIBezierPath bezierPath];
-[endPath moveToPoint:CGPointMake(-2, -length)];
-[endPath addLineToPoint:CGPointMake(2, -length)];
-[endPath addLineToPoint:CGPointMake(0, -length)];
-
-CABasicAnimation *pathAnim = [CABasicAnimation animationWithKeyPath:@&quot;path&quot;];
-pathAnim.fromValue = (__bridge id)layer.path;
-pathAnim.toValue = (__bridge id)endPath.CGPath;
-pathAnim.beginTime = duration * 0.2f;
-pathAnim.duration = duration * 0.8f;
-
-[group setAnimations:@[scaleAnim, pathAnim]];
-[layer addAnimation:group forKey:nil];
-</code></pre><p>这几行代码的意识是 从我们上一个layer的path位置开始向我们结束位置的path过渡,并且注意开始时间</p>
-<p>pathAnim.beginTime是 duration <em>0.2也就是说 在上一个动画结束的时间点才开始结束过渡,过渡的时长剩余是duration </em>0.8.这样两个连贯在一起的动画就执行完了,最后把动画加到动画组 天加给layer.</p>
-<p>剩余的工作就是做个普通的动画的 基本没什么了.</p>
-<pre><code>[UIView animateWithDuration:0.35f
-                      delay:0.0f
-                    options:UIViewAnimationOptionCurveEaseIn
-                 animations:^{
-                     self.likeAfter.transform = CGAffineTransformScale(CGAffineTransformMakeRotation(-M_PI_4), 0.1f, 0.1f);
-                 }
-                 completion:^(BOOL finished) {
-                     [self.likeAfter setHidden:YES];
-                     self.likeBefore.userInteractionEnabled = YES;
-                     self.likeAfter.userInteractionEnabled = YES;
-                 }];
-</code></pre><p>技巧</p>
-<p>结束动画的开始时间和结束时间控制,恰到好处.</p>
-<h2 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h2><p><a href="https://github.com/iwenyupinlun01/zanDemo" target="_blank" rel="noopener">demo</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/18/抖音点赞动画的实现/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -2304,11 +2279,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2328,7 +2303,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2336,7 +2311,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -152,6 +152,137 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-AutoreleasePool 重新梳理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/04/AutoreleasePool 重新梳理/">AutoreleasePool 重新梳理</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/04/AutoreleasePool 重新梳理/" class="archive-article-date">
+  	<time datetime="2019-09-04T11:54:29.822Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>AutoreleasePool 是一个抽象概念，并没有实际结构，真实的结构是一个双向链表『AutoreleasePoolPage』，由C++实现。</p>
+<h2 id="1-数据结构"><a href="#1-数据结构" class="headerlink" title="1.数据结构"></a>1.数据结构</h2><p>其数据结构如下</p>
+<pre><code>class AutoreleasePoolPage 
+{
+
+#define POOL_SENTINEL nil
+    static pthread_key_t const key = AUTORELEASE_POOL_KEY;
+    static uint8_t const SCRIBBLE = 0xA3;  // 0xA3A3A3A3 after releasing
+    static size_t const SIZE = 
+#if PROTECT_AUTORELEASEPOOL
+        PAGE_MAX_SIZE;  // must be multiple of vm page size
+#else
+        PAGE_MAX_SIZE;  // size and alignment, power of 2
+#endif
+    static size_t const COUNT = SIZE / sizeof(id);
+
+    magic_t const magic;
+    id *next;
+    pthread_t const thread;
+    AutoreleasePoolPage * const parent;
+    AutoreleasePoolPage *child;
+    uint32_t const depth;
+    uint32_t hiwat;
+}
+</code></pre><p>成员变量说明：</p>
+<p>next：游标，一直指向最新入栈的autorelease对象的下一个位置。</p>
+<p>key：TLS技术，既Thread Local Storage（TLS）线程局部存储。目的很简单，将一块内存作为某个线程专有的存储，以key-value的形式进行读写。AutoreleasePoolPage将这块区域用作存储最新的Page，既hotPage。</p>
+<p>SIZE：单个page的最大存储数量，AutoreleasePoolPage以双向链表的形式存在，但是单个page的存储是有限额的，(id <em>) ((uint8_t </em>)this+SIZE)。</p>
+<p>thread：当前线程pthread_self()。</p>
+<h2 id="2-push和pop"><a href="#2-push和pop" class="headerlink" title="2.push和pop"></a>2.push和pop</h2><p>当我们手动调用@autoreleasePool的时候，编译器会自动将大括号内的所有对象标记为autorelease前缀。AutoreleasePoolPage::autorelease((id)this)当前对象本身作为参数入参，不过在讨论对象的autorelease之前，编译器还插入了两个方法：</p>
+<pre><code>void *pool = objc_autoreleasePoolPush();
+……
+……
+……
+objc_autoreleasePoolPop(pool);
+</code></pre><p>前者做了和对象的autorelease相同的事情：</p>
+<pre><code>static inline id *autoreleaseFast(id obj)
+    {
+        AutoreleasePoolPage *page = hotPage();
+        if (page &amp;&amp; !page-&gt;full()) {
+            return page-&gt;add(obj);
+        } else if (page) {
+            return autoreleaseFullPage(obj, page);
+        } else {
+            return autoreleaseNoPage(obj);
+        }
+    }
+id *add(id obj)
+    {
+        assert(!full());
+        unprotect();
+        id *ret = next;  // faster than `return next-1` because of aliasing
+        *next++ = obj;
+        protect();
+        return ret;
+    }
+</code></pre><p>主要就是移动游标，并且返回当前位置，这个返回参数的意义主要体现在</p>
+<p>objc_autoreleasePoolPop(pool);的入参中，pool记录着一个pool的初始位置，根据这个位置和当前的hotPage位置，遍历中间所有的对象，进行释放。并且由于双向链表的结构，很容易跨page进行遍历。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/04/AutoreleasePool 重新梳理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-你可能不太会用的10个Git命令" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2055,147 +2186,6 @@ NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
 
 
   
-    <article id="post-多个网络请求的处理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/27/多个网络请求的处理/">多个网络请求的处理</a>
-    </h1>
-  
-
-        
-        <a href="/2019/08/27/多个网络请求的处理/" class="archive-article-date">
-  	<time datetime="2019-08-27T08:31:20.113Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1-dispatch-semaphore-信号量"><a href="#1-dispatch-semaphore-信号量" class="headerlink" title="1. dispatch_semaphore 信号量"></a>1. dispatch_semaphore 信号量</h2><p>信号量是一个整型值并且具有初始计数值，信号量通常支持两个操作：通知和等待。当信号被通知的时候计数值会增加，当信号量在线程上等待的时候，必要的情况下线程会被阻塞掉，直至信号被通知时计数值大于0，然后线程会减少这个计数继续工作。</p>
-<p>GCD中又3个信号量有关的操作：</p>
-<pre><code>dispatch_semaphore_create 信号量创建
-
-dispatch_semaphore_signal 发送通知
-
-dispatch_semaphore_wait 信号量等待
-
-dispatch_semaphore_create创建一个信号量
-</code></pre><ul>
-<li>dispatch_semaphore_create创建一个信号量</li>
-</ul>
-<p>传入的参数为long，输出一个dispatch_semaphore_t类型且值为value的信号量。<br>值得注意的是，这里的传入的参数value必须大于或等于0，否则dispatch_semaphore_create会返回NULL</p>
-<ul>
-<li>dispatch_semaphore_signal等待一个信号</li>
-</ul>
-<p>这个函数会使传入的信号量dsema的值加1。<br>返回值为long类型，当返回值为0时表示当前并没有线程等待其处理的信号量，其处理的信号量的值加1即可。<br>当返回值不为0时，表示其当前有（一个或多个）线程等待其处理的信号量，并且该函数唤醒了一个等待的线程（当线程有优先级时，唤醒优先级最高的线程；否则随机唤醒）。</p>
-<ul>
-<li>dispatch_semaphore_wait 等待一个信号</li>
-</ul>
-<p>这个函数会使传入的信号量dsema的值减1；<br>如果dsema信号量的值大于0，该函数所处线程就继续执行下面的语句，并且将信号量的值减1；<br>如果desema的值为0，那么这个函数就阻塞当前线程等待timeout（注意timeout的类型为dispatch_time_t，<br>不能直接传入整形或float型数），如果等待的期间desema的值被dispatch_semaphore_signal函数加1了，<br>且该函数（即dispatch_semaphore_wait）所处线程获得了信号量，那么就继续向下执行并将信号量减1。<br>如果等待期间没有获取到信号量或者信号量的值一直为0，那么等到timeout时，其所处线程自动执行其后语句</p>
-<ul>
-<li>timeout</li>
-</ul>
-<p>在设置timeout时，比较有用的两个宏:<br>DISPATCH_TIME_NOW 　　　　表示当前；<br>DISPATCH_TIME_FOREVER　　 表示未来；</p>
-<pre><code>// 创建信号量
-dispatch_semaphore_t sem = dispatch_semaphore_create(0);
-// 创建队列
-dispatch_queue_t testQueue = dispatch_queue_create(&quot;test&quot;, NULL);
-    dispatch_async(testQueue, ^{
-
-        for (int i = 0; i &lt; 10; i ++) {
-            NSLog(@&quot;i的值是-----&gt;%d&quot;,i);
-        }
-        // 发送一个信号
-        dispatch_semaphore_signal(sem);
-    });
-
-    // 信号量等待
-    dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
-    for (int j = 0; j &lt; 10; j ++) {
-        NSLog(@&quot;j 的值是-----&gt;%d&quot;,j);
-}
-</code></pre><h2 id="2-dispatch-group"><a href="#2-dispatch-group" class="headerlink" title="2. dispatch group"></a>2. dispatch group</h2><pre><code>dispatch_group_t group = dispatch_group_create();
-dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
-// 进入组（进入组和离开组必须成对出现,否则会造成死锁）
-dispatch_group_enter(group);
-dispatch_group_async(group, queue, ^{
-    // 执行异步任务1
-    for (int i = 0; i&lt;10; i++) {
-        NSLog(@&quot;i的值是:%d&quot;,i);
-    }
-    dispatch_group_leave(group);
-
-});
-dispatch_group_enter(group);
-dispatch_group_async(group, queue, ^{
-
-    // 执行异步任务2
-    for (int j = 0; j&lt;20; j++) {
-        NSLog(@&quot;j的值是:%d&quot;,j);
-    }
-    dispatch_group_leave(group);
-});
-
-dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-    NSLog(@&quot;完成...&quot;);
-});
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/27/多个网络请求的处理/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -2321,11 +2311,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2345,7 +2335,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2353,7 +2343,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
