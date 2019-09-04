@@ -152,6 +152,86 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-使用UIWebView导致内存暴涨的问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/16/使用UIWebView导致内存暴涨的问题/">使用UIWebView导致内存暴涨的问题</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/16/使用UIWebView导致内存暴涨的问题/" class="archive-article-date">
+  	<time datetime="2019-06-16T00:59:40.213Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>如果项目不需要支持iOS7用系统提供的更加高效的WKWebView。</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>查看资料因为Html里的js导致的内存泄漏，每次打开一个连接就会把“WebKitCacheModelPreferenceKey”设置成1.</p>
+<p>UIWebView增加</p>
+<pre><code>- （void）webViewDidFinishLoad:（UIWebView *）webView {
+[[NSUserDefaults standardUserDefaults] setInteger ：0 forKey：@“WebKitCacheModelPreferenceKey”];
+}
+</code></pre><h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>你将有一个大的内存使用和泄漏大量的数据！但是有一个黑客来解决这个问题：revert什么做，当你打开一个链接。实际上，导致此泄漏的关键属性是WebKitCacheModelPreferenceKey应用程序设置。当您在UIWebView中打开链接时，此属性会自动设置为值“1”。所以，解决方案是将其设置为0…</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/16/使用UIWebView导致内存暴涨的问题/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-OC自定义通知的封装（PSSNotificationCenter）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1646,275 +1726,9 @@ lazy var someClosure: () -&gt; Void = { [unowned self] in
 
 
   
-    <article id="post-swift中的枚举" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/20/swift中的枚举/">swift中的枚举</a>
-    </h1>
-  
-
-        
-        <a href="/2019/04/20/swift中的枚举/" class="archive-article-date">
-  	<time datetime="2019-04-20T14:27:47.126Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="先贴一个最简单的枚举"><a href="#先贴一个最简单的枚举" class="headerlink" title="先贴一个最简单的枚举"></a>先贴一个最简单的枚举</h3><pre><code>enum Movement {
-    case letf
-    case right
-    case top
-    case bottom
-}
-</code></pre><p>这里就定义了一个简单的方向枚举，有上下左右四个方面的case。</p>
-<ul>
-<li>1、你可以遍历他的枚举：</li>
-</ul>
-<pre><code>let aMovement = Movement.left
-
-switch aMovement {
-case .left:
-    print(&quot;Left&quot;)
-default:()
-
-}
-</code></pre><ul>
-<li><p>2、你可以对场景进行比较：</p>
-<pre><code>if aMovement == .left {
-    print(&quot;Left&quot;)
-}
-</code></pre></li>
-</ul>
-<h3 id="枚举值-与OC不一样，Swift的枚举牛逼得多了，OC只能玩Int，他能玩："><a href="#枚举值-与OC不一样，Swift的枚举牛逼得多了，OC只能玩Int，他能玩：" class="headerlink" title="枚举值 与OC不一样，Swift的枚举牛逼得多了，OC只能玩Int，他能玩："></a>枚举值 与OC不一样，Swift的枚举牛逼得多了，OC只能玩Int，他能玩：</h3><p>整型(Integer)</p>
-<p>浮点数(Float Point)</p>
-<p>字符串(String)</p>
-<p>布尔类型(Boolean)</p>
-<pre><code>enum Movement:Int {
-    case left = 0
-    case right = 1
-    case top = 2
-    case bottom = 3
-}
-
-enum Area: String {
-    case DG = &quot;dongguan&quot;
-    case GZ = &quot;guangzhou&quot;
-    case SZ = &quot;shenzhen&quot;
-}
-</code></pre><p>不过，你要是想玩个自定义的类关联类型，那还是不行的，不过，已经够用了。如果你想要或者枚举的case对应的值，只需要print(Area.DG.rawValue)这样调用就可以了，直接调用对应的rawValue。不过有一点要注意哈，你如果用rawValue来构造一个枚举对象，他是有可能不在任何一个场景的，因为，他的返回值是可选的。</p>
-<h3 id="嵌套枚举"><a href="#嵌套枚举" class="headerlink" title="###嵌套枚举"></a>###嵌套枚举</h3><pre><code>enum Area {
-    enum DongGuan {
-        case NanCheng
-        case DongCheng
-    }
-
-    enum GuangZhou {
-        case TianHe
-        case CheBei
-    }
-}
-
-print(Area.DongGuan.DongCheng)
-</code></pre><h3 id="关联值-这个关联值的说法就比较学术了，其实很简单，我们平时也经常用："><a href="#关联值-这个关联值的说法就比较学术了，其实很简单，我们平时也经常用：" class="headerlink" title="关联值 这个关联值的说法就比较学术了，其实很简单，我们平时也经常用："></a>关联值 这个关联值的说法就比较学术了，其实很简单，我们平时也经常用：</h3><pre><code>enum Trade {
-    case Buy(stock:String,amount:Int)
-    case Sell(stock:String,amount:Int)
-}
-
-let trade = Trade.Buy(stock: &quot;003100&quot;, amount: 100)
-
-switch trade {
-case .Buy(let stock,let amount):
-
-    print(&quot;stock:\(stock),amount:\(amount)&quot;)
-
-case .Sell(let stock,let amount):
-    print(&quot;stock:\(stock),amount:\(amount)&quot;)
-default:
-    ()
-}
-</code></pre><p>你看，其实就是枚举的case可以传值，不要小看这功能，放在OC里面，要写这样的代码，麻烦了去了。</p>
-<h3 id="方法和属性"><a href="#方法和属性" class="headerlink" title="方法和属性"></a>方法和属性</h3><p>先上代码</p>
-<pre><code>enum Device {
-    case iPad, iPhone, AppleTV, AppleWatch
-    func introduced() -&gt; String {
-
-        switch self {
-        case .iPad: return &quot;iPad&quot;
-        case .iPhone: return &quot;iPhone&quot;
-        case .AppleWatch: return &quot;AppleWatch&quot;
-        case .AppleTV: return &quot;AppleTV&quot;
-        }
-    }
-}
-
-print(Device.iPhone.introduced())
-</code></pre><p>很清晰，我们定义了一个设备枚举，有iPad, iPhone, AppleTV, AppleWatch，还有一个介绍的方法。这里的introduced方法，你可以认为枚举是一个类，introduced是一个成员方法，Device.iPhone就是一个Device的实例，case们是他的属性，好了，有了这个对像，Device.iPhone可以认为，Device里面有一个匿名属性，现在设置这个属性为iPhone。好了，introduced里面的switch self，其实就是遍历这个匿名属性的所有场景，如iPad，iPhone等，然后根据不同的场景返回不同的值。</p>
-<h3 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h3><p>增加一个存储属性到枚举中不被允许，但你依然能够创建计算属性。当然，计算属性的内容都是建立在枚举值下或者枚举关联值得到的。</p>
-<pre><code>enum Device {
-  case iPad, iPhone
-  var year: Int {
-    switch self {
-        case iPhone: return 2007
-        case iPad: return 2010
-     }
-  }
-}
-</code></pre><h3 id="静态方法"><a href="#静态方法" class="headerlink" title="静态方法"></a>静态方法</h3><pre><code>enum Device {
-    case iPad, iPhone, AppleTV, AppleWatch
-    func introduced() -&gt; String {
-
-        switch self {
-        case .iPad: return &quot;iPad&quot;
-        case .iPhone: return &quot;iPhone&quot;
-        case .AppleWatch: return &quot;AppleWatch&quot;
-        case .AppleTV: return &quot;AppleTV&quot;
-        }
-    }
-
-    static func fromSlang(term: String) -&gt; Device? {
-
-        if term == &quot;iWatch&quot; {
-
-            return .AppleWatch
-        }
-        return nil
-    }
-}
-
-print(Device.fromSlang(term: &quot;iWatch&quot;))
-</code></pre><p>static func fromSlang(term: String) -&gt; Device?就是一个静态方法。</p>
-<h3 id="协议"><a href="#协议" class="headerlink" title="协议"></a>协议</h3><p>Swift也允许你在枚举中使用协议(Protocols)和协议扩展(Protocol Extension)。</p>
-<p>Swift协议定义一个接口或类型以供其他数据结构来遵循。enum当然也不例外。我们先从Swift标准库中的一个例子开始.</p>
-<p>CustomStringConvertible是一个以打印为目的的自定义格式化输出的类型。</p>
-<pre><code>protocol CustomStringConvertible {
-  var description: String { get }
-}
-</code></pre><p>该协议只有一个要求，即一个只读(getter)类型的字符串(String类型)。我们可以很容易为enum实现这个协议。</p>
-<pre><code>enum Trade :CustomStringConvertible{
-    case Buy(stock:String,amount:Int)
-    case Sell(stock:String,amount:Int)
-
-    var description: String {
-
-        switch self {
-        case .Buy(_, _):
-            return &quot;Buy&quot;
-
-        case .Sell(_, _):
-            return &quot;Sell&quot;
-        }
-    }
-}
-
-print(Trade.Buy(stock: &quot;003100&quot;, amount: 100).description)
-</code></pre><h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3><p>枚举也可以进行扩展。最明显的用例就是将枚举的case和method分离，这样阅读你的代码能够简单快速地消化掉enum内容，紧接着转移到方法定义:</p>
-<pre><code>enum Device {
-    case iPad, iPhone, AppleTV, AppleWatch
-
-}
-extension Device: CustomStringConvertible{
-
-    func introduced() -&gt; String {
-
-        switch self {
-        case .iPad: return &quot;iPad&quot;
-        case .iPhone: return &quot;iPhone&quot;
-        case .AppleWatch: return &quot;AppleWatch&quot;
-        case .AppleTV: return &quot;AppleTV&quot;
-        }
-    }
-
-    var description: String {
-
-        switch self {
-        case .iPad: return &quot;iPad&quot;
-        case .iPhone: return &quot;iPhone&quot;
-        case .AppleWatch: return &quot;AppleWatch&quot;
-        case .AppleTV: return &quot;AppleTV&quot;
-        }
-    }
-}
-
-print(Device.AppleTV.description)
-
-print(Device.iPhone.introduced())
-</code></pre><h3 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h3><pre><code>enum Rubbish&lt;T&gt; {
-
-    case price(T)
-
-    func getPrice() -&gt; T {
-
-        switch self {
-        case .price(let value):
-            return value
-        }
-
-    }
-}
-
-print(Rubbish&lt;Int&gt;.price(100).getPrice())
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/04/20/swift中的枚举/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
     </nav>
   
 
@@ -2033,15 +1847,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2061,11 +1875,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
