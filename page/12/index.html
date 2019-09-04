@@ -152,6 +152,169 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-UITableView性能优化的一点感悟及计算UILabel高度的新方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/">UITableView性能优化的一点感悟及计算UILabel高度的新方法</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/" class="archive-article-date">
+  	<time datetime="2018-11-26T03:31:35.713Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在使用过程中发现，我们App的首页在快速滑动时会出现掉帧，以及在上拉加载更多时会抖动，因为首页模块是以前的同事写的，很多代码已不适应当前的需求，所以产生了优化的想法，优化主要分为以下几个方面：</p>
+<ul>
+<li><p>1.缓存cell高度（发现了一种计算Label高度的新方法）</p>
+</li>
+<li><p>2.优化cellForRow方法</p>
+</li>
+<li><p>3.图片加载优化</p>
+</li>
+<li><p>4.禁止tableView预估高度</p>
+</li>
+<li><p>5.删除无用数据处理逻辑</p>
+</li>
+</ul>
+<h2 id="缓存cell高度"><a href="#缓存cell高度" class="headerlink" title="缓存cell高度"></a>缓存cell高度</h2><p>在Feed流中，UITableViewCell的高度通常是变化的，需要根据返回的数据中的cell类型以及label的文字长度来计算高度，而在UITableView中func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell是一个高频调用的方法，为了减少CPU的计算，尽可能减少掉帧，所以需要将高度进行缓存，在我们的项目中，首页的数据是这样一个操作流程后台返回的JSON-&gt;FeedListModel-&gt;FeedsModel-&gt;各种cell的ViewModel(例如小图片的cell对应的model-SmallImageCellViewModel，大图片的cell对应的-BigImageCellViewModel)FeedListModel主要是包含了一些页码信息和FeedsModel数组FeedsModel储存着后台返回的cell所需的信息BigImageCellViewModel是cell对FeedsModel进行处理后得到cell所需的信息</p>
+<pre><code>优化以前，我们的高度是通过BigImageCellViewModel中计算属性height去获取的
+
+var height: CGFloat {
+   guard let title = title else { 
+         return ((UIScreen.mainWidth - 30) * 9)/16.0 + 62   
+         }
+
+   let constraintRect = CGSize(width: UIScreen.mainWidth - 30, height: 38.5)
+
+     let attributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 16)]
+
+     let rect = title.boundingRect(with: constraintRect,                                 options: .usesLineFragmentOrigin,                                 attributes: attributes,                                 context: nil)  
+
+      if let type = itemType, type == ItemType.sohuVideo {    
+         return ((UIScreen.mainWidth - 30) * 9)/16.0 + rect.height + 62  
+          }   
+         return ((UIScreen.mainWidth - 30) * 9)/16.0 + rect.height + 62
+         }
+</code></pre><p>这样的话每次取值时，会需要通过计算然后返回height属性，所以一开始我也是把计算属性改成存储属性了，但是还是很耗时（后来才发现是因为高度是存在BigImageCellViewModel中的，而每次数据更新后，由于业务需要会对当前的列表数据重新遍历处理，生成新的BigImageCellViewModel，新的BigImageCellViewModel的高度自然是每次需要计算），在使用instruments分析时发现，在加载数据时，1s内有20%的时候是用于计算每个cell的高度，因为计算cell高度时需要根据model.title确定cell中的标题Label显示几行，从而确定Label的高度，进而算出cell的高度，而计算Label高度一般都是使用这个方法，</p>
+<pre><code>@available(iOS 7.0, *)   open func boundingRect(with size: CGSize, options: NSStringDrawingOptions = [], attributes: [NSAttributedString.Key : Any]? = nil, context: NSStringDrawingContext?) -&gt; CGRect
+</code></pre><p>因为即便是同一个字符串，字体大小一样，字体不同时，高度会不一定一样，这个方法会根据字符串和对应字体进行绘制计算后得到的高度，而且这个操作是在主线程进行的，所以会导致掉帧，然后我就网上查阅资料怎么优化这个方法，网上这方面的资料比较少因为这个方法的耗时本身是可接受范围以内的，只是我们的height没有真正缓存上导致这个方法测试时特别耗时，这种思路是思路一在子线程中调用这个方法，然后对height进行赋值，类似于这样：</p>
+<h2 id="思路一-异步计算Label高度"><a href="#思路一-异步计算Label高度" class="headerlink" title="思路一 异步计算Label高度"></a>思路一 异步计算Label高度</h2><pre><code>var height：CGFloat = 70   
+
+let queue = DispatchQueue.global()   queue.async {       
+
+let labelRect = title.boundingRect(with: constraintRect,                                    options: .usesLineFragmentOrigin,                                     attributes: attributes,    
+                                                                    context: nil)      
+
+                                                                     height = labelRect.height + 50  
+                                                                      }
+</code></pre><p>就是通过先给height赋一个概率最大的值，然后通过异步计算后，得到一个准确值，再给height赋值上，但是在实际测试中发现，大部分cell取的是我们预设的高度默认值，这样在下次reloadData时，cell的高度会取算出来的值，然后会导致tableView的contentSize变化，视图抖动然后我就自己思考，其实我们的标题并不复杂，大部分是中文，其他是数字，标点符号，字母，然后我就测试了一下在UIFont.boldSystemFont(ofSize: 16)下，中文，数字，标点符号，字母的大小，然后测试发现中文 15pt 数字是8pt左右，主要的一些标点符号16pt 小写字母大概8pt，大写自贸银11pt，就想能不能通过对标题字符串进行遍历，判断字符的类型来计算标题的总宽度，之后再将总宽度除以标题的最大宽度得到行数，然后计算得出cell高度，代码如下：</p>
+<h2 id="思路二-计算Label高度的新方法-通过遍历字符串来计算高度"><a href="#思路二-计算Label高度的新方法-通过遍历字符串来计算高度" class="headerlink" title="思路二 计算Label高度的新方法 通过遍历字符串来计算高度"></a>思路二 计算Label高度的新方法 通过遍历字符串来计算高度</h2><pre><code>-(CGFloat)calculateTotalWidthInBold16 {   
+CGFloat totalWidth = 0;  
+ for (int i = 0; i &lt; self.length; i++) {       
+ unichar character  = [self characterAtIndex:i];       //中 占15pt 数字 占7 英文 a 8.2 A 10.1 B 10.6 ， ? 16.6pt       
+ if ([[NSCharacterSet decimalDigitCharacterSet] characterIsMember:character]) {//数字           totalWidth += 8;       
+ } else if ([[NSCharacterSet lowercaseLetterCharacterSet] characterIsMember:character]) {//小写字母           totalWidth += 10;       
+ } else if ([[NSCharacterSet uppercaseLetterCharacterSet] characterIsMember:character]) {//大写字母           totalWidth += 12;       
+ } else if ([[NSCharacterSet punctuationCharacterSet] characterIsMember:character]) {//标点符号           
+ totalWidth += 17;       
+ } else if (character &gt;= 0x4E00 &amp;&amp; character &lt;= 0x9FA5) {           
+ totalWidth += 15;       
+ } else {           
+ totalWidth += 15;       
+ }   
+ }   
+ return totalWidth + 5;
+
+ }
+</code></pre><p>在不缓存高度的情况下，这个方法能够很快得计算出高度，让tableview达到平均55帧以上的帧率，但是缺点是需要对使用的字体下进行测试，在UIFont.boldSystemFont(ofSize: 16)字体下，中文是固定的15pt，但是数字，小写字母，大写字母的长度不是固定的，所以如果需要做到非常准确，需要对每个数字，字母在这个字体下的长度进行测试。在缓存高度的情况下，与boundingRect方法相比，这个方法也能够提高计算速度，只是收益不那么明显</p>
+<h2 id="优化cellForRow方法"><a href="#优化cellForRow方法" class="headerlink" title="优化cellForRow方法"></a>优化cellForRow方法</h2><p>因为tableView的cellForRow方法也是一个调用频率特别高的方法，所以应该避免在cellForRow对cell进行约束修改，frame变化等操作，</p>
+<pre><code>default: //feed流           
+
+let cellViewModel = viewModel.viewModels.value[indexPath.row]           
+
+let cell = configFeedCell(tableView: tableView, cellViewModel: cellViewModel, indexPath: indexPath)//            cell.saHorizontalSpace = (15, 15)//           
+
+ if viewModel.isInfrontOfFeedSpacAble(indexPath: indexPath) 
+ {//            
+ cell.saSeparaptorLineStyle = .bottom//            
+
+ } else if cellViewModel as? FeedSpacAble != nil {//                cell.saSeparaptorLineStyle = .bottom//            
+ } else {//                
+
+ cell.saSeparaptorLineStyle = .none//            
+ }           
+ return cell
+</code></pre><h2 id="图片加载优化"><a href="#图片加载优化" class="headerlink" title="图片加载优化"></a>图片加载优化</h2><p>主要使用charles进行抓包，看项目有没有加载比较大的图片，我们项目首页的三张图片的资讯使用的是大图，一张图片长达4M,所以我改成小图了</p>
+<h2 id="禁止tableView预估高度"><a href="#禁止tableView预估高度" class="headerlink" title="禁止tableView预估高度"></a>禁止tableView预估高度</h2><p>因为tableView会根据estimatedRowHeight*行数来计算contentSize，并且在滑动时进行修正，所以会发生抖动，所以可以通过以下代码，禁用预估高度，因为iOS11以后预估高度的值不为0，所以需要显式赋值为0</p>
+<pre><code>tableView.estimatedRowHeight = 0
+
+tableView.estimatedSectionHeaderHeight = 0  
+
+tableView.estimatedSectionFooterHeight = 0
+</code></pre><h2 id="删除无用数据处理逻辑"><a href="#删除无用数据处理逻辑" class="headerlink" title="删除无用数据处理逻辑"></a>删除无用数据处理逻辑</h2><p>主要注释了代码中没有用的数据处理逻辑</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上其实只是针对我们项目一些比较基本的优化的地方，当然还有很多地方可以进行优化，例如将cell中view的布局进行缓存，减少不必要的计算，还有将一些Label通过异步渲染的方式绘制在cell中，减少view的层级，将一部分渲染的工作放在子线程中，但是这样会对我们的项目改动过大，所以暂时没有采用</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Cocoapods</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS 对象数组的深拷贝(NSCoding协议)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1696,336 +1859,6 @@ int main(int argc, char * argv[]) {
 
 
   
-    <article id="post-轻松实现Label的全方位对齐" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/15/轻松实现Label的全方位对齐/">轻松实现Label的全方位对齐</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/15/轻松实现Label的全方位对齐/" class="archive-article-date">
-  	<time datetime="2018-10-15T06:16:13.019Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>ARUILabelTextAlign</p>
-<ol>
-<li>实现 UILabel文本在 左(上 中 下)、中(上 中 下）、右(上 中 下) 9个方位显示；</li>
-</ol>
-<ol start="2">
-<li>提供富文本底部不对齐的解决方案；</li>
-</ol>
-<h2 id="核心代码："><a href="#核心代码：" class="headerlink" title="核心代码："></a>核心代码：</h2><h3 id="ARAlignLabel-h"><a href="#ARAlignLabel-h" class="headerlink" title="ARAlignLabel.h"></a>ARAlignLabel.h</h3><pre><code>#import 
-@class ARMaker;
-
-typedef NS_ENUM(NSUInteger, textAlignType)
-{
-    textAlignType_top = 10,   // 顶部对齐
-    textAlignType_left,       // 左边对齐
-    textAlignType_bottom,     // 底部对齐
-    textAlignType_right,      // 右边对齐
-    textAlignType_center      // 水平/垂直对齐（默认中心对齐）
-};
-
-@interface ARAlignLabel : UILabel
-
-/**
- *  根据对齐方式进行文本对齐
- *
- *  @param alignType 对齐block
- */
-- (void)textAlign:(void(^)(ARMaker *make))alignType;
-
-@end
-
-
-//工具类
-@interface ARMaker : NSObject
-
-/* 存放对齐样式 */
-@property(nonatomic, strong) NSMutableArray *typeArray;
-
-/**
- *  添加对齐样式
- */
-- (ARMaker *(^)(textAlignType type))addAlignType;
-
-@end
-</code></pre><h3 id="ARAlignLabel-m"><a href="#ARAlignLabel-m" class="headerlink" title="ARAlignLabel.m"></a>ARAlignLabel.m</h3><pre><code>#import &quot;ARAlignLabel.h&quot;
-
-@interface ARAlignLabel ()
-
-/* 对齐方式 */
-@property(nonatomic, strong) NSArray *typeArray;
-//上
-@property(nonatomic, assign) BOOL hasTop;
-//左
-@property(nonatomic, assign) BOOL hasLeft;
-//下
-@property(nonatomic, assign) BOOL hasBottom;
-//右
-@property(nonatomic, assign) BOOL hasRight;
-
-@end
-
-@implementation ARAlignLabel
-
-- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
-    CGRect textRect = [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
-    if (self.typeArray){
-        for (int i=0; i&lt;self.typeArray.count; i++) {
-            textAlignType type = [self.typeArray[i] integerValue];
-            switch (type) {
-                case textAlignType_top:  //顶部对齐
-                    self.hasTop = YES;
-                    textRect.origin.y = bounds.origin.y;
-                    break;
-                case textAlignType_left: //左部对齐
-                    self.hasLeft = YES;
-                    textRect.origin.x = bounds.origin.x;
-                    break;
-                case textAlignType_bottom: //底部对齐
-                    self.hasBottom = YES;
-                    textRect.origin.y = bounds.size.height - textRect.size.height;
-                    break;
-                case textAlignType_right: //右部对齐
-                    self.hasRight = YES;
-                    textRect.origin.x = bounds.size.width - textRect.size.width;
-                    break;
-                case textAlignType_center:
-                    if (self.hasTop) {  //上中
-                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
-                    }
-                    else if (self.hasLeft) { //左中
-                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
-                    }
-                    else if (self.hasBottom) { //下中
-                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
-                    }
-                    else if (self.hasRight) { //右中
-                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
-                    }
-                    else{   //上下左右居中
-                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
-                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-    return textRect;
-}
-
-- (void)drawTextInRect:(CGRect)requestedRect {
-    CGRect actualRect = requestedRect;
-    if (self.typeArray) {
-        actualRect = [self textRectForBounds:requestedRect limitedToNumberOfLines:self.numberOfLines];
-    }
-    [super drawTextInRect:actualRect];
-}
-
-- (void)textAlign:(void(^)(ARMaker *make))alignType {
-    ARMaker *make = [[ARMaker alloc]init];
-    alignType(make);
-    self.typeArray = make.typeArray;
-}
-
-@end
-
-//工具类
-@implementation ARMaker
-
-- (instancetype)init {
-    self = [super init];
-    if (self) {
-        self.typeArray = [NSMutableArray array];
-    }
-    return self;
-}
-
-- (ARMaker *(^)(enum textAlignType type))addAlignType {
-    __weak typeof (self) weakSelf = self;
-    return ^(enum textAlignType type) {
-        [weakSelf.typeArray addObject:@(type)];
-        return weakSelf;
-    };
-}
-
-@end
-</code></pre><h3 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h3><pre><code>- (void)viewDidLoad {
-    [super viewDidLoad];
-    self.view.backgroundColor = [UIColor whiteColor];
-
-    if (_index == 9) {
-        //富文本底部对齐
-        [self attributedTextAgainOfBottom];
-    }else {
-        ARAlignLabel *label = [[ARAlignLabel alloc] initWithFrame:CGRectMake(kScreenWidth/2.0 - 150, 300, 300, 80)];
-        label.backgroundColor = [UIColor orangeColor];
-        label.textColor = [UIColor blackColor];
-        label.font = [UIFont systemFontOfSize:18];
-        label.text = @&quot;爱学习，爱编程，爱咖啡可乐&quot;;
-        label.numberOfLines = 1;
-        [self.view addSubview:label];
-
-        switch (_index) {
-            case 0:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_top);
-                }];
-                break;
-            case 1:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_center);
-                }];
-                break;
-            case 2:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_bottom);
-                }];
-                break;
-            case 3:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_center).addAlignType(textAlignType_top);
-                }];
-                break;
-            case 4:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_center);
-                }];
-                break;
-            case 5:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_center).addAlignType(textAlignType_bottom);
-                }];
-                break;
-            case 6:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_top);
-                }];
-                break;
-            case 7:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_center);
-                }];
-                break;
-            case 8:
-                [label textAlign:^(ARMaker *make) {
-                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_bottom);
-                }];
-                break;
-            default:
-                break;
-        }
-    }
-}
-</code></pre><h3 id="富文本底部对齐"><a href="#富文本底部对齐" class="headerlink" title="富文本底部对齐"></a>富文本底部对齐</h3><pre><code>//富文本底部对齐
-- (void)attributedTextAgainOfBottom {
-
-    CGFloat space = 10.0;
-
-    ARAlignLabel *leftLB = [[ARAlignLabel alloc] initWithFrame:CGRectMake(20, 200, kScreenWidth/2.0 - 20 - space/2.0, 80)];
-    leftLB.backgroundColor = [UIColor lightGrayColor];
-    leftLB.textColor = [UIColor blackColor];
-    leftLB.numberOfLines = 1;
-    [self.view addSubview:leftLB];
-    //右下
-    [leftLB textAlign:^(ARMaker *make) {
-        make.addAlignType(textAlignType_center);
-    }];
-
-    NSMutableAttributedString  *attributedArr = [[NSMutableAttributedString alloc] initWithString:@&quot;单价 $123&quot;];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:40], NSForegroundColorAttributeName:[UIColor blackColor]} range:NSMakeRange(0, 1)];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:25], NSForegroundColorAttributeName:[UIColor blackColor]} range:NSMakeRange(1, 1)];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20], NSForegroundColorAttributeName:[UIColor blueColor]} range:NSMakeRange(3, 1)];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:35], NSForegroundColorAttributeName:[UIColor redColor]} range:NSMakeRange(4, attributedArr.length - 4)];
-
-    leftLB.attributedText = attributedArr;
-
-
-    //对齐之后
-    ARAlignLabel *rightLB = [[ARAlignLabel alloc] initWithFrame:CGRectMake(kScreenWidth/2.0 + space/2.0, 200, leftLB.frame.size.width, 80)];
-    rightLB.backgroundColor = [UIColor lightGrayColor];
-    rightLB.textColor = [UIColor blackColor];
-    rightLB.numberOfLines = 1;
-    [self.view addSubview:rightLB];
-    //左下
-    [rightLB textAlign:^(ARMaker *make) {
-        make.addAlignType(textAlignType_center);
-    }];
-
-    //设置部分文字的偏移量 (0是让文字保持原来的位置, 负值是让文字下移，正值是让文字上移)
-    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(1) range:NSMakeRange(0, 1)];
-    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(0) range:NSMakeRange(1, 1)];
-    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(-2) range:NSMakeRange(3, 1)];
-    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(-3) range:NSMakeRange(4, attributedArr.length - 4)];
-
-    rightLB.attributedText = attributedArr;
-
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/15/轻松实现Label的全方位对齐/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/11/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/13/">Next &raquo;</a>
@@ -2147,15 +1980,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2175,7 +2008,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2183,7 +2016,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">

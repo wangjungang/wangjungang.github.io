@@ -152,6 +152,439 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Sign in with Apple" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/08/29/Sign in with Apple/">Sign in with Apple</a>
+    </h1>
+  
+
+        
+        <a href="/2019/08/29/Sign in with Apple/" class="archive-article-date">
+  	<time datetime="2019-08-29T02:43:48.661Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近了解了iOS13 新增的功能之Sign In With Apple。会输出2篇文章，给大家分享一下。这是第一篇文章，主要的内容为Sign In With Apple及相关名词的介绍，及在iOS上的基础使用。</p>
+<h2 id="Sign-in-with-Apple是什么"><a href="#Sign-in-with-Apple是什么" class="headerlink" title="Sign in with Apple是什么"></a>Sign in with Apple是什么</h2><p>苹果官方 是这么介绍的Sign In With Apple</p>
+<p>The fast, easy way to sign in to apps and websites.<br>Sign In With Apple 是一种在app 和网站上快速、容易登录的方式。<br>Sign In with Apple makes it easy for users to sign in to your apps and websites using their Apple ID. Instead of filling out forms, verifying email addresses, and choosing new passwords, they can use Sign In with Apple to set up an account and start using your app right away. All accounts are protected with two-factor authentication for superior security, and Apple will not track users’ activity in your app or website.</p>
+<p>对于用户来说，Sign In With Apple 使他们可以使用Apple ID容易地登录apps和网站。而不需要填写表单，验证邮件，选择新密码。用户可以使用Sign In With Apple 创建新用户并立即可以开始使用你的app。为了提高安全性，双重因子验证保护了帐号的安全性。而且Apple 不会跟踪用户在app 和网站的行为信息。</p>
+<h3 id="1-双重因子验证"><a href="#1-双重因子验证" class="headerlink" title="1. 双重因子验证"></a>1. 双重因子验证</h3><p>这里笔者举个例子说明一下双重因子验证。比如：</p>
+<p>前提：我们有2个苹果设备A，B。我们已经在设备A上登录过了苹果帐号QiShare，B 设备上还没有登录苹果帐号。</p>
+<p>需求：我们要在B上也登录QiShare帐号</p>
+<p>步骤：当我们在B 设备上输入正确的QiShare帐号密码后，设备B上会提示，需要输入一个验证码，A 设备上会显示出B设备在什么位置要登录QiShare帐号，是否同意。而这个验证码会显示在A 设备上。</p>
+<p>笔者对这里的双重因子的理解是：</p>
+<p>1.1. 正确的AppleID 及相应密码；</p>
+<p>1.2. 需要在已经登录过帐号密码的设备上同意登录请求并且提供验证码。</p>
+<p>接着上边的描述，为了直观的表示相关信息，大家可以看下边的一组图，应该就能够理解笔者要表达的意思了。</p>
+<p>在B设备上登录QiShare帐号，截图省略。</p>
+<p>此时，已经登录过QiShare帐号的设备A的提示如下：</p>
+<p><img src="http://img.wangjungang.cn/WX20190829-104637.png" alt=""></p>
+<p>3 要登录QiShare帐号的设备B的提示</p>
+<p><img src="http://img.wangjungang.cn/OhFm5m.png" alt=""></p>
+<p>4.已登录过QiShare帐号的设备A提示的验证码</p>
+<p><img src="http://img.wangjungang.cn/wClcpk.png" alt=""></p>
+<p>5.设备B的提示是否信任浏览器，如果信任了浏览器，以后就不再需要每次登录帐号，都需要A设备上同意</p>
+<p><img src="http://img.wangjungang.cn/M6nb1x.png" alt=""></p>
+<h3 id="2-开发Sign-In-With-Apple的注意事项："><a href="#2-开发Sign-In-With-Apple的注意事项：" class="headerlink" title="2. 开发Sign In With Apple的注意事项："></a>2. 开发Sign In With Apple的注意事项：</h3><p>Sign In With Apple 是iOS13 新增的功能，需要使用： MacOS 10.14.4或之后的Mac上的Xcode 11开发。</p>
+<pre><code>Xcode 11 includes SDKs for iOS 13, macOS Catalina 10.15, watchOS 6, and tvOS 13. Xcode 11 supports on-device debugging for iOS 8 and later, tvOS 9 and later, and watchOS 2 and later. Xcode 11 requires a Mac running macOS Mojave 10.14.4 or later.
+Xcode 11 包含支持iOS13、macOS Catalina 10.15, watchOS 6, and tvOS 13的SDK，Xcode11 支持iOS8、tvOS2 或之后的设备，Xcode11 需要运行在MacOS 10.14.4或之后的Mac上。
+</code></pre><p>Sign In With Apple 是跨平台的，可以支持iOS、macOS、watchOS、tvOS、JS。</p>
+<h2 id="二、-iOS-Sign-In-With-Apple-流程"><a href="#二、-iOS-Sign-In-With-Apple-流程" class="headerlink" title="二、 iOS Sign In With Apple 流程"></a>二、 iOS Sign In With Apple 流程</h2><p>使用Sign In With Apple 的流程为：</p>
+<ul>
+<li>设置ASAuthorizationAppleIDButton相关布局，添加相应地授权处理；</li>
+<li>获取授权码；</li>
+<li>验证；</li>
+<li>处理Sign In With Apple授权状态变化；</li>
+</ul>
+<p>下边展开描述下iOS 使用Sign In With Apple的准备工作、可能遇到的问题及流程。</p>
+<h3 id="1-iOS-使用Sign-In-With-Apple的准备工作："><a href="#1-iOS-使用Sign-In-With-Apple的准备工作：" class="headerlink" title="1. iOS 使用Sign In With Apple的准备工作："></a>1. iOS 使用Sign In With Apple的准备工作：</h3><p>1.1在Xcode11 Signing &amp; Capabilities 中添加 Sign In With Apple</p>
+<h3 id="2-iOS-使用Sign-In-With-Apple可能遇到的问题："><a href="#2-iOS-使用Sign-In-With-Apple可能遇到的问题：" class="headerlink" title="2. iOS 使用Sign In With Apple可能遇到的问题："></a>2. iOS 使用Sign In With Apple可能遇到的问题：</h3><p>2.1 开启双重因子验证的方式：</p>
+<p>双重因子验证的开启：设置 -&gt; 密码与安全性 -&gt; 双重因子验证；<br>如果不开启双重因子验证，那么当我们在调用苹果官方授权接口的时候，系统也会提示我们需要去打开双重因子验证。</p>
+<p>2.2 停止App 使用Sign In With Apple 的方式：</p>
+<p>停止App 使用Sign In With Apple：设置 -&gt; 密码与安全性 -&gt; 使用您AppleID的App -&gt; 找到对应的App - &gt; “停止以Apple ID使用 Bundle ID…”；</p>
+<h3 id="3-iOS使用Sign-In-With-Apple-的开发流程："><a href="#3-iOS使用Sign-In-With-Apple-的开发流程：" class="headerlink" title="3. iOS使用Sign In With Apple 的开发流程："></a>3. iOS使用Sign In With Apple 的开发流程：</h3><p>在介绍布局之前先看下，笔者先给大家看下界面效果：</p>
+<p><img src="http://img.wangjungang.cn/dTCNP1.png" alt=""></p>
+<p>界面比较简单，界面上方为UITextView用于展示授权状态授权信息，”Sign In With Apple Button” 是用的官方的ASAuthorizationAppleIDButton。中间的“移除键盘”按钮用于移除键盘。</p>
+<p>3.1设置ASAuthorizationAppleIDButton相关布局，添加相应地授权处理；</p>
+<pre><code>- (void)setupUI {
+
+    // 用于展示Sign In With Apple 登录过程的信息
+    _appleIDInfoTextView = [[UITextView alloc] initWithFrame:CGRectMake(.0, 40.0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) * 0.4) textContainer:nil];
+    _appleIDInfoTextView.font = [UIFont systemFontOfSize:32.0];
+    [self.view addSubview:_appleIDInfoTextView];
+
+    // 移除键盘Button
+    UIButton *removeKeyboardBtn = [[UIButton alloc] init];
+    removeKeyboardBtn.backgroundColor = [UIColor grayColor];
+    [removeKeyboardBtn setTitle:@&quot;移除键盘&quot; forState:UIControlStateNormal];
+    removeKeyboardBtn.frame = CGRectMake(CGRectGetMidX(_appleIDInfoTextView.frame) - 50.0, CGRectGetMaxY(_appleIDInfoTextView.frame), 100.0, 40.0);
+    [removeKeyboardBtn addTarget:self action:@selector(removeFirstResponder:) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:removeKeyboardBtn];
+
+    if (@available(iOS 13.0, *)) {
+    // Sign In With Apple Button
+    ASAuthorizationAppleIDButton *appleIDButton = [ASAuthorizationAppleIDButton new];
+
+    appleIDButton.frame =  CGRectMake(.0, .0, CGRectGetWidth(self.view.frame) - 40.0, 100.0);
+    CGPoint origin = CGPointMake(20.0, CGRectGetMidY(self.view.frame));
+    CGRect frame = appleIDButton.frame;
+    frame.origin = origin;
+    appleIDButton.frame = frame;
+    appleIDButton.cornerRadius = CGRectGetHeight(appleIDButton.frame) * 0.25;
+    [self.view addSubview:appleIDButton];
+    [appleIDButton addTarget:self action:@selector(handleAuthrization:) forControlEvents:UIControlEventTouchUpInside];
+    }
+
+    NSMutableString *mStr = [NSMutableString string];
+    [mStr appendString:@&quot;显示Sign In With Apple 登录信息\n&quot;];
+    _appleIDInfoTextView.text = [mStr copy];
+}
+
+#pragma mark - Actions
+
+//! 处理授权
+- (void)handleAuthrization:(UIButton *)sender {
+    if (@available(iOS 13.0, *)) {
+        // A mechanism for generating requests to authenticate users based on their Apple ID.
+        // 基于用户的Apple ID授权用户，生成用户授权请求的一种机制
+        ASAuthorizationAppleIDProvider *appleIDProvider = [ASAuthorizationAppleIDProvider new];
+        // Creates a new Apple ID authorization request.
+        // 创建新的AppleID 授权请求
+        ASAuthorizationAppleIDRequest *request = appleIDProvider.createRequest;
+        // The contact information to be requested from the user during authentication.
+        // 在用户授权期间请求的联系信息
+        request.requestedScopes = @[ASAuthorizationScopeFullName, ASAuthorizationScopeEmail];
+        // A controller that manages authorization requests created by a provider.
+        // 由ASAuthorizationAppleIDProvider创建的授权请求 管理授权请求的控制器
+        ASAuthorizationController *controller = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
+        // A delegate that the authorization controller informs about the success or failure of an authorization attempt.
+        // 设置授权控制器通知授权请求的成功与失败的代理
+        controller.delegate = self;
+        // A delegate that provides a display context in which the system can present an authorization interface to the user.
+        // 设置提供 展示上下文的代理，在这个上下文中 系统可以展示授权界面给用户
+        controller.presentationContextProvider = self;
+        // starts the authorization flows named during controller initialization.
+        // 在控制器初始化期间启动授权流
+        [controller performRequests];
+    }
+}
+</code></pre><p>3.2 获取授权码</p>
+<p>获取授权码这部分主要看2个代理ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding，及相应的代理方法中的实现。<br>ASAuthorizationControllerDelegate<br>An interface for providing information about the outcome of an authorization request.</p>
+<p>提供关于授权请求结果信息的接口<br>ASAuthorizationControllerPresentationContextProviding：<br>An interface the controller uses to ask a delegate for a presentation context.<br>控制器的代理找一个展示授权控制器的上下文的接口</p>
+<p>下边为实现代理方法的代码：</p>
+<pre><code>#pragma mark - Delegate
+
+//! 授权成功地回调
+- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization  API_AVAILABLE(ios(13.0)){
+
+NSLog(@&quot;%s&quot;, __FUNCTION__);
+NSLog(@&quot;%@&quot;, controller);
+NSLog(@&quot;%@&quot;, authorization);
+
+NSLog(@&quot;authorization.credential：%@&quot;, authorization.credential);
+
+NSMutableString *mStr = [NSMutableString string];
+mStr = [_appleIDInfoTextView.text mutableCopy];
+
+if ([authorization.credential isKindOfClass:[ASAuthorizationAppleIDCredential class]]) {
+    // 用户登录使用ASAuthorizationAppleIDCredential
+    ASAuthorizationAppleIDCredential *appleIDCredential = authorization.credential;
+    NSString *user = appleIDCredential.user;
+    //  需要使用钥匙串的方式保存用户的唯一信息 这里暂且处于测试阶段 是否的NSUserDefaults
+    [[NSUserDefaults standardUserDefaults] setValue:user forKey:QiShareCurrentIdentifier];
+    [mStr appendString:user?:@&quot;&quot;];
+    NSString *familyName = appleIDCredential.fullName.familyName;
+    [mStr appendString:familyName?:@&quot;&quot;];
+    NSString *givenName = appleIDCredential.fullName.givenName;
+    [mStr appendString:givenName?:@&quot;&quot;];
+    NSString *email = appleIDCredential.email;
+    [mStr appendString:email?:@&quot;&quot;];
+    NSLog(@&quot;mStr：%@&quot;, mStr);
+    [mStr appendString:@&quot;\n&quot;];
+    _appleIDInfoTextView.text = mStr;
+
+} else if ([authorization.credential isKindOfClass:[ASPasswordCredential class]]) {
+    // 用户登录使用现有的密码凭证
+    ASPasswordCredential *passwordCredential = authorization.credential;
+    // 密码凭证对象的用户标识 用户的唯一标识
+    NSString *user = passwordCredential.user;
+    // 密码凭证对象的密码
+    NSString *password = passwordCredential.password;
+    [mStr appendString:user?:@&quot;&quot;];
+    [mStr appendString:password?:@&quot;&quot;];
+    [mStr appendString:@&quot;\n&quot;];
+    NSLog(@&quot;mStr：%@&quot;, mStr);
+    _appleIDInfoTextView.text = mStr;
+} else {
+    NSLog(@&quot;授权信息均不符&quot;);
+    mStr = [@&quot;授权信息均不符&quot; mutableCopy];
+    _appleIDInfoTextView.text = mStr;
+}
+</code></pre><p>}</p>
+<pre><code>//! 授权失败的回调
+- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error  API_AVAILABLE(ios(13.0)){
+
+NSLog(@&quot;%s&quot;, __FUNCTION__);
+NSLog(@&quot;错误信息：%@&quot;, error);
+NSString *errorMsg = nil;
+switch (error.code) {
+    case ASAuthorizationErrorCanceled:
+        errorMsg = @&quot;用户取消了授权请求&quot;;
+        break;
+    case ASAuthorizationErrorFailed:
+        errorMsg = @&quot;授权请求失败&quot;;
+        break;
+    case ASAuthorizationErrorInvalidResponse:
+        errorMsg = @&quot;授权请求响应无效&quot;;
+        break;
+    case ASAuthorizationErrorNotHandled:
+        errorMsg = @&quot;未能处理授权请求&quot;;
+        break;
+    case ASAuthorizationErrorUnknown:
+        errorMsg = @&quot;授权请求失败未知原因&quot;;
+        break;
+}
+
+NSMutableString *mStr = [_appleIDInfoTextView.text mutableCopy];
+[mStr appendString:errorMsg];
+[mStr appendString:@&quot;\n&quot;];
+_appleIDInfoTextView.text = [mStr copy];
+
+if (errorMsg) {
+    return;
+}
+
+if (error.localizedDescription) {
+    NSMutableString *mStr = [_appleIDInfoTextView.text mutableCopy];
+    [mStr appendString:error.localizedDescription];
+    [mStr appendString:@&quot;\n&quot;];
+    _appleIDInfoTextView.text = [mStr copy];
+}
+NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
+/* // 取消授权的时候也会调用这里
+ ((ASAuthorizationAppleIDRequest *)(controller.authorizationRequests[0])).requestedScopes
+ &lt;__NSArrayI 0x2821e2520&gt;(
+ full_name,
+ email
+ )
+ */
+}
+
+
+//! Tells the delegate from which window it should present content to the user.
+//! 告诉代理应该在哪个window 展示内容给用户
+- (ASPresentationAnchor)presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller  API_AVAILABLE(ios(13.0)){
+
+    NSLog(@&quot;调用展示window方法：%s&quot;, __FUNCTION__);
+    // 返回window
+    return self.view.window;
+}
+</code></pre><p>授权登录成功后调试的时候查看到的用户信息相关内容：</p>
+<pre><code> po appleIDCredential.authorizationCode
+&lt;63636435 32316262 32666464 30346130 62616366 65336439 32636564 34383666 622e302e 6d727371 7a2e5853 47686543 5f354f6e 48786838 32766670 50484377&gt;
+
+(lldb) po appleIDCredential.user
+0012xx.d81c1988bb054e91beec303a4xxxxxxx.0xx6
+
+(lldb) po appleIDCredential.fullName
+&lt;NSPersonNameComponents: 0x281bf2070&gt; {givenName = YW, familyName = W, middleName = (null), namePrefix = (null), nameSuffix = (null), nickname = (null) phoneticRepresentation = (null) }
+
+(lldb) po appleIDCredential.email
+26xxxxx168@qq.com
+</code></pre><p>已经使用Sign In With Apple登录过app的用户</p>
+<p>执行已经登录过的场景。如果设备中存在iCloud Keychain 凭证或者AppleID 凭证提示用户直接使用TouchID或FaceID登录即可。</p>
+<pre><code>- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+
+    [self perfomExistingAccountSetupFlows];
+}
+
+//! Prompts the user if an existing iCloud Keychain credential or Apple ID credential is found.
+//! 如果存在iCloud Keychain 凭证或者AppleID 凭证提示用户
+- (void)perfomExistingAccountSetupFlows {
+    if (@available(iOS 13.0, *)) {
+        // A mechanism for generating requests to authenticate users based on their Apple ID.
+        // 基于用户的Apple ID授权用户，生成用户授权请求的一种机制
+        ASAuthorizationAppleIDProvider *appleIDProvider = [ASAuthorizationAppleIDProvider new];
+        // An OpenID authorization request that relies on the user’s Apple ID.
+        // 授权请求依赖于用于的AppleID
+        ASAuthorizationAppleIDRequest *authAppleIDRequest = [appleIDProvider createRequest];
+        // A mechanism for generating requests to perform keychain credential sharing.
+        // 为了执行钥匙串凭证分享生成请求的一种机制
+        ASAuthorizationPasswordRequest *passwordRequest = [[ASAuthorizationPasswordProvider new] createRequest];
+
+        NSMutableArray &lt;ASAuthorizationRequest *&gt;* mArr = [NSMutableArray arrayWithCapacity:2];
+        if (authAppleIDRequest) {
+            [mArr addObject:authAppleIDRequest];
+        }
+        if (passwordRequest) {
+            [mArr addObject:passwordRequest];
+        }
+        // ASAuthorizationRequest：A base class for different kinds of authorization requests.
+        // ASAuthorizationRequest：对于不同种类授权请求的基类
+        NSArray &lt;ASAuthorizationRequest *&gt;* requests = [mArr copy];
+
+        // A controller that manages authorization requests created by a provider.
+        // 由ASAuthorizationAppleIDProvider创建的授权请求 管理授权请求的控制器
+        // Creates a controller from a collection of authorization requests.
+        // 从一系列授权请求中创建授权控制器
+        ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:requests];
+        // A delegate that the authorization controller informs about the success or failure of an authorization attempt.
+        // 设置授权控制器通知授权请求的成功与失败的代理
+        authorizationController.delegate = self;
+        // A delegate that provides a display context in which the system can present an authorization interface to the user.
+        // 设置提供 展示上下文的代理，在这个上下文中 系统可以展示授权界面给用户
+        authorizationController.presentationContextProvider = self;
+        // starts the authorization flows named during controller initialization.
+        // 在控制器初始化期间启动授权流
+        [authorizationController performRequests];
+    }
+}
+</code></pre><p>3.3 Verification</p>
+<p>关于验证的这一步，服务端同学LY和笔者都认为是需要传递授权码给自己的服务端，自己的服务端调用苹果APIGenerate and validate tokens去校验授权码。但是相关的API 调用不通。总是提示grant_type 有问题。不过我们服务端同学LY在PC端使用Sign In With Apple做过相应地测试，发现苹果提供的授权码校验的API是通的。当然相关内容也可能是笔者理解有误，大家如果有不同的理解，敬请讨论。</p>
+<pre><code>{
+    &quot;error&quot;: &quot;unsupported_grant_type&quot;
+}
+</code></pre><p>3.4监听授权状态变化</p>
+<p>监听授权状态改变，并且做出相应处理。授权状态有：</p>
+<p>ASAuthorizationAppleIDProviderCredentialRevoked：授权状态失效（用户停止使用AppID 登录App）、</p>
+<p>ASAuthorizationAppleIDProviderCredentialAuthorized：已授权(已使用AppleID 登录过App）、</p>
+<p>ASAuthorizationAppleIDProviderCredentialNotFound：授权凭证缺失（可能是使用AppleID 登录过App）</p>
+<p>处理改变有2种处理方式，一种是通过通知的方式，另一种是监听当前的appleIDCredential.user 的授权状态。</p>
+<p>3.4.1 监听appleIDCredential.user 的授权状态，这部分代码可以放到AppDelegate的- (BOOL)application:(UIApplication <em>)application didFinishLaunchingWithOptions:(NSDictionary </em>)launchOptions中，判断是否需要展示出登录控制器。</p>
+<pre><code>#pragma mark - Private functions
+//! 观察授权状态
+- (void)observeAuthticationState {
+
+    if (@available(iOS 13.0, *)) {
+        // A mechanism for generating requests to authenticate users based on their Apple ID.
+        // 基于用户的Apple ID 生成授权用户请求的机制
+        ASAuthorizationAppleIDProvider *appleIDProvider = [ASAuthorizationAppleIDProvider new];
+        // 注意 存储用户标识信息需要使用钥匙串来存储 这里笔者简单期间 使用NSUserDefaults 做的简单示例
+        NSString *userIdentifier = [[NSUserDefaults standardUserDefaults] valueForKey:QiShareCurrentIdentifier];
+
+        if (userIdentifier) {
+            NSString* __block errorMsg = nil;
+            //Returns the credential state for the given user in a completion handler.
+            // 在回调中返回用户的授权状态
+            [appleIDProvider getCredentialStateForUserID:userIdentifier completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
+                switch (credentialState) {
+                        // 苹果证书的授权状态
+                    case ASAuthorizationAppleIDProviderCredentialRevoked:
+                        // 苹果授权凭证失效
+                        errorMsg = @&quot;苹果授权凭证失效&quot;;
+                        break;
+                    case ASAuthorizationAppleIDProviderCredentialAuthorized:
+                        // 苹果授权凭证状态良好
+                        errorMsg = @&quot;苹果授权凭证状态良好&quot;;
+                        break;
+                    case ASAuthorizationAppleIDProviderCredentialNotFound:
+                        // 未发现苹果授权凭证
+                        errorMsg = @&quot;未发现苹果授权凭证&quot;;
+                        // 可以引导用户重新登录
+                        break;
+                }
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    NSLog(@&quot;SignInWithApple授权状态变化情况&quot;);
+                    NSLog(@&quot;%@&quot;, errorMsg);
+                });
+            }];
+
+        }
+    }
+}
+</code></pre><p>3.4.2使用通知的方式检测是否授权应用支持Sign In With Apple变化情况。如下的代码可以根据自己的业务场景去考虑放置的位置。</p>
+<pre><code>//! 添加苹果登录的状态通知
+- (void)observeAppleSignInState {
+    if (@available(iOS 13.0, *)) {
+        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+        [center addObserver:self selector:@selector(handleSignInWithAppleStateChanged:) name:ASAuthorizationAppleIDProviderCredentialRevokedNotification object:nil];
+    }
+}
+
+//! 观察SignInWithApple状态改变
+- (void)handleSignInWithAppleStateChanged:(id)noti {
+
+    NSLog(@&quot;%s&quot;, __FUNCTION__);
+    NSLog(@&quot;%@&quot;, noti);
+}
+
+- (void)dealloc {
+
+    if (@available(iOS 13.0, *)) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:ASAuthorizationAppleIDProviderCredentialRevokedNotification object:nil];
+    }
+}
+</code></pre><p>相关示意图如下：</p>
+<p>1.首次使用AppleID登录或者停止使用AppleID登录后，再次使用Sign In With Apple的提示如下：</p>
+<p><img src="http://img.wangjungang.cn/V7TIos.png" alt=""></p>
+<p>2.使用Sign In With Apple登录成功的截图如下：</p>
+<p><img src="http://img.wangjungang.cn/xV846A.png" alt=""></p>
+<p>3.使用过AppleID登录过App，进入应用的时候会提示使用TouchID登录的场景如下：</p>
+<p><img src="http://img.wangjungang.cn/W0Io7M.png" alt=""></p>
+<p>4.使用Sign In With Apple登录成功的截图如下：</p>
+<p><img src="http://img.wangjungang.cn/yJ9kZT.png" alt=""></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/08/29/Sign in with Apple/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-多个网络请求的处理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1949,211 +2382,6 @@ NSDictionary *userInfo = @{
 
 
   
-    <article id="post-iOS中Cookie的存取" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/iOS中Cookie的存取/">iOS中Cookie的存取</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/23/iOS中Cookie的存取/" class="archive-article-date">
-  	<time datetime="2019-06-23T11:43:59.094Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当前一些公司为了快速出一款app，很多时候采用UINavigationController+WebView或者NavigationController+UITabbarVC+WebView的方式，这样就不可避免的需要使用cookie与Html5交互，下面讲述几种常用情景下cookie的添加方法：</p>
-<h2 id="UIWebView"><a href="#UIWebView" class="headerlink" title="UIWebView"></a>UIWebView</h2><pre><code>// 工厂类中存储cookie的方法
-+ (void)saveCookies {
-    // 创建一个可变字典存放cookie
-    NSMutableDictionary *fromappDict = [NSMutableDictionary dictionary];
-    [fromappDict setObject:@&quot;fromapp&quot; forKey:NSHTTPCookieName];
-    [fromappDict setObject:@&quot;ios&quot; forKey:NSHTTPCookieValue];
-    // kDomain是公司app网址
-    [fromappDict setObject:kDomain forKey:NSHTTPCookieDomain];
-    [fromappDict setObject:kDomain forKey:NSHTTPCookieOriginURL];
-    [fromappDict setObject:@&quot;/&quot; forKey:NSHTTPCookiePath];
-    [fromappDict setObject:@&quot;0&quot; forKey:NSHTTPCookieVersion];
-
-    // 将可变字典转化为cookie
-    NSHTTPCookie *cookie = [NSHTTPCookie cookieWithProperties:fromappDict];
-
-    // 获取cookieStorage
-    NSHTTPCookieStorage *cookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage]
-
-    // 存储cookie
-    [cookieStorage setCookie:cookie];
-}
-</code></pre><p>UIWebView使用时间较长，只要在cookieStorage中设置了相应的cookie，每次就会自动带上；</p>
-<p>但是这样的弊端是随着与H5的交互增加，Cookie占用的空间越来越大，每次交互都夹带大量的cookie，不仅增加服务器端压力，也浪费用户的流量。比如每次交互都夹带5kb的cookie内容，但是真正用到的只有两三百字节。</p>
-<h2 id="WKWebView"><a href="#WKWebView" class="headerlink" title="WKWebView"></a>WKWebView</h2><p>WKWebView相比于UIWebView：</p>
-<p>速度快了一倍，内存却减少为原来的一半；</p>
-<p>cookie不再是自动携带，需要手动设置；</p>
-<p>交互更加顺畅，比如app底部四个tabBar也都是网页的，在UIWebView下点击，整个H5页面都会闪白一下，但是在WKWebView下点击，四个tabBar效果与原生app效果更加类似，不会有闪白现象。</p>
-<p>增减了一些代理方法，更方便的进行协议拦截和进度条展示</p>
-<ul>
-<li><p>1.在创建的时候存放到WKUserScript中进行添加cookie</p>
-<pre><code>WKWebViewConfiguration *webConfig = [[WKWebViewConfiguration alloc] init];
-// 设置偏好设置
-webConfig.preferences = [[WKPreferences alloc] init];
-// 默认为0
-webConfig.preferences.minimumFontSize = 10;
-// 默认认为YES
-webConfig.preferences.javaScriptEnabled = YES;
-// 在iOS上默认为NO，表示不能自动通过窗口打开
-webConfig.preferences.javaScriptCanOpenWindowsAutomatically = NO;
-
-// web内容处理池
-webConfig.processPool = [[WKProcessPool alloc] init];
-// 将所有cookie以document.cookie = &apos;key=value&apos;;形式进行拼接
-#warning 然而这里的单引号一定要注意是英文的，不要问我为什么告诉你这个(手动微笑)
-NSString *cookieValue = @&quot;document.cookie = &apos;fromapp=ios&apos;;document.cookie = &apos;channel=appstore&apos;;&quot;;
-
-// 加cookie给h5识别，表明在ios端打开该地址
-WKUserContentController* userContentController = WKUserContentController.new;
-WKUserScript * cookieScript = [[WKUserScript alloc]
-                               initWithSource: cookieValue
-                               injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
-[userContentController addUserScript:cookieScript];
-webConfig.userContentController = userContentController;
-
-WKWebView *wkWebView = [[WKWebView alloc] initWithFrame:frame configuration:webConfig];
-
-wkWebView.UIDelegate = wkWebView;
-wkWebView.navigationDelegate = wkWebView;
-</code></pre></li>
-</ul>
-<ul>
-<li>2 .加载某个url的时候添加cookie</li>
-</ul>
-<p>如果WKWebView在加载url的时候需要添加cookie，需要先手动获取当前NSHTTPCookieStorage中的所有cookie，然后将cookie放到NSMutableURLRequest请求头中</p>
-<pre><code>- (void)loadRequestWithUrlString:(NSString *)urlString {
-
-    // 在此处获取返回的cookie
-    NSMutableDictionary *cookieDic = [NSMutableDictionary dictionary];
-
-    NSMutableString *cookieValue = [NSMutableString stringWithFormat:@&quot;&quot;];
-    NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-
-    for (NSHTTPCookie *cookie in [cookieJar cookies]) {
-        [cookieDic setObject:cookie.value forKey:cookie.name];
-    }
-
-    // cookie重复，先放到字典进行去重，再进行拼接
-    for (NSString *key in cookieDic) {
-        NSString *appendString = [NSString stringWithFormat:@&quot;%@=%@;&quot;, key, [cookieDic valueForKey:key]];
-        [cookieValue appendString:appendString];
-    }
-
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:urlString]];
-    [request addValue:cookieValue forHTTPHeaderField:@&quot;Cookie&quot;];
-
-    [self loadRequest:request];
-}
-</code></pre><h2 id="AFNetworking"><a href="#AFNetworking" class="headerlink" title="AFNetworking"></a>AFNetworking</h2><p>AFNetworking存取cookie就比较常见了，话不多说，都在代码里了</p>
-<pre><code>// 获取AFHTTPRequestOperationManager
-AFHTTPRequestOperationManager *operationManager = [AFHTTPRequestOperationManager manager];
-
-// 创建可变字典用于存放Cookie
-NSMutableDictionary *cookieDic = [NSMutableDictionary dictionary];
-
-// 存放新添加的cookie
-#warning 单个的Cookie还好，但是楼主在工厂类方法中拼接了一个包含6个设备信息的value值，最后忘记加分号了，测试也没测出来
-#warning 因为不影响功能，但是后面的cookie就自动拼接上了，H5那边也识别不到，险造成重大事故(涉及金融。。)，望后来者看到，提前做好准备(就凭这个坑，你得给我个赞)
-NSMutableString *cookieValue = [NSMutableString stringWithFormat:@&quot;fromapp=ios;&quot;];
-
-// 获取
-NSHTTPCookieStorage *cookieJar = [NSHTTPCookieStorage sharedHTTPCookieStorage];
-
-for (NSHTTPCookie *cookie in [cookieJar cookies]) {
-    [cookieDic setObject:cookie.value forKey:cookie.name];
-}
-
-// cookie重复，先放到字典去重，再进行拼接
-for (NSString *key in cookieDic) {
-    NSString *appendString = [NSString stringWithFormat:@&quot;%@=%@;&quot;, key, [cookieDic valueForKey:key]];
-    [cookieValue appendString:appendString];
-}
-
-// 将cookie存到请求头中
-[operationManager.requestSerializer setValue:cookieValue forHTTPHeaderField:@&quot;Cookie&quot;];
-
-//  拼接url地址
-NSString *urlStr = [NSString stringWithFormat:@&quot;%@%@&quot;, kHostIP, kPath];
-
-// 设置参数字典
-NSDictionary *paraDict = @{
-                              @&quot;key&quot; : value
-                              };
-// 发送请求，处理结果
-[operationManager POST:urlStr parameters:paraDict success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
-
-     NSLog(@&quot;responseObject--&gt;%@&quot;, responseObject);
-
-} failure:^(AFHTTPRequestOperation * _Nullable operation, NSError * _Nonnull error) {
-
-     NSLog(@&quot;error--&gt;%@&quot;, error);
-}];
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/iOS中Cookie的存取/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -2275,15 +2503,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2303,7 +2531,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2311,7 +2539,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
