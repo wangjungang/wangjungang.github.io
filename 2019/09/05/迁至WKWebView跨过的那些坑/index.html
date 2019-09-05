@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>关于swift的可选类型 | Blog</title>
+  <title>迁至WKWebView跨过的那些坑 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。 关于objcet-c和swift中对于nil的处理Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNo">
+  <meta name="description" content="写在前面在iOS中有两种网页视图可以加载网页除了系统的那个控制器。一种是UIWebView，另一种是WKWebView，其实WKWebView就是想替代UIWebView的，因为我们都知道UIWebView非常占内存等一些问题，但是现在很多人还在使用UIWebView这是为啥呢？而且官方也宣布在iOS12中废弃了UIWebView让我们尽快使用WKWebView。其实也就是这些东西：页面尺寸问题、">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于swift的可选类型">
-<meta property="og:url" content="http://yoursite.com/2018/09/18/关于swift的可选类型/index.html">
+<meta property="og:title" content="迁至WKWebView跨过的那些坑">
+<meta property="og:url" content="http://yoursite.com/2019/09/05/迁至WKWebView跨过的那些坑/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。 关于objcet-c和swift中对于nil的处理Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNo">
+<meta property="og:description" content="写在前面在iOS中有两种网页视图可以加载网页除了系统的那个控制器。一种是UIWebView，另一种是WKWebView，其实WKWebView就是想替代UIWebView的，因为我们都知道UIWebView非常占内存等一些问题，但是现在很多人还在使用UIWebView这是为啥呢？而且官方也宣布在iOS12中废弃了UIWebView让我们尽快使用WKWebView。其实也就是这些东西：页面尺寸问题、">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-18T15:16:01.893Z">
+<meta property="og:updated_time" content="2019-09-05T06:43:59.118Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于swift的可选类型">
-<meta name="twitter:description" content="写在前面swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。 关于objcet-c和swift中对于nil的处理Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNo">
+<meta name="twitter:title" content="迁至WKWebView跨过的那些坑">
+<meta name="twitter:description" content="写在前面在iOS中有两种网页视图可以加载网页除了系统的那个控制器。一种是UIWebView，另一种是WKWebView，其实WKWebView就是想替代UIWebView的，因为我们都知道UIWebView非常占内存等一些问题，但是现在很多人还在使用UIWebView这是为啥呢？而且官方也宣布在iOS12中废弃了UIWebView让我们尽快使用WKWebView。其实也就是这些东西：页面尺寸问题、">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,132 +155,284 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-关于swift的可选类型" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-迁至WKWebView跨过的那些坑" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      关于swift的可选类型
+      迁至WKWebView跨过的那些坑
     </h1>
   
 
         
-        <a href="/2018/09/18/关于swift的可选类型/" class="archive-article-date">
-  	<time datetime="2018-09-18T15:08:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
+        <a href="/2019/09/05/迁至WKWebView跨过的那些坑/" class="archive-article-date">
+  	<time datetime="2019-09-05T06:38:49.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。</p>
-<h3 id="关于objcet-c和swift中对于nil的处理"><a href="#关于objcet-c和swift中对于nil的处理" class="headerlink" title="关于objcet-c和swift中对于nil的处理"></a>关于objcet-c和swift中对于nil的处理</h3><p>Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNotFound)</p>
-<p>Swift中的nil:表示任意类型的值缺失，是一个确定的值，要么是该类型的一个值要么什么都没有(即为nil)</p>
-<h3 id="一、申明可选常量或变量"><a href="#一、申明可选常量或变量" class="headerlink" title="一、申明可选常量或变量"></a>一、申明可选常量或变量</h3><pre><code>let status: Int? = 1   // 申明可选Int类型的常量,初始值为1 
-var defaultAddress: String? = &quot;江苏南京&quot;   // 申明可选String类型的变量,初始值为&quot;江苏南京&quot;
-var student: Person? // 申明可选Person(自定义的类)的变量，初始值为nil
-</code></pre><p>注意：Int?与Int不相同，Int?表示可选的Int类型，可以赋值为nil，而Int不可以赋值为nil</p>
-<h3 id="二、使用”-”强制解析获取可选类型的值-不建议直接使用"><a href="#二、使用”-”强制解析获取可选类型的值-不建议直接使用" class="headerlink" title="二、使用”!”强制解析获取可选类型的值(不建议直接使用)"></a>二、使用”!”强制解析获取可选类型的值(不建议直接使用)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
-if defaultAddress != nil { // !=或==可以用来判断是否为nil
-    print(&quot;您的地址是\(defaultAddress!)&quot;) // 使用!强制解析
-} else {
-    print(&quot;对不起，您不存在地址信息&quot;)
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS中有两种网页视图可以加载网页除了系统的那个控制器。一种是UIWebView，另一种是WKWebView，其实WKWebView就是想替代UIWebView的，因为我们都知道UIWebView非常占内存等一些问题，但是现在很多人还在使用UIWebView这是为啥呢？而且官方也宣布在iOS12中废弃了UIWebView让我们尽快使用WKWebView。其实也就是这些东西：<strong>页面尺寸问题、JS交互、请求拦截、cookie带不上的问题。</strong>所以有时想要迁移还得解决这些问题，所以还是很烦的，所以一一解决喽。</p>
+<h2 id="页面尺寸的问题"><a href="#页面尺寸的问题" class="headerlink" title="页面尺寸的问题"></a>页面尺寸的问题</h2><p>我们知道有些网页在UIWebView上显示好好地，使用WKWebView就会出现尺寸的问题，这时很纳闷，安卓也不会，你总不说是前端的问题吧？但其实是WKWebView中网页是需要适配一下，所以自己添加JS吧，当然和前端关系好就可以叫他加的。下面通过设置配置中的userContentController来添加JS。</p>
+<pre><code>WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+NSString *jScript = @&quot;var meta = document.createElement(&apos;meta&apos;); meta.setAttribute(&apos;name&apos;, &apos;viewport&apos;); meta.setAttribute(&apos;content&apos;, &apos;width=device-width&apos;); document.getElementsByTagName(&apos;head&apos;)[0].appendChild(meta);&quot;;
+WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+WKUserContentController *wkUController = [[WKUserContentController alloc] init];
+[wkUController addUserScript:wkUScript];
+configuration.userContentController = wkUController;
+</code></pre><h2 id="JS交互"><a href="#JS交互" class="headerlink" title="JS交互"></a>JS交互</h2><p>我们都知道在UIWebView中可以使用自家的JavaScriptCore来进行交互非常的方便。在JavaScriptCore中有三者比较常用那就是JSContext(上下文)、JSValue（类型转换）、JSExport(js调OC模型方法)。</p>
+<h3 id="在UIWebView中的便利交互方法"><a href="#在UIWebView中的便利交互方法" class="headerlink" title="在UIWebView中的便利交互方法"></a>在UIWebView中的便利交互方法</h3><pre><code>//JSContext就为其提供着运行环境 H5上下文
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    JSContext *jsContext = [self.webView valueForKeyPath:@&quot;documentView.webView.mainFrame.javaScriptContext&quot;];
+    self.jsContext = jsContext;
+}
+// 执行脚本增加js全局变量
+[self.jsContext evaluateScript:@&quot;var arr = [3, &apos;3&apos;, &apos;abc&apos;];&quot;];
+// ⚠️添加JS方法，需要注意的是添加的方法会覆盖原有的JS方法，因为我们是在网页加载成功后获取上下文来操作的。
+// 无参数的
+self.jsContext[@&quot;alertMessage&quot;] = ^() {
+   NSLog(@&quot;JS端调用alertMessage时就会跑到这里来！&quot;);
+};
+// 带参数的，值必须进行转换
+ self.jsContext[@&quot;showDict&quot;] = ^(JSValue *value) {
+    NSArray *args = [JSContext currentArguments];
+    JSValue *dictValue = args[0];
+    NSDictionary *dict = dictValue.toDictionary;
+    NSLog(@&quot;%@&quot;,dict);
+ };
+// 获取JS中的arr数据
+JSValue *arrValue = self.jsContext[@&quot;arr&quot;];
+// 异常捕获
+self.jsContext.exceptionHandler = ^(JSContext *context, JSValue *exception) {
+    weakSelf.jsContext.exception = exception;
+    NSLog(@&quot;exception == %@&quot;,exception);
+};
+// 给JS中的对象重新赋值
+OMJSObject *omObject = [[OMJSObject alloc] init];
+self.jsContext[@&quot;omObject&quot;] = omObject;
+NSLog(@&quot;omObject == %d&quot;,[omObject getSum:20 num2:40]);
+
+// 我们都知道object必须要遵守JSExport协议时，js可以直接调用object中的方法，并且需要把函数名取个别名。在JS端可以调用getS，OC可以继续使用这个getSum这个方法
+@protocol OMProtocol &lt;JSExport&gt;
+// 协议 - 协议方法 
+JSExportAs(getS, -(int)getSum:(int)num1 num2:(int)num2);
+@end
+</code></pre><h3 id="在WKWebView中如何做呢？"><a href="#在WKWebView中如何做呢？" class="headerlink" title="在WKWebView中如何做呢？"></a>在WKWebView中如何做呢？</h3><p>不能像上面那样，系统提供的是通过以下两种方法，所以是比较难受，而且还得前端使用messageHandler来调用，即安卓和iOS分开处理。</p>
+<pre><code>// 直接调用js
+NSString *jsStr = @&quot;var arr = [3, &apos;3&apos;, &apos;abc&apos;]; &quot;;
+[self.webView evaluateJavaScript:jsStr completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+   NSLog(@&quot;%@----%@&quot;,result, error);
+}];
+// 下面是注册名称后，js使用messageHandlers调用了指定名称就会进入到代理中
+
+// OC我们添加了js名称后
+- (void)viewDidLoad{
+  //...
+  [wkUController addScriptMessageHandler:self name:@&quot;showtime&quot;];
+  configuration.userContentController = wkUController;
 }
 
-var student: Person?
-print(&quot;学生为\(student!)&quot;) // XCode会提示运行错误，因为student初始值为nil，强制解析不行
-</code></pre><h3 id="三、使用可选绑定获取可选类型的值-建议的用法"><a href="#三、使用可选绑定获取可选类型的值-建议的用法" class="headerlink" title="三、使用可选绑定获取可选类型的值(建议的用法)"></a>三、使用可选绑定获取可选类型的值(建议的用法)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
-if let address = defaultAddress { // 如果defaultAddress有值或类型转换成功，则将值赋值给address直接使用
-    print(&quot;您的地址是\(address)&quot;)  // 使用address代替defaultAddress，且不需要加!强制解析
-} else {
-    print(&quot;对不起，您不存在地址信息&quot;)
-}
-</code></pre><h3 id="四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><a href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil" class="headerlink" title="四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)"></a>四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</h3><pre><code>var mobileNumber: Int64! = 13912345678 // 第一次申明有初始值
-print(&quot;您的电话号码是\(mobileNumber)&quot;) // 不需要使用!强制解析
-// 打印内容:**您的电话号码是****Optional(13912345678)**
-// 还是不建议直接强制解析，因为实际项目中可能中间已经对该值做了改变，若为nil则会运行错误导致APP崩溃
-if let number = mobileNumber { // 建议的做法
-    print(&quot;您的电话号码是\(number)&quot;)
-// 打印内容:**您的电话号码是****13912345678**
-} else {
-    print(&quot;您没有记录电话号码&quot;)
-}
-</code></pre><h3 id="空合运算符-用于判断变量或常量是否为nil"><a href="#空合运算符-用于判断变量或常量是否为nil" class="headerlink" title="空合运算符(用于判断变量或常量是否为nil)"></a>空合运算符(用于判断变量或常量是否为nil)</h3><pre><code>// 空合运算符：a ?? b 判断a是否为nil，若a不为nil对a解封，否则返回b的值
-var status: Int? // 申明可选Int类型的变量status，初始值为nil
-status ?? 0 // 因为status为nil，则返回0
-// ?? 即为以下if else的缩写
-func testOption() -&gt; Int {
-    let status: Int? = 1
-    if status == nil {
-        return 0
-    } else {
-        return status!
+// JS中messageHandlers调用我们在OC中的名称一致时就会进入后面的到OC的代理
+window.webkit.messageHandlers.showtime.postMessage(&apos;&apos;);
+
+// 代理，判断逻辑
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message{
+    if ([message.name isEqualToString:@&quot;showtime&quot;]) {
+        NSLog(@&quot;来了！&quot;);
     }
-}
-</code></pre><h3 id="六、函数-方法返回类型为可选类型"><a href="#六、函数-方法返回类型为可选类型" class="headerlink" title="六、函数/方法返回类型为可选类型"></a>六、函数/方法返回类型为可选类型</h3><h4 id="A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等"><a href="#A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等" class="headerlink" title="A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)"></a>A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)</h4><pre><code>func returnPossibleValue(value: Bool) -&gt; String? { // 返回类型为可选String类型
-    if value {
-        return &quot;返回类型是可选类型值&quot; // 如果为真，返回Int类型的值1
-    } else {
-        return nil // 如果为假，返回nil
-    }
+    NSLog(@&quot;message == %@ --- %@&quot;,message.name,message.body); 
 }
 
-let possibleValue = returnPossibleValue(value: true) // 要用可选绑定判断再使用，因为possibleValue为String？可选类型
-if let value = possibleValue {
-    print(value)
-} else {
-    print(&quot;none value&quot;)
-}
-</code></pre><h4 id="B-返回值为可选类型的类-如URL-、自定义Person-等"><a href="#B-返回值为可选类型的类-如URL-、自定义Person-等" class="headerlink" title="B:返回值为可选类型的类(如URL?、自定义Person?等)"></a>B:返回值为可选类型的类(如URL?、自定义Person?等)</h4><pre><code>class SomeClass {
-    var someValue: Int
-    init?(someValue: Int) { // 可失败构造器
-        if someValue == 1 { return nil }
-        self.someValue = someValue
-    }
+// 最后在dealloc必须移除
+[self.userContentController removeScriptMessageHandlerForName:@&quot;showtime&quot;];
+</code></pre><h3 id="一直用一直爽的交互"><a href="#一直用一直爽的交互" class="headerlink" title="一直用一直爽的交互"></a>一直用一直爽的交互</h3><p>我们上面写了两者的一些交互，虽然可以用呢，但是没有带一种很简单很轻松的境界，所以有一个开源库：WebViewJavaScriptBridge。这个开源库可以同时兼容两者，而且交互很简单，但是你必须得前端一起，否则就哦豁了。</p>
+<pre><code>// 使用
+self.wjb = [WebViewJavascriptBridge bridgeForWebView:self.webView];
+// 如果你要在VC中实现 UIWebView的代理方法 就实现下面的代码(否则省略)
+[self.wjb setWebViewDelegate:self];
+
+// 注册js方法名称
+[self.wjb registerHandler:@&quot;jsCallsOC&quot; handler:^(id data, WVJBResponseCallback responseCallback) {
+   NSLog(@&quot;currentThread == %@&quot;,[NSThread currentThread]);
+   NSLog(@&quot;data == %@ -- %@&quot;,data,responseCallback);
+}];
+
+// 调用JS
+dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [self.wjb callHandler:@&quot;OCCallJSFunction&quot; data:@&quot;OC调用JS&quot; responseCallback:^(id responseData) {
+           NSLog(@&quot;currentThread == %@&quot;,[NSThread currentThread]);
+           NSLog(@&quot;调用完JS后的回调：%@&quot;,responseData);
+        }];
+});
+</code></pre><p>前端使用实例如下，具体使用方法可以查看WebViewJavaScriptBridge。</p>
+<pre><code>function setupWebViewJavascriptBridge(callback) {
+    if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
+    if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
+    window.WVJBCallbacks = [callback];
+    var WVJBIframe = document.createElement(&apos;iframe&apos;);
+    WVJBIframe.style.display = &apos;none&apos;;
+    WVJBIframe.src = &apos;https://__bridge_loaded__&apos;;
+    document.documentElement.appendChild(WVJBIframe);
+    setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
 }
 
-func returnPossibleClass(value: Bool) -&gt; SomeClass? { // 返回的类实例可能为nil
-    if value {
-        return SomeClass(someValue: 1) // 返回的为nil
-    } else {
-        return SomeClass(someValue: 2) // 返回的SomeClass?实例，不为nil
-    }
+setupWebViewJavascriptBridge(function(bridge) {
+
+    /* Initialize your app here */
+
+    bridge.registerHandler(&apos;JS Echo&apos;, function(data, responseCallback) {
+        console.log(&quot;JS Echo called with:&quot;, data)
+        responseCallback(data)
+    })
+    bridge.callHandler(&apos;ObjC Echo&apos;, {&apos;key&apos;:&apos;value&apos;}, function responseCallback(responseData) {
+        console.log(&quot;JS received response:&quot;, responseData)
+    })
+})
+</code></pre><h2 id="请求拦截"><a href="#请求拦截" class="headerlink" title="请求拦截"></a>请求拦截</h2><p>我们UIWebView在早期是使用- (BOOL)webView:(UIWebView <em>)webView shouldStartLoadWithRequest:(NSURLRequest </em>)request navigationType:(UIWebViewNavigationType)navigationType来根据scheme、host、pathComponents进行拦截做自定义逻辑处理。但是这种方法不是很灵活，于是就使用NSURLProtocol来进行拦截，例如微信拦截淘宝一样，直接显示一个提示。又或者是拦截请求调用本地的接口，打开相机、录音、相册等功能。还能直接拦截后改变原有的request，直接返回数据或者其他的url，在一些去除广告时可以的用得上。</p>
+<p>我们使用的时候必须要使用NSURLProtocol的子类来进行一些操作。并在使用前需要注册自定义的Class。拦截后记得进行标记一下，防止自循环多执行。可惜的是在WKWebView中不能进行拦截后处理的操作，只能监听却改变不了。源于WKWebView采用的是webkit加载，和系统的浏览器一样的机制。</p>
+<pre><code>// 子类
+@interface OMURLProtocol : NSURLProtocol&lt;NSURLSessionDataDelegate&gt;
+@property (nonatomic, strong) NSURLSession *session;
+@end
+
+// 注册
+[NSURLProtocol registerClass:[OMURLProtocol class]];
+// 1. 首先会在这里来进行拦截，返回YES则表示需要经过我们自定义处理，NO则走系统处理
++ (BOOL)canInitWithRequest:(NSURLRequest *)request;
+
+// 2.拦截处理将会进入下一个环节, 返回一个标准化的request，可以在这里进行重定向
++ (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request;
+
+// 3.是否成功拦截都会走这个方法, 可以在这里进行一些自定义处理
+- (void)startLoading;
+
+// 4. 任何网络请求都会走上面的拦截处理，即使我们重定向后还会再走一次或多次流程，需要标记来处理
+// 根据request获取标记值来决定是否需要拦截，在canInitWithRequest内处理
++ (nullable id)propertyForKey:(NSString *)key inRequest:(NSURLRequest *)request;
+// 标记
++ (void)setProperty:(id)value forKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
+// 移除标记
++ (void)removePropertyForKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
+</code></pre><h3 id="请求头或数据混乱问题"><a href="#请求头或数据混乱问题" class="headerlink" title="请求头或数据混乱问题"></a>请求头或数据混乱问题</h3><p>还需要注意的一点是，如果实现线了拦截处理的话，我们在使用AFN和URLSession进行访问的时候拦截会发现数据或请求头可能和你拦截处理后的数据或请求不符合预期，这是因为我们在拦截的时候只是先请求了A后请求了B，这是不符合预期的，虽然URLConnection不会但是已被废弃不值得提倡使用。我们通过在拦截的时候通过LLDB打印session中配置的协议时，发现是这样的没有包含我们自定义的协议，我们通过Runtime交换方法交换protocolClasses方法，我们实现我们自己的protocolClasses方法。但是为了保证系统原有的属性，我们应该在系统原有的协议表上加上我们的协议类。在当前我们虽然可以通过[NSURLSession sharedSession].configuration.protocolClasses;获取系统默认的协议类，但是如果我们在当前自定义的类里protocolClasses写的话会造成死循环，因为我们交换了该属性的getter方法。我们使用保存类名然后存储至NSUserDefaults，取值时在还原class。</p>
+<pre><code>po session.configuration.protocolClasses
+&lt;__NSArrayI 0x600001442d00&gt;(
+_NSURLHTTPProtocol,
+_NSURLDataProtocol,
+_NSURLFTPProtocol,
+_NSURLFileProtocol,
+NSAboutURLProtocol
+)
+
+
+--- // 自定义返回我们的协议类
+- (NSArray *)protocolClasses {
+    NSArray *originalProtocols = [OMURLProtocol readOriginalProtocols];
+    NSMutableArray *newProtocols = [NSMutableArray arrayWithArray:originalProtocols];
+    [newProtocols addObject:[OMURLProtocol class]];
+    return newProtocols;
 }
-</code></pre><h4 id="C-返回值为可选类型的闭包-如-gt-void"><a href="#C-返回值为可选类型的闭包-如-gt-void" class="headerlink" title="C:返回值为可选类型的闭包(如(()-&gt; (void))? )"></a>C:返回值为可选类型的闭包(如(()-&gt; (void))? )</h4><pre><code>func returnOptionalFunc(value: Bool) -&gt; (() -&gt; (Void))? { // 返回类型为可选类型的闭包
-    if value {
-        return { () in
-            print(&quot;返回类型是可选类型闭包&quot;)
+
+// 我们再次打印时发现已经加上我们自定义的协议类了
+po session.configuration.protocolClasses
+&lt;__NSArrayM 0x60000041a4f0&gt;(
+_NSURLHTTPProtocol,
+_NSURLDataProtocol,
+_NSURLFTPProtocol,
+_NSURLFileProtocol,
+NSAboutURLProtocol,
+OMURLProtocol
+)
+</code></pre><hr>
+<pre><code>// 存储系统原有的协议类
++ (void)saveOriginalProtocols: (NSArray&lt;Class&gt; *)protocols{
+    NSMutableArray *protocolNameArray = [NSMutableArray array];
+    for (Class protocol in protocols){
+        [protocolNameArray addObject:NSStringFromClass(protocol)];
+    }
+    NSLog(@&quot;协议数组为： %@&quot;, protocolNameArray);
+    [[NSUserDefaults standardUserDefaults] setObject:protocolNameArray forKey:originalProtocolsKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+// 获取系统原有的协议类
++ (NSArray&lt;Class&gt; *)readOriginalProtocols{
+    NSArray *classNames = [[NSUserDefaults standardUserDefaults] valueForKey:originalProtocolsKey];
+    NSMutableArray *origianlProtocols = [NSMutableArray array];
+    for (NSString *name in classNames){
+        Class class = NSClassFromString(name);
+        [origianlProtocols addObject: class];
+    }
+    return origianlProtocols;
+}
+</code></pre><hr>
+<pre><code>+ (void)hookNSURLSessionConfiguration{
+    NSArray *originalProtocols = [NSURLSession sharedSession].configuration.protocolClasses;
+    [self saveOriginalProtocols:originalProtocols];
+    Class cls = NSClassFromString(@&quot;__NSCFURLSessionConfiguration&quot;) ?: NSClassFromString(@&quot;NSURLSessionConfiguration&quot;);
+    Method originalMethod = class_getInstanceMethod(cls, @selector(protocolClasses));
+    Method stubMethod = class_getInstanceMethod([self class], @selector(protocolClasses));
+    if (!originalMethod || !stubMethod) {
+        [NSException raise:NSInternalInconsistencyException format:@&quot;没有这个方法 无法交换&quot;];
+    }
+    method_exchangeImplementations(originalMethod, stubMethod);
+}
+</code></pre><h3 id="Cookie的携带问题"><a href="#Cookie的携带问题" class="headerlink" title="Cookie的携带问题"></a>Cookie的携带问题</h3><p>很多应用场景中需要使用session来进行处理，在UIWebView中很容易做到携带这些Cookie，但是由于WKWebView的机制不一样，跨域会出现丢失cookie的情况是很糟糕的。目前有两种用法：脚本和手动添加cookie。脚本不太靠谱，建议使用手动添加更为保险。</p>
+<p>// 使用脚本来添加cookie</p>
+<pre><code>// 获取去cookie数据
+- (NSString *)cookieString
+{
+    NSMutableString *script = [NSMutableString string];
+    [script appendString:@&quot;var cookieNames = document.cookie.split(&apos;; &apos;).map(function(cookie) { return cookie.split(&apos;=&apos;)[0] } );\n&quot;];
+    for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]) {
+
+        if ([cookie.value rangeOfString:@&quot;&apos;&quot;].location != NSNotFound) {
+            continue;
         }
+        [script appendFormat:@&quot;if (cookieNames.indexOf(&apos;%@&apos;) == -1) { document.cookie=&apos;%@&apos;; };\n&quot;, cookie.name, cookie.kc_formatCookieString];
+    }
+    return script;
+}
+
+// 添加cookie
+WKUserScript * cookieScript = [[WKUserScript alloc] initWithSource:[self cookieString] injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
+[[[WKUserContentController alloc] init] addUserScript: cookieScript];
+</code></pre><p>// 添加一个分类来修复cookie丢失的问题</p>
+<pre><code>@interface NSURLRequest (Cookie)
+
+- (NSURLRequest *)fixCookie;
+
+@end
+
+@implementation NSURLRequest (Cookie)
+
+- (NSURLRequest *)fixCookie{
+    NSMutableURLRequest *fixedRequest;
+    if ([self isKindOfClass:[NSMutableURLRequest class]]) {
+        fixedRequest = (NSMutableURLRequest *)self;
     } else {
-        return nil
+        fixedRequest = self.mutableCopy;
     }
-}
-
-let possibleFunc = returnOptionalFunc(value: true) // 要用可选绑定判断再使用，因为possibleFunc 为可选类型的闭包，类型为() -&gt; (Void)
-if let aFunc = possibleFunc {
-    print(aFunc())  // 注意增加()调用闭包，因为没有参数则是空括号
-} else {
-    print(&quot;none func&quot;)
-}
-</code></pre><h3 id="七、可选类型在类或结构体中的运用"><a href="#七、可选类型在类或结构体中的运用" class="headerlink" title="七、可选类型在类或结构体中的运用"></a>七、可选类型在类或结构体中的运用</h3><h4 id="A-可选类型在类中的运用"><a href="#A-可选类型在类中的运用" class="headerlink" title="A:可选类型在类中的运用"></a>A:可选类型在类中的运用</h4><pre><code>class PossibleClass {
-    var someValue: Int
-    var possibleValue: String? // 可选存储属性，默认值为nil
-    init(someValue: Int) { // 构造方法中可以不对possibleValue属性初始化
-        self.someValue = someValue
+    //防止Cookie丢失
+    NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:[NSHTTPCookieStorage sharedHTTPCookieStorage].cookies];
+    if (dict.count) {
+        NSMutableDictionary *mDict = self.allHTTPHeaderFields.mutableCopy;
+        [mDict setValuesForKeysWithDictionary:dict];
+        fixedRequest.allHTTPHeaderFields = mDict;
     }
+    return fixedRequest;
 }
 
-let someClass = PossibleClass(someValue: 4) // 实例化对象时不需要对possibleValue初始化，someClass实例中：someValue为4，possibleValue为nil
-</code></pre><p>注意：类中所有属性都需要有默认值。属性可以在申明时赋予初始值，也可以在构造方法中赋予初始值；子类继承父类时，必须先给自身属性先初始化后再继承父类构造方法初始化。一般的，出于安全的因素，子类的属性都赋予初始值或直接定义为可选类型。</p>
-<h4 id="B-可选类型在结构体中的运用"><a href="#B-可选类型在结构体中的运用" class="headerlink" title="B:可选类型在结构体中的运用"></a>B:可选类型在结构体中的运用</h4><pre><code>struct PossibleStruct {
-    var someValue: Int
-    var possibleValue: String? // 可选存储属性，默认值为nil
-    // 结构体中可以自定义一个init构造器对属性初始化，也可以不自定义
-}
+@end
 
-let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
+
+  // 使用场景
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    [navigationAction.request fixCookie];
+    decisionHandler(WKNavigationActionPolicyAllow);
+}
 </code></pre>
       
 
@@ -371,7 +523,7 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/18/关于swift的可选类型/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/05/迁至WKWebView跨过的那些坑/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -385,18 +537,9 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
   
 <nav id="article-nav">
   
-    <a href="/2018/09/18/关于swift中的单例模式/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          关于swift中的单例模式
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/09/17/iOS关于nsstring的copy和strong/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">iOS关于nsstring的copy和strong</div>
+    <a href="/2019/09/05/大型互联网公司分布式ID方案总结/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">大型互联网公司分布式ID方案总结</div>
       <i class="icon-circle-right"></i>
     </a>
   
