@@ -152,6 +152,994 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Swift 关键字" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/05/Swift 关键字/">Swift 关键字</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/05/Swift 关键字/" class="archive-article-date">
+  	<time datetime="2019-09-05T02:31:03.745Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>对于自身能力的严格要求，可以帮助实现我们所有梦寐以求的东西。</p>
+<h2 id="声明式关键字"><a href="#声明式关键字" class="headerlink" title="声明式关键字"></a>声明式关键字</h2><h3 id="associatedtype"><a href="#associatedtype" class="headerlink" title="associatedtype"></a>associatedtype</h3><p>在协议中，定义一个类型的占位符名称。直到协议被实现，该占位符才会被指定具体的类型。</p>
+<pre><code>protocol Entertainment  
+{  
+    associatedtype MediaType  
+}
+
+class Foo : Entertainment  
+{  
+    typealias MediaType = String //可以指定任意类型
+}
+</code></pre><h3 id="class"><a href="#class" class="headerlink" title="class"></a>class</h3><p>通用、灵活的结构体，是程序的基础组成部分。与 struct 类似，不同之处在于：</p>
+<ul>
+<li><p>允许一个类继承另一个类的特性。</p>
+</li>
+<li><p>类型转换，允许在运行时检查和指定一个类的实际类型。</p>
+</li>
+<li><p>析构方法允许类的实例释放所有资源。</p>
+</li>
+<li><p>引用计数允许多个引用指向一个实例。</p>
+<pre><code>class Person
+{
+var name:String
+var age:Int
+var gender:String
+}
+</code></pre></li>
+</ul>
+<p>###deinit<br>当一个类的实例即将被销毁时，会调用这个方法。</p>
+<pre><code>class Person  
+{  
+    var name:String  
+    var age:Int  
+    var gender:String
+
+    deinit  
+    {  
+        //从堆中释放，并释放的资源
+    }  
+}
+</code></pre><p>###enum<br>定义了包含一组有关联的值的类型，并可以以一种类型安全的方式使用这些值。在 Swift 中，枚举是一等类型，拥有在其它语言中只有 class 才会支持的特性</p>
+<pre><code>enum Gender  
+{  
+    case male  
+    case female  
+}
+</code></pre><h3 id="extension"><a href="#extension" class="headerlink" title="extension"></a>extension</h3><p>允许给已有的类、结构体、枚举、协议类型，添加新功能</p>
+<pre><code>class Person  
+{  
+    var name:String = &quot;&quot;  
+    var age:Int = 0  
+    var gender:String = &quot;&quot;  
+}
+
+extension Person  
+{  
+    func printInfo()  
+    {  
+        print(&quot;My name is \(name), I&apos;m \(age) years old and I&apos;m a \(gender).&quot;)  
+    }  
+}
+</code></pre><h3 id="fileprivate"><a href="#fileprivate" class="headerlink" title="fileprivate"></a>fileprivate</h3><p>访问控制权限，只允许在定义源文件中访问</p>
+<pre><code>class Person  
+{  
+    fileprivate var jobTitle:String = &quot;&quot;  
+}
+
+extension Person  
+{
+    //当 extension 和 class 在同一个文件中时，允许访问
+    func printJobTitle()  
+    {  
+        print(&quot;My job is (jobTitle)&quot;)  
+    }  
+}
+</code></pre><h3 id="func"><a href="#func" class="headerlink" title="func"></a>func</h3><p>包含用户执行特定任务的代码块</p>
+<pre><code>func addNumbers(num1:Int, num2:Int) -&gt; Int  
+{  
+    return num1+num2  
+}
+</code></pre><h3 id="import"><a href="#import" class="headerlink" title="import"></a>import</h3><p>引入一个以独立单元构建的框架或者应用</p>
+<pre><code>import UIKit
+
+//可以使用 UIKit 框架下的所有代码
+class Foo {}
+</code></pre><h3 id="init"><a href="#init" class="headerlink" title="init"></a>init</h3><p>类、结构体、枚举的实例的初始化准备过程</p>
+<pre><code>class Person
+{  
+    init()  
+    {  
+        //设置默认值，实例准备被使用
+    }  
+}
+</code></pre><h3 id="inout"><a href="#inout" class="headerlink" title="inout"></a>inout</h3><p>将一个值传入函数，并可以被函数修改，然后将值传回到调用处，来替换初始值。适用于引用类型和值类型。</p>
+<pre><code>func dangerousOp(_ error:inout NSError?)  
+{  
+    error = NSError(domain: &quot;&quot;, code: 0, userInfo: [&quot;&quot;:&quot;&quot;])  
+}
+
+var potentialError:NSError?
+dangerousOp(&amp;potentialError)
+
+//代码运行到这里，potentialError 不再是 nil，而是已经被初始化
+</code></pre><h3 id="internal"><a href="#internal" class="headerlink" title="internal"></a>internal</h3><p>访问控制权限，允许同一个模块下的所有源文件访问，如果在不同模块下则不允许访问。</p>
+<pre><code>class Person  
+{  
+    internal var jobTitle:String = &quot;&quot;  
+}
+
+let aPerson = Person()  
+aPerson.jobTitle = &quot;This can set anywhere in the application&quot;
+</code></pre><h3 id="let"><a href="#let" class="headerlink" title="let"></a>let</h3><p>定义一个不可变的变量</p>
+<pre><code>let constantString = &quot;This cannot be mutated going forward&quot;
+</code></pre><h3 id="open"><a href="#open" class="headerlink" title="open"></a>open</h3><p>访问控制权限，允许在定义的模块外也可以访问源文件里的所有类，并进行子类化。对于类成员，允许在定义的模块之外访问和重写。</p>
+<pre><code>open var foo:String? //这个属性允许在 app 内或 app 外重写和访问。在开发框架的时候，会应用到这个访问修饰符。
+</code></pre><h3 id="operator"><a href="#operator" class="headerlink" title="operator"></a>operator</h3><pre><code>特殊符号，用于检查、修改、组合值。
+
+//一元运算符 &quot;-&quot;，改变值的符号
+let foo = 5  
+let anotherFoo = -foo //anotherFoo 等于 -5
+
+//二元运算符 &quot;+&quot; 将两个值相加
+let box = 5 + 3
+
+//逻辑运算符 &quot;&amp;&amp;&quot; 将两个布尔值进行组合运算
+if didPassCheckOne &amp;&amp; didPassCheckTwo
+
+//三元运算符需要使用三个值
+let isLegalDrinkingAgeInUS:Bool = age &gt;= 21 ? true : false
+</code></pre><h3 id="private"><a href="#private" class="headerlink" title="private"></a>private</h3><p>访问控制权限，只允许实体在定义的类以及相同源文件内的 extension 中访问。</p>
+<pre><code>class Person  
+{  
+    private var jobTitle:String = &quot;&quot;  
+}
+
+// 当 extension 和 class 不在同一个源文件时
+extension Person  
+{
+    // 无法编译通过，只有在同一个源文件下才可以访问
+    func printJobTitle()  
+    {  
+        print(&quot;My job is (jobTitle)&quot;)  
+    }  
+}
+</code></pre><h3 id="protocol"><a href="#protocol" class="headerlink" title="protocol"></a>protocol</h3><p>定义了一组方法、属性或其它要求，用于满足特定任务和一系列功能。</p>
+<pre><code>protocol Blog  
+{  
+    var wordCount:Int { get set }  
+    func printReaderStats()  
+}
+
+class TTIDGPost : Blog  
+{  
+    var wordCount:Int
+
+    init(wordCount:Int)  
+    {  
+        self.wordCount = wordCount  
+    }
+
+    func printReaderStats()  
+    {  
+        //打印 post 的数据  
+    }  
+}
+</code></pre><h3 id="public"><a href="#public" class="headerlink" title="public"></a>public</h3><p>访问控制权限，允许在定义的模块外也可以访问源文件里的所有类，但只有在同一个模块内可以进行子类化。对于类成员，允许在同个模块下访问和重写。</p>
+<pre><code>public var foo:String? //只允许在 app 内重写和访问。
+</code></pre><h3 id="static"><a href="#static" class="headerlink" title="static"></a>static</h3><p>用于定义类方法，在类型本身进行调用。此外还可以定义静态成员。</p>
+<pre><code>class Person  
+{  
+    var jobTitle:String?
+
+    static func assignRandomName(_ aPerson:Person)  
+    {  
+        aPerson.jobTitle = &quot;Some random job&quot;  
+    }  
+}
+
+let somePerson = Person()  
+Person.assignRandomName(somePerson)  
+//somePerson.jobTitle 的值是 &quot;Some random job&quot;
+</code></pre><h3 id="struct"><a href="#struct" class="headerlink" title="struct"></a>struct</h3><p>通用、灵活的结构体，是程序的基础组成部分，并提供了默认初始化方法。与 class 不同，当 struct 在代码中被传递时，是被拷贝的，并不使用引用计数。除此之外，struct 没有下面的这些功能：</p>
+<p>使用继承。</p>
+<p>运行时的类型转换。</p>
+<p>使用析构方法。</p>
+<pre><code>struct Person
+{
+var name:String
+var age:Int
+var gender:String
+}
+</code></pre><h3 id="subscript"><a href="#subscript" class="headerlink" title="subscript"></a>subscript</h3><p>访问集合、列表、序列中成员元素的快捷方式。</p>
+<pre><code>var postMetrics = [&quot;Likes&quot;:422, &quot;ReadPercentage&quot;:0.58, &quot;Views&quot;:3409]  
+let postLikes = postMetrics[&quot;Likes&quot;]
+</code></pre><h3 id="typealias"><a href="#typealias" class="headerlink" title="typealias"></a>typealias</h3><p>给代码中已经存在的类，取别名。</p>
+<pre><code>typealias JSONDictionary = [String: AnyObject]
+
+func parseJSON(_ deserializedData:JSONDictionary){}
+</code></pre><h3 id="var"><a href="#var" class="headerlink" title="var"></a>var</h3><p>定义可变变量。</p>
+<pre><code>var mutableString = &quot;&quot;  
+mutableString = &quot;Mutated&quot;
+</code></pre><h2 id="语气中的关键词"><a href="#语气中的关键词" class="headerlink" title="语气中的关键词"></a>语气中的关键词</h2><h3 id="break"><a href="#break" class="headerlink" title="break"></a>break</h3><p>终止程序中循环的执行，比如if语句，switch语句</p>
+<pre><code>for idx in 0...3  
+{  
+    if idx % 2 == 0  
+    {  
+        //当 idx 等于偶数时，退出 for 循环  
+        break  
+    }  
+}
+</code></pre><h3 id="case"><a href="#case" class="headerlink" title="case"></a>case</h3><p>该语句在 switch 语句中列出，在每个分支可以进行模式匹配。</p>
+<pre><code>let box = 1
+
+switch box  
+{  
+    case 0:  
+    print(&quot;Box equals 0&quot;)  
+    case 1:  
+    print(&quot;Box equals 1&quot;)  
+    default:  
+    print(&quot;Box doesn&apos;t equal 0 or 1&quot;)  
+}
+</code></pre><h3 id="continue"><a href="#continue" class="headerlink" title="continue"></a>continue</h3><p>用于终止循环的当前迭代，并进入下一次迭代，而不会停止整个循环的执行</p>
+<pre><code>for idx in 0...3  
+{  
+    if idx % 2 == 0  
+    {  
+        //直接开始循环的下一次迭代
+        continue  
+    }
+
+    print(&quot;This code never fires on even numbers&quot;)  
+}
+</code></pre><h3 id="default"><a href="#default" class="headerlink" title="default"></a>default</h3><p>用户涵盖在switch语句中，所有未明确列出的枚举成员</p>
+<pre><code>let box = 1
+
+switch box  
+{  
+    case 0:  
+    print(&quot;Box equals 0&quot;)  
+    case 1:  
+    print(&quot;Box equals 1&quot;)  
+    default:  
+    print(&quot;Covers any scenario that doesn&apos;t get addressed above.&quot;)  
+}
+</code></pre><h3 id="defer"><a href="#defer" class="headerlink" title="defer"></a>defer</h3><p>用于在程序离开当前作用域之前，执行一段代码。</p>
+<pre><code>func cleanUpIO()  
+{  
+    defer  
+    {  
+        print(&quot;This is called right before exiting scope&quot;)  
+    }
+
+
+    //关闭文件流等。  
+}
+</code></pre><h3 id="do"><a href="#do" class="headerlink" title="do"></a>do</h3><p>用于表示处理错误代码段的开始。</p>
+<pre><code>do  
+{  
+    try expression  
+    //语句
+}  
+catch someError ex  
+{  
+    //处理错误
+}
+</code></pre><h3 id="else"><a href="#else" class="headerlink" title="else"></a>else</h3><p>与 if 语句结合使用。当条件为 true，执行一段代码。当条件为 false，执行另一段代码。</p>
+<pre><code>if val &gt; 1  
+{  
+    print(&quot;val is greater than 1&quot;)  
+}  
+else  
+{  
+    print(&quot;val is not greater than 1&quot;)  
+}
+</code></pre><h3 id="fallthrough"><a href="#fallthrough" class="headerlink" title="fallthrough"></a>fallthrough</h3><p>显式地允许从当前 case 跳转到下一个相邻 case 继续执行代码。</p>
+<pre><code>let box = 1
+
+switch box  
+{  
+    case 0:  
+    print(&quot;Box equals 0&quot;)  
+    fallthrough  
+    case 1:  
+    print(&quot;Box equals 0 or 1&quot;)  
+    default:  
+    print(&quot;Box doesn&apos;t equal 0 or 1&quot;)  
+}
+</code></pre><h3 id="for"><a href="#for" class="headerlink" title="for"></a>for</h3><p>在序列上迭代，比如一组特定范围内的数字，数组中的元素，字符串中的字符。*与关键字 in 成对使用。</p>
+<pre><code>for _ in 0..&lt;3 { print (&quot;This prints 3 times&quot;) }
+</code></pre><h3 id="guard"><a href="#guard" class="headerlink" title="guard"></a>guard</h3><p>当有一个以上的条件不满足要求时，将离开当前作用域。同时还提供解包可选类型的功能。</p>
+<pre><code>private func printRecordFromLastName(userLastName: String?)
+{  
+    guard let name = userLastName, name != &quot;Null&quot; else  
+    {  
+        //userLastName = &quot;Null&quot;，需要提前退出
+        return  
+    }
+
+    //继续执行代码
+    print(dataStore.findByLastName(name))  
+}
+</code></pre><h3 id="if"><a href="#if" class="headerlink" title="if"></a>if</h3><p>当条件满足时，执行代码。</p>
+<pre><code>if 1 &gt; 2  
+{  
+    print(&quot;This will never execute&quot;)  
+}
+</code></pre><h3 id="in"><a href="#in" class="headerlink" title="in"></a>in</h3><p>在序列上迭代，比如一组特定范围内的数字，数组中的元素，字符串中的字符。*与关键字 key 搭配使用。</p>
+<pre><code>for _ in 0..&lt;3 { print (&quot;This prints 3 times&quot;) }
+</code></pre><h3 id="repeat"><a href="#repeat" class="headerlink" title="repeat"></a>repeat</h3><p>在使用循环的判断条件之前，先执行一次循环中的代码。</p>
+<pre><code>repeat  
+{  
+    print(&quot;Always executes at least once before the condition is considered&quot;)  
+}  
+while 1 &gt; 2
+</code></pre><h3 id="return"><a href="#return" class="headerlink" title="return"></a>return</h3><p>立刻终止当前上下文，离开当前作用域，此外在返回时可以额外携带一个值。</p>
+<pre><code>func doNothing()  
+{  
+    return //直接离开当前上下文
+
+    let anInt = 0  
+    print(&quot;This never prints (anInt)&quot;)  
+}
+</code></pre><p>和</p>
+<pre><code>func returnName() -&gt; String?  
+{  
+    return self.userName //离开，并返回 userName 的值
+}
+</code></pre><h3 id="switch"><a href="#switch" class="headerlink" title="switch"></a>switch</h3><p>将给定的值与分支进行比较。执行第一个模式匹配成功的分支代码。</p>
+<pre><code>let box = 1
+
+switch box  
+{  
+    case 0:  
+    print(&quot;Box equals 0&quot;)  
+    fallthrough  
+    case 1:  
+    print(&quot;Box equals 0 or 1&quot;)  
+    default:  
+    print(&quot;Box doesn&apos;t equal 0 or 1&quot;)  
+}
+</code></pre><h3 id="where"><a href="#where" class="headerlink" title="where"></a>where</h3><p>要求关联类型必须遵守特定协议，或者类型参数和关联类型必须保持一致。也可以用于在 case 中提供额外条件，用于满足控制表达式。</p>
+<p>where 从句可以应用于多种场景。以下例子指明了 where 的主要应用场景，泛型中的模式匹配。</p>
+<pre><code>protocol Nameable  
+{  
+    var name:String {get set}  
+}
+
+func createdFormattedName(_ namedEntity:T) -&gt; String where T:Equatable  
+{  
+    //只有当实体同时遵守 Nameable 和 Equatable 协议的时候，才允许调用这个函数
+    return &quot;This things name is &quot; + namedEntity.name  
+}
+</code></pre><p>和</p>
+<pre><code>for i in 0…3 where i % 2 == 0  
+{  
+    print(i) //打印 0 和 2  
+}
+</code></pre><h3 id="while"><a href="#while" class="headerlink" title="while"></a>while</h3><p>循环执行特定的一段语句，直到条件不满足时，停止循环。</p>
+<pre><code>while foo != bar  
+{  
+    print(&quot;Keeps going until the foo == bar&quot;)  
+}
+</code></pre><h2 id="表达式和类型中的关键字"><a href="#表达式和类型中的关键字" class="headerlink" title="表达式和类型中的关键字"></a>表达式和类型中的关键字</h2><h3 id="Any"><a href="#Any" class="headerlink" title="Any"></a>Any</h3><p>用于表示任意类型的实例，包括函数类型。</p>
+<pre><code>var anything = [Any]()
+
+anything.append(&quot;Any Swift type can be added&quot;)  
+anything.append(0)  
+anything.append({(foo: String) -&gt; String in &quot;Passed in (foo)&quot;})
+</code></pre><h3 id="as"><a href="#as" class="headerlink" title="as"></a>as</h3><p>类型转换运算符，用于尝试将值转成其它类型。</p>
+<pre><code>var anything = [Any]()
+
+anything.append(&quot;Any Swift type can be added&quot;)  
+anything.append(0)  
+anything.append({(foo: String) -&gt; String in &quot;Passed in (foo)&quot; })
+
+let intInstance = anything[1] as? Int
+</code></pre><p>或者</p>
+<pre><code>var anything = [Any]()
+
+anything.append(&quot;Any Swift type can be added&quot;)  
+anything.append(0)  
+anything.append({(foo: String) -&gt; String in &quot;Passed in (foo)&quot; })
+
+for thing in anything  
+{  
+    switch thing  
+    {  
+        case 0 as Int:  
+        print(&quot;It&apos;s zero and an Int type&quot;)  
+        case let someInt as Int:  
+        print(&quot;It&apos;s an Int that&apos;s not zero but (someInt)&quot;)  
+        default:  
+        print(&quot;Who knows what it is&quot;)  
+    }  
+}
+</code></pre><h3 id="catch"><a href="#catch" class="headerlink" title="catch"></a>catch</h3><p>如果在 do 中抛出一个错误，catch 会尝试进行匹配，并决定如何处理错误</p>
+<pre><code>do  
+{  
+    try haveAWeekend(4)  
+}  
+catch WeekendError.Overtime(let hoursWorked)  
+{  
+    print(&quot;You worked (hoursWorked) more than you should have&quot;)  
+}  
+catch WeekendError.WorkAllWeekend  
+{  
+    print(&quot;You worked 48 hours :-0&quot;)  
+}  
+catch  
+{  
+    print(&quot;Gulping the weekend exception&quot;)  
+}
+</code></pre><h3 id="false"><a href="#false" class="headerlink" title="false"></a>false</h3><p>Swift 用于表示布尔值的两个常量值之一，true 的相反值。</p>
+<pre><code>let alwaysFalse = false  
+let alwaysTrue = true
+
+if alwaysFalse { print(&quot;Won&apos;t print, alwaysFalse is false 😉&quot;)}
+</code></pre><h3 id="is"><a href="#is" class="headerlink" title="is"></a>is</h3><p>类型检查运算符，用于确定实例是否为某个子类类型。</p>
+<pre><code>class Person {}  
+class Programmer : Person {}  
+class Nurse : Person {}
+
+let people = [Programmer(), Nurse()]
+
+for aPerson in people  
+{  
+    if aPerson is Programmer  
+    {  
+        print(&quot;This person is a dev&quot;)  
+    }  
+    else if aPerson is Nurse  
+    {  
+        print(&quot;This person is a nurse&quot;)  
+    }  
+}
+</code></pre><h3 id="nil"><a href="#nil" class="headerlink" title="nil"></a>nil</h3><p>在 Swift 中表示任意类型的无状态值。</p>
+<pre><code>与 Objective-C 中的 nil 不同，Objective-C 中的 nil 表示指向不存在对象的指针。
+
+class Person{}  
+struct Place{}
+
+//任何 Swift 类型或实例可以为 nil
+var statelessPerson:Person? = nil  
+var statelessPlace:Place? = nil  
+var statelessInt:Int? = nil  
+var statelessString:String? = nil
+</code></pre><h3 id="super"><a href="#super" class="headerlink" title="super"></a>super</h3><p>在子类中，暴露父类的方法、属性、下标。</p>
+<pre><code>class Person  
+{  
+    func printName()  
+    {  
+        print(&quot;Printing a name. &quot;)  
+    }  
+}
+
+class Programmer : Person  
+{  
+    override func printName()  
+    {  
+        super.printName()  
+        print(&quot;Hello World!&quot;)  
+    }  
+}
+
+let aDev = Programmer()  
+aDev.printName() //打印 Printing a name. Hello World!
+</code></pre><h3 id="self"><a href="#self" class="headerlink" title="self"></a>self</h3><p>任何类型的实例都拥有的隐式属性，等同于实例本身。此外还可以用于区分函数参数和成员属性名称相同的情况。</p>
+<pre><code>class Person  
+{  
+    func printSelf()  
+    {  
+        print(&quot;This is me: (self)&quot;)  
+    }  
+}
+
+let aPerson = Person()  
+aPerson.printSelf() //打印 &quot;This is me: Person&quot;
+</code></pre><h3 id="Self"><a href="#Self" class="headerlink" title="Self"></a>Self</h3><p>在协议中，表示遵守当前协议的实体类型。</p>
+<pre><code>protocol Printable  
+{  
+    func printTypeTwice(otherMe:Self)  
+}
+
+struct Foo : Printable  
+{  
+    func printTypeTwice(otherMe: Foo)  
+    {  
+        print(&quot;I am me plus (otherMe)&quot;)  
+    }  
+}
+
+let aFoo = Foo()  
+let anotherFoo = Foo()
+
+aFoo.printTypeTwice(otherMe: anotherFoo) //打印 I am me plus Foo()
+</code></pre><h3 id="throw"><a href="#throw" class="headerlink" title="throw"></a>throw</h3><p>用于在当前上下文，显式抛出 error。</p>
+<pre><code>enum WeekendError: Error  
+{  
+    case Overtime  
+    case WorkAllWeekend  
+}
+
+func workOvertime () throws  
+{  
+    throw WeekendError.Overtime  
+}
+</code></pre><h3 id="throws"><a href="#throws" class="headerlink" title="throws"></a>throws</h3><pre><code>enum WeekendError: Error  
+{  
+    case Overtime  
+    case WorkAllWeekend  
+}
+
+func workOvertime () throws  
+{  
+    throw WeekendError.Overtime  
+}
+
+//&quot;throws&quot; 表明在调用方法时，需要使用 try，try?，try!
+try workOvertime()
+</code></pre><h3 id="true"><a href="#true" class="headerlink" title="true"></a>true</h3><p>Swift 用于表示布尔值的两个常量值之一，表示为真。</p>
+<pre><code>let alwaysFalse = false  
+let alwaysTrue = true
+
+if alwaysTrue { print(&quot;Always prints&quot;)}
+</code></pre><p>###try</p>
+<p>表明接着调用的函数可能会抛出 error。有三种不同的使用方式：try，try?， try!。</p>
+<pre><code>let aResult = try dangerousFunction() //处理 error，或者继续传递 error  
+let aResult = try! dangerousFunction() //程序可能会闪退  
+if let aResult = try? dangerousFunction() //解包可选类型。
+</code></pre><h2 id="模式中的关键字"><a href="#模式中的关键字" class="headerlink" title="模式中的关键字"></a>模式中的关键字</h2><h3 id=""><a href="#" class="headerlink" title="_"></a>_</h3><p>用于匹配或省略任意值的通配符</p>
+<pre><code>for _ in 0..&lt;3  
+{  
+    print(&quot;Just loop 3 times, index has no meaning&quot;)  
+}
+</code></pre><p>另一种用法</p>
+<pre><code>let _ = Singleton() //忽略不使用的变量
+</code></pre><h2 id="以-开头的关键字"><a href="#以-开头的关键字" class="headerlink" title="以#开头的关键字"></a>以#开头的关键字</h2><h3 id="available"><a href="#available" class="headerlink" title="#available"></a>#available</h3><p>基于平台参数，通过 if，while，guard 语句的条件，在运行时检查 API 的可用性。</p>
+<pre><code>if #available(iOS 10, *)  
+{  
+    print(&quot;iOS 10 APIs are available&quot;)  
+}
+</code></pre><h3 id="colorLiteral"><a href="#colorLiteral" class="headerlink" title="#colorLiteral"></a>#colorLiteral</h3><p>在 playground 中使用的字面表达式，用于创建颜色选取器，选取后赋值给变量。</p>
+<pre><code>let aColor = #colorLiteral //创建颜色选取器
+</code></pre><h3 id="column"><a href="#column" class="headerlink" title="#column"></a>#column</h3><p>一种特殊的字面量表达式，用于获取字面量表示式的起始列数。</p>
+<pre><code>class Person  
+{  
+    func printInfo()  
+    {  
+        print(&quot;Some person info - on column (#column)&quot;)
+    }  
+}
+
+let aPerson = Person()  
+aPerson.printInfo() //Some person info - on column 53
+</code></pre><h3 id="else-1"><a href="#else-1" class="headerlink" title="#else"></a>#else</h3><p>条件编译控制语句，用于控制程序在不同条件下执行不同代码。与 #if 语句结合使用。当条件为 true，执行对应代码。当条件为 false，执行另一段代码。</p>
+<pre><code>#if os(iOS)  
+print(&quot;Compiled for an iOS device&quot;)  
+#else  
+print(&quot;Not on an iOS device&quot;)  
+#endif
+</code></pre><h3 id="elseif"><a href="#elseif" class="headerlink" title="#elseif"></a>#elseif</h3><p>条件编译控制语句，用于控制程序在不同条件下执行代码。与 #if 语句结合使用。当条件为 true，执行对应代码。</p>
+<pre><code>#if os(iOS)  
+print(&quot;Compiled for an iOS device&quot;)  
+#elseif os(macOS)  
+print(&quot;Compiled on a mac computer&quot;)  
+#endif
+</code></pre><h3 id="endif"><a href="#endif" class="headerlink" title="#endif"></a>#endif</h3><p>条件编译控制语句，用于控制程序在不同条件下执行代码。用于表明条件编译代码的结尾。</p>
+<pre><code>#if os(iOS)  
+print(&quot;Compiled for an iOS device&quot;)  
+#endif
+</code></pre><h3 id="file"><a href="#file" class="headerlink" title="#file"></a>#file</h3><p>特殊字面量表达式，返回当前代码所在源文件的名称。</p>
+<pre><code>class Person  
+{  
+    func printInfo()  
+    {  
+        print(&quot;Some person info - inside file (#file)&quot;)
+    }  
+}
+
+let aPerson = Person()  
+aPerson.printInfo() //Some person info - inside file /*代码所在 playground 文件路径*/
+</code></pre><h3 id="fileReference"><a href="#fileReference" class="headerlink" title="#fileReference"></a>#fileReference</h3><p>playground 字面量语法，用于创建文件选取器，选取并返回 NSURL 实例。</p>
+<pre><code>let fontFilePath = #fileReference //创建文件选取器
+</code></pre><h3 id="function"><a href="#function" class="headerlink" title="#function"></a>#function</h3><p>特殊字面量表达式，返回函数名称。在方法中，返回方法名。在属性的 getter 或者 setter 中，返回属性名。在特殊的成员中，比如 init 或 subscript 中，返回关键字名称。在文件的最顶层时，返回当前所在模块名称。</p>
+<pre><code>class Person  
+{  
+    func printInfo()  
+    {  
+        print(&quot;Some person info - inside function (#function)&quot;)
+    }  
+}
+
+let aPerson = Person()  
+aPerson.printInfo() //Some person info - inside function printInfo()
+</code></pre><h3 id="if-1"><a href="#if-1" class="headerlink" title="#if"></a>#if</h3><p>条件编译控制语句，用于控制程序在不同条件下编译代码。通过判断条件，决定是否执行代码。</p>
+<pre><code>#if os(iOS)  
+print(&quot;Compiled for an iOS device&quot;)  
+#endif
+</code></pre><h3 id="imageLiteral"><a href="#imageLiteral" class="headerlink" title="#imageLiteral"></a>#imageLiteral</h3><p>playground 字面量语法，创建图片选取器，选择并返回 UIImage 实例</p>
+<pre><code>let anImage = #imageLiteral //在 playground 文件中选取图片
+</code></pre><h3 id="line"><a href="#line" class="headerlink" title="#line"></a>#line</h3><p>特殊字面量表达式，用于获取当前代码的行数。</p>
+<pre><code>class Person  
+{  
+    func printInfo()  
+    {  
+        print(&quot;Some person info - on line number (#line)&quot;)
+    }  
+}
+
+let aPerson = Person()  
+aPerson.printInfo() //Some person info - on line number 5
+</code></pre><h3 id="selector"><a href="#selector" class="headerlink" title="#selector"></a>#selector</h3><p>用于创建 Objective-C selector 的表达式，可以静态检查方法是否存在，并暴露给 Objective-C。</p>
+<pre><code>//静态检查，确保 doAnObjCMethod 方法存在  
+control.sendAction(#selector(doAnObjCMethod), to: target, forEvent: event)
+</code></pre><h3 id="sourceLocation"><a href="#sourceLocation" class="headerlink" title="#sourceLocation"></a>#sourceLocation</h3><p>行控制语句，可以指定与原先完全不同的行数和源文件名。通常在 Swift 诊断、debug 时使用。</p>
+<pre><code>#sourceLocation(file:&quot;foo.swift&quot;, line:6)
+
+//打印新值
+print(#file)  
+print(#line)
+
+//重置行数和文件名
+#sourceLocation()
+
+print(#file)  
+print(#line)
+</code></pre><h2 id="特定上下文中的关键字"><a href="#特定上下文中的关键字" class="headerlink" title="特定上下文中的关键字"></a>特定上下文中的关键字</h2><p>这些关键字，在处于对应上下文之外时，可以用作标识符。</p>
+<h3 id="associativity"><a href="#associativity" class="headerlink" title="associativity"></a>associativity</h3><p>指明同一优先级的运算符，在缺少大括号的情况，按什么顺序结合。使用 left、right、none。</p>
+<pre><code>infix operator ~ { associativity right precedence 140 }  
+4 ~ 8
+</code></pre><h3 id="convenience"><a href="#convenience" class="headerlink" title="convenience"></a>convenience</h3><p>次等的便利构造器，最后会调用指定构造器初始化实例。</p>
+<pre><code>class Person  
+{  
+    var name:String
+
+    init(_ name:String)  
+    {  
+        self.name = name  
+    }
+
+    convenience init()  
+    {  
+        self.init(&quot;No Name&quot;)  
+    }  
+}
+
+let me = Person()  
+print(me.name)//打印 &quot;No Name&quot;
+</code></pre><h3 id="dynamic"><a href="#dynamic" class="headerlink" title="dynamic"></a>dynamic</h3><p>指明编译器不会对类成员或者函数的方法进行内联或虚拟化。这意味着对这个成员的访问是使用 Objective-C 运行时进行动态派发的（代替静态调用）。</p>
+<pre><code>class Person  
+{  
+    //隐式指明含有 &quot;objc&quot; 属性
+    //这对依赖于 Objc-C 黑魔法的库或者框架非常有用
+    //比如 KVO、KVC、Swizzling
+    dynamic var name:String?  
+}
+</code></pre><h3 id="didSet"><a href="#didSet" class="headerlink" title="didSet"></a>didSet</h3><p>属性观察者，当值存储到属性后马上调用。</p>
+<pre><code>var data = [1,2,3]  
+{  
+    didSet  
+    {  
+        tableView.reloadData()  
+    }  
+}
+</code></pre><h3 id="final"><a href="#final" class="headerlink" title="final"></a>final</h3><p>防止方法、属性、下标被重写。</p>
+<pre><code>final class Person {}  
+class Programmer : Person {} //编译错误
+</code></pre><h3 id="get"><a href="#get" class="headerlink" title="get"></a>get</h3><p>返回成员的值。还可以用在计算型属性上，间接获取其它属性的值。</p>
+<pre><code>class Person  
+{  
+    var name:String  
+    {  
+        get { return self.name }  
+        set { self.name = newValue}  
+    }
+
+    var indirectSetName:String  
+    {  
+        get  
+        {  
+            if let aFullTitle = self.fullTitle  
+            {  
+                return aFullTitle  
+            }  
+            return &quot;&quot;  
+        }
+
+        set (newTitle)  
+        {  
+            //如果没有定义 newTitle，可以使用 newValue
+            self.fullTitle = &quot;(self.name) :(newTitle)&quot;  
+        }
+    }  
+}
+</code></pre><h3 id="infix"><a href="#infix" class="headerlink" title="infix"></a>infix</h3><p>指明一个用于两个值之间的运算符。如果一个全新的全局运算符被定义为 infix，还需要指定优先级。</p>
+<pre><code>let twoIntsAdded = 2 + 3
+</code></pre><h3 id="indirect"><a href="#indirect" class="headerlink" title="indirect"></a>indirect</h3><p>指明在枚举类型中，存在成员使用相同枚举类型的实例作为关联值的情况。</p>
+<pre><code>indirect enum Entertainment  
+{  
+    case eventType(String)  
+    case oneEvent(Entertainment)  
+    case twoEvents(Entertainment, Entertainment)  
+}
+
+let dinner = Entertainment.eventType(&quot;Dinner&quot;)  
+let movie = Entertainment.eventType(&quot;Movie&quot;)
+
+let dateNight = Entertainment.twoEvents(dinner, movie)
+</code></pre><h3 id="lazy"><a href="#lazy" class="headerlink" title="lazy"></a>lazy</h3><p>指明属性的初始值，直到第一次被使用时，才进行初始化。</p>
+<pre><code>class Person  
+{  
+    lazy var personalityTraits = {  
+        //昂贵的数据库开销  
+        return [&quot;Nice&quot;, &quot;Funny&quot;]  
+    }()  
+}
+let aPerson = Person()  
+aPerson.personalityTraits //当 personalityTraits 首次被访问时，数据库才开始工作
+</code></pre><h3 id="left"><a href="#left" class="headerlink" title="left"></a>left</h3><p>指明运算符的结合性是从左到右。在没有使用大括号时，可以用于正确判断同一优先级运算符的执行顺序。</p>
+<pre><code>//&quot;-&quot; 运算符的结合性是从左到右
+10-2-4 //根据结合性，可以看做 (10-2) - 4
+</code></pre><h3 id="mutating"><a href="#mutating" class="headerlink" title="mutating"></a>mutating</h3><p>允许在方法中修改结构体或者枚举实例的属性值。</p>
+<pre><code>struct Person  
+{  
+    var job = &quot;&quot;
+
+    mutating func assignJob(newJob:String)  
+    {  
+        self = Person(job: newJob)  
+    }  
+}
+
+var aPerson = Person()  
+aPerson.job //&quot;&quot;
+
+aPerson.assignJob(newJob: &quot;iOS Engineer at Buffer&quot;)  
+aPerson.job //iOS Engineer at Buffer
+</code></pre><h3 id="none"><a href="#none" class="headerlink" title="none"></a>none</h3><p>是一个没有结合性的运算符。不允许这样的运算符相邻出现。</p>
+<pre><code>//&quot;&lt;&quot; 是非结合性的运算符
+1 &lt; 2 &lt; 3 //编译失败
+</code></pre><h3 id="nonmutating"><a href="#nonmutating" class="headerlink" title="nonmutating"></a>nonmutating</h3><p>指明成员的 setter 方法不会修改实例的值，但可能会有其它后果。</p>
+<pre><code>enum Paygrade  
+{  
+    case Junior, Middle, Senior, Master
+
+    var experiencePay:String?  
+    {  
+        get  
+        {  
+            database.payForGrade(String(describing:self))  
+        }
+
+        nonmutating set  
+        {  
+            if let newPay = newValue  
+            {  
+                database.editPayForGrade(String(describing:self), newSalary:newPay)  
+            }  
+        }  
+    }  
+}
+
+let currentPay = Paygrade.Middle
+
+//将 Middle pay 更新为 45k, 但不会修改 experiencePay 值
+currentPay.experiencePay = &quot;$45,000&quot;
+</code></pre><h3 id="optional"><a href="#optional" class="headerlink" title="optional"></a>optional</h3><p>用于指明协议中的可选方法。遵守该协议的实体类可以不实现这个方法。</p>
+<pre><code>@objc protocol Foo  
+{  
+    func requiredFunction()  
+    @objc optional func optionalFunction()  
+}
+
+class Person : Foo  
+{  
+    func requiredFunction()  
+    {  
+        print(&quot;Conformance is now valid&quot;)  
+    }  
+}
+</code></pre><h3 id="override"><a href="#override" class="headerlink" title="override"></a>override</h3><p>指明子类会提供自定义实现，覆盖父类的实例方法、类型方法、实例属性、类型属性、下标。如果没有实现，则会直接继承自父类。</p>
+<pre><code>class Person  
+{  
+    func printInfo()  
+    {  
+        print(&quot;I&apos;m just a person!&quot;)  
+    }  
+}
+
+class Programmer : Person  
+{  
+    override func printInfo()  
+    {  
+        print(&quot;I&apos;m a person who is a dev!&quot;)  
+    }  
+}
+
+let aPerson = Person()  
+let aDev = Programmer()
+
+aPerson.printInfo() //打印 I&apos;m just a person!  
+aDev.printInfo() //打印 I&apos;m a person who is a dev!
+</code></pre><h3 id="postfix"><a href="#postfix" class="headerlink" title="postfix"></a>postfix</h3><p>位于值后面的运算符。</p>
+<pre><code>var optionalStr:String? = &quot;Optional&quot;  
+print(optionalStr!)
+</code></pre><h3 id="precedence"><a href="#precedence" class="headerlink" title="precedence"></a>precedence</h3><p>指明某个运算符的优先级高于别的运算符，从而被优先使用。</p>
+<pre><code>infix operator ~ { associativity right precedence 140 }  
+4 ~ 8
+</code></pre><h3 id="prefix"><a href="#prefix" class="headerlink" title="prefix"></a>prefix</h3><p>位于值前面的运算符。</p>
+<pre><code>var anInt = 2  
+anInt = -anInt //anInt 等于 -2
+</code></pre><h3 id="required"><a href="#required" class="headerlink" title="required"></a>required</h3><p>确保编译器会检查该类的所有子类，全部实现了指定的构造器方法。</p>
+<pre><code>class Person  
+{  
+    var name:String?
+
+    required init(_ name:String)  
+    {  
+        self.name = name  
+    }  
+}
+
+class Programmer : Person  
+{  
+    //如果不实现这个方法，编译不会通过
+    required init(_ name: String)  
+    {  
+        super.init(name)  
+    }  
+}
+</code></pre><h3 id="right"><a href="#right" class="headerlink" title="right"></a>right</h3><p>指明运算符的结合性是从右到左的。在没有使用大括号时，可以用于正确判断同一优先级运算符的顺序。</p>
+<pre><code>//&quot;??&quot; 运算符结合性是从右到左
+var box:Int?  
+var sol:Int? = 2
+
+let foo:Int = box ?? sol ?? 0 //Foo 等于 2
+</code></pre><h3 id="set"><a href="#set" class="headerlink" title="set"></a>set</h3><p>通过获取的新值来设置成员的值。同样可以用于计算型属性来间接设置其它属性。如果计算型属性的 setter 没有定义新值的名称，可以使用默认的 newValue。</p>
+<pre><code>class Person  
+{  
+    var name:String  
+    {  
+        get { return self.name }  
+        set { self.name = newValue}  
+    }
+
+    var indirectSetName:String  
+    {  
+        get  
+        {  
+            if let aFullTitle = self.fullTitle  
+            {  
+                return aFullTitle  
+            }  
+            return &quot;&quot;  
+        }
+
+        set (newTitle)  
+        {  
+            //如果没有定义 newTitle，可以使用 newValue
+            self.fullTitle = &quot;(self.name) :(newTitle)&quot;  
+        }  
+    }  
+}
+</code></pre><h3 id="Type"><a href="#Type" class="headerlink" title="Type"></a>Type</h3><p>表示任意类型的类型，包括类类型、结构类型、枚举类型、协议类型。</p>
+<pre><code>class Person {}  
+class Programmer : Person {}
+
+let aDev:Programmer.Type = Programmer.self
+</code></pre><h3 id="unowned"><a href="#unowned" class="headerlink" title="unowned"></a>unowned</h3><p>让循环引用中的实例 A 不要强引用实例 B。前提条件是实例 B 的生命周期要长于 A 实例。</p>
+<pre><code>class Person  
+{  
+    var occupation:Job?  
+}
+
+//当 Person 实例不存在时，job 也不会存在。job 的生命周期取决于持有它的 Person。
+class Job  
+{  
+    unowned let employee:Person
+
+    init(with employee:Person)  
+    {  
+        self.employee = employee  
+    }  
+}
+</code></pre><h3 id="weak"><a href="#weak" class="headerlink" title="weak"></a>weak</h3><p>允许循环引用中的实例 A 弱引用实例 B ，而不是强引用。实例 B 的生命周期更短，并会被先释放。</p>
+<pre><code>class Person  
+{  
+    var residence:House?  
+}
+
+class House  
+{  
+    weak var occupant:Person?  
+}
+
+var me:Person? = Person()  
+var myHome:House? = House()
+
+me!.residence = myHome  
+myHome!.occupant = me
+
+me = nil  
+myHome!.occupant // myHome 等于 nil
+</code></pre><h3 id="willSet"><a href="#willSet" class="headerlink" title="willSet"></a>willSet</h3><p>属性观察者，在值存储到属性之前调用。</p>
+<pre><code>class Person  
+{  
+    var name:String?  
+    {  
+        willSet(newValue) {print(&quot;I&apos;ve got a new name, it&apos;s (newValue)!&quot;)}  
+    }  
+}
+
+let aPerson = Person()  
+aPerson.name = &quot;Jordan&quot; //在赋值之前，打印 &quot;I&apos;ve got a new name, it&apos;s Jordan!&quot;
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/05/Swift 关键字/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-集成了share分享之后的处理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1793,160 +2781,6 @@ scene?.window?.overrideUserInterfaceStyle = .dark
 
 
   
-    <article id="post-iOS 中处理定时任务的常用方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/29/iOS 中处理定时任务的常用方法/">iOS 中处理定时任务的常用方法</a>
-    </h1>
-  
-
-        
-        <a href="/2019/08/29/iOS 中处理定时任务的常用方法/" class="archive-article-date">
-  	<time datetime="2019-08-29T03:03:58.790Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目开发中，经常会在代码中处理一些需要延时或定时执行的任务，iOS 中处理定时任务的方法包括 performSelector 方法、NSTimer、GCD、CADisplayLink，其本质都是通过RunLoop来实现，下面我们就对这几个方法做一些总结。</p>
-<h2 id="1-performSelector方法"><a href="#1-performSelector方法" class="headerlink" title="1. performSelector方法"></a>1. performSelector方法</h2><p>在NSRunLoop.h中有对NSObject类的扩展方法，简单易用：</p>
-<pre><code>@interface NSObject (NSDelayedPerforming)
-
-- (void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay inModes:(NSArray&lt;NSRunLoopMode&gt; *)modes;
-- (void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay;
-
-+ (void)cancelPreviousPerformRequestsWithTarget:(id)aTarget selector:(SEL)aSelector object:(nullable id)anArgument;
-+ (void)cancelPreviousPerformRequestsWithTarget:(id)aTarget;
-
-@end
-</code></pre><h2 id="2-NSTimer"><a href="#2-NSTimer" class="headerlink" title="2. NSTimer"></a>2. NSTimer</h2><p>NSTimer 是最常使用的定时器，使用方式简单，NSTimer 是也通过添加到RunLoop中被触发并进行工作的，桥接 CFRunLoopTimerRef。NSTimer中定义的常用方法如下：</p>
-<pre><code>+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti invocation:(NSInvocation *)invocation repeats:(BOOL)yesOrNo;
-+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti invocation:(NSInvocation *)invocation repeats:(BOOL)yesOrNo;
-
-+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;
-+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;
-
-+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer *timer))block API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
-+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer *timer))block API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
-
-- (instancetype)initWithFireDate:(NSDate *)date interval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer *timer))block API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
-- (instancetype)initWithFireDate:(NSDate *)date interval:(NSTimeInterval)ti target:(id)t selector:(SEL)s userInfo:(nullable id)ui repeats:(BOOL)rep NS_DESIGNATED_INITIALIZER;
-</code></pre><p>以下是初始化NSTimer的不同方式：</p>
-<pre><code>// 自动加入currentRunLoop
-self.timer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
-//self.timer = [NSTimer scheduledTimerWithTimeInterval:5.0 repeats:YES block:^(NSTimer * _Nonnull timer) { }];
-
-// 手动加入RunLoop
-self.timer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
-[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
-
-// 指定timer触发时刻
-NSTimeInterval timeInterval = [self timeIntervalSinceReferenceDate] + 30;
-NSDate *newDate = [NSDate dateWithTimeIntervalSinceReferenceDate:timeInterval];
-self.timer = [[NSTimer alloc] initWithFireDate:newDate interval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
-[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
-</code></pre><p>如果当前界面中有UITableView，则在 UITableView 在滚动过程中，上述代码中的定时器到了时间并没有触发。根据RunLoop的相关知识，同一时刻 RunLoop 只运行在一种 Mode 上，并且只有这个 Mode 相关联的源或定时器会被传递消息，mainRunLoop 一般处于  NSDefaultRunLoopMode，但是在滚动或者点击事件等触发时，mainRunLoop 切换至  NSEventTrackingRunLoopMode ，而上面  timer 被加入的正是 NSDefaultRunLoopMode （未指明也默认加入默认模式），所以滑动时未触发定时操作。<br>解决方法：添加timer到mainRunLoop的NSRunLoopCommonMode中或者子线程中，需要注意的是加入子线程时要手动开启并运行子线程的RunLoop。</p>
-<pre><code>self.timer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
-[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
-</code></pre><p>NSRunLoopCommonMode这是一组可配置的常用模式。将输入源与此模式相关联也会将其与组中的每个模式相关联。对于Cocoa应用程序，此集合默认包括NSDefaultRunLoopMode，NSPanelRunLoopMode和NSEventTrackingRunLoopMode。</p>
-<p>注意：</p>
-<ul>
-<li>iOS10以前初始化的timer在运行期间会对target进行持有，因此，在释放时需要手动调用invalidate方法，并置nil；</li>
-<li>timer不能在当前宿主的dealloc方法中调用，因为timer没有被释放前，当前宿主不会执行dealloc方法；</li>
-<li>当前RunLoop会切换Mode，因此可能导致timer不是立刻被触发。</li>
-<li>在同一线程中，timer重复执行期间，有其他耗时任务时，在改耗时任务完成前也不会触发定时，在耗时任务完成后，timer的定时任务会继续执行。</li>
-<li>dispatch_source_set_timer中设置启动时间，dispatch_time_t可通过两个方法生成：dispatch_time 和 dispatch_walltime</li>
-</ul>
-<h2 id="3-GCD定时器"><a href="#3-GCD定时器" class="headerlink" title="3. GCD定时器"></a>3. GCD定时器</h2><p>我们也可以通过GCD中的方法实现定时器来处理定时任务，实现的代码逻辑如下：</p>
-<pre><code>// 1. 创建 dispatch source，指定检测事件为定时
-dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(&quot;Timer_Queue&quot;, 0));
-// 2. 设置定时器启动时间、间隔
-dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC,  0 * NSEC_PER_SEC); 
-// 3. 设置callback
-dispatch_source_set_event_handler(timer, ^{
-        NSLog(@&quot;timer fired&quot;);
-    });
-dispatch_source_set_event_handler(timer, ^{
-       //取消定时器时一些操作
-    });
-// 4. 启动定时器（刚创建的source处于被挂起状态）
-dispatch_resume(timer);
-// 5. 暂停定时器
-dispatch_suspend(timer);
-// 6. 取消定时器
-dispatch_source_cancel(timer);
-timer = nil;
-</code></pre><p>当我们想要timer只是延时执行一次时，只调用以下方法即可：</p>
-<pre><code>// 在主线程中延时5s中执行
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
-    });
-</code></pre><p>注意：</p>
-<ul>
-<li>正在执行的 block，在调用dispatch_suspend(timer)时，当前block并不会立即停止而是继续执行至完成；</li>
-<li>dispatch source在挂起时，直接设置为 nil 或者重新赋值都会造成crash，需要在activate的状态下调用dispatch_source_cancel(timer)后置为 nil 或者重新赋值；</li>
-<li>dispatch_source_cancel方法可以在dispatch_source_set_event_handler中调用，即timer可内部持有也可外部持有；</li>
-<li>dispatch_resume和dispatch_suspend调用需成对出现，否则会crash；</li>
-<li>dispatch source会比 NSTimer 更精准一些。</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/29/iOS 中处理定时任务的常用方法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -2048,11 +2882,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2068,11 +2902,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
