@@ -152,6 +152,316 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-springboot+mybatis实现数据库的读写分离" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/05/springboot+mybatis实现数据库的读写分离/">springboot+mybatis实现数据库的读写分离</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/05/springboot+mybatis实现数据库的读写分离/" class="archive-article-date">
+  	<time datetime="2019-09-05T06:47:07.092Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>随着业务的发展，除了拆分业务模块外，数据库的读写分离也是常见的优化手段。<br>方案使用了AbstractRoutingDataSource和mybatis plugin来动态的选择数据源<br>选择这个方案的原因主要是不需要改动原有业务代码，非常友好</p>
+<pre><code>注：
+demo中使用了mybatis-plus，实际使用mybatis也是一样的
+demo中使用的数据库是postgres，实际任一类型主从备份的数据库示例都是一样的
+demo中使用了alibaba的druid数据源，实际其他类型的数据源也是一样的
+</code></pre><h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>首先，我们需要两个数据库实例，一为master，一为slave。<br>所有的写操作，我们在master节点上操作<br>所有的读操作，我们在slave节点上操作</p>
+<p>需要注意的是：对于一次有读有写的事务，事务内的读操作也不应该在slave节点上，所有操作都应该在master节点上</p>
+<p>先跑起来两个pg的实例，其中15432端口对应的master节点，15433端口对应的slave节点：</p>
+<pre><code>docker run \
+    --name pg-master \
+    -p 15432:5432 \
+    --env &apos;PG_PASSWORD=postgres&apos; \
+    --env &apos;REPLICATION_MODE=master&apos; \
+    --env &apos;REPLICATION_USER=repluser&apos; \
+       --env &apos;REPLICATION_PASS=repluserpass&apos; \
+    -d sameersbn/postgresql:10-2
+
+docker run \
+    --name pg-slave \
+    -p 15433:5432 \
+    --link pg-master:master \
+    --env &apos;PG_PASSWORD=postgres&apos; \
+    --env &apos;REPLICATION_MODE=slave&apos; \
+    --env &apos;REPLICATION_SSLMODE=prefer&apos; \
+    --env &apos;REPLICATION_HOST=master&apos; \
+    --env &apos;REPLICATION_PORT=5432&apos; \
+    --env &apos;REPLICATION_USER=repluser&apos; \
+       --env &apos;REPLICATION_PASS=repluserpass&apos; \
+    -d sameersbn/postgresql:10-2
+</code></pre><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>整个实现主要有3个部分：</p>
+<ul>
+<li>配置两个数据源</li>
+<li>实现AbstractRoutingDataSource来动态的使用数据源</li>
+<li>实现mybatis plugin来动态的选择数据源</li>
+</ul>
+<h3 id="配置数据源"><a href="#配置数据源" class="headerlink" title="配置数据源"></a>配置数据源</h3><p>将数据库连接信息配置到application.yml文件中</p>
+<pre><code>spring:
+  mvc:
+    servlet:
+      path: /api
+
+datasource:
+  write:
+    driver-class-name: org.postgresql.Driver
+    url: &quot;${DB_URL_WRITE:jdbc:postgresql://localhost:15432/postgres}&quot;
+    username: &quot;${DB_USERNAME_WRITE:postgres}&quot;
+    password: &quot;${DB_PASSWORD_WRITE:postgres}&quot;
+  read:
+    driver-class-name: org.postgresql.Driver
+    url: &quot;${DB_URL_READ:jdbc:postgresql://localhost:15433/postgres}&quot;
+    username: &quot;${DB_USERNAME_READ:postgres}&quot;
+    password: &quot;${DB_PASSWORD_READ:postgres}&quot;
+
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+</code></pre><p>write写数据源，对应到master节点的15432端口<br>read读数据源，对应到slave节点的15433端口</p>
+<p>将两个数据源信息注入为DataSourceProperties：</p>
+<pre><code>@Configuration
+public class DataSourcePropertiesConfig {
+
+    @Primary
+    @Bean(&quot;writeDataSourceProperties&quot;)
+    @ConfigurationProperties(&quot;datasource.write&quot;)
+    public DataSourceProperties writeDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    @Bean(&quot;readDataSourceProperties&quot;)
+    @ConfigurationProperties(&quot;datasource.read&quot;)
+    public DataSourceProperties readDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+}
+</code></pre><h3 id="实现AbstractRoutingDataSource"><a href="#实现AbstractRoutingDataSource" class="headerlink" title="实现AbstractRoutingDataSource"></a>实现AbstractRoutingDataSource</h3><p>spring提供了AbstractRoutingDataSource，提供了动态选择数据源的功能，替换原有的单一数据源后，即可实现读写分离:</p>
+<pre><code>@Component
+public class CustomRoutingDataSource extends AbstractRoutingDataSource {
+
+    @Resource(name = &quot;writeDataSourceProperties&quot;)
+    private DataSourceProperties writeProperties;
+
+    @Resource(name = &quot;readDataSourceProperties&quot;)
+    private DataSourceProperties readProperties;
+
+
+    @Override
+    public void afterPropertiesSet() {
+        DataSource writeDataSource = 
+            writeProperties.initializeDataSourceBuilder().type(DruidDataSource.class).build();
+        DataSource readDataSource = 
+            readProperties.initializeDataSourceBuilder().type(DruidDataSource.class).build();
+
+        setDefaultTargetDataSource(writeDataSource);
+
+        Map&lt;Object, Object&gt; dataSourceMap = new HashMap&lt;&gt;();
+        dataSourceMap.put(WRITE_DATASOURCE, writeDataSource);
+        dataSourceMap.put(READ_DATASOURCE, readDataSource);
+        setTargetDataSources(dataSourceMap);
+
+        super.afterPropertiesSet();
+    }
+
+    @Override
+    protected Object determineCurrentLookupKey() {
+        String key = DataSourceHolder.getDataSource();
+
+        if (key == null) {
+             // default datasource
+            return WRITE_DATASOURCE;
+        }
+
+        return key;
+    }
+
+}
+</code></pre><p>AbstractRoutingDataSource内部维护了一个Map&lt;Object, Object&gt;的Map<br>在初始化过程中，我们将write、read两个数据源加入到这个map<br>调用数据源时：determineCurrentLookupKey()方法返回了需要使用的数据源对应的key</p>
+<p>当前线程需要使用的数据源对应的key，是在DataSourceHolder类中维护的：</p>
+<pre><code>public class DataSourceHolder {
+
+    public static final String WRITE_DATASOURCE = &quot;write&quot;;
+    public static final String READ_DATASOURCE = &quot;read&quot;;
+
+    private static final ThreadLocal&lt;String&gt; local = new ThreadLocal&lt;&gt;();
+
+
+    public static void putDataSource(String dataSource) {
+        local.set(dataSource);
+    }
+
+    public static String getDataSource() {
+        return local.get();
+    }
+
+    public static void clearDataSource() {
+        local.remove();
+    }
+
+}
+</code></pre><h3 id="实现mybatis-plugin"><a href="#实现mybatis-plugin" class="headerlink" title="实现mybatis plugin"></a>实现mybatis plugin</h3><p>上面提到了当前线程使用的数据源对应的key，这个key需要在mybatis plugin根据sql类型来确定 MybatisDataSourceInterceptor类：</p>
+<pre><code>@Component
+@Intercepts({
+        @Signature(type = Executor.class, method = &quot;update&quot;,
+                args = {MappedStatement.class, Object.class}),
+        @Signature(type = Executor.class, method = &quot;query&quot;,
+                args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
+        @Signature(type = Executor.class, method = &quot;query&quot;,
+                args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class,
+                        CacheKey.class, BoundSql.class})})
+public class MybatisDataSourceInterceptor implements Interceptor {
+
+    @Override
+    public Object intercept(Invocation invocation) throws Throwable {
+
+        boolean synchronizationActive = TransactionSynchronizationManager.isSynchronizationActive();
+        if(!synchronizationActive) {
+            Object[] objects = invocation.getArgs();
+            MappedStatement ms = (MappedStatement) objects[0];
+
+            if (ms.getSqlCommandType().equals(SqlCommandType.SELECT)) {
+                DataSourceHolder.putDataSource(DataSourceHolder.READ_DATASOURCE);
+            }
+        }
+
+        return invocation.proceed();
+    }
+
+    @Override
+    public Object plugin(Object target) {
+        return Plugin.wrap(target, this);
+    }
+
+    @Override
+    public void setProperties(Properties properties) {
+    }
+}
+</code></pre><p>仅当未在事务中，并且调用的sql是select类型时，在DataSourceHolder中将数据源设为read<br>其他情况下，AbstractRoutingDataSource会使用默认的write数据源</p>
+<p>至此，项目已经可以自动的在读、写数据源间切换，无需修改原有的业务代码<br>最后，提供demo使用依赖版本</p>
+<pre><code>&lt;parent&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-parent&lt;/artifactId&gt;
+    &lt;version&gt;2.1.7.RELEASE&lt;/version&gt;
+    &lt;relativePath/&gt; &lt;!-- lookup parent from repository --&gt;
+&lt;/parent&gt;
+
+&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.postgresql&lt;/groupId&gt;
+        &lt;artifactId&gt;postgresql&lt;/artifactId&gt;
+        &lt;version&gt;42.2.2&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.alibaba&lt;/groupId&gt;
+        &lt;artifactId&gt;druid-spring-boot-starter&lt;/artifactId&gt;
+        &lt;version&gt;1.1.9&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.baomidou&lt;/groupId&gt;
+        &lt;artifactId&gt;mybatisplus-spring-boot-starter&lt;/artifactId&gt;
+        &lt;version&gt;1.0.5&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.baomidou&lt;/groupId&gt;
+        &lt;artifactId&gt;mybatis-plus&lt;/artifactId&gt;
+        &lt;version&gt;2.1.9&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;io.springfox&lt;/groupId&gt;
+        &lt;artifactId&gt;springfox-swagger2&lt;/artifactId&gt;
+        &lt;version&gt;2.8.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;io.springfox&lt;/groupId&gt;
+        &lt;artifactId&gt;springfox-swagger-ui&lt;/artifactId&gt;
+        &lt;version&gt;2.8.0&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;
+        &lt;artifactId&gt;lombok&lt;/artifactId&gt;
+        &lt;version&gt;1.16.20&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;
+        &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/05/springboot+mybatis实现数据库的读写分离/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-迁至WKWebView跨过的那些坑" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2756,257 +3066,6 @@ Job succeeded
 
 
   
-    <article id="post-iOS适配Dark模式（OC" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/29/iOS适配Dark模式（OC/">iOS适配Dark模式（OC）</a>
-    </h1>
-  
-
-        
-        <a href="/2019/08/29/iOS适配Dark模式（OC/" class="archive-article-date">
-  	<time datetime="2019-08-29T04:25:47.552Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS 13终于引来了暗黑模式。</p>
-<p>每当新特性的到来，iOS开发者们既紧张又有点小兴奋，怀揣着被虐的心态，让我们来看看暗黑模式到底是个啥。</p>
-<p>虽然这是一个设计驱动的需求，但是本着一颗虔诚(暴躁)的心，我们还是要一步步来，“工欲善其事、必先利其器”，搞清楚应该怎么做。</p>
-<p>下载 Xcode11，跑起来你的项目。模拟器启动后，在“设置”-“开发者”中打开“Dark Appearance”后，你的项目就自动运行在暗黑模式了。</p>
-<p>有些界面会很奇怪，这很正常，可以从一个界面入手，一步步优化它。</p>
-<p>开发者主要从颜色和图片两个方面进行适配，我们不需要关心切换模式时该如何操作，这些都由系统帮我们实现</p>
-<h2 id="颜色适配"><a href="#颜色适配" class="headerlink" title="颜色适配"></a>颜色适配</h2><p>iOS13 之前 UIColor只能表示一种颜色，而从 iOS13 开始UIColor是一个动态的颜色，在Light Mode和Dark Mode可以分别设置不同的颜色。</p>
-<p>iOS13系统提供了一些动态颜色</p>
-<pre><code>@property (class, nonatomic, readonly) UIColor *systemBrownColor        API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *systemIndigoColor       API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *systemGray2Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemGray3Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemGray4Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemGray5Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemGray6Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *labelColor              API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *secondaryLabelColor     API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *tertiaryLabelColor      API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *quaternaryLabelColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *linkColor               API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *placeholderTextColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *separatorColor          API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *opaqueSeparatorColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *systemBackgroundColor                   API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *secondarySystemBackgroundColor          API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *tertiarySystemBackgroundColor           API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemGroupedBackgroundColor            API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *secondarySystemGroupedBackgroundColor   API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *tertiarySystemGroupedBackgroundColor    API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemFillColor                         API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *secondarySystemFillColor                API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *tertiarySystemFillColor                 API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *quaternarySystemFillColor               API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-</code></pre><p>实例</p>
-<p>[self.view setBackgroundColor:[UIColor systemBackgroundColor]];<br>[self.titleLabel setTextColor:[UIColor labelColor]];<br>[self.detailLabel setTextColor:[UIColor placeholderTextColor]];</p>
-<h3 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h3><p><img src="http://img.wangjungang.cn/Lpkxxs.png" alt=""></p>
-<p>用法和iOS13之前的一样，使用系统提供的这些动态颜色，不需要其他的适配操作</p>
-<h3 id="自定义动态UIColor"><a href="#自定义动态UIColor" class="headerlink" title="自定义动态UIColor"></a>自定义动态UIColor</h3><p>在实际开发过程，系统提供的这些颜色还远远不够，因此我们需要创建更多的动态颜色</p>
-<h4 id="初始化动态UIColor方法"><a href="#初始化动态UIColor方法" class="headerlink" title="初始化动态UIColor方法"></a>初始化动态UIColor方法</h4><p>iOS13 UIColor增加了两个初始化方法，使用以下方法可以创建动态UIColor</p>
-<p>注:一个是类方法，一个是实例方法</p>
-<pre><code>+ (UIColor *)colorWithDynamicProvider:(UIColor * (^)(UITraitCollection *))dynamicProvider API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-- (UIColor *)initWithDynamicProvider:(UIColor * (^)(UITraitCollection *))dynamicProvider API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-</code></pre><ul>
-<li>这两个方法要求传一个block进去</li>
-<li>当系统在LightMode和DarkMode之间相互切换时就会触发此回调</li>
-<li>这个block会返回一个UITraitCollection类</li>
-<li><p>我们需要使用其属性userInterfaceStyle，它是一个枚举类型，会告诉我们当前是LightMode还是DarkMode</p>
-<pre><code>typedef NS_ENUM(NSInteger, UIUserInterfaceStyle) {
-    UIUserInterfaceStyleUnspecified,
-    UIUserInterfaceStyleLight,
-    UIUserInterfaceStyleDark,
-} API_AVAILABLE(tvos(10.0)) API_AVAILABLE(ios(12.0)) API_UNAVAILABLE(watchos);
-</code></pre></li>
-</ul>
-<h4 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h4><pre><code>UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
-        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
-            return [UIColor redColor];
-        }
-        else {
-            return [UIColor greenColor];
-        }
-    }];
-
- [self.bgView setBackgroundColor:dyColor];
-</code></pre><h4 id="效果展示-1"><a href="#效果展示-1" class="headerlink" title="效果展示"></a>效果展示</h4><p><img src="http://img.wangjungang.cn/JQQHYK.png" alt=""></p>
-<h2 id="图片适配"><a href="#图片适配" class="headerlink" title="图片适配"></a>图片适配</h2><ul>
-<li>打开Assets.xcassets</li>
-<li>新建一个Image set</li>
-</ul>
-<p><img src="http://img.wangjungang.cn/sXRNaH.png" alt=""></p>
-<ul>
-<li><p>打开右侧工具栏，点击最后一栏，找到Appearances，选择Any，Dark<br><img src="http://img.wangjungang.cn/Q2JXtr.png" alt=""></p>
-</li>
-<li><p>将两种模式下不同的图片资源都拖进去</p>
-</li>
-</ul>
-<p><img src="http://img.wangjungang.cn/dgaWfi.png" alt=""></p>
-<ul>
-<li><p>使用该图片</p>
-<pre><code>[_logoImage setImage:[UIImage imageNamed:@&quot;icon_logo&quot;]];
-</code></pre></li>
-</ul>
-<p><img src="http://img.wangjungang.cn/BXxZgC.png" alt=""></p>
-<p>大功告成，完成颜色和图片的Dark Mode适配</p>
-<h2 id="获取当前模式-Light-or-Dark"><a href="#获取当前模式-Light-or-Dark" class="headerlink" title="获取当前模式(Light or Dark)"></a>获取当前模式(Light or Dark)</h2><p>有时候我们需要知道当前处于什么模式，并根据不同的模式执行不同的操作</p>
-<p>iOS13中CGColor依然只能表示单一的颜色</p>
-<p>通过调用UITraitCollection.currentTraitCollection.userInterfaceStyle<br>获取当前模式</p>
-<h4 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h4><pre><code>if (UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-      [self.titleLabel setText:@&quot;DarkMode&quot;];
- }
-  else {
-      [self.titleLabel setText:@&quot;LightMode&quot;];
-  }
-</code></pre><h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="监听模式切换"><a href="#监听模式切换" class="headerlink" title="监听模式切换"></a>监听模式切换</h3><p>有时我们需要监听系统模式的变化，并作出响应</p>
-<p>那么我们就需要在需要监听的viewController中，重写下列函数</p>
-<pre><code>// 注意:参数为变化前的traitCollection
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection;
-
-// 判断两个UITraitCollection对象是否不同
-- (BOOL)hasDifferentColorAppearanceComparedToTraitCollection:(UITraitCollection *)traitCollection;
-</code></pre><h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-    // trait发生了改变
-    if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
-    // 执行操作
-    }
-    }
-</code></pre><h3 id="CGColor适配"><a href="#CGColor适配" class="headerlink" title="CGColor适配"></a>CGColor适配</h3><p>我们知道iOS13后，UIColor能够表示动态颜色，但是CGColor依然只能表示一种颜色，那么对于CALayer等对象如何适配暗黑模式呢?当然是利用上一节提到的监听模式切换的方法啦。</p>
-<h4 id="方式一-resolvedColor"><a href="#方式一-resolvedColor" class="headerlink" title="方式一:resolvedColor"></a>方式一:resolvedColor</h4><pre><code>// 通过当前traitCollection得到对应UIColor
-// 将UIColor转换为CGColor
-- (UIColor *)resolvedColorWithTraitCollection:(UITraitCollection *)traitCollection;
-</code></pre><p>示例</p>
-<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-
-    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
-        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
-            return [UIColor redColor];
-        }
-        else {
-            return [UIColor greenColor];
-        }
-    }];
-    UIColor *resolvedColor = [dyColor resolvedColorWithTraitCollection:previousTraitCollection];
-    layer.backgroundColor = resolvedColor.CGColor;
-</code></pre><h4 id="方式二-performAsCurrent"><a href="#方式二-performAsCurrent" class="headerlink" title="方式二:performAsCurrent"></a>方式二:performAsCurrent</h4><pre><code>// 使用当前trainCollection调用此方法
-- (void)performAsCurrentTraitCollection:(void (^)(void))actions;
-</code></pre><p>示例</p>
-<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-
-    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
-        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
-            return [UIColor redColor];
-        }
-        else {
-            return [UIColor greenColor];
-        }
-    }];
-    [self.traitCollection performAsCurrentTraitCollection:^{
-        layer.backgroundColor = dyColor.CGColor;
-    }];
-
-}
-</code></pre><h4 id="最简单的方法"><a href="#最简单的方法" class="headerlink" title="最简单的方法"></a>最简单的方法</h4><p>直接设置为一个动态UIColor的CGColor即可</p>
-<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
-        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
-            return [UIColor redColor];
-        }
-        else {
-            return [UIColor greenColor];
-        }
-    }];
-        layer.backgroundColor = dyColor.CGColor;
-}
-</code></pre><p>!!! 设置layer颜色都是在traitCollectionDidChange中，意味着如果没有发生模式切换，layer将会没有颜色，需要设置一个基本颜色</p>
-<h3 id="模式切换时打印log"><a href="#模式切换时打印log" class="headerlink" title="模式切换时打印log"></a>模式切换时打印log</h3><p>模式切换时自动打印log，就不需要我们一次又一次的执行po命令了</p>
-<p>在Xcode菜单栏Product-&gt;Scheme-&gt;Edit Scheme</p>
-<p>选择Run-&gt;Arguments-&gt;Arguments Passed On Launch</p>
-<p>添加以下命令即可</p>
-<p>-UITraitCollectionChangeLoggingEnabled YES</p>
-<p><img src="http://img.wangjungang.cn/SUAYYg.png" alt=""></p>
-<h2 id="强行设置App模式"><a href="#强行设置App模式" class="headerlink" title="强行设置App模式"></a>强行设置App模式</h2><p>当系统设置为Light Mode时，对某些App的个别页面希望一直显示Dark Mode下的样式，这个时候就需要强行设置当前ViewController的模式了</p>
-<pre><code>// 设置当前view或viewCongtroller的模式
-@property(nonatomic) UIUserInterfaceStyle overrideUserInterfaceStyle;
-</code></pre><h4 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h4><pre><code>// 设置为Dark Mode即可
-[self setOverrideUserInterfaceStyle:UIUserInterfaceStyleDark];
-</code></pre><p>注意!!!</p>
-<p>当我们强行设置当前viewController为Dark Mode后，这个viewController下的view都是Dark Mode</p>
-<p>由这个ViewController present出的ViewController不会受到影响，依然跟随系统的模式<br>要想一键设置App下所有的ViewController都是Dark Mode，请直接在Window上执行<br>overrideUserInterfaceStyle</p>
-<p>对window.rootViewController强行设置Dark Mode也不会影响后续present出的ViewController的模式</p>
-<h2 id="NSAttributedString优化"><a href="#NSAttributedString优化" class="headerlink" title="NSAttributedString优化"></a>NSAttributedString优化</h2><h3 id="不建议的做法"><a href="#不建议的做法" class="headerlink" title="不建议的做法"></a>不建议的做法</h3><pre><code>NSDictionary *dic = @{NSFontAttributeName:[UIFont systemFontOfSize:16]};
-NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富文本文案&quot; attributes:dic];
-</code></pre><h3 id="推荐的做法"><a href="#推荐的做法" class="headerlink" title="推荐的做法"></a>推荐的做法</h3><pre><code>// 添加一个NSForegroundColorAttributeName属性
-NSDictionary *dic = @{NSFontAttributeName:[UIFont systemFontOfSize:16],NSForegroundColorAttributeName:[UIColor labelColor]};
-NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富文本文案&quot; attributes:dic];
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/29/iOS适配Dark模式（OC/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -3116,15 +3175,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">swift</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
