@@ -152,6 +152,347 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Swift 5.1 (3) - 字符串" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/06/Swift 5.1 (3) - 字符串/">Swift 5.1- 字符串</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/06/Swift 5.1 (3) - 字符串/" class="archive-article-date">
+  	<time datetime="2019-09-06T01:51:36.379Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p>字符串是一系列字符组成的。Swift字符串由String类型表示。</p>
+<p>1.使用字符串文字作为常量或变量的初始值：</p>
+<pre><code>let str = &quot;I am zhangfei&quot;//str 系统使用类型推断为String类型
+</code></pre><p>2.多行字符串：由三个双引号”””括起来的字符序列。注意：多行字符串文字的正文开始以及结束时，分隔符”””必须独占一行。</p>
+<pre><code>let quotation = &quot;&quot;&quot;
+The White Rabbit put on his spectacles.  &quot;Where shall I begin,
+please your Majesty?&quot; he asked.
+
+&quot;Begin at the beginning,&quot; the King said gravely, &quot;and go on
+till you come to the end; then stop.&quot;
+&quot;&quot;&quot;
+let multilineString = &quot;&quot;&quot;
+These are the same.
+&quot;&quot;&quot;
+</code></pre><p>多行字符串文字中包含换行符时，该换行符也会出现在字符串的值中。 如果只想使用换行符来简化代码的读取，而不希望换行符成为字符串值的一部分，请在这些行的末尾写一个反斜杠\。/*</p>
+<pre><code> 不加反斜杠\打印：
+ The White Rabbit put on his spectacles.  &quot;Where shall I begin,
+ please your Majesty?&quot; he asked.
+
+ &quot;Begin at the beginning,&quot; the King said gravely, &quot;and go on
+ till you come to the end; then stop.&quot;
+ 加反斜杠\打印：
+ The White Rabbit put on his spectacles.  &quot;Where shall I begin,please your Majesty?&quot; he asked.
+
+ &quot;Begin at the beginning,&quot; the King said gravely, &quot;and go ontill you come to the end; then stop.&quot;
+ */
+ let softWrappedQuotation = &quot;&quot;&quot;
+The White Rabbit put on his spectacles.  &quot;Where shall I begin,\
+please your Majesty?&quot; he asked.
+
+&quot;Begin at the beginning,&quot; the King said gravely, &quot;and go on \
+till you come to the end; then stop.&quot;
+&quot;&quot;&quot;
+print(softWrappedQuotation)
+</code></pre><h2 id="字符串中的特殊字符"><a href="#字符串中的特殊字符" class="headerlink" title="字符串中的特殊字符"></a>字符串中的特殊字符</h2><p>字符串中可以包含以下特殊字符：</p>
+<ul>
+<li>转义的特殊字符 \ 0（空字符），\（反斜杠），\ t（水平制表符），\ n（换行符），\ r \ n（回车符），\”（双引号）和\’（单 引号）。</li>
+<li>一个任意的Unicode标量值，写为\ u {n}，其中n是1-8位十六进制数。</li>
+</ul>
+<p>特殊字符示例：</p>
+<pre><code>let name = &quot;i am \&quot;张飞\&quot;&quot;
+let dollarSign = &quot;\u{24}&quot;        // $,  Unicode标量 U+0024
+let blackHeart = &quot;\u{2665}&quot;      // ♥,  Unicode标量 U+2665
+let sparklingHeart = &quot;\u{1F496}&quot; // 💖, Unicode标量 U+1F496
+print(name+dollarSign+blackHeart+sparklingHeart)//!&lt;i am &quot;张飞&quot;$♥💖
+</code></pre><p>因为多行字符串文字使用三个双引号”””而不是一个”，故多行字符串文字中包含双引号”可以不用转义它。但是要在多行字符串中包含””” ，需要至少转义一个引号。</p>
+<pre><code>let threeDoubleQuotationMarks = &quot;&quot;&quot;
+Escaping the first quotation mark \&quot;&quot;&quot;
+Escaping all three quotation marks \&quot;\&quot;\&quot;
+&quot;&quot;&quot;
+</code></pre><h2 id="扩展字符串分隔符"><a href="#扩展字符串分隔符" class="headerlink" title="扩展字符串分隔符"></a>扩展字符串分隔符</h2><p>我们可以将包含特殊字符的字符串放在扩展分隔符中，让所包含的特殊字符（如：转义符）不生效。使用时将字符串放在引号”中并用数字符号＃括起来。#的个数不限制，但是数量需要保持一致性。形式：let str = #”Line 1\nLine 2”#，str输出换行符\n而不是输出两行的字符串。</p>
+<p>如果需要字符串中特殊字符的特殊效果，则需要在转义字符\后面使用数字符号#，但要注意匹配#的个数。例如，字符串：let str = #”Line 1\nLine 2”#，我们需要让换行符\n生效，则可以使用let str = #”Line 1#nLine 2”#来代替。同样，let str = ##”Line 1##nLine 2”##或let str = ###”Line 1###nLine 2”###也能让换行符生效。</p>
+<p>多行字符串使用扩展分隔符而不需要使用转义符\，例如：</p>
+<pre><code>let threeQuotationMarks = #&quot;&quot;&quot;
+Here are three more double quotes: &quot;&quot;&quot;
+&quot;&quot;&quot;#
+print(threeQuotationMarks)//!&lt; log:Here are three more double quotes: &quot;&quot;&quot;
+</code></pre><h2 id="初始化一个空的字符串"><a href="#初始化一个空的字符串" class="headerlink" title="初始化一个空的字符串"></a>初始化一个空的字符串</h2><p>可以使用将空字符串指定给变量，或使用初始化字符串的语法初始化一个String实例：</p>
+<pre><code>// 一下两个字符串都是空的，并且彼此都是相等的
+var emptyString = &quot;&quot;        
+var anotherEmptyString = String() 
+</code></pre><p>字符串判空</p>
+<pre><code>if emptyString.isEmpty {
+    print(&quot;空字符串&quot;)
+}
+</code></pre><p><strong>可变字符串：</strong>将特定字符串赋值给变量或常量，来表示字符串是否可以被修改。 将特定字符串赋值给变量：在这种情况下可以对其进行修改。</p>
+<pre><code>var variableString = &quot;Horse&quot;
+variableString += &quot; and carriage&quot;
+print(variableString)
+</code></pre><p>将特定字符串赋值给常量：在这种情况下无法对其进行修改。</p>
+<pre><code>let constantString = &quot;Highlander&quot;
+constantString += &quot; and another Highlander&quot;//!&lt; 编译器报错：constantString是常量不可变
+</code></pre><p>这种方法与Objective-C和Cocoa中的字符串可变不同，您可以在两个类NSString和NSMutableString之间进行选择，区分可变字符串。</p>
+<h2 id="字符串是值类型"><a href="#字符串是值类型" class="headerlink" title="字符串是值类型"></a>字符串是值类型</h2><p> Swift的String类型是一种值类型。如果我们创建一个新的字符串a，在将a传递给函数或方法时，或将其赋值给常量或变量时，将复制字符串a的值。在以上每种情况下，都会创建现有字符串的新副本，并传递或分配新副本，而不是原始字符串。</p>
+<p> Swift默认复制字符串的行为，确保了在函数或方法中传递字符串时，该字符串的值不会被改变，无论它来自何处，除非我们自己修改。</p>
+<p> 同时Swift的编译器对字符串的默认复制行为做了优化：只有在绝对必要的情况下才会进行实际的复制，保证了性能。</p>
+<h2 id="字符使用"><a href="#字符使用" class="headerlink" title="字符使用"></a>字符使用</h2><p>我们可以通过使用for-in循环遍历字符串来访问字符串中各个字符</p>
+<pre><code>let str = &quot;Dog!&quot;
+for character in str {
+    print(character)
+}
+</code></pre><p>创建一个Character类型的常量或变量</p>
+<pre><code>//创建常量
+let character : Character = &quot;&quot;
+print(character)
+//创建变量
+var character : Character = &quot;&quot;
+character = &quot;&quot;
+print(character)
+</code></pre><p>通过字符数组，生成一个字符串</p>
+<pre><code>let catCharacters : [Character] = [&quot;c&quot;,&quot;a&quot;,&quot;t&quot;,&quot;i&quot;,&quot;s&quot;,&quot;&quot;]
+let catString = String(catCharacters)
+print(catString)
+</code></pre><h2 id="连接字符串和字符"><a href="#连接字符串和字符" class="headerlink" title="连接字符串和字符"></a>连接字符串和字符</h2><p>字符串可以使用加法运算符+连接到一起以创建新的字符串：</p>
+<pre><code>let string1 = &quot;hello&quot;
+let string2 = &quot; there&quot;
+let welcome = string1 + string2
+print(welcome)
+</code></pre><p>使用加号赋值运算符+=：</p>
+<pre><code>var instruction = &quot;look over&quot;
+let string2 = &quot; there&quot;
+instruction += string2 //!&lt; log:look over there
+</code></pre><p>使用String类型的append()方法将Character类型的值添加到String类型的变量。</p>
+<pre><code>var character : Character = &quot;&quot;
+character = &quot;&quot;
+var instruction = &quot;look over&quot;
+let string2 = &quot; there&quot;
+instruction += string2
+instruction.append(character) //!&lt; look over there
+</code></pre><p>使用多行字符串文字来构建更多行的字符串，则希望字符串中的每一行都以换行符结束，包括最后一行。</p>
+<pre><code>let badStart = &quot;&quot;&quot;
+one
+two
+&quot;&quot;&quot;
+let end = &quot;&quot;&quot;
+three
+&quot;&quot;&quot;
+/*输出两行：badStart的最后一行不以换行符结束，所以该行与end的第一行结合
+one
+twothree
+*/
+print(badStart + end)
+
+let goodStart = &quot;&quot;&quot;
+one
+two
+
+&quot;&quot;&quot;
+/*输出三行：goodStart最后一行以换行符结束。
+one
+two
+three
+*/
+print(goodStart + end)
+</code></pre><h2 id="字符串插值"><a href="#字符串插值" class="headerlink" title="字符串插值"></a>字符串插值</h2><p>字符串插值是一种通过在字符串中混合常量，变量，文字和表达式并可以构造出新字符串的方法。</p>
+<p>作用：将常量或变量的名称包含在较长字符串中作为占位符，并提示Swift将其替换为该常量或变量的当前值。使用形式：将名称括在括号中，并在左括号前用反斜杠转义它(变量或常量)。单行和多行字符串都可以使用字符串插值。</p>
+<pre><code>let multiplier = 3
+let message = &quot;\(multiplier) times 2.5 is \(Double(multiplier) * 2.5)&quot;
+print(message)//!&lt; 3 times 2.5 is 7.5
+</code></pre><p>上例中(multiplier)和(Double(multiplier) * 2.5)属于字符串插值。</p>
+<pre><code>print(#&quot;Write an interpolated string in Swift using \(multiplier).&quot;#)//!&lt;Write an interpolated string in Swift using \(multiplier).
+</code></pre><p>上例中使用扩展字符串分隔符来创建包含特殊字符\的字符串，否则这些字符将被视为字符串插值。</p>
+<p>若要在使用扩展分隔符的字符串中使用字符串插值，需将\后面的数字符号#的个数与字符串开头和结尾处#的个数相匹配。</p>
+<pre><code>print(#&quot;Write an interpolated string in Swift using \#(multiplier).&quot;#)//!&lt;Write an interpolated string in Swift using 3.
+</code></pre><p><strong>Unicode：</strong>又名：统一码、万国码、单一码。它是跨语言、跨平台进行文本转换、处理的国际标准。Swift中的字符串和字符类型完全符合Unicode。</p>
+<p>Unicode标量：Swift的原生String类型是根据Unicode标量构建的。Unicode标量：使用21个二进制位表示的字符或修饰符，（注解：目前Unicode的编码范围达到了21位，Unicode标量范围 0x0000 - 0x10ffff 的范围，二进制位为 1 0000 1111 1111 1111 1111，总共21位）例如：U+0061表示a,U+1F425表示🐥。需要注意的是，Unicode标量值并不需要把所有21个二进制位都分配给字符或修饰符 ，某些多出来的Unicode标量会保留下来，用于将来分配或用于UTF-16编码(注解：UTF-16是Unicode的其中一个使用方式，即把Unicode字符集的抽象码位映射为16位的序列，用于数据存储或传递)。</p>
+<p>扩展字形集群：Swift的Character类型的每个实例，代表一个扩展的字形集群。扩展字形集群是一个或多个可组合的Unicode标量（组合时，产生单个人类可读字符）的序列。字母é可以表示为单个Unicode标量\u{00E9}。字母é也可以表示为一对标量 ：标准字母e:\u{0065}和尖音符\u{301}组合的形式。（音调符标量以图形方式应用于其前面的标量，当它由具有Unicode感知的文本渲染系统渲染时将e转换为é）<br>在这两种情况下，字母é表示为单个Swift中的Character值，表示可扩展的字形簇。在第一种情况下，集群中的单个标量;在第二种情况下，它是两个标量的集群：</p>
+<pre><code>let eAcute: Character = &quot;\u{E9}&quot;                         // é
+let combinedEAcute: Character = &quot;\u{65}\u{301}&quot; //é
+print(String(eAcute)+String(combinedEAcute))
+</code></pre><p>可扩展的字形集群是一种将许多复杂脚本字符表示为单个字符值的灵活方式。</p>
+<pre><code>let precomposed: Character = &quot;\u{D55C}&quot;                  // 한
+let decomposed: Character = &quot;\u{1112}\u{1161}\u{11AB}&quot;   // \u{1112}:ᄒ, \u{1161}:ᅡ,\u{11AB}: ᆫ -&gt;한
+print(String(precomposed)+String(decomposed))
+</code></pre><p>区域指示符号的Unicode标量可以成对组合以生成单个字符值，例如区域指示符符号U（U + 1F1FA）和区域指示符符号字母S（U + 1F1F8）的组合：</p>
+<pre><code>let regionalIndicatorForUS: Character = &quot;\u{1F1FA}\u{1F1F8}&quot;
+print(String(regionalIndicatorForUS))//log:🇺🇸
+</code></pre><h2 id="字符计数"><a href="#字符计数" class="headerlink" title="字符计数"></a>字符计数</h2><p>检索字符串中字符的数目，可以使用字符串的count属性：</p>
+<pre><code>let title = &quot;Koala 🐨, Snail 🐌, Penguin 🐧, Dromedary 🐪&quot;
+print(&quot;title中有\(title.count)个字符&quot;)//!&lt; 40个字符
+</code></pre><p>需要注意的是：Swift中对字符串拼接扩展字形集群可能并不会影响字符串的字符数目。如：</p>
+<pre><code>var x = &quot;thing&quot; //!&lt; x.count = 5
+x += &quot;\u{301}&quot; //!&lt; x:thinǵ
+print(x) //!&lt; x.count 依旧是5
+</code></pre><p>扩展的字形集群可以由多个Unicode标量组成。这意味着相同字符的不同表示可能需要不同的内存量来存储。因此，在Swift中，字符串的每个字符在内存中所占的大小可能不相同。需要注意的是如果字符串特别长，使用count属性获取字符串中字符数量时，是会遍历整个字符串中的Unicode标量的。count属性可能与包含相同字符的NSString的length属性返回的字符数量不相同。因为两者的计算基准不一样。NSString的长度基于字符串的UTF-16表示中的16位码元的数量，而不是基于字符串中Unicode可扩展的字形集群的数量。</p>
+<pre><code>//OC中计算的字符数。
+NSString *str = @&quot;Koala 🐨, Snail 🐌, Penguin 🐧, Dromedary 🐪&quot;;
+NSLog(@&quot;%ld&quot;,str.length);//!&lt; 44个字符
+</code></pre><p>访问和修改字符串：通过相应方法和属性或使用下标语法来访问和修改字符串。 字符串索引：每个String值都有一个关联的索引类型String.Index，它对应于字符串中每个字符的位置。</p>
+<p>如上所述，Swift中不同的字符可能需要不同的内存量来存储，因为Swift的字符串中字符数是基于Unicode标量的来计算的：a.集群中的单个标量，b.多个标量的可扩展集群。因此Swift字符串不能用整数值索引，为了确定某个特定的字符位于哪个位置，我们必须从该字符串的开头或结尾遍历每个Unicode标量。</p>
+<p>使用startIndex属性可以访问字符串的第一个字符的位置。endIndex属性是字符串最后一个字符之后的位置。因此，endIndex属性不是字符串下标的有效参数。如果字符串为空，则startIndex和endIndex相等。可以使用字符串的索引index(before: )和index(after:)方法访问给定索引之前和之后的索引。要访问远离给定索引的索引，可以使用索引index(_:, offsetBy: )方法，而不是多次调用其中一种方法。字符串title根据字符索引获取字符：title[String.Index(必须是索引类型)]</p>
+<pre><code>let title = &quot;Koala 🐨, Snail 🐌, Penguin 
+</code></pre><hr>
+<pre><code>let title = &quot;Koala 🐨, Snail 🐌, Penguin 🐧, Dromedary 🐪&quot;
+let subStr = title[title.index(after: title.startIndex)]//!&lt; startIndex之后的位置 输出o
+let subStr1 = title[title.index(before: title.endIndex)]//!&lt; 🐪
+
+let subStr2 = title[title.index(title.endIndex, offsetBy: -1)] //!&lt; log:🐪
+let subStr3 = title[title.index(title.startIndex, offsetBy: 6)]//!&lt; log: 🐨
+
+let index = title.index(title.startIndex, offsetBy: 15)
+let subStr4 = title[index] //!&lt; log:🐌
+</code></pre><p>尝试访问字符串范围之外的索引或字符时将触发运行时错误。</p>
+<pre><code>//! 所得索引超越了字符串的有效范围，触发运行时错误：Thread 1: Fatal error: String index is out of bounds
+let outsideIndex = title.index(after: title.endIndex)
+//！索引超越了有效范围，触发运行时错误：Thread 1: Fatal error: String index is out of bounds
+let subStr5 = title[title.endIndex]
+</code></pre><p>使用indices属性可以获取字符串中所有字符的索引。</p>
+<pre><code>let indices = title.indices;//!DefaultIndices&lt;String&gt;(_elements: &quot;Koala , Snail , Penguin , Dromedary &quot;, _startIndex: Swift.String.Index(_rawBits: 0), _endIndex: Swift.String.Index(_rawBits: 3407872))
+var tempStr:String = &quot;&quot;
+for index in indices {
+    print(&quot;\(title[index])&quot;,&quot;&quot;,separator: &quot;_&quot;, terminator: &quot;&quot;, to: &amp;tempStr)
+}
+////!&lt; 最终合成的新字符串:K_o_a_l_a_ __,_ _S_n_a_i_l_ __,_ _P_e_n_g_u_i_n_ __,_ _D_r_o_m_e_d_a_r_y_ __
+print(&quot;最终合成的新字符串:\(tempStr)&quot;)
+</code></pre><p>重点：我们可以在符合Collection协议的任何类型上使用startIndex和endIndex属性以及索引index(before: )和index(after:)和index(<em>:, offsetBy: )方法。这包括字符串以及集合类型，如Array，Dictionary和Set。<br>字符串插入和删除：<br>插入：字符串指定索引处插入单个字符使用insert(</em>:at:)方法;在指定索引处插入另一个字符串使用insert(contentsOf:at:)方法。</p>
+<pre><code>var inserStr = &quot;hello&quot;
+//! 插入单个字符：unicode标量
+inserStr.insert(&quot;\u{1F1F7}&quot;, at: inserStr.startIndex)//!&lt; log:🇷hello
+//! 插入单个字符：普通字符
+inserStr.insert(&quot;!&quot;, at: inserStr.endIndex)//!&lt; log:🇷hello! 插入时可以使用endIndex
+//!&lt; 插入字符串：由字符：unicode标量组成的字符串
+let scalarStr = &quot;\u{1F1F6}\u{1F496}&quot;//!&lt; 🇶💖
+inserStr.insert(contentsOf: scalarStr, at: inserStr.startIndex)//!&lt; 🇶💖🇷hello!
+//! 插入普通字符串：
+let normalStr = &quot;_word&quot;
+inserStr.insert(contentsOf: normalStr, at: inserStr.index(before: inserStr.endIndex))//!&lt; 🇶💖🇷hello_word!
+</code></pre><p>删除：字符串删除指定索引处的单个字符使用remove(at:)方法;删除指定范围内的子字符串使用removeSubrange(_:)方法：</p>
+<pre><code>//复杂组成的字符串
+var removeStr = &quot;\u{1F1F6}\u{1E67F}\u{1F496}\u{1F1F7}hello_word!eye\u{301}&quot;//!&lt; log:🇶💖🇷hello_word!eyé
+//移除unicode标量字符：💖
+removeStr.remove(at: removeStr.index(removeStr.startIndex, offsetBy: 2))//!&lt; log:🇶🇷hello_word!eyé
+//移除普通字符：y 为啥-2因为endIndex属性表示字符串最后一个字符之后的位置
+removeStr.remove(at: removeStr.index(removeStr.endIndex, offsetBy: -2))//!&lt; log:🇶🇷hello_word!eé
+//!&lt; 删除子0-1范围内的字符串：由字符：unicode标量组成的子字符串：🇶
+//*range
+//    let range = removeStr.startIndex..&lt;removeStr.index(removeStr.startIndex, offsetBy: 2)
+//或
+let range = removeStr.startIndex...removeStr.index(removeStr.startIndex, offsetBy: 1)
+removeStr.removeSubrange(range) //!&lt; 🇷hello_word!eé
+</code></pre><p>注意：String类型实现了RangeReplaceableCollection协议，其他实现了RangeReplaceableCollection协议的任何类型都可以使用insert(<em>:at:)，insert(contentsOf:at:)，remove(at:)和removeSubrange(</em>:)方法。如：Array，Dictionary和Set。</p>
+<h2 id="子字符串"><a href="#子字符串" class="headerlink" title="子字符串"></a>子字符串</h2><p>从字符串中获取子字符串时 - 例如，使用索引或类似prefix(_:)的方法 ，结果是Substring的实例，而不是另一个字符串。Swift中的子字符串与字符串具有多数相同的方法，这意味着我们可以像处理字符串一样使用子字符串。但是与字符串不同，我们在对字符串执行操作时只会使用子字符串很短的时间。当我们需要将子字符串存储更长时间时，则需要将子字符串转换为String实例。</p>
+<pre><code>var myString = &quot;\u{1F1F6}\u{1E67F}\u{1F496}\u{1F1F7}hello_word!eye\u{301}&quot;//!&lt; log:𞙿hello_word!eyé
+//从字符串中取出hello子字符串
+//1.获取hello在字符中的范围
+//Returns the last index where the specified value appears in the collection.
+let subStart = myString.lastIndex(of:&quot;🇷&quot; ) ?? myString.startIndex //!&lt; 字符🇷的位置
+//Returns the first index where the specified value appears in the collection.
+let subEnd = myString.firstIndex(of: &quot;_&quot;) ?? myString.endIndex//!&lt; 字符_的位置
+//2.获取子字符串
+let subString = myString[subStart..&lt;subEnd]//!&lt;log: 🇷hello
+print(subString)
+//3.若需要长时间使用子字符串则需要类型转换
+let longSubStr = String(subString) //!&lt; or:String.init(subString)
+</code></pre><h2 id="重点知识："><a href="#重点知识：" class="headerlink" title="重点知识："></a>重点知识：</h2><p>字符串和子字符串之间的区别：与字符串一样，每个子字符串都有一个内存区域，用于存储构成子字符串的字符。但是作为性能优化，子字符串可以重用用于存储原始字符串的部分内存，或者用于存储另一个子字符串的内存的一部分。字符串具有类似的优化，但如果两个字符串共享内存，则它们是相等的此性能优化意味着在修改字符串或子字符串之前，不会增加复制内存的性能成本。如上所述，子字符串不适合长期存储 因为它们重用原始字符串的存储，只要使用任何子字符串，整个原始字符串就必须保存在内存中。</p>
+<p>示例描述：myString是一个字符串，这意味着它有一个内存区域，用于存储构成字符串的字符。因为subString是myString的子字符串，所以它重用了myString使用的内存。相比之下，longSubStr是一个字符串 ，从子字符串创建时，它有自己的存储空间。</p>
+<p><img src="http://img.wangjungang.cn/Pvwxq3.jpg" alt=""></p>
+<h2 id="字符串比较"><a href="#字符串比较" class="headerlink" title="字符串比较"></a>字符串比较</h2><p>字符串和字符是否相等的比较：使用“等于”运算符==和“不等于”运算符!=检查字符串和字符相等性。</p>
+<pre><code>let testStr1 = &quot;i have a cat\u{E9}?&quot;//!&lt; i have a caté?
+let testStr2 = &quot;i have a cat\u{65}\u{301}?&quot;//!&lt; i have a caté?
+if testStr1 == testStr2 {
+    print(&quot;这两个字符串是相等的&quot;)
+}
+</code></pre><p>如果两个字符串值（或两个字符值）的扩展字形集群在规范上等效，则它们被认为是相等的。如果扩展的字形集群具有相同的语言含义和外观，则它们在规范上是等效的，即使它们是不同Unicode标量组成的。</p>
+<p>举个反例：英语中大写字母A:\u{0041}不等同于俄语中的A:\u{0410}。字符在视觉上相同，但却不具有相同的语言含义，因此也是不相等的。</p>
+<pre><code>let englishA = &quot;\u{0041}&quot;//!&lt; A
+let RussianA = &quot;\u{0410}&quot;//!&lt; A
+if englishA == RussianA {
+    print(&quot;这两个字符串是相等的&quot;)
+} else {
+    print(&quot;这两个字符串是不相等的&quot;)//!&lt; log:这两个字符串是不相等的
+}
+</code></pre><p>字符串的前缀与后缀的比较：要检查字符串是否具有特定的字符串前缀或后缀，调用字符串的hasPrefix（_ :)和hasSuffix（_ :)方法，返回值都为布尔值。</p>
+<pre><code>let testStr1 = &quot;i have a cat\u{E9}?&quot;//!&lt; i have a caté?
+let testStr2 = &quot;i have a cat\u{65}\u{301}?&quot;//!&lt; i have a caté?
+let array = [testStr1,testStr2]
+for item in array[...] {
+    if item.hasPrefix(&quot;i&quot;) {
+        print(item + &quot;*&quot;)
+    }
+}
+/*注意：hasPrefix（_ :)和hasSuffix（_ :)方法在每个字符串中的扩展字形集群之间执行逐个字符的规范等效比较。*/
+for item in array[...] {
+    if item.hasSuffix(&quot;\u{E9}?&quot;) {
+        print(item + &quot;*&quot;)//!&lt;输出两次： i have a caté?*
+    }
+}
+</code></pre><p>注意：在每个字符串中调用hasPrefix（_ :)和hasSuffix（_ :)方法，会在字符串的扩展字形集群之间逐个字符进行规范的相等比较</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/06/Swift 5.1 (3) - 字符串/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-springboot+mybatis实现数据库的读写分离" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2979,93 +3320,6 @@ Job succeeded
 
 
   
-    <article id="post-git rebase 什么时候用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/03/git rebase 什么时候用/">git rebase 什么时候用</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/03/git rebase 什么时候用/" class="archive-article-date">
-  	<time datetime="2019-09-03T02:31:18.235Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>git rebase 俗称变基，作用是将提交到某一分支上的所有修改都移至另一分支上，就好像“重新播放”一样。这样操作后，提交历史会变得简洁，可读性更高，因为提交记录改变了时间线，把某个完整功能的提交记录整合在了一起，使得这期间其他人的提交记录不会穿插到其中，干净舒爽！🚾👯‍♂️</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>它的原理是首先找到两个分支（当前分支 experiment、变基操作的目标基底分支 master）的最近共同祖先 C2，然后对比当前分支相对于该祖先的历次提交，提取相应的修改并存为临时文件，然后将当前分支指向目标基底 C3, 最后以此将之前另存为临时文件的修改依序应用。</p>
-<p><img src="http://img.wangjungang.cn/WX20190903-103613.png" alt=""></p>
-<h2 id="重点-❗❗❗"><a href="#重点-❗❗❗" class="headerlink" title="重点 ❗❗❗"></a>重点 ❗❗❗</h2><p>具体该如何操作网上有很多文章，这里只是记录一下git rebase使用时该注意什么</p>
-<ul>
-<li>需遵循的金科玉律：不要对在你的仓库外有副本的分支执行变基。</li>
-</ul>
-<p>如果你遵循这条金科玉律，就不会出差错。 否则，人民群众会仇恨🌚你，你的朋友和家人也会嘲笑🌚你，唾弃🌚你。<br>只要你把变基命令当作是在推送前清理提交使之整洁的工具，并且只在从未推送至共用仓库的提交上执行变基命令，就不会有事。 假如在那些已经被推送至共用仓库的提交上执行变基命令，并因此丢弃了一些别人的开发所基于的提交，那你就有大麻烦了，你的同事也会因此鄙视🌚你。</p>
-<h2 id="变基-vs-合并🌏"><a href="#变基-vs-合并🌏" class="headerlink" title="变基 vs. 合并🌏"></a>变基 vs. 合并🌏</h2><p>你一定会想问，到底哪种方式更好。 在回答这个问题之前，让我们退后一步，想讨论一下提交历史到底意味着什么。</p>
-<p>有一种观点认为，仓库的提交历史即是 记录实际发生过什么。 它是针对历史的文档，本身就有价值，不能乱改。 从这个角度看来，改变提交历史是一种亵渎，你使用 谎言 掩盖了实际发生过的事情。 如果由合并产生的提交历史是一团糟怎么办？ 既然事实就是如此，那么这些痕迹就应该被保留下来，让后人能够查阅。<br>另一种观点则正好相反，他们认为提交历史是 项目过程中发生的事。 没人会出版一本书的第一版草稿，软件维护手册也是需要反复修订才能方便使用。 持这一观点的人会使用 rebase 及 filter-branch 等工具来编写故事，怎么方便后来的读者就怎么写。</p>
-<p>现在，让我们回到之前的问题上来，到底合并还是变基好？希望你能明白，这并没有一个简单的答案。 Git 是一个非常强大的工具，它允许你对提交历史做许多事情，但每个团队、每个项目对此的需求并不相同。 既然你已经分别学习了两者的用法，相信你能够根据实际情况作出明智的选择。</p>
-<ul>
-<li>总的原则是，只对尚未推送或分享给别人的本地修改执行变基操作清理历史，从不对已推送至别处的提交执行变基操作</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">git</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/03/git rebase 什么时候用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -3167,10 +3421,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
@@ -3183,11 +3433,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3199,7 +3449,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3208,6 +3458,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3231,11 +3485,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
               </li>
             
             <div class="clearfix"></div>
