@@ -152,6 +152,88 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/" class="archive-article-date">
+  	<time datetime="2018-09-13T13:05:33.346Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="什么时候会报-unrecognized-selector这个错误"><a href="#什么时候会报-unrecognized-selector这个错误" class="headerlink" title="什么时候会报 unrecognized selector这个错误"></a>什么时候会报 unrecognized selector这个错误</h2><p>1 对象未使用该方法</p>
+<p>2 对象已经被释放。</p>
+<h2 id="iOS有哪些机制来避免走到这一步？"><a href="#iOS有哪些机制来避免走到这一步？" class="headerlink" title="iOS有哪些机制来避免走到这一步？"></a>iOS有哪些机制来避免走到这一步？</h2><p>1 使用[id respondsToSelector:]进行判断。</p>
+<p>2 Method resolution</p>
+<p>objc运行时会调用+resolveInstanceMethod:或者 +resolveClassMethod:，让你有机会提供一个函数实现。如果你添加了函数，那运行时系统就会重新启动一次消息发送的过程，否则 ，运行时就会移到下一步，消息转发（Message Forwarding）。<br>返回Nil和self，去调用第三步methodSignatureForSelector和forwarInvocation；返回receiver，如果receiver有响应就直接处理，如果没有就去对应的对象内去调用第三步；调用子类的函数，子类没有进行这几个方法的重载，在父类处理时返回子类，会死循环。</p>
+<p>3 Fast forwarding</p>
+<p>如果目标对象实现了-forwardingTargetForSelector:，Runtime 这时就会调用这个方法，给你把这个消息转发给其他对象的机会。 只要这个方法返回的不是nil和self，整个消息发送的过程就会被重启，当然发送的对象会变成你返回的那个对象。否则，就会继续Normal Fowarding。 这里叫Fast，只是为了区别下一步的转发机制。因为这一步不会创建任何新的对象，但下一步转发会创建一个NSInvocation对象，所以相对更快点。</p>
+<p>4 Normal forwarding</p>
+<p>这一步是Runtime最后一次给你挽救的机会。首先它会发送-methodSignatureForSelector:消息获得函数的参数和返回值类型。如果-methodSignatureForSelector:返回nil，Runtime则会发出-doesNotRecognizeSelector:消息，程序这时也就挂掉了。如果返回了一个函数签名，Runtime就会创建一个NSInvocation对象并发送-forwardInvocation:消息给目标对象。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Runloop入门" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1329,98 +1411,9 @@ static struct _category_t _OBJC_$_CATEGORY_Person_$_categoryPerson __attribute__
 
 
   
-    <article id="post-类方法和实例方法的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/类方法和实例方法的区别/">类方法和实例方法的区别</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/类方法和实例方法的区别/" class="archive-article-date">
-  	<time datetime="2018-09-06T15:05:33.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Objective-C里面既有实例方法也类方法。类方法(Class Method) 有时被称为工厂方法(Factory Method)或者方便方法(Convenience method)。工厂方法的称谓明显和一般意义上的工厂方法不同，从本质上来说，类方法可以独立于对象而执行，所以在其他的语言里面类方法有的时候被称为静态方法。</p>
-<p>###注意点一：类方法<br>1，类方法可以调用类方法。</p>
-<p>2，类方法不可以调用实例方法，但是类方法可以通过创建对象来访问实例方法。</p>
-<p>3，类方法不可以使用实例变量。类方法可以使用self，因为self不是实例变量。</p>
-<p>4，类方法作为消息，可以被发送到类或者对象里面去（实际上，就是可以通过类或者对象调用类方法的意思）。</p>
-<p>####注意点二：self的规则</p>
-<p>1，实例方法里面的self，是对象的首地址。</p>
-<p>2，类方法里面的self，是Class.</p>
-<p>尽管在同一个类里面的使用self，但是self却有着不同的解读。在类方法里面的self，可以翻译成class self；在实例方法里面的self，应该被翻译成为object self。在类方法里面的self和实例方法里面的self有着本质上的不同，尽管他们的名字都叫self。</p>
-<p>类方法创造的对象要不要用release释放？</p>
-<p>答 不需要 这个对象被放到自动释放池中</p>
-<p>##区别：<br>1、类方法是属于整个类，而不属于某个对象。 </p>
-<p>2、类方法只能访问类成员变量，不能访问实例变量，而实例方法可以访问类成员变量和实例变量。 </p>
-<p>3、类方法的调用可以通过类名.类方法和对象.类方法，而实例方法只能通过对象.实例方法访问。 </p>
-<p>4、类方法只能访问类方法，而实例方法可以访问类方法和实例方法。 </p>
-<p>5、类方法不能被覆盖，实例方法可以被覆盖。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/类方法和实例方法的区别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/14/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/16/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/14/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/16/">Next &raquo;</a>
     </nav>
   
 
@@ -1519,11 +1512,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1543,11 +1536,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1556,6 +1549,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1571,11 +1568,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">

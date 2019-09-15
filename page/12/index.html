@@ -152,6 +152,318 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-避免使用 GCD Global队列创建Runloop常驻线程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/">避免使用 GCD Global队列创建Runloop常驻线程</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/" class="archive-article-date">
+  	<time datetime="2018-11-27T06:10:53.369Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="GCD-Global队列创建线程进行耗时操作的风险"><a href="#GCD-Global队列创建线程进行耗时操作的风险" class="headerlink" title="GCD Global队列创建线程进行耗时操作的风险"></a>GCD Global队列创建线程进行耗时操作的风险</h2><p>先思考下如下几个问题：</p>
+<p>新建线程的方式有哪些？各自的优缺点是什么？</p>
+<p>dispatch_async 函数分发到全局队列一定会新建线程执行任务么？</p>
+<p>如果全局队列对应的线程池如果满了，后续的派发的任务会怎么处置？有什么风险？</p>
+<p>答案大致是这样的：</p>
+<p>dispatch_async 函数分发到全局队列不一定会新建线程执行任务，全局队列底层有一个的线程池，如果线程池满了，那么后续的任务会被 block 住，等待前面的任务执行完成，才会继续执行。如果线程池中的线程长时间不结束，后续堆积的任务会越来越多，此时就会存在 APP crash的风险。</p>
+<pre><code>- (void)dispatchTest1 {
+    for (NSInteger i = 0; i&lt; 10000 ; i++) {
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self dispatchTask:i];
+        });
+    }
+}
+
+- (void)dispatchTask:(NSInteger)index {
+        //模拟耗时操作，比如DB,网络，文件读写等等
+        sleep(30);
+        NSLog(@&quot;----:%ld&quot;,index);
+}
+</code></pre><p>以上逻辑用真机测试会有卡死的几率，并非每次都会发生，但多尝试几次就会复现，伴随前后台切换，crash几率增大。</p>
+<p>下面做一下分析：</p>
+<p>参看 GCD 源码我们可以看到全局队列的相关源码如下：</p>
+<pre><code>DISPATCH_NOINLINE
+static void
+_dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
+{
+   dispatch_root_queue_context_t qc = dq-&gt;do_ctxt;
+   uint32_t i = n;
+   int r;
+
+   _dispatch_debug_root_queue(dq, __func__);
+   dispatch_once_f(&amp;_dispatch_root_queues_pred, NULL,
+           _dispatch_root_queues_init);
+
+#if HAVE_PTHREAD_WORKQUEUES
+#if DISPATCH_USE_PTHREAD_POOL
+   if (qc-&gt;dgq_kworkqueue != (void*)(~0ul))
+#endif
+   {
+       _dispatch_root_queue_debug(&quot;requesting new worker thread for global &quot;
+               &quot;queue: %p&quot;, dq);
+#if DISPATCH_USE_LEGACY_WORKQUEUE_FALLBACK
+       if (qc-&gt;dgq_kworkqueue) {
+           pthread_workitem_handle_t wh;
+           unsigned int gen_cnt;
+           do {
+               r = pthread_workqueue_additem_np(qc-&gt;dgq_kworkqueue,
+                       _dispatch_worker_thread4, dq, &amp;wh, &amp;gen_cnt);
+               (void)dispatch_assume_zero(r);
+           } while (--i);
+           return;
+       }
+#endif // DISPATCH_USE_LEGACY_WORKQUEUE_FALLBACK
+#if HAVE_PTHREAD_WORKQUEUE_SETDISPATCH_NP
+       if (!dq-&gt;dq_priority) {
+           r = pthread_workqueue_addthreads_np(qc-&gt;dgq_wq_priority,
+                   qc-&gt;dgq_wq_options, (int)i);
+           (void)dispatch_assume_zero(r);
+           return;
+       }
+#endif
+#if HAVE_PTHREAD_WORKQUEUE_QOS
+       r = _pthread_workqueue_addthreads((int)i, dq-&gt;dq_priority);
+       (void)dispatch_assume_zero(r);
+#endif
+       return;
+   }
+#endif // HAVE_PTHREAD_WORKQUEUES
+#if DISPATCH_USE_PTHREAD_POOL
+   dispatch_pthread_root_queue_context_t pqc = qc-&gt;dgq_ctxt;
+   if (fastpath(pqc-&gt;dpq_thread_mediator.do_vtable)) {
+       while (dispatch_semaphore_signal(&amp;pqc-&gt;dpq_thread_mediator)) {
+           if (!--i) {
+               return;
+           }
+       }
+   }
+   uint32_t j, t_count;
+   // seq_cst with atomic store to tail &lt;rdar://problem/16932833&gt;
+   t_count = dispatch_atomic_load2o(qc, dgq_thread_pool_size, seq_cst);
+   do {
+       if (!t_count) {
+           _dispatch_root_queue_debug(&quot;pthread pool is full for root queue: &quot;
+                   &quot;%p&quot;, dq);
+           return;
+       }
+       j = i &gt; t_count ? t_count : i;
+   } while (!dispatch_atomic_cmpxchgvw2o(qc, dgq_thread_pool_size, t_count,
+           t_count - j, &amp;t_count, acquire));
+
+   pthread_attr_t *attr = &amp;pqc-&gt;dpq_thread_attr;
+   pthread_t tid, *pthr = &amp;tid;
+#if DISPATCH_ENABLE_PTHREAD_ROOT_QUEUES
+   if (slowpath(dq == &amp;_dispatch_mgr_root_queue)) {
+       pthr = _dispatch_mgr_root_queue_init();
+   }
+#endif
+   do {
+       _dispatch_retain(dq);
+       while ((r = pthread_create(pthr, attr, _dispatch_worker_thread, dq))) {
+           if (r != EAGAIN) {
+               (void)dispatch_assume_zero(r);
+           }
+           _dispatch_temporary_resource_shortage();
+       }
+   } while (--j);
+#endif // DISPATCH_USE_PTHREAD_POOL
+}
+</code></pre><p>对于执行的任务来说，所执行的线程具体是哪个线程，则是通过 GCD 的线程池（Thread Pool）来进行调度</p>
+<p>上面贴的源码，我们关注如下的部分：</p>
+<p>其中有一个用来记录线程池大小的字段 dgq_thread_pool_size。这个字段标记着GCD线程池的大小。摘录上面源码的一部分：</p>
+<pre><code>uint32_t j, t_count;
+  // seq_cst with atomic store to tail &lt;rdar://problem/16932833&gt;
+  t_count = dispatch_atomic_load2o(qc, dgq_thread_pool_size, seq_cst);
+  do {
+      if (!t_count) {
+          _dispatch_root_queue_debug(&quot;pthread pool is full for root queue: &quot;
+                  &quot;%p&quot;, dq);
+          return;
+      }
+      j = i &gt; t_count ? t_count : i;
+  } while (!dispatch_atomic_cmpxchgvw2o(qc, dgq_thread_pool_size, t_count,
+          t_count - j, &amp;t_count, acquire));
+</code></pre><p>全局队列的底层是一个线程池，向全局队列中提交的 block，都会被放到这个线程池中执行，如果线程池已满，后续再提交 block 就不会再重新创建线程。这就是为什么 Demo 会造成卡顿甚至冻屏的原因。</p>
+<h2 id="避免使用-GCD-Global-队列创建-Runloop-常驻线程"><a href="#避免使用-GCD-Global-队列创建-Runloop-常驻线程" class="headerlink" title="避免使用 GCD Global 队列创建 Runloop 常驻线程"></a>避免使用 GCD Global 队列创建 Runloop 常驻线程</h2><p>在做网路请求时我们常常创建一个 Runloop 常驻线程用来接收、响应后续的服务端回执，比如NSURLConnection、AFNetworking等等，我们可以称这种线程为 Runloop 常驻线程。</p>
+<p>正如上文所述，用 GCD Global 队列创建线程进行耗时操作是存在风险的。那么我们可以试想下，如果这个耗时操作变成了 runloop 常驻线程，会是什么结果？下面做一下分析：</p>
+<p>先介绍下 Runloop 常驻线程的原理，在开发中一般有两种用法：</p>
+<ul>
+<li><p>单一 Runloop 常驻线程：在 APP 的生命周期中开启了唯一的常驻线程来进行网络请求，常用于网络库，或者有维持长连接需求的库，比如： AFNetworking 、 SocketRocket。</p>
+</li>
+<li><p>多个 Runloop 常驻线程：每进行一次网络请求就开启一条 Runloop 常驻线程，这条线程的生命周期的起点是网络请求开始，终点是网络请求结束，或者网络请求超时。</p>
+</li>
+</ul>
+<h2 id="单一-Runloop-常驻线程"><a href="#单一-Runloop-常驻线程" class="headerlink" title="单一 Runloop 常驻线程"></a>单一 Runloop 常驻线程</h2><p>先说第一种用法：</p>
+<p>以 AFNetworking 为例，AFURLConnectionOperation 这个类是基于 NSURLConnection 构建的，其希望能在后台线程接收 Delegate 回调。为此 AFNetworking 单独创建了一个线程，并在这个线程中启动了一个 RunLoop：</p>
+<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object {
+    @autoreleasepool {
+        [[NSThread currentThread] setName:@&quot;AFNetworking&quot;];
+        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
+        [runLoop run];
+    }
+}
+
++ (NSThread *)networkRequestThread {
+    static NSThread *_networkRequestThread = nil;
+    static dispatch_once_t oncePredicate;
+    dispatch_once(&amp;oncePredicate, ^{
+        _networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];
+        [_networkRequestThread start];
+    });
+    return _networkRequestThread;
+}
+</code></pre><h2 id="多个-Runloop-常驻线程"><a href="#多个-Runloop-常驻线程" class="headerlink" title="多个 Runloop 常驻线程"></a>多个 Runloop 常驻线程</h2><p>第二种用法，我写了一个小 Demo 来模拟这种场景，</p>
+<p>我们模拟了一个场景：假设所有的网络请求全部超时，或者服务端根本不响应，然后网络库超时检测机制的做法：</p>
+<pre><code>#import &quot;Foo.h&quot;
+
+@interface Foo()  {
+    NSRunLoop *_runloop;
+    NSTimer *_timeoutTimer;
+    NSTimeInterval _timeoutInterval;
+    dispatch_semaphore_t _sem;
+}
+@end
+
+@implementation Foo
+
+- (instancetype)init {
+    if (!(self = [super init])) {
+        return nil;
+    }
+    _timeoutInterval = 1 ;
+    _sem = dispatch_semaphore_create(0);
+    // Do any additional setup after loading the view, typically from a nib.
+    return self;
+}
+
+- (id)test {
+    // 第一种方式：
+    // NSThread *networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint0:) object:nil];
+    // [networkRequestThread start];
+    //第二种方式:
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        [self networkRequestThreadEntryPoint0:nil];
+    });
+    dispatch_semaphore_wait(_sem, DISPATCH_TIME_FOREVER);
+    return @(YES);
+}
+
+- (void)networkRequestThreadEntryPoint0:(id)__unused object {
+    @autoreleasepool {
+        [[NSThread currentThread] setName:@&quot;CYLTest&quot;];
+        _runloop = [NSRunLoop currentRunLoop];
+        [_runloop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
+        _timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(stopLoop) userInfo:nil repeats:NO];
+        [_runloop addTimer:_timeoutTimer forMode:NSRunLoopCommonModes];
+        [_runloop run];//在实际开发中最好使用这种方式来确保能runloop退出，做双重的保障[runloop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:(timeoutInterval+5)]];
+    }
+}
+
+- (void)stopLoop {
+    CFRunLoopStop([_runloop getCFRunLoop]);
+    dispatch_semaphore_signal(_sem);
+}
+
+@end
+</code></pre><p>如果</p>
+<pre><code>for (int i = 0; i &lt; 300 ; i++) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+            [[Foo new] test];
+            NSLog(@&quot;🔴类名与方法名：%@（在第%@行），描述：%@&quot;, @(__PRETTY_FUNCTION__), @(__LINE__), @&quot;&quot;);
+        });
+    }
+</code></pre><p>以上逻辑用真机测试会有卡死的几率，并非每次都会发生，但多尝试几次就会复现，伴随前后台切换，crash几率增大。</p>
+<p>其中我们采用了 GCD 全局队列的方式来创建常驻线程，因为在创建时可能已经出现了全局队列的线程池满了的情况，所以 GCD 派发的任务，无法执行，而且我们把超时检测的逻辑放进了这个任务中，所以导致的情况就是，有很多任务的超时检测功能失效了。此时就只能依赖于服务端响应来结束该任务（服务端响应能结束该任务的逻辑在 Demo 中未给出），但是如果再加之服务端不响应，那么任务就永远不会结束。后续的网络请求也会就此 block 住，造成 crash。</p>
+<p>如果我们把 GCD 全局队列换成 NSThread 的方式，那么就可以保证每次都会创建新的线程。</p>
+<p>注意：文章中只演示的是超时 cancel runloop 的操作，实际项目中一定有其他主动 cancel runloop 的操作，就比如网络请求成功或失败后需要进行cancel操作。代码中没有展示网络请求成功或失败后的 cancel 操作。</p>
+<p>Demo 的这种模拟可能比较极端，但是如果你维护的是一个像 AFNetworking 这样的一个网络库，你会放心把创建常驻线程这样的操作交给 GCD 全局队列吗？因为整个 APP 是在共享一个全局队列的线程池，那么如果 APP 把线程池沾满了，甚至线程池长时间占满且不结束，那么 AFNetworking 就自然不能再执行任务了，所以我们看到，即使是只会创建一条常驻线程， AFNetworking 依然采用了 NSThread 的方式而非 GCD 全局队列这种方式。</p>
+<p>注释：以下方法存在于老版本AFN 2.x 中。</p>
+<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object {
+    @autoreleasepool {
+        [[NSThread currentThread] setName:@&quot;AFNetworking&quot;];
+        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
+        [runLoop run];
+    }
+}
+
++ (NSThread *)networkRequestThread {
+    static NSThread *_networkRequestThread = nil;
+    static dispatch_once_t oncePredicate;
+    dispatch_once(&amp;oncePredicate, ^{
+        _networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];
+        [_networkRequestThread start];
+    });
+    return _networkRequestThread;
+}
+</code></pre><p>正如你所看到的，没有任何一个库会用 GCD 全局队列来创建常驻线程，而你也应该</p>
+<p>避免使用 GCD Global 队列来创建 Runloop 常驻线程。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS子线程更新UI到主线程的三种方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2169,200 +2481,9 @@ Terminating app due to uncaught exception &apos;NSInvalidArgumentException&apos;
 
 
   
-    <article id="post-关于压缩图片的方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/06/关于压缩图片的方法/">关于压缩图片的方法</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/06/关于压缩图片的方法/" class="archive-article-date">
-  	<time datetime="2018-11-06T10:17:23.002Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>图片的两种压缩方法</p>
-<p>1.1 压缩图片质量</p>
-<p>1.2 压缩图片尺寸</p>
-<p>压缩图片使图片文件小于指定大小</p>
-<p>2.1 压缩图片质量</p>
-<p>2.2 压缩图片尺寸</p>
-<p>2.3 两种图片压缩方法结合</p>
-<h3 id="一、两种图片压缩方法"><a href="#一、两种图片压缩方法" class="headerlink" title="一、两种图片压缩方法"></a>一、两种图片压缩方法</h3><p>两种压缩图片的方法：压缩图片质量(Quality)，压缩图片尺寸(Size)。</p>
-<h4 id="1-1-压缩图片质量"><a href="#1-1-压缩图片质量" class="headerlink" title="1.1 压缩图片质量"></a>1.1 压缩图片质量</h4><pre><code>NSData *data = UIImageJPEGRepresentation(image, compression);
-UIImage *resultImage = [UIImage imageWithData:data];
-</code></pre><p>通过UIImage和NSData的相互转化，减小 JPEG 图片的质量来压缩图片。UIImageJPEGRepresentation::第二个参数compression 取值 0.0~1.0，值越小表示图片质量越低，图片文件自然越小。</p>
-<h4 id="1-2-压缩图片尺寸"><a href="#1-2-压缩图片尺寸" class="headerlink" title="1.2 压缩图片尺寸"></a>1.2 压缩图片尺寸</h4><pre><code>UIGraphicsBeginImageContext(size);
-[image drawInRect:CGRectMake(0, 0, size.width, size.height)];
-resultImage = UIGraphicsGetImageFromCurrentImageContext();
-UIGraphicsEndImageContext();
-</code></pre><p>给定所需的图片尺寸 size，resultImage 即为原图 image 绘制为 size 大小的图片。</p>
-<h3 id="二、-压缩图片使图片文件小于指定大小"><a href="#二、-压缩图片使图片文件小于指定大小" class="headerlink" title="二、 压缩图片使图片文件小于指定大小"></a>二、 压缩图片使图片文件小于指定大小</h3><p>如果对图片清晰度要求不高，要求图片的上传、下载速度快的话，上传图片前需要压缩图片。压缩到什么程度要看具体情况，但一般会设定一个图片文件最大值，例如100 KB。可以用上诉两种方法来压缩图片。假设图片转化来的 NSData对象为data，通过data.length即可得到图片的字节大小。</p>
-<p>####2.1 压缩图片质量</p>
-<p>比较容易想到的方法是，通过循环来逐渐减小图片质量，直到图片稍小于指定大小(maxLength)。</p>
-<p>UIImage+WLCompress.m</p>
-<pre><code>- (NSData *)compressQualityWithMaxLength:(NSInteger)maxLength {
-    CGFloat compression = 1;
-    NSData *data = UIImageJPEGRepresentation(self, compression);
-    while (data.length &gt; maxLength &amp;&amp; compression &gt; 0) {
-        compression -= 0.02;
-        data = UIImageJPEGRepresentation(self, compression); // When compression less than a value, this code dose not work
-    }
-    return data;
-}
-</code></pre><p>这样循环次数多，效率低，耗时长。</p>
-<p>可以通过二分法来优化。</p>
-<pre><code>- (NSData *)compressQualityWithMaxLength:(NSInteger)maxLength {
-   CGFloat compression = 1;
-    NSData *data = UIImageJPEGRepresentation(self, compression);
-    if (data.length &lt; maxLength) return data;
-    CGFloat max = 1;
-    CGFloat min = 0;
-    for (int i = 0; i &lt; 6; ++i) {
-        compression = (max + min) / 2;
-        data = UIImageJPEGRepresentation(self, compression);
-        if (data.length &lt; maxLength * 0.9) {
-            min = compression;
-        } else if (data.length &gt; maxLength) {
-            max = compression;
-        } else {
-            break;
-        }
-    }
-    return data;
-}
-</code></pre><p>当图片大小小于 maxLength，大于 maxLength * 0.9 时，不再继续压缩。最多压缩 6 次，1/(2^6) = 0.015625 &lt; 0.02，也能达到每次循环 compression减小 0.02 的效果。这样的压缩次数比循环减小 compression少，耗时短。需要注意的是，当图片质量低于一定程度时，继续压缩没有效果。也就是说，compression继续减小，data 也不再继续减小。</p>
-<p>压缩图片质量的优点在于，尽可能保留图片清晰度，图片不会明显模糊；<br>缺点在于，不能保证图片压缩后小于指定大小。</p>
-<h4 id="2-2-压缩图片尺寸"><a href="#2-2-压缩图片尺寸" class="headerlink" title="2.2 压缩图片尺寸"></a>2.2 压缩图片尺寸</h4><p>与之前类似，比较容易想到的方法是，通过循环逐渐减小图片尺寸，直到图片稍小于指定大小(maxLength)。具体代码省略。同样的问题是循环次数多，效率低，耗时长。可以用二分法来提高效率，具体代码省略。这里介绍另外一种方法，比二分法更好，压缩次数少，而且可以使图片压缩后刚好小于指定大小(不只是 &lt; maxLength， &gt; maxLength * 0.9)。</p>
-<pre><code>-(NSData *)compressBySizeWithMaxLength:(NSUInteger)maxLength{
-    UIImage *resultImage = self;
-    NSData *data = UIImageJPEGRepresentation(resultImage, 1);
-    NSUInteger lastDataLength = 0;
-    while (data.length &gt; maxLength &amp;&amp; data.length != lastDataLength) {
-        lastDataLength = data.length;
-        CGFloat ratio = (CGFloat)maxLength / data.length;
-        CGSize size = CGSizeMake((NSUInteger)(resultImage.size.width * sqrtf(ratio)),
-                                 (NSUInteger)(resultImage.size.height * sqrtf(ratio))); // Use NSUInteger to prevent white blank
-        UIGraphicsBeginImageContext(size);
-        // Use image to draw (drawInRect:), image is larger but more compression time
-        // Use result image to draw, image is smaller but less compression time
-        [resultImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
-        resultImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        data = UIImageJPEGRepresentation(resultImage, 1);
-    }
-    return data;
-}
-</code></pre><p>[resultImage drawInRect:CGRectMake(0, 0, size.width, size.height)];<br>是用新图 resultImage 绘制，也可以用原图 image 来绘制。<br>用原图绘制，压缩后图片更接近指定大小，但是压缩次数较多，耗时较长。一张大小为 6064 KB 的图片，压缩图片尺寸，原图绘制与新图绘制结果如下</p>
-<h4 id="2-3-两种图片压缩方法结合"><a href="#2-3-两种图片压缩方法结合" class="headerlink" title="2.3 两种图片压缩方法结合"></a>2.3 两种图片压缩方法结合</h4><p>如果要保证图片清晰度，建议选择压缩图片质量。如果要使图片一定小于指定大小，压缩图片尺寸可以满足。对于后一种需求，还可以先压缩图片质量，如果已经小于指定大小，就可得到清晰的图片，否则再压缩图片尺寸。</p>
-<p>UIImage+WLCompress.m</p>
-<pre><code>-(NSData *)compressWithMaxLength:(NSUInteger)maxLength{
-    // Compress by quality
-    CGFloat compression = 1;
-    NSData *data = UIImageJPEGRepresentation(self, compression);
-    //NSLog(@&quot;Before compressing quality, image size = %ld KB&quot;,data.length/1024);
-    if (data.length &lt; maxLength) return data;
-
-    CGFloat max = 1;
-    CGFloat min = 0;
-    for (int i = 0; i &lt; 6; ++i) {
-        compression = (max + min) / 2;
-        data = UIImageJPEGRepresentation(self, compression);
-        //NSLog(@&quot;Compression = %.1f&quot;, compression);
-        //NSLog(@&quot;In compressing quality loop, image size = %ld KB&quot;, data.length / 1024);
-        if (data.length &lt; maxLength * 0.9) {
-            min = compression;
-        } else if (data.length &gt; maxLength) {
-            max = compression;
-        } else {
-            break;
-        }
-    }
-    //NSLog(@&quot;After compressing quality, image size = %ld KB&quot;, data.length / 1024);
-    if (data.length &lt; maxLength) return data;
-    UIImage *resultImage = [UIImage imageWithData:data];
-    // Compress by size
-    NSUInteger lastDataLength = 0;
-    while (data.length &gt; maxLength &amp;&amp; data.length != lastDataLength) {
-        lastDataLength = data.length;
-        CGFloat ratio = (CGFloat)maxLength / data.length;
-        //NSLog(@&quot;Ratio = %.1f&quot;, ratio);
-        CGSize size = CGSizeMake((NSUInteger)(resultImage.size.width * sqrtf(ratio)),
-                                 (NSUInteger)(resultImage.size.height * sqrtf(ratio))); // Use NSUInteger to prevent white blank
-        UIGraphicsBeginImageContext(size);
-        [resultImage drawInRect:CGRectMake(0, 0, size.width, size.height)];
-        resultImage = UIGraphicsGetImageFromCurrentImageContext();
-        UIGraphicsEndImageContext();
-        data = UIImageJPEGRepresentation(resultImage, compression);
-        //NSLog(@&quot;In compressing size loop, image size = %ld KB&quot;, data.length / 1024);
-    }
-    //NSLog(@&quot;After compressing size loop, image size = %ld KB&quot;, data.length / 1024);
-    return data;
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/06/关于压缩图片的方法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/11/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/13/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/11/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/13/">Next &raquo;</a>
     </nav>
   
 
@@ -2461,11 +2582,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2485,11 +2606,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2498,6 +2619,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2513,11 +2638,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
