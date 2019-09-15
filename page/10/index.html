@@ -152,6 +152,351 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-swift之协议" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/15/swift之协议/">swift之协议</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/15/swift之协议/" class="archive-article-date">
+  	<time datetime="2018-12-15T12:04:38.237Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>协议定义了用来实现某一特定任务或者功能的属性、方法以及需要的东西。</p>
+<p>类、结构体、枚举都可以采用协议，但是都必须实现协议所必须的要求。除了采纳协议规定的要求，还可以给协议扩展一下方法、属性，这样采纳该协议的类型就能够使用这些功能。</p>
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><pre><code>protocol SomeProtocol1{
+    //定义一下使用该协议要实现的内容
+}
+</code></pre><p>要让自定义的类型采用协议，需要在需要的类型名后加上协议名，并用 “:” 隔开，如果采纳多个协议，协议之间用逗号隔开。如果类型继承某个类，需要将继承的类写在协议的最前面。</p>
+<pre><code>class someClass:SomeSuperClass,SomeProtocol{
+
+}
+</code></pre><h2 id="属性要求"><a href="#属性要求" class="headerlink" title="属性要求"></a>属性要求</h2><p>协议可以要求采纳该协议的类型提供特定名称和类型的实例属性或者类型属性。但协议不指定协议的属性是存储还是计算型属性。它指定名字和类型。此外，还可以指定属性是可读还是可写的。</p>
+<p>通常用var来指定属性，在类型声明后加{set get}来表明属性是可读还是可写的。</p>
+<pre><code>protocol SomeProtocol2{
+    var musetBeSettable:Int {set get} //如果有set，必须有get
+    var doesnotBeSettable:Int {get}
+}
+</code></pre><p>在协议中定义类属性的时候，使用static 关键字修饰，当类类型采纳协议时，还可以用class 来声明类型属性</p>
+<pre><code>protocol FullName{
+    var fullName:String{get}
+}
+
+struct Person:FullName {
+    var fullName:String{ //提供FullName的属性的get实现
+        return &quot;iyaqi&quot;
+    }
+}
+print(Person().fullName) // iyaqi
+</code></pre><h2 id="方法要求"><a href="#方法要求" class="headerlink" title="方法要求"></a>方法要求</h2><p>协议可以要求采纳该协议的类型必须实现指定的实例方法或者类方法，但是这些方法不需要提供具体的实现。类似属性，可以类方法需用static关键字修饰，类类型还可以使用class修饰。</p>
+<pre><code>protocol RandomNumberGenerator{
+    func random()-&gt;Double
+    //static func someMethod()
+}
+class LinearCongruentialGenerator: RandomNumberGenerator {
+    var lastRandom = 42.0
+    let m = 139968.0
+    let a = 3877.0
+    let c = 29573.0
+    func random() -&gt; Double {
+        lastRandom = ((lastRandom * a + c) % m)
+        return lastRandom / m
+    }
+}
+let generator = LinearCongruentialGenerator()
+generator.random() //0.3746499199817101
+generator.random() //0.729023776863283
+</code></pre><p>如果需要修改实例或者实例的属性的值，需要在方法的func前面加 mutating。实现协议的 mutating方法时，如果是类类型，在实现的方法前面不需要加 mutating，结构体、枚举需要添加 mutating。</p>
+<pre><code>protocol Togglable{
+    mutating func toggle()
+}
+enum OnOffSwitch:Togglable{
+    case Off,On
+    mutating func toggle() {
+        switch self{
+        case .Off:
+            self = .On
+        case .On:
+            self = .Off
+        }
+    }
+}
+var switcher = OnOffSwitch.Off
+print(&quot;switcher&apos;s status:\(switcher)&quot;) //switcher&apos;s statu:Off\n
+switcher.toggle()
+print(&quot;switcher&apos;s status:\(switcher)&quot;) //switcher&apos;s statu:On\n
+</code></pre><h2 id="构造器要求"><a href="#构造器要求" class="headerlink" title="构造器要求"></a>构造器要求</h2><p>协议可以要求采纳协议的类型实现指定的构造器。类似与普通的构造器一样，但是不需要具体实现。</p>
+<pre><code>protocol aProtocol{
+    init (someParameters:Int)
+}
+</code></pre><p>构造器在类中的实现</p>
+<p>在类中的实现，无需指定是指定构造器还是便利构造器,并且需要加上 required 修饰符</p>
+<pre><code>class someClass:aProtocol{
+    init(a:Int){}
+    required init(someParameters: Int) {
+        //这里是实现部分。
+    }
+}
+
+class superClass {
+    init(someParameters:Int){}
+}
+
+class subClass: superClass,aProtocol {
+    //父类和协议都定义了这个构造器，所以要加上 override &amp; required
+    override required init( someParameters: Int) {
+
+        super.init(someParameters: 1)
+    }
+}
+</code></pre><h2 id="协议作为类型"><a href="#协议作为类型" class="headerlink" title="协议作为类型"></a>协议作为类型</h2><pre><code>//协议可以 像普通类型一样，作为参数、返回值，或者是属性，数组、字典中等容器的元素。
+class Dice{
+    let sides:Int
+    let generator :LinearCongruentialGenerator //协议作为属性
+    init(sides:Int,generator:LinearCongruentialGenerator){ //协议作为参数
+        self.sides = sides
+        self.generator = generator
+    }
+    func roll()-&gt;Int{
+        return Int(generator.random() * Double(sides)) + 1
+    }
+}
+
+
+var dice = Dice(sides: 3, generator: LinearCongruentialGenerator())
+for _ in 1...5{
+    print(dice.roll()) //2,3,2,3,2
+}
+</code></pre><h2 id="代理-委托-模式"><a href="#代理-委托-模式" class="headerlink" title="代理(委托)模式"></a>代理(委托)模式</h2><p>委托是一种设计模式，它允许类和结构体将一些功能委托给其他类型的实例来操作。委托的实现很简单：定义协议封装那些要实现的功能，这样采纳该协议的类型就能够提供这些功能。</p>
+<pre><code>protocol DiceGame{
+    var dice:Dice {get}
+    func play()
+}
+protocol DiceGameDelegate{
+    func diceDidStart(game:DiceGame)
+    func game(game:DiceGame,didStartNewTurnWithDiceRoll dicRoll:Int)
+    func gameEnd(game:DiceGame)
+}
+
+class SnakeAndLadders: DiceGame {
+    let finalSquare = 25
+    var dice = Dice(sides: 6, generator: LinearCongruentialGenerator())
+    var square = 0
+    var board = [Int]()
+    init(){
+        board = [Int](count: finalSquare, repeatedValue: 0)
+        board[03] = +08; board[06] = +11; board[09] = +09; board[10] = +02
+        board[14] = -10; board[19] = -11; board[22] = -02; board[24] = -08
+    }
+    var delegate : DiceGameDelegate?
+    func play() {
+        square = 0
+        delegate?.diceDidStart(self)
+        gameLoop:while square != finalSquare{
+            let diceRoll = dice.roll()
+            delegate?.game(self, didStartNewTurnWithDiceRoll: diceRoll)
+            switch square + diceRoll{
+            case finalSquare:
+                break gameLoop
+            case let newSquare where newSquare &gt; finalSquare:
+                continue gameLoop
+            default:
+                square += diceRoll
+                square += board[square]
+            }
+        }
+        delegate?.gameEnd(self)
+    }
+}
+</code></pre><h2 id="通过扩展添加协议一致性"><a href="#通过扩展添加协议一致性" class="headerlink" title="通过扩展添加协议一致性"></a>通过扩展添加协议一致性</h2><p>即便无法修改源代码，依然可以用扩展令已有类型采纳并符合协议。协议可以为类型添加属性、方法、下标等来让类型符合协议的要求</p>
+<pre><code>protocol TextRepresentable{
+    var textualDescription:String{get}
+}
+extension Dice:TextRepresentable{
+    var textualDescription:String{
+        return &quot;a side of Dice&quot;
+    }
+}
+</code></pre><p>通过扩展来采纳并实现协议，跟在原始定义中实现是同样的效果。</p>
+<h2 id="协议的集合"><a href="#协议的集合" class="headerlink" title="协议的集合"></a>协议的集合</h2><pre><code>let things:[TextRepresentable] = [dice]
+for thing in things{
+    print(thing.textualDescription)
+}
+</code></pre><h2 id="协议的继承"><a href="#协议的继承" class="headerlink" title="协议的继承"></a>协议的继承</h2><p>协议能够继承一个或者多个协议，多个协议之间用逗号隔开，语法跟类的继承相同。如果继承的协议还继承了其他协议，那么采纳该协议的类型也必须实现其他协议的要求。比如，协议B 继承 协议A，类型C采纳了B协议，那么C必须也实现协议A规定的东西。</p>
+<h2 id="类类型专属协议"><a href="#类类型专属协议" class="headerlink" title="类类型专属协议"></a>类类型专属协议</h2><p>可以在协议的继承列表中，添加class 关键字表示该协议只能被类类型采纳。其他类型不能采纳。</p>
+<h2 id="协议的合成"><a href="#协议的合成" class="headerlink" title="协议的合成"></a>协议的合成</h2><p>如果采用多个协议，可以将多个协议放在protocol&lt;&gt;里面。表示采纳的协议列表，称协议合成，协议之间用逗号隔开</p>
+<pre><code>protocol Named{
+    var name:String{get}
+}
+protocol Aged{
+    var age:Int {get set}
+}
+struct People :Named,Aged{
+    var name:String
+    var age:Int
+}
+</code></pre><p>协议合成,这个方法的参数不关心类型，之关心这个参数是否符合Named,Aged协议。</p>
+<pre><code>func wishHappyBirthday(celebrator:protocol&lt;Named,Aged&gt;){
+    print(&quot;Happy birthday \(celebrator.name) for \(celebrator.age)&quot;)
+}
+
+let birthdayPerson = People(name: &quot;iyaqi&quot;, age: 25)
+print(wishHappyBirthday(birthdayPerson))
+</code></pre><h2 id="检查协议的一致性"><a href="#检查协议的一致性" class="headerlink" title="检查协议的一致性"></a>检查协议的一致性</h2><p>使用is as来检查协议一致性。即是否符合某协议，并且可以转换到指定的协议类型</p>
+<pre><code>is 用来检查实例是否符合某个协议，若符合则返回 true，否则返回 false。
+as? 返回一个可选值，当实例符合某个协议时，返回类型为协议类型的可选值，否则返回 nil。
+as! 将实例强制向下转换到某个协议类型，如果强转失败，会引发运行时错误。
+
+protocol HasArea{
+    var area:Double{get}
+}
+
+class Circle: HasArea {
+    let pi:Double = 3.1415
+    var radius:Double
+    init(radius:Double){
+        self.radius = radius;
+    }
+    var area:Double{
+        return radius * radius * pi
+    }
+}
+class Country: HasArea {
+    var area:Double
+    init(area:Double){self.area = area}
+}
+
+class Animal {
+    var legs:Int
+    init(legs:Int){self.legs = legs}
+}
+
+var objects:[AnyObject] = [Circle(radius: 3),Country(area: 2000),Animal(legs: 2)]
+for object in objects{
+    if let hasAreaType = object as? HasArea{
+        //在这里object会被转化为 HasArea类型，虽然他们仍然是circle、country、animal类型，当object 赋给 hasAreaType时，只能访问area属性
+        print(hasAreaType.area) // 28.2735 ,200
+    }
+}
+</code></pre><h2 id="可选的协议要求"><a href="#可选的协议要求" class="headerlink" title="可选的协议要求"></a>可选的协议要求</h2><p>可以在协议中定义可以选择实现的要求，采纳该协议的类型可以选择是否采用这些要求。用optional关键字修饰。注意，可选的协议要求只能用在标记@objc的协议中，标记@objc的协议只能被OC的类或者是@objc类采纳，其他类型均不能采纳</p>
+<pre><code>@objc protocol CounterDataSource {
+    optional func incrementForCount(count:Int)-&gt;Int
+    optional var fixedIncrement:Int{get}
+}
+
+class Counter{
+    var count = 0
+    var datasource : CounterDataSource?
+    func increment(){
+        if let amount = datasource?.incrementForCount?(count){
+            count += amount
+        }else if let amount = datasource?.fixedIncrement{
+            count += amount
+        }
+    }
+}
+var counter = Counter()
+
+class threeSource: NSObject,CounterDataSource {
+    let fixedIncrement = 3
+}
+
+counter.datasource = threeSource()
+for _ in 1..&lt;4{
+    counter.increment() //
+    print(counter.count) // 3 6 9
+}
+
+class  TowardsZeroSource:NSObject,CounterDataSource{
+    func incrementForCount(count: Int) -&gt; Int {
+        if count == 0  {
+            return 0
+        }else if count &lt; 0{
+            return 1
+        }else{
+            return -1
+        }
+    }
+}
+
+print(counter.count) //9
+counter.datasource = TowardsZeroSource()
+counter.increment()
+print(counter.count) //8
+</code></pre><h2 id="协议扩展"><a href="#协议扩展" class="headerlink" title="协议扩展"></a>协议扩展</h2><p>协议可以通过扩展来添加方法、属性、下标等，基于此，可以通过给协议添加扩展，来实现这些功能，而无需在每个采纳该协议的类型中添加这些功能。通过协议扩展，所有采纳该协议的类型都会自动获取到该扩展增加的方法实现，无需任何额外修改。</p>
+<pre><code>extension RandomNumberGenerator{
+    func randomBool()-&gt;Bool{
+        return random() &gt; 0.5
+    }
+}
+
+let generator2 = LinearCongruentialGenerator()
+print(generator.random()) // 0.636466906721536
+print(generator.randomBool()) // 0.636466906721536 &gt; 0.5 返回 true
+</code></pre><p>可以提供默认的实现,也可以为协议添加限制条件</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/15/swift之协议/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Swift泛型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2362,86 +2707,6 @@ saleTicket.startSaleSave()
 
 
   
-    <article id="post-请求转发和重定向" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/12/请求转发和重定向/">请求转发和重定向</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/12/请求转发和重定向/" class="archive-article-date">
-  	<time datetime="2018-12-12T13:15:53.915Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="请求转发和重定向两者之间的区别"><a href="#请求转发和重定向两者之间的区别" class="headerlink" title="请求转发和重定向两者之间的区别"></a>请求转发和重定向两者之间的区别</h3><p>请求转发：一次请求，地址栏信息不变。      </p>
-<p>重定向：两次请求，地址栏信息会发生改变。</p>
-<h3 id="使用时机："><a href="#使用时机：" class="headerlink" title="使用时机："></a>使用时机：</h3><p>1.如果表单中有数据，而数据又比较重要，不能重复提交，建议使用重定向。</p>
-<p>2.如果servlet接受后，无法进行处理，建议使用重定向定位到可以处理的资源。</p>
-<p>请求转发：路径为当前项目的根目录，直接书写跳转的资源路径即可。</p>
-<h3 id="req-getRequestDispatcher-“1-jsp”-forward-req-resp"><a href="#req-getRequestDispatcher-“1-jsp”-forward-req-resp" class="headerlink" title="req.getRequestDispatcher(“1.jsp”).forward(req, resp);"></a>req.getRequestDispatcher(“1.jsp”).forward(req, resp);</h3><p>重定向：/代表服务器地址+服务器的应用目录（类似tomcat的webapps），因此还需要加上/项目名+跳转资源路径。</p>
-<h3 id="resp-sendRedirect-“-sx-2-jsp”"><a href="#resp-sendRedirect-“-sx-2-jsp”" class="headerlink" title="resp.sendRedirect(“/sx/2.jsp”);"></a>resp.sendRedirect(“/sx/2.jsp”);</h3><p>注意：如果req.getRequestDispatcher(“1.jsp”).forward(req, resp);写成了req.getRequestDispatcher(“1.jsp”)；则不会跳转。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">JAVA</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/12/请求转发和重定向/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/9/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/11/">Next &raquo;</a>
@@ -2579,15 +2844,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -152,6 +152,269 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-swift自动归档" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/15/swift自动归档/">swift自动归档</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/15/swift自动归档/" class="archive-article-date">
+  	<time datetime="2019-09-15T03:48:44.561Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>使用自动归档我们需要遵守NSCoding协议,但是通过一些Json转Model的工具来完成转Model后,比如遵守HandyJSON,再遵守NSCoding协议,会出现冲突Multiple inheritance from classes ‘BaseModel’ and ‘NSCoder’,这里暂时只用了HandyJSON来转Model,其他工具未知</p>
+<pre><code>import HandyJSON
+// -MARK: 继承此model不用重写init()函数
+class BaseModel: HandyJSON {
+    required init() {}
+}
+</code></pre><p><img src="http://img.wangjungang.cn/0fAYjd.jpg" alt=""></p>
+<h2 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h2><p><img src="http://img.wangjungang.cn/tmUuz2.jpg" alt=""></p>
+<pre><code>var dic = [String: Any]()
+       dic[&quot;id&quot;] = Int(tf_1.text!) // 因为模型指定的是Int 类型的 必须转成指定类型不然会失败 
+       dic[&quot;name&quot;] = tf_2.text
+       dic[&quot;age&quot;] = Int(tf_3.text!)
+       dic[&quot;phone&quot;] = tf_4.text
+       guard let json = dic.hw_toJSONString() else {
+           print(&quot;出错&quot;)
+           return
+       }
+       UserTool.saveUser(json) // 存
+       guard let user = UserTool.getUser() else { // 取
+           print(&quot;归档失败&quot;)
+           return
+       }
+       print(&quot;id:\(user.id)\n名字:\(user.name)\n年龄:\(user.age)\n电话:\(user.phone)&quot;)
+</code></pre><h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><p><img src="http://img.wangjungang.cn/qZuDVu.jpg" alt=""></p>
+<h3 id="存在问题"><a href="#存在问题" class="headerlink" title="存在问题"></a>存在问题</h3><p>使用案例:在Model中id是Int类型,这里给的是String类型</p>
+<pre><code>let dict = [
+    &quot;id&quot; : &quot;2&quot;,
+    &quot;name&quot; : &quot;隔壁老王&quot;,
+    &quot;age&quot; : 31,
+    &quot;phone&quot; : &quot;110&quot;
+    ] as [String : Any]
+guard let json = dict.hw_toJSONString() else {
+    print(&quot;出错&quot;)
+    return
+}
+UserTool.saveUser(json) // 存
+</code></pre><p>报错:主要是Codable必须是指定类型的才能转换,不然会出现以下错误</p>
+<pre><code>typeMismatch(Swift.Int, Swift.DecodingError.Context(codingPath: [CodingKeys(stringValue: &quot;id&quot;, intValue: nil)], debugDescription: &quot;Expected to decode Int but found a string/data instead.&quot;, underlyingError: nil))
+</code></pre><h2 id="以下方法主要是利用Codable来完成Json转Model"><a href="#以下方法主要是利用Codable来完成Json转Model" class="headerlink" title="以下方法主要是利用Codable来完成Json转Model"></a>以下方法主要是利用Codable来完成Json转Model</h2><h3 id="自定义Error"><a href="#自定义Error" class="headerlink" title="自定义Error"></a>自定义Error</h3><pre><code>enum HWMapError: Error {
+    case jsonToModelFail    //json转model失败
+    case jsonToDataFail     //json转data失败
+}
+</code></pre><h3 id="定义HWMappable协议继承Codable"><a href="#定义HWMappable协议继承Codable" class="headerlink" title="定义HWMappable协议继承Codable"></a>定义HWMappable协议继承Codable</h3><pre><code>public protocol HWMappable: Codable {
+    func hw_modelMapFinished()
+    mutating func hw_structMapFinished()
+}
+
+extension HWMappable {
+    public func hw_modelMapFinished() {
+        //外部自己实现
+    }
+    public mutating func hw_structMapFinished() {
+        //外部自己实现
+    }
+    ///JSON转模型
+    static func hw_mapFromJson&lt;T : HWMappable&gt;(_ JSONString : String, _ type:T.Type) throws -&gt; T {
+        guard let jsonData = JSONString.data(using: .utf8) else {
+            throw HWMapError.jsonToDataFail
+        }
+        let decoder = JSONDecoder()
+        do {
+            let obj = try decoder.decode(type, from: jsonData)
+            var vobj = obj
+            let mirro = Mirror(reflecting: vobj)
+            if mirro.displayStyle == Mirror.DisplayStyle.struct {
+                vobj.hw_structMapFinished()
+            }
+            if mirro.displayStyle == Mirror.DisplayStyle.class {
+                vobj.hw_modelMapFinished()
+            }
+            return vobj
+        } catch {
+            print(error)
+        }
+        throw HWMapError.jsonToModelFail
+    }
+}
+</code></pre><h2 id="自动归档"><a href="#自动归档" class="headerlink" title="自动归档"></a>自动归档</h2><pre><code>@objcMembers class UserInfo: NSObject, NSCoding, HWMappable {
+    var id: Int = 0 // 用户id
+    var name: String = &quot;&quot;
+    var phone: String = &quot;&quot;
+    var age = 0
+    /// json转模型
+    class func jsonToUser(_ json:String) -&gt; UserInfo? {
+        let user = try? UserInfo.hw_mapFromJson(json, UserInfo.self)
+        return user
+    }
+
+    // MARK: - 归档
+    func encode(with aCoder: NSCoder) {
+        UserTool.removeUser() // 归档前先删除原来的 避免错误
+        for name in getAllPropertys() {
+            guard let value = self.value(forKey: name) else {
+                return
+            }
+            aCoder.encode(value, forKey: name)
+        }
+    }
+    // MARK: - 解档
+    internal required init?(coder aDecoder: NSCoder){
+        super.init()
+        for name in getAllPropertys() {
+            guard let value = aDecoder.decodeObject(forKey: name) else {
+                return
+            }
+            setValue(value, forKeyPath: name)
+        }
+    }
+    // MARK: - 获取属性数组
+    func getAllPropertys() -&gt; [String] {
+        var count: UInt32 = 0 // 这个类型可以使用CUnsignedInt,对应Swift中的UInt32
+        let properties = class_copyPropertyList(self.classForCoder, &amp;count)
+        var propertyNames: [String] = []
+        for i in 0..&lt;Int(count) { // Swift中类型是严格检查的，必须转换成同一类型
+            if let property = properties?[i] { // UnsafeMutablePointer&lt;objc_property_t&gt;是可变指针，因此properties就是类似数组一样，可以通过下标获取
+                let name = property_getName(property)
+                // 这里还得转换成字符串
+                let strName = String(cString: name)
+                propertyNames.append(strName)
+            }
+        }
+        // 不要忘记释放内存，否则C语言的指针很容易成野指针的
+        free(properties)
+        return propertyNames
+    }
+}
+</code></pre><h2 id="使用工具"><a href="#使用工具" class="headerlink" title="使用工具"></a>使用工具</h2><pre><code>class UserTool {
+    // MARK: - 归档路径设置
+    static private var Path: String {
+        let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last!
+        return (path as NSString).appendingPathComponent(&quot;account.plist&quot;)
+    }
+
+    /// 是否登录
+    static func isLogin() -&gt; Bool {
+        guard UserTool.getUser() != nil else {
+            return false  //文件不存在
+        }
+        return true
+    }
+    /// 存档
+    static func saveUser(_ json: String) {
+        guard let user = UserInfo.jsonToUser(json) else {
+            return
+        }
+        NSKeyedArchiver.archiveRootObject(user, toFile: Path)
+    }
+    /// 获取用户信息
+    static func getUser()-&gt; UserInfo? {
+        let user = NSKeyedUnarchiver.unarchiveObject(withFile: Path) as? UserInfo
+        return user
+    }
+    /// 删档
+    static func removeUser() {
+        if FileManager.default.fileExists(atPath: Path) {
+            try! FileManager.default.removeItem(atPath: Path) // 删除文件
+        }else{
+
+        }
+    }
+}
+
+// MARK: - 字典转json
+extension Dictionary {
+    public func hw_toJSONString() -&gt; String? {
+        if (!JSONSerialization.isValidJSONObject(self)) {
+            print(&quot;dict转json失败&quot;)
+            return nil
+        }
+        if let newData : Data = try? JSONSerialization.data(withJSONObject: self, options: []) {
+            let JSONString = NSString(data:newData as Data,encoding: String.Encoding.utf8.rawValue)
+            return JSONString as String? ?? nil
+        }
+        print(&quot;dict转json失败&quot;)
+        return nil
+    }
+}
+// MARK: - json转字典
+extension String {
+    func hw_toDictionary() -&gt; NSDictionary? {
+        guard let jsonData:Data = self.data(using: .utf8) else {
+            return nil
+        }
+        let dict = try? JSONSerialization.jsonObject(with: jsonData, options: .mutableContainers)
+        if dict != nil {
+            return dict as? NSDictionary
+        }
+        return nil
+    }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/15/swift自动归档/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-mysql快速生成百万条测试数据的方法mysql快速生成百万条测试数据的方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2982,162 +3245,6 @@ id *add(id obj)
 
 
   
-    <article id="post-你可能不太会用的10个Git命令" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/04/你可能不太会用的10个Git命令/">你可能不太会用的10个Git命令</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/04/你可能不太会用的10个Git命令/" class="archive-article-date">
-  	<time datetime="2019-09-04T03:00:32.603Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>本文讨论的是开发人员、数据科学家或产品经理应该了解的各种 Git 命令。我们将了解该如何用 Git 进行检查、删除和整理操作。我们还将介绍如何用 Bash 别名和 Git 编辑器配置来逃避 Vim 以节省时间。</p>
-<h2 id="检查"><a href="#检查" class="headerlink" title="检查"></a>检查</h2><p>先了解一下如何检查改动痕迹。</p>
-<p><img src="http://img.wangjungang.cn/OQA9PS.jpg" alt=""></p>
-<ul>
-<li><p>git diff——查看所有本地文件的改动。只改动一个文件的话可以在命令后添加文件名。</p>
-</li>
-<li><p>git log——查看所有提交历史。还可用于带有 git log –p my_file 的文件，输入 q 退出。</p>
-</li>
-<li><p>git blame my file——了解谁在什么时候对 my_file 做了什么样的改动。</p>
-</li>
-<li><p>git reflog——显示本地代码库 HEAD 的更改日志。这个命令很适合查找丢失的工作。</p>
-</li>
-</ul>
-<p>用 Git 进行检查并不麻烦。相比之下，Git 中有不少删除和撤销提交以及文件改动的操作。</p>
-<h2 id="撤销"><a href="#撤销" class="headerlink" title="撤销"></a>撤销</h2><p>可以用 git reset、git checkout 和 git revert 撤销在代码库中所做的改动，这些命令可能有点难理解。</p>
-<p>git reset 和 git checkout 既可用于提交也可用于单个文件的修改，而 git revert 只能用在提交层面。如果你只需要处理尚未合并到协作远程工作的本地提交，你可以使用这三者中任何一条命令。如果是协同工作且需要撤销远程分支中的提交，那么就用 git revert。</p>
-<p><img src="http://img.wangjungang.cn/bk378b.jpg" alt=""></p>
-<p>这些命令中的每一条都有多个参数。以下是常见的用法：</p>
-<ul>
-<li>git reset –-hard HEAD——撤销最近提交以来暂存区和非暂存区的改动。</li>
-</ul>
-<p>指定不同的提交而不是 HEAD，以撤销自这条提交以来的更改。–hard 指的是撤销暂存区和非暂存区的更改。</p>
-<p>要确保你撤销的不是协作伙伴所依赖的远程分支的提交。</p>
-<ul>
-<li>git checkout my commit——从 my_commit 中撤销非暂存区的改动。</li>
-</ul>
-<p>HEAD 常用在 my_commit，用来撤销最近一次提交以来在本地工作目录的改动。</p>
-<p>checkout 最适合用于仅限于本地的撤销。它不会破坏你的协作伙伴所依赖的远程分支的提交历史。</p>
-<p>如果你将 checkout 用在分支而不是提交上，HEAD 将会切换到指定分支，并更新成匹配的工作目录。<br>这是 checkout 命令更常见的用法。</p>
-<ul>
-<li>Git revert my commit——撤销 my_commit 中的更改。当用 revert 撤销改动时，它会产生新的提交。</li>
-</ul>
-<p>对协作项目而言，revert 是很安全的，因为它不会覆盖其他用户分支可能依赖的历史记录。</p>
-<p><img src="http://img.wangjungang.cn/deBYsf.jpg" alt=""></p>
-<p>revert 很安全。</p>
-<p>有时候你只想删除本地目录中的未追踪文件。例如，也许你运行的代码在版本库中创建了许多你不需要的不同类型的文件。你可以一键清除它们！</p>
-<ul>
-<li><p>Git clean –n——删除本地工作目录中的未追踪文件。</p>
-</li>
-<li><p>–n 表示试运行，在试运行中什么都不会删除。</p>
-</li>
-<li><p>-f 表示实际删除文件。</p>
-</li>
-<li><p>-d 表示删除未追踪的目录。</p>
-</li>
-</ul>
-<p>默认情况下不会删除 .gitignore 中的未追踪文件，但这种行为是可以更改的。</p>
-<p><img src="http://img.wangjungang.cn/Q63Rxp.jpg" alt=""></p>
-<p>现在你已经知道了 Git 中用于撤销操作的命令，接下来我们再看两条可以有序排列文件的命令。</p>
-<h2 id="整理"><a href="#整理" class="headerlink" title="整理"></a>整理</h2><ul>
-<li>Git commit –amend——将暂存区的更改添加到最近一次提交中。</li>
-</ul>
-<p>如果暂存区中什么都没有，你可以用该命令编辑最新的提交信息。只有在提交尚未整合到远程主分支中时才使用该命令！</p>
-<ul>
-<li>Git push my remote –tags——将所有本地标记发送到远程版本库中。适用于版本变更。</li>
-</ul>
-<p>如果你用的是 Python，并希望更改你所构建的包，bump2version 会自动为你创建标签。一旦将标签推送出去，你就可以在自己的版本中使用了。这里有一篇我的指南，可以指导你完成第一个 OSS Python 包。跟紧我，确保你不会错过版本控制的部分！</p>
-<h3 id="求助，我被困在-Vim-中出不去了！"><a href="#求助，我被困在-Vim-中出不去了！" class="headerlink" title="求助，我被困在 Vim 中出不去了！"></a>求助，我被困在 Vim 中出不去了！</h3><p>使用 Git 时，你可能偶尔会发现自己被困在 Vim 会话中了。</p>
-<p>例如，你试着在没有提交信息的情况下提交，Vim 会自动开启。如果你不知道 Vim 的话，这种情况糟糕透了——在这个关于如何摆脱这一困境的 Stack Overflow 回答下有超过 4，000 的投票。</p>
-<p>以下四步用于在已保存的文件中逃离 Vim：</p>
-<ol>
-<li><p>按 i 进入插入模式</p>
-</li>
-<li><p>在第一行输入你的提交信息</p>
-</li>
-<li><p>按下退出键——Esc</p>
-</li>
-<li><p>输入 :x。别忘了冒号（colon）。</p>
-</li>
-</ol>
-<h3 id="更改默认编辑器"><a href="#更改默认编辑器" class="headerlink" title="更改默认编辑器"></a>更改默认编辑器</h3><p>为了避免使用 Vim，可以更改 Git 中的默认编辑器。以下是更改我使用的编辑器 Atom 的默认值的命令：</p>
-<pre><code>git config --global core.editor &quot;atom --wait&quot;
-</code></pre><p>假设你已经安装了 Atom，你现在就可以在 Atom 中解决 Git 问题了。</p>
-<h2 id="创建-Git-命令的快捷键"><a href="#创建-Git-命令的快捷键" class="headerlink" title="创建 Git 命令的快捷键"></a>创建 Git 命令的快捷键</h2><p><img src="http://img.wangjungang.cn/rFttfp.jpg" alt=""></p>
-<p>在 .bash_profile 中添加以下 alias 命令可以给 Git 命令添加快捷键：</p>
-<pre><code>alias gs=&apos;git status &apos;alias ga=&apos;git add &apos;alias gaa=&apos;git add -A &apos;alias gb=&apos;git branch &apos;alias gc=&apos;git commit &apos;alias gcm=&apos;git commit -m &apos;alias go=&apos;git checkout &apos;
-</code></pre><p>你可以调整上述命令，来为任何 Git 命令添加快捷键。</p>
-<p>如果你没有 .bash_profile，你可以用以下命令在 macOS 上创建一个：</p>
-<pre><code>touch ~/.bash_profile
-</code></pre><p>打开该文件：</p>
-<pre><code>open ~/.bash_profile
-</code></pre><p>现在你在终端键入 gs 的效果和键入 git status 的效果是一样的。注意，在终端中你可以输入快捷键后再输入其它标记。</p>
-<p>你也可以使用 Git 的别名，但这要求你在输入快捷键命令之前先输入 git。谁会需要这些额外的按键呢？</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Git</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/04/你可能不太会用的10个Git命令/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -3275,15 +3382,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
