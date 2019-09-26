@@ -152,6 +152,161 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS导航栏的正确隐藏方式 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/15/iOS导航栏的正确隐藏方式 /">iOS导航栏的正确隐藏方式</a>
+    </h1>
+  
+
+        
+        <a href="/2018/10/15/iOS导航栏的正确隐藏方式 /" class="archive-article-date">
+  	<time datetime="2018-10-15T06:51:01.655Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目中经常碰到首页顶部是无限轮播,需要靠最上面显示.有的设置导航栏为透明等一系列的方法,这个可以借助第三方.或者干脆简单粗暴的直接隐藏掉导航栏.可是push到下一个页面的时候是需要导航栏的,如何做了,这里给出两种方法.</p>
+<h2 id="第一种做法"><a href="#第一种做法" class="headerlink" title="第一种做法"></a>第一种做法</h2><p>注意这里一定要用动画的方式隐藏导航栏,这样在使用滑动返回手势的时候效果最好,和上面动图一致.这样做有一个缺点就是在切换tabBar的时候有一个导航栏向上消失的动画.</p>
+<pre><code>- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+
+    [self.navigationController setNavigationBarHidden:YES animated:animated];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+
+    [self.navigationController setNavigationBarHidden:NO animated:animated];
+}
+</code></pre><h2 id="第二种做法"><a href="#第二种做法" class="headerlink" title="第二种做法"></a>第二种做法</h2><p>设置self为导航控制器的代理,实现代理方法,在将要显示控制器中设置导航栏隐藏和显示,使用这种方式不仅完美切合滑动返回手势,同时也解决了切换tabBar的时候,导航栏动态隐藏的问题。最后要记得在控制器销毁的时候把导航栏的代理设置为nil。</p>
+<pre><code>@interface WLHomePageController () &lt;UINavigationControllerDelegate&gt;
+
+@end
+
+@implementation WLHomePageController 
+
+#pragma mark - lifeCycle
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    // 设置导航控制器的代理为self
+    self.navigationController.delegate = self;
+}
+
+#pragma mark - UINavigationControllerDelegate
+// 将要显示控制器
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    // 判断要显示的控制器是否是自己
+    BOOL isShowHomePage = [viewController isKindOfClass:[self class]];
+
+    [self.navigationController setNavigationBarHidden:isShowHomePage animated:YES];
+}
+
+- (void)dealloc {
+    self.navigationController.delegate = nil;
+}
+</code></pre><h2 id="第三种做法"><a href="#第三种做法" class="headerlink" title="第三种做法"></a>第三种做法</h2><p>主要是针对A隐藏Nav, A push 到B，B也需要隐藏Nav的这种情况</p>
+<p>1、自定义UINavigationController</p>
+<pre><code>#import &quot;WYNavigationController.h&quot;
+#import &quot;ViewController.h&quot;
+#import &quot;WYTargetVC.h&quot;
+
+
+@interface WYNavigationController ()&lt;UINavigationControllerDelegate, UIGestureRecognizerDelegate&gt;
+
+@end
+
+@implementation WYNavigationController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+
+    self.delegate = self;
+    // 设置全屏滑动返回
+    id target = self.interactivePopGestureRecognizer.delegate;
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:target action:@selector(handleNavigationTransition:)];
+    [self.view addGestureRecognizer:pan];
+    self.interactivePopGestureRecognizer.enabled = NO;
+}
+
+- (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+    if (self.viewControllers.count &gt; 0) {
+        viewController.hidesBottomBarWhenPushed = YES;
+    }
+    [super pushViewController:viewController animated:animated];
+}
+
+
+#pragma mark - UINavigationControllerDelegate
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    // 判断如果是需要隐藏导航控制器的类，则隐藏
+    BOOL isHideNav = ([viewController isKindOfClass:[ViewController class]] || 
+                      [viewController isKindOfClass:[WYTargetVC class]]);
+
+    [self setNavigationBarHidden:isHideNav animated:YES];
+}
+</code></pre><p>但是注意setNavigationBarHidden:YES设置这行代码后会导致Nav的滑动返回手势失效，这也就是为什么前面我们在自定义导航的时候需要设置全屏滑动返回了。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/10/15/iOS导航栏的正确隐藏方式 /">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-轻松实现Label的全方位对齐" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1524,103 +1679,6 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
 
 
   
-    <article id="post-适配iPhone XR" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/16/适配iPhone XR/">适配iPhone XR</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/16/适配iPhone XR/" class="archive-article-date">
-  	<time datetime="2018-09-16T06:24:26.639Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="快速适配"><a href="#快速适配" class="headerlink" title="快速适配"></a>快速适配</h3><p>先说结论，找设计师要2张启动图：</p>
-<p>iPhone XR：828px x 1792px</p>
-<p>iPhone XS Max: 1242px x 2688px</p>
-<h3 id="LaunchImage中只有iPhone-X-iPhone-XS"><a href="#LaunchImage中只有iPhone-X-iPhone-XS" class="headerlink" title="LaunchImage中只有iPhone X/iPhone XS"></a>LaunchImage中只有iPhone X/iPhone XS</h3><p>iPhone XR / XS Max 对老版本兼容请求</p>
-<p>如果没有设置iPhone XR/iPhone XS Max启动图但设置了iPhone X的启动图，iPhone XR / XS Max默认会走iPhone X 的尺寸<br>375ptx812pt，会对内容近乎于等比拉伸放到iPhone XR / XS Max屏幕内，如下图：</p>
-<p><img src="http://op1uxe89i.bkt.clouddn.com/WX20180916-143326@2x.png" alt=""></p>
-<h3 id="1-代码中判断是否是iPhone-X时需要注意"><a href="#1-代码中判断是否是iPhone-X时需要注意" class="headerlink" title="1. 代码中判断是否是iPhone X时需要注意"></a>1. 代码中判断是否是iPhone X时需要注意</h3><p>如果你以前是使用设备尺寸来判断iPhone X那就需要修改了，判断iPhone X主要是因为刘海的原因可能要做些特殊处理。鉴于iPhone X/XS/XR/XS Max底部都会有安全距离，所以可以利用safeAreaInsets.bottom &gt; 0.0来判断是否是iPhone X。</p>
-<p>safeAreaInsets支持iOS11及以后。</p>
-<pre><code>static inline BOOL isIPhoneX() {
-    BOOL iPhoneX = NO;
-    if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) {
-        return iPhoneX;
-    }
-
-    if (@available(iOS 11.0, *)) {
-        UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
-        if (mainWindow.safeAreaInsets.bottom &gt; 0.0) {
-
-            iPhoneX = YES;
-        }
-    }
-
-    return iPhoneX;
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/16/适配iPhone XR/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/13/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/15/">Next &raquo;</a>
@@ -1722,11 +1780,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1742,11 +1800,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1774,11 +1832,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">

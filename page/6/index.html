@@ -152,6 +152,133 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-UITableView + Refresh" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/22/UITableView + Refresh/">UITableView + Refresh</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/22/UITableView + Refresh/" class="archive-article-date">
+  	<time datetime="2019-02-22T07:37:28.676Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="TableView-通常要和-Refresh功能结合使用-Refresh-大都从网络获取数据然后进行刷新"><a href="#TableView-通常要和-Refresh功能结合使用-Refresh-大都从网络获取数据然后进行刷新" class="headerlink" title="TableView 通常要和 Refresh功能结合使用, Refresh 大都从网络获取数据然后进行刷新"></a>TableView 通常要和 Refresh功能结合使用, Refresh 大都从网络获取数据然后进行刷新</h3><h2 id="数据获取-返回列表数据"><a href="#数据获取-返回列表数据" class="headerlink" title="数据获取, 返回列表数据"></a>数据获取, 返回列表数据</h2><pre><code>/// 获取数据
+func getRandomResult() -&gt; Observable&lt;[SectionModel&lt;String, Int&gt;]&gt; {
+    let items = (0..&lt;5).map { _ in Int(arc4random()) }
+    let observable = Observable.just([SectionModel(model: &quot;S&quot;, items: items)])
+    return observable.delay(2, scheduler: MainScheduler.instance) // 模拟网络请求 延迟2秒钟
+}
+</code></pre><h2 id="创建表格并绑定数据"><a href="#创建表格并绑定数据" class="headerlink" title="创建表格并绑定数据"></a>创建表格并绑定数据</h2><pre><code>/// 设置导航栏右侧按钮为刷新
+let refreshButton = UIBarButtonItem()
+refreshButton.title = &quot;刷新&quot;
+self.navigationItem.rightBarButtonItem = refreshButton
+
+// 创建表格
+tableView = UITableView(frame: view.bounds, style: .plain)
+// 注册单元格
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
+view.addSubview(tableView)
+
+// 初始化数据
+let randomResult = refreshButton.rx.tap.asObservable()
+    .throttle(1, scheduler: MainScheduler.instance) // 在主线程中操作, 若1秒钟多次改变, 取最后一次
+    .startWith(()) // 加这个是为了一开始就能自动请求一次数据
+    .flatMapLatest(getRandomResult) // 连续请求时只取最后一次数据
+    .share(replay: 1)
+
+
+// 创建数据源
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, Int&gt;&gt;( configureCell: {
+    (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
+    let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
+    cell.textLabel?.text = &quot;条目\(indexPath.row): \(element)&quot;
+    return cell
+})
+
+// 数据绑定
+randomResult.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+</code></pre><h2 id="停止数据请求"><a href="#停止数据请求" class="headerlink" title="停止数据请求"></a>停止数据请求</h2><p>使用 takeUntil 来停止数据请求</p>
+<pre><code>let cancelButton = UIBarButtonItem()
+cancelButton.title = &quot;取消&quot;
+self.navigationItem.leftBarButtonItem = cancelButton
+
+`
+`
+`
+// 初始化数据
+let randomResult = refreshButton.rx.tap.asObservable()
+    .throttle(1, scheduler: MainScheduler.instance) // 在主线程中操作, 若1秒钟多次改变, 取最后一次
+    .startWith(()) // 加这个是为了一开始就能自动请求一次数据
+    .flatMapLatest({
+    // 核心代码
+    self.getRandomResult().takeUntil(self.cancelButton.rx.tap) }) // 停止数据请求
+    .share(replay: 1)
+
+`
+</code></pre><p><code></code></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/22/UITableView + Refresh/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-UITableView + RxDataSources" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1863,87 +1990,6 @@ hexo deploy
 
 
   
-    <article id="post-自动释放池工作原理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/18/自动释放池工作原理/">自动释放池工作原理</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/18/自动释放池工作原理/" class="archive-article-date">
-  	<time datetime="2019-02-18T08:06:56.260Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="什么是自动释放池"><a href="#什么是自动释放池" class="headerlink" title="什么是自动释放池"></a>什么是自动释放池</h2><p>自动释放池(autorelease pool)是OC的一种内存自动回收机制.<br>当你向一个对象发送一个autorelease消息的时候,cocoa就会将对象的一个引用放入<br>到最新的自动释放池中(当前线程栈顶位置),它任然是一个正当的对象,因此自动释放池<br>定义的作用域内的其他对象都可以向他发送消息.</p>
-<h2 id="如何工作"><a href="#如何工作" class="headerlink" title="如何工作"></a>如何工作</h2><ul>
-<li>objective-C是通过一种”referring counting”(引用计数)的方式管理内存的<br>对象在开始分配内存(alloc)的时候引用计数为1,以后如果有copy,retain的时候<br>都会加1,每当release和autorelease的时候引用计数就会减1,如果一个对象的引<br>用计数为0,就会被系统销毁.</li>
-<li>NSAutoreleasePool 就是用来做引用计数的管理工作的,这个东西一般不用你管的</li>
-<li>autorelease和release没什么区别,只是引用计数减1的时机不同而已.autorelease<br>会在对象的使用真正结束的时候才做引用计数减1.</li>
-</ul>
-<h3 id="自动释放池什么时候创建，什么时候销毁？"><a href="#自动释放池什么时候创建，什么时候销毁？" class="headerlink" title="自动释放池什么时候创建，什么时候销毁？"></a>自动释放池什么时候创建，什么时候销毁？</h3><p>每一次运行循环执行后，也就是每当事件被触发时都会创建自动释放池。在程序执行的过程中，所有autorelease的对象在出了作用域之后会被添加到最近创建的自动释放池中。运行循环结束前会释放自动释放池，还有池子满了也会销毁。</p>
-<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p>自动释放池被销毁或耗尽时会向池中的所有对象发送release消息，释放所有autorelease对象。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/18/自动释放池工作原理/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -2045,11 +2091,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2065,11 +2111,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2097,11 +2143,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">

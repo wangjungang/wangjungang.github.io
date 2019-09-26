@@ -152,6 +152,87 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-自动释放池工作原理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/18/自动释放池工作原理/">自动释放池工作原理</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/18/自动释放池工作原理/" class="archive-article-date">
+  	<time datetime="2019-02-18T08:06:56.260Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="什么是自动释放池"><a href="#什么是自动释放池" class="headerlink" title="什么是自动释放池"></a>什么是自动释放池</h2><p>自动释放池(autorelease pool)是OC的一种内存自动回收机制.<br>当你向一个对象发送一个autorelease消息的时候,cocoa就会将对象的一个引用放入<br>到最新的自动释放池中(当前线程栈顶位置),它任然是一个正当的对象,因此自动释放池<br>定义的作用域内的其他对象都可以向他发送消息.</p>
+<h2 id="如何工作"><a href="#如何工作" class="headerlink" title="如何工作"></a>如何工作</h2><ul>
+<li>objective-C是通过一种”referring counting”(引用计数)的方式管理内存的<br>对象在开始分配内存(alloc)的时候引用计数为1,以后如果有copy,retain的时候<br>都会加1,每当release和autorelease的时候引用计数就会减1,如果一个对象的引<br>用计数为0,就会被系统销毁.</li>
+<li>NSAutoreleasePool 就是用来做引用计数的管理工作的,这个东西一般不用你管的</li>
+<li>autorelease和release没什么区别,只是引用计数减1的时机不同而已.autorelease<br>会在对象的使用真正结束的时候才做引用计数减1.</li>
+</ul>
+<h3 id="自动释放池什么时候创建，什么时候销毁？"><a href="#自动释放池什么时候创建，什么时候销毁？" class="headerlink" title="自动释放池什么时候创建，什么时候销毁？"></a>自动释放池什么时候创建，什么时候销毁？</h3><p>每一次运行循环执行后，也就是每当事件被触发时都会创建自动释放池。在程序执行的过程中，所有autorelease的对象在出了作用域之后会被添加到最近创建的自动释放池中。运行循环结束前会释放自动释放池，还有池子满了也会销毁。</p>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p>自动释放池被销毁或耗尽时会向池中的所有对象发送release消息，释放所有autorelease对象。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/18/自动释放池工作原理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-常用的setNeedsDisplay和setNeedsLayout" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1466,120 +1547,6 @@ label.frame = CGRectMake(100, 100, adaptionSize.width, adaptionSize.height);
 
 
   
-    <article id="post-iOS拦截器" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/28/iOS拦截器/">iOS拦截器</a>
-    </h1>
-  
-
-        
-        <a href="/2019/01/28/iOS拦截器/" class="archive-article-date">
-  	<time datetime="2019-01-28T09:11:10.436Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目中我们可能都需要判断断网的情况，然后进行一下提示，或者我们需要在每个控制器中都需要初始一些东西，那么我们可以在项目中用一个基类去做这些事情，可是，如果我们的项目想要后面添加这些东西，我们再去用基类，改起来就比较麻烦了，或者可能改出问题来。这时候我们可能会用到拦截器来进行一些操作。下面是我用拦截器来进行一些网络的提示</p>
-<h3 id="1、导入头文件-import-“ZYInterceptorWithNetwork-h”"><a href="#1、导入头文件-import-“ZYInterceptorWithNetwork-h”" class="headerlink" title="1、导入头文件#import “ZYInterceptorWithNetwork.h”"></a>1、导入头文件#import “ZYInterceptorWithNetwork.h”</h3><h3 id="2、在需要使用的地方写入下面的代码"><a href="#2、在需要使用的地方写入下面的代码" class="headerlink" title="2、在需要使用的地方写入下面的代码"></a>2、在需要使用的地方写入下面的代码</h3><pre><code>ZYInterceptorWithNetwork *network = [ZYInterceptorWithNetwork sharedInstance];
-network.promptStr = @&quot;网络有错&quot;; //网络提示内容
-network.btnText = @&quot;确定&quot;;//网络提示按钮文字
-network.title = @&quot;提示&quot;;//标题
-[network loadInterceptorWithActionName:@&quot;viewWillAppear:&quot; optionType:AspectPositionAfter error:^(NSError *interceptorError) {
-    NSLog(@&quot;拦截错误&quot;);
-}];//拦截代码
-</code></pre><h3 id="3、假如有的地方我们不需要拦截，那么我们可以这么做"><a href="#3、假如有的地方我们不需要拦截，那么我们可以这么做" class="headerlink" title="3、假如有的地方我们不需要拦截，那么我们可以这么做"></a>3、假如有的地方我们不需要拦截，那么我们可以这么做</h3><p>1)、导入头文件#import “ZYInterceptorWithNetwork.h”</p>
-<p>2)、 跳转界面的地方写入下面的代码</p>
-<pre><code>ZYThreeViewController *three= [[ZYThreeViewController alloc] init];
-three.isDisabledInterceptor = YES;    //跳转的地方设置失去作用
-[self.navigationController pushViewController:three animated:YES];
-</code></pre><p>这就是基本的用法。当然，我们也可以去扩充这些东西，我只是做了网络的操作，我们也可以去做别的一些操作，只要在下面这个方法中修改一些东西即可：</p>
-<pre><code>// 通过这种方式可以代替原来框架中的基类，不必每个 ViewController 再去继续原框架的基类
-#pragma mark - alternative methods
-- (void)action:(BOOL)animated viewController:(UIViewController *)viewController
- {
-if (!viewController.isInitTheme) {
-    // 去做基础业务相关的内容
-    viewController.isInitTheme = YES;
-}
-if (![ZYInterceptorWithNetwork isConnectionAvailableWithStatus:nil]) {
-    //设置提示框或者什么操作
-    UIViewController *currentVc = [self getCurrentController];
-    if (self.promptStr.length != 0 &amp;&amp; self.title.length != 0 &amp;&amp; self.btnText.length != 0 ) {
-        UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:_title message:_promptStr preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *sureBtn = [UIAlertAction actionWithTitle:_btnText style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        }];
-        [alertVc addAction:sureBtn];
-        [currentVc presentViewController:alertVc animated:YES completion:nil];
-    }else {
-        UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:@&quot;提示&quot; message:@&quot;网络状况不太好，请检查网络...&quot; preferredStyle:UIAlertControllerStyleAlert];
-        UIAlertAction *sureBtn = [UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        }];
-        [alertVc addAction:sureBtn];
-        [currentVc presentViewController:alertVc animated:YES completion:nil];
-    }
-}
-}
-</code></pre><p><a href="https://github.com/zhangyqyx/Interceptor" target="_blank" rel="noopener">封装demo</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/01/28/iOS拦截器/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/6/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/8/">Next &raquo;</a>
@@ -1681,11 +1648,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1701,11 +1668,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1733,11 +1700,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">

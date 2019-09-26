@@ -152,6 +152,120 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS拦截器" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/28/iOS拦截器/">iOS拦截器</a>
+    </h1>
+  
+
+        
+        <a href="/2019/01/28/iOS拦截器/" class="archive-article-date">
+  	<time datetime="2019-01-28T09:11:10.436Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目中我们可能都需要判断断网的情况，然后进行一下提示，或者我们需要在每个控制器中都需要初始一些东西，那么我们可以在项目中用一个基类去做这些事情，可是，如果我们的项目想要后面添加这些东西，我们再去用基类，改起来就比较麻烦了，或者可能改出问题来。这时候我们可能会用到拦截器来进行一些操作。下面是我用拦截器来进行一些网络的提示</p>
+<h3 id="1、导入头文件-import-“ZYInterceptorWithNetwork-h”"><a href="#1、导入头文件-import-“ZYInterceptorWithNetwork-h”" class="headerlink" title="1、导入头文件#import “ZYInterceptorWithNetwork.h”"></a>1、导入头文件#import “ZYInterceptorWithNetwork.h”</h3><h3 id="2、在需要使用的地方写入下面的代码"><a href="#2、在需要使用的地方写入下面的代码" class="headerlink" title="2、在需要使用的地方写入下面的代码"></a>2、在需要使用的地方写入下面的代码</h3><pre><code>ZYInterceptorWithNetwork *network = [ZYInterceptorWithNetwork sharedInstance];
+network.promptStr = @&quot;网络有错&quot;; //网络提示内容
+network.btnText = @&quot;确定&quot;;//网络提示按钮文字
+network.title = @&quot;提示&quot;;//标题
+[network loadInterceptorWithActionName:@&quot;viewWillAppear:&quot; optionType:AspectPositionAfter error:^(NSError *interceptorError) {
+    NSLog(@&quot;拦截错误&quot;);
+}];//拦截代码
+</code></pre><h3 id="3、假如有的地方我们不需要拦截，那么我们可以这么做"><a href="#3、假如有的地方我们不需要拦截，那么我们可以这么做" class="headerlink" title="3、假如有的地方我们不需要拦截，那么我们可以这么做"></a>3、假如有的地方我们不需要拦截，那么我们可以这么做</h3><p>1)、导入头文件#import “ZYInterceptorWithNetwork.h”</p>
+<p>2)、 跳转界面的地方写入下面的代码</p>
+<pre><code>ZYThreeViewController *three= [[ZYThreeViewController alloc] init];
+three.isDisabledInterceptor = YES;    //跳转的地方设置失去作用
+[self.navigationController pushViewController:three animated:YES];
+</code></pre><p>这就是基本的用法。当然，我们也可以去扩充这些东西，我只是做了网络的操作，我们也可以去做别的一些操作，只要在下面这个方法中修改一些东西即可：</p>
+<pre><code>// 通过这种方式可以代替原来框架中的基类，不必每个 ViewController 再去继续原框架的基类
+#pragma mark - alternative methods
+- (void)action:(BOOL)animated viewController:(UIViewController *)viewController
+ {
+if (!viewController.isInitTheme) {
+    // 去做基础业务相关的内容
+    viewController.isInitTheme = YES;
+}
+if (![ZYInterceptorWithNetwork isConnectionAvailableWithStatus:nil]) {
+    //设置提示框或者什么操作
+    UIViewController *currentVc = [self getCurrentController];
+    if (self.promptStr.length != 0 &amp;&amp; self.title.length != 0 &amp;&amp; self.btnText.length != 0 ) {
+        UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:_title message:_promptStr preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *sureBtn = [UIAlertAction actionWithTitle:_btnText style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        }];
+        [alertVc addAction:sureBtn];
+        [currentVc presentViewController:alertVc animated:YES completion:nil];
+    }else {
+        UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:@&quot;提示&quot; message:@&quot;网络状况不太好，请检查网络...&quot; preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *sureBtn = [UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        }];
+        [alertVc addAction:sureBtn];
+        [currentVc presentViewController:alertVc animated:YES completion:nil];
+    }
+}
+}
+</code></pre><p><a href="https://github.com/zhangyqyx/Interceptor" target="_blank" rel="noopener">封装demo</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/01/28/iOS拦截器/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-五星好评刮刮乐" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1483,346 +1597,6 @@ if let cat = animal as? Cat{
 
 
   
-    <article id="post-MVC架构实例" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/20/MVC架构实例/">MVC架构实例</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/20/MVC架构实例/" class="archive-article-date">
-  	<time datetime="2018-12-20T08:14:13.787Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>MVC模式的目的是实现一种动态的程序设计，使后续对程序的修改和扩展简化，并且使程序某一部分的重复利用成为可能。除此之外，此模式通过对复杂度的简化，使程序结构更加直观</p>
-<ul>
-<li>控制器（Controller）–&gt; 负责转发请求，对请求进行处理。</li>
-<li>视图（View） –&gt; 界面设计人员进行图形界面设计。</li>
-<li>模型（Model） –&gt; 程序员编写程序应有的功能（实现算法等等）、数据库专家进行数据管理和数据库设计(可以实现具体的功能)。</li>
-</ul>
-<p>以上出自维基百科资料，下面说点人为描述(简单易懂的)~</p>
-<ul>
-<li>Model层: 数据处理层，包括网络请求，数据加工</li>
-<li>View层: 所有App上看得到的界面</li>
-<li>Controller层: Model 与 View层的中介，把Model数据在View上展示出来</li>
-<li>目的: 低耦合，可复用</li>
-</ul>
-<p><img src="http://img.wangjungang.cn/WX20181220-162442@2x.png" alt=""></p>
-<p>先看这张图，这张图是iOS的MVC架构中最经常出现的图了吧，因为IOS中的Controlller 是 UIViewController，所以导致很多人会把视图写在Controller中，如下图:</p>
-<pre><code>@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //setupUI
-
-    //1.createView
-    UIView *view = [[UIView alloc]init];
-    view.frame = CGRectMake(100, 100, 100, 100);
-    view.backgroundColor = [UIColor orangeColor];
-    [self.view addSubview:view];
-
-    //2.createButton
-    UIButton *btn = [UIButton buttonWithType:UIButtonTypeInfoDark];
-    btn.center = self.view.center;
-    [self.view addSubview:btn];
-
-    //3...
-}
-</code></pre><p>这种写法在我刚蹭到iOS的时候也这样写过，先说这样写的好处，以及初学者为什么会这么写：</p>
-<ul>
-<li>比如按钮，可以在当前控制器直接add target:添加点击事件，在当前控制器内就能调用到点击方法，不需要设置代理之类的；</li>
-<li>比如要找某个界面，直接切到这个界面对应的controller就行，因为View 写在 Controller里面，不用去别的地方找，就这里有；</li>
-<li>比如一个View，里面有一张图片，图片依赖于网络资源，这样写的好处，可以直接让 View 在 Controller 中就能拿到资源，不需要传值</li>
-</ul>
-<p>缺点！！：</p>
-<ul>
-<li>导致Controller特别臃肿，里面代码特别多，视图一复杂起来，代码量可能过1000行，不好维护</li>
-<li>写在Controller里无法复用，除非你在 VC2里面 copy 当前VC中的 View的代码</li>
-<li>特别low！！会被懂架构的人瞧不起，喷你根本不是MVC,是MC架构，可能还要你来段喊麦证明一下自己(-。-)</li>
-</ul>
-<h2 id="如何告别MC模式，真正走到MVC？"><a href="#如何告别MC模式，真正走到MVC？" class="headerlink" title="如何告别MC模式，真正走到MVC？"></a>如何告别MC模式，真正走到MVC？</h2><ul>
-<li>先给自己洗脑，iOS的Controller不是UIViewController，而是普通的Controller，没有View。（很关键的一步）</li>
-<li>模块化划分，每个模块对应自己的一个View，例如Demo2模块，View层里面有个Demo2View，将界面元素写到View中</li>
-</ul>
-<h3 id="知识点1-如何传值"><a href="#知识点1-如何传值" class="headerlink" title="知识点1 如何传值"></a>知识点1 如何传值</h3><pre><code>//View
-+ (instancetype)viewWithTitleStr:(NSString *)titleStr{
-
-    //do createView
-    //...
-}
-
-//Controller
-@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    /*setupUI*/
-    //1.createView - 参数通过`View`的函数作为外部参数传进去
-    DemoView *view = [DemoView viewWithTitleStr:@&quot;我是参数&quot;];
-    [self.view addSubview:view];
-}
-</code></pre><h3 id="知识点2-控件点击事件如何回调给控制器"><a href="#知识点2-控件点击事件如何回调给控制器" class="headerlink" title="知识点2 控件点击事件如何回调给控制器"></a>知识点2 控件点击事件如何回调给控制器</h3><pre><code>//View
-@implementation DemoView
-
-- (instancetype)initWithTitleStr:(NSString *)titleStr{
-    if (self = [super init]) {
-
-        UIButton *btn = [UIButton buttonWithType:UIButtonTypeInfoDark];
-        [self addSubview:btn];
-        [btn addTarget:self action:@selector(p_clickBtn:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return self;
-}
-
-- (void)p_clickBtn:(UIButton *)sender{
-
-    //通过代理回调
-    [_delegate respondsToSelector:@selector(clickBtn:)] ?
-    [_delegate clickBtn:sender] : nil;
-}
-
-//Controller
-@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //setupUI
-
-    //1.createView
-    DemoView *view = [DemoView viewWithTitleStr:@&quot;我是参数&quot;];
-    view.delegate = self;
-    [self.view addSubview:view];
-}
-
-#pragma mark - privateDelegate
-- (void)clickBtn:(UIButton *)sender{
-    //View层按钮的点击事件回调~
-}
-</code></pre><p><img src="http://img.wangjungang.cn/WX20181220-162530@2x.png" alt=""></p>
-<p>接下来看这张iOS MVC架构图二，这张也是特别常见，在上面解决了View层之后，我们来看下这里的Model层~</p>
-<pre><code>@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //loadDatas
-    [[AFHTTPSessionManager manager]GET:url
-                            parameters:parameters
-                              progress:nil
-                               success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
-    {
-
-        //刷新tableView
-        _datas = responseObject;
-        [_tableView reloadDatas];
-
-    } failure:nil];
-}
-</code></pre><p>这种写法在我刚蹭到iOS的时候又这样写过，先说这样写的好处，以及初学者为什么会这么写：</p>
-<ul>
-<li>简单，网络请求完，直接在当前控制器刷新TableView的数据源</li>
-<li>比如要找某个界面的网络请求，直接切到这个界面对应的controller就行，因为数据请求 写在 Controller里面，不用去别的地方找，就这里有；</li>
-<li>比如当前网络请求接口，需要外部参数，比如前一个界面的uuid，这样写的好处，可以直接让当前请求在 Controller 中就能拿到资源，不需要传值</li>
-</ul>
-<p>缺点！！：</p>
-<ul>
-<li>又导致Controller特别臃肿，里面代码特别多，如果当前控制器需要多次请求，代码量可能过1000行，不好维护</li>
-<li>写在Controller里无法复用，除非你在 VC2里面 copy 当前VC中的 网络请求的代码</li>
-<li>如果某些接口有依赖要求，接口1请求完再请求接口2，嵌套起来，辣眼睛的程度差点治好我多年的近视</li>
-<li>特别low！！会被懂架构的人瞧不起，喷你根本不是MVC,如果你还用了上面的View写在Controller的操作的话，恭喜你，最终大法 - Controller架构顺利完成，并不需要什么Model &amp;&amp; View</li>
-</ul>
-<p><img src="http://img.wangjungang.cn/WX20181220-162706@2x.png" alt=""></p>
-<h2 id="如何告别VC模式，真正走到MVC？"><a href="#如何告别VC模式，真正走到MVC？" class="headerlink" title="如何告别VC模式，真正走到MVC？"></a>如何告别VC模式，真正走到MVC？</h2><ul>
-<li>不用洗脑，给自己一个大耳刮子让自己清醒清醒，这iOS的Controller就算是UIViewController，也没看到M啊，没有Model。（很关键的一步）</li>
-<li>模块化划分，每个模块对应自己的一个Model，例如Demo2模块，View层里面有个Demo2Model，将网络请求&amp;&amp;数据处理写到Model中</li>
-</ul>
-<h3 id="知识1：如何传值-参数"><a href="#知识1：如何传值-参数" class="headerlink" title="知识1：如何传值(参数)"></a>知识1：如何传值(参数)</h3><p>@implementation DemoModel</p>
-<pre><code>+ (NSArray *)fetchDatasWithUUid:(NSString *)uuid{
-
-    //Model发送网络请求
-    NSDictionary *parameters = @{@&quot;uuid&quot;:uuid}
-        [[AFHTTPSessionManager manager]GET:url
-                                parameters:parameters
-                                  progress:nil
-                                   success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
-        {
-            //这是异步请求，无法return array
-        } failure:nil];
-
-}
-</code></pre><h3 id="知识2：如何回调-网络请求是异步请求-通过Block"><a href="#知识2：如何回调-网络请求是异步请求-通过Block" class="headerlink" title="知识2：如何回调(网络请求是异步请求) - 通过Block"></a>知识2：如何回调(网络请求是异步请求) - 通过Block</h3><pre><code>//Model
-@implementation DemoModel
-
-+ (void)fetchDatasWithUUid:(NSString *)uuid success:(successBlock)block{
-
-    //Model发送网络请求
-    NSDictionary *parameters = @{@&quot;uuid&quot;:uuid}
-        [[AFHTTPSessionManager manager]GET:url
-                                parameters:parameters
-                                  progress:nil
-                                   success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
-        {
-            //通过block异步回调~
-            block(responseObject);
-
-        } failure:nil];   
-}
-
-
-//Controller
-@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //loadDatas
-    [DemoModel fetchDatasWithUUid:_uuid success:^(NSArray *array) {
-        _datas = array;
-        [_tableView reloadDatas];
-    }];
-}
-</code></pre><p>基础的MVC讲解完毕，其实本质上就是让Controller减压，不该控制器管的他别让他知道，如上基础MVC操作之后的优势：</p>
-<ul>
-<li>MVC架构分明，在同一个模块内，如果视图有问题，找到该模块的View就行，其他同理，Controller代码大大减少，负责View的代理事件就可以</li>
-<li>可以复用，比如你一个产品列表的数据，首页也要用，产品页也要用，直接分别在其对应的VC1 &amp;&amp; VC2 调用函数[ProductModel fetchDatas]即可，无需写多次，View的复用同理</li>
-<li>结构分明，便于维护，拓展也是在此基础上拓展，代码干净简洁。</li>
-</ul>
-<h2 id="进阶讲解-MVC-配合-继承，进阶提高效率"><a href="#进阶讲解-MVC-配合-继承，进阶提高效率" class="headerlink" title="进阶讲解 - MVC 配合 继承，进阶提高效率"></a>进阶讲解 - MVC 配合 继承，进阶提高效率</h2><ul>
-<li>常用的方法，抽一个基类出来，继承是子类可以拥有父类的方法，重新父类的方法即可，无需声明</li>
-</ul>
-<pre><code>//数据基类
-@interface MNBaseDatas : NSObject
-
-//请求数据成功
-typedef void (^MNsuccessBlock)(NSArray *array);
-
-+ (void)fetchDatasSuccessBlock:(MNsuccessBlock)block;
-
-+ (void)fetchDatasSuccessBlock:(MNsuccessBlock)block
-                  failureBlock:(MNfailureBlock)failure;
-</code></pre><p>如果，如果抽出一个数据模型的基类，比如这里的MNBaseDatas，如之前我们举例的DemoModel就无需声明</p>
-<pre><code>@interface DemoModel : MNBaseDatas
-
-/**继承自MNBaseDatas，父类有的就可以不用声明，这里的block 和 类方法都可以不用声明*/
-//typedef void (^successBlock)(NSArray *array);
-
-//+ (void)fetchDatasSuccessBlock:(MNsuccessBlock)block;
-
-@end
-
-//Controller
-@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //loadDatas - DemoModel没有声明 -fetchDatasSuccessBlock，一样可以调用，因为父类有此方法
-    [DemoModel fetchDatasSuccessBlock:^(NSArray *array) {
-        _datas = array;
-        [_tableView reloadDatas];
-    }];
-}
-</code></pre><p>如果父类没有的方法或属性，在子类里面写就行了，不会影响到父类代码，父类一般也是放公共，常用的方法(或属性)，如果是特殊的，直接在子类里面新增即可，无需添加到父类~</p>
-<h3 id="控制器也可以使用继承，可以减少不少冗余代码"><a href="#控制器也可以使用继承，可以减少不少冗余代码" class="headerlink" title="控制器也可以使用继承，可以减少不少冗余代码"></a>控制器也可以使用继承，可以减少不少冗余代码</h3><pre><code>//基类控制器
-@interface MNBaseViewController : UIViewController
-
-@property (nonatomic, weak)UITableView *tableView;
-
-@property (nonatomic, copy)NSArray *datas;
-
-- (void)setupUI;
-
-- (void)loadDatas;
-
-@end
-
-//MNBaseViewController.m 文件
-@interface MNBaseViewController ()
-&lt;
-UITableViewDelegate,UITableViewDataSource
-&gt;
-
-#pragma mark - setupUI
-- (void)setupUI{
-     //统一创建tableView，设置当前代理=self
-    UITableView *tableView = [[UITableView alloc]init];
-    tableView.frame = Frame(0, DefaultNaviHeight, ScreenW, ScreenH - DefaultNaviHeight);
-    tableView.delegate = self;
-    tableView.dataSource = self;
-}
-</code></pre><ul>
-<li>根据我们的封装，基本上所有的控制器都需要设置界面 setupUI 获取数据  loadDatas，所以将这两个函数抽到基类MNBaseViewController 中</li>
-<li>因为iOS中，tableView应该算最常见的控件之一，基本上大多数界面都会用它展示数据，所以tableView也抽到基类中，当公告属性</li>
-<li>有tableView 就跑不了数据源了，datas 同理，也抽到基类</li>
-<li>同时，设置MNBaseViewController成为 tableView 的delegate和dataSource，所有的子类都无需再声明</li>
-<li>如果有需要用到tableView的，一个[super setUI]就能拥有这个tableView，无需创建</li>
-</ul>
-<p>这样，所有的UIViewController，只要继承自MNBaseViewController的，都可以有如上的函数和方法(可以根据需要扩充)</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/20/MVC架构实例/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/7/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/9/">Next &raquo;</a>
@@ -1924,11 +1698,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1944,11 +1718,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1976,11 +1750,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
