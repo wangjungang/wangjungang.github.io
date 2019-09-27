@@ -6,20 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>关于内购需要注意的一些坑 | Blog</title>
+  <title>RxSwift + MJRefresh 自动管理刷新状态 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面网络上关于内购支付的文章大都千篇一律，讲述的是如何创建内购项目，最后再把内购发起的相关代码直接写上就完事了。但是，在实际开发中，关于内购的坑却多的让人抓狂，比如常见的掉单，重复充值等情形。有的用户反馈我明明扣过钱了，为何没有充值？有的却是用户付了一次款，却给冲了两次+的额度，无论哪种情况，对开发者而言都是灾难，一方面是用户体验，一方面是公司亏损。 接下来我先讲两种常见的流程和思路，以及列举">
+  <meta name="description" content="枚举首先定义一个有关刷新状态的枚举类型： /// 可按照自己的需求添加，由于我没有用到 mj_footer.beginRefreshing()， /// 所以没有定义相关的枚举。 enum RefreshStatus {     case none     case beingHeaderRefresh     case endHeaderRefresh     case endFooterRef">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="关于内购需要注意的一些坑">
-<meta property="og:url" content="http://yoursite.com/2018/12/20/关于内购需要注意的一些坑/index.html">
+<meta property="og:title" content="RxSwift + MJRefresh 自动管理刷新状态">
+<meta property="og:url" content="http://yoursite.com/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面网络上关于内购支付的文章大都千篇一律，讲述的是如何创建内购项目，最后再把内购发起的相关代码直接写上就完事了。但是，在实际开发中，关于内购的坑却多的让人抓狂，比如常见的掉单，重复充值等情形。有的用户反馈我明明扣过钱了，为何没有充值？有的却是用户付了一次款，却给冲了两次+的额度，无论哪种情况，对开发者而言都是灾难，一方面是用户体验，一方面是公司亏损。 接下来我先讲两种常见的流程和思路，以及列举">
+<meta property="og:description" content="枚举首先定义一个有关刷新状态的枚举类型： /// 可按照自己的需求添加，由于我没有用到 mj_footer.beginRefreshing()， /// 所以没有定义相关的枚举。 enum RefreshStatus {     case none     case beingHeaderRefresh     case endHeaderRefresh     case endFooterRef">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-20T08:50:30.231Z">
+<meta property="og:updated_time" content="2019-09-27T13:13:22.970Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于内购需要注意的一些坑">
-<meta name="twitter:description" content="写在前面网络上关于内购支付的文章大都千篇一律，讲述的是如何创建内购项目，最后再把内购发起的相关代码直接写上就完事了。但是，在实际开发中，关于内购的坑却多的让人抓狂，比如常见的掉单，重复充值等情形。有的用户反馈我明明扣过钱了，为何没有充值？有的却是用户付了一次款，却给冲了两次+的额度，无论哪种情况，对开发者而言都是灾难，一方面是用户体验，一方面是公司亏损。 接下来我先讲两种常见的流程和思路，以及列举">
+<meta name="twitter:title" content="RxSwift + MJRefresh 自动管理刷新状态">
+<meta name="twitter:description" content="枚举首先定义一个有关刷新状态的枚举类型： /// 可按照自己的需求添加，由于我没有用到 mj_footer.beginRefreshing()， /// 所以没有定义相关的枚举。 enum RefreshStatus {     case none     case beingHeaderRefresh     case endHeaderRefresh     case endFooterRef">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -155,74 +155,230 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-关于内购需要注意的一些坑" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-RxSwift + MJRefresh 自动管理刷新状态" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      关于内购需要注意的一些坑
+      RxSwift + MJRefresh 自动管理刷新状态
     </h1>
   
 
         
-        <a href="/2018/12/20/关于内购需要注意的一些坑/" class="archive-article-date">
-  	<time datetime="2018-12-20T08:41:31.157Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
+        <a href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/" class="archive-article-date">
+  	<time datetime="2019-09-26T02:29:03.451Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>网络上关于内购支付的文章大都千篇一律，讲述的是如何创建内购项目，最后再把内购发起的相关代码直接写上就完事了。但是，在实际开发中，关于内购的坑却多的让人抓狂，比如常见的掉单，重复充值等情形。有的用户反馈我明明扣过钱了，为何没有充值？有的却是用户付了一次款，却给冲了两次+的额度，无论哪种情况，对开发者而言都是灾难，一方面是用户体验，一方面是公司亏损。</p>
-<p>接下来我先讲两种常见的流程和思路，以及列举将会出现的问题，最后再来讲一下我自己开发的流程和应对策略</p>
-<h2 id="1-验证放在客户端"><a href="#1-验证放在客户端" class="headerlink" title="1. 验证放在客户端"></a>1. 验证放在客户端</h2><h3 id="1-1-流程"><a href="#1-1-流程" class="headerlink" title="1.1 流程"></a>1.1 流程</h3><p>1.判断是否允许内购</p>
-<p>2.根据商品id请求商品的具体信息</p>
-<p>3.商品信息请求成功，创建支付交易，发起支付，之后就走的是系统提供的观察者</p>
-<pre><code>- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray&lt;SKPaymentTransaction *&gt; *)transactions
-</code></pre><p>4.如果支付不成功，结束交易</p>
-<p>5.支付成功，结束交易，获取凭证，本地进行验证(具体验证方法，我这里不再贴出代码，网上有一大堆)</p>
-<p>6.等待校验结果，成功则调取充值接口，否则不充值</p>
-<h3 id="1-2-可能存在的问题"><a href="#1-2-可能存在的问题" class="headerlink" title="1.2 可能存在的问题"></a>1.2 可能存在的问题</h3><p>看了上述流程，我们会发现，前面的还好，验证的过程却完全不可控，比如，校验失败，再比如校验回来了，充值接口却没有来得及调用，或者充值接口还没回来等，用户退出了界面或者app。由于在支付成功的时候就结束了交易，这个时候若是校验结果没有返回或者校验结果回来了充值没有顺利进行，那么这个单子就丢了，对用户而言这就是损失。再有，放在客户端有个问题，凭证可以伪造，如果有人截取请求，伪造凭证，那就可以肆无忌惮地进行充值，对公司而言这是损失，所以这种方案不用想肯定错漏百出。</p>
-<h2 id="2-支付在客户端，校验和充值在服务端"><a href="#2-支付在客户端，校验和充值在服务端" class="headerlink" title="2.支付在客户端，校验和充值在服务端"></a>2.支付在客户端，校验和充值在服务端</h2><p>基于第一种方案，第二种方案是要好一些的，而且我下面提到的第三种也是在第二种的基础上改进的。</p>
-<h3 id="2-1-流程"><a href="#2-1-流程" class="headerlink" title="2.1 流程"></a>2.1 流程</h3><p>1.判断是否允许内购</p>
-<p>2.根据商品id请求商品的具体信息</p>
-<p>3.商品信息请求成功，创建支付交易，发起支付，之后就走的是系统提供的观察者</p>
-<pre><code>- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray&lt;SKPaymentTransaction *&gt; *)transactions
-</code></pre><p>4.支付失败，结束交易</p>
-<p>5.支付成功，取出凭证上传给服务端，服务端进行验证并充值，这些步骤完成后返回给客户端，客户端结束交易。</p>
-<p>这么做看似没有什么毛病，如果按照正常流程的话的确是对的。但是都是有意外的，出现意外的点：</p>
-<ul>
-<li>服务端接到的凭证还有可能是伪造的</li>
-<li>服务端验证是和苹果服务器打交道，不可能那么快，如果这个时候用户退出了app，那么交易就没有结束，下次启动依然会执行上传凭证的后续操作，由于每次获取的凭证和时间戳有关，所以服务端在判断凭证重复性上来说也是不安全的，这就可能造成重复充值的情况</li>
-</ul>
-<h2 id="3-本文要介绍的方案，基于第二种方案的改进"><a href="#3-本文要介绍的方案，基于第二种方案的改进" class="headerlink" title="3.本文要介绍的方案，基于第二种方案的改进"></a>3.本文要介绍的方案，基于第二种方案的改进</h2><p>由于要对交易进行判重，如果凭借苹果那边返回的数据进行判断，就等着被坑死吧，网上一开始以为没有问题的applicationUserName也可能抽风给你来个nil，而且在查账的时候根本查无可查，所以最好的做法是判断逻辑都用我们自己的数据，下面我列举一下我的流程，所有的操作都从点击购买按钮开始：</p>
-<h3 id="3-1-流程"><a href="#3-1-流程" class="headerlink" title="3.1 流程"></a>3.1 流程</h3><ul>
-<li><p>向服务器请求创建订单接口，这个订单是服务器那边生成的，用来确定每次请求订单的唯一性，也是用来对账的标识。</p>
-</li>
-<li><p>进入内购支付流程</p>
-</li>
-<li><p>根据商品ID请求商品信息</p>
-</li>
-<li><p>商品信息请求成功，发起交易</p>
-</li>
-<li><p>支付没有成功，结束交易</p>
-</li>
-<li><p>支付成功，先判断交易的transactionIdentifier是否存在于本地，如果存在，则此项交易已经无效，直接结束交易，如果不存在，则走验证逻辑</p>
-</li>
-<li><p>验证逻辑：取出沙盒中的凭证，将凭证上传给服务器，要带上之前生成的订单id，服务器接收失败，什么也不做。接收成功，将交易的transactionIdentifier存到本地同时结束交易，后面的验证都在服务器了。</p>
-</li>
-<li><p>服务器验证过程：服务器会维护一个订单id列表，此订单id的初始状态为未验证，当接收到客户端传的凭证后，将此订单id状态置为验证中。如果验证成功，将订单id状态设置为无效，同时前去充值，充值结果返回给客户端。</p>
-</li>
-</ul>
-<p>有人会问，客户端如果这个时候退出了呢？这个也没关系，因为从客户端上传凭证给服务端成功后，就没有客户端什么事儿了，所有的校验和验证，充值逻辑都有服务端把控。</p>
-<p>做的好一点的，为了让用户知晓充值成功，服务端在充值完成后，可以定向给用户发一条推送通知。同时客户端上传凭证成功后，给用户一个充值延迟到账的提示。</p>
-<p>下面模拟几种意外情况，由于支付工具类做的是单例，这里只模拟退出app的情况，不用再模拟退出支付页面的情况:</p>
-<p>1 用户在上传凭证中退出app，这个很好理解，什么也不会发生，交易依然存在于苹果服务器缓存中，用户下次启动界面，会从缓存中查询是否有未完成交易，如果有，会继续执行支付成功后的逻辑，不用担心掉单的情形</p>
-<p>2 上传凭证成功了，如果服务端验证失败呢？这个可不在客户端控制范围内，而且客户端已经做了结束交易和移除交易id的操作，那么有没有可能丢单呢？下面我具体说一下：<br>前面讲过，服务端有一个订单id标识每一笔支付交易，接收了凭证后也会立即根据订单id存起来，如果验证失败，服务器会用定时器做轮询验证操作，只要是有效的订单id，就会去进行验证，前面已经知道，唯有校验成功，订单id才会无效，所以这保证了凭证一定会去验证，而且最终一定会验证通过，这样就极大地减少了丢单的概率，而由于服务端存在严谨的判断逻辑，所以重复充值的情况在正常逻辑下是不会存在的(排除有用户恶意退款的情况，这个也非重复充值，而是另外一种情况，由于苹果恶心的保密机制，我们无法获取到用户退款的详情，所以也就无法应对这种恶意行为)</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>结束语：总体而言就这些，由于代码涉及到具体的业务和接口，我这里只用语言进行陈述，有描述的不到位的情况，还请在留言区指出，有更好的思路的也请在留言区交流。内购这块一直是一个巨坑，我很希望有朝一日能彻底填平，这样对大家都好。</p>
+        <h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><p>首先定义一个有关刷新状态的枚举类型：</p>
+<pre><code>/// 可按照自己的需求添加，由于我没有用到 mj_footer.beginRefreshing()，
+/// 所以没有定义相关的枚举。
+enum RefreshStatus {
+    case none
+    case beingHeaderRefresh
+    case endHeaderRefresh
+    case endFooterRefresh
+    // 这个枚举由于在我项目中经常用到，所以我定一个关联值的枚举。
+    // 项目中需要：
+    //  - 数据为空的时候隐藏 `mj_footer`，否则显示；
+    //  - 然后判断没有更多数据就调用 `endRefreshingWithNoMoreData()`
+    //    否则 `endRefreshing()`
+    case footerStatus(isHidden: Bool, isNoMoreData: Bool)
+}
+</code></pre><p>无需过多纠结，后面会演示枚举如何使用。</p>
+<h2 id="BehaviorSubject"><a href="#BehaviorSubject" class="headerlink" title="BehaviorSubject"></a>BehaviorSubject</h2><p> 接下来要介绍一个跟 RxSwift 有关的一个类型 BehaviorSubject，我们会在文章用到它。</p>
+<p>  BehaviorSubject 向所有订阅者发布事件，并向新的订阅者提供最近（或最初）的值。</p>
+<p>  怎么理解？来看看代码：<br>  <br>      func addObserver(_ id: String) -&gt; Disposable {<br>        return subscribe { print(“Subscription:”, id, “Event:”, $0) }<br>    }</p>
+<pre><code>let disposeBag = DisposeBag()
+let subject = BehaviorSubject(value: &quot;🔴&quot;)
 
+subject.addObserver(&quot;1&quot;).disposed(by: disposeBag)
+subject.onNext(&quot;🐶&quot;)
+subject.onNext(&quot;🐱&quot;)
+
+subject.addObserver(&quot;2&quot;).disposed(by: disposeBag)
+subject.onNext(&quot;🅰️&quot;)
+subject.onNext(&quot;🅱️&quot;)
+
+/**
+Subscription: 1 Event: next(🔴)
+Subscription: 1 Event: next(🐶)
+Subscription: 1 Event: next(🐱)
+Subscription: 2 Event: next(🐱)
+Subscription: 1 Event: next(🅰️)
+Subscription: 2 Event: next(🅰️)
+Subscription: 1 Event: next(🅱️)
+Subscription: 2 Event: next(🅱️)
+Subscription: 1 Event: next(🍐)
+Subscription: 2 Event: next(🍐)
+Subscription: 1 Event: next(🍊)
+Subscription: 2 Event: next(🍊)
+*/
+</code></pre><p>总结一下：BehaviorSubject 从上至下接收它发出的最新（原始值也属于发出的事件元素）值。并向新的订阅者提供最新值，所以这里我们 订阅2号 会接收到前面发出的最新元素，稍后才是 订阅2号 自己发出的元素事件。</p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p> 好了，下面我们就用上面学到的所有知识来写一个自动管理刷新状态案例。<br> 假设有这样一个需求：<br>  <br>  <br>    // ViewController.swift</p>
+<pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
+// 不传参数则不创建。自动管理刷新状态。
+viewModel.refreshStatusBind(to: tableView, {
+    // 处理头部刷新。
+}) {
+    // 处理尾部刷新。
+}.disposed(by: bag)
+</code></pre><p>如何做到这一点？看到方法是从 viewModel 里面调出来的，那我们就去 viewModel 里面看一看究竟。</p>
+<pre><code>class ViewModel: Refreshable {
+
+    lazy var list = Variable&lt;[MnlDakaCommentModel]&gt;([])
+    let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
+    let reload = PublishSubject&lt;Bool&gt;()
+    let bag = DisposeBag()
+
+    init() {
+        reload.subscribe(onNext: { [weak self] (isDown) in
+            guard let `self` = self else {
+                return
+            }
+            // 发送请求
+            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
+                let list = result.value?[&quot;list&quot;].arrayObject
+                let models = decode([MnlDakaCommentModel].self, from: list) ?? []
+            }
+        }
+    }
+}
+</code></pre><p> 这里你就知道了吧？任何实现 Refreshable 必须实现 refreshStatus 属性，如果你足够眼尖应该看到，上面的 ViewModel 同样定义一个类型一样 refreshStatus 属性，为的就是实现协议中规定的属性。</p>
+<p>  好了，有个这个属性之后，我们就可以愉快的管理刷新状态了，比如想让它结束刷新，我们可以拿到 refreshStatus 属性，比如在 ViewModel 里，我们可以这样：</p>
+<pre><code>// 发送请求
+MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
+    let list = result.value?[&quot;list&quot;].arrayObject
+    let models = decode([MnlDakaCommentModel].self, from: list) ?? []
+    // 请求完成需要结束刷新：
+    // refreshStatus.onNext(.endFooterRefresh)
+    // 或者判断没有更多数据时：
+    // refreshStatus.onNext(isHidden: false, isNoMoreData: true)
+}
+</code></pre><p> 这时你肯定问了，凭什么我这样发送消息就可以管理刷新状态了？你逗我呢？之前讲 BehaviorSubject 的时候不是有讲到订阅 (subscribe) 吗？既然这里发送消息了，肯定会在接收到发出的元素的时候做了什么处理吧？</p>
+<p>  问得好！问得非常好！问得太————好了。好吧，我老实交代，就来说下接收到元素时我都做了什么？<br>  <br>      extension Refreshable {</p>
+<pre><code>    func refreshStatusBind(to scrollView: UIScrollView, _ header: (() -&gt; Void)? = nil, _ footer: (() -&gt; Void)? = nil) -&gt; Disposable {
+
+        if header != nil {
+            scrollView.mj_header = MJRefreshNormalHeader {
+                // 处理头部方法时结束尾部刷新。
+                scrollView.mj_footer?.endRefreshing()
+                header?()
+            }
+        }
+        if footer != nil {
+            scrollView.mj_footer = MJRefreshAutoNormalFooter {
+                // 处理尾部方法时结束头部刷新。
+                scrollView.mj_header?.endRefreshing()
+                footer?()
+            }
+        }
+
+        return refreshStatus.subscribe(onNext: { (status) in
+            switch status {
+            case .none:
+                // 未发生任何状态事件时隐藏尾部。
+                scrollView.mj_footer?.isHidden = true
+            case .beginHeaderRefresh:
+                scrollView.mj_header?.beginRefreshing()
+            case .endHeaderRefresh:
+                scrollView.mj_header?.endRefreshing()
+            case .endFooterRefresh:
+                scrollView.mj_footer?.endRefreshing()
+            case .endAllRefresh:
+                // 结束全部拉刷新
+                scrollView.mj_header?.endRefreshing()
+                scrollView.mj_footer?.endRefreshing()
+            case .footerStatus(let isHidden, let isNone):
+                // 根据关联值确定 footer 的状态。
+                scrollView.mj_footer?.isHidden = isHidden
+                // 处理尾部状态时，如果之前正在刷新头部，则结束刷新，
+                // 至此，我们无需写判断结束头部刷新的代码，在这里自动处理。
+                scrollView.mj_header?.endRefreshing()
+                if isNone {
+                    scrollView.mj_footer?.endRefreshingWithNoMoreData()
+                }else {
+                    scrollView.mj_footer?.endRefreshing()
+                }
+            }
+        })
+    }
+}
+</code></pre><p>给 Refreshable 加一个扩展，我们先来看方法的第一部分：创建头部和尾部刷新控件。这段代码很容易看懂，结合前面放在 ViewController.swift 里的代码：</p>
+<pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
+// 不传参数则不创建。自动管理刷新状态。
+viewModel.refreshStatusBind(to: tableView, {
+    // 处理头部刷新。
+}) {
+    // 处理尾部刷新。
+}.disposed(by: bag)
+</code></pre><p> 无非就是传闭包参数的时候创建对应的刷新控件，并把传进去的闭包作为控件的刷新事件。因为我已经把 UIScrollView 作为参数传进来了，所以可以直接拿到它创建刷新控件。</p>
+<p>  在到第二部分，这就是一个真正监听状态改变的部分了，是根据发出的消息做出改变的反应。这样，我们在 ViewModel 里发送消息，这里就能接收到并作出对应的改变。
+  </p>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><h3 id="ViewController-swift"><a href="#ViewController-swift" class="headerlink" title="ViewController.swift"></a>ViewController.swift</h3><pre><code>import UIKit
+import RxSwift
+
+class ViewController: UITableViewController {
+
+    lazy var viewModel = ViewModel()
+    let bag = DisposeBag()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        /// 创建刷新控件。
+        viewModel.refreshStatusBind(to: tableView, { [weak self] in
+            // 处理头部刷新。
+            self?.viewModel.reload.onNext(false)
+        }) { [weak self] in
+            // 处理尾部刷新。
+            self?.viewModel.reload.onNext(true)
+        }.disposed(by: bag)
+
+        // 给 viewModel 中的 reload 发送消息，让其请求数据。
+        // 参数 Bool 表示是否上拉。
+        viewModel.reload.onNext(false)
+    }
+}
+</code></pre><h3 id="ViewModel-swift"><a href="#ViewModel-swift" class="headerlink" title="ViewModel.swift"></a>ViewModel.swift</h3><pre><code>import UIKit
+import RxSwift
+
+class ViewModel: Refreshable {
+
+    lazy var list = Variable&lt;[Model]&gt;([])
+    let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
+    let reload = PublishSubject&lt;Bool&gt;()
+    let bag = DisposeBag()
+
+    init() {
+        reload.subscribe(onNext: { [weak self] (isReload) in
+
+            guard let `self` = self else {
+                return
+            }
+
+            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in
+
+                let list = result.value?[&quot;list&quot;].arrayObject
+                let models = decode([MnlDakaCommentModel].self, from: list) ?? []
+
+                self.list.value = isReload ? models : self.list.value + models
+
+                let count = result.value?[&quot;count&quot;].int ?? 0
+                // 发送刷新状态给订阅者，让其作出改变。
+                // 如果列表个数和总数相等，则判断它为没有更多数据。
+                self.refreshStatus.onNext(.footerStatus(isHidden: self.list.value.isEmpty,
+                                                        isNoMoreData: self.list.value.count == count))
+            }
+        }).disposed(by: bag)
+    }
+}
+</code></pre>
       
 
       
@@ -312,7 +468,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/20/关于内购需要注意的一些坑/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -326,18 +482,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/12/20/tabbar和nav的黑线/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          tabbar和nav的黑线
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/12/20/MVC架构实例/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">MVC架构实例</div>
+    <a href="/2019/09/26/RxDataSource 使用套路与解释/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">RxDataSource 使用套路与解释</div>
       <i class="icon-circle-right"></i>
     </a>
   

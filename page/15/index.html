@@ -152,6 +152,97 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS中的静态库与动态库" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/16/iOS中的静态库与动态库/">iOS中的静态库与动态库</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/16/iOS中的静态库与动态库/" class="archive-article-date">
+  	<time datetime="2018-09-16T14:44:12.089Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>如果我们有些功能要给别人用，但是又不想公开代码实现，比如高德地图、第三方登录分享等等，这时候我们就要打包成库了。库分静态库和动态库两种：</p>
+<p>静态库：以.a 和 .framework为文件后缀名。</p>
+<p>动态库：以.tbd(之前叫.dylib) 和 .framework 为文件后缀名。</p>
+<h2 id="静态库与动态库的区别"><a href="#静态库与动态库的区别" class="headerlink" title="静态库与动态库的区别"></a>静态库与动态库的区别</h2><p>静态库：链接时会被完整的复制到可执行文件中，被多次使用就有多份拷贝。</p>
+<p>动态库：链接时不复制，程序运行时由系统动态加载到内存，系统只加载一次，多个程序共用（如系统的UIKit.framework等），节省内存。</p>
+<p>静态库和动态库是相对编译期和运行期的：静态库在程序编译时会被链接到目标代码中，程序运行时将不再需要改静态库；而动态库在程序编译时并不会被链接到目标代码中，只是在程序运行时才被载入，因为在程序运行期间还需要动态库的存在。</p>
+<h3 id="静态库-好处："><a href="#静态库-好处：" class="headerlink" title="静态库 好处："></a>静态库 好处：</h3><p>模块化，分工合作，提高了代码的复用及核心技术的保密程度</p>
+<p>避免少量改动经常导致大量的重复编译连接</p>
+<p>也可以重用，注意不是共享使用</p>
+<p>###动态库 好处：</p>
+<p>使用动态库，可以将最终可执行文件体积缩小，将整个应用程序分模块，团队合作，进行分工，影响比较小</p>
+<p>使用动态库，多个应用程序共享内存中得同一份库文件，节省资源</p>
+<p>使用动态库，可以不重新编译连接可执行程序的前提下，更新动态库文件达到更新应用程序的目的。</p>
+<p>应用插件化</p>
+<p>软件版本实时模块升级</p>
+<p>在其它大部分平台上，动态库都可以用于不同应用间共享， 共享可执行文件，这就大大节省了内存。</p>
+<p>iOS平台 在 iOS8 之前，苹果不允许第三方框架使用动态方式加载，从 iOS8 开始允许开发者有条件地创建和使用动态框架，这种框架叫做 Cocoa Touch Framework。虽然同样是动态框架，但是和系统 framework 不同，app 中使用 Cocoa Touch Framework 制作的动态库 在打包和提交 app 时会被放到 app  main bundle 的根目录 中，运行在沙盒里，而不是系统中。也就是说，不同的 app 就算使用了同样的 framework，但还是会有多份的框架被分别签名，打包和加载。不过 iOS8 上开放了 App Extension 功能，可以为一个应用创建插件，这样主app和插件之间共享动态库还是可行的。</p>
+<p>苹果系统专属的framework 是共享的（如UIKit）, 但是我们自己使用 Cocoa Touch Framework 制作的动态库是放到 app bundle 中，运行在沙盒中的</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/16/iOS中的静态库与动态库/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-适配iPhone XR" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1057,137 +1148,6 @@ dispatch_release(semaphore);
 
 
   
-    <article id="post-UIBezierPath设置图片圆角" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/08/UIBezierPath设置图片圆角/">UIBezierPath设置图片圆角</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/08/UIBezierPath设置图片圆角/" class="archive-article-date">
-  	<time datetime="2018-09-08T15:25:13.677Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>一般我们都会通过Layer设置图片圆角，这种方法在iOS9以前可能会发生离屏渲染，</p>
-<p>比较消耗性能，比如当一个页面上有十几头像这样设置了圆角会明显感觉到卡顿。这种就是最常用的，也是最耗性能的。</p>
-<pre><code>imageView.layer.cornerRadius=20;
-imageView.layer.masksToBounds=YES;
-</code></pre><p>ios9.0之后对UIImageView的圆角设置做了优化，UIImageView这样设置圆角不会触发离屏渲染，ios9.0之前还是会触发离屏渲染。而UIButton还是都会触发离屏渲染。</p>
-<p>现在优化方案就是先把图片处理成圆角，处理后再渲染；</p>
-<pre><code>//1.先写一个切圆角的方法，方便调用
-
-- (void)setGraphicsCutRoundCornersWithView:(UIImageView *) imageview roundCornersSize:(CGFloat )cornersSize
-{
-    //开始上下文
-    UIGraphicsBeginImageContextWithOptions(imageview.bounds.size, NO, 0.0);
-    [[UIBezierPath bezierPathWithRoundedRect:imageview.bounds cornerRadius:cornersSize] addClip];
-    [imageview drawRect:imageview.bounds];
-    //当前上下文
-    imageview.image = UIGraphicsGetImageFromCurrentImageContext();
-    // 结束上下文
-    UIGraphicsEndImageContext();
-}
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
- UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
-  [imageView setImage:[UIImage imageNamed:@&quot;aaa&quot;]];
-  [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];//调用方法
-
- [self.view addSubview:imageView];
-}
-</code></pre><p>我上面的方法是加载的本地图片，如果是网络请求的，就不行了。。。我在AFNetworking里看了看不容易实现，因为他没有completed回调方法，所以我就用SD_WebImage实现了一下。</p>
-<pre><code>- (void)viewDidLoad {
-    [super viewDidLoad];
- NSString *path=@&quot;http://pic.yesky.com/uploadImages/2015/211/46/Y9QRRQ94U8C3.jpg&quot;;
-
-    UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
-
-    [imageView sd_setImageWithURL:[NSURL URLWithString:path] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-         [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];
-    }];
-
-     [self.view addSubview:imageView];
-
-}
-</code></pre><p>如果是普通视图，不包含图片，可通过如下方式处理： 把背景图设置成clearColor, layer 的背景color和要渲染的视图颜色一致，设置好角度，通过颜色差异来显示出圆角的效果； 关键是把masksToBounds设置NO,就是这个家伙消耗性能；</p>
-<pre><code>   self.view.backgroundColor = [UIColor clearColor];
-
-// Set view.layer.backgroundColor not view.backgroundColor otherwise the background is not masked to the rounded border.
-
-    self.view.layer.backgroundColor = [UIColor whiteColor].CGColor;
-
-    self.view.layer.cornerRadius = 8;
-
-// Huge change in performance by explicitly setting the below (even though default is supposedly NO)
-    self.view.layer.masksToBounds = NO;   
-
-// Performance improvement here depends on the size of your view
-
-    self.view.layer.shouldRasterize = YES; 
-    [self.view.layer setRasterizationScale:[UIScreen mainScreen].scale];
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/08/UIBezierPath设置图片圆角/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/14/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/16/">Next &raquo;</a>
@@ -1309,11 +1269,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1329,11 +1289,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1341,11 +1301,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
