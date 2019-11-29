@@ -6,22 +6,22 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>适配iPhone XR | Blog</title>
+  <title>使用RunLoop检测卡顿 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="快速适配先说结论，找设计师要2张启动图： iPhone XR：828px x 1792px iPhone XS Max: 1242px x 2688px LaunchImage中只有iPhone X/iPhone XSiPhone XR / XS Max 对老版本兼容请求 如果没有设置iPhone XR/iPhone XS Max启动图但设置了iPhone X的启动图，iPhone XR / XS">
+  <meta name="description" content="卡顿的原因 复杂UI、图文混排的绘制量过大； 在主线程做网络同步请求； 在主线程做大量的IO操作； 运算量过大，CPU持续高占用； 死锁和主子线程抢锁；  RunLoop：对于iOS开发来说，监控卡顿就是要去找到主线程上都做了那些事。我们都知道，线程的消息事件是依赖于NSRunLoop的，所以从NSRunLoop入手，就可以知道主线程上都调用了哪些方法，我们通过监听NSRunLoop的状态，就能发">
 <meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
-<meta property="og:title" content="适配iPhone XR">
-<meta property="og:url" content="http://yoursite.com/2018/09/16/适配iPhone XR/index.html">
+<meta property="og:title" content="使用RunLoop检测卡顿">
+<meta property="og:url" content="http://yoursite.com/2019/11/29/使用RunLoop检测卡顿/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="快速适配先说结论，找设计师要2张启动图： iPhone XR：828px x 1792px iPhone XS Max: 1242px x 2688px LaunchImage中只有iPhone X/iPhone XSiPhone XR / XS Max 对老版本兼容请求 如果没有设置iPhone XR/iPhone XS Max启动图但设置了iPhone X的启动图，iPhone XR / XS">
+<meta property="og:description" content="卡顿的原因 复杂UI、图文混排的绘制量过大； 在主线程做网络同步请求； 在主线程做大量的IO操作； 运算量过大，CPU持续高占用； 死锁和主子线程抢锁；  RunLoop：对于iOS开发来说，监控卡顿就是要去找到主线程上都做了那些事。我们都知道，线程的消息事件是依赖于NSRunLoop的，所以从NSRunLoop入手，就可以知道主线程上都调用了哪些方法，我们通过监听NSRunLoop的状态，就能发">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://op1uxe89i.bkt.clouddn.com/WX20180916-143326@2x.png">
-<meta property="og:updated_time" content="2018-09-16T14:02:49.253Z">
+<meta property="og:image" content="http://img.wangjungang.cn/desZ5x.jpg">
+<meta property="og:updated_time" content="2019-11-29T10:33:55.980Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="适配iPhone XR">
-<meta name="twitter:description" content="快速适配先说结论，找设计师要2张启动图： iPhone XR：828px x 1792px iPhone XS Max: 1242px x 2688px LaunchImage中只有iPhone X/iPhone XSiPhone XR / XS Max 对老版本兼容请求 如果没有设置iPhone XR/iPhone XS Max启动图但设置了iPhone X的启动图，iPhone XR / XS">
-<meta name="twitter:image" content="http://op1uxe89i.bkt.clouddn.com/WX20180916-143326@2x.png">
+<meta name="twitter:title" content="使用RunLoop检测卡顿">
+<meta name="twitter:description" content="卡顿的原因 复杂UI、图文混排的绘制量过大； 在主线程做网络同步请求； 在主线程做大量的IO操作； 运算量过大，CPU持续高占用； 死锁和主子线程抢锁；  RunLoop：对于iOS开发来说，监控卡顿就是要去找到主线程上都做了那些事。我们都知道，线程的消息事件是依赖于NSRunLoop的，所以从NSRunLoop入手，就可以知道主线程上都调用了哪些方法，我们通过监听NSRunLoop的状态，就能发">
+<meta name="twitter:image" content="http://img.wangjungang.cn/desZ5x.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -157,50 +157,163 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-适配iPhone XR" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-使用RunLoop检测卡顿" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      适配iPhone XR
+      使用RunLoop检测卡顿
     </h1>
   
 
         
-        <a href="/2018/09/16/适配iPhone XR/" class="archive-article-date">
-  	<time datetime="2018-09-16T06:24:26.639Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
+        <a href="/2019/11/29/使用RunLoop检测卡顿/" class="archive-article-date">
+  	<time datetime="2019-11-29T09:43:43.644Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="快速适配"><a href="#快速适配" class="headerlink" title="快速适配"></a>快速适配</h3><p>先说结论，找设计师要2张启动图：</p>
-<p>iPhone XR：828px x 1792px</p>
-<p>iPhone XS Max: 1242px x 2688px</p>
-<h3 id="LaunchImage中只有iPhone-X-iPhone-XS"><a href="#LaunchImage中只有iPhone-X-iPhone-XS" class="headerlink" title="LaunchImage中只有iPhone X/iPhone XS"></a>LaunchImage中只有iPhone X/iPhone XS</h3><p>iPhone XR / XS Max 对老版本兼容请求</p>
-<p>如果没有设置iPhone XR/iPhone XS Max启动图但设置了iPhone X的启动图，iPhone XR / XS Max默认会走iPhone X 的尺寸<br>375ptx812pt，会对内容近乎于等比拉伸放到iPhone XR / XS Max屏幕内，如下图：</p>
-<p><img src="http://op1uxe89i.bkt.clouddn.com/WX20180916-143326@2x.png" alt=""></p>
-<h3 id="1-代码中判断是否是iPhone-X时需要注意"><a href="#1-代码中判断是否是iPhone-X时需要注意" class="headerlink" title="1. 代码中判断是否是iPhone X时需要注意"></a>1. 代码中判断是否是iPhone X时需要注意</h3><p>如果你以前是使用设备尺寸来判断iPhone X那就需要修改了，判断iPhone X主要是因为刘海的原因可能要做些特殊处理。鉴于iPhone X/XS/XR/XS Max底部都会有安全距离，所以可以利用safeAreaInsets.bottom &gt; 0.0来判断是否是iPhone X。</p>
-<p>safeAreaInsets支持iOS11及以后。</p>
-<pre><code>static inline BOOL isIPhoneX() {
-    BOOL iPhoneX = NO;
-    if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) {
-        return iPhoneX;
-    }
-
-    if (@available(iOS 11.0, *)) {
-        UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
-        if (mainWindow.safeAreaInsets.bottom &gt; 0.0) {
-
-            iPhoneX = YES;
-        }
-    }
-
-    return iPhoneX;
+        <h2 id="卡顿的原因"><a href="#卡顿的原因" class="headerlink" title="卡顿的原因"></a>卡顿的原因</h2><ul>
+<li>复杂UI、图文混排的绘制量过大；</li>
+<li>在主线程做网络同步请求；</li>
+<li>在主线程做大量的IO操作；</li>
+<li>运算量过大，CPU持续高占用；</li>
+<li>死锁和主子线程抢锁；</li>
+</ul>
+<h2 id="RunLoop："><a href="#RunLoop：" class="headerlink" title="RunLoop："></a>RunLoop：</h2><p>对于iOS开发来说，监控卡顿就是要去找到主线程上都做了那些事。我们都知道，线程的消息事件是依赖于NSRunLoop的，所以从NSRunLoop入手，就可以知道主线程上都调用了哪些方法，我们通过监听NSRunLoop的状态，就能发现调用方法是否执行时间过长，从而判断出是否会出现卡顿。</p>
+<p>所以这里推荐的监控卡顿的方案是：通过监控RunLoop的状态来判断是否会出现卡顿。</p>
+<p>RunLoop这个对象，在iOS里是由CFRunLoop实现。简单来说，RunLoop是用来监听输入源，进行调度处理的。这里的输入源可以是输入设备、网络、周期性或者延迟时间、异步回调。RunLoop会接受两种类型的输入源：一种是来自另一个线程或者来自不同应用的异步消息；另一种是来自预定时间或者重复间隔的同步事件。</p>
+<p>RunLoop的目的是，当有事件要去处理时保持线程忙，当没有事件要处理时让线程进入休眠。所以，了解RunLoop原理不光能够运用到监控卡顿上，还可以提高用户的交互体验。通过将那些繁重而不紧急会大量占用CPU的任务(比如图片加载)，放到空闲的RunLoop模式里执行，就可以避开在UITrackingRunLoopMode这个RunLoop模式时执行。UIUITrackingRunLoopMode是用户进行滚动操作时会切换的RunLoop模式。避免在这个RunLoop模式执行繁重的CPU任务，就能避免影响用户交互操作上的体验。</p>
+<h2 id="RunLoop的原理："><a href="#RunLoop的原理：" class="headerlink" title="RunLoop的原理："></a>RunLoop的原理：</h2><h3 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h3><p>通知observers:Runloop要开始进入loop了。紧接着就进入loop。代码如下</p>
+<pre><code>//通知 observers
+if (currentMode-&gt;_observerMask &amp; kCFRunLoopEntry ) 
+    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopEntry);
+//进入 loop
+result = __CFRunLoopRun(rl, currentMode, seconds, returnAfterSourceHandled, previousMode);
+</code></pre><h3 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h3><p>开启一个do while来保活线程。通知Observers:RunLoop会触发Timer回调、Source0回调，接着执行加入block。代码如下：</p>
+<pre><code>// 通知 Observers RunLoop 会触发 Timer 回调
+if (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeTimers)
+    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeTimers);
+// 通知 Observers RunLoop 会触发 Source0 回调
+if (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeSources)
+    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeSources);
+// 执行 block
+__CFRunLoopDoBlocks(runloop, currentMode);
+</code></pre><p>接下来，触发Sourece0回调，如果有Source1是ready状态的话，就会跳转到handle_msg去处理消息。代码如下：</p>
+<pre><code>if (MACH_PORT_NULL != dispatchPort ) {
+    Boolean hasMsg = __CFRunLoopServiceMachPort(dispatchPort, &amp;msg)
+    if (hasMsg) goto handle_msg;
 }
+</code></pre><h3 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h3><p>回调触发后，通知到Observers:RunLoop的线程将进入休眠(sleep)状态，代码如下：</p>
+<pre><code>Boolean poll = sourceHandledThisLoop || (0ULL == timeout_context-&gt;termTSR);
+if (!poll &amp;&amp; (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeWaiting)) {
+    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeWaiting);
+}
+</code></pre><h3 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h3><p>进入休眠后，会等待mach_port的消息，以再次唤醒。只有在下面四个事件出现才会被再次唤醒：</p>
+<ul>
+<li>基于port的Source事件；</li>
+<li>Timer时间到；</li>
+<li>RunLoop超时；</li>
+<li>被调用者唤醒。</li>
+</ul>
+<p>等待唤醒的代码如下：</p>
+<pre><code>do {
+    __CFRunLoopServiceMachPort(waitSet, &amp;msg, sizeof(msg_buffer), &amp;livePort) {
+        // 基于 port 的 Source 事件、调用者唤醒
+        if (modeQueuePort != MACH_PORT_NULL &amp;&amp; livePort == modeQueuePort) {
+            break;
+        }
+        // Timer 时间到、RunLoop 超时
+        if (currentMode-&gt;_timerFired) {
+            break;
+        }
+} while (1);
+</code></pre><h3 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h3><p>唤醒时通知Observer:RunLoop的线程刚刚被唤醒了。代码如下：</p>
+<pre><code>if (!poll &amp;&amp; (currentMode-&gt;_observerMask &amp; kCFRunLoopAfterWaiting))
+    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopAfterWaiting);
+</code></pre><h3 id="第六步"><a href="#第六步" class="headerlink" title="第六步"></a>第六步</h3><p>RunLoop被唤醒后就要进行处理消息了：</p>
+<ul>
+<li>如果是Timer时间到的话，就触发Timer的回调；</li>
+<li>如果是dispatch的话，就执行block；</li>
+<li>如果是Source1事件的话，就处理这个事件。</li>
+</ul>
+<p>消息执行完后，就执行加到loop里的block。代码如下：</p>
+<pre><code>handle_msg:
+// 如果 Timer 时间到，就触发 Timer 回调
+if (msg-is-timer) {
+    __CFRunLoopDoTimers(runloop, currentMode, mach_absolute_time())
+} 
+// 如果 dispatch 就执行 block
+else if (msg_is_dispatch) {
+    __CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE__(msg);
+} 
+
+// Source1 事件的话，就处理这个事件
+else {
+    CFRunLoopSourceRef source1 = __CFRunLoopModeFindSourceForMachPort(runloop, currentMode, livePort);
+    sourceHandledThisLoop = __CFRunLoopDoSource1(runloop, currentMode, source1, msg);
+    if (sourceHandledThisLoop) {
+        mach_msg(reply, MACH_SEND_MSG, reply);
+    }
+}
+</code></pre><h3 id="第七步"><a href="#第七步" class="headerlink" title="第七步"></a>第七步</h3><p>根据当前RunLoop的状态来判断是否需要走下一个loop。当被外部强制停止或loop超时，就不再继续下一个loop了，否则继续走下一个loop。代码如下：</p>
+<pre><code>if (sourceHandledThisLoop &amp;&amp; stopAfterHandle) {
+     // 事件已处理完
+    retVal = kCFRunLoopRunHandledSource;
+} else if (timeout) {
+    // 超时
+    retVal = kCFRunLoopRunTimedOut;
+} else if (__CFRunLoopIsStopped(runloop)) {
+    // 外部调用者强制停止
+    retVal = kCFRunLoopRunStopped;
+} else if (__CFRunLoopModeIsEmpty(runloop, currentMode)) {
+    // mode 为空，RunLoop 结束
+    retVal = kCFRunLoopRunFinished;
+}
+</code></pre><p>整个RunLoop的过程，可以总结为如下所示的一张图片。</p>
+<p><img src="http://img.wangjungang.cn/desZ5x.jpg" alt=""></p>
+<h2 id="RunLoop的六个状态"><a href="#RunLoop的六个状态" class="headerlink" title="RunLoop的六个状态"></a>RunLoop的六个状态</h2><pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
+    kCFRunLoopEntry , // 进入 loop
+    kCFRunLoopBeforeTimers , // 触发 Timer 回调
+    kCFRunLoopBeforeSources , // 触发 Source0 回调
+    kCFRunLoopBeforeWaiting , // 等待 mach_port 消息
+    kCFRunLoopAfterWaiting ), // 接收 mach_port 消息
+    kCFRunLoopExit , // 退出 loop
+    kCFRunLoopAllActivities  // loop 所有状态改变
+}
+</code></pre><p>如果RunLoop的线程，进入睡眠前方法的执行时间过长而导致无法进入睡眠，或者线程唤醒后接受消息时间过长而无法进入下一步的话，就可以认为是线程受阻了。如果这个线程是主线程的话，表现就是出现卡顿。</p>
+<p>所以，如果我们要利用RunLoop原理来监控卡顿的话，就要关注这两个阶段。RunLoop在进入睡眠之前和唤醒后的两个loop状态定义的值，分别是kCFRunLoopBeforeSource和kCFRunLoopAfterWaiting，也就是要触发Source0回调和接受mac_port消息两个状态。</p>
+<h2 id="如何检查卡顿？"><a href="#如何检查卡顿？" class="headerlink" title="如何检查卡顿？"></a>如何检查卡顿？</h2><p>首先需要创建一个CFRunLoopObserverContext观察者，代码如下:</p>
+<pre><code>CFRunLoopObserverContext context = {0,(__bridge void*)self,NULL,NULL};
+runLoopObserver = CFRunLoopObserverCreate(kCFAllocatorDefault,kCFRunLoopAllActivities,YES,0,&amp;runLoopObserverCallBack,&amp;context);
+</code></pre><p>将创建好的观察者runLoopObserver添加到主线程RunLoop的common模式下观察，然后，创建一个持续的子线程专门用来监控主线程的RunLoop状态。</p>
+<p>一旦发现进入睡眠前的kCFRunLoopBeforeSources状态，或者唤醒后的状态kCFRunLoopAfterWaiting，在设置的时间阈值内一直没有变化，即可认定为卡顿。</p>
+<p>开启子线程监控的代码如下：</p>
+<pre><code>//创建子线程监控
+dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    //子线程开启一个持续的 loop 用来进行监控
+    while (YES) {
+        //semaphoreWait 信号等待的时间
+        long semaphoreWait = dispatch_semaphore_wait(dispatchSemaphore, dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC));
+        if (semaphoreWait != 0) {
+            if (!runLoopObserver) {
+                timeoutCount = 0;
+                dispatchSemaphore = 0;
+                runLoopActivity = 0;
+                return;
+            }
+            //BeforeSources 和 AfterWaiting 这两个状态能够检测到是否卡顿
+            if (runLoopActivity == kCFRunLoopBeforeSources || runLoopActivity == kCFRunLoopAfterWaiting) {
+                //将堆栈信息上报服务器的代码放到这里
+            } //end activity
+        }// end semaphore wait
+        timeoutCount = 0;
+    }// end while
+});
 </code></pre>
       
 
@@ -291,7 +404,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/16/适配iPhone XR/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/11/29/使用RunLoop检测卡顿/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -305,18 +418,9 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/09/16/iOS中的静态库与动态库/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          iOS中的静态库与动态库
-        
-      </div>
-    </a>
   
-  
-    <a href="/2018/09/14/iOS分类(category),类扩展(extension)/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">iOS分类(category),类扩展(extension)</div>
+    <a href="/2019/11/29/iOS之runloop优化tableView的实现/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">iOS之runloop优化tableView的实现</div>
       <i class="icon-circle-right"></i>
     </a>
   
