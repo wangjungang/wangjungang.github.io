@@ -152,6 +152,245 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-UIImage图片性能优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/17/UIImage图片性能优化/">UIImage图片性能优化</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/17/UIImage图片性能优化/" class="archive-article-date">
+  	<time datetime="2018-12-17T03:24:37.183Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当你用 UIImage 或 CGImageSource 的那几个方法创建图片时，图片数据并不会立刻解码。图片设置到 UIImageView 或者 CALayer.contents 中去，并且 CALayer 被提交到 GPU 前，CGImage 中的数据才会得到解码。这一步是发生在主线程的，并且不可避免。如果想要绕开这个机制，常见的做法是在后台线程先把图片绘制到 CGBitmapContext 中，然后从 Bitmap 直接创建图片。目前常见的网络图片库都自带这个功能。</p>
+<p>这就是说图片解码需要消耗比较多的时间，在即将显示前，图片才会得到解码显示。</p>
+<h2 id="图片解码产生的性能问题"><a href="#图片解码产生的性能问题" class="headerlink" title="图片解码产生的性能问题"></a>图片解码产生的性能问题</h2><p>下面我试试图片解码到底有多卡，我拿了10张超过1MB的图片进行测试。</p>
+<p>代码很简单，就是一个tableView，在cell里面显示图片。</p>
+<pre><code>- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;cell&quot;];
+    if(!cell)
+    {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@&quot;cell&quot;];
+
+        UIImageView *headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 6, 80, 100-12)];
+        headImageView.tag = 10;
+        [cell.contentView addSubview:headImageView];
+    }
+
+    NSString *fileName = [NSString stringWithFormat:@&quot;Start%zi&quot;,indexPath.row%12];
+    @autoreleasepool{
+        UIImage *image = [UIImage imageNamed:fileName];
+        UIImageView *imageView = [cell.contentView viewWithTag:10];
+        imageView.image = image;
+    }
+    return cell;
+}
+</code></pre><p>1、通过imageNamed加载图</p>
+<pre><code>@autoreleasepool{
+        UIImage *image = [UIImage imageNamed:fileName];
+        UIImageView *imageView = [cell.contentView viewWithTag:10];
+        imageView.image = image;
+    }
+</code></pre><p>2、通过imageWithContentsOfFile加载图片</p>
+<pre><code>@autoreleasepool{
+//        UIImage *image = [UIImage imageNamed:fileName];
+        NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@&quot;png&quot;];
+        UIImage *image = [UIImage imageWithContentsOfFile:path];
+        UIImageView *imageView = [cell.contentView viewWithTag:10];
+        imageView.image = image;
+    }
+</code></pre><p>两种加载方式，一开始都是比较卡，好像imageNamed方式有缓存，后面再滑动tableView不卡了，因为缓存了解码后的图片。但imageWithContentsOfFile这种方式，一直都是卡顿，证明没有缓存，每次显示都进行了一次解码。</p>
+<p>给imageView.image赋值时候，才会发生图片解码，如果不执行这代码，发现没产生什么卡顿，证明imageNamed等的图片加载方法耗时不多，主要的耗时操作是在解码阶段。</p>
+<h2 id="二、图片解码的性能优化"><a href="#二、图片解码的性能优化" class="headerlink" title="二、图片解码的性能优化"></a>二、图片解码的性能优化</h2><p>对图片解码的性能优化，可以考虑把图片解码操作放到子线程执行。然后再把解码后的图片赋值给imageView.image，如果发现图片已经是解码过的，就不会再发生解码操作，就可以达到优化效果。</p>
+<p>SDWebImage的实现思路就是这样，从网络获取图片后，进行了一次解码操作，再缓存到内存和磁盘，以供显示</p>
+<p>SDWebImageDecoder的解码方法decodedImageWithImage，里面代码也不难，有兴趣可以详细看看，当然，网上也有一大堆源码分析。<br>下面，我就要用这方法优化上面的代码：</p>
+<pre><code>- (void)queryImageCache:(NSString *)filename block:(void(^)(UIImage *image))block
+{
+    //从内存去取，如果没取到，就直接读取文件，在缓存起来
+    UIImage *image = [self.memCache objectForKey:filename];
+    if(image)
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(block)
+                block(image);
+        });
+    }
+    else
+    {
+        dispatch_async(_ioQueue, ^{
+
+            @autoreleasepool{
+                NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:@&quot;png&quot;];
+                UIImage *image = [UIImage imageWithContentsOfFile:path];
+                //把解压操作放到子线程
+                image = [UIImage decodedImageWithImage:image];
+                [self.memCache setObject:image forKey:filename];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if(block)
+                        block(image);
+                });
+            }
+        });
+    }
+}
+</code></pre><p>我把解码操作放到了子线程，解码完成后就缓存到内存，以供下次直接使用，执行如下：</p>
+<pre><code>[self queryImageCache:fileName block:^(UIImage *image) {
+        UIImageView *imageView = [cell.contentView viewWithTag:10];
+        imageView.image = image;
+    }];
+ return cell;
+</code></pre><p>不会出现卡顿现象，而且占用的内存比直接使用imageNamed少。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/17/UIImage图片性能优化/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-imagewithnamed渲染优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/16/imagewithnamed渲染优化/">imagewithnamed渲染优化</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/16/imagewithnamed渲染优化/" class="archive-article-date">
+  	<time datetime="2018-12-16T12:04:07.793Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>参考SDWebImage的图片编解码的思路，SD在拿到图片data的时候并没有将它直接转为image对象，而是在子线程里面做了一个解码的操作，这样已经被解码的图片就赋值给imageView的时候就不会再进行解码，也就不会妨碍主线程了。</p>
+<pre><code>- (void)decodedImageWithImageName:(NSString *)imageName block:(void(^)(UIImage *image))block {
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        @autoreleasepool{
+            UIImage *image = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+            image = [UIImage decodedImageWithImage:image];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                if(block)
+                block(image);
+            });
+        }
+    });
+}
+</code></pre><p>代码实现很简单，就是将图片的操作放入到一个全局队列中，当然也可以自己创建一个队列去执行这个异步操作。decodedImageWithImage:为SD的代码，需要#import “SDWebImageDecoder.h”，具体实现网上对这一块的源码解释的比较多，很容易理解。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/16/imagewithnamed渲染优化/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-轮子阅读之SDAutoLayout" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -3134,311 +3373,6 @@ while (1) {
 
 
   
-    <article id="post-Swift命名空间" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/14/Swift命名空间/">Swift命名空间</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/14/Swift命名空间/" class="archive-article-date">
-  	<time datetime="2018-12-14T06:17:52.561Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>命名空间namespace在C++、C#里面是一个常见概念，Swift中也引入了这样一个机制，下面来探索一下这个命名空间的来龙去脉。</p>
-<p>Objective-C没有命名空间，为了避免冲突，Objective-C的类型一般都会加上两到三个字母的前缀，比如Apple保留的NS和UI前缀，各个系统框架的前缀，各个系统框架的前缀SK（StoreKit），CG（CoreGraphic）等。</p>
-<p>Swift的命名空间是基于module而不是在代码中显示地指明，每个module代表了Swift中的一个命名空间。也就是说，同一个target里的类型名称还是不能相同的。</p>
-<h2 id="为什么需要命名空间"><a href="#为什么需要命名空间" class="headerlink" title="为什么需要命名空间"></a>为什么需要命名空间</h2><p>为了防止代码冲突</p>
-<p>在开发中，尤其是在多模块开发中，很难保证模块之间的类名不会重复，为了保证不同模块下同名的类可以正常使用而不报错，引入命名空间来保证即使创建的类名一样，只要命名空间不一样，这些类也是不一样的，所以，这是一种安全机制，用命名空间来防止冲突。可以看出，Swift中的类名的完整形式其实是“命名空间+类名”。我们可以尝试在类中打印当前类来查看一下完整名字：</p>
-<pre><code>override func viewDidLoad() {
-    super.viewDidLoad()
-    print(self)
-}
-//打印结果是：&lt;aa.viewcontroller: 0x7fec6a00e5c0&gt;&lt;/aa.viewcontroller: 0x7fec6a00e5c0&gt;
-</code></pre><h2 id="命名空间查看与修改"><a href="#命名空间查看与修改" class="headerlink" title="命名空间查看与修改"></a>命名空间查看与修改</h2><p>从上面的打印结果来看，命名空间是我们项目的名字，那么如果查看呢？我们需要用源代码的形式打开Info.plist，可以看到里面有一个字段CFBundleExecutable，它对应的值就是命名空间。</p>
-<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688598233397.png" alt=""></p>
-<p>如果要修改命名空间，注意不要直接编辑Info.plist，可以进入Build Settings中搜索Product Name，然后进行修改。</p>
-<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688648110559.png" alt=""></p>
-<h2 id="命名空间如何获取"><a href="#命名空间如何获取" class="headerlink" title="命名空间如何获取"></a>命名空间如何获取</h2><p>既然知道可以通过Info.plist获取命名空间，那么如何在程序中获取呢？很显然需要解析Info.plist文件，拿到CFBundleExecutable对应的value值。</p>
-<pre><code>let namespace = Bundle.main.infoDictionary![&quot;CFBundleExecutable&quot;]
-// 返回的是一个可选型      
-print(namespace!)
-</code></pre><h2 id="命名空间在开发中的使用"><a href="#命名空间在开发中的使用" class="headerlink" title="命名空间在开发中的使用"></a>命名空间在开发中的使用</h2><ul>
-<li><p>由于Objective-C中没有命名空间，所以写起来很轻松。</p>
-<pre><code>//viewDidLoad中添加一个个控制器
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self addNavigationChildVC:@&quot;ContactViewController&quot; :@&quot;联系人&quot; :@&quot;tabbar_contacts&quot; :@&quot;tabbar_contactsHL&quot;];
-}
-
-//自定的方法中根据传进来的字符串创建控制器
--(void)addNavigationChildVC: (NSString *) vcName :(NSString *)title :(NSString *)nomalImageName :(NSString *)selectedImageName {
-    //创建控制器
-    Class class = NSClassFromString(vcName);
-    UIViewController *vc = [[class alloc]init];
-    ...
-}
-</code></pre></li>
-<li><p>Swift中命名空间的存在，如果按照上述做法得不到想要的结果，这时候就需要想办法进行处理</p>
-<pre><code>//viewDidLoad中添加一个个控制器
-override func viewDidLoad() {
-    super.viewDidLoad()
-    addChildViewController(vcName: &quot;ContactsViewController&quot;, title: &quot;联系人&quot;, image: &quot;tabbar_contacts&quot;, selectedImage: &quot;tabbar_contactsHL&quot;)
-}
-
-//创建一个函数来将控制器的名字转成具体的类
-func stringToVC(vcName:String) -&gt; UIViewController? {
-    //获取命名空间
-    guard let namespace = Bundle.main.infoDictionary![&quot;CFBundleExecutable&quot;] as? String else {
-        print(&quot;获取失败&quot;)
-        return nil
-    }        
-    //拼接完整的类
-    guard let vcClass = NSClassFromString(namespace + &quot;.&quot; + vcName) else {
-        print(&quot;拼接失败&quot;)
-        return nil
-    }   
-    //转换成UIViewController
-    guard let vcType = vcClass as? UIViewController.Type else {
-        print(&quot;转换失败&quot;)
-        return nil
-    }  
-    //根据类型创建对应的控制器
-    let vc = vcType.init()
-    return vc
-}
-</code></pre></li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/14/Swift命名空间/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-什么是RESTful API" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/13/什么是RESTful API/">什么是RESTful API</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/13/什么是RESTful API/" class="archive-article-date">
-  	<time datetime="2018-12-13T09:07:52.264Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>REST，即Representational State Transfer的缩写。直接翻译的意思是”表现层状态转化”。</p>
-<p>它是一种互联网应用程序的API设计理念：URL定位资源，用HTTP动词（GET,POST,DELETE,DETC）描述操作。</p>
-<p>近年来移动互联网的发展，前端设备层出不穷（手机、平板、桌面电脑、其他专用设备……），因此，必须有一种统一的机制，方便不同的前端设备与后端进行通信,于是RESTful诞生了，它可以通过一套统一的接口为 Web，iOS和Android提供服务。</p>
-<h3 id="URI"><a href="#URI" class="headerlink" title="URI"></a>URI</h3><p>即统一资源标识符，服务器上每一种资源，比如文档、图像、视频片段、程序 都由一个通用资源标识符（Uniform Resource Identifier, 简称”URI”）进行定位。</p>
-<h3 id="HTTP动词"><a href="#HTTP动词" class="headerlink" title="HTTP动词"></a>HTTP动词</h3><p>常用的HTTP动词有下面五个</p>
-<ul>
-<li>GET（SELECT）：从服务器取出资源（一项或多项）。</li>
-<li>POST（CREATE）：在服务器新建一个资源。</li>
-<li>PUT（UPDATE）：在服务器更新资源（客户端提供改变后的完整资源）。</li>
-<li>PATCH（UPDATE）：在服务器更新资源（客户端提供改变的属性）。</li>
-<li>DELETE（DELETE）：从服务器删除资源。</li>
-</ul>
-<h3 id="RESTful架构"><a href="#RESTful架构" class="headerlink" title="RESTful架构"></a>RESTful架构</h3><p>服务器上每一种资源，比如一个文件，一张图片，一部电影，都有对应的url地址，如果我们的客户端需要对服务器上的这个资源进行操作，就需要通过http协议执行相应的动作来操作它，比如进行获取，更新，删除。</p>
-<p>简单来说就是url地址中只包含名词表示资源，使用http动词表示动作进行操作资源</p>
-<p>举个例子：左边是错误的设计，而右边是正确的</p>
-<pre><code>GET /blog/getArticles --&gt; GET /blog/Articles  获取所有文章
-GET /blog/addArticles --&gt; POST /blog/Articles  添加一篇文章
-GET /blog/editArticles --&gt; PUT /blog/Articles  修改一篇文章 
-GET /rest/api/deleteArticles?id=1 --&gt; DELETE /blog/Articles/1  删除一篇文章
-</code></pre><h3 id="统一资源接口"><a href="#统一资源接口" class="headerlink" title="统一资源接口"></a>统一资源接口</h3><p>RESTful架构应该遵循统一接口原则，统一接口包含了一组受限的预定义的操作，不论什么样的资源，都是通过使用相同的接口进行资源的访问。接口应该使用标准的HTTP方法如GET，PUT和POST，并遵循这些方法的语义。</p>
-<p>如果按照HTTP方法的语义来暴露资源，那么接口将会拥有安全性和幂等性的特性，例如GET和HEAD请求都是安全的， 无论请求多少次，都不会改变服务器状态。而GET、HEAD、PUT和DELETE请求都是幂等的，无论对资源操作多少次， 结果总是一样的，后面的请求并不会产生比第一次更多的影响。</p>
-<p>下面列出了GET，DELETE，PUT和POST的典型用法:</p>
-<h4 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h4><ul>
-<li>安全且幂等</li>
-<li>获取表示</li>
-<li>变更时获取表示（缓存）</li>
-<li>200（OK） - 表示已在响应中发出</li>
-<li>204（无内容） - 资源有空表示</li>
-<li>301（Moved Permanently） - 资源的URI已被更新</li>
-<li>303（See Other） - 其他（如，负载均衡）</li>
-<li>304（not modified）- 资源未更改（缓存）</li>
-<li>400 （bad request）- 指代坏请求（如，参数错误）</li>
-<li>404 （not found）- 资源不存在</li>
-<li>406 （not acceptable）- 服务端不支持所需表示</li>
-<li>500 （internal server error）- 通用错误响应</li>
-<li>503 （Service Unavailable）- 服务端当前无法处理请求</li>
-</ul>
-<h4 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h4><ul>
-<li>不安全且不幂等</li>
-<li>使用服务端管理的（自动产生）的实例号创建资源</li>
-<li>创建子资源</li>
-<li>部分更新资源</li>
-<li>如果没有被修改，则不过更新资源（乐观锁）</li>
-<li>200（OK）- 如果现有资源已被更改</li>
-<li>201（created）- 如果新资源被创建</li>
-<li>202（accepted）- 已接受处理请求但尚未完成（异步处理）</li>
-<li>301（Moved Permanently）- 资源的URI被更新</li>
-<li>303（See Other）- 其他（如，负载均衡）</li>
-<li>400（bad request）- 指代坏请求</li>
-<li>404 （not found）- 资源不存在</li>
-<li>406 （not acceptable）- 服务端不支持所需表示</li>
-<li>409 （conflict）- 通用冲突</li>
-<li>412 （Precondition Failed）- 前置条件失败（如执行条件更新时的冲突）</li>
-<li>415 （unsupported media type）- 接受到的表示不受支持</li>
-<li>500 （internal server error）- 通用错误响应</li>
-<li>503 （Service Unavailable）- 服务当前无法处理请求</li>
-</ul>
-<h4 id="PUT"><a href="#PUT" class="headerlink" title="PUT"></a>PUT</h4><ul>
-<li>不安全但幂等</li>
-<li>用客户端管理的实例号创建一个资源</li>
-<li>通过替换的方式更新资源</li>
-<li>如果未被修改，则更新资源（乐观锁）</li>
-<li>200 （OK）- 如果已存在资源被更改</li>
-<li>201 （created）- 如果新资源被创建</li>
-<li>301（Moved Permanently）- 资源的URI已更改</li>
-<li>303 （See Other）- 其他（如，负载均衡）</li>
-<li>400 （bad request）- 指代坏请求</li>
-<li>404 （not found）- 资源不存在</li>
-<li>406 （not acceptable）- 服务端不支持所需表示</li>
-<li>409 （conflict）- 通用冲突</li>
-<li>412 （Precondition Failed）- 前置条件失败（如执行条件更新时的冲突）</li>
-<li>415 （unsupported media type）- 接受到的表示不受支持</li>
-<li>500 （internal server error）- 通用错误响应</li>
-<li>503 （Service Unavailable）- 服务当前无法处理请求</li>
-</ul>
-<h4 id="DELETE"><a href="#DELETE" class="headerlink" title="DELETE"></a>DELETE</h4><ul>
-<li>不安全但幂等</li>
-<li>删除资源</li>
-<li>200 （OK）- 资源已被删除</li>
-<li>301 （Moved Permanently）- 资源的URI已更改</li>
-<li>303 （See Other）- 其他，如负载均衡</li>
-<li>400 （bad request）- 指代坏请求</li>
-<li>404 （not found）- 资源不存在</li>
-<li>409 （conflict）- 通用冲突</li>
-<li>500 （internal server error）- 通用错误响应</li>
-<li>503 （Service Unavailable）- 服务端当前无法处理请求</li>
-</ul>
-<h3 id="POST和PUT用于创建资源时有什么区别"><a href="#POST和PUT用于创建资源时有什么区别" class="headerlink" title="POST和PUT用于创建资源时有什么区别?"></a>POST和PUT用于创建资源时有什么区别?</h3><p>POST和PUT在创建资源的区别在于，所创建的资源的名称(URI)是否由客户端决定。 例如为我的博文增加一个java的分类，生成的路径就是分类名/categories/java，那么就可以采用PUT方法。不过很多人直接把POST、GET、PUT、DELETE直接对应上CRUD，例如在一个典型的rails实现的RESTful应用中就是这么做的。</p>
-<p>我认为，这是因为rails默认使用服务端生成的ID作为URI的缘故，而不少人就是通过rails实践REST的，所以很容易造成这种误解。</p>
-<h3 id="客户端不一定都支持这些HTTP方法吧"><a href="#客户端不一定都支持这些HTTP方法吧" class="headerlink" title="客户端不一定都支持这些HTTP方法吧?"></a>客户端不一定都支持这些HTTP方法吧?</h3><p>的确有这种情况，特别是一些比较古老的基于浏览器的客户端，只能支持GET和POST两种方法。</p>
-<p>在实践上，客户端和服务端都可能需要做一些妥协。例如rails框架就支持通过隐藏参数_method=DELETE来传递真实的请求方法， 而像Backbone这样的客户端MVC框架则允许传递_method传输和设置X-HTTP-Method-Override头来规避这个问题。</p>
-<h3 id="统一接口是否意味着不能扩展带特殊语义的方法"><a href="#统一接口是否意味着不能扩展带特殊语义的方法" class="headerlink" title="统一接口是否意味着不能扩展带特殊语义的方法?"></a>统一接口是否意味着不能扩展带特殊语义的方法?</h3><p>统一接口并不阻止你扩展方法，只要方法对资源的操作有着具体的、可识别的语义即可，并能够保持整个接口的统一性。</p>
-<p>像WebDAV就对HTTP方法进行了扩展，增加了LOCK、UPLOCK等方法。而github的API则支持使用PATCH方法来进行issue的更新，例如:</p>
-<pre><code>PATCH /repos/:owner/:repo/issues/:number
-</code></pre><p>不过，需要注意的是，像PATCH这种不是HTTP标准方法的，服务端需要考虑客户端是否能够支持的问题。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/13/什么是RESTful API/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/9/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/11/">Next &raquo;</a>
@@ -3560,11 +3494,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
