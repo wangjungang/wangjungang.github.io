@@ -152,6 +152,366 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-多线程之线程安全" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/20/多线程之线程安全/">多线程之线程安全</a>
+    </h1>
+  
+
+        
+        <a href="/2019/04/20/多线程之线程安全/" class="archive-article-date">
+  	<time datetime="2019-04-20T13:44:11.468Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在单线程的情形下，任务依次串行执行是不存在线程安全问题的。在单线程的情形下，如果多线程都是访问共享资源而不去修改共享资源也可以保证线程安全，比如：设置只读属性的全局变量。线程不安全是由于多线程访问造成的，是由于多线程访问和修改共享资源而引起不可预测的结果。而线程锁可以有效的解决线程安全问题</p>
+<p>iOS 多线程开发中为保证线程安全而常用的几种锁：NSLock、dispatch_semaphore、NSCondition、NSRecursiveLock、NSConditionLock、@synchronized，这几种锁各有优点，适用于不同的场景，下面我们就来依次介绍一下。</p>
+<h2 id="iOS中的锁"><a href="#iOS中的锁" class="headerlink" title="iOS中的锁"></a>iOS中的锁</h2><h3 id="NSLock"><a href="#NSLock" class="headerlink" title="NSLock"></a>NSLock</h3><p>NSLock 是OC层封装底层线程操作来实现的一种锁，继承NSLocking协议，在此我们不讨论各种锁的实现细节，因为基本用不到。NSLock使用非常简单：</p>
+<pre><code>NSLock *lock = [NSLock alloc] init];
+
+// 加锁
+[lock lock];
+
+/*
+* 被加锁的代码区间
+*/
+
+// 解锁
+[lock Unlock];
+</code></pre><p>我们以车站购票为例子，多个窗口同时售票，每个窗口有人循环购票:</p>
+<pre><code>// 定义NSLock变量
+@property (nonatomic, strong) NSLock *lock;
+// 实例化
+_lock = [[NSLock alloc] init];
+
+/*******************************************************************************/
+
+// 调用测试方法
+dispatch_queue_t queue = dispatch_queue_create(&quot;QiMultiThreadSafeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);
+
+    for (NSInteger i=0; i&lt;10; i++) {
+        dispatch_async(queue, ^{
+            [self testNSLock];
+        });
+    }
+}
+
+/*******************************************************************************/
+
+// 测试方法
+- (void)testNSLock {
+
+    while (1) {
+        [_lock lock];
+        if (_ticketCount &gt; 0) {
+            _ticketCount --;
+            NSLog(@&quot;---&gt;&gt; %@已购票1张，剩余%ld张&quot;, [NSThread currentThread], (long)_ticketCount);
+        }
+        else {
+            [_lock unlock];
+            return;
+        }
+        [_lock unlock];
+        sleep(0.2);
+    }
+}
+</code></pre><h3 id="dispatch-semaphore"><a href="#dispatch-semaphore" class="headerlink" title="dispatch_semaphore"></a>dispatch_semaphore</h3><p>dispatch_semaphore 是 GCD 提供的，使用信号量来控制并发线程的数量（可同时进入并执行加锁代码块的线程的数量），相关的三个函数：</p>
+<pre><code>// 创建信号量
+dispatch_semaphore_create(long value); 
+
+//等待信号
+dispatch_semaphore_wait(dispatch_semaphore_t dsema, dispatch_time_t timeout);
+
+发送信号
+dispatch_semaphore_signal(dispatch_semaphore_t dsema);
+
+//! 定义信号量semaphore
+@property (nonatomic, strong) dispatch_semaphore_t semaphore;
+//! 实例化
+_semaphore = dispatch_semaphore_create(1);
+
+/*******************************************************************************/
+
+// 调用测试方法
+- (void)multiThread {
+
+dispatch_queue_t queue = dispatch_queue_create(&quot;QiMultiThreadSafeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);
+for (NSInteger i=0; i&lt;2; i++) {
+    dispatch_async(queue, ^{
+        [self testDispatchSemaphore:i];
+    });
+}
+}
+
+/*******************************************************************************/
+
+// 测试方法
+- (void)testDispatchSemaphore:(NSInteger)num {
+
+while (1) {
+    // 参数1为信号量；参数2为超时时间；ret为返回值
+    //dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+    long ret = dispatch_semaphore_wait(_semaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.21*NSEC_PER_SEC)));
+    if (ret == 0) {
+        if (_ticketCount &gt; 0) {
+            NSLog(@&quot;%d 窗口 卖了第%d张票&quot;, (int)num, (int)_ticketCount);
+            _ticketCount --;
+        }
+        else {
+            dispatch_semaphore_signal(_semaphore);
+            NSLog(@&quot;%d 卖光了&quot;, (int)num);
+            break;
+        }
+        [NSThread sleepForTimeInterval:0.2];
+        dispatch_semaphore_signal(_semaphore);
+    }
+    else {
+        NSLog(@&quot;%d %@&quot;, (int)num, @&quot;超时了&quot;);
+    }
+
+    [NSThread sleepForTimeInterval:0.2];
+}
+}
+</code></pre><p>当第一各参数semaphore取值为1时，dispatch_semaphore_wait(semaphore, timeout)与dispatch_semaphore_signal(signal)成对出现，所达到的效果就跟NSLock中的lock和unlock是一样的。区别在于当semaphore取值为n时，则可以有n个线程同时访问被保护的临界区，即可以控制多个线程并发。第二个参数为dispatch_time_t类型，如果直接输入一个非dispatch_time_t的值会导致dispatch_semaphore_wait方法偶尔返回非0值。</p>
+<h3 id="NSCondition"><a href="#NSCondition" class="headerlink" title="NSCondition"></a>NSCondition</h3><p>NSCondition 常用于生产者-消费者模式，它继承于NSLocking协议，同样有lock和unlock方法。条件变量有点像信号量，提供了线程阻塞与信号机制，因此可以用来阻塞某个线程，并等待数据就绪，再唤醒线程。</p>
+<pre><code>NSCondition *lock = [[NSCondition alloc] init];
+
+//线程A
+[lock lock];
+
+[lock wait]; // 线程被挂起
+
+[lock unlock];
+
+//线程2
+sleep(1);//以保证让线程2的代码后执行
+
+[lock lock];
+
+[lock signal]; // 唤醒线程1
+
+[lock unlock];
+</code></pre><p>我们执行了两次for循环，起了两批新线程，一批来add数据，另一批来remove数据。其中add数据方法加锁，remove数据方法也加了锁：</p>
+<pre><code>// 定义变量
+@property (nonatomic, strong) NSCondition *condition;
+// 实例化
+_condition = [[NSCondition alloc] init];
+
+/*******************************************************************************/
+
+// 调用测试方法
+- (void)multiThread {
+
+    dispatch_queue_t queue = dispatch_queue_create(&quot;QiMultiThreadSafeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);
+
+    for (NSInteger i=0; i&lt;10; i++) {
+        dispatch_async(queue, ^{
+            [self testNSConditionAdd];
+        });
+    }
+
+    for (NSInteger i=0; i&lt;10; i++) {
+        dispatch_async(queue, ^{
+            [self testNSConditionRemove];
+        });
+    }
+}
+
+/*******************************************************************************/
+
+// 测试方法
+- (void)testNSConditionAdd {
+
+    [_condition lock];
+
+    // 生产数据
+    NSObject *object = [NSObject new];
+    [_ticketsArr addObject:object];
+    NSLog(@&quot;---&gt;&gt;%@ add&quot;, [NSThread currentThread]);
+    [_condition signal];
+
+    [_condition unlock];
+}
+
+- (void)testNSConditionRemove {
+
+    [_condition lock];
+
+    // 消费数据
+    if (!_ticketsArr.count) {
+        NSLog(@&quot;---&gt;&gt; wait&quot;);
+        [_condition wait];
+    }
+    [_ticketsArr removeObjectAtIndex:0];
+    NSLog(@&quot;---&gt;&gt;%@ remove&quot;, [NSThread currentThread]);
+
+    [_condition unlock];
+}
+</code></pre><h3 id="NSConditionLock"><a href="#NSConditionLock" class="headerlink" title="NSConditionLock"></a>NSConditionLock</h3><p>NSConditionLock 为条件锁，lockWhenCondition:方法是当condition参数与初始化时候的 condition 相等时才可加锁。而unlockWithCondition:方法并不是当 Condition 符合条件时才解锁，而是解锁之后，修改 Condition 的值。NSConditionLock 借助 NSCondition 来实现，它的本质就是一个生产者-消费者模型。“条件被满足”可以理解为生产者提供了新的内容NSConditionLock 的内部持有一个 NSCondition 对象，以及 _condition_value 属性，在初始化时就会对这个属性进行赋值:</p>
+<pre><code>// 设置条件
+#define CONDITION_NO_DATA   100
+#define CONDITION_HAS_DATA  101
+
+/*******************************************************************************/
+
+// 初始化条件锁对象
+@property (nonatomic, strong) NSConditionLock *conditionLock;
+// 实例化
+_conditionLock = [[NSConditionLock alloc] initWithCondition:CONDITION_NO_DATA];
+
+/*******************************************************************************/
+
+// 调用测试方法
+- (void)multiThread {
+
+    dispatch_queue_t queue = dispatch_queue_create(&quot;QiMultiThreadSafeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);
+
+    for (NSInteger i=0; i&lt;10; i++) {
+        dispatch_async(queue, ^{
+            [self testNSConditionLockAdd];
+        });
+    }
+
+    for (NSInteger i=0; i&lt;10; i++) {
+        dispatch_async(queue, ^{
+            [self testNSConditionLockRemove];
+        });
+    }
+}
+
+/*******************************************************************************/
+
+// 测试方法
+- (void)testNSConditionLockAdd {
+
+    // 满足CONDITION_NO_DATA时，加锁
+    [_conditionLock lockWhenCondition:CONDITION_NO_DATA];
+
+    // 生产数据
+    NSObject *object = [NSObject new];
+    [_ticketsArr addObject:object];
+    NSLog(@&quot;----&gt;&gt;%@ add&quot;, [NSThread currentThread]);
+    [_condition signal];
+
+    // 有数据，解锁并设置条件
+    [_conditionLock unlockWithCondition:CONDITION_HAS_DATA];
+}
+
+- (void)testNSConditionLockRemove {
+
+    // 有数据时，加锁
+    [_conditionLock lockWhenCondition:CONDITION_HAS_DATA];
+
+    // 消费数据
+    if (!_ticketsArr.count) {
+        NSLog(@&quot;----&gt;&gt; wait&quot;);
+        [_condition wait];
+    }
+    [_ticketsArr removeObjectAtIndex:0];
+    NSLog(@&quot;----&gt;&gt;%@ remove&quot;, [NSThread currentThread]);
+
+    //3. 没有数据，解锁并设置条件
+    [_conditionLock unlockWithCondition:CONDITION_NO_DATA];
+}
+</code></pre><h3 id="NSRecursiveLock"><a href="#NSRecursiveLock" class="headerlink" title="NSRecursiveLock"></a>NSRecursiveLock</h3><p>顾名思义，NSRecursiveLock定义的是一个递归锁，这个锁可以被同一线程多次请求，而不会引起死锁。这主要是用在循环或递归操作中。NSRecursiveLock在识别到递归时，只加1次锁，在递归返回时也只解锁1次。</p>
+<pre><code>// 初始化锁对象
+@property (nonatomic, strong) NSRecursiveLock *recursiveLock;
+_recursiveLock = [[NSRecursiveLock alloc] init];
+
+/*******************************************************************************/
+
+// 加锁的递归方法
+- (void)testNSRecursiveLock:(NSInteger)tag {
+
+    [_recursiveLock lock];
+
+    if (tag &gt; 0) {
+
+        [self testNSRecursiveLock:tag - 1];
+        NSLog(@&quot;---&gt;&gt; %ld&quot;, (long)tag);
+    }
+
+    [_recursiveLock unlock];
+}
+</code></pre><h3 id="synchronized"><a href="#synchronized" class="headerlink" title="@synchronized"></a>@synchronized</h3><p>@synchronized是一个 OC 层面的锁，非常简单易用。参数需要传一个 OC 对象，它实际上是把这个对象当做锁的唯一标识。使用时直接将加锁的代码区间放入花括号中即可，但是它的缺点也显而易见，虽然易用，但是没有之上介绍几个锁的复杂功能</p>
+<pre><code>- (void)testSynchronized {
+
+    @synchronized (self) {
+
+        if (_ticketCount &gt; 0) {
+
+            _ticketCount --;
+            NSLog(@&quot;---&gt;&gt; %@已购票1张，剩余%ld张&quot;, [NSThread currentThread], (long)_ticketCount);
+        }
+    }
+}
+</code></pre><p>原子操作</p>
+<p>原子操作是指不可打断的操作，也就是说线程在执行操作过程中，不会被操作系统挂起，而是一定会执行完。如文章开头出图中17+1 = 18这个动作，在整个运算过程中，就属于一个原子操作。<br>变量属性Property中的原子定义</p>
+<p>一般我们定义一个变量 @property (nonatomic, strong) NSMutableArray *ticketsArr;</p>
+<p>nonatomic：非原子属性，不会为setter方法加锁，适合内存小的移动设备；</p>
+<p>atomic：原子属性，默认为setter方法加锁（默认就是atomic），线程安全。</p>
+<p>PS： 在iOS开发过程中，一般都将属性声明为nonatomic，尽量避免多线程抢夺同一资源，尽量将加锁等资源抢夺业务交给服务器。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/04/20/多线程之线程安全/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-多类型Cell的tableView实现" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1933,161 +2293,6 @@ Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&q
 
 
   
-    <article id="post-好好看看 KVC &amp;&amp; KVO" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/21/好好看看 KVC && KVO/">好好看看 KVC &amp;&amp; KVO</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/21/好好看看 KVC && KVO/" class="archive-article-date">
-  	<time datetime="2019-02-21T07:34:53.020Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><h3 id="字典快速赋值"><a href="#字典快速赋值" class="headerlink" title="字典快速赋值"></a>字典快速赋值</h3><p>KVC 可以将字典里面和 model 同名的 property 进行快速赋值 setValuesForKeysWithDictionary</p>
-<pre><code>//前提：model 中的各个 property 必须和 NSDictionary 中的属性一致
-- (instancetype)initWithDic:(NSDictionary *)dic{
-    BannerModel *model = [BannerModel new];
-    [model setValuesForKeysWithDictionary:dic];
-    return model;  
-}
-</code></pre><p>但是这里会有2种特殊情况。</p>
-<ul>
-<li>情况一 在 model 里面有 property 但是在 NSDictionary 里面没有这个值</li>
-</ul>
-<p>运行上面的代码，代码不崩溃，只不过在输出值的时候输出了 null</p>
-<ul>
-<li>情况二 在 NSDictionary 中存在某个值，但是在 model 里面没有值</li>
-</ul>
-<p>运行后编译成功，但是代码奔溃掉。原因是 KVC 。所以我们只需要实现这么一个方法。甚至不需要写函数体部分</p>
-<pre><code>- (void)setValue:(id)value forUndefinedKey:(NSString *)key{
-
-}
-</code></pre><ul>
-<li>情况三 如果 Dictionary 和 Model 中的 property 不同名</li>
-</ul>
-<p>我们照样可以利用 setValue:forUndefinedKey: 去处理</p>
-<pre><code>//model
-@property (nonatomic,copy)NSString *name;
-@property (nonatomic,copy)NSString *sex;
-@property (nonatomic,copy) NSString* age;
-//NSDictionary
-NSDictionary *dic = @{@&quot;username&quot;:@&quot;张三&quot;,@&quot;sex&quot;:@&quot;男&quot;,@&quot;id&quot;:@&quot;22&quot;};
-
--(void)setValue:(id)value forUndefinedKey:(NSString *)key{
-    if([key isEqualToString:@&quot;id&quot;]){
-        self.age=value;
-    }
-    if([key isEqualToString:@&quot;username&quot;]){
-        self.name=value;
-    }
-}    
-</code></pre><ul>
-<li><p>情况四 如果我们观察对象的属性是数组，我们经常会观察不到变化，因为 KVO 是观察 setter 方法。我们可以用 mutableArrayValueForKeyPath 进行属性的操作</p>
-<pre><code>NSMutableArray *hobbies = [_person mutableArrayValueForKeyPath:@&quot;hobbies&quot;];
-[hobbies addObject:@&quot;Web&quot;];
-</code></pre></li>
-<li>情况五 注册依赖键.</li>
-</ul>
-<p>KVO 可以观察属性的二级属性对象的所有属性变化。说人话就是“假如 Person 类有个 Dog 类，Dog 类有 name、fur、weight 等属性，我们给 Person 的 Dog 属性观察，假如 Dog 的任何属性变化是，Person 的观察者对象都可以拿到当前的变化值。我们只需要在 Person 中写下面的方法即可”</p>
-<pre><code>[self.person  addObserver:self
-        forKeyPath:NSStringFromSelector(@selector(dog))
-           options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
-           context:ContextMark];
-
-self.person.dog.name = @&quot;啸天犬&quot;;
-self.person.dog.weight = 50;
-
-
-// Person.m
-+ (NSSet&lt;NSString *&gt; *)keyPathsForValuesAffectingValueForKey:(NSString *)key {
-    NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-
-    if ([key isEqualToString:@&quot;dog&quot;]) {
-        NSArray *affectingKeys = @[@&quot;name&quot;, @&quot;fur&quot;, @&quot;weight&quot;];
-        keyPaths = [keyPaths setByAddingObjectsFromArray:affectingKeys];
-    }
-    return keyPaths;
-}
-</code></pre><h2 id="KVO的本质"><a href="#KVO的本质" class="headerlink" title="KVO的本质"></a>KVO的本质</h2><p>kVO 是Objective-C 对观察者模式的实现。也是 Cocoa Binding 的基础。</p>
-<h3 id="几个基本的知识点"><a href="#几个基本的知识点" class="headerlink" title="几个基本的知识点"></a>几个基本的知识点</h3><ul>
-<li><p>1 KVO 观察者和属性被观察的对象之间不是强引用的关系</p>
-</li>
-<li><p>2 KVO 的触发分为自动触发模式和手动触发模式2种。通常我们使用的都是自动通知，注册观察者之后，当条件触发的时候会自动调用-(void)observeValueForKeyPath…  如果需要实现手动通知，我们需要使用下面的方法</p>
-<pre><code>+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
-    return NO;
-}
-</code></pre></li>
-<li><p>3 若类有实例变量 NSString *_foo， 调用 setValue:forKey: 是以 foo 还是 _foo 作为 key ？<br>都可以</p>
-</li>
-<li><p>4 KVC 的 keyPath 中的集合运算符如何使用</p>
-</li>
-<li><p>5 KVO 和 KVC 的 keyPath 一定是属性吗？ 可以是成员变量</p>
-</li>
-</ul>
-<h3 id="KVO的缺陷"><a href="#KVO的缺陷" class="headerlink" title="KVO的缺陷"></a>KVO的缺陷</h3><p>KVO 虽然很强大，你只能重写 -<br>observeValueForKeyPath:ofObject:change:context: 来获得通知，想要提供自定义的 selector ，不行；想要传入一个 block，没门儿。感觉如果加入 block 就更棒了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/21/好好看看 KVC && KVO/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -2209,11 +2414,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2225,11 +2430,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2241,7 +2446,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2249,7 +2454,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
