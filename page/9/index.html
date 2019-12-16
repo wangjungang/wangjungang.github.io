@@ -152,6 +152,155 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS开发之APP内部切换语言" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/24/iOS开发之APP内部切换语言/">iOS开发之APP内部切换语言</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/24/iOS开发之APP内部切换语言/" class="archive-article-date">
+  	<time datetime="2018-12-24T03:14:10.130Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS开发中，随着APP越来越完善，很多APP都做了国际化，也实现了APP内部切换语言。</p>
+<p>国际化都会走到NSBundle的- (NSString <em>)localizedStringForKey:(NSString </em>)key value:(nullable NSString <em>)value table:(nullable NSString </em>)tableName方法，使用自定义Bundle替换NSBundle，通过切换根控制器来完成APP内部切换语言。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="1-拦截国际化方法"><a href="#1-拦截国际化方法" class="headerlink" title="1.拦截国际化方法"></a>1.拦截国际化方法</h3><p>通过分类和runtime来实现拦截，将Bundle替换为自定义CLBundle。</p>
+<pre><code>+ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&amp;onceToken, ^{
+        //动态继承、交换，方法类似KVO，通过修改[NSBundle mainBundle]对象的isa指针，使其指向它的子类CLBundle，这样便可以调用子类的方法；其实这里也可以使用method_swizzling来交换mainBundle的实现，来动态判断，可以同样实现。
+        object_setClass([NSBundle mainBundle], [CLBundle class]);
+    });
+}
+</code></pre><h3 id="2-重写方法判断加载哪一种语言"><a href="#2-重写方法判断加载哪一种语言" class="headerlink" title="2.重写方法判断加载哪一种语言"></a>2.重写方法判断加载哪一种语言</h3><p>重写mainBundle方法，通过语言管理类获取当前应该加载哪一种语言。</p>
+<pre><code>- (NSString *)localizedStringForKey:(NSString *)key value:(NSString *)value table:(NSString *)tableName {
+    if ([CLBundle cl_mainBundle]) {
+        return [[CLBundle cl_mainBundle] localizedStringForKey:key value:value table:tableName];
+    } else {
+        return [super localizedStringForKey:key value:value table:tableName];
+    }
+}
+
++ (NSBundle *)cl_mainBundle {
+    if ([NSBundle currentLanguage].length) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:[NSBundle currentLanguage] ofType:@&quot;lproj&quot;];
+        if (path.length) {
+            return [NSBundle bundleWithPath:path];
+        }
+    }
+    return nil;
+}
+
++ (NSString *)currentLanguage {
+    return [CLLanguageManager userLanguage] ? : [NSLocale preferredLanguages].firstObject;
+}
+</code></pre><h3 id="3-语言管理类"><a href="#3-语言管理类" class="headerlink" title="3.语言管理类"></a>3.语言管理类</h3><p>将语言切换调用设置简单封装，方便调用。</p>
+<pre><code>+ (void)setUserLanguage:(NSString *)userLanguage {
+    //跟随手机系统
+    if (!userLanguage.length) {
+        [self resetSystemLanguage];
+        return;
+    }
+    //用户自定义
+    [[NSUserDefaults standardUserDefaults] setValue:userLanguage forKey:CLUserLanguageKey];
+    [[NSUserDefaults standardUserDefaults] setValue:@[userLanguage] forKey:@&quot;AppleLanguages&quot;];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (NSString *)userLanguage {
+    return [[NSUserDefaults standardUserDefaults] valueForKey:CLUserLanguageKey];
+}
+
+/**
+ 重置系统语言
+ */
++ (void)resetSystemLanguage {
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:CLUserLanguageKey];
+    [[NSUserDefaults standardUserDefaults] setValue:nil forKey:@&quot;AppleLanguages&quot;];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+</code></pre><h3 id="4-切换根控制器来切换语言"><a href="#4-切换根控制器来切换语言" class="headerlink" title="4.切换根控制器来切换语言"></a>4.切换根控制器来切换语言</h3><p>为了减少工作量，直接切换根控制器来达到语言切换。</p>
+<pre><code>[CLLanguageManager setUserLanguage:@&quot;en&quot;];
+ CLTabbarController *tabbarController = [[CLTabbarController alloc] init];
+tabbarController.selectedIndex = 3;
+UINavigationController *navigationController = tabbarController.selectedViewController;
+NSMutableArray *viewControllers = navigationController.viewControllers.mutableCopy;
+    //取出我的页面，提前加载，解决返回按钮不变化
+ CLMyController *me = (CLMyController *)[viewControllers firstObject];
+[me loadViewIfNeeded];
+    //新建设置语言页面
+CLChangeLanguageController *languageController = [[CLChangeLanguageController alloc] init];
+languageController.hidesBottomBarWhenPushed = YES;
+[viewControllers addObject:languageController];
+    //解决奇怪的动画bug。
+dispatch_async(dispatch_get_main_queue(), ^{
+    [UIApplication sharedApplication].keyWindow.rootViewController = tabbarController;
+    navigationController.viewControllers = viewControllers;
+    CLLog(@&quot;已切换到语言 %@&quot;, [NSBundle currentLanguage]);
+});
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/24/iOS开发之APP内部切换语言/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS10 跳转系统设置" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1517,155 +1666,9 @@ class _YellowBirdState extends State&lt;YellowBird&gt; {
 
 
   
-    <article id="post-autorelease的理解" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/18/autorelease的理解/">autorelease的理解</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/18/autorelease的理解/" class="archive-article-date">
-  	<time datetime="2018-12-18T02:31:21.613Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在ARC模式下，因为系统帮我们管理内存，所以很少关注到autorelease自动释放池。系统其实是通过autorelease来管理我们申请的内存（创建对象），在一次runLoop后，会进行一次autorelease的处理，释放掉申请的内存。程序运行过程中，会产生很多autorelease，系统是通过一个栈来管理它们。</p>
-<p>虽然，很多事情都是系统帮我们做了，那有时候还是需要我们自己善用autorelease来优化代码：</p>
-<p>1、利用@autoreleasepool优化循环。如果循环次数比较多，并且里面申请了一些比较大的内存，可以在循环内部手动加上@autoreleasepool，来及时释放内存，避免内存暴涨。</p>
-<p>2、线程需要长期运行并且有可能产生大量autoreleased对象, 你应该使用autorelease pool blocks。</p>
-<p>3、长期在后台中运行的任务, 方法。</p>
-<h3 id="一切从一个例子开始吧："><a href="#一切从一个例子开始吧：" class="headerlink" title="一切从一个例子开始吧："></a>一切从一个例子开始吧：</h3><pre><code>__weak id wsPtr;
-    {
-        NSObject *obj = [[NSObject alloc] init];
-        wsPtr = obj;
-        NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-    }
-    NSLog(@&quot;2&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-</code></pre><p>结果为</p>
-<pre><code>2018-09-21 14:05:00.154692+0800 SummaryTest[1333:1156186] 1&gt;&gt;&gt;&gt;&gt;&gt;NSObject
-2018-09-21 14:05:00.154904+0800 SummaryTest[1333:1156186] 2&gt;&gt;&gt;&gt;&gt;&gt;(null)
-</code></pre><p>这结果，大家都不会觉得奇怪，出了作用范围嘛，obj对象已经释放了，所以后面访问到为nil。</p>
-<p>改为如下情况呢：</p>
-<pre><code>__weak id wsPtr;
-    {
-        __autoreleasing NSObject *obj = [[NSObject alloc] init];
-        wsPtr = obj;
-        NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-    }
-    NSLog(@&quot;2&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-</code></pre><p>结果为</p>
-<pre><code>2018-09-21 14:14:05.920146+0800 SummaryTest[1336:1157313] 1&gt;&gt;&gt;&gt;&gt;&gt;NSObject
-2018-09-21 14:14:05.920369+0800 SummaryTest[1336:1157313] 2&gt;&gt;&gt;&gt;&gt;&gt;NSObject
-</code></pre><p>结果是，在括号外部，生成的obj还是没有释放。这就是autoreleasePool对它的影响。虽然autorelease是系统控制，我们不好把控它的结束时间。但可以肯定，在一个函数内部，它不会释放的，所以，放到释放池的对象，在整个函数内部是有效的。那么问题来了，什么时候的对象才归autoreleasePool管理，为什么第一次申请的obj，没放到autoreleasePool中呢。</p>
-<p>在以下情况，会注册到autoreleasePool中：</p>
-<ul>
-<li><p>1、__autoreleasing修饰的对象，如上所述。</p>
-</li>
-<li><p>2、非自己生成并持有的对象。明显点的，就是通过一个函数返回的对象。使用alloc/new/copy/mutableCopy以外的方法来取得的对象。这就解释了，上面第一个例子的obj为什么没被autoreleasePool管理。</p>
-<ul>
-<li>(void)testAutorelease<br>{<br>  __weak id wsPtr;<br>  {<pre><code>NSObject *obj = [self gainObj];
-wsPtr = obj;
-NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-</code></pre>  }<br>  NSLog(@”2&gt;&gt;&gt;&gt;&gt;&gt;%@”,[wsPtr class]);<br>}</li>
-<li>(NSObject *)gainObj<br>{<br>  return [[NSObject alloc] init];<br>}</li>
-</ul>
-</li>
-</ul>
-<p>结果是，obj注册到autoreleasepool中，括号外也可以访问对象。</p>
-<ul>
-<li><p>3、id的指针或对象的指针会默认加上__autoreleasing修饰符。如一些函数：</p>
-<pre><code>- (BOOL)performOperationWithError:(NSError **)error;
-</code></pre></li>
-</ul>
-<h3 id="二、一些特殊情况"><a href="#二、一些特殊情况" class="headerlink" title="二、一些特殊情况"></a>二、一些特殊情况</h3><p>一切都按我的推理进行着，切出现了一个奇葩的情况：</p>
-<pre><code>__weak id reference;
-- (void)testAutorelease
-{
-    NSString *myStr = [NSString stringWithFormat:@&quot;asdd&quot;];
-    reference = myStr;
-    NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,reference);
-}
-- (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event
-{
-    NSLog(@&quot;2&gt;&gt;&gt;&gt;%@&quot;,reference);
-}
-</code></pre><p>我想测试，出了函数域，什么时候就会释放，所以加了个点击事件。结果是，不管什么时候点击，都可以访问到对象。然后我就一脸蒙蔽了。我又测试了NSObject、NSArray，都不会出现上面的情况。难道是NSString特有的性质，在view期间都不释放，最后随view一起释放。</p>
-<pre><code>NSString *myStr = [NSString stringWithFormat:@&quot;assdfdsfdsfddd&quot;];
-</code></pre><p>把字符串加长一点，竟然会释放了。真是奇葩。看看它们的地址吧：</p>
-<pre><code>- (void)testAutorelease
-{
-    NSString *myStr1 = [NSString stringWithFormat:@&quot;assdfdsfdsfddd&quot;];
-    NSString *myStr2 = [NSString stringWithFormat:@&quot;ass&quot;];
-    reference = myStr1;
-    NSLog(@&quot;str1=%p  str2=%p&quot;,myStr1,myStr2);
-}
-
-2018-09-21 15:23:07.671661+0800 SummaryTest[1367:1168589] str1=0x1700373a0  str2=0xa000000007373613
-</code></pre><p>比较长的NSString存于堆区，较短的NSString感觉像是存于数据区，所以性质不一样吧，不懂。记住NSString特殊一点就可以了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/18/autorelease的理解/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
     </nav>
   
 
@@ -1800,15 +1803,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1820,11 +1823,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
