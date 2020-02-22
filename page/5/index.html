@@ -152,6 +152,116 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-通过单例、归档存储多个用户数据 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/16/通过单例、归档存储多个用户数据 /">通过单例、归档存储多个用户数据</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/16/通过单例、归档存储多个用户数据 /" class="archive-article-date">
+  	<time datetime="2019-06-16T12:37:46.199Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>之前一直是只利用单例存储个人信息的。为了保证用户数据的更新，还必须重写每个属性的set方法，为每一个属性建立一个key，一旦更新就要用NSUserDefaults进行存储，一条属性基本需要十行代码进行书写。如果属性多了起来，那代码量就更加惨不忍睹。且如果在用户数据包含model的情况下，还要进行额外处理，那过程就更加繁琐了。<br>索性，自己就利用归档相关的知识重新进行了整理。</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>在WJGBaseModel中提供三个方法:</p>
+<pre><code>+ (instancetype)sharedInstance:(NSString *)key;
++ (void)saveData:(NSString *)key;
++ (void)clearData:(NSString *)key;
+</code></pre><p>作用分别是:</p>
+<p>根据标识key创建单例对象。<br>存储/更新数据。<br>删除数据。</p>
+<h3 id="1-存储数据"><a href="#1-存储数据" class="headerlink" title="1.存储数据"></a>1.存储数据</h3><pre><code>UserModel *userModel = [UserModel sharedInstance:UserKey0];
+userModel.dic = @{@&quot;sex&quot;:@&quot;man&quot;};
+userModel.name = @&quot;tl&quot;;
+userModel.age = 25;
+
+FatherModel *fatherModel = [FatherModel new];
+fatherModel.arr = @[@&quot;1&quot;,@&quot;2&quot;,@&quot;3&quot;];
+fatherModel.name = @&quot;xxx&quot;;
+fatherModel.phone = 18599990001;
+userModel.father = fatherModel;
+
+WifeModel *wifeModel = [WifeModel new];
+wifeModel.name = @&quot;yyy&quot;;
+wifeModel.height = 165;
+wifeModel.weight = 56.5;
+fatherModel.wife = wifeModel;
+
+[UserModel saveData:UserKey0];
+</code></pre><h3 id="2-更新数据"><a href="#2-更新数据" class="headerlink" title="2.更新数据"></a>2.更新数据</h3><pre><code>UserModel *userModel = [UserModel sharedInstance:UserKey0];
+FatherModel *fatherModel = userModel.father;
+WifeModel *wifeModel = fatherModel.wife;
+
+userModel.age = 30;
+fatherModel.arr = nil;
+fatherModel.name = @&quot;yyy&quot;;
+wifeModel.name = nil;
+
+[UserModel saveData:UserKey0];
+</code></pre><h3 id="3-删除数据"><a href="#3-删除数据" class="headerlink" title="3.删除数据"></a>3.删除数据</h3><pre><code>[UserModel clearData:UserKey0];
+</code></pre><p><a href="https://github.com/iwenyupinlun01/WJGBaseModel" target="_blank" rel="noopener">DEMO</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/16/通过单例、归档存储多个用户数据 /">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-使用UIWebView导致内存暴涨的问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1634,98 +1744,6 @@ class TDWNetworkTest {
 
 
   
-    <article id="post-swift内存管理之weak与unowned" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/20/swift内存管理之weak与unowned/">swift内存管理之weak与unowned</a>
-    </h1>
-  
-
-        
-        <a href="/2019/04/20/swift内存管理之weak与unowned/" class="archive-article-date">
-  	<time datetime="2019-04-20T14:50:27.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。</p>
-<h2 id="weak"><a href="#weak" class="headerlink" title="weak"></a>weak</h2><p>日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。</p>
-<pre><code>weak var delegate: SomeDelegate?
-
-lazy var someClosure: () -&gt; Void = { [weak self] in
-    guard let self = self else { retrun }
-    self.balabala
-}
-</code></pre><p>当我们赋值给一个被标记 weak 的变量时，它的引用计数不会被改变。而且当这个弱引用变量所引用的对象被释放时，这个变量将被自动设为 nil。这也是弱引用必须被声明为 Optional 的原因。</p>
-<h2 id="unowned"><a href="#unowned" class="headerlink" title="unowned"></a>unowned</h2><pre><code>unowned let someInstance: SomeClass
-
-lazy var someClosure: () -&gt; Void = { [unowned self] in
-    self.balabala
-}
-</code></pre><p>在使用 unowned 时，我们不需要将变量声明为 Optional。</p>
-<p>需要注意的是。对于被 unowned 标记的变量，即使它的原来引用已经被释放，它仍然会保持对被已经释放了的对象的一个 “无效的” 引用，它不是 Optional ，也不会被指向 nil。所以，当我们试图访问这样的 unowned 引用时，程序就会发生错误。</p>
-<p>根据苹果的官方文档的建议。当我们知道两个对象的生命周期并不相关，那么我们必须使用 weak。相反，非强引用对象拥有和强引用对象同样或者更长的生命周期的话，则应该使用 unowned。</p>
-<p>例如，ViewControler 对它的 SubView 的引用可以使用 unowned。因为 ViewControler 的生命周期一定比对它的 SubView 长。</p>
-<p>而在使用服务时，则需要看情况使用 weak。因为服务的初始化方法可能是被工厂模式或 Service Locator 所封装。这些服务可能在某些时候被重构为单例，此时它们的生命周期发生了改变。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/04/20/swift内存管理之weak与unowned/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
@@ -1740,7 +1758,7 @@ lazy var someClosure: () -&gt; Void = { [unowned self] in
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2019 wangjungang
+    		&copy; 2020 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1867,11 +1885,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1883,11 +1901,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">

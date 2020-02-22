@@ -152,6 +152,523 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-看完就懂的无痕埋点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/04/看完就懂的无痕埋点/">看完就懂的无痕埋点</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/04/看完就懂的无痕埋点/" class="archive-article-date">
+  	<time datetime="2019-07-04T10:10:32.010Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在移动互联网时代，对于每个公司、企业来说，用户的行为数据非常重要。重要到什么程度，用户在这个页面停留多久、点击了什么按钮、浏览了什么内容、什么手机、什么网络环境、App什么版本等都需要清清楚楚。一些大厂的蛮多业务成果都是基于用户操作行为进行推荐后二次转换。另一方面是以日志的作用帮助开发者分析线上问题的一种辅助手段。</p>
+<p>那么有了上述的诉求，那么技术人员如何满足这些需求？引出来了一个技术点-“埋点”</p>
+<h2 id="埋点手段"><a href="#埋点手段" class="headerlink" title="埋点手段"></a>埋点手段</h2><p>业界中对于代码埋点主要有3种主流的方案：代码手动埋点、可视化埋点、无痕埋点。简单说说这几种埋点方案。</p>
+<p>代码手动埋点：根据业务需求（运营、产品、开发多个角度出发）在需要埋点地方手动调用埋点接口，上传埋点数据。</p>
+<p>可视化埋点：通过可视化配置工具完成采集节点，在前端自动解析配置并上报埋点数据，从而实现可视化“无痕埋点”</p>
+<p>无痕埋点：通过技术手段，完成对用户行为数据无差别的统计上传的工作。后期数据分析处理的时候通过技术手段筛选出合适的数据进行统计分析。</p>
+<h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><h3 id="代码手动埋点"><a href="#代码手动埋点" class="headerlink" title="代码手动埋点"></a>代码手动埋点</h3><p>该方案情况下，如果需要埋点，则需要在工程代码中，写埋点相关代码。因为侵入了业务代码，对业务代码产生了污染，显而易见的缺点是埋点的成本较高、且违背了单一原则。</p>
+<p>例1：假如你需要知道用户在点击“购买按钮”时的相关信息（手机型号、App版本、页面路径、停留时间、动作等等），那么就需要在按钮的点击事件里面去写埋点统计的代码。这样明显的弊端就是在之前业务逻辑的代码上面又多出了埋点的代码。由于埋点代码分散、埋点的工作量很大、代码维护成本较高、后期重构很头痛。</p>
+<p>例2：假如 App 采用了 Hybrid 架构，当 App 的第一版本发布的时候 H5 的关键业务逻辑统计是由 Native 定义好关键逻辑（比如H5调起了Native的分享功能，那么存在一个分享的埋点事件）的桥接。假如某天增加了一个扫一扫功能，未定义扫一扫的埋点桥接，那么 H5 页面变动的时候，Native 埋点代码不去更新的话，变动的 H5 的业务就未被精确统计。</p>
+<p>优点：产品、运营工作量少，对照业务映射表就可以还原出相关业务场景、数据精细无须大量的加工和处理</p>
+<p>缺点：开发工作量大、前期需要和运营、产品指定的好业务标识，以便产品和运营进行数据统计分析</p>
+<h3 id="可视化埋点"><a href="#可视化埋点" class="headerlink" title="可视化埋点"></a>可视化埋点</h3><p>可视化埋点的出现，是为解决代码埋点流程复杂、成本高、新开发的页面（H5、或者服务端下发的 json 去生成相应页面）不能及时拥有埋点能力</p>
+<p>前端在「埋点编辑模式」下，以“可视化”的方式去配置、绑定关键业务模块的路径到前端可以唯一确定到view的xpath过程。</p>
+<p>用户每次操作的控件，都生成一个 xpath 字符串，然后通过接口将 xpath 字符串(view在前端系统中的唯一定位。以 iOS 为例，App名称、控制器名称、一层层view、同类型view的序号：“GoodCell.21.RetailTableView.GoodsViewController.*baoApp”)到真正的业务模块（“宝App-商城控制器-分销商品列表-第21个商品被点击了”）的映射关系上传到服务端。xpath 具体是什么在下文会有介绍。</p>
+<p>之后操作 App 就生成对应的 xpath 和埋点数据（开发者通过技术手段将从服务端获取的关键数据塞到前端的 UI 控件上。 iOS 端为例， UIView 的 accessibilityIdentifier 属性可以设置我们从服务端获取的埋点数据）上传到服务端。</p>
+<p>优点：数据量相对准确、后期数据分析成本低</p>
+<p>缺点：前期控件的唯一识别、定位都需要额外开发；可视化平台的开发成本较高；对于额外需求的分析可能会比较困难</p>
+<h3 id="无痕埋点"><a href="#无痕埋点" class="headerlink" title="无痕埋点"></a>无痕埋点</h3><p>通过技术手段无差别地记录用户在前端页面上的行为。可以正确的获取 PV、UV、IP、Action、Time 等信息。</p>
+<p>缺点：前期开发统计基础信息的技术产品成本较高、后期数据分析数据量很大、分析成本较高（大量数据传统的关系型数据库压力大）</p>
+<p>优点：开发人员工作量小、数据全面、无遗漏、产品和运营按需分析、支持动态页面的统计分析</p>
+<h2 id="如何选择"><a href="#如何选择" class="headerlink" title="如何选择"></a>如何选择</h2><p>结合上述优缺点，我们选择了无痕埋点+可视化埋点结合的技术方案。</p>
+<p>怎么说呢？对于关键的业务开发结束上线后、通过可视化方案（类似于一个界面，想想看 Dreamwaver，你在界面上拖拖控件，简单编辑下就可以生成对应的 HTML 代码）点击一下绑定对应关系到服务端。</p>
+<p>那么这个对应关系是什么？我们需要唯一定位一个前端元素，那么想到的办法就是不管 Native 和 Web 前端，控件或者元素来说就是一个树形层级，DOM tree 或者 UI tree，所以我们通过技术手段定位到这个元素，以 Native  iOS 为例子，假如点击商品详情页的加入购物车按钮会根据 UI 层级结构生成一个唯一标识 “addCartButton.GoodsViewController.GoodsView.*BaoApp” 。但是用户在使用 App 的时候，上传的是这串东西的 MD5到服务端。</p>
+<p>这么做有2个原因：服务端数据库存储这串很长的东西不是很好；埋点数据被劫持的话直接看到明文不太好。所以 MD5 再上传。</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="数据的收集"><a href="#数据的收集" class="headerlink" title="数据的收集"></a>数据的收集</h3><p>实现方案由以下几个关键指标：</p>
+<p>现有代码改动少、尽量不要侵入业务代码去实现拦截系统事件</p>
+<p>全量收集</p>
+<p>如何唯一标识一个控件元素</p>
+<h3 id="不侵入业务代码拦截系统事件"><a href="#不侵入业务代码拦截系统事件" class="headerlink" title="不侵入业务代码拦截系统事件"></a>不侵入业务代码拦截系统事件</h3><p>以 iOS 为例。我们会想到 <strong>AOP（Aspect Oriented Programming）</strong>面向切面编程思想。动态地在函数调用前后插入相应的代码，在 Objective-C 中我们可以利用 Runtime 特性，用 Method Swizzling 来 hook 相应的函数</p>
+<p>为了给所有类方便地 hook，我们可以给 NSObject 添加个 Category，名字叫做 NSObject+MethodSwizzling</p>
+<p>#pragma mark - public Method</p>
+<ul>
+<li><p>(void)lbp_swizzleMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector<br>{<br>  class_swizzleInstanceMethod(self, originalSelector, swizzledSelector);<br>}</p>
+</li>
+<li><p>(void)lbp_swizzleClassMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector<br>{<br>  //类方法实际上是储存在类对象的类(即元类)中，即类方法相当于元类的实例方法,所以只需要把元类传入，其他逻辑和交互实例方法一样。<br>  Class class2 = object_getClass(self);<br>  class_swizzleInstanceMethod(class2, originalSelector, swizzledSelector);<br>}</p>
+<pre><code>#pragma mark - private method
+
+void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSEL)
+{
+    /*
+     Class class = [self class];
+     //原有方法
+     Method originalMethod = class_getInstanceMethod(class, originalSelector);
+     //替换原有方法的新方法
+     Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+     //先尝试給源SEL添加IMP，这里是为了避免源SEL没有实现IMP的情况
+     BOOL didAddMethod = class_addMethod(class,originalSelector,
+     method_getImplementation(swizzledMethod),
+     method_getTypeEncoding(swizzledMethod));
+     if (didAddMethod) {//添加成功：表明源SEL没有实现IMP，将源SEL的IMP替换到交换SEL的IMP
+     class_replaceMethod(class,swizzledSelector,
+     method_getImplementation(originalMethod),
+     method_getTypeEncoding(originalMethod));
+     } else {//添加失败：表明源SEL已经有IMP，直接将两个SEL的IMP交换即可
+     method_exchangeImplementations(originalMethod, swizzledMethod);
+     }
+     */
+
+    Method originMethod = class_getInstanceMethod(class, originalSEL);
+    Method replaceMethod = class_getInstanceMethod(class, replacementSEL);
+
+    if(class_addMethod(class, originalSEL, method_getImplementation(replaceMethod),method_getTypeEncoding(replaceMethod)))
+    {
+        class_replaceMethod(class,replacementSEL, method_getImplementation(originMethod), method_getTypeEncoding(originMethod));
+    }else {
+        method_exchangeImplementations(originMethod, replaceMethod);
+    }
+}
+</code></pre></li>
+</ul>
+<h3 id="全量收集"><a href="#全量收集" class="headerlink" title="全量收集"></a>全量收集</h3><p>我们会想到 hook AppDelegate 代理方法、UIViewController 生命周期方法、按钮点击事件、手势事件、各种系统控件的点击回调方法、应用状态切换等等。</p>
+<p>以统计页面的打开时间和统计页面的打开、关闭的需求为例，我们对 UIViewController 进行 hook</p>
+<pre><code>    static char *lbp_viewController_open_time = &quot;lbp_viewController_open_time&quot;;
+    static char *lbp_viewController_close_time = &quot;lbp_viewController_close_time&quot;;
+
+    @implementation UIViewController (lbpka)
+
+    // load 方法里面添加 dispatch_once 是为了防止手动调用 load 方法。
+    + (void)load {
+        static dispatch_once_t onceToken;
+        dispatch_once(&amp;onceToken, ^{
+            @autoreleasepool {
+                [[self class] lbp_swizzleMethod:@selector(viewWillAppear:) swizzledSelector:@selector(lbp_viewWillAppear:)];
+                [[self class] lbp_swizzleMethod:@selector(viewWillDisappear:) swizzledSelector:@selector(lbp_viewWillDisappear:)];
+
+
+            }
+        });
+    }
+
+
+    #pragma mark - add prop
+
+    - (void)setOpenTime:(NSDate *)openTime {
+        objc_setAssociatedObject(self,&amp;lbp_viewController_open_time, openTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+
+    - (NSDate *)getOpenTime{
+        return objc_getAssociatedObject(self, &amp;lbp_viewController_open_time);
+    }
+
+    - (void)setCloseTime:(NSDate *)closeTime {
+        objc_setAssociatedObject(self,&amp;lbp_viewController_close_time, closeTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    }
+
+    - (NSDate *)getCloseTime{
+        return objc_getAssociatedObject(self, &amp;lbp_viewController_close_time);
+    }
+
+    - (void)lbp_viewWillAppear:(BOOL)animated {
+
+        NSString *className = NSStringFromClass([self class]);
+        NSString *refer = [NSString string];
+        //TODO:TODO 是否只埋本地有url的page
+        if ([self getPageUrl:className]) {
+            //设置打开时间
+           [self setOpenTime:[NSDate dateWithTimeIntervalSinceNow:0]];
+            if (self.navigationController) {
+                if (self.navigationController.viewControllers.count &gt;=2) {
+                    //获取当前vc 栈中 上一个VC
+                    UIViewController *referVC =  self.navigationController.viewControllers[self.navigationController.viewControllers.count-2];
+                    refer = [self getPageUrl:NSStringFromClass([referVC class])];
+                }
+            }
+            if (!refer || refer.length == 0) {
+                refer = @&quot;unknown&quot;;
+            }
+            [UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];
+        }
+
+        [self lbp_viewWillAppear:animated];
+    }
+
+    - (void)lbp_viewWillDisappear:(BOOL)animated {
+        NSString *className = NSStringFromClass([self class]);
+        if ([self getPageUrl:className]) {
+            [self setCloseTime:[NSDate dateWithTimeIntervalSinceNow:0]];
+            [UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];
+        }
+        [self lbp_viewWillDisappear:animated];
+    }
+
+    #pragma mark - private method
+
+    - (NSString *)p_calculationTimeSpend {
+
+        if (![self getOpenTime] || ![self getCloseTime]) {
+            return @&quot;unknown&quot;;
+        }
+        NSTimeInterval aTimer = [[self getCloseTime] timeIntervalSinceDate:[self getOpenTime]];
+
+        int hour = (int)(aTimer/3600);
+
+        int minute = (int)(aTimer - hour*3600)/60;
+
+        int second = aTimer - hour*3600 - minute*60;
+
+        return [NSString stringWithFormat:@&quot;%d&quot;,second];
+}
+</code></pre><h3 id="如何标识一个唯一的元素"><a href="#如何标识一个唯一的元素" class="headerlink" title="如何标识一个唯一的元素"></a>如何标识一个唯一的元素</h3><p>xpath 是移动端定义可操作区域的唯一标识。既然想通过一个字符串标识前端系统中可操作的控件，那么 xpath 需要2个指标：</p>
+<p>唯一性：在同一系统中不存在不同控件有着相同的 xpath</p>
+<p>稳定性：不同版本的系统中，在页面结构没有变动的情况下，不同版本的相同页面，相同的控件的 xpath 需要保持一致。</p>
+<p>我们想到 Naive、H5 页面等系统渲染的时候都是以树形结构去绘制和渲染，所以我们以当前的 View 到系统的根元素之间的所有关键点（UIViewController、UIView、UIView容器（UITableView、UICollectionView等）、UIButton…）串联起来这样就唯一定位了控件元素。</p>
+<p>为了精确定位元素节点，参看下图</p>
+<p>假设一个 UIView 中有三个子 view，先后顺序是：label、button1、button2，那么深度依次为： 0、1、2。假如用户做了某些操作将 label1 从父 view 中被移除了。此时 UIView 只有 2 个子view：button1、button2，而且深度变为了：0、1。</p>
+<p>view层级<br>可以看出仅仅由于其中某个子 view  的改变，却导致其它子 view 的深度都发生了变化。因此，在设计的时候需要注意，在新增/移除某一 view 时，尽量减少对已有 view 的深度的影响，调整了对节点的深度的计算方式：采用当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值。</p>
+<p>我们再看一下上面的这个例子，最初 label、button1、button2 的深度依次是：0、0、1。在 label 被移除后，button1、button2 的深度依次为：0、1。可以看出，在这个例子中，label 的移除并未对 button1、button2 的深度造成影响，这种调整后的计算方式在一定程度上增强了 xpath 的抗干扰性。</p>
+<p>另外，调整后的深度的计算方式是依赖于各节点的类型的，因此，此时必须要将各节点的名称放到viewPath中，而不再是仅仅为了增加可读性。</p>
+<p>在标识控件元素的层级时，需要知道「当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值」。参看上图，如果不是同类型的话，则唯一性得不到保证。</p>
+<h3 id="同类型的-view-的唯一定位问题"><a href="#同类型的-view-的唯一定位问题" class="headerlink" title="同类型的 view 的唯一定位问题"></a>同类型的 view 的唯一定位问题</h3><p>有个问题，比如我们点击的元素是 UITableViewCell，那么它虽然可以定位到类似于这个标示 xxApp.GoodsViewController.GoodsTableView.GoodsCell，同类型的 Cell 有多个，所以单凭借这个字符串是没有办法定位具体的那个 Cell 被点击了。</p>
+<p>当然有解决方案啦。</p>
+<p>找出当前元素在父层同类型元素中的索引。根据当前的元素遍历当前元素的父级元素的子元素，如果出现相同的元素，则需要判断当前元素是所在层级的第几个元素</p>
+<p>对当前的控件元素的父视图的全部子视图进行遍历，如果存在和当前的控件元素同类型的控件，那么需要判断当前控件元素在同类型控件元素中的所处的位置，那么则可以唯一定位。举例：GoodsCell-3.GoodsTableView.GoodsViewController.xxApp</p>
+<pre><code>//UIResponder分类
+- (NSString *)lbp_identifierKa
+{
+//    if (self.xq_identifier_ka == nil) {
+        if ([self isKindOfClass:[UIView class]]) {
+            UIView *view = (id)self;
+            NSString *sameViewTreeNode = [view obtainSameSuperViewSameClassViewTreeIndexPath];
+            NSMutableString *str = [NSMutableString string];
+            //特殊的 加减购 因为带有spm但是要区分加减 需要带TreeNode
+            NSString *className = [NSString stringWithUTF8String:object_getClassName(view)];
+            if (!view.accessibilityIdentifier || [className isEqualToString:@&quot;lbpButton&quot;]) {
+                [str appendString:sameViewTreeNode];
+                [str appendString:@&quot;,&quot;];
+            }
+            while (view.nextResponder) {
+                [str appendFormat:@&quot;%@,&quot;, NSStringFromClass(view.class)];
+                if ([view.class isSubclassOfClass:[UIViewController class]]) {
+                    break;
+                }
+                view = (id)view.nextResponder;
+            }
+            self.xq_identifier_ka = [self md5String:[NSString stringWithFormat:@&quot;%@&quot;,str]];
+            //            self.xq_identifier_ka = [NSString stringWithFormat:@&quot;%@&quot;,str];
+        }
+//    }
+    return self.xq_identifier_ka;
+}
+
+// UIView 分类
+- (NSString *)obtainSameSuperViewSameClassViewTreeIndexPat
+{    
+    NSString *classStr = NSStringFromClass([self class]);
+    //cell的子view
+    //UITableView 特殊的superview (UITableViewContentView)
+    //UICollectionViewCell
+    BOOL shouldUseSuperView =
+    ([classStr isEqualToString:@&quot;UITableViewCellContentView&quot;]) ||
+    ([[self.superview class] isKindOfClass:[UITableViewCell class]])||
+    ([[self.superview class] isKindOfClass:[UICollectionViewCell class]]);
+    if (shouldUseSuperView) {
+        return [self obtainIndexPathByView:self.superview];
+    }else {
+        return [self obtainIndexPathByView:self];
+    }
+}
+
+- (NSString *)obtainIndexPathByView:(UIView *)view
+{    
+    NSInteger viewTreeNodeDepth = NSIntegerMin;
+    NSInteger sameViewTreeNodeDepth = NSIntegerMin;
+
+    NSString *classStr = NSStringFromClass([view class]);
+
+    NSMutableArray *sameClassArr = [[NSMutableArray alloc]init];
+    //所处父view的全部subviews根节点深度
+    for (NSInteger index =0; index &lt; view.superview.subviews.count; index ++) {
+        //同类型
+        if  ([classStr isEqualToString:NSStringFromClass([view.superview.subviews[index] class])]){
+            [sameClassArr addObject:view.superview.subviews[index]];
+        }
+        if (view == view.superview.subviews[index]) {
+            viewTreeNodeDepth = index;
+            break;
+        }
+    }
+    //所处父view的同类型subviews根节点深度
+    for (NSInteger index =0; index &lt; sameClassArr.count; index ++) {
+        if (view == sameClassArr[index]) {
+            sameViewTreeNodeDepth = index;
+            break;
+        }
+    }
+    return [NSString stringWithFormat:@&quot;%ld&quot;,sameViewTreeNodeDepth];
+
+}
+</code></pre><h3 id="同类型的view，但是点击的意义却不一样。如何唯一标识？"><a href="#同类型的view，但是点击的意义却不一样。如何唯一标识？" class="headerlink" title="同类型的view，但是点击的意义却不一样。如何唯一标识？"></a>同类型的view，但是点击的意义却不一样。如何唯一标识？</h3><p>问题5说明的是在一个界面上有多个不同的 view，他们的类型是同一种（CycleBannerView，但是数据源不一样，那么当数据源长度大于1的时候会轮播，下面会展示 UIPageControl。如果数据源是1个，那么就不会轮播和展示 UIPageControl）。情况6是同一种类型的 View，但是根据展示的内容不一样，点击的意义也不一样。也就是运营需要去知道用户到底点击的是哪一个。如下图所示，「立即抢购」和「分享赚佣金」是同一种类型的 View，但是点击意义不一样，需要我们需要唯一标识出来。之前的方法通过 “viewPath 配合同类型的 view 去加索引值“ 的方式还是没有办法唯一标识出来。所以想到一个方案，给 NSObject 添加一个分类，在分类里面添加一个协议。让需要复用但需要唯一标识的 view 去实现协议方法，因为是给 NSObject 分类添加的协议，所以 view 不需要去指定遵循。</p>
+<p>关键步骤：</p>
+<p>添加 NSObject 的 Category。在分类里面声明唯一标识的协议</p>
+<p>在生成 viewPath 的地方去拿出当前 view 的唯一标识（view 调用协议方法）。然后拼接之前拿出的 viewPath</p>
+<pre><code>//NSObject+UniqueIdentify.h
+#importNS_ASSUME_NONNULL_BEGIN
+
+@class NSObject;
+@protocol UniqueIdentify@optional
+- (NSString *)setUniqueIdentifier;
+
+@end
+
+@interface NSObject (UniqueIdentify)@end
+
+NS_ASSUME_NONNULL_END
+
+//NSObject+UniqueIdentify.m
+#import &quot;NSObject+UniqueIdentify.h&quot;
+
+@implementation NSObject (UniqueIdentify)
+
+@end
+
+//MallTGoodTagView.h
+
+extern NSString * _Nonnull const ImmediateyPurchase;
+extern NSString * _Nonnull const ShareToAward;
+
+//MallTGoodTagView.m
+NSString *const ImmediateyPurchase = @&quot;立即抢购&quot;;
+NSString *const ShareToAward = @&quot;分享赚佣金&quot;;
+
+- (NSString *)setUniqueIdentifier
+{
+    if (self.tagString) {
+        return self.tagString;
+    } else {
+        return NSStringFromClass([self class]);
+    }
+}
+
+//UIResponder Category 生成 viewPath
+- (NSString *)lbp_identifierKa
+{
+//    if (self.xq_identifier_ka == nil) {
+        if ([self isKindOfClass:[UIView class]]) {
+            UIView *view = (id)self;
+            NSString *sameViewTreeNode = [view obtainSameSuperViewSameClassViewTreeIndexPath];
+            NSMutableString *str = [NSMutableString string];
+            //特殊的 加减购 因为带有spm但是要区分加减 需要带TreeNode
+            NSString *className = [NSString stringWithUTF8String:object_getClassName(view)];
+            if (!view.accessibilityIdentifier || [className isEqualToString:@&quot;lbpButton&quot;]) {
+                [str appendString:sameViewTreeNode];
+                [str appendString:@&quot;,&quot;];
+            }
+            while (view.nextResponder) {
+                 if ([view respondsToSelector:@selector(setUniqueIdentifier)]) {
+                    NSString *unqiueIdentifier = [view setUniqueIdentifier];
+                    if (unqiueIdentifier) {
+                        [str appendFormat:@&quot;%@,&quot;, unqiueIdentifier];
+                    }
+                }00
+                [str appendFormat:@&quot;%@,&quot;, NSStringFromClass(view.class)];
+                if ([view.class isSubclassOfClass:[UIViewController class]]) {
+                    break;
+                }
+                view = (id)view.nextResponder;
+            }
+            self.xq_identifier_ka = [self md5String:[NSString stringWithFormat:@&quot;%@&quot;,str]];
+            //            self.xq_identifier_ka = [NSString stringWithFormat:@&quot;%@&quot;,str];
+        }
+//    }
+    return self.xq_identifier_ka;
+}
+</code></pre><h2 id="数据如何处理"><a href="#数据如何处理" class="headerlink" title="数据如何处理"></a>数据如何处理</h2><p>利用系统提供的 accessibilityIdentifier 官方给出的解释是标识用户界面元素的字符串</p>
+<pre><code>/*
+
+A string that identifies the user interface element.
+
+default == nil
+
+*/
+
+@property(nullable, nonatomic, copy) NSString *accessibilityIdentifier NS_AVAILABLE_IOS(5_0);
+</code></pre><p>服务端下发唯一标识</p>
+<p>接口获取的数据，里面有当前元素的唯一标识。比如在 UITableView 的界面去请求接口拿到数据，那么在在获取到的数据源里面会有一个字段，专门用来存储动态化的经常变动的业务数据。</p>
+<pre><code>cell.accessibilityIdentifier = [[[SDGGoodsCategoryServices sharedInstance].categories[indexPath.section] children][indexPath.row].spmContent yy_modelToJSONString];
+</code></pre><h3 id="基础数据"><a href="#基础数据" class="headerlink" title="基础数据"></a>基础数据</h3><p>设计上分为2个 pod 库，一个是 TriggerKit（专门用来 hook 机会需要的所有事件，页面停留时间、页面标识、view标识），另一个是 Appmonitor（专门用来提供基础数据、埋点数据的维护、上传机制）。所以在 Appmonitor 里面有个类叫做 UserTrackDataCenter 的类，专门提供一些基础数据（系统版本、操作系统、地理位置、网络等信息）。</p>
+<p>对外暴露出一些方法，用来将埋点数据交给 Appmonitor 去维护埋点数据，达到合适的“机制”再去上传埋点数据到服务端。</p>
+<pre><code>+ (void)clickEventUuid:(NSString *)uuid otherParam:(NSDictionary *)otherParam spmContent:(NSDictionary *)spmContent {
+    if (uuid) {
+        NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:otherParam];
+        params[SDGStatisticEventtagKey] = @&quot;clickMonitorV1&quot;;
+        NSMutableDictionary *valueDict = [[NSMutableDictionary alloc] initWithDictionary:spmContent];
+        valueDict[@&quot;xpath&quot;] = uuid?:@&quot;&quot;;
+        params[SDGStatisticEventtagValue] = valueDict?:@{};
+        [[AppMonotior shareInstance] traceEvent:[AMStatisticEvent eventWithInfo:params]];
+    }
+}
+</code></pre><h3 id="数据上报"><a href="#数据上报" class="headerlink" title="数据上报"></a>数据上报</h3><p>数据通过上面的办法收集完了，那么如何及时、高效的上传到后端，给运营分析、处理呢？</p>
+<p>App 运行期间用户会点击非常多的数据，如果实时上传的话对于网络的利用率较低，所以需要考虑一个机制去控制用户产生的埋点数据的上传。</p>
+<p>思路是这样的。对外部暴露出一个接口，用来将产生的数据往数据中心存储。用户产生的数据会先保存到 AppMonitor 的内存中去，设置一个临界值（memoryEventMax = 50），如果存储的值达到设置的临界值 memoryEventMax，那么将内存中的数据写入文件系统，以 zip 的形式保存下来，然后上传到埋点系统。如果没有达到临界值但是存在一些 App 状态切换的情况，这时候需要及时保存数据到持久化。当下次打开 App 就去从本地持久化的地方读取是否有未上传的数据，如果有就上传日志信息，成功后删除本地的日志压缩包。</p>
+<p>App 应用状态的切换策略如下：</p>
+<p>didFinishLaunchWithOptions:内存日志信息写入硬盘</p>
+<p>didBecomeActive：上传</p>
+<p>willTerimate：内存日志信息写入硬盘</p>
+<p>didEnterBackground：内存日志信息写入硬盘</p>
+<p>下面的代码是 App 埋点数据的保存与上传</p>
+<pre><code>// 将App日志信息写入到内存中。当内存中的数量到达一定规模（超过设置的内存中存储的数量）的时候就将内存中的日志存储到文件信息中
+- (void)joinEvent:(NSDictionary *)dictionary
+{
+    if (dictionary) {
+        NSDictionary *tmp = [self createDicWithEvent:dictionary];
+        if (!s_memoryArray) {
+            s_memoryArray = [NSMutableArray array];
+        }
+        [s_memoryArray addObject:tmp];
+        if ([s_memoryArray count] &gt;= s_flushNum) {
+            [self writeEventLogsInFilesCompletion:^{
+                [self startUploadLogFile];
+            }];
+        }
+    }
+}
+
+// 外界调用的数据传递入口（App埋点统计）
+- (void)traceEvent:(AMStatisticEvent *)event
+{
+    // 线程锁,防止多处调用产生并发问题
+    @synchronized (self) {
+        if (event &amp;&amp; event.userInfo) {
+            [self joinEvent:event.userInfo];
+        }
+    }
+}
+
+// 将内存中的数据写入到文件中，持久化存储
+- (void)writeEventLogsInFilesCompletion:(void(^)(void))completionBlock
+{
+    NSArray *tmp = nil;
+    @synchronized (self) {
+        tmp = s_memoryArray;
+        s_memoryArray = nil;
+    }
+    if (tmp) {
+        __weak typeof(self) weakSelf = self;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSString *jsonFilePath = [weakSelf createTraceJsonFile];
+            if ([weakSelf writeArr:tmp toFilePath:jsonFilePath]) {
+                NSString *zipedFilePath = [weakSelf zipJsonFile:jsonFilePath];
+                if (zipedFilePath) {
+                    [AppMonotior clearCacheFile:jsonFilePath];
+                    if (completionBlock) {
+                        completionBlock();
+                    }
+                }
+            }
+        });
+    }
+}
+
+// 从App埋点统计压缩包文件夹中的每个压缩包文件上传服务端，成功后就删除本地的日志压缩包
+- (void)startUploadLogFile
+{
+    NSArray *fList = [self listFilesAtPath:[self eventJsonPath]];
+    if (!fList || [fList count] == 0) {
+        return;
+    }
+    [fList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if (![obj hasSuffix:@&quot;.zip&quot;]) {
+            return;
+        }
+
+        NSString *zipedPath = obj;
+        unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:zipedPath error:nil] fileSize];
+        if (!fileSize || fileSize &lt; 1) {
+            return;
+        }
+        // 调用接口上传埋点数据
+        [self uploadZipFileWithPath:zipedPath completion:^(NSString *completionResult) {
+            if ([completionResult isEqual:@&quot;OK&quot;]) {
+                [AppMonotior clearCacheFile:zipedPath];
+            }
+        }];
+    }];
+}
+</code></pre><p>使用的时候就是在 hook 系统事件的时候，去调用统计页面上传数据</p>
+<pre><code>/UIViewController
+[UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];    // 页面出现
+[UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];    //页面消失
+</code></pre><h2 id="总结下来关键步骤："><a href="#总结下来关键步骤：" class="headerlink" title="总结下来关键步骤："></a>总结下来关键步骤：</h2><p>hook 系统的各种事件（UIResponder、UITableView、UICollectionView代理事件、UIControl事件、UITapGestureRecognizers）、hook 应用程序、控制器生命周期。在做本来的逻辑之前添加额外的监控代码</p>
+<p>对于点击的元素按照视图树生成对应的唯一标识（addCartButton.GoodsView.GoodsViewController） 的 md5 值</p>
+<p>在业务开发完毕，进入埋点的编辑模式，将 md5 和关键的页面的关键事件（运营、产品想统计的关键模块：App层级、业务模块、关键页面、关键操作）给绑定起来。比如 addCartButton.GoodsView.GoodsViewController.tbApp 对应了 tbApp-商城模块-商品详情页-加入购物车功能。</p>
+<p>将所需要的数据存储下来</p>
+<p>设计机制等到合适的时机去上传数据</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/04/看完就懂的无痕埋点/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关于日志模式及日志级别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1662,116 +2179,6 @@ pathAnim.duration = duration * 0.8f;
 
 
   
-    <article id="post-通过单例、归档存储多个用户数据 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/16/通过单例、归档存储多个用户数据 /">通过单例、归档存储多个用户数据</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/16/通过单例、归档存储多个用户数据 /" class="archive-article-date">
-  	<time datetime="2019-06-16T12:37:46.199Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>之前一直是只利用单例存储个人信息的。为了保证用户数据的更新，还必须重写每个属性的set方法，为每一个属性建立一个key，一旦更新就要用NSUserDefaults进行存储，一条属性基本需要十行代码进行书写。如果属性多了起来，那代码量就更加惨不忍睹。且如果在用户数据包含model的情况下，还要进行额外处理，那过程就更加繁琐了。<br>索性，自己就利用归档相关的知识重新进行了整理。</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>在WJGBaseModel中提供三个方法:</p>
-<pre><code>+ (instancetype)sharedInstance:(NSString *)key;
-+ (void)saveData:(NSString *)key;
-+ (void)clearData:(NSString *)key;
-</code></pre><p>作用分别是:</p>
-<p>根据标识key创建单例对象。<br>存储/更新数据。<br>删除数据。</p>
-<h3 id="1-存储数据"><a href="#1-存储数据" class="headerlink" title="1.存储数据"></a>1.存储数据</h3><pre><code>UserModel *userModel = [UserModel sharedInstance:UserKey0];
-userModel.dic = @{@&quot;sex&quot;:@&quot;man&quot;};
-userModel.name = @&quot;tl&quot;;
-userModel.age = 25;
-
-FatherModel *fatherModel = [FatherModel new];
-fatherModel.arr = @[@&quot;1&quot;,@&quot;2&quot;,@&quot;3&quot;];
-fatherModel.name = @&quot;xxx&quot;;
-fatherModel.phone = 18599990001;
-userModel.father = fatherModel;
-
-WifeModel *wifeModel = [WifeModel new];
-wifeModel.name = @&quot;yyy&quot;;
-wifeModel.height = 165;
-wifeModel.weight = 56.5;
-fatherModel.wife = wifeModel;
-
-[UserModel saveData:UserKey0];
-</code></pre><h3 id="2-更新数据"><a href="#2-更新数据" class="headerlink" title="2.更新数据"></a>2.更新数据</h3><pre><code>UserModel *userModel = [UserModel sharedInstance:UserKey0];
-FatherModel *fatherModel = userModel.father;
-WifeModel *wifeModel = fatherModel.wife;
-
-userModel.age = 30;
-fatherModel.arr = nil;
-fatherModel.name = @&quot;yyy&quot;;
-wifeModel.name = nil;
-
-[UserModel saveData:UserKey0];
-</code></pre><h3 id="3-删除数据"><a href="#3-删除数据" class="headerlink" title="3.删除数据"></a>3.删除数据</h3><pre><code>[UserModel clearData:UserKey0];
-</code></pre><p><a href="https://github.com/iwenyupinlun01/WJGBaseModel" target="_blank" rel="noopener">DEMO</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/16/通过单例、归档存储多个用户数据 /">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -1786,7 +2193,7 @@ wifeModel.name = nil;
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2019 wangjungang
+    		&copy; 2020 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1913,11 +2320,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1929,11 +2336,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">

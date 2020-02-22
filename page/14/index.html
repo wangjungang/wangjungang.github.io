@@ -152,6 +152,304 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS NSConding 协议归档" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/24/iOS NSConding 协议归档/">iOS NSConding 协议归档</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/24/iOS NSConding 协议归档/" class="archive-article-date">
+  	<time datetime="2018-11-24T14:20:42.496Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-24</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>1.归档是将数据持久化的一种方式，一般针对于比较复杂对象，比如自定义的对象，来进行数据持久化操作。</p>
+<p>2.归档的对象需要遵循NSCoding协议，存储的时候调用encodeWithCoder：方法，读取的时候调用initWithCoder：方法。</p>
+<p>3.将数据写入本地需要调用 [NSKeyedArchiver archiveRootObject:per toFile:filePath]，filePath为存储的路径。</p>
+<p>4.从本地读取数据需要调用[NSKeyedUnarchiver unarchiveObjectWithFile:filePath]，filePath为存储的路径。</p>
+<h2 id="对自定义对象进行归档"><a href="#对自定义对象进行归档" class="headerlink" title="对自定义对象进行归档"></a>对自定义对象进行归档</h2><h3 id="1-自定义Person类服从NSCoding协议"><a href="#1-自定义Person类服从NSCoding协议" class="headerlink" title="1.自定义Person类服从NSCoding协议"></a>1.自定义Person类服从NSCoding协议</h3><pre><code>#import &lt;Foundation/Foundation.h&gt;
+#import &lt;UIKit/UIKit.h&gt;
+
+@interface Person : NSObject &lt;NSCoding&gt;
+@property (nonatomic, copy) NSString *name;
+@property (nonatomic, assign) int age;
+@property (nonatomic, assign)  CGFloat height;
+@end
+</code></pre><h3 id="2-实现协议方法encodeWithCoder：和initWithCoder："><a href="#2-实现协议方法encodeWithCoder：和initWithCoder：" class="headerlink" title="2.实现协议方法encodeWithCoder：和initWithCoder："></a>2.实现协议方法encodeWithCoder：和initWithCoder：</h3><pre><code>#import &quot;Person.h&quot;
+
+@implementation Person
+//写入文件时调用 -- 将需要存储的属性写在里面
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+    [aCoder encodeObject:self.name forKey:@&quot;name&quot;];
+    [aCoder encodeInt:self.age forKey:@&quot;age&quot;];
+    [aCoder encodeFloat:self.height forKey:@&quot;height&quot;];
+}
+
+//从文件中读取时调用 -- 将需要存储的属性写在里面
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
+    if (self = [super init]) {
+        self.name = [aDecoder decodeObjectForKey:@&quot;name&quot;];
+        self.age = [aDecoder decodeIntForKey:@&quot;age&quot;];
+        self.height = [aDecoder decodeFloatForKey:@&quot;height&quot;];
+    }
+    return self;
+}
+@end
+</code></pre><h3 id="3-写入与读取"><a href="#3-写入与读取" class="headerlink" title="3.写入与读取"></a>3.写入与读取</h3><p>写入：[NSKeyedArchiver archiveRootObject:per toFile:filePath]</p>
+<p>读取： [NSKeyedUnarchiver unarchiveObjectWithFile:filePath]</p>
+<pre><code>#import &quot;ViewController.h&quot;
+#import &quot;Person.h&quot;
+@interface ViewController ()
+
+@end
+
+@implementation ViewController
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self saveModel];
+    [self readModel];
+}
+
+//存储数据
+- (void)saveModel {
+    Person *per = [Person new];
+    per.name = @&quot;xiaoming&quot;;
+    per.age = 18;
+    per.height = 180;
+
+    NSString *filePath = [self getFilePath];
+
+    //将对象per写入
+    [NSKeyedArchiver archiveRootObject:per toFile:filePath];
+
+}
+//读取数据
+- (void)readModel {
+    NSString *filePath = [self getFilePath];
+
+    //取出per对象
+    Person *per = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
+    NSLog(@&quot;%@ -- %@ -- %d -- %.0f&quot;, per, per.name, per.age, per.height);
+}
+//获得全路径
+- (NSString *)getFilePath {
+    //获取Documents
+    NSString *doc = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+    //在Documents下创建Person.data文件
+    NSString *filePath = [doc stringByAppendingPathComponent:@&quot;Person.data&quot;];
+    return filePath;
+}
+@end
+</code></pre><p>readModel：方法中打印出存储的per对象相关信息，则对自定义对象Person数据持久化成功</p>
+<h2 id="运用runtime优化"><a href="#运用runtime优化" class="headerlink" title="运用runtime优化"></a>运用runtime优化</h2><p>当该类拥有上百个属性时，那将会花费更多的功夫在重复代码上，所以使用运行时机制截取类的成员变量，进行赋值</p>
+<p>Animal 类</p>
+<pre><code>@property (nonatomic,copy) NSString *name;
+@property (nonatomic,assign) int age;
+//成员变量
+@property (nonatomic,assign) double weight;
+
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+
+    if (self = [super init]) {
+        Class c = self.class;
+        // 截取类和父类的成员变量
+        while (c &amp;&amp; c != [NSObject class]) {
+            unsigned int count = 0;
+            Ivar *ivars = class_copyIvarList(c, &amp;count);
+            for (int i = 0; i &lt; count; i++) {
+
+                NSString *key = [NSString stringWithUTF8String:ivar_getName(ivars[i])];
+
+                id value = [aDecoder decodeObjectForKey:key];
+
+                [self setValue:value forKey:key];
+
+            }
+            // 获得c的父类
+            c = [c superclass];
+            free(ivar);
+        }
+
+
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+
+     Class c = self.class;
+    // 截取类和父类的成员变量
+    while (c &amp;&amp; c != [NSObject class]) {
+        unsigned int count = 0;
+
+        Ivar *ivars = class_copyIvarList(c, &amp;count);
+
+        for (int i = 0; i &lt; count; i++) {
+            Ivar ivar = ivars[i];
+            NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
+
+            id value = [self valueForKey:key];
+
+            [aCoder encodeObject:value forKey:key];
+        }
+        c = [c superclass];
+        // 释放内存
+        free(ivar);
+    }
+
+}
+</code></pre><p>代码测试</p>
+<pre><code>- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    CXDog *d = [[CXDog alloc] init];
+    d.name = @&quot;cx&quot;;
+    d.age = 12;
+    d.weight = 1.55;
+    // 将对象归档
+    [NSKeyedArchiverarchiveRootObject:d toFile:@&quot;/Users/c_xie/Desktop/wj.xxoo&quot;];
+    // 将对象解档
+    CXDog *dog = [NSKeyedUnarchiverunarchiveObjectWithFile:@&quot;/Users/c_xie/Desktop/wj.xxoo&quot;];
+    NSLog(@&quot;%@,%d,%f&quot;,dog.name,dog.age,d.weight);
+
+}
+</code></pre><h2 id="runtime自动归档和解档"><a href="#runtime自动归档和解档" class="headerlink" title="runtime自动归档和解档"></a>runtime自动归档和解档</h2><pre><code>#import &lt;Foundation/Foundation.h&gt;
+
+@interface Person : NSObject
+
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSNumber *age;
+@property (nonatomic, strong) NSString *address;
+@property (nonatomic, strong) NSString *company;
+@property (nonatomic, strong) NSString *job;
+
+@end
+
+#import &quot;Person.h&quot;
+#import &lt;objc/runtime.h&gt;
+
+@implementation Person
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    if (self = [super init])
+    {
+        unsigned int outCount;
+        Ivar *ivars = class_copyIvarList([self class], &amp;outCount);
+        for (int i = 0; i &lt; outCount; i ++)
+        {
+            Ivar ivar = ivars[i];
+            NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
+            [self setValue:[aDecoder decodeObjectForKey:key] forKey:key];
+        }
+        free(ivars)
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    unsigned int outCount;
+    Ivar *ivars = class_copyIvarList([self class], &amp;outCount);
+    for (int i = 0; i &lt; outCount; i ++)
+    {
+        Ivar ivar = ivars[i];
+        NSString *key = [NSString stringWithUTF8String:ivar_getName(ivar)];
+        [aCoder encodeObject:[self valueForKey:key] forKey:key];
+    }
+    free(ivars)
+}
+
+@end
+</code></pre><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><pre><code>// 自动归档/解档
+NSData *data = [[NSUserDefaults standardUserDefaults] objectForKey:@&quot;PersonInfo&quot;];
+if (data) {
+        // 解档使用
+        Person *person = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        NSLog(@&quot;name: %@&quot;, person.name);
+} else {
+        Person *person = [Person new];
+        person.name = @&quot;devZhang&quot;;
+        person.age = @(35);
+        person.company = @&quot;ShengXue&quot;;
+        person.job = @&quot;iOSDev&quot;;
+        person.address = @&quot;龙岗坂田国际中心&quot;;
+        // 归档存储
+        data = [NSKeyedArchiver archivedDataWithRootObject:person];
+        [[NSUserDefaults standardUserDefaults] setObject:data forKey:@&quot;PersonInfo&quot;];
+}
+</code></pre><p>未进行归档、解档时报错</p>
+<pre><code>// 归档错误
+Terminating app due to uncaught exception &apos;NSInvalidArgumentException&apos;, reason: &apos;-[Person encodeWithCoder:]: unrecognized selector sent to instance 0x600000450d40&apos;
+
+// 解档错误
+Terminating app due to uncaught exception &apos;NSInvalidArgumentException&apos;, reason: &apos;-[Person initWithCoder:]: unrecognized selector sent to instance 0x60000005d760&apos;
+</code></pre><p>使用自动归档、解档后，自定义类型数据处理正常</p>
+<pre><code>2018-07-07 00:26:20.023737+0800 DemoRuntime[1850:81640] name: devZhang
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/24/iOS NSConding 协议归档/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关于压缩图片的方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1740,179 +2038,6 @@ bezierPathWithRect:myView.bounds] CGPath]];
 
 
   
-    <article id="post-无限循环滚动的TableView" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/02/无限循环滚动的TableView/">无限循环滚动的TableView</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/02/无限循环滚动的TableView/" class="archive-article-date">
-  	<time datetime="2018-10-02T14:37:33.938Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天来看看如何实现一个可以无限循环的TableView</p>
-<p>条条大路通罗马，个人分析下以下思路的可行性：</p>
-<p>借鉴无限广告轮播的思路。可行性不高，主要是列表头部和尾部的衔接不够自然，而且快速滑动不够流畅。</p>
-<p>使用TableView+3倍长度dataSource。可行性一般，在使用过程中滑动流畅，但是由于重复的数据源，可能导致在处理事件时需要特别对数据进行处理避免重复，另外此方法不能重用，总让有强迫症的人感觉不够优雅。。。</p>
-<p>使用TableView子类+数据源拦截器。可行性较高，在使用过程中滑动流畅，而且在代理方法中并不需要做特殊处理，可封装重用。</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="我们通过创建TableView的子类，在子类中对dataSource进行处理。"><a href="#我们通过创建TableView的子类，在子类中对dataSource进行处理。" class="headerlink" title="我们通过创建TableView的子类，在子类中对dataSource进行处理。"></a>我们通过创建TableView的子类，在子类中对dataSource进行处理。</h3><p>如果直接将子类自身设为子类的dataSource，创建另外一个dataSource作为对外的delegate，将自身不处理的代理消息转发给对外的delegate，这样要求自身实现所有的代理方法，非常蛋疼。</p>
-<p>因此，我们创建一个拦截器，通过拦截器决定将消息发送到TableView子类内部或者是其dataSource，这样简洁又比较优雅（装逼）。</p>
-<p>注：使用此方法实现无限循环的TableView，需要对ObjC的消息转发有一定理解。</p>
-<h3 id="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"><a href="#1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置" class="headerlink" title="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"></a>1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置</h3><pre><code>- (void)layoutSubviews {
-    [self resetContentOffsetIfNeeded];
-    [super layoutSubviews];
-}
-
-- (void)resetContentOffsetIfNeeded {
-    CGPoint contentOffset  = self.contentOffset;
-    //头部
-    if (contentOffset.y &lt; 0.0) {
-        contentOffset.y = self.contentSize.height / 3.0;
-    }
-    //尾部
-    else if (contentOffset.y &gt;= (self.contentSize.height - self.bounds.size.height)) {
-        contentOffset.y = self.contentSize.height / 3.0 - self.bounds.size.height;
-    }
-    [self setContentOffset: contentOffset];
-}
-</code></pre><h3 id="2、创建一个拦截器"><a href="#2、创建一个拦截器" class="headerlink" title="2、创建一个拦截器"></a>2、创建一个拦截器</h3><pre><code>@interface SUTableViewInterceptor : NSObject
-
-@property (nonatomic, weak) id receiver;
-@property (nonatomic, weak) id middleMan;
-
-@end
-</code></pre><h3 id="3、将拦截器设置为TableView子类的dataSource"><a href="#3、将拦截器设置为TableView子类的dataSource" class="headerlink" title="3、将拦截器设置为TableView子类的dataSource"></a>3、将拦截器设置为TableView子类的dataSource</h3><pre><code>- (void)setDataSource:(id&lt;UITableViewDataSource&gt;)dataSource {
-    self.dataSourceInterceptor.receiver = dataSource;
-    [super setDataSource:(id&lt;UITableViewDataSource&gt;)self.dataSourceInterceptor];
-}
-
-- (SUTableViewInterceptor *)dataSourceInterceptor {
-    if (!_dataSourceInterceptor) {
-        _dataSourceInterceptor = [[SUTableViewInterceptor alloc]init];
-        _dataSourceInterceptor.middleMan = self;
-    }
-    return _dataSourceInterceptor;
-}
-</code></pre><h3 id="4、在子类中实现需要加工处理的代理方法"><a href="#4、在子类中实现需要加工处理的代理方法" class="headerlink" title="4、在子类中实现需要加工处理的代理方法"></a>4、在子类中实现需要加工处理的代理方法</h3><pre><code>- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
-    self.actualRows = [self.dataSourceInterceptor.receiver tableView:tableView numberOfRowsInSection:section];
-    return self.actualRows * 3;
-}
-
-- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSIndexPath * actualIndexPath = [NSIndexPath indexPathForRow:indexPath.row % self.actualRows inSection:indexPath.section];
-    return [self.dataSourceInterceptor.receiver tableView:tableView cellForRowAtIndexPath:actualIndexPath];
-}
-</code></pre><h3 id="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理"><a href="#5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理" class="headerlink" title="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)"></a>5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)</h3><pre><code>@implementation SUTableViewInterceptor
-
-#pragma mark - forward &amp; response override
-- (id)forwardingTargetForSelector:(SEL)aSelector {
-    if ([self.middleMan respondsToSelector:aSelector]) return self.middleMan;
-    if ([self.receiver respondsToSelector:aSelector]) return self.receiver;
-    return [super forwardingTargetForSelector:aSelector];
-}
-
-- (BOOL)respondsToSelector:(SEL)aSelector {
-    if ([self.middleMan respondsToSelector:aSelector]) return YES;
-    if ([self.receiver respondsToSelector:aSelector]) return YES;
-    return [super respondsToSelector:aSelector];
-}
-
-@end
-</code></pre><p>到此，自定义的TableView基本完成，整理一下思路，不难理解我们是通过拦截器将代理消息转发到子类内部，子类内部则通过外部代理提供的dataSource来拷贝成3份，来组成一个3倍于普通长度的TableView，并在其滑动时进行处理，形成可以无限循环滚动的效果。</p>
-<p>这样，在外部看起来，使用这个TableView和普通TableView没有什么不同，但是多了一个可以循环滚动的“属性”，当然，你也可以将其封装成可设置的属性，方便切换普通模式和循环滚动模式。</p>
-<p>下面，用这个TableView的子类来试着创建一个可以循环滚动的列表看看：</p>
-<pre><code>- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self.view addSubview:self.tableView];
-}
-
-- (UITableView *)tableView {
-    if(!_tableView) {
-        _tableView = [[SUTableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-        _tableView.delegate = self;
-        _tableView.dataSource = self;
-        _tableView.showsVerticalScrollIndicator = NO;
-        _tableView.rowHeight = 150.0;
-        [_tableView registerNib:[UINib nibWithNibName:@&quot;LiveCell&quot; bundle:nil] forCellReuseIdentifier:liveCellID];
-    }
-    return _tableView;
-}
-
-#pragma mark - UITableViewDataSource
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 5;
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    LiveCell * cell = [self.tableView dequeueReusableCellWithIdentifier:liveCellID];
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.descLabel.text = [NSString stringWithFormat:@&quot;第 %ld 个主播频道&quot;, indexPath.row + 1];
-    return cell;
-}
-</code></pre><p>怎么样，强迫症是不是舒缓了，是不是轻松多了~~~</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/02/无限循环滚动的TableView/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/13/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/15/">Next &raquo;</a>
@@ -1927,7 +2052,7 @@ bezierPathWithRect:myView.bounds] CGPath]];
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2019 wangjungang
+    		&copy; 2020 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -2054,11 +2179,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2070,11 +2195,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
