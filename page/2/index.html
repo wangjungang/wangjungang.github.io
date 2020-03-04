@@ -152,6 +152,198 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-使用 RXSwift 构建 UITableView" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/22/使用 RXSwift 构建 UITableView/">使用 RXSwift 构建 UITableView</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/22/使用 RXSwift 构建 UITableView/" class="archive-article-date">
+  	<time datetime="2019-09-22T12:09:02.833Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="使用-RXSwift-构建-UITableView-的步骤"><a href="#使用-RXSwift-构建-UITableView-的步骤" class="headerlink" title="使用 RXSwift 构建 UITableView 的步骤"></a>使用 RXSwift 构建 UITableView 的步骤</h2><ul>
+<li>构建 Observable 类型的数据源</li>
+<li>将数据源与 tableView 绑定</li>
+<li>绑定 tableView 的事件(如：cell 的点击事件)</li>
+<li>设置 tableView Delegate/DataSource 的代理方法(根据需求，非必要)</li>
+</ul>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>在我们开始之前，我们需要在项目中集成 RXSwift，具体步骤可参见 RXSwift。成功集成之后，我们需要在要使用 RXSwift 的文件中导入它：</p>
+<pre><code>import RxSwift
+</code></pre><p>接着，我们要创建一个 DisposeBag 类型的全局变量(一定要是全局变量)：</p>
+<pre><code>let disposeBag = DisposeBag()
+</code></pre><p>关于 DisposeBag 的作用: DisposeBag 对于 RX 相当于 ARC 对于 iOS，即它是 RX 管理对象内存的一种方式。</p>
+<p>最后，将需要使用的 cell 进行注册：</p>
+<pre><code>tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;Cell&quot;)
+</code></pre><p>OK，到现在为止，我们已经完成了所有的准备工作。接下来，我们可以根据上面的步骤来构建 tableView 了。</p>
+<h2 id="构建-Observable-类型的数据源"><a href="#构建-Observable-类型的数据源" class="headerlink" title="构建 Observable 类型的数据源"></a>构建 Observable 类型的数据源</h2><p>首先，我们需要构建 Observable 类型的数据源。至于为什么要构建 Observable 类型的数据，我们可以从 RXSwift 的文档上一探究竟。</p>
+<p>它的文档上是这么写的：Every Observable sequence is just a sequence. The key advantage for an Observable vs Swift’s Sequence is that it can also receive elements asynchronously。这句话的意思是说，可观察序列和 Swift 的原生序列本质上是一样的，但它们有一个最主要的不同，那就是可观察序列可以异步接受元素。</p>
+<p>通过下面的代码创建 Observable 类型的数据源：</p>
+<pre><code>let texts = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;RXSwift&quot;]
+let textsObservable = Observable.from(optional: texts)
+</code></pre><p>此时，你用 option 键查看 textsObservable 属性的类型，应该显示的是 Observable<string>。</string></p>
+<p><img src="http://img.wangjungang.cn/0YNHnK.jpg" alt=""></p>
+<p>可供使用的数据源已经构建完成，接下来需要将数据源与 tableView 绑定。</p>
+<h2 id="将数据源与-tableView-绑定"><a href="#将数据源与-tableView-绑定" class="headerlink" title="将数据源与 tableView 绑定"></a>将数据源与 tableView 绑定</h2><p>通过下面代码进行绑定(不要忘记最后的 .disposed(by: disposeBag) )：</p>
+<pre><code>textsObservable.bind(to: tableView.rx
+    .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) { (row, text, cell) in
+        cell.textLabel?.text = text
+    }
+    .disposed(by: disposeBag)
+</code></pre><p>在绑定方法的闭包中，我们需要定义三个变量，三个变量分别有以下含义：</p>
+<ul>
+<li>第一个变量为当前cell所处的行数，即：indexPath.row</li>
+<li>第二个变量为可观察序列在当前行数索引的元素，即：texts[row]</li>
+<li>第三个变量为当前cell</li>
+</ul>
+<p><img src="http://img.wangjungang.cn/FXP642.jpg" alt=""></p>
+<h2 id="绑定-tableView-的事件"><a href="#绑定-tableView-的事件" class="headerlink" title="绑定 tableView 的事件"></a>绑定 tableView 的事件</h2><p>通过下面代码进行绑定(cell 的点击事件)：</p>
+<pre><code>tableView.rx.itemSelected.bind { (indexPath) in
+        print(indexPath)
+    }
+    .disposed(by: disposeBag)
+</code></pre><p>同样，不要忘记最后的 disposed 。</p>
+<p>到这里，我们就完成了通过 RX 构建一个简单的 tableView 。如果你对 tableView 还有一些自定义的需求，可通过第四步骤完成。</p>
+<h2 id="设置-tableView-Delegate-DataSource-的代理方法"><a href="#设置-tableView-Delegate-DataSource-的代理方法" class="headerlink" title="设置 tableView Delegate/DataSource 的代理方法"></a>设置 tableView Delegate/DataSource 的代理方法</h2><p>通过下面的代码设置代理：</p>
+<pre><code>tableView.rx.setDelegate(self).disposed(by: disposeBag)
+tableView.rx.setDataSource(self).disposed(by: disposeBag)
+</code></pre><p>然后，你就可以实现相关的代理方法来进行自定义了，以设置高度举例：</p>
+<pre><code>extension ALGExploreDetailVC: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat {
+        return 100
+    }
+}
+</code></pre><p>注意：如果你不需要使用 UITableViewDelegate/UITableViewDataSource 的委托方法的话，你是可以不写的。</p>
+<pre><code>// 不使用 RX 的话，需要实现代理方法
+tableView.delegate = self
+tableView.dataSource = self
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
+    ....
+}
+
+// 使用 RX 
+// 绑定即可，不需写上面的代码
+textsObservable.bind(to: tableView.rx
+    .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) { (row, text, cell) in
+        cell.textLabel?.text = &quot;\(text)&quot;
+    }
+    .disposed(by: disposeBag)
+</code></pre><p>如果使用 RX 绑定了 tableView ，再使用下面的代码就不对了，我们需使用 RX 设置代理的方法。</p>
+<pre><code>tableView.delegate = self
+</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>使用 RX 可以使代码简洁，易读</li>
+<li>使用 RX 语句后需调用 .disposed(by: disposeBag) ,释放内存</li>
+</ul>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><pre><code>import UIKit
+import RxSwift
+
+class TestViewController: UIViewController {
+    var tableView = UITableView(frame: .zero)
+    let kCellHeight: CGFloat = 40
+    let disposeBag = DisposeBag()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor.white
+        setupSubviews()
+    }
+}
+
+extension TestViewController {
+    func setupSubviews() {
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;Cell&quot;)
+        view.addSubview(tableView)
+
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.safeEdges(to: view)
+        //1.创建可观察数据源
+        let texts = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;RXSwift&quot;]
+        let textsObservable = Observable.from(optional: texts)
+        //2. 将数据源与 tableView 绑定
+        textsObservable.bind(to: tableView.rx
+            .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) { (row, text, cell) in
+                cell.textLabel?.text = text
+            }
+            .disposed(by: disposeBag)
+        //3. 绑定 tableView 的事件
+        tableView.rx.itemSelected.bind { (indexPath) in
+                print(indexPath)
+            }
+            .disposed(by: disposeBag)
+
+        //4. 设置 tableView Delegate/DataSource 的代理方法
+        tableView.rx.setDelegate(self).disposed(by: disposeBag)
+    }
+}
+
+extension TestViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat {
+        return 100
+    }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/22/使用 RXSwift 构建 UITableView/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Autorelease &amp; AutoreleasePool" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -3328,200 +3520,6 @@ aPerson.name = &quot;Jordan&quot; //在赋值之前，打印 &quot;I&apos;ve got
 
 
   
-    <article id="post-集成了share分享之后的处理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/04/集成了share分享之后的处理/">集成了share分享之后的处理</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/04/集成了share分享之后的处理/" class="archive-article-date">
-  	<time datetime="2019-09-04T11:59:05.959Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>使用 ShareSDK 的微信登录方法之前，需配置微信 App 的 Secret，然而登录之后 ShareSDK 返回的 token 与后台不匹配，导致调用后台的登录方法报错（ShareSDK 的微信登录 跟 原生的微信登录方法返回的 token 不同）。</p>
-<p>所以我只能用原生的微信登录方法，但是在集成了 ShareSDK 的情况下调用微信登录之后，死活不走 WXApiDelegate（未集成 ShareSDK 之前会走 WXApiDelegate）。</p>
-<p>由于 Twitter 分享的文档都是英文，Facebook 分享之前也没做过，我懒得一个个去搞所以就换成了友盟分享，然而在集成了友盟分享的情况下，调用原生的微信登录方法之后也是不走 WXApiDelegate。然后我看了下微信SDK源码之后换了一个方法：</p>
-<p>after</p>
-<pre><code>//调用原生的微信登录接口
-let req = SendAuthReq.init()
-req.scope = &quot;snsapi_userinfo&quot;
-req.state = &quot;123&quot;
-WXApi.sendAuthReq(req, viewController: nil, delegate: self)
-</code></pre><p>before</p>
-<pre><code>//调用原生的微信登录接口
-let req = SendAuthReq.init()
-req.scope = &quot;snsapi_userinfo&quot;
-req.state = &quot;123&quot;
-WXApi.sendReq(req)
-</code></pre><p>并且在登录界面实现了微信代理方法：</p>
-<pre><code>// MARK: 微信代理方法
-extension GMLoginView: WXApiDelegate {
-
-    func onResp(_ resp: BaseResp!) {
-        print(&quot;--&gt;&gt; 微信代理方法&quot;)
-    }
-}
-</code></pre><p>这时终于走了 AppDelegate 的 WXApiDelegate。使用友盟分享SDK实现了微信分享、微博分享、Facebook分享、Twitter分享功能，使用原生的微信登录接口了实现后台登录。</p>
-<p>只在集成友盟分享SDK的时候，同时集成微信SDK即可。</p>
-<p>微信分享 和 微信登录的回调都在 AppDelegate 的 WXApiDelegate 中处理。</p>
-<p>虽然不走 GMLoginView 的 WXApiDelegate ，但是这段代码却不得不写，否则就不走 AppDelegate 的 WXApiDelegate。</p>
-<h2 id="集成友盟分享SDK时的-AppDelegate-swift"><a href="#集成友盟分享SDK时的-AppDelegate-swift" class="headerlink" title="集成友盟分享SDK时的 AppDelegate.swift"></a>集成友盟分享SDK时的 AppDelegate.swift</h2><pre><code>class AppDelegate: UIResponder, UIApplicationDelegate {
-
-    var window: UIWindow?
-
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -&gt; Bool {
-
-        self.configThirdSDK(launchOptions: launchOptions)
-        return true
-    }
-
-    func configThirdSDK(launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
-
-        //配置友盟分享
-        UMSocialManager.default().openLog(true)
-        UMSocialManager.default().umSocialAppkey = GMConst.kYoumengAppID
-        UMSocialManager.default().setPlaform(.wechatSession, appKey: GMConst.kWechatAppID, appSecret: nil, redirectURL: nil)
-        UMSocialManager.default().setPlaform(.sina, appKey: GMConst.kSinaAppID, appSecret: GMConst.kSinaSecret, redirectURL: nil)
-        UMSocialManager.default().setPlaform(.twitter, appKey: GMConst.kTwitterID, appSecret: GMConst.kTwitterSecret, redirectURL: nil)
-        UMSocialManager.default().setPlaform(.facebook, appKey: GMConst.kFacebookID, appSecret: nil, redirectURL: nil)
-
-        //配置原生微信API
-        WXApi.registerApp(GMConst.kWechatAppID, enableMTA: true)
-    }
-
-    // MARK: 设置系统回调
-    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -&gt; Bool {
-
-        let absoluteString = url.absoluteString
-        if absoluteString.range(of: GMConst.kWechatAppID) != nil {
-            return WXApi.handleOpen(url, delegate: self as WXApiDelegate)
-
-        } else {
-            return UMSocialManager.default().handleOpen(url, sourceApplication: sourceApplication, annotation: annotation)
-        }
-    }
-
-    func application(_ application: UIApplication, handleOpen url: URL) -&gt; Bool {
-         //代码同上一个方法   
-    }
-}
-
-// MARK: 微信代理方法
-extension AppDelegate: WXApiDelegate {
-
-    func onResp(_ resp: BaseResp!) {
-
-        if resp is SendMessageToWXResp { //微信分享
-
-            if resp.errCode == 0 {//分享成功
-                GMHudUtils.showHUD(title: &quot;分享成功&quot;) 
-            } else if resp.errCode == -2 { 
-                GMHudUtils.showHUD(title: &quot;分享失败&quot;) 
-            }
-
-        } else if resp is SendAuthResp{ //微信登录
-
-            self.loginStatus = LoginStatus.none
-            if resp.errCode == 0 {//登录成功
-                //调用后台的登录接口 
-            } else {
-                GMHudUtils.showHUD(title: &quot;登录失败&quot;)
-            }
-        }
-    }
-}
-</code></pre><h3 id="GMLoginView-swift"><a href="#GMLoginView-swift" class="headerlink" title="GMLoginView.swift"></a>GMLoginView.swift</h3><pre><code>class GMLoginView: UIView {
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    override func awakeFromNib() {        
-
-    }
-
-    @IBAction func loginBtnAction(_ sender: UIButton) {
-
-        HUD.flash(.label(&quot;登录中...&quot;), delay: 999) { _ in }
-
-        //调用微信原生的登录接口
-        let req = SendAuthReq.init()
-        req.scope = &quot;snsapi_userinfo&quot;
-        req.state = &quot;123&quot;
-        WXApi.sendAuthReq(req, viewController: nil, delegate: self)
-    }
-}
-
-// MARK: 微信代理方法
-extension GMLoginView: WXApiDelegate {
-
-    func onResp(_ resp: BaseResp!) {
-        print(&quot;--&gt;&gt; 微信代理方法&quot;)
-    }
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/04/集成了share分享之后的处理/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -3651,11 +3649,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
