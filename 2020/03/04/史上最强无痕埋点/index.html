@@ -6,15 +6,27 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Blog</title>
+  <title>史上最强无痕埋点 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/page/4/index.html">
+  <meta name="description" content="写在前面在移动互联网时代，对于每个公司、企业来说，用户的行为数据非常重要。重要到什么程度，用户在这个页面停留多久、点击了什么按钮、浏览了什么内容、什么手机、什么网络环境、App什么版本等都需要清清楚楚。一些大厂的蛮多业务成果都是基于用户操作行为进行推荐后二次转换。另一方面是以日志的作用帮助开发者分析线上问题的一种辅助手段。 那么有了上述的诉求，那么技术人员如何满足这些需求？引出来了一个技术点-“埋">
+<meta name="keywords" content="iOS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="史上最强无痕埋点">
+<meta property="og:url" content="http://yoursite.com/2020/03/04/史上最强无痕埋点/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="写在前面在移动互联网时代，对于每个公司、企业来说，用户的行为数据非常重要。重要到什么程度，用户在这个页面停留多久、点击了什么按钮、浏览了什么内容、什么手机、什么网络环境、App什么版本等都需要清清楚楚。一些大厂的蛮多业务成果都是基于用户操作行为进行推荐后二次转换。另一方面是以日志的作用帮助开发者分析线上问题的一种辅助手段。 那么有了上述的诉求，那么技术人员如何满足这些需求？引出来了一个技术点-“埋">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="http://img.wangjungang.cn/sUK3kh.png">
+<meta property="og:image" content="http://img.wangjungang.cn/7tIkuC.png">
+<meta property="og:image" content="http://img.wangjungang.cn/kAHDPo.png">
+<meta property="og:image" content="http://img.wangjungang.cn/74bO8A.jpg">
+<meta property="og:image" content="http://img.wangjungang.cn/SDd8wH.jpg">
+<meta property="og:image" content="http://img.wangjungang.cn/JbHICW.jpg">
+<meta property="og:updated_time" content="2020-03-04T03:18:12.938Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="史上最强无痕埋点">
+<meta name="twitter:description" content="写在前面在移动互联网时代，对于每个公司、企业来说，用户的行为数据非常重要。重要到什么程度，用户在这个页面停留多久、点击了什么按钮、浏览了什么内容、什么手机、什么网络环境、App什么版本等都需要清清楚楚。一些大厂的蛮多业务成果都是基于用户操作行为进行推荐后二次转换。另一方面是以日志的作用帮助开发者分析线上问题的一种辅助手段。 那么有了上述的诉求，那么技术人员如何满足这些需求？引出来了一个技术点-“埋">
+<meta name="twitter:image" content="http://img.wangjungang.cn/sUK3kh.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,750 +162,20 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-iOS 中处理定时任务的常用方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-史上最强无痕埋点" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/29/iOS 中处理定时任务的常用方法/">iOS 中处理定时任务的常用方法</a>
+    <h1 class="article-title" itemprop="name">
+      史上最强无痕埋点
     </h1>
   
 
         
-        <a href="/2019/08/29/iOS 中处理定时任务的常用方法/" class="archive-article-date">
-  	<time datetime="2019-08-29T03:03:58.790Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目开发中，经常会在代码中处理一些需要延时或定时执行的任务，iOS 中处理定时任务的方法包括 performSelector 方法、NSTimer、GCD、CADisplayLink，其本质都是通过RunLoop来实现，下面我们就对这几个方法做一些总结。</p>
-<h2 id="1-performSelector方法"><a href="#1-performSelector方法" class="headerlink" title="1. performSelector方法"></a>1. performSelector方法</h2><p>在NSRunLoop.h中有对NSObject类的扩展方法，简单易用：</p>
-<pre><code>@interface NSObject (NSDelayedPerforming)
-
-- (void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay inModes:(NSArray&lt;NSRunLoopMode&gt; *)modes;
-- (void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay;
-
-+ (void)cancelPreviousPerformRequestsWithTarget:(id)aTarget selector:(SEL)aSelector object:(nullable id)anArgument;
-+ (void)cancelPreviousPerformRequestsWithTarget:(id)aTarget;
-
-@end
-</code></pre><h2 id="2-NSTimer"><a href="#2-NSTimer" class="headerlink" title="2. NSTimer"></a>2. NSTimer</h2><p>NSTimer 是最常使用的定时器，使用方式简单，NSTimer 是也通过添加到RunLoop中被触发并进行工作的，桥接 CFRunLoopTimerRef。NSTimer中定义的常用方法如下：</p>
-<pre><code>+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti invocation:(NSInvocation *)invocation repeats:(BOOL)yesOrNo;
-+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti invocation:(NSInvocation *)invocation repeats:(BOOL)yesOrNo;
-
-+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;
-+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;
-
-+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer *timer))block API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
-+ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer *timer))block API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
-
-- (instancetype)initWithFireDate:(NSDate *)date interval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer *timer))block API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
-- (instancetype)initWithFireDate:(NSDate *)date interval:(NSTimeInterval)ti target:(id)t selector:(SEL)s userInfo:(nullable id)ui repeats:(BOOL)rep NS_DESIGNATED_INITIALIZER;
-</code></pre><p>以下是初始化NSTimer的不同方式：</p>
-<pre><code>// 自动加入currentRunLoop
-self.timer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
-//self.timer = [NSTimer scheduledTimerWithTimeInterval:5.0 repeats:YES block:^(NSTimer * _Nonnull timer) { }];
-
-// 手动加入RunLoop
-self.timer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
-[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
-
-// 指定timer触发时刻
-NSTimeInterval timeInterval = [self timeIntervalSinceReferenceDate] + 30;
-NSDate *newDate = [NSDate dateWithTimeIntervalSinceReferenceDate:timeInterval];
-self.timer = [[NSTimer alloc] initWithFireDate:newDate interval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
-[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
-</code></pre><p>如果当前界面中有UITableView，则在 UITableView 在滚动过程中，上述代码中的定时器到了时间并没有触发。根据RunLoop的相关知识，同一时刻 RunLoop 只运行在一种 Mode 上，并且只有这个 Mode 相关联的源或定时器会被传递消息，mainRunLoop 一般处于  NSDefaultRunLoopMode，但是在滚动或者点击事件等触发时，mainRunLoop 切换至  NSEventTrackingRunLoopMode ，而上面  timer 被加入的正是 NSDefaultRunLoopMode （未指明也默认加入默认模式），所以滑动时未触发定时操作。<br>解决方法：添加timer到mainRunLoop的NSRunLoopCommonMode中或者子线程中，需要注意的是加入子线程时要手动开启并运行子线程的RunLoop。</p>
-<pre><code>self.timer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
-[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
-</code></pre><p>NSRunLoopCommonMode这是一组可配置的常用模式。将输入源与此模式相关联也会将其与组中的每个模式相关联。对于Cocoa应用程序，此集合默认包括NSDefaultRunLoopMode，NSPanelRunLoopMode和NSEventTrackingRunLoopMode。</p>
-<p>注意：</p>
-<ul>
-<li>iOS10以前初始化的timer在运行期间会对target进行持有，因此，在释放时需要手动调用invalidate方法，并置nil；</li>
-<li>timer不能在当前宿主的dealloc方法中调用，因为timer没有被释放前，当前宿主不会执行dealloc方法；</li>
-<li>当前RunLoop会切换Mode，因此可能导致timer不是立刻被触发。</li>
-<li>在同一线程中，timer重复执行期间，有其他耗时任务时，在改耗时任务完成前也不会触发定时，在耗时任务完成后，timer的定时任务会继续执行。</li>
-<li>dispatch_source_set_timer中设置启动时间，dispatch_time_t可通过两个方法生成：dispatch_time 和 dispatch_walltime</li>
-</ul>
-<h2 id="3-GCD定时器"><a href="#3-GCD定时器" class="headerlink" title="3. GCD定时器"></a>3. GCD定时器</h2><p>我们也可以通过GCD中的方法实现定时器来处理定时任务，实现的代码逻辑如下：</p>
-<pre><code>// 1. 创建 dispatch source，指定检测事件为定时
-dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(&quot;Timer_Queue&quot;, 0));
-// 2. 设置定时器启动时间、间隔
-dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC,  0 * NSEC_PER_SEC); 
-// 3. 设置callback
-dispatch_source_set_event_handler(timer, ^{
-        NSLog(@&quot;timer fired&quot;);
-    });
-dispatch_source_set_event_handler(timer, ^{
-       //取消定时器时一些操作
-    });
-// 4. 启动定时器（刚创建的source处于被挂起状态）
-dispatch_resume(timer);
-// 5. 暂停定时器
-dispatch_suspend(timer);
-// 6. 取消定时器
-dispatch_source_cancel(timer);
-timer = nil;
-</code></pre><p>当我们想要timer只是延时执行一次时，只调用以下方法即可：</p>
-<pre><code>// 在主线程中延时5s中执行
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
-    });
-</code></pre><p>注意：</p>
-<ul>
-<li>正在执行的 block，在调用dispatch_suspend(timer)时，当前block并不会立即停止而是继续执行至完成；</li>
-<li>dispatch source在挂起时，直接设置为 nil 或者重新赋值都会造成crash，需要在activate的状态下调用dispatch_source_cancel(timer)后置为 nil 或者重新赋值；</li>
-<li>dispatch_source_cancel方法可以在dispatch_source_set_event_handler中调用，即timer可内部持有也可外部持有；</li>
-<li>dispatch_resume和dispatch_suspend调用需成对出现，否则会crash；</li>
-<li>dispatch source会比 NSTimer 更精准一些。</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/29/iOS 中处理定时任务的常用方法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Sign in with Apple" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/29/Sign in with Apple/">Sign in with Apple</a>
-    </h1>
-  
-
-        
-        <a href="/2019/08/29/Sign in with Apple/" class="archive-article-date">
-  	<time datetime="2019-08-29T02:43:48.661Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近了解了iOS13 新增的功能之Sign In With Apple。会输出2篇文章，给大家分享一下。这是第一篇文章，主要的内容为Sign In With Apple及相关名词的介绍，及在iOS上的基础使用。</p>
-<h2 id="Sign-in-with-Apple是什么"><a href="#Sign-in-with-Apple是什么" class="headerlink" title="Sign in with Apple是什么"></a>Sign in with Apple是什么</h2><p>苹果官方 是这么介绍的Sign In With Apple</p>
-<p>The fast, easy way to sign in to apps and websites.<br>Sign In With Apple 是一种在app 和网站上快速、容易登录的方式。<br>Sign In with Apple makes it easy for users to sign in to your apps and websites using their Apple ID. Instead of filling out forms, verifying email addresses, and choosing new passwords, they can use Sign In with Apple to set up an account and start using your app right away. All accounts are protected with two-factor authentication for superior security, and Apple will not track users’ activity in your app or website.</p>
-<p>对于用户来说，Sign In With Apple 使他们可以使用Apple ID容易地登录apps和网站。而不需要填写表单，验证邮件，选择新密码。用户可以使用Sign In With Apple 创建新用户并立即可以开始使用你的app。为了提高安全性，双重因子验证保护了帐号的安全性。而且Apple 不会跟踪用户在app 和网站的行为信息。</p>
-<h3 id="1-双重因子验证"><a href="#1-双重因子验证" class="headerlink" title="1. 双重因子验证"></a>1. 双重因子验证</h3><p>这里笔者举个例子说明一下双重因子验证。比如：</p>
-<p>前提：我们有2个苹果设备A，B。我们已经在设备A上登录过了苹果帐号QiShare，B 设备上还没有登录苹果帐号。</p>
-<p>需求：我们要在B上也登录QiShare帐号</p>
-<p>步骤：当我们在B 设备上输入正确的QiShare帐号密码后，设备B上会提示，需要输入一个验证码，A 设备上会显示出B设备在什么位置要登录QiShare帐号，是否同意。而这个验证码会显示在A 设备上。</p>
-<p>笔者对这里的双重因子的理解是：</p>
-<p>1.1. 正确的AppleID 及相应密码；</p>
-<p>1.2. 需要在已经登录过帐号密码的设备上同意登录请求并且提供验证码。</p>
-<p>接着上边的描述，为了直观的表示相关信息，大家可以看下边的一组图，应该就能够理解笔者要表达的意思了。</p>
-<p>在B设备上登录QiShare帐号，截图省略。</p>
-<p>此时，已经登录过QiShare帐号的设备A的提示如下：</p>
-<p><img src="http://img.wangjungang.cn/WX20190829-104637.png" alt=""></p>
-<p>3 要登录QiShare帐号的设备B的提示</p>
-<p><img src="http://img.wangjungang.cn/OhFm5m.png" alt=""></p>
-<p>4.已登录过QiShare帐号的设备A提示的验证码</p>
-<p><img src="http://img.wangjungang.cn/wClcpk.png" alt=""></p>
-<p>5.设备B的提示是否信任浏览器，如果信任了浏览器，以后就不再需要每次登录帐号，都需要A设备上同意</p>
-<p><img src="http://img.wangjungang.cn/M6nb1x.png" alt=""></p>
-<h3 id="2-开发Sign-In-With-Apple的注意事项："><a href="#2-开发Sign-In-With-Apple的注意事项：" class="headerlink" title="2. 开发Sign In With Apple的注意事项："></a>2. 开发Sign In With Apple的注意事项：</h3><p>Sign In With Apple 是iOS13 新增的功能，需要使用： MacOS 10.14.4或之后的Mac上的Xcode 11开发。</p>
-<pre><code>Xcode 11 includes SDKs for iOS 13, macOS Catalina 10.15, watchOS 6, and tvOS 13. Xcode 11 supports on-device debugging for iOS 8 and later, tvOS 9 and later, and watchOS 2 and later. Xcode 11 requires a Mac running macOS Mojave 10.14.4 or later.
-Xcode 11 包含支持iOS13、macOS Catalina 10.15, watchOS 6, and tvOS 13的SDK，Xcode11 支持iOS8、tvOS2 或之后的设备，Xcode11 需要运行在MacOS 10.14.4或之后的Mac上。
-</code></pre><p>Sign In With Apple 是跨平台的，可以支持iOS、macOS、watchOS、tvOS、JS。</p>
-<h2 id="二、-iOS-Sign-In-With-Apple-流程"><a href="#二、-iOS-Sign-In-With-Apple-流程" class="headerlink" title="二、 iOS Sign In With Apple 流程"></a>二、 iOS Sign In With Apple 流程</h2><p>使用Sign In With Apple 的流程为：</p>
-<ul>
-<li>设置ASAuthorizationAppleIDButton相关布局，添加相应地授权处理；</li>
-<li>获取授权码；</li>
-<li>验证；</li>
-<li>处理Sign In With Apple授权状态变化；</li>
-</ul>
-<p>下边展开描述下iOS 使用Sign In With Apple的准备工作、可能遇到的问题及流程。</p>
-<h3 id="1-iOS-使用Sign-In-With-Apple的准备工作："><a href="#1-iOS-使用Sign-In-With-Apple的准备工作：" class="headerlink" title="1. iOS 使用Sign In With Apple的准备工作："></a>1. iOS 使用Sign In With Apple的准备工作：</h3><p>1.1在Xcode11 Signing &amp; Capabilities 中添加 Sign In With Apple</p>
-<h3 id="2-iOS-使用Sign-In-With-Apple可能遇到的问题："><a href="#2-iOS-使用Sign-In-With-Apple可能遇到的问题：" class="headerlink" title="2. iOS 使用Sign In With Apple可能遇到的问题："></a>2. iOS 使用Sign In With Apple可能遇到的问题：</h3><p>2.1 开启双重因子验证的方式：</p>
-<p>双重因子验证的开启：设置 -&gt; 密码与安全性 -&gt; 双重因子验证；<br>如果不开启双重因子验证，那么当我们在调用苹果官方授权接口的时候，系统也会提示我们需要去打开双重因子验证。</p>
-<p>2.2 停止App 使用Sign In With Apple 的方式：</p>
-<p>停止App 使用Sign In With Apple：设置 -&gt; 密码与安全性 -&gt; 使用您AppleID的App -&gt; 找到对应的App - &gt; “停止以Apple ID使用 Bundle ID…”；</p>
-<h3 id="3-iOS使用Sign-In-With-Apple-的开发流程："><a href="#3-iOS使用Sign-In-With-Apple-的开发流程：" class="headerlink" title="3. iOS使用Sign In With Apple 的开发流程："></a>3. iOS使用Sign In With Apple 的开发流程：</h3><p>在介绍布局之前先看下，笔者先给大家看下界面效果：</p>
-<p><img src="http://img.wangjungang.cn/dTCNP1.png" alt=""></p>
-<p>界面比较简单，界面上方为UITextView用于展示授权状态授权信息，”Sign In With Apple Button” 是用的官方的ASAuthorizationAppleIDButton。中间的“移除键盘”按钮用于移除键盘。</p>
-<p>3.1设置ASAuthorizationAppleIDButton相关布局，添加相应地授权处理；</p>
-<pre><code>- (void)setupUI {
-
-    // 用于展示Sign In With Apple 登录过程的信息
-    _appleIDInfoTextView = [[UITextView alloc] initWithFrame:CGRectMake(.0, 40.0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) * 0.4) textContainer:nil];
-    _appleIDInfoTextView.font = [UIFont systemFontOfSize:32.0];
-    [self.view addSubview:_appleIDInfoTextView];
-
-    // 移除键盘Button
-    UIButton *removeKeyboardBtn = [[UIButton alloc] init];
-    removeKeyboardBtn.backgroundColor = [UIColor grayColor];
-    [removeKeyboardBtn setTitle:@&quot;移除键盘&quot; forState:UIControlStateNormal];
-    removeKeyboardBtn.frame = CGRectMake(CGRectGetMidX(_appleIDInfoTextView.frame) - 50.0, CGRectGetMaxY(_appleIDInfoTextView.frame), 100.0, 40.0);
-    [removeKeyboardBtn addTarget:self action:@selector(removeFirstResponder:) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:removeKeyboardBtn];
-
-    if (@available(iOS 13.0, *)) {
-    // Sign In With Apple Button
-    ASAuthorizationAppleIDButton *appleIDButton = [ASAuthorizationAppleIDButton new];
-
-    appleIDButton.frame =  CGRectMake(.0, .0, CGRectGetWidth(self.view.frame) - 40.0, 100.0);
-    CGPoint origin = CGPointMake(20.0, CGRectGetMidY(self.view.frame));
-    CGRect frame = appleIDButton.frame;
-    frame.origin = origin;
-    appleIDButton.frame = frame;
-    appleIDButton.cornerRadius = CGRectGetHeight(appleIDButton.frame) * 0.25;
-    [self.view addSubview:appleIDButton];
-    [appleIDButton addTarget:self action:@selector(handleAuthrization:) forControlEvents:UIControlEventTouchUpInside];
-    }
-
-    NSMutableString *mStr = [NSMutableString string];
-    [mStr appendString:@&quot;显示Sign In With Apple 登录信息\n&quot;];
-    _appleIDInfoTextView.text = [mStr copy];
-}
-
-#pragma mark - Actions
-
-//! 处理授权
-- (void)handleAuthrization:(UIButton *)sender {
-    if (@available(iOS 13.0, *)) {
-        // A mechanism for generating requests to authenticate users based on their Apple ID.
-        // 基于用户的Apple ID授权用户，生成用户授权请求的一种机制
-        ASAuthorizationAppleIDProvider *appleIDProvider = [ASAuthorizationAppleIDProvider new];
-        // Creates a new Apple ID authorization request.
-        // 创建新的AppleID 授权请求
-        ASAuthorizationAppleIDRequest *request = appleIDProvider.createRequest;
-        // The contact information to be requested from the user during authentication.
-        // 在用户授权期间请求的联系信息
-        request.requestedScopes = @[ASAuthorizationScopeFullName, ASAuthorizationScopeEmail];
-        // A controller that manages authorization requests created by a provider.
-        // 由ASAuthorizationAppleIDProvider创建的授权请求 管理授权请求的控制器
-        ASAuthorizationController *controller = [[ASAuthorizationController alloc] initWithAuthorizationRequests:@[request]];
-        // A delegate that the authorization controller informs about the success or failure of an authorization attempt.
-        // 设置授权控制器通知授权请求的成功与失败的代理
-        controller.delegate = self;
-        // A delegate that provides a display context in which the system can present an authorization interface to the user.
-        // 设置提供 展示上下文的代理，在这个上下文中 系统可以展示授权界面给用户
-        controller.presentationContextProvider = self;
-        // starts the authorization flows named during controller initialization.
-        // 在控制器初始化期间启动授权流
-        [controller performRequests];
-    }
-}
-</code></pre><p>3.2 获取授权码</p>
-<p>获取授权码这部分主要看2个代理ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding，及相应的代理方法中的实现。<br>ASAuthorizationControllerDelegate<br>An interface for providing information about the outcome of an authorization request.</p>
-<p>提供关于授权请求结果信息的接口<br>ASAuthorizationControllerPresentationContextProviding：<br>An interface the controller uses to ask a delegate for a presentation context.<br>控制器的代理找一个展示授权控制器的上下文的接口</p>
-<p>下边为实现代理方法的代码：</p>
-<pre><code>#pragma mark - Delegate
-
-//! 授权成功地回调
-- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization  API_AVAILABLE(ios(13.0)){
-
-NSLog(@&quot;%s&quot;, __FUNCTION__);
-NSLog(@&quot;%@&quot;, controller);
-NSLog(@&quot;%@&quot;, authorization);
-
-NSLog(@&quot;authorization.credential：%@&quot;, authorization.credential);
-
-NSMutableString *mStr = [NSMutableString string];
-mStr = [_appleIDInfoTextView.text mutableCopy];
-
-if ([authorization.credential isKindOfClass:[ASAuthorizationAppleIDCredential class]]) {
-    // 用户登录使用ASAuthorizationAppleIDCredential
-    ASAuthorizationAppleIDCredential *appleIDCredential = authorization.credential;
-    NSString *user = appleIDCredential.user;
-    //  需要使用钥匙串的方式保存用户的唯一信息 这里暂且处于测试阶段 是否的NSUserDefaults
-    [[NSUserDefaults standardUserDefaults] setValue:user forKey:QiShareCurrentIdentifier];
-    [mStr appendString:user?:@&quot;&quot;];
-    NSString *familyName = appleIDCredential.fullName.familyName;
-    [mStr appendString:familyName?:@&quot;&quot;];
-    NSString *givenName = appleIDCredential.fullName.givenName;
-    [mStr appendString:givenName?:@&quot;&quot;];
-    NSString *email = appleIDCredential.email;
-    [mStr appendString:email?:@&quot;&quot;];
-    NSLog(@&quot;mStr：%@&quot;, mStr);
-    [mStr appendString:@&quot;\n&quot;];
-    _appleIDInfoTextView.text = mStr;
-
-} else if ([authorization.credential isKindOfClass:[ASPasswordCredential class]]) {
-    // 用户登录使用现有的密码凭证
-    ASPasswordCredential *passwordCredential = authorization.credential;
-    // 密码凭证对象的用户标识 用户的唯一标识
-    NSString *user = passwordCredential.user;
-    // 密码凭证对象的密码
-    NSString *password = passwordCredential.password;
-    [mStr appendString:user?:@&quot;&quot;];
-    [mStr appendString:password?:@&quot;&quot;];
-    [mStr appendString:@&quot;\n&quot;];
-    NSLog(@&quot;mStr：%@&quot;, mStr);
-    _appleIDInfoTextView.text = mStr;
-} else {
-    NSLog(@&quot;授权信息均不符&quot;);
-    mStr = [@&quot;授权信息均不符&quot; mutableCopy];
-    _appleIDInfoTextView.text = mStr;
-}
-</code></pre><p>}</p>
-<pre><code>//! 授权失败的回调
-- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error  API_AVAILABLE(ios(13.0)){
-
-NSLog(@&quot;%s&quot;, __FUNCTION__);
-NSLog(@&quot;错误信息：%@&quot;, error);
-NSString *errorMsg = nil;
-switch (error.code) {
-    case ASAuthorizationErrorCanceled:
-        errorMsg = @&quot;用户取消了授权请求&quot;;
-        break;
-    case ASAuthorizationErrorFailed:
-        errorMsg = @&quot;授权请求失败&quot;;
-        break;
-    case ASAuthorizationErrorInvalidResponse:
-        errorMsg = @&quot;授权请求响应无效&quot;;
-        break;
-    case ASAuthorizationErrorNotHandled:
-        errorMsg = @&quot;未能处理授权请求&quot;;
-        break;
-    case ASAuthorizationErrorUnknown:
-        errorMsg = @&quot;授权请求失败未知原因&quot;;
-        break;
-}
-
-NSMutableString *mStr = [_appleIDInfoTextView.text mutableCopy];
-[mStr appendString:errorMsg];
-[mStr appendString:@&quot;\n&quot;];
-_appleIDInfoTextView.text = [mStr copy];
-
-if (errorMsg) {
-    return;
-}
-
-if (error.localizedDescription) {
-    NSMutableString *mStr = [_appleIDInfoTextView.text mutableCopy];
-    [mStr appendString:error.localizedDescription];
-    [mStr appendString:@&quot;\n&quot;];
-    _appleIDInfoTextView.text = [mStr copy];
-}
-NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
-/* // 取消授权的时候也会调用这里
- ((ASAuthorizationAppleIDRequest *)(controller.authorizationRequests[0])).requestedScopes
- &lt;__NSArrayI 0x2821e2520&gt;(
- full_name,
- email
- )
- */
-}
-
-
-//! Tells the delegate from which window it should present content to the user.
-//! 告诉代理应该在哪个window 展示内容给用户
-- (ASPresentationAnchor)presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller  API_AVAILABLE(ios(13.0)){
-
-    NSLog(@&quot;调用展示window方法：%s&quot;, __FUNCTION__);
-    // 返回window
-    return self.view.window;
-}
-</code></pre><p>授权登录成功后调试的时候查看到的用户信息相关内容：</p>
-<pre><code> po appleIDCredential.authorizationCode
-&lt;63636435 32316262 32666464 30346130 62616366 65336439 32636564 34383666 622e302e 6d727371 7a2e5853 47686543 5f354f6e 48786838 32766670 50484377&gt;
-
-(lldb) po appleIDCredential.user
-0012xx.d81c1988bb054e91beec303a4xxxxxxx.0xx6
-
-(lldb) po appleIDCredential.fullName
-&lt;NSPersonNameComponents: 0x281bf2070&gt; {givenName = YW, familyName = W, middleName = (null), namePrefix = (null), nameSuffix = (null), nickname = (null) phoneticRepresentation = (null) }
-
-(lldb) po appleIDCredential.email
-26xxxxx168@qq.com
-</code></pre><p>已经使用Sign In With Apple登录过app的用户</p>
-<p>执行已经登录过的场景。如果设备中存在iCloud Keychain 凭证或者AppleID 凭证提示用户直接使用TouchID或FaceID登录即可。</p>
-<pre><code>- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-
-    [self perfomExistingAccountSetupFlows];
-}
-
-//! Prompts the user if an existing iCloud Keychain credential or Apple ID credential is found.
-//! 如果存在iCloud Keychain 凭证或者AppleID 凭证提示用户
-- (void)perfomExistingAccountSetupFlows {
-    if (@available(iOS 13.0, *)) {
-        // A mechanism for generating requests to authenticate users based on their Apple ID.
-        // 基于用户的Apple ID授权用户，生成用户授权请求的一种机制
-        ASAuthorizationAppleIDProvider *appleIDProvider = [ASAuthorizationAppleIDProvider new];
-        // An OpenID authorization request that relies on the user’s Apple ID.
-        // 授权请求依赖于用于的AppleID
-        ASAuthorizationAppleIDRequest *authAppleIDRequest = [appleIDProvider createRequest];
-        // A mechanism for generating requests to perform keychain credential sharing.
-        // 为了执行钥匙串凭证分享生成请求的一种机制
-        ASAuthorizationPasswordRequest *passwordRequest = [[ASAuthorizationPasswordProvider new] createRequest];
-
-        NSMutableArray &lt;ASAuthorizationRequest *&gt;* mArr = [NSMutableArray arrayWithCapacity:2];
-        if (authAppleIDRequest) {
-            [mArr addObject:authAppleIDRequest];
-        }
-        if (passwordRequest) {
-            [mArr addObject:passwordRequest];
-        }
-        // ASAuthorizationRequest：A base class for different kinds of authorization requests.
-        // ASAuthorizationRequest：对于不同种类授权请求的基类
-        NSArray &lt;ASAuthorizationRequest *&gt;* requests = [mArr copy];
-
-        // A controller that manages authorization requests created by a provider.
-        // 由ASAuthorizationAppleIDProvider创建的授权请求 管理授权请求的控制器
-        // Creates a controller from a collection of authorization requests.
-        // 从一系列授权请求中创建授权控制器
-        ASAuthorizationController *authorizationController = [[ASAuthorizationController alloc] initWithAuthorizationRequests:requests];
-        // A delegate that the authorization controller informs about the success or failure of an authorization attempt.
-        // 设置授权控制器通知授权请求的成功与失败的代理
-        authorizationController.delegate = self;
-        // A delegate that provides a display context in which the system can present an authorization interface to the user.
-        // 设置提供 展示上下文的代理，在这个上下文中 系统可以展示授权界面给用户
-        authorizationController.presentationContextProvider = self;
-        // starts the authorization flows named during controller initialization.
-        // 在控制器初始化期间启动授权流
-        [authorizationController performRequests];
-    }
-}
-</code></pre><p>3.3 Verification</p>
-<p>关于验证的这一步，服务端同学LY和笔者都认为是需要传递授权码给自己的服务端，自己的服务端调用苹果APIGenerate and validate tokens去校验授权码。但是相关的API 调用不通。总是提示grant_type 有问题。不过我们服务端同学LY在PC端使用Sign In With Apple做过相应地测试，发现苹果提供的授权码校验的API是通的。当然相关内容也可能是笔者理解有误，大家如果有不同的理解，敬请讨论。</p>
-<pre><code>{
-    &quot;error&quot;: &quot;unsupported_grant_type&quot;
-}
-</code></pre><p>3.4监听授权状态变化</p>
-<p>监听授权状态改变，并且做出相应处理。授权状态有：</p>
-<p>ASAuthorizationAppleIDProviderCredentialRevoked：授权状态失效（用户停止使用AppID 登录App）、</p>
-<p>ASAuthorizationAppleIDProviderCredentialAuthorized：已授权(已使用AppleID 登录过App）、</p>
-<p>ASAuthorizationAppleIDProviderCredentialNotFound：授权凭证缺失（可能是使用AppleID 登录过App）</p>
-<p>处理改变有2种处理方式，一种是通过通知的方式，另一种是监听当前的appleIDCredential.user 的授权状态。</p>
-<p>3.4.1 监听appleIDCredential.user 的授权状态，这部分代码可以放到AppDelegate的- (BOOL)application:(UIApplication <em>)application didFinishLaunchingWithOptions:(NSDictionary </em>)launchOptions中，判断是否需要展示出登录控制器。</p>
-<pre><code>#pragma mark - Private functions
-//! 观察授权状态
-- (void)observeAuthticationState {
-
-    if (@available(iOS 13.0, *)) {
-        // A mechanism for generating requests to authenticate users based on their Apple ID.
-        // 基于用户的Apple ID 生成授权用户请求的机制
-        ASAuthorizationAppleIDProvider *appleIDProvider = [ASAuthorizationAppleIDProvider new];
-        // 注意 存储用户标识信息需要使用钥匙串来存储 这里笔者简单期间 使用NSUserDefaults 做的简单示例
-        NSString *userIdentifier = [[NSUserDefaults standardUserDefaults] valueForKey:QiShareCurrentIdentifier];
-
-        if (userIdentifier) {
-            NSString* __block errorMsg = nil;
-            //Returns the credential state for the given user in a completion handler.
-            // 在回调中返回用户的授权状态
-            [appleIDProvider getCredentialStateForUserID:userIdentifier completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
-                switch (credentialState) {
-                        // 苹果证书的授权状态
-                    case ASAuthorizationAppleIDProviderCredentialRevoked:
-                        // 苹果授权凭证失效
-                        errorMsg = @&quot;苹果授权凭证失效&quot;;
-                        break;
-                    case ASAuthorizationAppleIDProviderCredentialAuthorized:
-                        // 苹果授权凭证状态良好
-                        errorMsg = @&quot;苹果授权凭证状态良好&quot;;
-                        break;
-                    case ASAuthorizationAppleIDProviderCredentialNotFound:
-                        // 未发现苹果授权凭证
-                        errorMsg = @&quot;未发现苹果授权凭证&quot;;
-                        // 可以引导用户重新登录
-                        break;
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    NSLog(@&quot;SignInWithApple授权状态变化情况&quot;);
-                    NSLog(@&quot;%@&quot;, errorMsg);
-                });
-            }];
-
-        }
-    }
-}
-</code></pre><p>3.4.2使用通知的方式检测是否授权应用支持Sign In With Apple变化情况。如下的代码可以根据自己的业务场景去考虑放置的位置。</p>
-<pre><code>//! 添加苹果登录的状态通知
-- (void)observeAppleSignInState {
-    if (@available(iOS 13.0, *)) {
-        NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-        [center addObserver:self selector:@selector(handleSignInWithAppleStateChanged:) name:ASAuthorizationAppleIDProviderCredentialRevokedNotification object:nil];
-    }
-}
-
-//! 观察SignInWithApple状态改变
-- (void)handleSignInWithAppleStateChanged:(id)noti {
-
-    NSLog(@&quot;%s&quot;, __FUNCTION__);
-    NSLog(@&quot;%@&quot;, noti);
-}
-
-- (void)dealloc {
-
-    if (@available(iOS 13.0, *)) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:ASAuthorizationAppleIDProviderCredentialRevokedNotification object:nil];
-    }
-}
-</code></pre><p>相关示意图如下：</p>
-<p>1.首次使用AppleID登录或者停止使用AppleID登录后，再次使用Sign In With Apple的提示如下：</p>
-<p><img src="http://img.wangjungang.cn/V7TIos.png" alt=""></p>
-<p>2.使用Sign In With Apple登录成功的截图如下：</p>
-<p><img src="http://img.wangjungang.cn/xV846A.png" alt=""></p>
-<p>3.使用过AppleID登录过App，进入应用的时候会提示使用TouchID登录的场景如下：</p>
-<p><img src="http://img.wangjungang.cn/W0Io7M.png" alt=""></p>
-<p>4.使用Sign In With Apple登录成功的截图如下：</p>
-<p><img src="http://img.wangjungang.cn/yJ9kZT.png" alt=""></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/29/Sign in with Apple/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-多个网络请求的处理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/27/多个网络请求的处理/">多个网络请求的处理</a>
-    </h1>
-  
-
-        
-        <a href="/2019/08/27/多个网络请求的处理/" class="archive-article-date">
-  	<time datetime="2019-08-27T08:31:20.113Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1-dispatch-semaphore-信号量"><a href="#1-dispatch-semaphore-信号量" class="headerlink" title="1. dispatch_semaphore 信号量"></a>1. dispatch_semaphore 信号量</h2><p>信号量是一个整型值并且具有初始计数值，信号量通常支持两个操作：通知和等待。当信号被通知的时候计数值会增加，当信号量在线程上等待的时候，必要的情况下线程会被阻塞掉，直至信号被通知时计数值大于0，然后线程会减少这个计数继续工作。</p>
-<p>GCD中又3个信号量有关的操作：</p>
-<pre><code>dispatch_semaphore_create 信号量创建
-
-dispatch_semaphore_signal 发送通知
-
-dispatch_semaphore_wait 信号量等待
-
-dispatch_semaphore_create创建一个信号量
-</code></pre><ul>
-<li>dispatch_semaphore_create创建一个信号量</li>
-</ul>
-<p>传入的参数为long，输出一个dispatch_semaphore_t类型且值为value的信号量。<br>值得注意的是，这里的传入的参数value必须大于或等于0，否则dispatch_semaphore_create会返回NULL</p>
-<ul>
-<li>dispatch_semaphore_signal等待一个信号</li>
-</ul>
-<p>这个函数会使传入的信号量dsema的值加1。<br>返回值为long类型，当返回值为0时表示当前并没有线程等待其处理的信号量，其处理的信号量的值加1即可。<br>当返回值不为0时，表示其当前有（一个或多个）线程等待其处理的信号量，并且该函数唤醒了一个等待的线程（当线程有优先级时，唤醒优先级最高的线程；否则随机唤醒）。</p>
-<ul>
-<li>dispatch_semaphore_wait 等待一个信号</li>
-</ul>
-<p>这个函数会使传入的信号量dsema的值减1；<br>如果dsema信号量的值大于0，该函数所处线程就继续执行下面的语句，并且将信号量的值减1；<br>如果desema的值为0，那么这个函数就阻塞当前线程等待timeout（注意timeout的类型为dispatch_time_t，<br>不能直接传入整形或float型数），如果等待的期间desema的值被dispatch_semaphore_signal函数加1了，<br>且该函数（即dispatch_semaphore_wait）所处线程获得了信号量，那么就继续向下执行并将信号量减1。<br>如果等待期间没有获取到信号量或者信号量的值一直为0，那么等到timeout时，其所处线程自动执行其后语句</p>
-<ul>
-<li>timeout</li>
-</ul>
-<p>在设置timeout时，比较有用的两个宏:<br>DISPATCH_TIME_NOW 　　　　表示当前；<br>DISPATCH_TIME_FOREVER　　 表示未来；</p>
-<pre><code>// 创建信号量
-dispatch_semaphore_t sem = dispatch_semaphore_create(0);
-// 创建队列
-dispatch_queue_t testQueue = dispatch_queue_create(&quot;test&quot;, NULL);
-    dispatch_async(testQueue, ^{
-
-        for (int i = 0; i &lt; 10; i ++) {
-            NSLog(@&quot;i的值是-----&gt;%d&quot;,i);
-        }
-        // 发送一个信号
-        dispatch_semaphore_signal(sem);
-    });
-
-    // 信号量等待
-    dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
-    for (int j = 0; j &lt; 10; j ++) {
-        NSLog(@&quot;j 的值是-----&gt;%d&quot;,j);
-}
-</code></pre><h2 id="2-dispatch-group"><a href="#2-dispatch-group" class="headerlink" title="2. dispatch group"></a>2. dispatch group</h2><pre><code>dispatch_group_t group = dispatch_group_create();
-dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
-// 进入组（进入组和离开组必须成对出现,否则会造成死锁）
-dispatch_group_enter(group);
-dispatch_group_async(group, queue, ^{
-    // 执行异步任务1
-    for (int i = 0; i&lt;10; i++) {
-        NSLog(@&quot;i的值是:%d&quot;,i);
-    }
-    dispatch_group_leave(group);
-
-});
-dispatch_group_enter(group);
-dispatch_group_async(group, queue, ^{
-
-    // 执行异步任务2
-    for (int j = 0; j&lt;20; j++) {
-        NSLog(@&quot;j的值是:%d&quot;,j);
-    }
-    dispatch_group_leave(group);
-});
-
-dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-    NSLog(@&quot;完成...&quot;);
-});
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/27/多个网络请求的处理/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-看完就懂的无痕埋点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/04/看完就懂的无痕埋点/">看完就懂的无痕埋点</a>
-    </h1>
-  
-
-        
-        <a href="/2019/07/04/看完就懂的无痕埋点/" class="archive-article-date">
-  	<time datetime="2019-07-04T10:10:32.010Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-04</time>
+        <a href="/2020/03/04/史上最强无痕埋点/" class="archive-article-date">
+  	<time datetime="2020-03-04T03:01:34.334Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-04</time>
 </a>
         
       </header>
@@ -902,40 +184,55 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在移动互联网时代，对于每个公司、企业来说，用户的行为数据非常重要。重要到什么程度，用户在这个页面停留多久、点击了什么按钮、浏览了什么内容、什么手机、什么网络环境、App什么版本等都需要清清楚楚。一些大厂的蛮多业务成果都是基于用户操作行为进行推荐后二次转换。另一方面是以日志的作用帮助开发者分析线上问题的一种辅助手段。</p>
 <p>那么有了上述的诉求，那么技术人员如何满足这些需求？引出来了一个技术点-“埋点”</p>
-<h2 id="埋点手段"><a href="#埋点手段" class="headerlink" title="埋点手段"></a>埋点手段</h2><p>业界中对于代码埋点主要有3种主流的方案：代码手动埋点、可视化埋点、无痕埋点。简单说说这几种埋点方案。</p>
-<p>代码手动埋点：根据业务需求（运营、产品、开发多个角度出发）在需要埋点地方手动调用埋点接口，上传埋点数据。</p>
-<p>可视化埋点：通过可视化配置工具完成采集节点，在前端自动解析配置并上报埋点数据，从而实现可视化“无痕埋点”</p>
-<p>无痕埋点：通过技术手段，完成对用户行为数据无差别的统计上传的工作。后期数据分析处理的时候通过技术手段筛选出合适的数据进行统计分析。</p>
-<h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><h3 id="代码手动埋点"><a href="#代码手动埋点" class="headerlink" title="代码手动埋点"></a>代码手动埋点</h3><p>该方案情况下，如果需要埋点，则需要在工程代码中，写埋点相关代码。因为侵入了业务代码，对业务代码产生了污染，显而易见的缺点是埋点的成本较高、且违背了单一原则。</p>
+<h2 id="0x01-埋点手段"><a href="#0x01-埋点手段" class="headerlink" title="0x01. 埋点手段"></a>0x01. 埋点手段</h2><p>业界中对于代码埋点主要有3种主流的方案：代码手动埋点、可视化埋点、无痕埋点。简单说说这几种埋点方案。</p>
+<ul>
+<li><p>代码手动埋点：根据业务需求（运营、产品、开发多个角度出发）在需要埋点地方手动调用埋点接口，上传埋点数据。</p>
+</li>
+<li><p>可视化埋点：通过可视化配置工具完成采集节点，在前端自动解析配置并上报埋点数据，从而实现可视化“无痕埋点”</p>
+</li>
+<li><p>无痕埋点：通过技术手段，完成对用户行为数据无差别的统计上传的工作。后期数据分析处理的时候通过技术手段筛选出合适的数据进行统计分析。</p>
+</li>
+</ul>
+<h2 id="0x02-技术选型"><a href="#0x02-技术选型" class="headerlink" title="0x02. 技术选型"></a>0x02. 技术选型</h2><h3 id="1-代码手动埋点"><a href="#1-代码手动埋点" class="headerlink" title="1. 代码手动埋点"></a>1. 代码手动埋点</h3><p>该方案情况下，如果需要埋点，则需要在工程代码中，写埋点相关代码。因为侵入了业务代码，对业务代码产生了污染，显而易见的缺点是埋点的成本较高、且违背了单一原则。</p>
 <p>例1：假如你需要知道用户在点击“购买按钮”时的相关信息（手机型号、App版本、页面路径、停留时间、动作等等），那么就需要在按钮的点击事件里面去写埋点统计的代码。这样明显的弊端就是在之前业务逻辑的代码上面又多出了埋点的代码。由于埋点代码分散、埋点的工作量很大、代码维护成本较高、后期重构很头痛。</p>
 <p>例2：假如 App 采用了 Hybrid 架构，当 App 的第一版本发布的时候 H5 的关键业务逻辑统计是由 Native 定义好关键逻辑（比如H5调起了Native的分享功能，那么存在一个分享的埋点事件）的桥接。假如某天增加了一个扫一扫功能，未定义扫一扫的埋点桥接，那么 H5 页面变动的时候，Native 埋点代码不去更新的话，变动的 H5 的业务就未被精确统计。</p>
 <p>优点：产品、运营工作量少，对照业务映射表就可以还原出相关业务场景、数据精细无须大量的加工和处理</p>
 <p>缺点：开发工作量大、前期需要和运营、产品指定的好业务标识，以便产品和运营进行数据统计分析</p>
-<h3 id="可视化埋点"><a href="#可视化埋点" class="headerlink" title="可视化埋点"></a>可视化埋点</h3><p>可视化埋点的出现，是为解决代码埋点流程复杂、成本高、新开发的页面（H5、或者服务端下发的 json 去生成相应页面）不能及时拥有埋点能力</p>
+<h3 id="2-可视化埋点"><a href="#2-可视化埋点" class="headerlink" title="2. 可视化埋点"></a>2. 可视化埋点</h3><p>可视化埋点的出现，是为解决代码埋点流程复杂、成本高、新开发的页面（H5、或者服务端下发的 json 去生成相应页面）不能及时拥有埋点能力</p>
 <p>前端在「埋点编辑模式」下，以“可视化”的方式去配置、绑定关键业务模块的路径到前端可以唯一确定到view的xpath过程。</p>
 <p>用户每次操作的控件，都生成一个 xpath 字符串，然后通过接口将 xpath 字符串(view在前端系统中的唯一定位。以 iOS 为例，App名称、控制器名称、一层层view、同类型view的序号：“GoodCell.21.RetailTableView.GoodsViewController.*baoApp”)到真正的业务模块（“宝App-商城控制器-分销商品列表-第21个商品被点击了”）的映射关系上传到服务端。xpath 具体是什么在下文会有介绍。</p>
 <p>之后操作 App 就生成对应的 xpath 和埋点数据（开发者通过技术手段将从服务端获取的关键数据塞到前端的 UI 控件上。 iOS 端为例， UIView 的 accessibilityIdentifier 属性可以设置我们从服务端获取的埋点数据）上传到服务端。</p>
 <p>优点：数据量相对准确、后期数据分析成本低</p>
 <p>缺点：前期控件的唯一识别、定位都需要额外开发；可视化平台的开发成本较高；对于额外需求的分析可能会比较困难</p>
-<h3 id="无痕埋点"><a href="#无痕埋点" class="headerlink" title="无痕埋点"></a>无痕埋点</h3><p>通过技术手段无差别地记录用户在前端页面上的行为。可以正确的获取 PV、UV、IP、Action、Time 等信息。</p>
+<h3 id="3-无痕埋点"><a href="#3-无痕埋点" class="headerlink" title="3. 无痕埋点"></a>3. 无痕埋点</h3><p>通过技术手段无差别地记录用户在前端页面上的行为。可以正确的获取 PV、UV、IP、Action、Time 等信息。</p>
 <p>缺点：前期开发统计基础信息的技术产品成本较高、后期数据分析数据量很大、分析成本较高（大量数据传统的关系型数据库压力大）</p>
 <p>优点：开发人员工作量小、数据全面、无遗漏、产品和运营按需分析、支持动态页面的统计分析</p>
-<h2 id="如何选择"><a href="#如何选择" class="headerlink" title="如何选择"></a>如何选择</h2><p>结合上述优缺点，我们选择了无痕埋点+可视化埋点结合的技术方案。</p>
+<h3 id="4-如何选择"><a href="#4-如何选择" class="headerlink" title="4. 如何选择"></a>4. 如何选择</h3><p>结合上述优缺点，我们选择了无痕埋点+可视化埋点结合的技术方案。</p>
 <p>怎么说呢？对于关键的业务开发结束上线后、通过可视化方案（类似于一个界面，想想看 Dreamwaver，你在界面上拖拖控件，简单编辑下就可以生成对应的 HTML 代码）点击一下绑定对应关系到服务端。</p>
 <p>那么这个对应关系是什么？我们需要唯一定位一个前端元素，那么想到的办法就是不管 Native 和 Web 前端，控件或者元素来说就是一个树形层级，DOM tree 或者 UI tree，所以我们通过技术手段定位到这个元素，以 Native  iOS 为例子，假如点击商品详情页的加入购物车按钮会根据 UI 层级结构生成一个唯一标识 “addCartButton.GoodsViewController.GoodsView.*BaoApp” 。但是用户在使用 App 的时候，上传的是这串东西的 MD5到服务端。</p>
 <p>这么做有2个原因：服务端数据库存储这串很长的东西不是很好；埋点数据被劫持的话直接看到明文不太好。所以 MD5 再上传。</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="数据的收集"><a href="#数据的收集" class="headerlink" title="数据的收集"></a>数据的收集</h3><p>实现方案由以下几个关键指标：</p>
-<p>现有代码改动少、尽量不要侵入业务代码去实现拦截系统事件</p>
-<p>全量收集</p>
-<p>如何唯一标识一个控件元素</p>
-<h3 id="不侵入业务代码拦截系统事件"><a href="#不侵入业务代码拦截系统事件" class="headerlink" title="不侵入业务代码拦截系统事件"></a>不侵入业务代码拦截系统事件</h3><p>以 iOS 为例。我们会想到 <strong>AOP（Aspect Oriented Programming）</strong>面向切面编程思想。动态地在函数调用前后插入相应的代码，在 Objective-C 中我们可以利用 Runtime 特性，用 Method Swizzling 来 hook 相应的函数</p>
-<p>为了给所有类方便地 hook，我们可以给 NSObject 添加个 Category，名字叫做 NSObject+MethodSwizzling</p>
-<p>#pragma mark - public Method</p>
+<h2 id="0x03-操刀就干"><a href="#0x03-操刀就干" class="headerlink" title="0x03. 操刀就干"></a>0x03. 操刀就干</h2><h3 id="1-数据的收集"><a href="#1-数据的收集" class="headerlink" title="1 .数据的收集"></a>1 .数据的收集</h3><p>实现方案由以下几个关键指标：</p>
 <ul>
-<li><p>(void)lbp_swizzleMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector<br>{<br>  class_swizzleInstanceMethod(self, originalSelector, swizzledSelector);<br>}</p>
-</li>
-<li><p>(void)lbp_swizzleClassMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector<br>{<br>  //类方法实际上是储存在类对象的类(即元类)中，即类方法相当于元类的实例方法,所以只需要把元类传入，其他逻辑和交互实例方法一样。<br>  Class class2 = object_getClass(self);<br>  class_swizzleInstanceMethod(class2, originalSelector, swizzledSelector);<br>}</p>
-<pre><code>#pragma mark - private method
+<li>现有代码改动少、尽量不要侵入业务代码去实现拦截系统事件</li>
+<li>全量收集</li>
+<li>如何唯一标识一个控件元素</li>
+</ul>
+<h3 id="2-不侵入业务代码拦截系统事件"><a href="#2-不侵入业务代码拦截系统事件" class="headerlink" title="2. 不侵入业务代码拦截系统事件"></a>2. 不侵入业务代码拦截系统事件</h3><p>以 iOS 为例。我们会想到 <strong>AOP（Aspect Oriented Programming）</strong>面向切面编程思想。动态地在函数调用前后插入相应的代码，在 Objective-C 中我们可以利用 Runtime 特性，用 Method Swizzling 来 hook 相应的函数</p>
+<p>为了给所有类方便地 hook，我们可以给 NSObject 添加个 Category，名字叫做 NSObject+MethodSwizzling</p>
+<pre><code>#pragma mark - public Method
++ (void)lbp_swizzleMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector
+{
+    class_swizzleInstanceMethod(self, originalSelector, swizzledSelector);
+}
+
++ (void)lbp_swizzleClassMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector
+{
+    //类方法实际上是储存在类对象的类(即元类)中，即类方法相当于元类的实例方法,所以只需要把元类传入，其他逻辑和交互实例方法一样。
+    Class class2 = object_getClass(self);
+    class_swizzleInstanceMethod(class2, originalSelector, swizzledSelector);
+}
+
+#pragma mark - private method
 
 void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSEL)
 {
@@ -968,110 +265,116 @@ void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSE
         method_exchangeImplementations(originMethod, replaceMethod);
     }
 }
-</code></pre></li>
-</ul>
-<h3 id="全量收集"><a href="#全量收集" class="headerlink" title="全量收集"></a>全量收集</h3><p>我们会想到 hook AppDelegate 代理方法、UIViewController 生命周期方法、按钮点击事件、手势事件、各种系统控件的点击回调方法、应用状态切换等等。</p>
+</code></pre><h3 id="3-全量收集"><a href="#3-全量收集" class="headerlink" title="3. 全量收集"></a>3. 全量收集</h3><p>我们会想到 hook AppDelegate 代理方法、UIViewController 生命周期方法、按钮点击事件、手势事件、各种系统控件的点击回调方法、应用状态切换等等。</p>
+<p><img src="http://img.wangjungang.cn/sUK3kh.png" alt=""></p>
 <p>以统计页面的打开时间和统计页面的打开、关闭的需求为例，我们对 UIViewController 进行 hook</p>
-<pre><code>    static char *lbp_viewController_open_time = &quot;lbp_viewController_open_time&quot;;
-    static char *lbp_viewController_close_time = &quot;lbp_viewController_close_time&quot;;
+<pre><code>static char *lbp_viewController_open_time = &quot;lbp_viewController_open_time&quot;;
+static char *lbp_viewController_close_time = &quot;lbp_viewController_close_time&quot;;
 
-    @implementation UIViewController (lbpka)
+@implementation UIViewController (lbpka)
 
-    // load 方法里面添加 dispatch_once 是为了防止手动调用 load 方法。
-    + (void)load {
-        static dispatch_once_t onceToken;
-        dispatch_once(&amp;onceToken, ^{
-            @autoreleasepool {
-                [[self class] lbp_swizzleMethod:@selector(viewWillAppear:) swizzledSelector:@selector(lbp_viewWillAppear:)];
-                [[self class] lbp_swizzleMethod:@selector(viewWillDisappear:) swizzledSelector:@selector(lbp_viewWillDisappear:)];
-
-
-            }
-        });
-    }
+// load 方法里面添加 dispatch_once 是为了防止手动调用 load 方法。
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&amp;onceToken, ^{
+        @autoreleasepool {
+            [[self class] lbp_swizzleMethod:@selector(viewWillAppear:) swizzledSelector:@selector(lbp_viewWillAppear:)];
+            [[self class] lbp_swizzleMethod:@selector(viewWillDisappear:) swizzledSelector:@selector(lbp_viewWillDisappear:)];
 
 
-    #pragma mark - add prop
-
-    - (void)setOpenTime:(NSDate *)openTime {
-        objc_setAssociatedObject(self,&amp;lbp_viewController_open_time, openTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
-
-    - (NSDate *)getOpenTime{
-        return objc_getAssociatedObject(self, &amp;lbp_viewController_open_time);
-    }
-
-    - (void)setCloseTime:(NSDate *)closeTime {
-        objc_setAssociatedObject(self,&amp;lbp_viewController_close_time, closeTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
-
-    - (NSDate *)getCloseTime{
-        return objc_getAssociatedObject(self, &amp;lbp_viewController_close_time);
-    }
-
-    - (void)lbp_viewWillAppear:(BOOL)animated {
-
-        NSString *className = NSStringFromClass([self class]);
-        NSString *refer = [NSString string];
-        //TODO:TODO 是否只埋本地有url的page
-        if ([self getPageUrl:className]) {
-            //设置打开时间
-           [self setOpenTime:[NSDate dateWithTimeIntervalSinceNow:0]];
-            if (self.navigationController) {
-                if (self.navigationController.viewControllers.count &gt;=2) {
-                    //获取当前vc 栈中 上一个VC
-                    UIViewController *referVC =  self.navigationController.viewControllers[self.navigationController.viewControllers.count-2];
-                    refer = [self getPageUrl:NSStringFromClass([referVC class])];
-                }
-            }
-            if (!refer || refer.length == 0) {
-                refer = @&quot;unknown&quot;;
-            }
-            [UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];
         }
-
-        [self lbp_viewWillAppear:animated];
-    }
-
-    - (void)lbp_viewWillDisappear:(BOOL)animated {
-        NSString *className = NSStringFromClass([self class]);
-        if ([self getPageUrl:className]) {
-            [self setCloseTime:[NSDate dateWithTimeIntervalSinceNow:0]];
-            [UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];
-        }
-        [self lbp_viewWillDisappear:animated];
-    }
-
-    #pragma mark - private method
-
-    - (NSString *)p_calculationTimeSpend {
-
-        if (![self getOpenTime] || ![self getCloseTime]) {
-            return @&quot;unknown&quot;;
-        }
-        NSTimeInterval aTimer = [[self getCloseTime] timeIntervalSinceDate:[self getOpenTime]];
-
-        int hour = (int)(aTimer/3600);
-
-        int minute = (int)(aTimer - hour*3600)/60;
-
-        int second = aTimer - hour*3600 - minute*60;
-
-        return [NSString stringWithFormat:@&quot;%d&quot;,second];
+    });
 }
-</code></pre><h3 id="如何标识一个唯一的元素"><a href="#如何标识一个唯一的元素" class="headerlink" title="如何标识一个唯一的元素"></a>如何标识一个唯一的元素</h3><p>xpath 是移动端定义可操作区域的唯一标识。既然想通过一个字符串标识前端系统中可操作的控件，那么 xpath 需要2个指标：</p>
-<p>唯一性：在同一系统中不存在不同控件有着相同的 xpath</p>
-<p>稳定性：不同版本的系统中，在页面结构没有变动的情况下，不同版本的相同页面，相同的控件的 xpath 需要保持一致。</p>
+
+
+#pragma mark - add prop
+
+- (void)setOpenTime:(NSDate *)openTime {
+    objc_setAssociatedObject(self,&amp;lbp_viewController_open_time, openTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSDate *)getOpenTime{
+    return objc_getAssociatedObject(self, &amp;lbp_viewController_open_time);
+}
+
+- (void)setCloseTime:(NSDate *)closeTime {
+    objc_setAssociatedObject(self,&amp;lbp_viewController_close_time, closeTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSDate *)getCloseTime{
+    return objc_getAssociatedObject(self, &amp;lbp_viewController_close_time);
+}
+
+- (void)lbp_viewWillAppear:(BOOL)animated {
+
+    NSString *className = NSStringFromClass([self class]);
+    NSString *refer = [NSString string];
+    //TODO:TODO 是否只埋本地有url的page
+    if ([self getPageUrl:className]) {
+        //设置打开时间
+       [self setOpenTime:[NSDate dateWithTimeIntervalSinceNow:0]];
+        if (self.navigationController) {
+            if (self.navigationController.viewControllers.count &gt;=2) {
+                //获取当前vc 栈中 上一个VC
+                UIViewController *referVC =  self.navigationController.viewControllers[self.navigationController.viewControllers.count-2];
+                refer = [self getPageUrl:NSStringFromClass([referVC class])];
+            }
+        }
+        if (!refer || refer.length == 0) {
+            refer = @&quot;unknown&quot;;
+        }
+        [UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];
+    }
+
+    [self lbp_viewWillAppear:animated];
+}
+
+- (void)lbp_viewWillDisappear:(BOOL)animated {
+    NSString *className = NSStringFromClass([self class]);
+    if ([self getPageUrl:className]) {
+        [self setCloseTime:[NSDate dateWithTimeIntervalSinceNow:0]];
+        [UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];
+    }
+    [self lbp_viewWillDisappear:animated];
+}
+
+#pragma mark - private method
+
+- (NSString *)p_calculationTimeSpend {
+
+    if (![self getOpenTime] || ![self getCloseTime]) {
+        return @&quot;unknown&quot;;
+    }
+    NSTimeInterval aTimer = [[self getCloseTime] timeIntervalSinceDate:[self getOpenTime]];
+
+    int hour = (int)(aTimer/3600);
+
+    int minute = (int)(aTimer - hour*3600)/60;
+
+    int second = aTimer - hour*3600 - minute*60;
+
+    return [NSString stringWithFormat:@&quot;%d&quot;,second];
+}
+
+@end
+</code></pre><h3 id="4-如何唯一标识一个控件元素"><a href="#4-如何唯一标识一个控件元素" class="headerlink" title="4. 如何唯一标识一个控件元素"></a>4. 如何唯一标识一个控件元素</h3><p>xpath 是移动端定义可操作区域的唯一标识。既然想通过一个字符串标识前端系统中可操作的控件，那么 xpath 需要2个指标：</p>
+<ul>
+<li>唯一性：在同一系统中不存在不同控件有着相同的 xpath</li>
+<li>稳定性：不同版本的系统中，在页面结构没有变动的情况下，不同版本的相同页面，相同的控件的 xpath 需要保持一致。</li>
+</ul>
 <p>我们想到 Naive、H5 页面等系统渲染的时候都是以树形结构去绘制和渲染，所以我们以当前的 View 到系统的根元素之间的所有关键点（UIViewController、UIView、UIView容器（UITableView、UICollectionView等）、UIButton…）串联起来这样就唯一定位了控件元素。</p>
 <p>为了精确定位元素节点，参看下图</p>
 <p>假设一个 UIView 中有三个子 view，先后顺序是：label、button1、button2，那么深度依次为： 0、1、2。假如用户做了某些操作将 label1 从父 view 中被移除了。此时 UIView 只有 2 个子view：button1、button2，而且深度变为了：0、1。</p>
-<p>view层级<br>可以看出仅仅由于其中某个子 view  的改变，却导致其它子 view 的深度都发生了变化。因此，在设计的时候需要注意，在新增/移除某一 view 时，尽量减少对已有 view 的深度的影响，调整了对节点的深度的计算方式：采用当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值。</p>
+<p><img src="http://img.wangjungang.cn/7tIkuC.png" alt=""></p>
+<p>可以看出仅仅由于其中某个子 view  的改变，却导致其它子 view 的深度都发生了变化。因此，在设计的时候需要注意，在新增/移除某一 view 时，尽量减少对已有 view 的深度的影响，调整了对节点的深度的计算方式：采用当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值。</p>
 <p>我们再看一下上面的这个例子，最初 label、button1、button2 的深度依次是：0、0、1。在 label 被移除后，button1、button2 的深度依次为：0、1。可以看出，在这个例子中，label 的移除并未对 button1、button2 的深度造成影响，这种调整后的计算方式在一定程度上增强了 xpath 的抗干扰性。</p>
 <p>另外，调整后的深度的计算方式是依赖于各节点的类型的，因此，此时必须要将各节点的名称放到viewPath中，而不再是仅仅为了增加可读性。</p>
 <p>在标识控件元素的层级时，需要知道「当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值」。参看上图，如果不是同类型的话，则唯一性得不到保证。</p>
-<h3 id="同类型的-view-的唯一定位问题"><a href="#同类型的-view-的唯一定位问题" class="headerlink" title="同类型的 view 的唯一定位问题"></a>同类型的 view 的唯一定位问题</h3><p>有个问题，比如我们点击的元素是 UITableViewCell，那么它虽然可以定位到类似于这个标示 xxApp.GoodsViewController.GoodsTableView.GoodsCell，同类型的 Cell 有多个，所以单凭借这个字符串是没有办法定位具体的那个 Cell 被点击了。</p>
+<h3 id="5-同类型的-view-的唯一定位问题"><a href="#5-同类型的-view-的唯一定位问题" class="headerlink" title="5. 同类型的 view 的唯一定位问题"></a>5. 同类型的 view 的唯一定位问题</h3><p>有个问题，比如我们点击的元素是 UITableViewCell，那么它虽然可以定位到类似于这个标示 xxApp.GoodsViewController.GoodsTableView.GoodsCell，同类型的 Cell 有多个，所以单凭借这个字符串是没有办法定位具体的那个 Cell 被点击了。</p>
 <p>当然有解决方案啦。</p>
-<p>找出当前元素在父层同类型元素中的索引。根据当前的元素遍历当前元素的父级元素的子元素，如果出现相同的元素，则需要判断当前元素是所在层级的第几个元素</p>
+<ul>
+<li>找出当前元素在父层同类型元素中的索引。根据当前的元素遍历当前元素的父级元素的子元素，如果出现相同的元素，则需要判断当前元素是所在层级的第几个元素</li>
+</ul>
 <p>对当前的控件元素的父视图的全部子视图进行遍历，如果存在和当前的控件元素同类型的控件，那么需要判断当前控件元素在同类型控件元素中的所处的位置，那么则可以唯一定位。举例：GoodsCell-3.GoodsTableView.GoodsViewController.xxApp</p>
 <pre><code>//UIResponder分类
 - (NSString *)lbp_identifierKa
@@ -1148,20 +451,33 @@ void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSE
     return [NSString stringWithFormat:@&quot;%ld&quot;,sameViewTreeNodeDepth];
 
 }
-</code></pre><h3 id="同类型的view，但是点击的意义却不一样。如何唯一标识？"><a href="#同类型的view，但是点击的意义却不一样。如何唯一标识？" class="headerlink" title="同类型的view，但是点击的意义却不一样。如何唯一标识？"></a>同类型的view，但是点击的意义却不一样。如何唯一标识？</h3><p>问题5说明的是在一个界面上有多个不同的 view，他们的类型是同一种（CycleBannerView，但是数据源不一样，那么当数据源长度大于1的时候会轮播，下面会展示 UIPageControl。如果数据源是1个，那么就不会轮播和展示 UIPageControl）。情况6是同一种类型的 View，但是根据展示的内容不一样，点击的意义也不一样。也就是运营需要去知道用户到底点击的是哪一个。如下图所示，「立即抢购」和「分享赚佣金」是同一种类型的 View，但是点击意义不一样，需要我们需要唯一标识出来。之前的方法通过 “viewPath 配合同类型的 view 去加索引值“ 的方式还是没有办法唯一标识出来。所以想到一个方案，给 NSObject 添加一个分类，在分类里面添加一个协议。让需要复用但需要唯一标识的 view 去实现协议方法，因为是给 NSObject 分类添加的协议，所以 view 不需要去指定遵循。</p>
+</code></pre><p><img src="http://img.wangjungang.cn/kAHDPo.png" alt=""></p>
+<h3 id="6-同类型的view，但是点击的意义却不一样。如何唯一标识？"><a href="#6-同类型的view，但是点击的意义却不一样。如何唯一标识？" class="headerlink" title="6. 同类型的view，但是点击的意义却不一样。如何唯一标识？"></a>6. 同类型的view，但是点击的意义却不一样。如何唯一标识？</h3><p>问题5说明的是在一个界面上有多个不同的 view，他们的类型是同一种（CycleBannerView，但是数据源不一样，那么当数据源长度大于1的时候会轮播，下面会展示 UIPageControl。如果数据源是1个，那么就不会轮播和展示 UIPageControl）。情况6是同一种类型的 View，但是根据展示的内容不一样，点击的意义也不一样。也就是运营需要去知道用户到底点击的是哪一个。如下图所示，「立即抢购」和「分享赚佣金」是同一种类型的 View，但是点击意义不一样，需要我们需要唯一标识出来。之前的方法通过 “viewPath 配合同类型的 view 去加索引值“ 的方式还是没有办法唯一标识出来。所以想到一个方案，给 NSObject 添加一个分类，在分类里面添加一个协议。让需要复用但需要唯一标识的 view 去实现协议方法，因为是给 NSObject 分类添加的协议，所以 view 不需要去指定遵循。</p>
+<p><img src="http://img.wangjungang.cn/74bO8A.jpg" alt=""></p>
 <p>关键步骤：</p>
-<p>添加 NSObject 的 Category。在分类里面声明唯一标识的协议</p>
-<p>在生成 viewPath 的地方去拿出当前 view 的唯一标识（view 调用协议方法）。然后拼接之前拿出的 viewPath</p>
+<ul>
+<li><p>添加 NSObject 的 Category。在分类里面声明唯一标识的协议</p>
+</li>
+<li><p>在生成 viewPath 的地方去拿出当前 view 的唯一标识（view 调用协议方法）。然后拼接之前拿出的 viewPath</p>
+</li>
+</ul>
+<hr>
 <pre><code>//NSObject+UniqueIdentify.h
-#importNS_ASSUME_NONNULL_BEGIN
+#import &lt;Foundation/Foundation.h&gt;
+
+NS_ASSUME_NONNULL_BEGIN
 
 @class NSObject;
-@protocol UniqueIdentify@optional
+@protocol UniqueIdentify&lt;NSObject&gt;
+
+@optional
 - (NSString *)setUniqueIdentifier;
 
 @end
 
-@interface NSObject (UniqueIdentify)@end
+@interface NSObject (UniqueIdentify)&lt;UniqueIdentify&gt;
+
+@end
 
 NS_ASSUME_NONNULL_END
 
@@ -1171,8 +487,8 @@ NS_ASSUME_NONNULL_END
 @implementation NSObject (UniqueIdentify)
 
 @end
-
-//MallTGoodTagView.h
+</code></pre><hr>
+<pre><code>//MallTGoodTagView.h
 
 extern NSString * _Nonnull const ImmediateyPurchase;
 extern NSString * _Nonnull const ShareToAward;
@@ -1189,54 +505,19 @@ NSString *const ShareToAward = @&quot;分享赚佣金&quot;;
         return NSStringFromClass([self class]);
     }
 }
-
-//UIResponder Category 生成 viewPath
-- (NSString *)lbp_identifierKa
-{
-//    if (self.xq_identifier_ka == nil) {
-        if ([self isKindOfClass:[UIView class]]) {
-            UIView *view = (id)self;
-            NSString *sameViewTreeNode = [view obtainSameSuperViewSameClassViewTreeIndexPath];
-            NSMutableString *str = [NSMutableString string];
-            //特殊的 加减购 因为带有spm但是要区分加减 需要带TreeNode
-            NSString *className = [NSString stringWithUTF8String:object_getClassName(view)];
-            if (!view.accessibilityIdentifier || [className isEqualToString:@&quot;lbpButton&quot;]) {
-                [str appendString:sameViewTreeNode];
-                [str appendString:@&quot;,&quot;];
-            }
-            while (view.nextResponder) {
-                 if ([view respondsToSelector:@selector(setUniqueIdentifier)]) {
-                    NSString *unqiueIdentifier = [view setUniqueIdentifier];
-                    if (unqiueIdentifier) {
-                        [str appendFormat:@&quot;%@,&quot;, unqiueIdentifier];
-                    }
-                }00
-                [str appendFormat:@&quot;%@,&quot;, NSStringFromClass(view.class)];
-                if ([view.class isSubclassOfClass:[UIViewController class]]) {
-                    break;
-                }
-                view = (id)view.nextResponder;
-            }
-            self.xq_identifier_ka = [self md5String:[NSString stringWithFormat:@&quot;%@&quot;,str]];
-            //            self.xq_identifier_ka = [NSString stringWithFormat:@&quot;%@&quot;,str];
-        }
-//    }
-    return self.xq_identifier_ka;
-}
-</code></pre><h2 id="数据如何处理"><a href="#数据如何处理" class="headerlink" title="数据如何处理"></a>数据如何处理</h2><p>利用系统提供的 accessibilityIdentifier 官方给出的解释是标识用户界面元素的字符串</p>
+</code></pre><hr>
+<p><img src="http://img.wangjungang.cn/SDd8wH.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/JbHICW.jpg" alt=""></p>
+<h3 id="7-数据如何处理"><a href="#7-数据如何处理" class="headerlink" title="7. 数据如何处理"></a>7. 数据如何处理</h3><h4 id="A-如何处理业务数据"><a href="#A-如何处理业务数据" class="headerlink" title="A. 如何处理业务数据"></a>A. 如何处理业务数据</h4><p>利用系统提供的 accessibilityIdentifier 官方给出的解释是标识用户界面元素的字符串</p>
 <pre><code>/*
-
 A string that identifies the user interface element.
-
 default == nil
-
 */
-
 @property(nullable, nonatomic, copy) NSString *accessibilityIdentifier NS_AVAILABLE_IOS(5_0);
 </code></pre><p>服务端下发唯一标识</p>
 <p>接口获取的数据，里面有当前元素的唯一标识。比如在 UITableView 的界面去请求接口拿到数据，那么在在获取到的数据源里面会有一个字段，专门用来存储动态化的经常变动的业务数据。</p>
 <pre><code>cell.accessibilityIdentifier = [[[SDGGoodsCategoryServices sharedInstance].categories[indexPath.section] children][indexPath.row].spmContent yy_modelToJSONString];
-</code></pre><h3 id="基础数据"><a href="#基础数据" class="headerlink" title="基础数据"></a>基础数据</h3><p>设计上分为2个 pod 库，一个是 TriggerKit（专门用来 hook 机会需要的所有事件，页面停留时间、页面标识、view标识），另一个是 Appmonitor（专门用来提供基础数据、埋点数据的维护、上传机制）。所以在 Appmonitor 里面有个类叫做 UserTrackDataCenter 的类，专门提供一些基础数据（系统版本、操作系统、地理位置、网络等信息）。</p>
+</code></pre><h4 id="B-基础数据"><a href="#B-基础数据" class="headerlink" title="B.基础数据"></a>B.基础数据</h4><p>设计上分为2个 pod 库，一个是 TriggerKit（专门用来 hook 机会需要的所有事件，页面停留时间、页面标识、view标识），另一个是 Appmonitor（专门用来提供基础数据、埋点数据的维护、上传机制）。所以在 Appmonitor 里面有个类叫做 UserTrackDataCenter 的类，专门提供一些基础数据（系统版本、操作系统、地理位置、网络等信息）。</p>
 <p>对外暴露出一些方法，用来将埋点数据交给 Appmonitor 去维护埋点数据，达到合适的“机制”再去上传埋点数据到服务端。</p>
 <pre><code>+ (void)clickEventUuid:(NSString *)uuid otherParam:(NSDictionary *)otherParam spmContent:(NSDictionary *)spmContent {
     if (uuid) {
@@ -1248,14 +529,16 @@ default == nil
         [[AppMonotior shareInstance] traceEvent:[AMStatisticEvent eventWithInfo:params]];
     }
 }
-</code></pre><h3 id="数据上报"><a href="#数据上报" class="headerlink" title="数据上报"></a>数据上报</h3><p>数据通过上面的办法收集完了，那么如何及时、高效的上传到后端，给运营分析、处理呢？</p>
+</code></pre><p>###8. 数据的上报<br>数据通过上面的办法收集完了，那么如何及时、高效的上传到后端，给运营分析、处理呢？</p>
 <p>App 运行期间用户会点击非常多的数据，如果实时上传的话对于网络的利用率较低，所以需要考虑一个机制去控制用户产生的埋点数据的上传。</p>
 <p>思路是这样的。对外部暴露出一个接口，用来将产生的数据往数据中心存储。用户产生的数据会先保存到 AppMonitor 的内存中去，设置一个临界值（memoryEventMax = 50），如果存储的值达到设置的临界值 memoryEventMax，那么将内存中的数据写入文件系统，以 zip 的形式保存下来，然后上传到埋点系统。如果没有达到临界值但是存在一些 App 状态切换的情况，这时候需要及时保存数据到持久化。当下次打开 App 就去从本地持久化的地方读取是否有未上传的数据，如果有就上传日志信息，成功后删除本地的日志压缩包。</p>
 <p>App 应用状态的切换策略如下：</p>
-<p>didFinishLaunchWithOptions:内存日志信息写入硬盘</p>
-<p>didBecomeActive：上传</p>
-<p>willTerimate：内存日志信息写入硬盘</p>
-<p>didEnterBackground：内存日志信息写入硬盘</p>
+<ul>
+<li>didFinishLaunchWithOptions:内存日志信息写入硬盘</li>
+<li>didBecomeActive：上传</li>
+<li>willTerimate：内存日志信息写入硬盘</li>
+<li>didEnterBackground：内存日志信息写入硬盘</li>
+</ul>
 <p>下面的代码是 App 埋点数据的保存与上传</p>
 <pre><code>// 将App日志信息写入到内存中。当内存中的数量到达一定规模（超过设置的内存中存储的数量）的时候就将内存中的日志存储到文件信息中
 - (void)joinEvent:(NSDictionary *)dictionary
@@ -1336,17 +619,41 @@ default == nil
     }];
 }
 </code></pre><p>使用的时候就是在 hook 系统事件的时候，去调用统计页面上传数据</p>
-<pre><code>/UIViewController
+<pre><code>//UIViewController
 [UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];    // 页面出现
 [UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];    //页面消失
-</code></pre><h2 id="总结下来关键步骤："><a href="#总结下来关键步骤：" class="headerlink" title="总结下来关键步骤："></a>总结下来关键步骤：</h2><p>hook 系统的各种事件（UIResponder、UITableView、UICollectionView代理事件、UIControl事件、UITapGestureRecognizers）、hook 应用程序、控制器生命周期。在做本来的逻辑之前添加额外的监控代码</p>
-<p>对于点击的元素按照视图树生成对应的唯一标识（addCartButton.GoodsView.GoodsViewController） 的 md5 值</p>
-<p>在业务开发完毕，进入埋点的编辑模式，将 md5 和关键的页面的关键事件（运营、产品想统计的关键模块：App层级、业务模块、关键页面、关键操作）给绑定起来。比如 addCartButton.GoodsView.GoodsViewController.tbApp 对应了 tbApp-商城模块-商品详情页-加入购物车功能。</p>
-<p>将所需要的数据存储下来</p>
-<p>设计机制等到合适的时机去上传数据</p>
+</code></pre><p>总结下来关键步骤：</p>
+<ul>
+<li>hook 系统的各种事件（UIResponder、UITableView、UICollectionView代理事件、UIControl事件、UITapGestureRecognizers）、hook 应用程序、控制器生命周期。在做本来的逻辑之前添加额外的监控代码</li>
+<li>对于点击的元素按照视图树生成对应的唯一标识（addCartButton.GoodsView.GoodsViewController） 的 md5 值</li>
+<li>在业务开发完毕，进入埋点的编辑模式，将 md5 和关键的页面的关键事件（运营、产品想统计的关键模块：App层级、业务模块、关键页面、关键操作）给绑定起来。比如 addCartButton.GoodsView.GoodsViewController.tbApp 对应了 tbApp-商城模块-商品详情页-加入购物车功能。</li>
+<li>将所需要的数据存储下来</li>
+<li>设计机制等到合适的时机去上传数据</li>
+</ul>
 
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -1366,16 +673,75 @@ default == nil
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/04/看完就懂的无痕埋点/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/03/04/史上最强无痕埋点/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2020/03/04/规范化团队 git 提交信息/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">规范化团队 git 提交信息</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -1395,1038 +761,14 @@ default == nil
 
 
 
-
-  
-    <article id="post-关于日志模式及日志级别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/02/关于日志模式及日志级别/">iOS关于日志模式及日志级别</a>
-    </h1>
-  
-
-        
-        <a href="/2019/07/02/关于日志模式及日志级别/" class="archive-article-date">
-  	<time datetime="2019-07-02T08:55:06.088Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-02</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在开发中我们经常要通过Log(日志)来调试问题, 而上线后不需要打印Log,而且平常开发每做一个模块如果可以将log按照级别打印出来,对分析问题帮助很大.</p>
-<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>通过导入一个头文件以实现开启或关闭Log模式,实现选择Log级别.通过导入#include &lt;syslog.h&gt;以实现打印不同级别的Log.</p>
-<p>为什么使用syslog ? 因为它不仅可以在Xcode控制台打印信息,还可能在Mac终端中打印出日志信息,这样的好处是比如我们有一个app store的app出了问题,我们可以在app中调节log level到debug模式,然后使用数据线连接设备, 这样再复现问题可以将相关的Log即时打印出来.对分析问题帮助很大.</p>
-<h2 id="简要分析"><a href="#简要分析" class="headerlink" title="简要分析"></a>简要分析</h2><h3 id="1-Log模式"><a href="#1-Log模式" class="headerlink" title="1. Log模式"></a>1. Log模式</h3><p>为什么设置log模式,很简单,因为上线后的app不必打印log, 而且如果开发中想取消所有相关打印也可以直接通过该宏定义决定.</p>
-<p>本例中如果在代码中定义了kXDXDebugMode则启用打印log模式,否则关闭.</p>
-<h3 id="2-Log级别"><a href="#2-Log级别" class="headerlink" title="2.Log级别"></a>2.Log级别</h3><p>本例中通过五个函数来打印不同级别log,如下</p>
-<pre><code>#define kModuleName &quot;Hello&quot;
-...
-    int i = 1; int j = 2;
-    log4cplus_fatal(kModuleName, &quot;world1 , %d,%d&quot;,i,j);
-    log4cplus_error(kModuleName, &quot;world2&quot;);
-    log4cplus_warn(kModuleName, &quot;world3&quot;);
-    log4cplus_info(kModuleName, &quot;world4&quot;);
-    log4cplus_debug(kModuleName, &quot;world5&quot;);
-</code></pre><p>比如我们在开发中可能独立承担一个模块,而此模块单单做完如果出现问题就需要调试,但是如果我们的Log足够清晰是可以迅速帮助我们找到问题所在,这里将Log分为5个级别<br>以下是个人对于打印Log的一些建议,并不是说一定要按照如下.</p>
-<p>XDX_IOS_FLAG_FATAL : 严重级别</p>
-<p>此类错误出现时,表明程序因为某某问题已经彻底无法运行下去,我们在使用此log时可以附加说明当前碰到的重大问题及产生原因,以便调试.</p>
-<p>XDX_IOS_FLAG_ERROR : 出错级别</p>
-<p>此类打印可用于出现一般错误,比如某个方法调用返回失败, 因为一般而言代码预期是正确的, 所以此类Log不会打印的太频繁, 打开此级别后我们可以清晰看到程序哪些地方出现问题.</p>
-<p>XDX_IOS_FLAG_WARN : 警告级别</p>
-<p>此类错误一般较低于error级别,即在一些可能出错的地方, 但实际并没有出错, 比如当视频帧数量小于0表示出错情况,我们为了预防,可以在视频帧数量小于5时使用此类添加一条预防的Log.</p>
-<p>XDX_IOS_FLAG_INFO : 重要信息级别</p>
-<p>此类级别一般用于打印模块中一些重要的点, 比如我们可以在某个类初始化完成时打印此类中初始化好的一些重要信息,或者在使用某个功能前做一个打印,这样对于追踪代码十分有效.</p>
-<p>XDX_IOS_FLAG_DEBUG : 调试级别</p>
-<p>此类级别表明我们当前正在临时打印一些log为了去调试程序, 或者说我们为了观察某个现象但是需要频繁打印, 比如相机回调中打印时间戳,因为相机每秒钟出来几十帧数据,所以打印十分频繁,我们可以使用此级别在开发中作为调试信息,一般不建议在正常使用中开启此级别.<br>综上所述,即log级别越高,log数量应该是越少,这样我们可以在开发中根据如上所述的情况合理选择使用哪个级别的log. Log级别是有包含关系的, 即低的log级别可以包含比自身高的log级别.</p>
-<h3 id="3-模块名"><a href="#3-模块名" class="headerlink" title="3. 模块名"></a>3. 模块名</h3><p>这里封装的格式如下,即一条log分为两部分,前面是模块名,后面是具体log内容,使用这种格式可以帮助我们通过过滤某个模块中的Log, 十分直观清晰</p>
-<pre><code>#define log4cplus_fatal(category, logFmt, ...) \
-if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_FATAL) \
-syslog(LOG_CRIT, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
-</code></pre><p>举例如下:</p>
-<pre><code>#define kModuleName &quot;Hello&quot;
-
-...
-
-
-- (void)test {
-    int i = 0;
-    log4cplus_debug(kModuleName, &quot;Hello World - %d&quot;,i);
-}
-</code></pre><h3 id="4-注意"><a href="#4-注意" class="headerlink" title="4.注意"></a>4.注意</h3><p>因为我们使用的syslog,所以OC中的格式符%@是不可用的.但是任何OC中的字符串都可通过UTF8String转为C语言字符串,所以并不影响我们的使用.</p>
-<h3 id="5-使用方式"><a href="#5-使用方式" class="headerlink" title="5.使用方式"></a>5.使用方式</h3><p>每次编译前设置log级别</p>
-<p>如果不需要在项目中通过UI动态更改log级别,则可以直接使用如下方式将头文件拖入项目,然后在需要使用log的地方将其导入.这种方式简单方便,仅仅通过每次运行前更改宏定义即可转变log级别.</p>
-<p>在运行后通过UI更改</p>
-<p>那么需要将头文件的XDX_IOS_LOG_LEVEL全局静态变量换为外部变量,然后取消下面这段代码,最后在控制UI的类中定义并通过交互更改此值即可.</p>
-<pre><code>#ifdef XDXLogLevelFatal
-static const int XDX_IOS_LOG_LEVEL = XDX_IOS_FLAG_FATAL;
-#elif defined(XDXLogLevelError)
-static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR);
-#elif defined(XDXLogLevelWarn)
-static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN);
-#elif defined(XDXLogLevelInfo)
-static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN | XDX_IOS_FLAG_INFO);
-#elif defined(XDXLogLevelDebug)
-static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN | XDX_IOS_FLAG_INFO | XDX_IOS_FLAG_DEBUG);
-#endif
-</code></pre><h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><pre><code>#include &lt;syslog.h&gt;
-#ifndef XDX_IOS
-#define XDX_IOS
-#endif
-
-#pragma - Please select your log mode and log level
-
-// Note: Only debug mode will print log. You could also set mode for log level.
-#define kXDXDebugMode
-// XDXLogLevelFatal , XDXLogLevelError , XDXLogLevelWarn , XDXLogLevelInfo , XDXLogLevelDebug
-#define XDXLogLevelDebug
-
-#pragma ----------------------------------
-
-#ifdef kXDXDebugMode
-
-static const int XDX_IOS_FLAG_FATAL = 0x10;
-static const int XDX_IOS_FLAG_ERROR = 0x08;
-static const int XDX_IOS_FLAG_WARN  = 0x04;
-static const int XDX_IOS_FLAG_INFO  = 0x02;
-static const int XDX_IOS_FLAG_DEBUG = 0x01;
-
-#ifdef XDXLogLevelFatal
-static const int XDX_IOS_LOG_LEVEL = XDX_IOS_FLAG_FATAL;
-#elif defined(XDXLogLevelError)
-static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR);
-#elif defined(XDXLogLevelWarn)
-static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN);
-#elif defined(XDXLogLevelInfo)
-static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN | XDX_IOS_FLAG_INFO);
-#elif defined(XDXLogLevelDebug)
-static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN | XDX_IOS_FLAG_INFO | XDX_IOS_FLAG_DEBUG);
-#endif
-
-
-
-#define log4cplus_fatal(category, logFmt, ...) \
-if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_FATAL) \
-syslog(LOG_CRIT, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
-
-#define log4cplus_error(category, logFmt, ...) \
-if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_ERROR) \
-syslog(LOG_ERR, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
-
-#define log4cplus_warn(category, logFmt, ...) \
-if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_WARN) \
-syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
-
-#define log4cplus_info(category, logFmt, ...) \
-if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_INFO) \
-syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
-
-#define log4cplus_debug(category, logFmt, ...) \
-if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_DEBUG) \
-syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
-
-
-#else
-
-#define log4cplus_fatal(category, logFmt, ...); \
-
-#define log4cplus_error(category, logFmt, ...); \
-
-#define log4cplus_warn(category, logFmt, ...); \
-
-#define log4cplus_info(category, logFmt, ...); \
-
-#define log4cplus_debug(category, logFmt, ...); \
-
-#endif
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/02/关于日志模式及日志级别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-#define和const的使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS开发中，经常用到宏定义，或用const修饰一些数据类型</p>
-<p>那么，到底使用哪一种会更合适，他们之间有什么区别</p>
-<h2 id="static"><a href="#static" class="headerlink" title="static"></a>static</h2><p>修饰局部变量</p>
-<p>让局部变量只初始化一次</p>
-<p>局部变量在程序中只有一份内存</p>
-<p>并不会改变局部变量的作用域，仅仅是改变了局部变量的生命周期（只到程序结束，这个局部变量才会销毁）</p>
-<p>修饰全局变量</p>
-<p>全局变量的作用域仅限于当前文件</p>
-<h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><p>没有const修饰的指针</p>
-<p>指针p和*p都能被修改// </p>
-<h2 id="static和const联合使用"><a href="#static和const联合使用" class="headerlink" title="static和const联合使用"></a>static和const联合使用</h2><p>static将一个全局变量变成局部变量</p>
-<p>const将一个局部变量变成局部常量</p>
-<h2 id="使用static-const-与-define"><a href="#使用static-const-与-define" class="headerlink" title="使用static const 与 #define"></a>使用static const 与 #define</h2><p>相同点</p>
-<p>都不能再被修改</p>
-<p>一处修改，其它都改了</p>
-<p>不同点</p>
-<p>static const修饰变量只有一份内存</p>
-<p>宏定义，只是简单的替换，每次使用都需要创建一份内存</p>
-<p>结论</p>
-<p>使用static const修饰更加高效，在同一个文件内可以使用static const取代#define</p>
-<h2 id="const实际开发的应用"><a href="#const实际开发的应用" class="headerlink" title="const实际开发的应用"></a>const实际开发的应用</h2><p>一般会先新建ZMJConst.h文件专门存放常量的引用// </p>
-<p>引用某变量，如果没有使用const修饰，就不能直接在编译的时候就能检测是否修改了</p>
-<p>ZMJRedexternconstCGFloatZMJRed;externNSString*constZMJName;</p>
-<p>可以模仿系统UIKIT_EXTERN来代替extern，逼格更高！</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/30/#define和const的使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-圆角头像的几种裁剪" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/圆角头像的几种裁剪/">圆角头像的几种裁剪</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/23/圆角头像的几种裁剪/" class="archive-article-date">
-  	<time datetime="2019-06-23T13:52:36.054Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>h 我就不写了</p>
-<p>.m</p>
-<pre><code>#import &quot;UIImage+Extension.h&quot;
-
-@implementation UIImage (Extension)
-+ (instancetype)sw_icon:(UIImage *)image
-{
-    UIGraphicsBeginImageContext(image.size);
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
-    CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
-    CGContextAddEllipseInRect(ctx, rect);
-    CGContextClip(ctx);
-    [image drawInRect:rect];
-    UIImage *icon = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return icon;
-}
-@end
-</code></pre><p>以下方法 是我在控制器里写的, 如需写在分类, 需稍加改动</p>
-<pre><code>// CGContext 裁剪
-- (UIImage *)CGContextClip:(UIImage *)img cornerRadius:(CGFloat)c {
-    int w = img.size.width * img.scale;
-    int h = img.size.height * img.scale;
-
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(w, h), false, 1.0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextMoveToPoint(context, 0, c);
-    CGContextAddArcToPoint(context, 0, 0, c, 0, c);
-    CGContextAddLineToPoint(context, w-c, 0);
-    CGContextAddArcToPoint(context, w, 0, w, c, c);
-    CGContextAddLineToPoint(context, w, h-c);
-    CGContextAddArcToPoint(context, w, h, w-c, h, c);
-    CGContextAddLineToPoint(context, c, h);
-    CGContextAddArcToPoint(context, 0, h, 0, h-c, c);
-    CGContextAddLineToPoint(context, 0, c);
-    CGContextClosePath(context);
-
-    CGContextClip(context);     // 先裁剪 context，再画图，就会在裁剪后的 path 中画
-    [img drawInRect:CGRectMake(0, 0, w, h)];       // 画图
-    CGContextDrawPath(context, kCGPathFill);
-
-    UIImage *ret = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return ret;
-}
-</code></pre><p>方法二</p>
-<pre><code>// UIBezierPath 裁剪
-- (UIImage *)UIBezierPathClip:(UIImage *)img cornerRadius:(CGFloat)c {
-    int w = img.size.width * img.scale;
-    int h = img.size.height * img.scale;
-    CGRect rect = CGRectMake(0, 0, w, h);
-
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(w, h), false, 1.0);
-    [[UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:c] addClip];
-    [img drawInRect:rect];
-    UIImage *ret = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return ret;
-}
-</code></pre><p>方法三</p>
-<pre><code>// 自定义裁剪算法
-- (UIImage *)dealImage:(UIImage *)img cornerRadius:(CGFloat)c {
-    // 1.CGDataProviderRef 把 CGImage 转 二进制流
-    CGDataProviderRef provider = CGImageGetDataProvider(img.CGImage);
-    void *imgData = (void *)CFDataGetBytePtr(CGDataProviderCopyData(provider));
-    int width = img.size.width * img.scale;
-    int height = img.size.height * img.scale;
-
-    // 2.处理 imgData
-//    dealImage(imgData, width, height);
-    cornerImage(imgData, width, height, c);
-
-    // 3.CGDataProviderRef 把 二进制流 转 CGImage
-    CGDataProviderRef pv = CGDataProviderCreateWithData(NULL, imgData, width * height * 4, releaseData);
-    CGImageRef content = CGImageCreate(width , height, 8, 32, 4 * width, CGColorSpaceCreateDeviceRGB(), kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast, pv, NULL, true, kCGRenderingIntentDefault);
-    UIImage *result = [UIImage imageWithCGImage:content];
-    CGDataProviderRelease(pv);      // 释放空间
-    CGImageRelease(content);
-
-    return result;
-}
-
-void releaseData(void *info, const void *data, size_t size) {
-    free((void *)data);
-}
-
-// 在 img 上处理图片, 测试用
-void dealImage(UInt32 *img, int w, int h) {
-    int num = w * h;
-    UInt32 *cur = img;
-    for (int i=0; i&lt;num; i++, cur++) {
-        UInt8 *p = (UInt8 *)cur;
-        // RGBA 排列
-        // f(x) = 255 - g(x) 求负片
-        p[0] = 255 - p[0];
-        p[1] = 255 - p[1];
-        p[2] = 255 - p[2];
-        p[3] = 255;
-    }
-}
-
-// 裁剪圆角
-void cornerImage(UInt32 *const img, int w, int h, CGFloat cornerRadius) {
-    CGFloat c = cornerRadius;
-    CGFloat min = w &gt; h ? h : w;
-
-    if (c &lt; 0) { c = 0; }
-    if (c &gt; min * 0.5) { c = min * 0.5; }
-
-    // 左上 y:[0, c), x:[x, c-y)
-    for (int y=0; y&lt;c; y++) {
-        for (int x=0; x&lt;c-y; x++) {
-            UInt32 *p = img + y * w + x;    // p 32位指针，RGBA排列，各8位
-            if (isCircle(c, c, c, x, y) == false) {
-                *p = 0;
-            }
-        }
-    }
-    // 右上 y:[0, c), x:[w-c+y, w)
-    int tmp = w-c;
-    for (int y=0; y&lt;c; y++) {
-        for (int x=tmp+y; x&lt;w; x++) {
-            UInt32 *p = img + y * w + x;
-            if (isCircle(w-c, c, c, x, y) == false) {
-                *p = 0;
-            }
-        }
-    }
-    // 左下 y:[h-c, h), x:[0, y-h+c)
-    tmp = h-c;
-    for (int y=h-c; y&lt;h; y++) {
-        for (int x=0; x&lt;y-tmp; x++) {
-            UInt32 *p = img + y * w + x;
-            if (isCircle(c, h-c, c, x, y) == false) {
-                *p = 0;
-            }
-        }
-    }
-    // 右下 y~[h-c, h), x~[w-c+h-y, w)
-    tmp = w-c+h;
-    for (int y=h-c; y&lt;h; y++) {
-        for (int x=tmp-y; x&lt;w; x++) {
-            UInt32 *p = img + y * w + x;
-            if (isCircle(w-c, h-c, c, x, y) == false) {
-                *p = 0;
-            }
-        }
-    }
-}
-
-// 判断点 (px, py) 在不在圆心 (cx, cy) 半径 r 的圆内
-static inline bool isCircle(float cx, float cy, float r, float px, float py) {
-    if ((px-cx) * (px-cx) + (py-cy) * (py-cy) &gt; r * r) {
-        return false;
-    }
-    return true;
-}
-</code></pre><p>自定义裁剪 裁剪10000张图片 用时平均 11.3</p>
-<p>GContext裁剪 裁剪10000张图片 用时平均 12.7</p>
-<p>贝塞尔裁剪 裁剪10000张图片 用时平均 13.0</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/圆角头像的几种裁剪/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-使用贝塞尔曲线绘制水波纹" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/使用贝塞尔曲线绘制水波纹/">使用贝塞尔曲线绘制水波纹</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/23/使用贝塞尔曲线绘制水波纹/" class="archive-article-date">
-  	<time datetime="2019-06-23T13:48:06.223Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="思路："><a href="#思路：" class="headerlink" title="思路："></a>思路：</h2><p>使用贝塞尔曲线绘制正弦曲线；使用CAShapeLayer绘制形状；使用CADisplayLink做刷屏；</p>
-<p>CADisplayLink是一个能让我们以和屏幕刷新率相同的频率将内容画到屏幕上的定时器。一但 CADisplayLink以特定的模式注册到runloop之后，每当屏幕需要刷新的时候，runloop就会调用CADisplayLink绑定的target上的selector；iOS设备的刷新频率事60HZ也就是每秒60次。那么每一次刷新的时间就是1/60秒 大概16.7毫秒；下面直接上代码：</p>
-<h2 id="一-创建THWave类，继承于UIView"><a href="#一-创建THWave类，继承于UIView" class="headerlink" title="一. 创建THWave类，继承于UIView"></a>一. 创建THWave类，继承于UIView</h2><pre><code>/** 浪宽： 一个完整的浪的宽度 */
-@property (nonatomic, assign) CGFloat waveWidth;
-
-/** 浪高： 波峰到波谷的距离 */
-@property (nonatomic, assign) CGFloat waveHeight;
-
-/** 浪速： 浪线的移动速度 */
-@property (nonatomic, assign) CGFloat waveSpeed;
-
-/** 浪速： 浪的内填充颜色 */
-@property (nonatomic, strong) UIColor *waveColor;
-
-/** 返回浪的Y点 */
-@property (nonatomic, copy) WaveYBlock waveY;
-
-
-/** 开始波动 */
-- (void)startWaveAnimation;
-/** 结束波动 */
-- (void)endWaveAnimation;
-</code></pre><h2 id="二-创建CAShapeLayer"><a href="#二-创建CAShapeLayer" class="headerlink" title="二. 创建CAShapeLayer"></a>二. 创建CAShapeLayer</h2><pre><code>#pragma mark - initUI
-- (void)initUI{
-    // 设置底色
-    self.backgroundColor = [UIColor whiteColor];
-
-    // 创建layer
-    _waveLayer = [CAShapeLayer layer];
-    [self.layer addSublayer:_waveLayer];
-}
-
-#pragma mark - 设置浪高
-- (void)setWaveHeight:(CGFloat)waveHeight{
-    _waveHeight = waveHeight;
-
-    CGRect frame = self.bounds;
-    frame.origin.y = frame.size.height - self.waveHeight;
-    frame.size.height = self.waveHeight;
-    _waveLayer.frame = frame;
-
-}
-#pragma mark - 设置浪色
-- (void)setWaveColor:(UIColor *)waveColor{
-    _waveColor = waveColor;
-    _waveLayer.fillColor = waveColor.CGColor;
-}
-</code></pre><h2 id="三-创建刷屏器"><a href="#三-创建刷屏器" class="headerlink" title="三. 创建刷屏器"></a>三. 创建刷屏器</h2><pre><code>#pragma mark - 开始和结束动画
-- (void)startWaveAnimation{
-    self.timer = [CADisplayLink displayLinkWithTarget:self selector:@selector(wave)];
-    [self.timer addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-}
-- (void)endWaveAnimation{
-    [self.timer invalidate];
-    self.timer = nil;
-}
-</code></pre><h2 id="四-绘制"><a href="#四-绘制" class="headerlink" title="四. 绘制"></a>四. 绘制</h2><pre><code>// 动画实现
-- (void)wave{
-
-    // 1. 随机
-    int speed = [@(self.waveSpeed) intValue];
-    int num = arc4random() % speed;
-    self.offset += num;
-
-    CGFloat width = self.bounds.size.width;
-    CGFloat height = self.waveHeight;
-    CGFloat y = 0.f;
-    // 2. 绘线
-    UIBezierPath *path = [UIBezierPath bezierPath];
-    [path moveToPoint:CGPointMake(0, height)];
-    for (CGFloat x = 0.f; x &lt;= width; x++) {
-        y = height * sinf(2*M_PI/self.waveWidth *x - self.offset * 0.0045);
-        [path addLineToPoint:CGPointMake(x, y)];
-    }
-
-    // 3. 返回x等于中心点时的Y值
-    CGFloat centerX = self.bounds.size.width / 2.0;
-    CGFloat centerY = height * sinf(2*M_PI/self.waveWidth * centerX - self.offset * 0.0045);
-    if (self.waveY) {
-        self.waveY(centerY);
-    }
-
-    // 4. 闭合曲线
-    [path addLineToPoint:CGPointMake(width, height)];
-    [path addLineToPoint:CGPointMake(0, height)];
-    [path closePath];
-    self.waveLayer.path = path.CGPath;
-}
-</code></pre><h2 id="五-外部引用-顺便加条小船"><a href="#五-外部引用-顺便加条小船" class="headerlink" title="五. 外部引用,顺便加条小船"></a>五. 外部引用,顺便加条小船</h2><pre><code>#pragma mark - creatWave
--(void)creatWave{
-    // 1. view 增加浪
-    [self.view addSubview: ({
-        THWave *wave = [[THWave alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 300)];
-        wave.waveHeight = 18;
-        wave.waveSpeed = 15;
-        wave.waveWidth = 300;
-        wave.waveColor = [UIColor colorWithRed:48/255.0 green:204/255.0 blue:249/255.0 alpha:1];
-
-        // 2. 浪增加船
-        UIImageView *boat;
-        [wave addSubview:({
-            boat = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@&quot;boat&quot;]];
-            boat.bounds = CGRectMake(0, 0, 123.3, 106.6);
-            boat.contentMode = UIViewContentModeScaleToFill;
-            boat;
-        })];
-
-        // 3. 弱化，调整船的位置
-        __weak typeof(self)weakSelf = self;
-        __weak typeof(wave)weakWave = wave;
-        wave.waveY = ^(CGFloat waveY){
-            CGRect frame = boat.bounds;
-            frame.origin.x = CGRectGetWidth(weakSelf.view.frame)/2.0 - CGRectGetWidth(frame)/2.0;
-            frame.origin.y = weakWave.bounds.size.height - boat.bounds.size.height - weakWave.waveHeight + waveY;
-            boat.frame = frame;
-        };
-        [wave startWaveAnimation];
-        wave;
-    })];
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/使用贝塞尔曲线绘制水波纹/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-MVP模式的学习" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/MVP模式的学习/">MVP模式的学习</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/23/MVP模式的学习/" class="archive-article-date">
-  	<time datetime="2019-06-23T12:02:00.876Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo</p>
-<p>打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。<br>MVP似乎有好多的变种，作者所说的这种有如下特点：<br>（原文如下：）</p>
-<pre><code>the view part of the MVP consists of both UIViews and UIViewController
-the view delegates user interactions to the presenter
-the presenter contains the logic to handle user interactions
-the presenter communicates with model layer, converts the data to UI friendly format, and updates the view
-the presenter has no dependencies to UIKit
-the view is passive (dump)
-稍微翻译一下
-MVP的 V 层是由UIViewController 和UIView 共同组成
-view 将委托presenter 对它自己的操作，（简单来说就是presenter发命令来控制view的交互，要你隐藏就隐藏，叫你show 你就乖乖的show）
-presenter拥有对 view交互的逻辑（就是上面说的意思）
-presenter跟model层通信，并将数据转化成对适应UI的数据并更新view
-presenter不需要依赖UIKit
-view层是单一，因为它是被动接受命令，没有主动能力
-</code></pre><p>presenter 作为业务逻辑的处理者，首先要向model层拿数据，所以它将可以向model层通信。其次，UI的处理权移交给了它，所以它需要与view成通讯，发送命令改变UI。同时，UI的响应将触发业务逻辑的处理，所以view 层向presenter层通讯，告诉他用户做了什么操作，需要你反馈对应的数据来更新UI。这样就完成了从用户交互获得交互反馈到整个业务逻辑。</p>
-<h2 id="先看看结构"><a href="#先看看结构" class="headerlink" title="先看看结构"></a>先看看结构</h2><p>UserViewProtocol 协议定义了一下方法，这些方法其实就是presenter对view层发送的命令</p>
-<pre><code>#import &lt;Foundation/Foundation.h&gt;
-@protocol UserViewProtocol &lt;NSObject&gt;
--(void) userViewDataSource:(NSArray*)data;
--(void) showIndicator;
--(void) hideIndicator;
--(void) showEmptyView;
-@end
-</code></pre><p>UserService 类是用来请求数据给presenter的，也能算是model层吧。我就只定义了一个方法。</p>
-<pre><code>-(void)getUserInfosSuccess:(SuccessHandler )success andFail:(FailHandler) failure
-</code></pre><p>这一层，其实也可以很复杂，这就涉及网络层的架构了</p>
-<p>ViewController类则是UI层，它实现了tableview自己的协议，还实现了用户交互的协议 UserViewProtocol，也就说，presenter向UI层发送命令，其实是发给UI层的viewController，实际上是控制器来被动的更新UI。这个不管是MVC还是MVP，view的实际控制权应该都是viewController，这个理解应该没错吧。<br>协议中的几个方法实现如下。</p>
-<pre><code>-(void)userViewDataSource:(NSArray*)data{
- self.friendlyUIData = data;
- [self.tableview reloadData];
-}
--(void) showIndicator{
- self.indicator.hidden = NO;
-}
--(void) hideIndicator{
- self.indicator.hidden = YES;
-}
--(void) showEmptyView{
- UIAlertController *alertView = [UIAlertController alertControllerWithTitle:@&quot;Alert&quot; message:@&quot;show empty view&quot; preferredStyle:UIAlertControllerStyleAlert];
- [alertView addAction:[UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:nil]];
- [self presentViewController:alertView animated:YES completion:^{
- }];
-}
-</code></pre><p>另外，在viewDidload中，调用了presenter的两个public 方法</p>
-<pre><code>self.presenter = [Presenter new];
-[self.presenter attachView:self];
-[self.presenter fetchData];
-</code></pre><p>那就来看看Presenter类，这个类我在demo中加了不少的注释，主要是为了理清自己的思路</p>
-<p>先说attachView 方法，这个方法是对外公开的，目的就是为了将实现了UserViewProtocol 协议的对象（其实应该就是控制器，因为view的直接操作者就是view Controller）绑定到presenter 上，说白了就是presenter 可以直接拿到实现了UserViewProtocol 协议的对象，并且向他发送命令（协议实现的方法，前面有说到），具体该方法的实现</p>
-<pre><code>@interface Presenter()
-@property (nonatomic,strong) UserService *userService;
-@property (nonatomic,weak) id&lt;UserViewProtocol&gt; attachView;
-@end
--(void)attachView:(id &lt;UserViewProtocol&gt;)view{
- self.attachView = view;
- self.userService  = [UserService new];
-}
-</code></pre><p>注意这里用了weak 来修饰attachView 树形，因为presenter和 viewController相互持有，所以必须要通过weak 来打破循环引用，这跟我们平时使用委托协议（ delegate）是一样的，只是名字换成了attachView 而已。</p>
-<p>再来说fetchData方法，公开这个方法，只是为了数据请求有个统一的接口，而不需要presenter分开多次调用，presenter自己处理所有事情，不让viewController参和进来。具体实现就看demo</p>
-<p>最后说一下</p>
-<pre><code>-(NSArray *)processOriginDataToUIFriendlyData:(NSArray *) originData{
- NSMutableArray *friendlyUIData = [NSMutableArray new];
- for (NSDictionary *dic in originData) {
-  if ([[dic valueForKey:@&quot;gender&quot;] isEqualToString:@&quot;males&quot;]) {
-   [friendlyUIData addObject:dic];
-  }
- }
- return friendlyUIData;
-}
-</code></pre><p>这个私有方法是将原始数据转换成UI所需要的数据，这样UI拿到数据就可以直接使用，而不用做各种判断，逻辑依然放在了presenter中。而且，这个数据处理可以做成协议，输出不同UI需要的数据，这个也可以看casatwy大神 关于view架构的文章。</p>
-<p><a href="https://github.com/HecvStyle/MVPDemo" target="_blank" rel="noopener">Demo</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/MVP模式的学习/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-runtime万能跳转界面" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/runtime万能跳转界面/">runtime万能跳转界面</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/23/runtime万能跳转界面/" class="archive-article-date">
-  	<time datetime="2019-06-23T11:57:21.378Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在开发项目中，会有这样变态的需求：</p>
-<p>推送：根据服务端推送过来的数据规则，跳转到对应的控制器<br>feeds列表：不同类似的cell，可能跳转不同的控制器（嘘！产品经理是这样要求：我也不确定会跳转哪个界面哦，可能是这个又可能是那个，能给我做灵活吗？根据后台返回规则任意跳转？）</p>
-<p>思考：wocao！这变态的需求，要拒绝他吗？<br>switch判断呗，考虑所有跳转的因素？这不得写死我…</p>
-<pre><code>switch () {
-    case :
-        break;
-    default:
-        break;
-}
-</code></pre><p>我是这么个实现的（runtime是个好东西）</p>
-<p>利用runtime动态生成对象、属性、方法这特性，我们可以先跟服务端商量好，定义跳转规则，比如要跳转到A控制器，需要传属性id、type，那么服务端返回字典给我，里面有控制器名，两个属性名跟属性值，客户端就可以根据控制器名生成对象，再用kvc给对象赋值，这样就搞定了 —O(∩_∩)O哈哈哈</p>
-<p>比如：根据推送规则跳转对应界面HSFeedsViewController</p>
-<p>HSFeedsViewController.h：</p>
-<pre><code>进入该界面需要传的属性
-@interface HSFeedsViewController : UIViewController
-
-// 注：根据下面的两个属性，可以从服务器获取对应的频道列表数据
-
-/** 频道ID */
-@property (nonatomic, copy) NSString *ID;
-
-/** 频道type */
-@property (nonatomic, copy) NSString *type;
-
-@end
-</code></pre><p>AppDelegate.m：</p>
-<p>推送过来的消息规则</p>
-<pre><code>// 这个规则肯定事先跟服务端沟通好，跳转对应的界面需要对应的参数
-NSDictionary *userInfo = @{
-                           @&quot;class&quot;: @&quot;HSFeedsViewController&quot;,
-                           @&quot;property&quot;: @{
-                                        @&quot;ID&quot;: @&quot;123&quot;,
-                                        @&quot;type&quot;: @&quot;12&quot;
-                                   }
-                           };
-</code></pre><p>接收推送消息</p>
-<pre><code>- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
-    [self push:userInfo];
-}
-</code></pre><p>跳转界面</p>
-<pre><code>- (void)push:(NSDictionary *)params
-{
-    // 类名
-    NSString *class =[NSString stringWithFormat:@&quot;%@&quot;, params[@&quot;class&quot;]];
-    const char *className = [class cStringUsingEncoding:NSASCIIStringEncoding];
-
-    // 从一个字串返回一个类
-    Class newClass = objc_getClass(className);
-    if (!newClass)
-    {
-        // 创建一个类
-        Class superClass = [NSObject class];
-        newClass = objc_allocateClassPair(superClass, className, 0);
-        // 注册你创建的这个类
-        objc_registerClassPair(newClass);
-    }
-    // 创建对象
-    id instance = [[newClass alloc] init];
-
-    // 对该对象赋值属性
-    NSDictionary * propertys = params[@&quot;property&quot;];
-    [propertys enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        // 检测这个对象是否存在该属性
-        if ([self checkIsExistPropertyWithInstance:instance verifyPropertyName:key]) {
-            // 利用kvc赋值
-            [instance setValue:obj forKey:key];
-        }
-    }];
-
-    // 获取导航控制器
-    UITabBarController *tabVC = (UITabBarController *)self.window.rootViewController;
-    UINavigationController *pushClassStance = (UINavigationController *)tabVC.viewControllers[tabVC.selectedIndex];
-    // 跳转到对应的控制器
-    [pushClassStance pushViewController:instance animated:YES];
-}
-</code></pre><p>检测对象是否存在该属性</p>
-<pre><code>- (BOOL)checkIsExistPropertyWithInstance:(id)instance verifyPropertyName:(NSString *)verifyPropertyName
-{
-    unsigned int outCount, i;
-
-    // 获取对象里的属性列表
-    objc_property_t * properties = class_copyPropertyList([instance
-                                                           class], &amp;outCount);
-
-    for (i = 0; i &lt; outCount; i++) {
-        objc_property_t property =properties[i];
-        //  属性名转成字符串
-        NSString *propertyName = [[NSString alloc] initWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
-        // 判断该属性是否存在
-        if ([propertyName isEqualToString:verifyPropertyName]) {
-            free(properties);
-            return YES;
-        }
-    }
-    free(properties);
-
-    return NO;
-}
-</code></pre><p><a href="https://github.com/wangjungang/Universal-Jump-ViewController" target="_blank" rel="noopener">demo</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/runtime万能跳转界面/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
-    </nav>
+  
+
+  
+
+  
+
   
 
 
@@ -2453,8 +795,8 @@ NSDictionary *userInfo = @{
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
