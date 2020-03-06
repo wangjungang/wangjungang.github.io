@@ -152,6 +152,130 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS 简单而粗暴的说一说内存管理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/">iOS 简单而粗暴的说一说内存管理</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/" class="archive-article-date">
+  	<time datetime="2018-09-06T05:21:08.050Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>既然是内存管理，首先要知道那么内存是用来干什么的？内存具体管理的东西是什么？当然这些东西基本都是常识了，内存当然是用来存储数据的，内存要管理的东西简单的说也就是如何将数据存储到内存中（比如说我们的声明变量就可以将数据存储到内存中），其次存储到内存中的数据怎样释放，什么时候释放，这都是内存管理需要来关心的</p>
+<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="内存中的五大区域"><a href="#内存中的五大区域" class="headerlink" title="内存中的五大区域"></a>内存中的五大区域</h3><p>内存分为5个区域，分别指的是—–&gt;栈区/堆区/BSS段/数据段/代码段</p>
+<h4 id="栈区"><a href="#栈区" class="headerlink" title="栈区"></a>栈区</h4><p>存储局部变量，当其作用域执行完毕之后，就会被系统立即收回</p>
+<h4 id="堆区"><a href="#堆区" class="headerlink" title="堆区"></a>堆区</h4><p>存储OC对象，手动申请的字节空间，需要调用free来释放</p>
+<h4 id="BSS段"><a href="#BSS段" class="headerlink" title="BSS段"></a>BSS段</h4><p>未初始化的全局变量和静态变量，一旦初始化就会从BSS段中回收掉，转存到数据段中</p>
+<h4 id="数据段"><a href="#数据段" class="headerlink" title="数据段"></a>数据段</h4><p>存储已经初始化的全局变量和静态变量，以及常量数据，直到结束程序时才会被立即收回</p>
+<h4 id="代码段"><a href="#代码段" class="headerlink" title="代码段"></a>代码段</h4><p>代码，直到结束程序时才会被立即收回</p>
+<h3 id="OC中堆区存储对象的特点"><a href="#OC中堆区存储对象的特点" class="headerlink" title="OC中堆区存储对象的特点"></a>OC中堆区存储对象的特点</h3><p>除了堆区，其他区域的中存储的数据，都是又系统自动释放的</p>
+<p>堆区中的OC对象，是不会自动释放的，如果不主动释放，那么将在程序结束的时候才去释放</p>
+<h3 id="引用计数器"><a href="#引用计数器" class="headerlink" title="引用计数器"></a>引用计数器</h3><p>首先简单来说一下，每一个OC对象都有一个属性，叫做retainCount，翻译过来也就是引用计数器，类型为unsigned long，占据8个字节，每一个对象负责维护对象所引用的记数值，当一个新的引用指向对象，那么这个对象的引用值增加1，当我们新创建出一个对象的时候这个对象的引用计数器的值默认为1，当这个对象被少一次引用的时候那么就先让这个对象的引用记数值减1，当这个对象所引用的记数值为0的时候，代表这个对象没有被使用，这时系统会自动回收掉此对象，回收这个对象的同时自动调用这个对象的dealloc方法</p>
+<h4 id="控制规则："><a href="#控制规则：" class="headerlink" title="控制规则："></a>控制规则：</h4><p>为对象发送一条retain消息，那么对象的引用计数器的值就会+1</p>
+<p>为对象发送一条release消息，那么对象的引用计数器的值就会-1</p>
+<p>为对象发送一条retainCount消息，那么就可以得到这个对象的引用计数器的值</p>
+<h3 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h3><p>MRC：Manual Reference Counting 手动引用计数器，需要我们手动管理对象引用计数器的值</p>
+<p>ARC：Autimatic Reference Counting 自动引用计数器，系统自动的改变对象引用计数器的值（iOS5之后），ARC是基于MRC的</p>
+<h3 id="内存管理的原则"><a href="#内存管理的原则" class="headerlink" title="内存管理的原则"></a>内存管理的原则</h3><p>新创建一个对象，这个对象的引用计数器的值为1，有对象的创建，就需要匹配一个release</p>
+<p>是谁来负责retain的，谁就要负责release，使用的时候retain，不是用的时候release</p>
+<p>retain的次数要和release次数想匹配，有加有减，做到平衡</p>
+<h3 id="野指针"><a href="#野指针" class="headerlink" title="野指针"></a>野指针</h3><p>在C中，声明一个指针变量，没有为这个指针变量初始化，那么这个指针变量的值也就是一个垃圾值，指针指向随机的一块空间，那么我们叫做野指针</p>
+<p>在OC中，一个指针指向的对象被释放了，那么这个指针叫野指针</p>
+<h3 id="对象的回收"><a href="#对象的回收" class="headerlink" title="对象的回收"></a>对象的回收</h3><p>对象所占用的字节空间，分配给别人使用，系统未分配这块空间被别人使用之前，这个对象的数据仍然处在内存中</p>
+<h3 id="僵尸对象"><a href="#僵尸对象" class="headerlink" title="僵尸对象"></a>僵尸对象</h3><p>已经被收回但是这个对象的数据仍然处在内存中，像这样的对象叫做僵尸对象</p>
+<p>僵尸对象有可能可以访问也有可能不可以访问，当僵尸对象所占的内存空间还没有分配给别人使用的时候，这个数据的对象其实仍然存在，通过指针仍然可以找到这个对象，所以说这个时候僵尸对象还可以被访问，当这个僵尸对象已经分配给别人使用的时候，这个对象就不存在了，这个时候不可以被访问</p>
+<p>注意：一旦一个对象成为僵尸对象之后，这个对象无论如何都不应该被使用，无论有没有分配给别人使用，都不能用！且不可以复活！</p>
+<h3 id="避免内存泄漏"><a href="#避免内存泄漏" class="headerlink" title="避免内存泄漏"></a>避免内存泄漏</h3><p>有对象的创建，就必须要匹配一个release，retain和release的次数要匹配，不要随便为一个指针赋值为nil，除非这个指针是野指针，在方法中不要随意对传入的对象进行retain</p>
+<p>当我们通过野指针去访问僵尸对象的时候会报错，为了避免报错当一个指针成为野指针后，为这个指针赋值为nil</p>
+<h2 id="循环引用"><a href="#循环引用" class="headerlink" title="循环引用"></a>循环引用</h2><p>@class</p>
+<p>对于循环依赖关系来说，比方A类引用B类，同时B类也引用A类</p>
+<p>这种代码编译会报错。当使用@class在两个类相互声明，就不会出现编译报错</p>
+<p>用法概括</p>
+<p>使用@class 类名; 就可以引用一个类，说明一下它是一个类</p>
+<p>和import的区别</p>
+<p>l  #import方式会包含被引用类的所有信息，包括被引用类的变量和方法；@class方式只是告诉编译器在A.h文件中 B *b 只是类的声明，具体这个类里有什么信息，这里不需要知道，等实现文件中真正要用到时，才会真正去查看B类中信息</p>
+<p>l  如果有上百个头文件都#import了同一个文件，或者这些文件依次被#improt,那么一旦最开始的头文件稍有改动，后面引用到这个文件的所有类都需要重新编译一遍，这样的效率也是可想而知的，而相对来讲，使用@class方式就不会出现这种问题了</p>
+<p>l  在.m实现文件中，如果需要引用到被引用类的实体变量或者方法时，还需要使用#import方式引入被引用类</p>
+<h3 id="如何解决循环引用的内存管理。"><a href="#如何解决循环引用的内存管理。" class="headerlink" title="如何解决循环引用的内存管理。"></a>如何解决循环引用的内存管理。</h3><p>解决方案：一端用assign，一端用retain</p>
+<p>  比如A对象retain了B对象，B对象retain了A对象</p>
+<p>  这样会导致A对象和B对象永远无法释放</p>
+<h3 id="didReceiveMemoryWarning、dealloc方法使用"><a href="#didReceiveMemoryWarning、dealloc方法使用" class="headerlink" title="didReceiveMemoryWarning、dealloc方法使用"></a>didReceiveMemoryWarning、dealloc方法使用</h3><p>####1.didReceiveMemoryWarning方法：</p>
+<p>首先调用[super didReceiveMemoryWarning]方法，然后检查当前视图的父视图是否为空，如果为空，则释放掉一些不需要的数据。关于视图界面的释放不应该在这个方法中，应该放在viewDidUnload方法中。</p>
+<p>####2.dealloc方法：</p>
+<p>对象释放时调用，在这个方法中，要释放掉所有的数据和输出口。比如释放输出口：[xxx release];(不使用self关键字)</p>
+<h2 id="一些注意的地方"><a href="#一些注意的地方" class="headerlink" title="一些注意的地方"></a>一些注意的地方</h2><p>1.向集合(NSArray,NSDictionary等)添加对象时，被添加的对象会被执行retain操作，当从集合中移走对象或者集合对象被释放时，集合中的对象会被执行release操作。</p>
+<p>2.要保证有多少个alloc、copy、multablecopy、retain消息，就要有多少个release或者autorelease，保证代码平衡。</p>
+<p>3.在程序中直接用@””创建的NSString对象，是常量，引用计数是-1，向它发送retain、release没有效果。</p>
+<p>4.在View中使用图片时，大的图片区域尽量使用小的图片数据来填充，减小内存占用。</p>
+<p>5.[UIImage imageNamed:@””]，次方法使用了系统缓存来缓存图像，会长时间占用内存，最好使用imageWithContentsOfFile方法。</p>
+<p>6.数据要延迟加载，只在内存中保留满足需要的最少的数据和视图元素，需要的时候再加载，不需要就马上销毁。</p>
+<p>7.假如一个成员变量在property中使用了retain，当使用self关键字对其赋值时，会对创建的对象再retain一次，造成内存泄露。比如：self.xxx = [[XXXalloc] init];</p>
+<p>  对一个成员变量赋nil值时，self.xxx = nil,会调用xxx的release方法，并且将指针置空，xxx = nil，只是将指针置空。</p>
+<p>9.在控制器中使用NSTimer会使当前控制器引用计数加1，所以在控制器释放之前，必须暂停和使定时器失效，否则控制器将不会被释放。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-AFN为什么添加一条常驻线程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1372,134 +1496,6 @@ void codingOC(id self,SEL _cmd) {
 
 
   
-    <article id="post-java连接Mysql8.0.11" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/31/java连接Mysql8.0.11/">java连接Mysql8.0.11</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/31/java连接Mysql8.0.11/" class="archive-article-date">
-  	<time datetime="2018-07-31T15:32:24.531Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>java连接Mysql8.0.11与之前版本有些不同。</p>
-<p>最近也是踩了很多的坑，总结一下。</p>
-<pre><code>其中driver为com.mysql.cj.jdbc.Driver
-
-url为jdbc:mysql://localhost/net_tableinfo?useSSL=FALSE&amp;serverTimezone=UTC（net_tableinfo为数据库的名字）
-</code></pre><h2 id="测试代码如下"><a href="#测试代码如下" class="headerlink" title="测试代码如下"></a>测试代码如下</h2><pre><code>package com.dgd.test;
-
-import java.sql.*;
-
-
-/**
- * @author Dgd
- * @create 2017-10-16-21:25
- * 测试数据库
- */
-
-public class Test {
-    //mysql驱动包名
-    private static final String DRIVER_NAME = &quot;com.mysql.cj.jdbc.Driver&quot;;
-    //数据库连接地址
-    private static final String URL = &quot;jdbc:mysql://localhost/New_info?useSSL=FALSE&amp;serverTimezone=UTC&quot;;
-    //用户名
-    private static final String USER_NAME = &quot;root&quot;;
-    //密码
-    private static final String PASSWORD = &quot;password&quot;;
-    public static void main(String[] args){
-        Connection connection = null;
-        try {
-            //加载mysql的驱动类
-            Class.forName(DRIVER_NAME);
-            //获取数据库连接
-            connection = DriverManager.getConnection(URL, USER_NAME, PASSWORD);
-            //mysql查询语句
-            String sql = &quot;SELECT name FROM net_tableinfo&quot;;
-            PreparedStatement prst = connection.prepareStatement(sql);
-            //结果集
-            ResultSet rs = prst.executeQuery();
-            while (rs.next()) {
-                System.out.println(&quot;用户名:&quot; + rs.getString(&quot;name&quot;));
-            }
-            rs.close();
-            prst.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/31/java连接Mysql8.0.11/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/17/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/19/">Next &raquo;</a>
@@ -1605,11 +1601,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">

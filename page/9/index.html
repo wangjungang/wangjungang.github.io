@@ -152,6 +152,190 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS 最详细的几种定时器的使用介绍" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/28/iOS 最详细的几种定时器的使用介绍/">iOS 最详细的几种定时器的使用介绍</a>
+    </h1>
+  
+
+        
+        <a href="/2019/01/28/iOS 最详细的几种定时器的使用介绍/" class="archive-article-date">
+  	<time datetime="2019-01-28T09:35:59.542Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在软件开发过程中，我们常常需要在某个时间后执行某个方法，或者是按照某个周期一直执行某个方法。在这个时候，我们就需要用到定时器。而关于定时器，ios开发我们会用到的也就以下几种。下面介绍以下：</p>
+<h2 id="第一种：NSTimer"><a href="#第一种：NSTimer" class="headerlink" title="第一种：NSTimer"></a>第一种：NSTimer</h2><h3 id="1、创建方法一"><a href="#1、创建方法一" class="headerlink" title="1、创建方法一"></a>1、创建方法一</h3><pre><code>NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(action) userInfo:nil repeats:YES];
+TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法
+</code></pre><p>userInfo:可以写一些标识信息（一般不用）</p>
+<p>target : 需要执行方法的对象。</p>
+<p>selector : 需要执行的方法</p>
+<p>repeats : 是否需要循环</p>
+<pre><code>NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+
+}];
+</code></pre><p>TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法</p>
+<p>repeats : 是否需要循环</p>
+<p>使用block的方法就直接在block里面写延时后要执行的代码就可以了</p>
+<pre><code>SEL action = @selector(action);
+NSInvocation* invo = [NSInvocation invocationWithMethodSignature:[[self class] instanceMethodSignatureForSelector:action]];
+[invo setTarget:self];
+[invo setSelector:action];
+NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1.0 invocation:invo repeats:YES];
+</code></pre><p>TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法</p>
+<p>action : 需要执行的方法</p>
+<p>repeats : 是否需要循环</p>
+<p>这种三种方式创建的定时器不用加入到RunLoop，是由于系统已经将其加入到了默认的RunLoop中。而且这种定时器创建就会启动。</p>
+<h3 id="2、创建方法二"><a href="#2、创建方法二" class="headerlink" title="2、创建方法二"></a>2、创建方法二</h3><pre><code>  NSTimer *timer  =  [NSTimer  timerWithTimeInterval:1.0 target:self selector:@selector(action) userInfo:nil repeats:YES];
+[[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法
+</code></pre><p>userInfo:可以写一些标识信息（一般不用）</p>
+<p>target : 需要执行方法的对象。</p>
+<p>selector : 需要执行的方法</p>
+<p>repeats : 是否需要循环</p>
+<pre><code>NSTimer *timer = [NSTimer timerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+}];
+[[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法
+</code></pre><p>repeats : 是否需要循环</p>
+<p>使用block的方法就直接在block里面写延时后要执行的代码就可以了</p>
+<pre><code>SEL action = @selector(action);
+NSInvocation* invo = [NSInvocation invocationWithMethodSignature:[[self class] instanceMethodSignatureForSelector:action]];
+[invo setTarget:self];
+[invo setSelector:action];
+NSTimer* timer = [NSTimer timerWithTimeInterval:1.0 invocation:invo repeats:YES];//加入主循环池中
+[[NSRunLoop mainRunLoop]addTimer:timer forMode:NSDefaultRunLoopMode];
+</code></pre><p>TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法</p>
+<p>action : 需要执行的方法</p>
+<p>repeats : 是否需要循环</p>
+<p>这种三种方式创建的定时器都需要我们自己去加入到RunLoop中，不然定时器无法启动。</p>
+<p>释放定时器</p>
+<pre><code>[timer invalidate];
+</code></pre><h4 id="timer的一些属性变量："><a href="#timer的一些属性变量：" class="headerlink" title="timer的一些属性变量："></a>timer的一些属性变量：</h4><p>//这是设置定时器的启动具体时间，常用来管理定时器的启动与停止</p>
+<pre><code>@property (copy) NSDate *fireDate;
+</code></pre><p>//启动定时器</p>
+<pre><code>//    timer.fireDate = [NSDate distantPast];
+</code></pre><p>//停止定时器</p>
+<pre><code>//    timer.fireDate = [NSDate distantFuture];
+</code></pre><p>这个是一个只读属性，获取定时器调用间隔时间。</p>
+<pre><code>@property (readonly) NSTimeInterval timeInterval;
+</code></pre><p>这是7.0之后新增的一个属性，因为NSTimer并不完全精准，通过这个值设置误差范围。</p>
+<pre><code>@property NSTimeInterval tolerance ;
+</code></pre><p>获取定时器是否有效</p>
+<pre><code>@property (readonly, getter=isValid) BOOL valid;
+</code></pre><p>获取参数信息</p>
+<pre><code>@property (nullable, readonly, retain) id userInfo;
+</code></pre><h2 id="第二种：CADisplayLink"><a href="#第二种：CADisplayLink" class="headerlink" title="第二种：CADisplayLink"></a>第二种：CADisplayLink</h2><p>创建方法：</p>
+<pre><code>CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(action)];
+[displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+</code></pre><p>target : 需要执行方法的对象。</p>
+<p>selector : 需要执行的方法</p>
+<p>释放方法</p>
+<pre><code>[displayLink invalidate];
+
+displayLink = nil;
+</code></pre><p>释放了displayLink也就意味着停止了定时器，或者使用下面的方法移除定时器</p>
+<pre><code>[displayLink removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+</code></pre><h3 id="CADisplayLink的一些属性变量："><a href="#CADisplayLink的一些属性变量：" class="headerlink" title="CADisplayLink的一些属性变量："></a>CADisplayLink的一些属性变量：</h3><p>每帧之间的时间</p>
+<pre><code>@property(readonly, nonatomic) CFTimeInterval duration;
+</code></pre><p>间隔多少帧调用一次selector 方法，默认1</p>
+<pre><code>@property(nonatomic) NSInteger frameInterval;
+</code></pre><p>屏幕显示的上一帧的时间戳，只读的CFTimeInterval值。</p>
+<pre><code>@property(readonly, nonatomic) CFTimeInterval timestamp;
+</code></pre><p>是否暂停，控制CADisplayLink的运行</p>
+<pre><code>@property(getter=isPaused, nonatomic) BOOL paused;
+</code></pre><p>注意：</p>
+<p>1、通常来讲：iOS设备的刷新频率事60HZ也就是每秒60次。那么每一次刷新的时间就是1/60秒 大概16.7毫秒。当我们的frameInterval 值为1的时候我们需要保证的是 CADisplayLink调用的target的函数计算时间不应该大于 16.7否则就会出现严重的丢帧现象。</p>
+<h2 id="GCD方法"><a href="#GCD方法" class="headerlink" title="GCD方法"></a>GCD方法</h2><h3 id="只执行一次"><a href="#只执行一次" class="headerlink" title="只执行一次"></a>只执行一次</h3><pre><code>double delayInSeconds = 2.0;
+dispatch_time_t poptime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+dispatch_after(poptime, dispatch_get_main_queue(), ^{
+//执行事件
+});
+</code></pre><p>delayInSeconds:执行之前等待的时间。比如设置成2.0，就代表2秒后执行方法</p>
+<h3 id="重复执行"><a href="#重复执行" class="headerlink" title="重复执行"></a>重复执行</h3><pre><code>/** timer声明成属性存储起来 */
+@property (nonatomic , strong)dispatch_source_t timer;
+NSTimeInterval period = 1.0;//设置时间间隔
+dispatch_queue_t queue =     dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+   dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, period * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+  dispatch_source_set_event_handler(_timer, ^{
+        NSLog(@&quot;%@&quot; , [NSThread currentThread]);//打印当前线程 
+       dispatch_async(dispatch_get_main_queue(), ^{
+         //回到主线程做事情
+     });
+});
+dispatch_resume(_timer);
+</code></pre><p>注意：要将timer存储起来，不然会就只执行一次</p>
+<p>如果不定时器使用完了的话 ，取消定时器：dispatch_source_cancel(_timer);</p>
+<h2 id="最后讲一下：-NSTimer和CADisplayLink-的区别和联系"><a href="#最后讲一下：-NSTimer和CADisplayLink-的区别和联系" class="headerlink" title="最后讲一下： NSTimer和CADisplayLink 的区别和联系"></a>最后讲一下： NSTimer和CADisplayLink 的区别和联系</h2><h3 id="1、原理不同"><a href="#1、原理不同" class="headerlink" title="1、原理不同"></a>1、原理不同</h3><p>CADisplayLink是一个能让我们以和屏幕刷新率同步的频率将特定的内容画到屏幕上的定时器类。CADisplayLink以特定模式注册到runloop后，每当屏幕显示内容刷新结束的时候，runloop就会向CADisplayLink指定的target发送一次指定的selector消息， CADisplayLink类对应的selector就会被调用一次。</p>
+<p>NSTimer以指定的模式注册到runloop后，每当设定的周期时间到达后，runloop会向指定的target发送一次指定的selector消息。</p>
+<h3 id="2、周期设置方式不同"><a href="#2、周期设置方式不同" class="headerlink" title="2、周期设置方式不同"></a>2、周期设置方式不同</h3><p>iOS设备的屏幕刷新频率(FPS)是60Hz，因此CADisplayLink的selector默认调用周期是每秒60次，这个周期可以通过frameInterval属性设置，CADisplayLink的selector每秒调用次数=60/frameInterval。比如当frameInterval设为2，每秒调用就变成30次。因此，CADisplayLink周期的设置方式略显不便。</p>
+<p>NSTimer的selector调用周期可以在初始化时直接设定，相对就灵活的多。</p>
+<h3 id="3、精确度不同"><a href="#3、精确度不同" class="headerlink" title="3、精确度不同"></a>3、精确度不同</h3><p>iOS设备的屏幕刷新频率是固定的，CADisplayLink在正常情况下会在每次刷新结束都被调用，精确度相当高。</p>
+<p>NSTimer的精确度就显得低了点，比如NSTimer的触发时间到的时候，runloop如果在忙于别的调用，触发时间就会推迟到下一个runloop周期。更有甚者，在OS X v10.9以后为了尽量避免在NSTimer触发时间到了而去中断当前处理的任务，NSTimer新增了tolerance属性，让用户可以设置可以容忍的触发的时间范围。</p>
+<h3 id="4、使用场合"><a href="#4、使用场合" class="headerlink" title="4、使用场合"></a>4、使用场合</h3><p>从原理上不难看出，CADisplayLink使用场合相对专一，适合做界面的不停重绘，比如视频播放的时候需要不停地获取下一帧用于界面渲染。</p>
+<p>NSTimer的使用范围要广泛的多，各种需要单次或者循环定时处理的任务都可以使用。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/01/28/iOS 最详细的几种定时器的使用介绍/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS label代码自适应高度宽度" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1490,103 +1674,6 @@ if let cat = animal as? Cat{
 
 
   
-    <article id="post-tabbar和nav的黑线" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/20/tabbar和nav的黑线/">tabbar和nav的黑线</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/20/tabbar和nav的黑线/" class="archive-article-date">
-  	<time datetime="2018-12-20T08:52:58.590Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>有的时候因为项目需求，对tabbar以及navigationbar，需要去掉或者改变顶部及底部细线的颜色，对于这个问题，笔者在这里总结一下，方法不难，至于导航栏底部和tabbar顶部的黑线从何而来呢？通过层次结构会发现，是由于导航栏或者tabbar设置的默认图片导致的，要消除这种效果，就要摒弃系统自带的图片，自己生成一张图片，或者设置空的图片，下面就来上代码：</p>
-<h3 id="1-改变或者消除tabbar底部细线及其颜色"><a href="#1-改变或者消除tabbar底部细线及其颜色" class="headerlink" title="1.改变或者消除tabbar底部细线及其颜色"></a>1.改变或者消除tabbar底部细线及其颜色</h3><pre><code>[self.tabBar setBackgroundImage:[UIImage new]];
-[self.tabBar setShadowImage:[self.tabBar lineImageWithColor:[UIColor colorWithHexString:@&quot;#fb9966&quot;]]];
-</code></pre><p>第一步是设置背景图片，第二部设置阴影图片，上面的是改变细线的颜色，我们可以自己画一张图片，画图片的方法如下：</p>
-<pre><code>- (UIImage *)lineImageWithColor:(UIColor *)lineColor {
-
-    CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 0.5);
-    UIGraphicsBeginImageContext(rect.size);
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
-
-    CGContextSetFillColorWithColor(ctx, lineColor.CGColor);
-    CGContextFillRect(ctx, rect);
-
-    UIImage *lineImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return lineImage;
-
-}
-</code></pre><p>当然，如果想要去除黑线，只需要将shadowImage也设置未空白图片就可以了</p>
-<h3 id="2-去除或者改变navigationbar底部黑线"><a href="#2-去除或者改变navigationbar底部黑线" class="headerlink" title="2.去除或者改变navigationbar底部黑线"></a>2.去除或者改变navigationbar底部黑线</h3><p>原理类似，直接上代码吧</p>
-<pre><code>[self.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-[self.navigationBar setShadowImage:[self.navigationBar lineImageWithColor:[UIColor colorWithHexString:@&quot;#fb9966&quot;]]];
-</code></pre><p>至于导航栏比较多变，这一点完全可以隐藏掉系统的导航栏，自己做一个就行了</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/20/tabbar和nav的黑线/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
@@ -1692,11 +1779,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -152,6 +152,120 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS 多线程相关之performSelector、死锁" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/06/iOS 多线程相关之performSelector、死锁/">iOS 多线程相关之performSelector、死锁</a>
+    </h1>
+  
+
+        
+        <a href="/2020/03/06/iOS 多线程相关之performSelector、死锁/" class="archive-article-date">
+  	<time datetime="2020-03-06T08:17:17.327Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="performSelector"><a href="#performSelector" class="headerlink" title="performSelector"></a>performSelector</h3><pre><code>//在当前线程延迟1s执行，响应了OC语言的动态性：延迟到运行时才绑定方法
+[self performSelector:@selector(aaa) withObject:nil afterDelay:1];
+// 回到主线程，waitUntilDone:是否将该回调方法执行完再执行后面的代码
+// 如果为YES：就必须等回调方法执行完成之后才能执行后面的代码，说白了就是阻塞当前的线程
+// 如果是NO：就是不等回调方法结束，不会阻塞当前线程
+[self performSelectorOnMainThread:@selector(aaa) withObject:nil waitUntilDone:YES];
+// 开辟子线程
+[self performSelectorInBackground:@selector(aaa) withObject:nil];
+//在指定线程执行
+[self performSelector:@selector(aaa) onThread:[NSThread currentThread] withObject:nil waitUntilDone:YES];
+</code></pre><p>需要注意的是</p>
+<p>如果是带afterDelay的延时函数，会在内部创建一个NSTimer，然后添加到当前线程的Runloop中。也就是如果当前线程没有开启runloop，该方法会失效。在子线程中，需要启动runloop(注意调用顺序)</p>
+<pre><code>[self performSelector:@selector(aaa) withObject:nil afterDelay:1];
+[[NSRunLoop currentRunLoop] run];
+</code></pre><ul>
+<li>performSelector:withObject:只是一个单纯的消息发送，和时间没有一点关系。所以不需要添加到子线程的Runloop中也能执行</li>
+</ul>
+<p>下面代码片段的test方法会去执行吗？</p>
+<pre><code>dispatch_async(dispatch_get_global_queue(0, 0), ^{
+  [self performSelector:@selector(test:) withObject:nil afterDelay:0];
+});
+</code></pre><p>这里的test方法是不会去执行的，原因在于- (void)performSelector: withObject: afterDelay:这个方法要创建提交任务到runloop上的，而gcd底层创建的线程是默认没有开启对应runloop的，所有这个方法就会失效。</p>
+<p>而如果将dispatch_get_global_queue改成主队列，由于主队列所在的主线程是默认开启了runloop的，就会去执行(将dispatch_async改成同步，因为同步是在当前线程执行，那么如果当前线程是主线程，test方法也是会去执行的)</p>
+<h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><p>死锁就是队列引起的循环等待，一个比较常见的死锁例子:主队列同步</p>
+<pre><code>- (void)viewDidLoad {
+  [super viewDidLoad];
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    NSLog(@&quot;deallock&quot;);
+  });
+}
+</code></pre><p>在主线程中运用主队列同步，也就是把任务放到了主线程的队列中。同步对于任务是立刻执行的，那么当把任务放进主队列时，它就会立马执行，只有执行完这个任务，viewDidLoad才会继续向下执行。而viewDidLoad和任务都是在主队列上的，由于队列的先进先出原则，任务又需等待viewDidLoad执行完毕后才能继续执行，viewDidLoad和这个任务就形成了相互循环等待，就造成了死锁。</p>
+<p>想避免这种死锁，可以将同步改成异步dispatch_async或者将dispatch_get_main_queue换成其他串行或并行队列，都可以解决</p>
+<p>同样，下边的代码也会造成死锁：</p>
+<pre><code>dispatch_queue_t serialQueue = dispatch_queue_create(&quot;test&quot;, DISPATCH_QUEUE_SERIAL);
+dispatch_async(serialQueue, ^{
+  dispatch_sync(serialQueue, ^{
+    NSLog(@&quot;deadlock&quot;);
+  });
+});
+</code></pre><p>外面的函数无论是同步还是异步都会造成死锁。这是因为里面的任务和外面的任务都在同一个serialQueue队列内，又是同步，这就和上边主队列同步的例子一样造成了死锁。</p>
+<p>解决方法也和上边一样，将里面的同步改成异步dispatch_async或者将serialQueue换成其他串行或并行队列，都可以解决</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/03/06/iOS 多线程相关之performSelector、死锁/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Git的各种撤销" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2362,194 +2476,6 @@ self.timer = [NSTimer scheduledTimerWithTimeInterval:0.001 target:self selector:
 
 
   
-    <article id="post-Xcode11 新建工程中的SceneDelegate" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/">Xcode11 新建工程中的SceneDelegate</a>
-    </h1>
-  
-
-        
-        <a href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/" class="archive-article-date">
-  	<time datetime="2019-11-29T08:13:08.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Xcode 11 建新工程默认会创建通过 UIScene 管理多个 UIWindow 的应用，工程中除了 AppDelegate 外还会有一个 SceneDelegate，这是为了实现iPadOS支持多窗口的结果。AppDelegate.h不再有window属性，window属性被定义在了SceneDelegate.h中，AppDelegate中有新增的关于scene的代理方法，SceneDelegate中也有相应的代理方法。因此，当我们用Xcode11针对不同版本的iOS开发应用时，就要做一些适配。</p>
-<h2 id="样式"><a href="#样式" class="headerlink" title="样式"></a>样式</h2><p><img src="http://img.wangjungang.cn/MCTA26.jpg" alt=""></p>
-<p><img src="http://img.wangjungang.cn/eI9CO0.jpg" alt=""></p>
-<p>AppDelegate.h中多了两个默认的代理方法：</p>
-<pre><code>#pragma mark - UISceneSession lifecycle
-
-/*
-1.如果没有在APP的Info.plist文件中包含scene的配置数据，或者要动态更改场景配置数据，需要实现此方法。 UIKit会在创建新scene前调用此方法。
-2.方法会返回一个UISceneConfiguration对象，其包含其中包含场景详细信息，包括要创建的场景类型，用于管理场景的委托对象以及包含要显示的初始视图控制器的情节提要。 如果未实现此方法，则必须在应用程序的Info.plist文件中提供场景配置数据。
-
-总结下：默认在info.plist中进行了配置， 不用实现该方法也没有关系。如果没有配置就需要实现这个方法并返回一个UISceneConfiguration对象。
-配置参数中Application Session Role 是个数组，每一项有三个参数:
-Configuration Name:   当前配置的名字;
-Delegate Class Name:  与哪个Scene代理对象关联;
-StoryBoard name: 这个Scene使用的哪个storyboard。
-注意：代理方法中调用的是配置名为Default Configuration的Scene，则系统就会自动去调用SceneDelegate这个类。这样SceneDelegate和AppDelegate产生了关联。
-*/
-- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
-    // Called when a new scene session is being created.
-    // Use this method to select a configuration to create the new scene with.
-    return [[UISceneConfiguration alloc] initWithName:@&quot;Default Configuration&quot; sessionRole:connectingSceneSession.role];
-}
-
-// 在分屏中关闭其中一个或多个scene时候回调用
-- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet&lt;UISceneSession *&gt; *)sceneSessions {
-    // Called when the user discards a scene session.
-    // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-    // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-}
-</code></pre><p>SceneDelegate.m中的默认代理方法如下：</p>
-<pre><code>- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
-    // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-    // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-    // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-}
-
-- (void)sceneDidDisconnect:(UIScene *)scene {
-    // Called as the scene is being released by the system.
-    // This occurs shortly after the scene enters the background, or when its session is discarded.
-    // Release any resources associated with this scene that can be re-created the next time the scene connects.
-    // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
-}
-
-- (void)sceneDidBecomeActive:(UIScene *)scene {
-    // Called when the scene has moved from an inactive state to an active state.
-    // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-}
-
-- (void)sceneWillResignActive:(UIScene *)scene {
-    // Called when the scene will move from an active state to an inactive state.
-    // This may occur due to temporary interruptions (ex. an incoming phone call).
-}
-
-- (void)sceneWillEnterForeground:(UIScene *)scene {
-    // Called as the scene transitions from the background to the foreground.
-    // Use this method to undo the changes made on entering the background.
-}
-
-- (void)sceneDidEnterBackground:(UIScene *)scene {
-    // Called as the scene transitions from the foreground to the background.
-    // Use this method to save data, release shared resources, and store enough scene-specific state information
-    // to restore the scene back to its current state.
-}
-</code></pre><h2 id="1-不需要多窗口（multiple-windows）"><a href="#1-不需要多窗口（multiple-windows）" class="headerlink" title="1. 不需要多窗口（multiple windows）"></a>1. 不需要多窗口（multiple windows）</h2><p>如果需要支持iOS 13 及之前多个版本的iOS，且又不需要多个窗口的功能，可以<strong><em>删除项目info.plist文件中的Application Scene Manifest的配置数据</em></strong>，AppDelegate中关于Scene的代理方法、SceneDelegate的类是否删除都可以。<br>如果使用纯代码来实现显示界面，需要在AppDelegate.h中手动添加window属性，添加以下代码即可：</p>
-<pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
-    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    [self.window setBackgroundColor:[UIColor whiteColor]];
-
-    ViewController *con = [[ViewController alloc] init];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
-    [self.window setRootViewController:nav];
-    [self.window makeKeyAndVisible];
-    return YES;
-}
-</code></pre><h2 id="2-支持多窗口"><a href="#2-支持多窗口" class="headerlink" title="2. 支持多窗口"></a>2. 支持多窗口</h2><p>iOS 13项目info.plist中的配置项Application Scene Manifest是针对iPad multiple windows功能推出的。在保留Application Scene Manifest配置项不予删除时（其中，项目是否支持多窗口功能是个可勾选项），AppDelegate的生命周期方法不再起作用，需要在SceneDelegate中使用UIScene提供的生命周期方法，并且需要针对 iOS 13 需要在Scene中配置和 iOS 13 以下在AppDelegate中做两套配置。<br>下面是纯代码实现界面显示的代码：</p>
-<pre><code>//// AppDelegate.m中
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
-
-    if (@available(iOS 13.0, *)) {
-
-    } else {
-        self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        [self.window setBackgroundColor:[UIColor whiteColor]];
-
-        ViewController *con = [[ViewController alloc] init];
-        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
-        [self.window setRootViewController:nav];
-        [self.window makeKeyAndVisible];
-    }
-    return YES;
-}
-
-
-//// SceneDelegate.m中
-
-- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
-
-    //在这里手动创建新的window
-    if (@available(iOS 13.0, *)) {
-        UIWindowScene *windowScene = (UIWindowScene *)scene;
-        self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        [self.window setWindowScene:windowScene];
-        [self.window setBackgroundColor:[UIColor whiteColor]];
-
-        ViewController *con = [[ViewController alloc] init];
-        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
-        [self.window setRootViewController:nav];
-        [self.window makeKeyAndVisible];
-    }
-}
-</code></pre><p>注意：如果不使用storyboard，需要将配置中的storyboard项删除：</p>
-<p><img src="http://img.wangjungang.cn/UbOrNC.jpg" alt=""></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -2655,11 +2581,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
