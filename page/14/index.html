@@ -152,6 +152,275 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS 利用运行时将对象序列化与反序列化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/">iOS 利用运行时将对象序列化与反序列化</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/" class="archive-article-date">
+  	<time datetime="2018-11-27T04:17:03.170Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在iOS中想要把一些对象数据存储到本地需要那个对象实现NSCoding协议下的两个方法</p>
+<pre><code>-(void) encodeWithCoder:(NSCoder *)encoder;
+
+-(id) initWithCoder:(NSCoder *)decoder;
+</code></pre><p>然后在这两个方法中实现对象序列化与反序列化的操作.</p>
+<p>例如: </p>
+<p>Person类有两个属性</p>
+<pre><code>@property (nonatomic, copy) NSString *userName;
+@property (nonatomic, copy) NSString *passWord;
+</code></pre><p>那么如果需要实现Person类的序列化与反序列化就需要在上述两个方法中分别实现</p>
+<pre><code>-(void) encodeWithCoder:(NSCoder *)encoder {
+    [encoder encodeObject:_userName forKey:@&quot;userName&quot;];
+    [encoder encodeObject:_passWord forKey:@&quot;passWord&quot;];
+}
+
+-(id) initWithCoder:(NSCoder *)decoder {
+    _userName = [decoder decodeObjectForKey:@&quot;userName&quot;];
+    _passWord = [decoder decodeObjectForKey:@&quot;passWord&quot;];
+}
+</code></pre><p>最后在需要对象序列化的地方调用</p>
+<pre><code>BOOL isSuccess = [NSKeyedArchiver archiveRootObject:person toFile:@&quot;archiver.dat&quot;];
+</code></pre><p>返回布尔类型可以检查序列化操作是否成功.<br>然后在需要对象反序列化的地方调用</p>
+<pre><code>Person *person = [NSKeyedUnarchiver unarchiveObjectWithFile: @&quot;archiver.dat&quot;];
+</code></pre><p>获得已序列化的对象.<br>当然,序列化的对象可以是实现了Coding协议的对象数组或者其他.</p>
+<h3 id="那么重点儿来了……"><a href="#那么重点儿来了……" class="headerlink" title="那么重点儿来了……"></a>那么重点儿来了……</h3><p>在我的项目中我写了N个需要序列化的对象,然后在N个需要序列化的对象中又有N个属性,然后可能还要不定期的增加、修改、删除某些属性,那我不就需要每天辗转这些序列化对象中做一些很无聊的工作吗?<br>一想到这个我都能烦死,那该怎么办呢?</p>
+<p>我想到了运行时中是有可以动态获取类属性的方法实现的.于是我在某个类中做了以下工作:</p>
+<pre><code>//解码
+ - (id)initWithCoder:(NSCoder *)coder
+ {
+    unsigned int iVarCount = 0;
+    Ivar *iVarList = class_copyIvarList([self class], &amp;iVarCount);//取得变量列表,[self class]表示对自身类进行操作
+    for (int i = 0; i &lt; iVarCount; i++) {
+        Ivar var = *(iVarList + i);
+        const char * varName = ivar_getName(var);//取得变量名字，将作为key
+        NSString *key = [NSString stringWithUTF8String:varName];
+        //decode
+        id  value = [coder decodeObjectForKey:key];//解码
+        if (value) {
+            [self setValue:value forKey:key];//使用KVC强制写入到对象中
+        }
+    }
+    free(iVarList);//记得释放内存
+    return self;
+}
+//编码
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+    unsigned int varCount = 0;
+    Ivar *ivarList = class_copyIvarList([self class], &amp;varCount);
+    for (int i = 0; i &lt; varCount; i++) {
+        Ivar var = *(ivarList + i);
+        const char *varName = ivar_getName(var);
+        NSString *key = [NSString stringWithUTF8String:varName];
+        id varValue = [self valueForKey:key];//使用KVC获取key对应的变量值
+        if (varValue) {
+            [coder encodeObject:varValue forKey:key];
+        }
+    }
+    free(ivarList);
+}
+</code></pre><p>照以上写法儿一般情况下都是可以满足需求的,因为该实现中获取变量时都是指定当前类，也就是[self class].当序列化对象不是直接继承NSObject时会遗漏掉父类的属性. </p>
+<p>所以我们需要对NSObject的上层所有序列对象的类属性进行编解码.但是在用class_copyIvarList获取父类属性的时候程序在[self valueForKey:key]崩掉了.后来了解到获取父类属性用class_copyPropertyList是正常的,如果这样的话在方法中只能做判断是否是当前类了.所以只要把以下代码复制粘贴到 你的序列化对象中就可以不再关注对象的.m文件动态添加、删除、修改类属性了. </p>
+<p>另外在其他地方了解到一个问题,那就是</p>
+<pre><code>iOS中打印propertyList会发现有 superClass、
+
+description、debugDescription、hash等四个属性。对这几个
+
+属性进行encode操作会导致crash。因此在encode前需要屏蔽掉这些key
+
+    - (id)initWithCoder:(NSCoder *)coder    
+{    
+    Class cls = [self class];   
+    while (cls != [NSObject class]) {   
+        /*判断是自身类还是父类*/    
+        BOOL bIsSelfClass = (cls == [self class]);  
+        unsigned int iVarCount = 0; 
+        unsigned int propVarCount = 0;  
+        unsigned int sharedVarCount = 0;    
+        Ivar *ivarList = bIsSelfClass ? class_copyIvarList([cls class], &amp;iVarCount) : NULL;/*变量列表，含属性以及私有变量*/   
+        objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/   
+        sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   
+
+        for (int i = 0; i &lt; sharedVarCount; i++) {  
+            const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); 
+            NSString *key = [NSString stringWithUTF8String:varName];   
+            id varValue = [coder decodeObjectForKey:key]; 
+            NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;];   
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) { 
+                [self setValue:varValue forKey:key];    
+            }   
+        }   
+        free(ivarList); 
+        free(propList); 
+        cls = class_getSuperclass(cls); 
+    }   
+    return self;    
+}   
+
+- (void)encodeWithCoder:(NSCoder *)coder    
+{   
+    Class cls = [self class];   
+    while (cls != [NSObject class]) {   
+        /*判断是自身类还是父类*/    
+        BOOL bIsSelfClass = (cls == [self class]);  
+        unsigned int iVarCount = 0; 
+        unsigned int propVarCount = 0;  
+        unsigned int sharedVarCount = 0;    
+        Ivar *ivarList = bIsSelfClass ? class_copyIvarList([cls class], &amp;iVarCount) : NULL;/*变量列表，含属性以及私有变量*/   
+        objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/ 
+        sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   
+
+        for (int i = 0; i &lt; sharedVarCount; i++) {  
+            const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); 
+            NSString *key = [NSString stringWithUTF8String:varName];    
+            /*valueForKey只能获取本类所有变量以及所有层级父类的属性，不包含任何父类的私有变量(会崩溃)*/  
+            id varValue = [self valueForKey:key];
+            NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;];    
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) { 
+                [coder encodeObject:varValue forKey:key];   
+            }   
+        }   
+        free(ivarList); 
+        free(propList); 
+        cls = class_getSuperclass(cls); 
+    }   
+}
+</code></pre><p>但是这样的话我那么多序列化对象难道要一个一个粘贴过去么? </p>
+<p>能不能再做一层封装? </p>
+<p>答案是肯定的 </p>
+<p>在项目中新建一个.h文件 </p>
+<p><img src="https://img-blog.csdn.net/20180716095810557?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+<p>然后复制下面的代码到.h文件中</p>
+<pre><code>#import &lt;objc/runtime.h&gt;
+
+#define SERIALIZER_CODER_DECODER()     \
+\
+- (id)initWithCoder:(NSCoder *)coder    \
+{   \
+    Class cls = [self class];   \
+    while (cls != [NSObject class]) {   \
+        /*判断是自身类还是父类*/    \
+        BOOL bIsSelfClass = (cls == [self class]);  \
+        unsigned int iVarCount = 0; \
+        unsigned int propVarCount = 0;  \
+        unsigned int sharedVarCount = 0;    \
+        Ivar *ivarList = bIsSelfClass ? class_copyIvarList([cls class], &amp;iVarCount) : NULL;/*变量列表，含属性以及私有变量*/   \
+        objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/   \
+        sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   \
+\
+        for (int i = 0; i &lt; sharedVarCount; i++) {  \
+            const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); \
+            NSString *key = [NSString stringWithUTF8String:varName];   \
+            id varValue = [coder decodeObjectForKey:key];   \
+            NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;]; \
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) { \
+                [self setValue:varValue forKey:key];    \
+            }   \
+        }   \
+        free(ivarList); \
+        free(propList); \
+        cls = class_getSuperclass(cls); \
+    }   \
+    return self;    \
+}   \
+\
+- (void)encodeWithCoder:(NSCoder *)coder    \
+{   \
+    Class cls = [self class];   \
+    while (cls != [NSObject class]) {   \
+        /*判断是自身类还是父类*/    \
+        BOOL bIsSelfClass = (cls == [self class]);  \
+        unsigned int iVarCount = 0; \
+        unsigned int propVarCount = 0;  \
+        unsigned int sharedVarCount = 0;    \
+        Ivar *ivarList = bIsSelfClass ? class_copyIvarList([cls class], &amp;iVarCount) : NULL;/*变量列表，含属性以及私有变量*/   \
+        objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/ \
+        sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   \
+        \
+        for (int i = 0; i &lt; sharedVarCount; i++) {  \
+            const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); \
+            NSString *key = [NSString stringWithUTF8String:varName];    \
+            /*valueForKey只能获取本类所有变量以及所有层级父类的属性，不包含任何父类的私有变量(会崩溃)*/  \
+            id varValue = [self valueForKey:key];   \
+            NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;]; \
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) { \
+                [coder encodeObject:varValue forKey:key];   \
+            }   \
+        }   \
+        free(ivarList); \
+        free(propList); \
+        cls = class_getSuperclass(cls); \
+    }   \
+}
+</code></pre><p>只需要在你需要序列化的对象中import你的.h文件然后直接调用</p>
+<pre><code>SERIALIZER_CODER_DECODER()
+</code></pre><p><img src="https://img-blog.csdn.net/2018071610055818?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-详解AFNetworking的HTTPS模块" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2182,129 +2451,6 @@ YYWebImage 使用 MIT 许可证，详情见 LICENSE 文件。
 
 
   
-    <article id="post-App启动速度优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/15/App启动速度优化/">App启动速度优化</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/15/App启动速度优化/" class="archive-article-date">
-  	<time datetime="2018-10-15T07:18:39.953Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>应用启动流程</p>
-<p>iOS应用的启动可分为pre-main阶段和main()阶段，其中系统做的事情依次是：</p>
-<p>pre-main阶段</p>
-<p>1.1. 加载应用的可执行文件</p>
-<p>1.2. 加载动态链接库加载器dyld（dynamic loader）</p>
-<p>1.3. dyld递归加载应用所有依赖的dylib（dynamic library 动态链接库）</p>
-<p>main()阶段</p>
-<p>2.1. dyld调用main()</p>
-<p>2.2. 调用UIApplicationMain()</p>
-<p>2.3. 调用applicationWillFinishLaunching</p>
-<p>2.4. 调用didFinishLaunchingWithOptions</p>
-<h2 id="启动耗时的测量"><a href="#启动耗时的测量" class="headerlink" title="启动耗时的测量"></a>启动耗时的测量</h2><p>在进行优化之前，我们首先应该能测量各阶段的耗时。</p>
-<h3 id="1-pre-main阶段"><a href="#1-pre-main阶段" class="headerlink" title="1. pre-main阶段"></a>1. pre-main阶段</h3><p>对于pre-main阶段，Apple提供了一种测量方法，在 Xcode 中 Edit scheme -&gt; Run -&gt; Auguments 将环境变量DYLD_PRINT_STATISTICS 设为1 。之后控制台会输出类似内容：</p>
-<pre><code>Total pre-main time: 228.41 milliseconds (100.0%)
-         dylib loading time:  82.35 milliseconds (36.0%)
-        rebase/binding time:   6.12 milliseconds (2.6%)
-            ObjC setup time:   7.82 milliseconds (3.4%)
-           initializer time: 132.02 milliseconds (57.8%)
-           slowest intializers :
-             libSystem.B.dylib : 122.07 milliseconds (53.4%)
-                CoreFoundation :   5.59 milliseconds (2.4%)
-</code></pre><p>这样我们可以清晰的看到每个耗时了。</p>
-<h3 id="2-main-阶段"><a href="#2-main-阶段" class="headerlink" title="2.main()阶段"></a>2.main()阶段</h3><p>mian()阶段主要是测量mian()函数开始执行到didFinishLaunchingWithOptions执行结束的时间，我们直接插入代码就可以了。</p>
-<pre><code>CFAbsoluteTime StartTime;
-int main(int argc, char * argv[]) {
-      StartTime = CFAbsoluteTimeGetCurrent();
-</code></pre><p>再在AppDelegate.m文件中用extern声明全局变量StartTime</p>
-<pre><code>extern CFAbsoluteTime StartTime;
-</code></pre><p>最后在didFinishLaunchingWithOptions里，再获取一下当前时间，与StartTime的差值即是main()阶段运行耗时。</p>
-<pre><code>double launchTime = (CFAbsoluteTimeGetCurrent() - StartTime);
-</code></pre><h2 id="改善启动时间"><a href="#改善启动时间" class="headerlink" title="改善启动时间"></a>改善启动时间</h2><h3 id="pre-main阶段"><a href="#pre-main阶段" class="headerlink" title="pre-main阶段"></a>pre-main阶段</h3><p>在这一阶段，我们能做的主要是优化dylib</p>
-<h3 id="加载-Dylib"><a href="#加载-Dylib" class="headerlink" title="加载 Dylib"></a>加载 Dylib</h3><p>之前提到过加载系统的 dylib 很快，因为有优化。但加载内嵌（embedded）的 dylib 文件很占时间，所以尽可能把多个内嵌 dylib 合并成一个来加载，或者使用 static archive。</p>
-<p>使用 dlopen() 来在运行时懒加载是不建议的，这么做可能会带来一些问题，并且总的开销更大。</p>
-<h3 id="Rebase-Binding"><a href="#Rebase-Binding" class="headerlink" title="Rebase/Binding"></a>Rebase/Binding</h3><p>之前提过 Rebaing 消耗了大量时间在 I/O 上，而在之后的 Binding 就不怎么需要 I/O 了，而是将时间耗费在计算上。所以这两个步骤的耗时是混在一起的。</p>
-<p>之前说过可以从查看 <strong>DATA 段中需要修正（fix-up）的指针，所以减少指针数量才会减少这部分工作的耗时。对于 ObjC 来说就是减少 Class,selector 和 category 这些元数据的数量。从编码原则和设计模式之类的理论都会鼓励大家多写精致短小的类和方法，并将每部分方法独立出一个类别，其实这会增加启动时间。对于 C++ 来说需要减少虚方法，因为虚方法会创建 vtable，这也会在 </strong>DATA 段中创建结构。虽然 C++ 虚方法对启动耗时的增加要比 ObjC 元数据要少，但依然不可忽视。</p>
-<h3 id="Objc-setup"><a href="#Objc-setup" class="headerlink" title="Objc setup"></a>Objc setup</h3><p>大部分ObjC初始化工作已经在Rebase/Bind阶段做完了，这一步dyld会注册所有声明过的ObjC类，将分类插入到类的方法列表里，再检查每个selector的唯一性。</p>
-<p>在这一步倒没什么优化可做的，Rebase/Bind阶段优化好了，这一步的耗时也会减少。</p>
-<h3 id="Initializers"><a href="#Initializers" class="headerlink" title="Initializers"></a>Initializers</h3><p>到了这一阶段，dyld开始运行程序的初始化函数，调用每个Objc类和分类的+load方法，调用C/C++ 中的构造器函数（用attribute((constructor))修饰的函数），和创建非基本类型的C++静态全局变量。Initializers阶段执行完后，dyld开始调用main()函数。</p>
-<p>在这一步，我们可以做的优化有：</p>
-<p>1.少在类的+load方法里做事情，尽量把这些事情推迟到+initiailize</p>
-<p>2.减少构造器函数个数，在构造器函数里少做些事情</p>
-<p>3.减少C++静态全局变量的个数</p>
-<h2 id="main-阶段的优化"><a href="#main-阶段的优化" class="headerlink" title="main()阶段的优化"></a>main()阶段的优化</h2><p>这一阶段的优化主要是减少didFinishLaunchingWithOptions方法里的工作，在didFinishLaunchingWithOptions方法里，我们会创建应用的window，指定其rootViewController，调用window的makeKeyAndVisible方法让其可见。由于业务需要，我们会初始化各个二方/三方库，设置系统UI风格，检查是否需要显示引导页、是否需要登录、是否有新版本等，由于历史原因，这里的代码容易变得比较庞大，启动耗时难以控制。</p>
-<p>所以，满足业务需要的前提下，didFinishLaunchingWithOptions在主线程里做的事情越少越好。在这一步，我们可以做的优化有：</p>
-<p>1.梳理各个二方/三方库，找到可以延迟加载的库，做延迟加载处理，比如放到首页控制器的viewDidAppear方法里。</p>
-<p>2.梳理业务逻辑，把可以延迟执行的逻辑，做延迟执行处理。比如检查新版本、注册推送通知等逻辑。</p>
-<p>3.避免复杂/多余的计算。</p>
-<p>4.避免在首页控制器的viewDidLoad和viewWillAppear做太多事情，这2个方法执行完，首页控制器才能显示，部分可以延迟创建的视图应做延迟创建/懒加载处理。</p>
-<p>5.首页控制器用纯代码方式来构建。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总结起来，好像启动速度优化就一句话：让系统在启动期间少做一些事。当然我们得先清楚工程里做的哪些事是在启动期间做的、对启动速度的影响有多大，然后case by case地分析工程代码，通过放到子线程、延迟加载、懒加载等方式让系统在启动期间更轻松些。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/15/App启动速度优化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/13/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/15/">Next &raquo;</a>
@@ -2410,6 +2556,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
@@ -2459,10 +2609,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">

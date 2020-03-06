@@ -152,6 +152,282 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-RxSwift + MJRefresh 自动管理刷新状态" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/">RxSwift + MJRefresh 自动管理刷新状态</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/" class="archive-article-date">
+  	<time datetime="2019-09-26T02:29:03.451Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><p>首先定义一个有关刷新状态的枚举类型：</p>
+<pre><code>/// 可按照自己的需求添加，由于我没有用到 mj_footer.beginRefreshing()，
+/// 所以没有定义相关的枚举。
+enum RefreshStatus {
+    case none
+    case beingHeaderRefresh
+    case endHeaderRefresh
+    case endFooterRefresh
+    // 这个枚举由于在我项目中经常用到，所以我定一个关联值的枚举。
+    // 项目中需要：
+    //  - 数据为空的时候隐藏 `mj_footer`，否则显示；
+    //  - 然后判断没有更多数据就调用 `endRefreshingWithNoMoreData()`
+    //    否则 `endRefreshing()`
+    case footerStatus(isHidden: Bool, isNoMoreData: Bool)
+}
+</code></pre><p>无需过多纠结，后面会演示枚举如何使用。</p>
+<h2 id="BehaviorSubject"><a href="#BehaviorSubject" class="headerlink" title="BehaviorSubject"></a>BehaviorSubject</h2><p> 接下来要介绍一个跟 RxSwift 有关的一个类型 BehaviorSubject，我们会在文章用到它。</p>
+<p>  BehaviorSubject 向所有订阅者发布事件，并向新的订阅者提供最近（或最初）的值。</p>
+<p>  怎么理解？来看看代码：<br>  <br>      func addObserver(_ id: String) -&gt; Disposable {<br>        return subscribe { print(“Subscription:”, id, “Event:”, $0) }<br>    }</p>
+<pre><code>let disposeBag = DisposeBag()
+let subject = BehaviorSubject(value: &quot;🔴&quot;)
+
+subject.addObserver(&quot;1&quot;).disposed(by: disposeBag)
+subject.onNext(&quot;🐶&quot;)
+subject.onNext(&quot;🐱&quot;)
+
+subject.addObserver(&quot;2&quot;).disposed(by: disposeBag)
+subject.onNext(&quot;🅰️&quot;)
+subject.onNext(&quot;🅱️&quot;)
+
+/**
+Subscription: 1 Event: next(🔴)
+Subscription: 1 Event: next(🐶)
+Subscription: 1 Event: next(🐱)
+Subscription: 2 Event: next(🐱)
+Subscription: 1 Event: next(🅰️)
+Subscription: 2 Event: next(🅰️)
+Subscription: 1 Event: next(🅱️)
+Subscription: 2 Event: next(🅱️)
+Subscription: 1 Event: next(🍐)
+Subscription: 2 Event: next(🍐)
+Subscription: 1 Event: next(🍊)
+Subscription: 2 Event: next(🍊)
+*/
+</code></pre><p>总结一下：BehaviorSubject 从上至下接收它发出的最新（原始值也属于发出的事件元素）值。并向新的订阅者提供最新值，所以这里我们 订阅2号 会接收到前面发出的最新元素，稍后才是 订阅2号 自己发出的元素事件。</p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p> 好了，下面我们就用上面学到的所有知识来写一个自动管理刷新状态案例。<br> 假设有这样一个需求：<br>  <br>  <br>    // ViewController.swift</p>
+<pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
+// 不传参数则不创建。自动管理刷新状态。
+viewModel.refreshStatusBind(to: tableView, {
+    // 处理头部刷新。
+}) {
+    // 处理尾部刷新。
+}.disposed(by: bag)
+</code></pre><p>如何做到这一点？看到方法是从 viewModel 里面调出来的，那我们就去 viewModel 里面看一看究竟。</p>
+<pre><code>class ViewModel: Refreshable {
+
+    lazy var list = Variable&lt;[MnlDakaCommentModel]&gt;([])
+    let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
+    let reload = PublishSubject&lt;Bool&gt;()
+    let bag = DisposeBag()
+
+    init() {
+        reload.subscribe(onNext: { [weak self] (isDown) in
+            guard let `self` = self else {
+                return
+            }
+            // 发送请求
+            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
+                let list = result.value?[&quot;list&quot;].arrayObject
+                let models = decode([MnlDakaCommentModel].self, from: list) ?? []
+            }
+        }
+    }
+}
+</code></pre><p> 这里你就知道了吧？任何实现 Refreshable 必须实现 refreshStatus 属性，如果你足够眼尖应该看到，上面的 ViewModel 同样定义一个类型一样 refreshStatus 属性，为的就是实现协议中规定的属性。</p>
+<p>  好了，有个这个属性之后，我们就可以愉快的管理刷新状态了，比如想让它结束刷新，我们可以拿到 refreshStatus 属性，比如在 ViewModel 里，我们可以这样：</p>
+<pre><code>// 发送请求
+MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
+    let list = result.value?[&quot;list&quot;].arrayObject
+    let models = decode([MnlDakaCommentModel].self, from: list) ?? []
+    // 请求完成需要结束刷新：
+    // refreshStatus.onNext(.endFooterRefresh)
+    // 或者判断没有更多数据时：
+    // refreshStatus.onNext(isHidden: false, isNoMoreData: true)
+}
+</code></pre><p> 这时你肯定问了，凭什么我这样发送消息就可以管理刷新状态了？你逗我呢？之前讲 BehaviorSubject 的时候不是有讲到订阅 (subscribe) 吗？既然这里发送消息了，肯定会在接收到发出的元素的时候做了什么处理吧？</p>
+<p>  问得好！问得非常好！问得太————好了。好吧，我老实交代，就来说下接收到元素时我都做了什么？<br>  <br>      extension Refreshable {</p>
+<pre><code>    func refreshStatusBind(to scrollView: UIScrollView, _ header: (() -&gt; Void)? = nil, _ footer: (() -&gt; Void)? = nil) -&gt; Disposable {
+
+        if header != nil {
+            scrollView.mj_header = MJRefreshNormalHeader {
+                // 处理头部方法时结束尾部刷新。
+                scrollView.mj_footer?.endRefreshing()
+                header?()
+            }
+        }
+        if footer != nil {
+            scrollView.mj_footer = MJRefreshAutoNormalFooter {
+                // 处理尾部方法时结束头部刷新。
+                scrollView.mj_header?.endRefreshing()
+                footer?()
+            }
+        }
+
+        return refreshStatus.subscribe(onNext: { (status) in
+            switch status {
+            case .none:
+                // 未发生任何状态事件时隐藏尾部。
+                scrollView.mj_footer?.isHidden = true
+            case .beginHeaderRefresh:
+                scrollView.mj_header?.beginRefreshing()
+            case .endHeaderRefresh:
+                scrollView.mj_header?.endRefreshing()
+            case .endFooterRefresh:
+                scrollView.mj_footer?.endRefreshing()
+            case .endAllRefresh:
+                // 结束全部拉刷新
+                scrollView.mj_header?.endRefreshing()
+                scrollView.mj_footer?.endRefreshing()
+            case .footerStatus(let isHidden, let isNone):
+                // 根据关联值确定 footer 的状态。
+                scrollView.mj_footer?.isHidden = isHidden
+                // 处理尾部状态时，如果之前正在刷新头部，则结束刷新，
+                // 至此，我们无需写判断结束头部刷新的代码，在这里自动处理。
+                scrollView.mj_header?.endRefreshing()
+                if isNone {
+                    scrollView.mj_footer?.endRefreshingWithNoMoreData()
+                }else {
+                    scrollView.mj_footer?.endRefreshing()
+                }
+            }
+        })
+    }
+}
+</code></pre><p>给 Refreshable 加一个扩展，我们先来看方法的第一部分：创建头部和尾部刷新控件。这段代码很容易看懂，结合前面放在 ViewController.swift 里的代码：</p>
+<pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
+// 不传参数则不创建。自动管理刷新状态。
+viewModel.refreshStatusBind(to: tableView, {
+    // 处理头部刷新。
+}) {
+    // 处理尾部刷新。
+}.disposed(by: bag)
+</code></pre><p> 无非就是传闭包参数的时候创建对应的刷新控件，并把传进去的闭包作为控件的刷新事件。因为我已经把 UIScrollView 作为参数传进来了，所以可以直接拿到它创建刷新控件。</p>
+<p>  在到第二部分，这就是一个真正监听状态改变的部分了，是根据发出的消息做出改变的反应。这样，我们在 ViewModel 里发送消息，这里就能接收到并作出对应的改变。
+  </p>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><h3 id="ViewController-swift"><a href="#ViewController-swift" class="headerlink" title="ViewController.swift"></a>ViewController.swift</h3><pre><code>import UIKit
+import RxSwift
+
+class ViewController: UITableViewController {
+
+    lazy var viewModel = ViewModel()
+    let bag = DisposeBag()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        /// 创建刷新控件。
+        viewModel.refreshStatusBind(to: tableView, { [weak self] in
+            // 处理头部刷新。
+            self?.viewModel.reload.onNext(false)
+        }) { [weak self] in
+            // 处理尾部刷新。
+            self?.viewModel.reload.onNext(true)
+        }.disposed(by: bag)
+
+        // 给 viewModel 中的 reload 发送消息，让其请求数据。
+        // 参数 Bool 表示是否上拉。
+        viewModel.reload.onNext(false)
+    }
+}
+</code></pre><h3 id="ViewModel-swift"><a href="#ViewModel-swift" class="headerlink" title="ViewModel.swift"></a>ViewModel.swift</h3><pre><code>import UIKit
+import RxSwift
+
+class ViewModel: Refreshable {
+
+    lazy var list = Variable&lt;[Model]&gt;([])
+    let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
+    let reload = PublishSubject&lt;Bool&gt;()
+    let bag = DisposeBag()
+
+    init() {
+        reload.subscribe(onNext: { [weak self] (isReload) in
+
+            guard let `self` = self else {
+                return
+            }
+
+            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in
+
+                let list = result.value?[&quot;list&quot;].arrayObject
+                let models = decode([MnlDakaCommentModel].self, from: list) ?? []
+
+                self.list.value = isReload ? models : self.list.value + models
+
+                let count = result.value?[&quot;count&quot;].int ?? 0
+                // 发送刷新状态给订阅者，让其作出改变。
+                // 如果列表个数和总数相等，则判断它为没有更多数据。
+                self.refreshStatus.onNext(.footerStatus(isHidden: self.list.value.isEmpty,
+                                                        isNoMoreData: self.list.value.count == count))
+            }
+        }).disposed(by: bag)
+    }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-RxDataSource 使用套路与解释" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2585,164 +2861,6 @@ WKUserScript * cookieScript = [[WKUserScript alloc] initWithSource:[self cookieS
 
 
   
-    <article id="post-大型互联网公司分布式ID方案总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/05/大型互联网公司分布式ID方案总结/">大型互联网公司分布式ID方案总结</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/05/大型互联网公司分布式ID方案总结/" class="archive-article-date">
-  	<time datetime="2019-09-05T06:26:24.083Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>ID是数据的唯一标识，传统的做法是利用UUID和数据库的自增ID，在互联网企业中，大部分公司使用的都是Mysql，并且因为需要事务支持，所以通常会使用Innodb存储引擎，UUID太长以及无序，所以并不适合在Innodb中来作为主键，自增ID比较合适，但是随着公司的业务发展，数据量将越来越大，需要对数据进行分表，而分表后，每个表中的数据都会按自己的节奏进行自增，很有可能出现ID冲突。这时就需要一个单独的机制来负责生成唯一ID，生成出来的ID也可以叫做分布式ID，或全局ID。下面来分析各个生成分布式ID的机制。</p>
-<p><img src="http://img.wangjungang.cn/ALQ2nU.jpg" alt=""></p>
-<h2 id="数据库自增ID"><a href="#数据库自增ID" class="headerlink" title="数据库自增ID"></a>数据库自增ID</h2><p>第一种方案仍然还是基于数据库的自增ID，需要单独使用一个数据库实例，在这个实例中新建一个单独的表：</p>
-<p>表结构如下</p>
-<pre><code>CREATE DATABASE `SEQID`;
-
-CREATE TABLE SEQID.SEQUENCE_ID (
-    id bigint(20) unsigned NOT NULL auto_increment, 
-    stub char(10) NOT NULL default &apos;&apos;,
-    PRIMARY KEY (id),
-    UNIQUE KEY stub (stub)
-) ENGINE=MyISAM;
-</code></pre><p>可以使用下面的语句生成并获取到一个自增ID</p>
-<pre><code>begin;
-replace into SEQUENCE_ID (stub) VALUES (&apos;anyword&apos;);
-select last_insert_id();
-commit;
-</code></pre><p>stub字段在这里并没有什么特殊的意义，只是为了方便的去插入数据，只有能插入数据才能产生自增id。而对于插入我们用的是replace，replace会先看是否存在stub指定值一样的数据，如果存在则先delete再insert，如果不存在则直接insert。</p>
-<p>这种生成分布式ID的机制，需要一个单独的Mysql实例，虽然可行，但是基于性能与可靠性来考虑的话都不够，业务系统每次需要一个ID时，都需要请求数据库获取，性能低，并且如果此数据库实例下线了，那么将影响所有的业务系统。</p>
-<p>为了解决数据库可靠性问题，我们可以使用第二种分布式ID生成方案。</p>
-<h2 id="数据库多主模式"><a href="#数据库多主模式" class="headerlink" title="数据库多主模式"></a>数据库多主模式</h2><p>如果我们两个数据库组成一个主从模式集群，正常情况下可以解决数据库可靠性问题，但是如果主库挂掉后，数据没有及时同步到从库，这个时候会出现ID重复的现象。我们可以使用双主模式集群，也就是两个Mysql实例都能单独的生产自增ID，这样能够提高效率，但是如果不经过其他改造的话，这两个Mysql实例很可能会生成同样的ID。需要单独给每个Mysql实例配置不同的起始值和自增步长。</p>
-<p>第一台Mysql实例配置：</p>
-<pre><code>set @@auto_increment_offset = 1;     -- 起始值
-set @@auto_increment_increment = 2;  -- 步长
-</code></pre><p>第二台Mysql实例配置</p>
-<pre><code>set @@auto_increment_offset = 2;     -- 起始值
-set @@auto_increment_increment = 2;  -- 步长
-</code></pre><p>经过上面的配置后，这两个Mysql实例生成的id序列如下：<br>mysql1,起始值为1,步长为2,ID生成的序列为：1,3,5,7,9,…<br>mysql2,起始值为2,步长为2,ID生成的序列为：2,4,6,8,10,…</p>
-<p>对于这种生成分布式ID的方案，需要单独新增一个生成分布式ID应用，比如<br>DistributIdService，该应用提供一个接口供业务应用获取ID，业务应用需要一个ID时，通过rpc的方式请求DistributIdService，DistributIdService随机去上面的两个Mysql实例中去获取ID。</p>
-<p>实行这种方案后，就算其中某一台Mysql实例下线了，也不会影响DistributIdService，DistributIdService仍然可以利用另外一台Mysql来生成ID。</p>
-<p>但是这种方案的扩展性不太好，如果两台Mysql实例不够用，需要新增Mysql实例来提高性能时，这时就会比较麻烦。</p>
-<p>现在如果要新增一个实例mysql3，要怎么操作呢？</p>
-<p>第一，mysql1、mysql2的步长肯定都要修改为3，而且只能是人工去修改，这是需要时间的。</p>
-<p>第二，因为mysql1和mysql2是不停在自增的，对于mysql3的起始值我们可能要定得大一点，以给充分的时间去修改mysql1，mysql2的步长。</p>
-<p>第三，在修改步长的时候很可能会出现重复ID，要解决这个问题，可能需要停机才行。<br>为了解决上面的问题，以及能够进一步提高DistributIdService的性能，如果使用第三种生成分布式ID机制。</p>
-<h2 id="号段模式"><a href="#号段模式" class="headerlink" title="号段模式"></a>号段模式</h2><p>我们可以使用号段的方式来获取自增ID，号段可以理解成批量获取，比如DistributIdService从数据库获取ID时，如果能批量获取多个ID并缓存在本地的话，那样将大大提供业务应用获取ID的效率。</p>
-<p>比如DistributIdService每次从数据库获取ID时，就获取一个号段，比如(1,1000]，这个范围表示了1000个ID，业务应用在请求DistributIdService提供ID时，<br>DistributIdService只需要在本地从1开始自增并返回即可，而不需要每次都请求数据库，一直到本地自增到1000时，也就是当前号段已经被用完时，才去数据库重新获取下一号段。</p>
-<p>所以，我们需要对数据库表进行改动，如下：</p>
-<pre><code>CREATE TABLE id_generator (
-  id int(10) NOT NULL,
-  current_max_id bigint(20) NOT NULL COMMENT &apos;当前最大id&apos;,
-  increment_step int(10) NOT NULL COMMENT &apos;号段的长度&apos;,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-</code></pre><p>这个数据库表用来记录自增步长以及当前自增ID的最大值（也就是当前已经被申请的号段的最后一个值），因为自增逻辑被移到DistributIdService中去了，所以数据库不需要这部分逻辑了。</p>
-<p>这种方案不再强依赖数据库，就算数据库不可用，那么DistributIdService也能继续支撑一段时间。但是如果DistributIdService重启，会丢失一段ID，导致ID空洞。</p>
-<p>为了提高DistributIdService的高可用，需要做一个集群，业务在请求DistributIdService集群获取ID时，会随机的选择某一个DistributIdService节点进行获取，对每一个DistributIdService节点来说，数据库连接的是同一个数据库，那么可能会产生多个DistributIdService节点同时请求数据库获取号段，那么这个时候需要利用乐观锁来进行控制，比如在数据库表中增加一个version字段，在获取号段时使用如下SQL：</p>
-<pre><code>update id_generator set current_max_id=#{newMaxId}, version=version+1 where version = #{version}
-</code></pre><p>因为newMaxId是DistributIdService中根据oldMaxId+步长算出来的，只要上面的update更新成功了就表示号段获取成功了。</p>
-<p>为了提供数据库层的高可用，需要对数据库使用多主模式进行部署，对于每个数据库来说要保证生成的号段不重复，这就需要利用最开始的思路，再在刚刚的数据库表中增加起始值和步长，比如如果现在是两台Mysql，那么<br>mysql1将生成号段（1,1001]，自增的时候序列为1，3，4，5，7….<br>mysql1将生成号段（2,1002]，自增的时候序列为2，4，6，8，10…</p>
-<p>在TinyId中还增加了一步来提高效率，在上面的实现中，ID自增的逻辑是在DistributIdService中实现的，而实际上可以把自增的逻辑转移到业务应用本地，这样对于业务应用来说只需要获取号段，每次自增时不再需要请求调用DistributIdService了。</p>
-<p>作者：1点25<br>链接：<a href="https://juejin.im/post/5d6fc8eff265da03ef7a324b" target="_blank" rel="noopener">https://juejin.im/post/5d6fc8eff265da03ef7a324b</a><br>来源：掘金<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
-<h2 id="雪花算法"><a href="#雪花算法" class="headerlink" title="雪花算法"></a>雪花算法</h2><p>上面的三种方法总的来说是基于自增思想的，而接下来就介绍比较著名的雪花算法-snowflake。</p>
-<p>我们可以换个角度来对分布式ID进行思考，只要能让负责生成分布式ID的每台机器在每毫秒内生成不一样的ID就行了。</p>
-<p>snowflake是twitter开源的分布式ID生成算法，是一种算法，所以它和上面的三种生成分布式ID机制不太一样，它不依赖数据库。</p>
-<p>核心思想是：分布式ID固定是一个long型的数字，一个long型占8个字节，也就是64个bit，原始snowflake算法中对于bit的分配如下图：</p>
-<p><img src="http://img.wangjungang.cn/3EhNZe.jpg" alt=""></p>
-<ul>
-<li><p>第一个bit位是标识部分，在java中由于long的最高位是符号位，正数是0，负数是1，一般生成的ID为正数，所以固定为0。</p>
-</li>
-<li><p>时间戳部分占41bit，这个是毫秒级的时间，一般实现上不会存储当前的时间戳，而是时间戳的差值（当前时间-固定的开始时间），这样可以使产生的ID从更小值开始；41位的时间戳可以使用69年，(1L &lt;&lt; 41) / (1000L <em> 60 </em> 60 <em> 24 </em> 365) = 69年</p>
-</li>
-<li><p>工作机器id占10bit，这里比较灵活，比如，可以使用前5位作为数据中心机房标识，后5位作为单机房机器标识，可以部署1024个节点。</p>
-</li>
-<li>序列号部分占12bit，支持同一毫秒内同一个节点可以生成4096个ID</li>
-</ul>
-<p>根据这个算法的逻辑，只需要将这个算法用Java语言实现出来，封装为一个工具方法，那么各个业务应用可以直接使用该工具方法来获取分布式ID，只需保证每个业务应用有自己的工作机器id即可，而不需要单独去搭建一个获取分布式ID的应用。</p>
-<p>在大厂里，其实并没有直接使用snowflake，而是进行了改造，因为snowflake算法中最难实践的就是工作机器id，原始的snowflake算法需要人工去为每台机器去指定一个机器id，并配置在某个地方从而让snowflake从此处获取机器id。</p>
-<p>但是在大厂里，机器是很多的，人力成本太大且容易出错，所以大厂对snowflake进行了改造。</p>
-<h3 id="百度（uid-generator）"><a href="#百度（uid-generator）" class="headerlink" title="百度（uid-generator）"></a>百度（uid-generator）</h3><p>uid-generator使用的就是snowflake，只是在生产机器id，也叫做workId时有所不同。<br>uid-generator中的workId是由uid-generator自动生成的，并且考虑到了应用部署在docker上的情况，在uid-generator中用户可以自己去定义workId的生成策略，默认提供的策略是：应用启动时由数据库分配。说的简单一点就是：应用在启动时会往数据库表(uid-generator需要新增一个WORKER_NODE表)中去插入一条数据，数据插入成功后返回的该数据对应的自增唯一id就是该机器的workId，而数据由host，port组成。</p>
-<p>对于uid-generator中的workId，占用了22个bit位，时间占用了28个bit位，序列化占用了13个bit位，需要注意的是，和原始的snowflake不太一样，时间的单位是秒，而不是毫秒，workId也不一样，同一个应用每重启一次就会消费一个workId。</p>
-<p><a href="https://github.com/baidu/uid-generator" target="_blank" rel="noopener">github</a></p>
-<h3 id="美团（Leaf）"><a href="#美团（Leaf）" class="headerlink" title="美团（Leaf）"></a>美团（Leaf）</h3><p>美团的Leaf也是一个分布式ID生成框架。它非常全面，即支持号段模式，也支持snowflake模式。号段模式这里就不介绍了，和上面的分析类似。</p>
-<p>Leaf中的snowflake模式和原始snowflake算法的不同点，也主要在workId的生成，Leaf中workId是基于ZooKeeper的顺序Id来生成的，每个应用在使用Leaf-snowflake时，在启动时都会都在Zookeeper中生成一个顺序Id，相当于一台机器对应一个顺序节点，也就是一个workId。</p>
-<p><a href="https://github.com/Meituan-Dianping/Leaf" target="_blank" rel="noopener">github</a></p>
-<h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><p>这里额外再介绍一下使用Redis来生成分布式ID，其实和利用Mysql自增ID类似，可以利用Redis中的incr命令来实现原子性的自增与返回，比如：</p>
-<pre><code>127.0.0.1:6379&gt; set seq_id 1     // 初始化自增ID为1
-OK
-127.0.0.1:6379&gt; incr seq_id      // 增加1，并返回
-(integer) 2
-127.0.0.1:6379&gt; incr seq_id      // 增加1，并返回
-(integer) 3
-</code></pre><p>使用redis的效率是非常高的，但是要考虑持久化的问题。Redis支持RDB和AOF两种持久化的方式。</p>
-<p>RDB持久化相当于定时打一个快照进行持久化，如果打完快照后，连续自增了几次，还没来得及做下一次快照持久化，这个时候Redis挂掉了，重启Redis后会出现ID重复。</p>
-<p>AOF持久化相当于对每条写命令进行持久化，如果Redis挂掉了，不会出现ID重复的现象，但是会由于incr命令过得，导致重启恢复数据时间过长。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/05/大型互联网公司分布式ID方案总结/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -2848,6 +2966,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
@@ -2897,10 +3019,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
