@@ -152,6 +152,125 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS10 跳转系统设置" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/21/iOS10 跳转系统设置/">iOS10 跳转系统设置</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/21/iOS10 跳转系统设置/" class="archive-article-date">
+  	<time datetime="2018-12-21T10:46:03.645Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Objective-c"><a href="#Objective-c" class="headerlink" title="Objective-c"></a>Objective-c</h2><pre><code>NSString * urlString = @&quot;App-Prefs:root=WIFI&quot;;
+
+if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) {
+
+if (iOS10) {
+
+[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString] options:@{} completionHandler:nil];
+
+} else {
+
+[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
+
+}
+
+}
+</code></pre><h2 id="Swift"><a href="#Swift" class="headerlink" title="Swift"></a>Swift</h2><pre><code>if let url = URL(string:&quot;App-Prefs:root=WIFI&quot;)
+ {if #available(iOS 10.0, *) 
+ {
+ UIApplication.shared.open(url, options: [:], completionHandler: nil)} 
+
+ else 
+ {
+
+     UIApplication.shared.openURL(url)
+ }
+
+}
+</code></pre><h2 id="跳转-写法"><a href="#跳转-写法" class="headerlink" title="跳转 写法"></a>跳转 写法</h2><ul>
+<li>无线局域网 App-Prefs:root=WIFI</li>
+<li>蓝牙 App-Prefs:root=Bluetooth</li>
+<li>蜂窝移动网络 App-Prefs:root=MOBILE_DATA_SETTINGS_ID</li>
+<li>个人热点 App-Prefs:root=INTERNET_TETHERING</li>
+<li>运营商 App-Prefs:root=Carrier</li>
+<li>通知 App-Prefs:root=NOTIFICATIONS_ID</li>
+<li>通用 App-Prefs:root=General</li>
+<li>通用-关于本机 App-Prefs:root=General&amp;path=About</li>
+<li>通用-键盘 App-Prefs:root=General&amp;path=Keyboard</li>
+<li>通用-辅助功能 App-Prefs:root=General&amp;path=ACCESSIBILITY</li>
+<li>通用-语言与地区 App-Prefs:root=General&amp;path=INTERNATIONAL</li>
+<li>通用-还原 App-Prefs:root=Reset</li>
+<li>墙纸 App-Prefs:root=WallpaperSiri App-Prefs:root=SIRI</li>
+<li>隐私 App-Prefs:root=PrivacySafari App-Prefs:root=SAFARI</li>
+<li>音乐 App-Prefs:root=MUSIC</li>
+<li>音乐-均衡器 App-Prefs:root=MUSIC&amp;path=com.apple.Music:</li>
+<li>EQ照片与相机 App-Prefs:root=PhotosFaceTime App-Prefs:root=FACETIME</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/21/iOS10 跳转系统设置/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-持续震动，想停就停" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1544,104 +1663,6 @@ NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
 
 
   
-    <article id="post-swift Notification通知的使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/17/swift Notification通知的使用/">swift Notification通知的使用</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/17/swift Notification通知的使用/" class="archive-article-date">
-  	<time datetime="2018-12-17T12:23:30.155Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <pre><code>//通知名称常量
-let NotifyMsgName = NSNotification.Name(rawValue:&quot;notifyMsg&quot;)
-
-//注册通知监听
-NotificationCenter.default.addObserver(self, selector:#selector(notifiAction(notification:)),
-                                               name: NotifyMsgName, object: nil)
-
-//通知处理函数
-func notifiAction(notification:NSNotification){
-
-    let userinfo = notification.userInfo //所属类型为 [AnyHashable : Any]? 尝试转换为 as! NSDictionary as! [String : Any]，发现报错
-    let key_value = userinfo?[AnyHashable(&quot;name&quot;)] as! String
-    print(notification.description+&quot; key=&quot;+key_value)
-
-}
-
-
-//post通知
-NotificationCenter.default.post(name:NotifyMsgName, object: nil, userInfo: [&quot;name&quot;:&quot;xiaoming&quot;])
-
-
-//注销通知，在controller退出的时候注销
-deinit {
-    NotificationCenter.default.removeObserver(self)
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/17/swift Notification通知的使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/9/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/11/">Next &raquo;</a>
@@ -1751,11 +1772,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1787,15 +1808,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1807,11 +1828,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">

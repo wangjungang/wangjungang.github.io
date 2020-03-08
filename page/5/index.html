@@ -152,6 +152,88 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-#define和const的使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS开发中，经常用到宏定义，或用const修饰一些数据类型</p>
+<p>那么，到底使用哪一种会更合适，他们之间有什么区别</p>
+<h2 id="static"><a href="#static" class="headerlink" title="static"></a>static</h2><p>修饰局部变量</p>
+<p>让局部变量只初始化一次</p>
+<p>局部变量在程序中只有一份内存</p>
+<p>并不会改变局部变量的作用域，仅仅是改变了局部变量的生命周期（只到程序结束，这个局部变量才会销毁）</p>
+<p>修饰全局变量</p>
+<p>全局变量的作用域仅限于当前文件</p>
+<h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><p>没有const修饰的指针</p>
+<p>指针p和*p都能被修改// </p>
+<h2 id="static和const联合使用"><a href="#static和const联合使用" class="headerlink" title="static和const联合使用"></a>static和const联合使用</h2><p>static将一个全局变量变成局部变量</p>
+<p>const将一个局部变量变成局部常量</p>
+<h2 id="使用static-const-与-define"><a href="#使用static-const-与-define" class="headerlink" title="使用static const 与 #define"></a>使用static const 与 #define</h2><p>相同点</p>
+<p>都不能再被修改</p>
+<p>一处修改，其它都改了</p>
+<p>不同点</p>
+<p>static const修饰变量只有一份内存</p>
+<p>宏定义，只是简单的替换，每次使用都需要创建一份内存</p>
+<p>结论</p>
+<p>使用static const修饰更加高效，在同一个文件内可以使用static const取代#define</p>
+<h2 id="const实际开发的应用"><a href="#const实际开发的应用" class="headerlink" title="const实际开发的应用"></a>const实际开发的应用</h2><p>一般会先新建ZMJConst.h文件专门存放常量的引用// </p>
+<p>引用某变量，如果没有使用const修饰，就不能直接在编译的时候就能检测是否修改了</p>
+<p>ZMJRedexternconstCGFloatZMJRed;externNSString*constZMJName;</p>
+<p>可以模仿系统UIKIT_EXTERN来代替extern，逼格更高！</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/30/#define和const的使用/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-圆角头像的几种裁剪" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1572,191 +1654,6 @@ wifeModel.name = nil;
 
 
   
-    <article id="post-OC自定义通知的封装（PSSNotificationCenter）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/16/OC自定义通知的封装（PSSNotificationCenter）/">OC自定义通知的封装（PSSNotificationCenter）</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/16/OC自定义通知的封装（PSSNotificationCenter）/" class="archive-article-date">
-  	<time datetime="2019-06-16T00:45:39.391Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>作为iOS开发者，大家应该都使用过系统通知（NSNotificationCenter），无非就是三步，1. 注册通知，2.发送通知，3.销毁观察者，我在这里就不多解释了；。如果忘记销毁观察者，ios9之前是会崩溃的。因此我就有了自己实现全局一对多分发通知的想法，于是封装了PSSNotificationCenter</p>
-<h2 id="系统通知如何使用"><a href="#系统通知如何使用" class="headerlink" title="系统通知如何使用"></a>系统通知如何使用</h2><h3 id="通知的使用步骤"><a href="#通知的使用步骤" class="headerlink" title="通知的使用步骤"></a>通知的使用步骤</h3><p>1.注册通知</p>
-<pre><code>[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveSysNoti) name:@&quot;target&quot; object:nil];
-
-- (void)receiveSysNoti:(NSNotification *)noti {
-    NSLog(@&quot;%@&quot;, [[NSThread currentThread] isMainThread] ? @&quot;收到系统通知：主线程&quot; : @&quot;收到系统通知：子线程&quot;);
-}
-</code></pre><p>2.在需要的时候发送通知</p>
-<pre><code>[[NSNotificationCenter defaultCenter] postNotificationName:@&quot;target&quot; object:nil];
-</code></pre><p>3.移出观察者</p>
-<p>如果iOS9之前，不移除观察者是会崩溃的，而且崩溃不会有断点，如果你继承了友盟，甚至不会给你打印崩溃信息，很难找，所以务必要记得。</p>
-<pre><code>// 移除目标所有通知
-   [[NSNotificationCenter defaultCenter] removeObserver:self];
-   // 移除目标对应通知
-   [[NSNotificationCenter defaultCenter] removeObserver:self name:@&quot;target&quot; object:nil];
-</code></pre><h3 id="系统通知还可以使用block的方式："><a href="#系统通知还可以使用block的方式：" class="headerlink" title="系统通知还可以使用block的方式："></a>系统通知还可以使用block的方式：</h3><p>但是使用block方式会有内存问题，即便用上面两个方法移除，block本身依旧被NotificationCenter持有，当发送通知时依然会运行；请看代码</p>
-<pre><code>// 注册通知
-[[NSNotificationCenter defaultCenter] addObserverForName:@&quot;block&quot; object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
-    NSLog(@&quot;block方式受到系统通知&quot;);
-}];
-
-// 点击注销通知
-- (IBAction)click3:(id)sender {
-    // [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@&quot;block&quot; object:nil];
-}
-// 点击发送通知
-- (IBAction)clickSysNoti:(id)sender {
-    [[NSNotificationCenter defaultCenter] postNotificationName:@&quot;block&quot; object:nil];
-}
-</code></pre><p>上述代码，首先点击发送通知，控制台会打印block方式受到系统通，然后点击注销通知，再点击发送通知，依然会打印；如果退出当前控制器，并且再进入一次控制器，点击发送通知，控制器会打印2次，证明block没有被销毁</p>
-<p>那么为什么会出现这种情况呢？</p>
-<p>首先，在使用block方式注册通知的时候，我们只是传了block，并没有传Observer监听者，NSNotificationCenter直接持有block，而我们用的两个注销方式都是针对target-action方式的；我并没有找到block方式的通知的注销方法，所以如果你使用通知，我建议使用target-action方式，或者用我封装的PSSNotificationCenter</p>
-<h2 id="系统通知的原理，以及出现的常见问题"><a href="#系统通知的原理，以及出现的常见问题" class="headerlink" title="系统通知的原理，以及出现的常见问题"></a>系统通知的原理，以及出现的常见问题</h2><h3 id="使用target-action方式的原理大概是这个样子的："><a href="#使用target-action方式的原理大概是这个样子的：" class="headerlink" title="使用target-action方式的原理大概是这个样子的："></a>使用target-action方式的原理大概是这个样子的：</h3><p>在ios9之前，有些类是不支持weak指针的，所以使用的是unsafe_unretained类型的指针；顾名思义，unsafe_unretained的意思就是不安全的，不会对对象持有的指针，weak所指向的地址被注销时，指针自动指向nil，向nil指针发送消息是不会崩溃的；而unsafe_unretained指针指向的内存被销毁时，是不会指向nil的，从而导致野指针，所以ios9之前是需要注销的；</p>
-<p>当你调用注销方法时，NSNotificationCenter会把指针指向nil，避免出现野指针</p>
-<p>内存大概是这个样子的</p>
-<p>NSNotificationCenter 内部根据每个通知名称name都引用着一个数组（这个数组应该是弱引用数组NSHashTable），数组里存着每个注册者的target-action，当发通知时（[[NSNotificationCenter defaultCenter] postNotificationName:@”target” object:nil];），会根据NotificationName找到对应的数组，然后便利数组里的target-action，达到批量分发的功能。</p>
-<h3 id="使用block方式大概是这个样子的："><a href="#使用block方式大概是这个样子的：" class="headerlink" title="使用block方式大概是这个样子的："></a>使用block方式大概是这个样子的：</h3><p>注册通知时，不需要你传Observer，NSNotificationCenter根据NotificationName持有一个数组，然后把block放到这个数组中，当你调用postNotification时，根据NotificationName找到对应数组并遍历调用；（但是会出现block不会被释放的问题）</p>
-<h3 id="子线程发送通知时："><a href="#子线程发送通知时：" class="headerlink" title="子线程发送通知时："></a>子线程发送通知时：</h3><p>在发送时都是遍历target-action或block调用方法，因此，在子线程发送通知，方法调用也是发生在子线程，也就是说，接收也是默认在子线程的，所以如果你需要在接收通知时刷新UI，建议跳转到主线程哦。</p>
-<p>target-action方式需要声明单独的方法接收，如果支持ios9之前的版本还得注销，真是好麻烦。block方式呢，还会出现内存问题，API提供的较少，因此我决定，封装一款自己的通知 - PSSNotificationCenter</p>
-<h2 id="PSSNotificationCenter-自己封装的全局通知"><a href="#PSSNotificationCenter-自己封装的全局通知" class="headerlink" title="PSSNotificationCenter 自己封装的全局通知"></a>PSSNotificationCenter 自己封装的全局通知</h2><p>封装这个框架，首先，不能存在内存问题；其次，用法必须简单容易理解。因此我选择block方式进行封装；</p>
-<ul>
-<li><p>使用方法：不需要注销，也不存在内存问题，子线程发通知也会自动跳转到主线程接收通知，是线程安全的。</p>
-<pre><code>// 注册通知
-    // 不带NotificationName，字用默认的name kDefaultNotificationName。observer必须传，而且要是NSObject
-    [[PSSNotificationCenter defaultCenter] addEvent:^(id info) {
-        NSLog(@&quot;%@&quot;, info);
-    } observer:self.obj_1];
-
-    [[PSSNotificationCenter defaultCenter] addEvent:^(id info) {
-        NSLog(@&quot;%@&quot;, info);
-    } observer:self];
-
-    [[PSSNotificationCenter defaultCenter] addEvent:^(id info) {
-
-    } eventName:@&quot;PSS&quot; observer:self];
-
-// 发送通知
-    [[PSSNotificationCenter defaultCenter] postDefaultNotification:@&quot;11111&quot;];
-    [[PSSNotificationCenter defaultCenter] postNotificationByName:@&quot;PSS&quot; info:@&quot;附带信息&quot;];
-</code></pre></li>
-</ul>
-<h2 id="实现原理及源代码"><a href="#实现原理及源代码" class="headerlink" title="实现原理及源代码"></a>实现原理及源代码</h2><p>PSSNotificationCenter下有一个Dictionary，结构大致如下：</p>
-<pre><code>@property (nonatomic, strong) NSMutableDictionary &lt;NSString *, NSMapTable&lt;NSString *, PSSEventSet *&gt; *&gt; *eventDict;
-
-@{
-      @&quot;通知的名字_1&quot;: @{ // 这个字典是NSMapTable，可以对持有的Value弱引用
-              @&quot;观察者内存地址生成的字符串_1&quot;: PSSEventSet对象,
-              @&quot;观察者内存地址生成的字符串_2&quot;: PSSEventSet对象,
-              },
-      @&quot;通知的名字_1&quot;: @{ // 这个字典是NSMapTable
-              @&quot;观察者内存地址生成的字符串_1&quot;: PSSEventSet对象,
-              @&quot;观察者内存地址生成的字符串_2&quot;: PSSEventSet对象,
-              },
-};
-</code></pre><p>NSMapTable： 类似于字典，可以对value进行弱引用；</p>
-<p>PSSEventSet： 动态添加给观察者的属性</p>
-<pre><code>@interface PSSEventSet : NSObject
-@property (nonatomic, strong) NSMutableArray&lt;PSSBlockObject *&gt; *blockObjectArray;
-@end
-</code></pre><p>PSSBlockObject： 用于持有block</p>
-<pre><code>typedef void(^PSSNotiEvent)(id info);
-
-@interface PSSBlockObject : NSObject
-
-@property (nonatomic, copy) PSSNotiEvent eventHandler;
-
-@end
-</code></pre><p>.h中暴露的方法</p>
-<pre><code>#define kDefaultNotificationName @&quot;PSSDefaultNotification&quot;
-@class PSSEventSet;
-@interface PSSNotificationCenter : NSObject
-
-+ (instancetype)defaultCenter;
-
-- (void)addEvent:(PSSNotiEvent)event observer:(NSObject *)observer;
-- (void)addEvent:(PSSNotiEvent)event eventName:(NSString *)eventName observer:(NSObject *)observer;
-
-/// info: 传值
-- (void)postNotificationByName:(NSString *)name info:(id)info;
-- (void)postDefaultNotification:(id)info;
-/// 移出对应通知事件
-- (void)removeNotificationName:(NSString *)name;
-/// 移出所有通知下的 observer对应的事件（不给此observer发送事件了）
-- (void)removeObserver:(NSObject *)observer;
-- (void)removeObserverByEventSet:(PSSEventSet *)eventSet;
-/// 移出对应通知下，对应observer的事件
-- (void)removeNotificationName:(NSString *)name observer:(NSObject *)observer;
-/// 移出所有事件
-- (void)removeAllNoti;
-
-@end
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/16/OC自定义通知的封装（PSSNotificationCenter）/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
@@ -1866,11 +1763,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1902,15 +1799,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1922,11 +1819,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
