@@ -152,6 +152,138 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-一些常见的跳转" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/04/一些常见的跳转/">一些常见的跳转</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/04/一些常见的跳转/" class="archive-article-date">
+  	<time datetime="2018-11-04T15:18:17.304Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>跳转评论、详情</li>
+</ul>
+<p>跳转到详情</p>
+<pre><code>NSString *str = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&quot;, AppId];
+UIApplication *app = [UIApplication sharedApplication];
+NSURL *url = [NSURL URLWithString:str];
+if ([app canOpenURL:url]) {
+    [app openURL:url];
+}
+</code></pre><p>跳转到评论</p>
+<pre><code>NSString *str = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&amp;id=%@&quot;, AppId];
+UIApplication *app = [UIApplication sharedApplication];
+NSURL *url = [NSURL URLWithString:str];
+if ([app canOpenURL:url]) {
+     [app openURL:url];
+}
+</code></pre><ul>
+<li><p>弹出电话</p>
+<pre><code>@property (nonatomic, strong) UIWebView *webView;
+</code></pre></li>
+</ul>
+<pre><code>- (UIWebView *)webView
+{
+    if(!_webView)
+    {
+        _webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+    }
+    return _webView;
+}
+
+// 客服电话
+[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@&quot;tel://%@&quot;, self.lbl_Telphone.text]]]];
+</code></pre><ul>
+<li>跳转QQ</li>
+</ul>
+<pre><code>NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@&quot;mqq://im/chat?chat_type=wpa&amp;uin=%@&amp;version=1&amp;src_type=web&quot;, self.qq]];
+
+[self.webView loadRequest:[NSURLRequest requestWithURL:url]];
+</code></pre><ul>
+<li>跳转微信</li>
+</ul>
+<pre><code>NSString *str =@&quot;weixin://qr/JnXv90fE6hqVrQOU9yA0&quot;;
+[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:str]]];
+</code></pre><ul>
+<li>跳转到微信公众号</li>
+</ul>
+<p>注：跳转到微信公众号，首先需要到微信开发平台，绑定对应的公众号</p>
+<pre><code>if ([WXApi isWXAppInstalled]) {
+     JumpToBizProfileReq *req = [[JumpToBizProfileReq alloc]init];
+     req.username = @&quot;公众号原始ID&quot;;
+      req.extMsg = @&quot;&quot;;
+     req.profileType =0;
+     [WXApi sendReq:req];
+} else {
+     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
+     [pasteboard setString:self.weChatID];
+     [QQMMessage showSuccessMessage:@&quot;已复制公众号&quot;];
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/04/一些常见的跳转/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-一些小知识的总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1699,136 +1831,6 @@ bezierPathWithRect:myView.bounds] CGPath]];
 
 
   
-    <article id="post-关于swift中的单例模式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/18/关于swift中的单例模式/">关于swift中的单例模式</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/18/关于swift中的单例模式/" class="archive-article-date">
-  	<time datetime="2018-09-18T15:52:12.784Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>单例模式是设计模式中最简单的一种，甚至有些模式大师都不称其为模式，称其为一种实现技巧，因为设计模式讲究对象之间的关系的抽象，而单例模式只有自己一个对象。</p>
-<p>当你只需要一个实例的时候需要使用单例，如UIApplication.sharedApplication() 等 ，windows的任务管理器，回收站 都是只能同时存在一个。</p>
-<p>下面看看swift中的几种实现方式：</p>
-<pre><code>import Foundation
-
-class SingleOne {
-
-    //单例
-    static let shareSingleOne = SingleOne()
-
-}
-</code></pre><p>一句话搞定，静态常理。所有地方用到的都是同一个</p>
-<pre><code>import Foundation
-
-class SingleTwo {
-
-    //单例
-    class func shareSingleTwo()-&gt;SingleTwo{
-        struct Singleton{
-            static var onceToken : dispatch_once_t = 0
-            static var single:SingleTwo?
-        }
-        dispatch_once(&amp;Singleton.onceToken,{
-            Singleton.single=shareSingleTwo()
-        }
-        )
-        return Singleton.single!
-    }
-
-}
-</code></pre><p>使用dispatch_once可以保证其中的代码只执行一次</p>
-<pre><code>import Foundation
-
-//全局的常量
-let single = SingleThree()
-
-class SingleThree {
-
-    class var sharedInstance : SingleThree {
-        return single
-    }
-}
-
-
-import Foundation
-
-class SingleFour {
-
-    static var sharedInstance : SingleFour {
-        struct Static {
-            static let instance : SingleFour = SingleFour()
-        }
-        return Static.instance
-    }
-}
-
-在方法内定义静态常量
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/18/关于swift中的单例模式/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/14/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/16/">Next &raquo;</a>
@@ -1938,11 +1940,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1966,11 +1968,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1986,11 +1988,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

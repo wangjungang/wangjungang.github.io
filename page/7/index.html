@@ -152,6 +152,274 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-多类型Cell的tableView实现" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/20/多类型Cell的tableView实现/">多类型Cell的tableView实现</a>
+    </h1>
+  
+
+        
+        <a href="/2019/04/20/多类型Cell的tableView实现/" class="archive-article-date">
+  	<time datetime="2019-04-20T12:50:11.401Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><img src="http://img.wangjungang.cn/WX20190420-205233@2x.png" alt=""></p>
+<p>这种风格的tableView内容基本是固定且简单，如果要用MVVM去实现会比较繁琐。或者像我之前我都是直接根据indexPath去一一对应生成，这在开发阶段会很快很容易，但是后期如果要修改，比如增加一列或者删除一列，这时候就需要同时修改下面代理中的代码</p>
+<pre><code>- tableView: numberOfRowsInSection:
+- tableView: cellForRowAtIndexPath:
+- tableView: didSelectRowAtIndexPath:
+</code></pre><p>对于能躺着绝不坐着的个人习惯，我就想是不是可以改进下。</p>
+<h2 id="生成Model"><a href="#生成Model" class="headerlink" title="生成Model"></a>生成Model</h2><p> model的生成大同小异，基本是http获取json后转为model。这里我自己创建了json然后本地获取模拟了下。</p>
+<pre><code> {
+    &quot;photo&quot;:&quot;Audrey&quot;,
+    &quot;username&quot;:&quot;奥黛丽&quot;,
+    &quot;userCode&quot;:&quot;formyicarus222&quot;,
+    &quot;QRCode&quot;:&quot;ico&quot;,
+    &quot;sex&quot;:1
+}
+</code></pre><p>model 代码</p>
+<pre><code>@interface MultipeTypeModel : NSObject
+
+@property (strong, nonatomic) NSString *photo;
+@property (strong, nonatomic) NSString *username;
+@property (strong, nonatomic) NSString *userCode;
+@property (strong, nonatomic) NSString *qrCode;
+@property (assign, nonatomic) NSInteger sex;
+
++ (void)requestForData:(void(^)(MultipeTypeModel *model))completion;
+@end
+
+- (instancetype)initWithDict:(NSDictionary *)dict
+{
+    self = [super init];
+    if (self) {
+        self.photo = dict[@&quot;photo&quot;];
+        self.username = dict[@&quot;username&quot;];
+        self.userCode = dict[@&quot;userCode&quot;];
+        self.qrCode = dict[@&quot;QRCode&quot;];
+    }
+    return self;
+}
+
++ (void)requestForData:(void (^)(MultipeTypeModel * _Nonnull))completion {
+    NSString *path = [[NSBundle mainBundle] pathForResource:@&quot;MultipleCell&quot; ofType:@&quot;json&quot;];
+    NSString *json= [[NSString alloc] initWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+    NSDictionary *jsonDict = [json jsonValueDecoded];
+    MultipeTypeModel *model = [[MultipeTypeModel alloc] initWithDict:jsonDict];
+    completion(model);
+}
+</code></pre><p>在vc里调用</p>
+<pre><code>- (void)geteData {
+    [MultipeTypeModel requestForData:^(MultipeTypeModel * _Nonnull model) {
+        self.muModel = model;
+    }];
+}
+</code></pre><h2 id="Model生成数组"><a href="#Model生成数组" class="headerlink" title="Model生成数组"></a>Model生成数组</h2><p>之前我说使用indexPath一一指定的方式去实现有个问题，就是后期需要增加或者删除cell需要修改多处代码。而解决这个问题的办法就是将tableView的数据统一和一个数组关联，那么之后有需求变动，我只需要修改这个数组就可以了。</p>
+<p>model转数组代码：</p>
+<pre><code>- (NSArray *)tableArrayFromModel:(MultipeTypeModel *)model {
+    NSArray *arr = @[
+                     @[
+                         @{
+                             @&quot;title&quot;:@&quot;头像&quot;,
+                             @&quot;image&quot;:model.photo?:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeHeader),
+                             @&quot;selector&quot;:NSStringFromSelector(@selector(doHeaderPhotoAction:))
+                             },
+
+                         @{
+                             @&quot;title&quot;:@&quot;用户名&quot;,
+                             @&quot;content&quot;:model.username?:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeName),
+                             @&quot;selector&quot;:NSStringFromSelector(@selector(doUsernameAction:))
+                             },
+//                         
+//                         @{
+//                             @&quot;title&quot;:@&quot;性别&quot;,
+//                             @&quot;content&quot;:model.sex==1?@&quot;男&quot;:@&quot;女&quot;,
+//                             @&quot;type&quot;:@2
+//                             },
+
+                         @{
+                             @&quot;title&quot;:@&quot;微信号&quot;,
+                             @&quot;content&quot;:model.userCode?:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeNameNoAccessory)
+                             },
+
+                         @{
+                             @&quot;title&quot;:@&quot;二维码&quot;,
+                             @&quot;image&quot;:model.qrCode?:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeHeader),
+                             @&quot;selector&quot;:NSStringFromSelector(@selector(doQRCodeAction:))
+                             },
+
+                         @{
+                             @&quot;title&quot;:@&quot;更多&quot;,
+                             @&quot;content&quot;:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeName),
+                             @&quot;selector&quot;:NSStringFromSelector(@selector(doMoreAction:))
+                             }
+                         ],
+
+                     @[
+                         @{
+                             @&quot;title&quot;:@&quot;我的地址&quot;,
+                             @&quot;content&quot;:@&quot;&quot;,
+                             @&quot;type&quot;:@(MUTableCellTypeName),
+                             @&quot;selector&quot;:NSStringFromSelector(@selector(doAddressAction:))
+                             }
+                         ]
+
+                     ];
+
+        return arr;
+        }
+</code></pre><p>这是一个二维数组，第一维表示section，第二维表示row。selector表示点击cell的事件，type表示cell的类型。cell的类型我是创建一个枚举来指定的：</p>
+<pre><code>typedef NS_ENUM(NSInteger,MUTableCellType) {
+    MUTableCellTypeHeader=1,
+    MUTableCellTypeName,
+    MUTableCellTypeNameNoAccessory
+};
+</code></pre><p>一般来说这种tableView的数据是可以修改的。我按如下思路修改：</p>
+<p>1.直接修改self.muModel实例的属性值。</p>
+<p>2.重新将model转为数组</p>
+<p>3.reloadData</p>
+<pre><code>- (void)reloadTableWithModel:(MultipeTypeModel *)model atIndexPath:(NSIndexPath *)indexPath {
+
+    self.tableArray = [self tableArrayFromModel:model];
+    if (indexPath) {
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    else {
+        [self.tableView reloadData];
+    }
+}
+</code></pre><h2 id="TableView数据展示"><a href="#TableView数据展示" class="headerlink" title="TableView数据展示"></a>TableView数据展示</h2><p>到这里，tableView相关数据就处理完，接下来就是将数据填充进tableView:</p>
+<pre><code>- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSArray *arr = self.tableArray[section];
+    return arr.count;
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return self.tableArray.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSArray *sectionArr = self.tableArray[indexPath.section];
+    NSDictionary *dict = sectionArr[indexPath.row];
+    NSInteger type = [dict[@&quot;type&quot;] integerValue];
+    switch (type) {
+        case MUTableCellTypeHeader:
+            {
+                MUPhotoCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;MUPhotoCell&quot; forIndexPath:indexPath];
+                cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                [cell bindDict:dict];
+                return cell;
+            }
+            break;
+        case MUTableCellTypeName:
+        {
+            MUNameCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;MUNameCell&quot; forIndexPath:indexPath];
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            [cell bindDict:dict];
+            return cell;
+        }
+            break;
+        case MUTableCellTypeNameNoAccessory:
+        {
+            MUNameCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;MUNameCell&quot; forIndexPath:indexPath];
+            [cell bindDict:dict];
+            return cell;
+        }
+            break;
+
+        default:
+            break;
+    }
+
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;cell&quot; forIndexPath:indexPath];
+    cell.backgroundColor = [UIColor redColor];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:true];
+
+    NSArray *sectionArr = self.tableArray[indexPath.section];
+    NSDictionary *dict = sectionArr[indexPath.row];
+    NSString *selector = dict[@&quot;selector&quot;];
+    SEL sel = NSSelectorFromString(selector);
+    if ([self respondsToSelector:sel]) {
+        [self performSelector:sel withObject:indexPath];
+    }
+}
+</code></pre><p>这样，当我后续接到需求变动，比如上面要添加一个cell，我只需要在- (NSArray <em>)tableArrayFromModel:(MultipeTypeModel </em>)model方法添加一个元素就可以了。</p>
+<pre><code>@{
+@&quot;title&quot;:@&quot;性别&quot;,
+@&quot;content&quot;:model.sex==1?@&quot;男&quot;:@&quot;女&quot;,
+@&quot;type&quot;:@(MUTableCellTypeName)
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/04/20/多类型Cell的tableView实现/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Swift中的高阶函数" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1820,98 +2088,6 @@ self.person.dog.weight = 50;
 
 
   
-    <article id="post-iOS改变图片颜色" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/21/iOS改变图片颜色/">iOS改变图片颜色</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/21/iOS改变图片颜色/" class="archive-article-date">
-  	<time datetime="2019-02-21T07:24:36.731Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在做项目的时候碰到了一个需求，就是设计做的图片的颜色和需求不符合，需要把图片的颜色改变一下。下面是改变图片颜色的方法。</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>首先我们创建一个UIImage的Category，名为ChangeColor。这个名为ChangeColor的Category只有一个方法，即-(UIImage<em>)imageChangeColor:(UIColor</em>)color。这个方法的具体实现如下：</p>
-<pre><code>#import &quot;UIImage+ChangeColor.h&quot;@implementation UIImage (ChangeColor)//绘图-(UIImage*)imageChangeColor:(UIColor*)color
-{    //获取画布
-    UIGraphicsBeginImageContextWithOptions(self.size, NO, 0.0f);    //画笔沾取颜色
-    [color setFill];    
-    CGRect bounds = CGRectMake(0, 0, self.size.width, self.size.height);    UIRectFill(bounds);    //绘制一次
-    [self drawInRect:bounds blendMode:kCGBlendModeOverlay alpha:1.0f];    //再绘制一次
-    [self drawInRect:bounds blendMode:kCGBlendModeDestinationIn alpha:1.0f];    //获取图片
-    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();    UIGraphicsEndImageContext();    return img;
-}
-</code></pre><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>首先我们看一下不改变颜色时，真实的图片颜色</p>
-<pre><code>UIImage *image = [UIImage imageNamed:@&quot;qr-code&quot;];UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-[imageView setFrame:CGRectMake(100, 100, 100, 100)];
-[self.view addSubview:imageView];
-</code></pre><p>然后我们改变图片的颜色为绿色：</p>
-<pre><code>UIImage *image = [UIImage imageNamed:@&quot;qr-code&quot;];UIImageView *imageView = [[UIImageView alloc] initWithImage:[image imageChangeColor:[UIColor blueColor]]];
-[imageView setFrame:CGRectMake(100, 100, 100, 100)];
-[self.view addSubview:imageView];
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/21/iOS改变图片颜色/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/6/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/8/">Next &raquo;</a>
@@ -2021,11 +2197,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2049,11 +2225,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2069,11 +2245,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

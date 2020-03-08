@@ -152,6 +152,93 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-git rebase 什么时候用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/03/git rebase 什么时候用/">git rebase 什么时候用</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/03/git rebase 什么时候用/" class="archive-article-date">
+  	<time datetime="2019-09-03T02:31:18.235Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-03</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>git rebase 俗称变基，作用是将提交到某一分支上的所有修改都移至另一分支上，就好像“重新播放”一样。这样操作后，提交历史会变得简洁，可读性更高，因为提交记录改变了时间线，把某个完整功能的提交记录整合在了一起，使得这期间其他人的提交记录不会穿插到其中，干净舒爽！🚾👯‍♂️</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>它的原理是首先找到两个分支（当前分支 experiment、变基操作的目标基底分支 master）的最近共同祖先 C2，然后对比当前分支相对于该祖先的历次提交，提取相应的修改并存为临时文件，然后将当前分支指向目标基底 C3, 最后以此将之前另存为临时文件的修改依序应用。</p>
+<p><img src="http://img.wangjungang.cn/WX20190903-103613.png" alt=""></p>
+<h2 id="重点-❗❗❗"><a href="#重点-❗❗❗" class="headerlink" title="重点 ❗❗❗"></a>重点 ❗❗❗</h2><p>具体该如何操作网上有很多文章，这里只是记录一下git rebase使用时该注意什么</p>
+<ul>
+<li>需遵循的金科玉律：不要对在你的仓库外有副本的分支执行变基。</li>
+</ul>
+<p>如果你遵循这条金科玉律，就不会出差错。 否则，人民群众会仇恨🌚你，你的朋友和家人也会嘲笑🌚你，唾弃🌚你。<br>只要你把变基命令当作是在推送前清理提交使之整洁的工具，并且只在从未推送至共用仓库的提交上执行变基命令，就不会有事。 假如在那些已经被推送至共用仓库的提交上执行变基命令，并因此丢弃了一些别人的开发所基于的提交，那你就有大麻烦了，你的同事也会因此鄙视🌚你。</p>
+<h2 id="变基-vs-合并🌏"><a href="#变基-vs-合并🌏" class="headerlink" title="变基 vs. 合并🌏"></a>变基 vs. 合并🌏</h2><p>你一定会想问，到底哪种方式更好。 在回答这个问题之前，让我们退后一步，想讨论一下提交历史到底意味着什么。</p>
+<p>有一种观点认为，仓库的提交历史即是 记录实际发生过什么。 它是针对历史的文档，本身就有价值，不能乱改。 从这个角度看来，改变提交历史是一种亵渎，你使用 谎言 掩盖了实际发生过的事情。 如果由合并产生的提交历史是一团糟怎么办？ 既然事实就是如此，那么这些痕迹就应该被保留下来，让后人能够查阅。<br>另一种观点则正好相反，他们认为提交历史是 项目过程中发生的事。 没人会出版一本书的第一版草稿，软件维护手册也是需要反复修订才能方便使用。 持这一观点的人会使用 rebase 及 filter-branch 等工具来编写故事，怎么方便后来的读者就怎么写。</p>
+<p>现在，让我们回到之前的问题上来，到底合并还是变基好？希望你能明白，这并没有一个简单的答案。 Git 是一个非常强大的工具，它允许你对提交历史做许多事情，但每个团队、每个项目对此的需求并不相同。 既然你已经分别学习了两者的用法，相信你能够根据实际情况作出明智的选择。</p>
+<ul>
+<li>总的原则是，只对尚未推送或分享给别人的本地修改执行变基操作清理历史，从不对已推送至别处的提交执行变基操作</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">git</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/03/git rebase 什么时候用/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS适配Dark模式（OC" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2191,241 +2278,6 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
 
 
   
-    <article id="post-圆角头像的几种裁剪" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/圆角头像的几种裁剪/">圆角头像的几种裁剪</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/23/圆角头像的几种裁剪/" class="archive-article-date">
-  	<time datetime="2019-06-23T13:52:36.054Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>h 我就不写了</p>
-<p>.m</p>
-<pre><code>#import &quot;UIImage+Extension.h&quot;
-
-@implementation UIImage (Extension)
-+ (instancetype)sw_icon:(UIImage *)image
-{
-    UIGraphicsBeginImageContext(image.size);
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
-    CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
-    CGContextAddEllipseInRect(ctx, rect);
-    CGContextClip(ctx);
-    [image drawInRect:rect];
-    UIImage *icon = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return icon;
-}
-@end
-</code></pre><p>以下方法 是我在控制器里写的, 如需写在分类, 需稍加改动</p>
-<pre><code>// CGContext 裁剪
-- (UIImage *)CGContextClip:(UIImage *)img cornerRadius:(CGFloat)c {
-    int w = img.size.width * img.scale;
-    int h = img.size.height * img.scale;
-
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(w, h), false, 1.0);
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    CGContextMoveToPoint(context, 0, c);
-    CGContextAddArcToPoint(context, 0, 0, c, 0, c);
-    CGContextAddLineToPoint(context, w-c, 0);
-    CGContextAddArcToPoint(context, w, 0, w, c, c);
-    CGContextAddLineToPoint(context, w, h-c);
-    CGContextAddArcToPoint(context, w, h, w-c, h, c);
-    CGContextAddLineToPoint(context, c, h);
-    CGContextAddArcToPoint(context, 0, h, 0, h-c, c);
-    CGContextAddLineToPoint(context, 0, c);
-    CGContextClosePath(context);
-
-    CGContextClip(context);     // 先裁剪 context，再画图，就会在裁剪后的 path 中画
-    [img drawInRect:CGRectMake(0, 0, w, h)];       // 画图
-    CGContextDrawPath(context, kCGPathFill);
-
-    UIImage *ret = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return ret;
-}
-</code></pre><p>方法二</p>
-<pre><code>// UIBezierPath 裁剪
-- (UIImage *)UIBezierPathClip:(UIImage *)img cornerRadius:(CGFloat)c {
-    int w = img.size.width * img.scale;
-    int h = img.size.height * img.scale;
-    CGRect rect = CGRectMake(0, 0, w, h);
-
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(w, h), false, 1.0);
-    [[UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:c] addClip];
-    [img drawInRect:rect];
-    UIImage *ret = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return ret;
-}
-</code></pre><p>方法三</p>
-<pre><code>// 自定义裁剪算法
-- (UIImage *)dealImage:(UIImage *)img cornerRadius:(CGFloat)c {
-    // 1.CGDataProviderRef 把 CGImage 转 二进制流
-    CGDataProviderRef provider = CGImageGetDataProvider(img.CGImage);
-    void *imgData = (void *)CFDataGetBytePtr(CGDataProviderCopyData(provider));
-    int width = img.size.width * img.scale;
-    int height = img.size.height * img.scale;
-
-    // 2.处理 imgData
-//    dealImage(imgData, width, height);
-    cornerImage(imgData, width, height, c);
-
-    // 3.CGDataProviderRef 把 二进制流 转 CGImage
-    CGDataProviderRef pv = CGDataProviderCreateWithData(NULL, imgData, width * height * 4, releaseData);
-    CGImageRef content = CGImageCreate(width , height, 8, 32, 4 * width, CGColorSpaceCreateDeviceRGB(), kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast, pv, NULL, true, kCGRenderingIntentDefault);
-    UIImage *result = [UIImage imageWithCGImage:content];
-    CGDataProviderRelease(pv);      // 释放空间
-    CGImageRelease(content);
-
-    return result;
-}
-
-void releaseData(void *info, const void *data, size_t size) {
-    free((void *)data);
-}
-
-// 在 img 上处理图片, 测试用
-void dealImage(UInt32 *img, int w, int h) {
-    int num = w * h;
-    UInt32 *cur = img;
-    for (int i=0; i&lt;num; i++, cur++) {
-        UInt8 *p = (UInt8 *)cur;
-        // RGBA 排列
-        // f(x) = 255 - g(x) 求负片
-        p[0] = 255 - p[0];
-        p[1] = 255 - p[1];
-        p[2] = 255 - p[2];
-        p[3] = 255;
-    }
-}
-
-// 裁剪圆角
-void cornerImage(UInt32 *const img, int w, int h, CGFloat cornerRadius) {
-    CGFloat c = cornerRadius;
-    CGFloat min = w &gt; h ? h : w;
-
-    if (c &lt; 0) { c = 0; }
-    if (c &gt; min * 0.5) { c = min * 0.5; }
-
-    // 左上 y:[0, c), x:[x, c-y)
-    for (int y=0; y&lt;c; y++) {
-        for (int x=0; x&lt;c-y; x++) {
-            UInt32 *p = img + y * w + x;    // p 32位指针，RGBA排列，各8位
-            if (isCircle(c, c, c, x, y) == false) {
-                *p = 0;
-            }
-        }
-    }
-    // 右上 y:[0, c), x:[w-c+y, w)
-    int tmp = w-c;
-    for (int y=0; y&lt;c; y++) {
-        for (int x=tmp+y; x&lt;w; x++) {
-            UInt32 *p = img + y * w + x;
-            if (isCircle(w-c, c, c, x, y) == false) {
-                *p = 0;
-            }
-        }
-    }
-    // 左下 y:[h-c, h), x:[0, y-h+c)
-    tmp = h-c;
-    for (int y=h-c; y&lt;h; y++) {
-        for (int x=0; x&lt;y-tmp; x++) {
-            UInt32 *p = img + y * w + x;
-            if (isCircle(c, h-c, c, x, y) == false) {
-                *p = 0;
-            }
-        }
-    }
-    // 右下 y~[h-c, h), x~[w-c+h-y, w)
-    tmp = w-c+h;
-    for (int y=h-c; y&lt;h; y++) {
-        for (int x=tmp-y; x&lt;w; x++) {
-            UInt32 *p = img + y * w + x;
-            if (isCircle(w-c, h-c, c, x, y) == false) {
-                *p = 0;
-            }
-        }
-    }
-}
-
-// 判断点 (px, py) 在不在圆心 (cx, cy) 半径 r 的圆内
-static inline bool isCircle(float cx, float cy, float r, float px, float py) {
-    if ((px-cx) * (px-cx) + (py-cy) * (py-cy) &gt; r * r) {
-        return false;
-    }
-    return true;
-}
-</code></pre><p>自定义裁剪 裁剪10000张图片 用时平均 11.3</p>
-<p>GContext裁剪 裁剪10000张图片 用时平均 12.7</p>
-<p>贝塞尔裁剪 裁剪10000张图片 用时平均 13.0</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/圆角头像的几种裁剪/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -2535,11 +2387,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2563,11 +2415,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2583,11 +2435,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
