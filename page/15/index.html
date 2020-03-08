@@ -152,6 +152,212 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-一些小知识的总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/04/一些小知识的总结/">一些小知识的总结</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/04/一些小知识的总结/" class="archive-article-date">
+  	<time datetime="2018-11-04T15:11:53.307Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这些内容，写完就忘，用完就扔，这样很不好，特意总结记录一下，方便之后查阅。</p>
+<h3 id="ios-半边圆角"><a href="#ios-半边圆角" class="headerlink" title="ios 半边圆角"></a>ios 半边圆角</h3><p>如果需要将UIView的4个角全部都为圆角，做法相当简单，只需设置其Layer的cornerRadius属性即可（项目需要使用QuartzCore框架）。而若要指定某几个角（小于4）为圆角而别的不变时，这种方法就不好用了。<br>对于这种情况，Stackoverflow上提供了几种解决方案。其中最简单优雅的方案，就是使用UIBezierPath。下面给出一段示例代码。</p>
+<pre><code>UIView *viewBackground = [[UIView alloc] initWithFrame:frame(10, 10, WIDTH-20, 182)];
+        viewBackground.backgroundColor = [UIColor whiteColor];
+        viewBackground.layer.cornerRadius = 3;
+        viewBackground.layer.masksToBounds = YES;
+        [self addSubview:viewBackground];
+
+        UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:viewBackground.bounds byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(10, 10)];
+        CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+        maskLayer.frame = viewBackground.bounds;
+        maskLayer.path = maskPath.CGPath;
+        viewBackground.layer.mask = maskLayer;
+</code></pre><p>其中</p>
+<pre><code>byRoundingCorners:UIRectCornerBottomLeft | UIRectCornerBottomRight
+</code></pre><p>指定了需要成为圆角的角。该参数是UIRectCorner类型的，可选的值有：</p>
+<pre><code>* UIRectCornerTopLeft
+* UIRectCornerTopRight
+* UIRectCornerBottomLeft
+* UIRectCornerBottomRight
+* UIRectCornerAllCorners
+</code></pre><h3 id="ios推送跳转到指定页面"><a href="#ios推送跳转到指定页面" class="headerlink" title="ios推送跳转到指定页面"></a>ios推送跳转到指定页面</h3><pre><code>//获取当前屏幕显示的viewcontroller
+- (UIViewController *)getCurrentVC
+{
+    UIViewController  *result = nil;
+    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
+    if(window.windowLevel != UIWindowLevelNormal)
+    {
+        NSArray *windows = [[UIApplication sharedApplication] windows];
+        for(UIWindow * tmpWin in windows)
+        {
+            if(tmpWin.windowLevel == UIWindowLevelNormal)
+            {
+                window = tmpWin;
+                break;
+            }
+        }
+    }
+    UIView *frontView = [[window subviews] objectAtIndex:0];
+    id nextResponder = [frontView nextResponder];
+    if([nextResponder isKindOfClass:[UIViewController class]]){
+        result = nextResponder;
+    }else{
+        result = window.rootViewController;
+    }
+    return result;
+}
+
+//找到当前控制器  判断
+- (UIViewController *)getDisViewController
+{
+    UIViewController *currVC;
+    if ([[self getCurrentVC] isKindOfClass:[SystemViewController class]]) {//判断是是不是tabbar  是tabbar找到最好导航最后一个控制器是当前控制器
+        SystemViewController *tabBar = (SystemViewController *)[self getCurrentVC];
+        SystemNavigationController *mainNC = tabBar.selectedViewController;
+        return mainNC.viewControllers.lastObject;
+    }
+    /*else if ([ [self getCurrentVC] isKindOfClass:[WJInterpreterTabBarController class]])
+    {
+        WJInterpreterTabBarController *tabBar = (WJInterpreterTabBarController *)[self getCurrentVC];
+        WJNAVController *mainNC = tabBar.selectedViewController;
+        return mainNC.viewControllers.lastObject;
+    }*/
+     else if ([ [self getCurrentVC] isKindOfClass:[SystemNavigationController class]]){//如果当前页面是导航，找到导航数组中最后一个控制器 ，是当前屏幕显示的控制器
+        SystemNavigationController *mainNC = (SystemNavigationController *)[self getCurrentVC];
+        return mainNC.viewControllers.lastObject;
+    }else if ([ [self getCurrentVC] isKindOfClass:[UIViewController class]]){
+        return [self getCurrentVC] ;
+    }else{
+        return [self getCurrentVC] ;
+    }
+}
+
+
+//获取到控制器  直接跳转
+UIViewController *vc = [self getDisViewController];
+        [vc.navigationController pushViewController:systemMessageVC animated:YES];
+</code></pre><h3 id="ios返回指定控制器"><a href="#ios返回指定控制器" class="headerlink" title="ios返回指定控制器"></a>ios返回指定控制器</h3><pre><code>for (UIViewController *controller in self.navigationController.viewControllers) {
+        if ([controller isKindOfClass:[ChatViewController class]]) {
+            [self.navigationController popToViewController:controller animated:YES];
+        }
+    }
+</code></pre><h3 id="IOS-获取视频第一帧"><a href="#IOS-获取视频第一帧" class="headerlink" title="IOS 获取视频第一帧"></a>IOS 获取视频第一帧</h3><pre><code>#import &lt;AVFoundation/AVAsset.h&gt;
+#import &lt;AVFoundation/AVAssetImageGenerator.h&gt;
+#import &lt;AVFoundation/AVTime.h&gt;
+
+
+
+// 获取视频第一帧
+- (UIImage*) getVideoPreViewImage:(NSURL *)path
+{
+    AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:path options:nil];
+    AVAssetImageGenerator *assetGen = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+
+    assetGen.appliesPreferredTrackTransform = YES;
+    CMTime time = CMTimeMakeWithSeconds(0.0, 600);
+    NSError *error = nil;
+    CMTime actualTime;
+    CGImageRef image = [assetGen copyCGImageAtTime:time actualTime:&amp;actualTime error:&amp;error];
+    UIImage *videoImage = [[UIImage alloc] initWithCGImage:image];
+    CGImageRelease(image);
+    return videoImage;
+}
+</code></pre><h3 id="IOS-label加图片"><a href="#IOS-label加图片" class="headerlink" title="IOS label加图片"></a>IOS label加图片</h3><pre><code>NSMutableAttributedString * attriStr = [[NSMutableAttributedString alloc] initWithString:_labelGrowthValue.text];
+
+    /**
+     添加图片到指定的位置
+     */
+    NSTextAttachment *attchImage = [[NSTextAttachment alloc] init];
+    // 表情图片
+    attchImage.image = [UIImage imageNamed:@&quot;icon_chengzhangzhi&quot;];
+    // 设置图片大小
+    attchImage.bounds = CGRectMake(0, 0, 15, 15);
+    NSAttributedString *stringImage = [NSAttributedString attributedStringWithAttachment:attchImage];
+    [attriStr insertAttributedString:stringImage atIndex:0];
+
+    _labelGrowthValue.attributedText = attriStr;
+</code></pre><h3 id="iOS-UITap-禁止传播到其他控件"><a href="#iOS-UITap-禁止传播到其他控件" class="headerlink" title="iOS UITap 禁止传播到其他控件"></a>iOS UITap 禁止传播到其他控件</h3><pre><code>UITapGestureRecognizer *tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(keyboardHide:)];
+    //设置成NO表示当前控件响应后会传播到其他控件上，默认为YES。
+    tapGestureRecognizer.cancelsTouchesInView = NO;
+    //将触摸事件添加到当前view
+</code></pre><h3 id="ios-杀死程序和程序进入后台"><a href="#ios-杀死程序和程序进入后台" class="headerlink" title="ios 杀死程序和程序进入后台"></a>ios 杀死程序和程序进入后台</h3><p> 杀死程序时调用</p>
+<pre><code>//进程杀死时会调用这个
+- (void)applicationWillTerminate:(UIApplication *)application{
+    DLog(@&quot;进程杀死时会调用这个&quot;);
+}
+</code></pre><p>进入后台时调用这个</p>
+<pre><code>[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(comeHome:) name:@&quot;UIApplicationDidEnterBackgroundNotification&quot; object:nil];
+
+
+- (void)comeHome:(UIApplication *)application {
+    NSLog(@&quot;进入后台&quot;);
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/04/一些小知识的总结/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS YYWebImage" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1623,185 +1829,6 @@ class SingleFour {
 
 
   
-    <article id="post-关于swift的可选类型" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/18/关于swift的可选类型/">关于swift的可选类型</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/18/关于swift的可选类型/" class="archive-article-date">
-  	<time datetime="2018-09-18T15:08:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。</p>
-<h3 id="关于objcet-c和swift中对于nil的处理"><a href="#关于objcet-c和swift中对于nil的处理" class="headerlink" title="关于objcet-c和swift中对于nil的处理"></a>关于objcet-c和swift中对于nil的处理</h3><p>Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNotFound)</p>
-<p>Swift中的nil:表示任意类型的值缺失，是一个确定的值，要么是该类型的一个值要么什么都没有(即为nil)</p>
-<h3 id="一、申明可选常量或变量"><a href="#一、申明可选常量或变量" class="headerlink" title="一、申明可选常量或变量"></a>一、申明可选常量或变量</h3><pre><code>let status: Int? = 1   // 申明可选Int类型的常量,初始值为1 
-var defaultAddress: String? = &quot;江苏南京&quot;   // 申明可选String类型的变量,初始值为&quot;江苏南京&quot;
-var student: Person? // 申明可选Person(自定义的类)的变量，初始值为nil
-</code></pre><p>注意：Int?与Int不相同，Int?表示可选的Int类型，可以赋值为nil，而Int不可以赋值为nil</p>
-<h3 id="二、使用”-”强制解析获取可选类型的值-不建议直接使用"><a href="#二、使用”-”强制解析获取可选类型的值-不建议直接使用" class="headerlink" title="二、使用”!”强制解析获取可选类型的值(不建议直接使用)"></a>二、使用”!”强制解析获取可选类型的值(不建议直接使用)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
-if defaultAddress != nil { // !=或==可以用来判断是否为nil
-    print(&quot;您的地址是\(defaultAddress!)&quot;) // 使用!强制解析
-} else {
-    print(&quot;对不起，您不存在地址信息&quot;)
-}
-
-var student: Person?
-print(&quot;学生为\(student!)&quot;) // XCode会提示运行错误，因为student初始值为nil，强制解析不行
-</code></pre><h3 id="三、使用可选绑定获取可选类型的值-建议的用法"><a href="#三、使用可选绑定获取可选类型的值-建议的用法" class="headerlink" title="三、使用可选绑定获取可选类型的值(建议的用法)"></a>三、使用可选绑定获取可选类型的值(建议的用法)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
-if let address = defaultAddress { // 如果defaultAddress有值或类型转换成功，则将值赋值给address直接使用
-    print(&quot;您的地址是\(address)&quot;)  // 使用address代替defaultAddress，且不需要加!强制解析
-} else {
-    print(&quot;对不起，您不存在地址信息&quot;)
-}
-</code></pre><h3 id="四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><a href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil" class="headerlink" title="四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)"></a>四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</h3><pre><code>var mobileNumber: Int64! = 13912345678 // 第一次申明有初始值
-print(&quot;您的电话号码是\(mobileNumber)&quot;) // 不需要使用!强制解析
-// 打印内容:**您的电话号码是****Optional(13912345678)**
-// 还是不建议直接强制解析，因为实际项目中可能中间已经对该值做了改变，若为nil则会运行错误导致APP崩溃
-if let number = mobileNumber { // 建议的做法
-    print(&quot;您的电话号码是\(number)&quot;)
-// 打印内容:**您的电话号码是****13912345678**
-} else {
-    print(&quot;您没有记录电话号码&quot;)
-}
-</code></pre><h3 id="空合运算符-用于判断变量或常量是否为nil"><a href="#空合运算符-用于判断变量或常量是否为nil" class="headerlink" title="空合运算符(用于判断变量或常量是否为nil)"></a>空合运算符(用于判断变量或常量是否为nil)</h3><pre><code>// 空合运算符：a ?? b 判断a是否为nil，若a不为nil对a解封，否则返回b的值
-var status: Int? // 申明可选Int类型的变量status，初始值为nil
-status ?? 0 // 因为status为nil，则返回0
-// ?? 即为以下if else的缩写
-func testOption() -&gt; Int {
-    let status: Int? = 1
-    if status == nil {
-        return 0
-    } else {
-        return status!
-    }
-}
-</code></pre><h3 id="六、函数-方法返回类型为可选类型"><a href="#六、函数-方法返回类型为可选类型" class="headerlink" title="六、函数/方法返回类型为可选类型"></a>六、函数/方法返回类型为可选类型</h3><h4 id="A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等"><a href="#A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等" class="headerlink" title="A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)"></a>A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)</h4><pre><code>func returnPossibleValue(value: Bool) -&gt; String? { // 返回类型为可选String类型
-    if value {
-        return &quot;返回类型是可选类型值&quot; // 如果为真，返回Int类型的值1
-    } else {
-        return nil // 如果为假，返回nil
-    }
-}
-
-let possibleValue = returnPossibleValue(value: true) // 要用可选绑定判断再使用，因为possibleValue为String？可选类型
-if let value = possibleValue {
-    print(value)
-} else {
-    print(&quot;none value&quot;)
-}
-</code></pre><h4 id="B-返回值为可选类型的类-如URL-、自定义Person-等"><a href="#B-返回值为可选类型的类-如URL-、自定义Person-等" class="headerlink" title="B:返回值为可选类型的类(如URL?、自定义Person?等)"></a>B:返回值为可选类型的类(如URL?、自定义Person?等)</h4><pre><code>class SomeClass {
-    var someValue: Int
-    init?(someValue: Int) { // 可失败构造器
-        if someValue == 1 { return nil }
-        self.someValue = someValue
-    }
-}
-
-func returnPossibleClass(value: Bool) -&gt; SomeClass? { // 返回的类实例可能为nil
-    if value {
-        return SomeClass(someValue: 1) // 返回的为nil
-    } else {
-        return SomeClass(someValue: 2) // 返回的SomeClass?实例，不为nil
-    }
-}
-</code></pre><h4 id="C-返回值为可选类型的闭包-如-gt-void"><a href="#C-返回值为可选类型的闭包-如-gt-void" class="headerlink" title="C:返回值为可选类型的闭包(如(()-&gt; (void))? )"></a>C:返回值为可选类型的闭包(如(()-&gt; (void))? )</h4><pre><code>func returnOptionalFunc(value: Bool) -&gt; (() -&gt; (Void))? { // 返回类型为可选类型的闭包
-    if value {
-        return { () in
-            print(&quot;返回类型是可选类型闭包&quot;)
-        }
-    } else {
-        return nil
-    }
-}
-
-let possibleFunc = returnOptionalFunc(value: true) // 要用可选绑定判断再使用，因为possibleFunc 为可选类型的闭包，类型为() -&gt; (Void)
-if let aFunc = possibleFunc {
-    print(aFunc())  // 注意增加()调用闭包，因为没有参数则是空括号
-} else {
-    print(&quot;none func&quot;)
-}
-</code></pre><h3 id="七、可选类型在类或结构体中的运用"><a href="#七、可选类型在类或结构体中的运用" class="headerlink" title="七、可选类型在类或结构体中的运用"></a>七、可选类型在类或结构体中的运用</h3><h4 id="A-可选类型在类中的运用"><a href="#A-可选类型在类中的运用" class="headerlink" title="A:可选类型在类中的运用"></a>A:可选类型在类中的运用</h4><pre><code>class PossibleClass {
-    var someValue: Int
-    var possibleValue: String? // 可选存储属性，默认值为nil
-    init(someValue: Int) { // 构造方法中可以不对possibleValue属性初始化
-        self.someValue = someValue
-    }
-}
-
-let someClass = PossibleClass(someValue: 4) // 实例化对象时不需要对possibleValue初始化，someClass实例中：someValue为4，possibleValue为nil
-</code></pre><p>注意：类中所有属性都需要有默认值。属性可以在申明时赋予初始值，也可以在构造方法中赋予初始值；子类继承父类时，必须先给自身属性先初始化后再继承父类构造方法初始化。一般的，出于安全的因素，子类的属性都赋予初始值或直接定义为可选类型。</p>
-<h4 id="B-可选类型在结构体中的运用"><a href="#B-可选类型在结构体中的运用" class="headerlink" title="B:可选类型在结构体中的运用"></a>B:可选类型在结构体中的运用</h4><pre><code>struct PossibleStruct {
-    var someValue: Int
-    var possibleValue: String? // 可选存储属性，默认值为nil
-    // 结构体中可以自定义一个init构造器对属性初始化，也可以不自定义
-}
-
-let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/18/关于swift的可选类型/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/14/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/16/">Next &raquo;</a>
@@ -1911,6 +1938,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -1935,11 +1966,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1955,11 +1986,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1976,10 +2007,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">算法</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
             
             <div class="clearfix"></div>

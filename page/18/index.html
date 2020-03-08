@@ -152,6 +152,249 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/">iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/" class="archive-article-date">
+  	<time datetime="2018-09-06T13:53:32.378Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>很少有人知道weak表其实是一个hash（哈希）表，Key是所指对象的地址，Value是weak指针的地址数组。更多人的人只是知道weak是弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候自动被设置为nil。</p>
+<h2 id="weak-实现原理的概括"><a href="#weak-实现原理的概括" class="headerlink" title="weak 实现原理的概括"></a>weak 实现原理的概括</h2><p>Runtime维护了一个weak表，用于存储指向某个对象的所有weak指针。weak表其实是一个hash（哈希）表，Key是所指对象的地址，Value是weak指针的地址（这个地址的值是所指对象的地址）数组。</p>
+<p>weak 的实现原理可以概括一下三步：</p>
+<p>1、初始化时：runtime会调用objc_initWeak函数，初始化一个新的weak指针指向对象的地址。</p>
+<p>2、添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。</p>
+<p>3、释放时，调用clearDeallocating函数。clearDeallocating函数首先根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除，最后清理对象的记录。</p>
+<h3 id="1、初始化时：runtime会调用objc-initWeak函数，objc-initWeak函数会初始化一个新的weak指针指向对象的地址。"><a href="#1、初始化时：runtime会调用objc-initWeak函数，objc-initWeak函数会初始化一个新的weak指针指向对象的地址。" class="headerlink" title="1、初始化时：runtime会调用objc_initWeak函数，objc_initWeak函数会初始化一个新的weak指针指向对象的地址。"></a>1、初始化时：runtime会调用objc_initWeak函数，objc_initWeak函数会初始化一个新的weak指针指向对象的地址。</h3><p>示例代码</p>
+<pre><code>{
+    NSObject *obj = [[NSObject alloc] init];
+    id __weak obj1 = obj;
+}
+</code></pre><p>当我们初始化一个weak变量时，runtime会调用 NSObject.mm 中的objc_initWeak函数。这个函数在Clang中的声明如下：</p>
+<pre><code>id objc_initWeak(id *object, id value);
+</code></pre><p>而对于 objc_initWeak() 方法的实现</p>
+<pre><code>id objc_initWeak(id *location, id newObj) {
+// 查看对象实例是否有效
+// 无效对象直接导致指针释放
+    if (!newObj) {
+        *location = nil;
+        return nil;
+    }
+    // 这里传递了三个 bool 数值
+    // 使用 template 进行常量参数传递是为了优化性能
+    return storeWeakfalse/*old*/, true/*new*/, true/*crash*/&gt;
+    (location, (objc_object*)newObj);
+}    
+</code></pre><p>可以看出，这个函数仅仅是一个深层函数的调用入口，而一般的入口函数中，都会做一些简单的判断（例如 objc_msgSend 中的缓存判断），这里判断了其指针指向的类对象是否有效，无效直接释放，不再往深层调用函数。否则，object将被注册为一个指向value的__weak对象。而这事应该是objc_storeWeak函数干的。</p>
+<p>注意：objc_initWeak函数有一个前提条件：就是object必须是一个没有被注册为__weak对象的有效指针。而value则可以是null，或者指向一个有效的对象。</p>
+<h3 id="添加引用时：objc-initWeak函数会调用-objc-storeWeak-函数，-objc-storeWeak-的作用是更新指针指向，创建对应的弱引用表。"><a href="#添加引用时：objc-initWeak函数会调用-objc-storeWeak-函数，-objc-storeWeak-的作用是更新指针指向，创建对应的弱引用表。" class="headerlink" title="添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。"></a>添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。</h3><p>objc_storeWeak的函数声明如下：</p>
+<pre><code>id objc_storeWeak(id *location, id value);
+</code></pre><p>objc_storeWeak() 的具体实现如下：</p>
+<pre><code>// HaveOld:     true - 变量有值
+//             false - 需要被及时清理，当前值可能为 nil
+// HaveNew:     true - 需要被分配的新值，当前值可能为 nil
+//             false - 不需要分配新值
+// CrashIfDeallocating: true - 说明 newObj 已经释放或者 newObj 不支持弱引用，该过程需要暂停
+//             false - 用 nil 替代存储
+template bool HaveOld, bool HaveNew, bool CrashIfDeallocating&gt;
+static id storeWeak(id *location, objc_object *newObj) {
+    // 该过程用来更新弱引用指针的指向
+    // 初始化 previouslyInitializedClass 指针
+    Class previouslyInitializedClass = nil;
+    id oldObj;
+    // 声明两个 SideTable
+    // ① 新旧散列创建
+    SideTable *oldTable;
+    SideTable *newTable;
+    // 获得新值和旧值的锁存位置（用地址作为唯一标示）
+    // 通过地址来建立索引标志，防止桶重复
+    // 下面指向的操作会改变旧值
+retry:
+    if (HaveOld) {
+        // 更改指针，获得以 oldObj 为索引所存储的值地址
+        oldObj = *location;
+        oldTable = &amp;SideTables()[oldObj];
+    } else {
+        oldTable = nil;
+    }
+    if (HaveNew) {
+        // 更改新值指针，获得以 newObj 为索引所存储的值地址
+        newTable = &amp;SideTables()[newObj];
+    } else {
+        newTable = nil;
+    }
+    // 加锁操作，防止多线程中竞争冲突
+    SideTable::lockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
+    // 避免线程冲突重处理
+    // location 应该与 oldObj 保持一致，如果不同，说明当前的 location 已经处理过 oldObj 可是又被其他线程所修改
+    if (HaveOld  &amp;&amp;  *location != oldObj) {
+        SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
+        goto retry;
+    }
+    // 防止弱引用间死锁
+    // 并且通过 +initialize 初始化构造器保证所有弱引用的 isa 非空指向
+    if (HaveNew  &amp;&amp;  newObj) {
+        // 获得新对象的 isa 指针
+        Class cls = newObj-&gt;getIsa();
+        // 判断 isa 非空且已经初始化
+        if (cls != previouslyInitializedClass  &amp;&amp;
+            !((objc_class *)cls)-&gt;isInitialized()) {
+            // 解锁
+            SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
+            // 对其 isa 指针进行初始化
+            _class_initialize(_class_getNonMetaClass(cls, (id)newObj));
+            // 如果该类已经完成执行 +initialize 方法是最理想情况
+            // 如果该类 +initialize 在线程中
+            // 例如 +initialize 正在调用 storeWeak 方法
+            // 需要手动对其增加保护策略，并设置 previouslyInitializedClass 指针进行标记
+            previouslyInitializedClass = cls;
+            // 重新尝试
+            goto retry;
+        }
+    }
+    // ② 清除旧值
+    if (HaveOld) {
+        weak_unregister_no_lock(&amp;oldTable-&gt;weak_table, oldObj, location);
+    }
+    // ③ 分配新值
+    if (HaveNew) {
+        newObj = (objc_object *)weak_register_no_lock(&amp;newTable-&gt;weak_table,
+                                                      (id)newObj, location,
+                                                      CrashIfDeallocating);
+        // 如果弱引用被释放 weak_register_no_lock 方法返回 nil
+        // 在引用计数表中设置若引用标记位
+        if (newObj  &amp;&amp;  !newObj-&gt;isTaggedPointer()) {
+            // 弱引用位初始化操作
+            // 引用计数那张散列表的weak引用对象的引用计数中标识为weak引用
+            newObj-&gt;setWeaklyReferenced_nolock();
+        }
+        // 之前不要设置 location 对象，这里需要更改指针指向
+        *location = (id)newObj;
+    }
+    else {
+        // 没有新值，则无需更改
+    }
+    SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
+    return (id)newObj;
+}
+</code></pre><p>SideTable 这个结构体，我给他起名引用计数和弱引用依赖表，因为它主要用于管理对象的引用计数和 weak 表。在 NSObject.mm 中声明其数据结构：</p>
+<pre><code>struct SideTable {
+// 保证原子操作的自旋锁
+    spinlock_t slock;
+    // 引用计数的 hash 表
+    RefcountMap refcnts;
+    // weak 引用全局 hash 表
+    weak_table_t weak_table;
+}
+</code></pre><p>对于 slock 和 refcnts 两个成员不用多说，第一个是为了防止竞争选择的自旋锁，第二个是协助对象的 isa 指针的 extra_rc 共同引用计数的变量（对于对象结果，在今后的文中提到）。这里主要看 weak 全局 hash 表的结构与作用。</p>
+<p>weak表</p>
+<p>weak表是一个弱引用表，实现为一个weak_table_t结构体，存储了某个对象相关的的所有的弱引用信息。其定义如下(具体定义在objc-weak.h中)：</p>
+<pre><code>   struct weak_table_t {
+    // 保存了所有指向指定对象的 weak 指针
+    weak_entry_t *weak_entries;
+    // 存储空间
+    size_t    num_entries;
+    // 参与判断引用计数辅助量
+    uintptr_t mask;
+    // hash key 最大偏移值
+    uintptr_t max_hash_displacement;
+};
+</code></pre><p>这是一个全局弱引用hash表。使用不定类型对象的地址作为 key ，用 weak_entry_t 类型结构体对象作为 value 。其中的 weak_entries 成员，从字面意思上看，即为弱引用表入口。其实现也是这样的。</p>
+<p>其中weak_entry_t是存储在弱引用表中的一个内部结构体，它负责维护和存储指向一个对象的所有弱引用hash表。其定义如下：</p>
+<pre><code>typedef objc_object ** weak_referrer_t;
+struct weak_entry_t {
+    DisguisedPtrobjc_object&gt; referent;
+    union {
+        struct {
+            weak_referrer_t *referrers;
+            uintptr_t        out_of_line : 1;
+            uintptr_t        num_refs : PTR_MINUS_1;
+            uintptr_t        mask;
+            uintptr_t        max_hash_displacement;
+        };
+        struct {
+            // out_of_line=0 is LSB of one of these (don&apos;t care which)
+            weak_referrer_t  inline_referrers[WEAK_INLINE_COUNT];
+        };
+    }
+}
+</code></pre><p>在 weak_entry_t 的结构中，DisguisedPtr referent 是对泛型对象的指针做了一个封装，通过这个泛型类来解决内存泄漏的问题。从注释中写 out_of_line 成员为最低有效位，当其为0的时候， weak_referrer_t 成员将扩展为多行静态 hash table。其实其中的 weak_referrer_t 是二维 objc_object 的别名，通过一个二维指针地址偏移，用下标作为 hash 的 key，做成了一个弱引用散列。</p>
+<p>那么在有效位未生效的时候，out_of_line 、 num_refs、 mask 、 max_hash_displacement 有什么作用？以下是笔者自身的猜测：</p>
+<p>out_of_line：最低有效位，也是标志位。当标志位 0 时，增加引用表指针纬度。</p>
+<p>num_refs：引用数值。这里记录弱引用表中引用有效数字，因为弱引用表使用的是静态 hash 结构，所以需要使用变量来记录数目。</p>
+<p>mask：计数辅助量。</p>
+<p>max_hash_displacement：hash 元素上限阀值。</p>
+<p>其实 out_of_line 的值通常情况下是等于零的，所以弱引用表总是一个 objc_objective 指针二维数组。一维 objc_objective 指针可构成一张弱引用散列表，通过第三纬度实现了多张散列表，并且表数量为 WEAK_INLINE_COUNT 。</p>
+<p>总结一下 StripedMap[] ： StripedMap 是一个模板类，在这个类中有一个 array 成员，用来存储 PaddedT 对象，并且其中对于 [] 符的重载定义中，会返回这个 PaddedT 的 value 成员，这个 value 就是我们传入的 T 泛型成员，也就是 SideTable 对象。在 array 的下标中，这里使用了 indexForPointer 方法通过位运算计算下标，实现了静态的 Hash Table。而在 weak_table 中，其成员 weak_entry 会将传入对象的地址加以封装起来，并且其中也有访问全局弱引用表的入口。</p>
+<h3 id="旧对象解除注册操作-weak-unregister-no-lock"><a href="#旧对象解除注册操作-weak-unregister-no-lock" class="headerlink" title="旧对象解除注册操作 weak_unregister_no_lock"></a>旧对象解除注册操作 weak_unregister_no_lock</h3><p>该方法主要作用是将旧对象在 weak_table 中接触 weak 指针的对应绑定。根据函数名，称之为解除注册操作。从源码中，可以知道其功能就是从 weak_table 中接触 weak 指针的绑定。而其中的遍历查询，就是针对于 weak_entry 中的多张弱引用散列表。</p>
+<h3 id="新对象添加注册操作-weak-register-no-lock"><a href="#新对象添加注册操作-weak-register-no-lock" class="headerlink" title="新对象添加注册操作 weak_register_no_lock"></a>新对象添加注册操作 weak_register_no_lock</h3><p>这一步与上一步相反，通过 weak_register_no_lock 函数把心的对象进行注册操作，完成与对应的弱引用表进行绑定操作。</p>
+<h2 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h2><p>一个对象A,里面有一个weak属性B, 首先会有一个hash表, 键为A的地址, 值为一个数组, 这个数组里包含了B指针的地址, 当销毁的时候回根据B指针的地址获取到B的指针, 然后置为nil</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS 简单而粗暴的说一说内存管理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1209,293 +1452,6 @@ for (id obj in arr) {
 
 
   
-    <article id="post-iOS中runtim的几种常用的方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/31/iOS中runtim的几种常用的方法/">iOS中runtime的几种常用的方法</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/31/iOS中runtim的几种常用的方法/" class="archive-article-date">
-  	<time datetime="2018-07-31T15:45:21.369Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>公司项目中用了一些 runtime 相关的知识, 初看时有些蒙, 虽然用的并不多, 但还是想着系统的把 runtime 相关的常用方法整理一下, 自己以后用着方便。</p>
-<p>ps：不知道是谁惯得毛病，面试很多都问这东西。其实实际用途吧，就–just so so。</p>
-<h2 id="runtime-简介"><a href="#runtime-简介" class="headerlink" title="runtime 简介"></a>runtime 简介</h2><p>runtime 简称运行时，是系统在运行的时候的一些机制，其中最主要的是消息机制。它是一套比较底层的纯 C 语言 API, 属于一个 C 语言库，包含了很多底层的 C 语言 API。我们平时编写的 OC 代码，在程序运行过程时，其实最终都是转成了 runtime 的 C 语言代码。如下所示:</p>
-<pre><code>// OC代码:
-[Person coding];
-
-//运行时 runtime 会将它转化成 C 语言的代码:
-objc_msgSend(Person, @selector(coding));
-</code></pre><h2 id="二、相关函数"><a href="#二、相关函数" class="headerlink" title="二、相关函数"></a>二、相关函数</h2><pre><code>// 遍历某个类所有的成员变量
-class_copyIvarList
-
-// 遍历某个类所有的方法
-class_copyMethodList
-
-// 获取指定名称的成员变量
-class_getInstanceVariable
-
-// 获取成员变量名
-ivar_getName
-
-// 获取成员变量类型编码
-ivar_getTypeEncoding
-
-// 获取某个对象成员变量的值
-object_getIvar
-
-// 设置某个对象成员变量的值
-object_setIvar
-
-// 给对象发送消息
-objc_msgSend
-</code></pre><h2 id="相关应用"><a href="#相关应用" class="headerlink" title="相关应用"></a>相关应用</h2><p>更改属性值</p>
-<p>动态添加属性</p>
-<p>动态添加方法</p>
-<p>交换方法的实现</p>
-<p>拦截并替换方法</p>
-<p>在方法上增加额外功能</p>
-<p>归档解档</p>
-<p>字典转模型</p>
-<h2 id="四、代码实现"><a href="#四、代码实现" class="headerlink" title="四、代码实现"></a>四、代码实现</h2><p>要使用runtime，要先引入头文件#import</p>
-<h3 id="4-1-更改属性值"><a href="#4-1-更改属性值" class="headerlink" title="4.1 更改属性值"></a>4.1 更改属性值</h3><p>用 runtime 修改一个对象的属性值</p>
-<pre><code>unsigned int count = 0;
-  // 动态获取类中的所有属性(包括私有)
-  Ivar *ivar = class_copyIvarList(_person.class, &amp;count);
-  // 遍历属性找到对应字段
-  for (int i = 0; i &lt; count; i ++) {
-      Ivar tempIvar = ivar[i];
-      const char *varChar = ivar_getName(tempIvar);
-      NSString *varString = [NSString stringWithUTF8String:varChar];
-      if ([varString isEqualToString:@&quot;_name&quot;]) {
-          // 修改对应的字段值
-          object_setIvar(_person, tempIvar, @&quot;更改属性值成功&quot;);
-          break;
-      }
-  }
-</code></pre><h3 id="4-2-动态添加属性"><a href="#4-2-动态添加属性" class="headerlink" title="4.2 动态添加属性"></a>4.2 动态添加属性</h3><p>用 runtime 为一个类添加属性, iOS 分类里一般会这样用, 我们建立一个分类, NSObject+NNAddAttribute.h, 并添加以下代码:</p>
-<pre><code>- (void)setName:(NSString *)name {
-    objc_setAssociatedObject(self, @&quot;name&quot;, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (NSString *)name {
-    return objc_getAssociatedObject(self, @&quot;name&quot;);
-}
-</code></pre><p>这样只要引用 NSObject+NNAddAttribute.h, 用 NSObject 创建的对象就会有一个 name 属性, 我们可以直接这样写:</p>
-<pre><code>NSObject *person = [NSObject new];
-person.name = @&quot;以梦为马&quot;;
-</code></pre><h3 id="4-3-动态添加方法"><a href="#4-3-动态添加方法" class="headerlink" title="4.3 动态添加方法"></a>4.3 动态添加方法</h3><p>person 类中没有 coding 方法，我们用 runtime 给 person 类添加了一个名字叫 coding 的方法，最终再调用coding方法做出相应. 下面代码的几个参数需要注意一下:</p>
-<pre><code>- (void)buttonClick:(UIButton *)sender {
-    /*
-     动态添加 coding 方法
-     (IMP)codingOC 意思是 codingOC 的地址指针;
-     &quot;v@:&quot; 意思是，v 代表无返回值 void，如果是 i 则代表 int；@代表 id sel; : 代表 SEL _cmd;
-     “v@:@@” 意思是，两个参数的没有返回值。
-     */
-    class_addMethod([_person class], @selector(coding), (IMP)codingOC, &quot;v@:&quot;);
-    // 调用 coding 方法响应事件
-    if ([_person respondsToSelector:@selector(coding)]) {
-        [_person performSelector:@selector(coding)];
-        self.testLabelText = @&quot;添加方法成功&quot;;
-    } else {
-        self.testLabelText = @&quot;添加方法失败&quot;;
-    }
-}
-
-// 编写 codingOC 的实现
-void codingOC(id self,SEL _cmd) {
-    NSLog(@&quot;添加方法成功&quot;);
-}
-</code></pre><h3 id="4-4-交换方法的实现"><a href="#4-4-交换方法的实现" class="headerlink" title="4.4 交换方法的实现"></a>4.4 交换方法的实现</h3><p>某个类有两个方法, 比如 person 类有两个方法, coding 方法与 eating 方法, 我们用 runtime 交换一下这两个方法, 就会出现这样的情况, 当我们调用 coding 的时候, 执行的是 eating, 当我们调用 eating 的时候, 执行的是 coding, 如下面的动态效果图.</p>
-<pre><code>Method oriMethod = class_getInstanceMethod(_person.class, @selector(coding));
-   Method curMethod = class_getInstanceMethod(_person.class, @selector(eating));
-   method_exchangeImplementations(oriMethod, curMethod);
-</code></pre><p><img src="http://cc.cocimg.com/api/uploads//20180731/1533006613832913.gif" alt=""></p>
-<h3 id="4-5-拦截并替换方法"><a href="#4-5-拦截并替换方法" class="headerlink" title="4.5 拦截并替换方法"></a>4.5 拦截并替换方法</h3><p>这个功能和上面的其实有些类似, 拦截并替换方法可以拦截并替换同一个类的, 也可以在两个类之间进行, 我这里用了两个不同的类, 下面是简单的代码实现.</p>
-<pre><code>_person = [NNPerson new];
-   _library = [NNLibrary new];
-   self.testLabelText = [_library libraryMethod];
-   Method oriMethod = class_getInstanceMethod(_person.class, @selector(changeMethod));
-   Method curMethod = class_getInstanceMethod(_library.class, @selector(libraryMethod));
-   method_exchangeImplementations(oriMethod, curMethod);
-</code></pre><h3 id="在方法上增加额外功能"><a href="#在方法上增加额外功能" class="headerlink" title="在方法上增加额外功能"></a>在方法上增加额外功能</h3><p>这个使用场景还是挺多的, 比如我们需要记录 APP 中某一个按钮的点击次数, 这个时候我们便可以利用 runtime 来实现这个功能. 我这里写了个 UIButton 的子类, 然后在 + (void)load 中用 runtime 给它增加了一个功能, 核心代码及实现效果图如下:</p>
-<pre><code>+ (void)load {
-    static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
-        Method oriMethod = class_getInstanceMethod(self.class, @selector(sendAction:to:forEvent:));
-        Method cusMethod = class_getInstanceMethod(self.class, @selector(customSendAction:to:forEvent:));
-        // 判断自定义的方法是否实现, 避免崩溃
-        BOOL addSuccess = class_addMethod(self.class, @selector(sendAction:to:forEvent:), method_getImplementation(cusMethod), method_getTypeEncoding(cusMethod));
-        if (addSuccess) {
-            // 没有实现, 将源方法的实现替换到交换方法的实现
-            class_replaceMethod(self.class, @selector(customSendAction:to:forEvent:), method_getImplementation(oriMethod), method_getTypeEncoding(oriMethod));
-        } else {
-            // 已经实现, 直接交换方法
-            method_exchangeImplementations(oriMethod, cusMethod);
-        }
-    });
-}
-</code></pre><p><img src="http://cc.cocimg.com/api/uploads//20180731/1533006692520815.gif" alt="">    </p>
-<h3 id="4-7归档解档"><a href="#4-7归档解档" class="headerlink" title="4.7归档解档"></a>4.7归档解档</h3><p>当我们使用 NSCoding 进行归档及解档时, 如果不用 runtime, 那么不管模型里面有多少属性, 我们都需要对其实现一遍 encodeObject 和 decodeObjectForKey 方法, 如果模型里面有 10000 个属性, 那么我们就需要写 10000 句encodeObject 和 decodeObjectForKey 方法, 这个时候用 runtime, 便可以充分体验其好处(以下只是核心代码, 具体代码请见 demo).</p>
-<pre><code>- (void)encodeWithCoder:(NSCoder *)aCoder {
-    unsigned int count = 0;
-    // 获取类中所有属性
-    Ivar *ivars = class_copyIvarList(self.class, &amp;count);
-    // 遍历属性
-    for (int i = 0; i &lt; count; i ++) {
-        // 取出 i 位置对应的属性
-        Ivar ivar = ivars[i];
-        // 查看属性
-        const char *name = ivar_getName(ivar);
-        NSString *key = [NSString stringWithUTF8String:name];
-        // 利用 KVC 进行取值，根据属性名称获取对应的值
-        id value = [self valueForKey:key];
-        [aCoder encodeObject:value forKey:key];
-    }
-    free(ivars);
-}
-
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if (self = [super init]) {
-        unsigned int count = 0;
-        // 获取类中所有属性
-        Ivar *ivars = class_copyIvarList(self.class, &amp;count);
-        // 遍历属性
-        for (int i = 0; i &lt; count; i ++) {
-            // 取出 i 位置对应的属性
-            Ivar ivar = ivars[i];
-            // 查看属性
-            const char *name = ivar_getName(ivar);
-            NSString *key = [NSString stringWithUTF8String:name];
-            // 进行解档取值
-            id value = [aDecoder decodeObjectForKey:key];
-            // 利用 KVC 对属性赋值
-            [self setValue:value forKey:key];
-        }
-    }
-    return self;
-}
-</code></pre><h3 id="4-8-字典转模型"><a href="#4-8-字典转模型" class="headerlink" title="4.8 字典转模型"></a>4.8 字典转模型</h3><p>字典转模型我们通常用的都是第三方, MJExtension, YYModel 等, 但也有必要了解一下其实现方式: 遍历模型中的所有属性，根据模型的属性名，去字典中查找对应的 key，取出对应的值，给模型的属性赋值。</p>
-<pre><code>/** 字典转模型 **/
-+ (instancetype)modelWithDict:(NSDictionary *)dict {
-    id objc = [[self alloc] init];
-    unsigned int count = 0;
-    // 获取成员属性数组
-    Ivar *ivarList = class_copyIvarList(self, &amp;count);
-    // 遍历所有的成员属性名
-    for (int i = 0; i &lt; count; i ++) {
-        // 获取成员属性
-        Ivar ivar = ivarList[i];
-        // 获取成员属性名
-        NSString *ivarName = [NSString stringWithUTF8String:ivar_getName(ivar)];
-        NSString *key = [ivarName substringFromIndex:1];
-        // 从字典中取出对应 value 给模型属性赋值
-        id value = dict[key];
-        // 获取成员属性类型
-        NSString *ivarType = [NSString stringWithUTF8String:ivar_getTypeEncoding(ivar)];
-        // 判断 value 是不是字典
-        if ([value isKindOfClass:[NSDictionary class]]) {
-            ivarType = [ivarType stringByReplacingOccurrencesOfString:@&quot;@&quot; withString:@&quot;&quot;];
-            ivarType = [ivarType stringByReplacingOccurrencesOfString:@&quot;\&quot;&quot; withString:@&quot;&quot;];
-            Class modalClass = NSClassFromString(ivarType);
-            // 字典转模型
-            if (modalClass) {
-                // 字典转模型
-                value = [modalClass modelWithDict:value];
-            }
-        }
-        if ([value isKindOfClass:[NSArray class]]) {
-            // 判断对应类有没有实现字典数组转模型数组的协议
-            if ([self respondsToSelector:@selector(arrayContainModelClass)]) {
-                // 转换成id类型，就能调用任何对象的方法
-                id idSelf = self;
-                // 获取数组中字典对应的模型
-                NSString *type = [idSelf arrayContainModelClass][key];
-                // 生成模型
-                Class classModel = NSClassFromString(type);
-                NSMutableArray *arrM = [NSMutableArray array];
-                // 遍历字典数组，生成模型数组
-                for (NSDictionary *dict in value) {
-                    // 字典转模型
-                    id model =  [classModel modelWithDict:dict];
-                    [arrM addObject:model];
-                }
-                // 把模型数组赋值给value
-                value = arrM;
-            }
-        }
-        // KVC 字典转模型
-        if (value) {
-            [objc setValue:value forKey:key];
-        }
-    }
-    return objc;
-}
-</code></pre><p><a href="https://github.com/wangjungang/runtimeTest" target="_blank" rel="noopener">代码地址</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/31/iOS中runtim的几种常用的方法/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/17/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><a class="extend next" rel="next" href="/page/19/">Next &raquo;</a>
@@ -1605,6 +1561,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -1629,11 +1589,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1649,11 +1609,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1670,10 +1630,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">算法</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
             
             <div class="clearfix"></div>
