@@ -152,6 +152,154 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS关于delegate的整理内容" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/04/iOS关于delegate的整理内容/">iOS关于delegate的整理内容</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/04/iOS关于delegate的整理内容/" class="archive-article-date">
+  	<time datetime="2018-09-04T09:58:13.408Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-为什么代理要用weak？"><a href="#1-为什么代理要用weak？" class="headerlink" title="1.为什么代理要用weak？"></a>1.为什么代理要用weak？</h2><p> 防止循环引用。例如View有一个协议，需要一个代理实现回调。一个Controller添加这个View，并且遵守协议，成为View的代理。如果不用week，用strong，Controller -&gt;View -&gt; delegate -&gt; Controller，就循环引用了。</p>
+<h2 id="2-代理的delegate和dataSource有什么区别？"><a href="#2-代理的delegate和dataSource有什么区别？" class="headerlink" title="2.代理的delegate和dataSource有什么区别？"></a>2.代理的delegate和dataSource有什么区别？</h2><p> delegate偏重于与用户交互的回调，有那些方法可以供我使用，例如UITableviewDelegate；dataSource偏重于数据的回调，view里面有什么东西，属性都是什么，例如UITableviewDatasource；</p>
+<h2 id="3-block和代理的区别"><a href="#3-block和代理的区别" class="headerlink" title="3.block和代理的区别"></a>3.block和代理的区别</h2><h3 id="3-1-Block的介绍"><a href="#3-1-Block的介绍" class="headerlink" title="3.1 Block的介绍"></a>3.1 Block的介绍</h3><p> 在 iOS中， block一共分三种。<br>  (1)全局静态 block，不会访问任何外部变量，执行完就销毁。</p>
+<pre><code>^{
+        NSLog(@&quot;Hello World!&quot;);
+    }();
+</code></pre><p>（2）保存在栈中的 block，当函数返回时会被销毁，和第一种的区别就是调用了外部变量。</p>
+<pre><code>[UIView animateWithDuration:3 animations:^{
+        self.view.backgroundColor = [UIColor redColor];
+    }];
+</code></pre><p> (3)保存在堆中的 block，当引用计数为 0 时会被销毁。例如按钮的点击事件，一直存在，即使执行过，也不销毁，因为按钮还可能被点击。直到持有按钮的View被销毁，它才会被销毁。</p>
+<pre><code>#import &lt;UIKit/UIKit.h&gt;
+
+typedef void(^ButtonClickBlcok)();
+
+@interface TestView : UIView
+
+@property (nonatomic, copy) ButtonClickBlcok buttonClickBlcok;
+
+@end
+
+
+#import &quot;TestView.h&quot;
+
+@implementation TestView
+
+- (IBAction)buttonClick:(id)sender {
+    if (self.buttonClickBlcok) {
+        self.buttonClickBlcok();
+    }
+}
+@end
+</code></pre><p>###3.2 Block的优点 </p>
+<p>block的代码可读性更好。因为block只要实现就可以了，而代理需要遵守协议并且实现协议里的方法，而两者还不在一个地方。代理使用起来也更麻烦，因为要声明协议、声明代理属性、遵守协议、实现协议里的方法。block不需要声明，也不需要遵守，只需要声明属性和实现就可以了。</p>
+<p>  block是一种轻量级的回调，可以直接访问上下文，由于block的代码是内联的，运行效率更高。block就是一个对象，实现了匿名函数的功能。所以我们可以把block当做一个成员变量、属性、参数使用，使用起来非常灵活。像用AFNetworking请求数据和GCD实现多线程，都使用了block回调。</p>
+<h3 id="3-3block的缺点"><a href="#3-3block的缺点" class="headerlink" title="3.3block的缺点"></a>3.3block的缺点</h3><p>blcok的运行成本高。block出栈需要将使用的数据从栈内存拷贝到堆内存，当然对象的话就是引用计数加1，使用完或者block置nil后才销毁。delegate只是保存了一个对象指针(一定要用week修饰delegate，不然也会循环引用)，直接回调，没有额外消耗。就像C的函数指针，只多做了一个查表动作。</p>
+<p>  block容易造成循环引用，而且不易察觉。因为为了blcok不被系统回收，所以我们都用copy关键字修饰，实行强引用。block对捕获的变量也都是强引用，所以就会造成循环引用。
+  
+  </p>
+<pre><code>#import &quot;ViewController.h&quot;
+
+typedef void(^TestBlock)(void);
+
+@interface ViewController ()
+{
+    void (^_testCycleBlock)(void);
+}
+@end
+
+@implementation ViewController
+
+- (void)viewDidLoad {
+
+    [super viewDidLoad];
+
+    __weak ViewController *weakSelf = self;
+    _testCycleBlock = ^{
+
+        /**
+          //引发循环引用
+          NSLog(@&quot;%@&quot;, self);
+         */
+        //防止循环引用
+        NSLog(@&quot;%@&quot;, weakSelf);
+    };
+}
+@end
+</code></pre><p>###3.4 如何使用</p>
+<p>优先使用block。</p>
+<p>如果回调的状态很多，多于三个使用代理。
+  
+  </p>
+<p>如果回调的很频繁，次数很多，像UITableview，每次初始化、滑动、点击都会回调，使用代理。
+  </p>
+<p>block和代理都各有优缺点，所以我们一定要理解区分使用场景，应用适合的回调方式。优化APP的性能，提高流畅性，从点滴做起。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/04/iOS关于delegate的整理内容/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS NSset 和 NSArray的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1530,70 +1678,6 @@ self.secondLabel.text = dataHandle.str;
 
 
   
-    <article id="post-welcome" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/27/welcome/">Welcome</a>
-    </h1>
-  
-
-        
-        <a href="/2018/07/27/welcome/" class="archive-article-date">
-  	<time datetime="2018-07-27T15:30:37.293Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>##电脑终于修好了</p>
-<p>整整两年的博客，由于数据没有备份，毁于一旦，深刻的教训，陆陆续续的补上好了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/07/27/welcome/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/18/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="page-number" href="/page/18/">18</a><span class="page-number current">19</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/20/">Next &raquo;</a>
@@ -1707,7 +1791,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1716,10 +1808,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">MySql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1735,19 +1823,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1759,11 +1843,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
