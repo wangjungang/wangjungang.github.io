@@ -152,6 +152,172 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-抖音点赞动画的实现" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/18/抖音点赞动画的实现/">抖音点赞动画的实现</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/18/抖音点赞动画的实现/" class="archive-article-date">
+  	<time datetime="2019-06-18T04:37:47.755Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>主要技术点</p>
+<p>1.CAShapeLayer和贝赛尔曲线绘制三角形</p>
+<p>2.组合动画的时间技巧</p>
+<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>我们可以看到 它是一个 三角形的贝塞尔曲线</p>
+<p><img src="http://img.wangjungang.cn/WX20190619-092448@2x.png" alt=""></p>
+<p>这样的动画需要经过:</p>
+<p>2π (360°)旋转一周</p>
+<p>圆一周一共有六个 三角形的贝赛尔曲线图形形状.</p>
+<p>一个动画组 内部包含缩放动画 从0~1的放大 ,动画如果执行10秒,那么 scale缩放动画执行 10*0.2 = 2秒, 动画组中还包含另一个动画是 从结束位置的动画到结尾消失的位置大小变化直到动画消失.</p>
+<p>沿着圆形每 60°角度 创建一个上图的三角形图形.</p>
+<p>说了这么多 实际就是用CABasicAnimation的keypath是path和CABasicAnimation的keypath是transform.scale的动画组合在一起作用于一个三角形上,并且一共创建6个三角形图形.<br>结束的时候大概是这样的</p>
+<p>结束的时候实际上是一个从 上一次动画执行完成的path向 一条线上三个点的path过渡的过程,直到最后隐藏消失.</p>
+<p>好下面我们来实现一下这个动画</p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>首先我们子类话一个ZanLikeView继承自UIView并设置底部的图片和点击变换的❤️图片,就是两张UIImageView加手势,当点击的时候区分不同view的tag就知道哪个imageview点击,这样就可以做两张动画不同的效果了,不过这些可以参考demo.</p>
+<p>我主要介绍核心代码</p>
+<p>创建 CAShapeLayer用于做形状图形相关的图形动画.</p>
+<pre><code>CAShapeLayer *layer = [[CAShapeLayer alloc]init];
+layer.position = _likeBefore.center;
+layer.fillColor = [UIColor redColor].CGColor;
+</code></pre><p>颜色为暴露在外面的接口</p>
+<p>for循环每 30°角创建一个上述的三角形.我们需要创建 6个 就循环6次</p>
+<p>创建初始位置的贝塞尔path</p>
+<pre><code>CGFloat length = 30;
+CGFloat duration = 0.5f;
+for(int i = 0 ; i &lt; 6; i++) {
+    CAShapeLayer *layer = [[CAShapeLayer alloc]init];
+    layer.position = _likeBefore.center;
+    layer.fillColor = [[UIColor redColor].CGColor;
+
+    //...  1
+    //...  2
+    //...  3
+}
+</code></pre><p>这里我们一共创建6个shapeLayer的实例并填充成颜色,我们这里填充的是红色 其它的颜色可自行封装.</p>
+<p>_likeBefore 是我们看到白色的❤️背景视图(UIImageView)</p>
+<p>下面 在//… 1的地方加入如下代码</p>
+<pre><code>UIBezierPath *startPath = [UIBezierPath bezierPath];
+[startPath moveToPoint:CGPointMake(-2, -length)];
+[startPath addLineToPoint:CGPointMake(2, -length)];
+[startPath addLineToPoint:CGPointMake(0, 0)];
+</code></pre><p>这行代码加完就是这样的图形</p>
+<p><img src="http://img.wangjungang.cn/WX20190619-092448@2x.png" alt=""></p>
+<p>然后创建完成我们需要把path给layer.path. 记得转成CGPath</p>
+<pre><code>layer.path = startPath.CGPath;
+layer.transform = CATransform3DMakeRotation(M_PI / 3.0f * i, 0.0, 0.0, 1.0);
+[self.layer addSublayer:layer]
+</code></pre><p>注: CATransform3DMakeRotation()函数 当x,y,z值为0时,代表在该轴方向上不进行旋转,当值为-1时,代表在该轴方向上进行逆时针旋转,当值为1时,代表在该轴方向上进行顺时针旋转</p>
+<p>因为我们是需要60°创建一个layer所以需要顺时针 M_PI / 3.0f = 60°. 每循环一次则创建第N个角度乘60°.</p>
+<p>接着在//… 2添加如下代码</p>
+<pre><code>//动画组
+CAAnimationGroup *group = [[CAAnimationGroup alloc] init];
+group.removedOnCompletion = NO;
+group.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+group.fillMode = kCAFillModeForwards;
+group.duration = duration;
+//缩放动画
+CABasicAnimation *scaleAnim = [CABasicAnimation animationWithKeyPath:@&quot;transform.scale&quot;];
+scaleAnim.fromValue = @(0.0);
+scaleAnim.toValue = @(1.0);
+scaleAnim.duration = duration * 0.2f; //注意这里是在给定时长的地方前0.2f的时间里执行缩放
+</code></pre><p>这里说下duration <em>0.2f. 比如我给定 10秒的duration,那么 duration </em>0.2 = 2 秒执行缩放.</p>
+<p>最后在//… 3的代码出加上如下代码</p>
+<pre><code>//结束点
+UIBezierPath *endPath = [UIBezierPath bezierPath];
+[endPath moveToPoint:CGPointMake(-2, -length)];
+[endPath addLineToPoint:CGPointMake(2, -length)];
+[endPath addLineToPoint:CGPointMake(0, -length)];
+
+CABasicAnimation *pathAnim = [CABasicAnimation animationWithKeyPath:@&quot;path&quot;];
+pathAnim.fromValue = (__bridge id)layer.path;
+pathAnim.toValue = (__bridge id)endPath.CGPath;
+pathAnim.beginTime = duration * 0.2f;
+pathAnim.duration = duration * 0.8f;
+
+[group setAnimations:@[scaleAnim, pathAnim]];
+[layer addAnimation:group forKey:nil];
+</code></pre><p>这几行代码的意识是 从我们上一个layer的path位置开始向我们结束位置的path过渡,并且注意开始时间</p>
+<p>pathAnim.beginTime是 duration <em>0.2也就是说 在上一个动画结束的时间点才开始结束过渡,过渡的时长剩余是duration </em>0.8.这样两个连贯在一起的动画就执行完了,最后把动画加到动画组 天加给layer.</p>
+<p>剩余的工作就是做个普通的动画的 基本没什么了.</p>
+<pre><code>[UIView animateWithDuration:0.35f
+                      delay:0.0f
+                    options:UIViewAnimationOptionCurveEaseIn
+                 animations:^{
+                     self.likeAfter.transform = CGAffineTransformScale(CGAffineTransformMakeRotation(-M_PI_4), 0.1f, 0.1f);
+                 }
+                 completion:^(BOOL finished) {
+                     [self.likeAfter setHidden:YES];
+                     self.likeBefore.userInteractionEnabled = YES;
+                     self.likeAfter.userInteractionEnabled = YES;
+                 }];
+</code></pre><p>技巧</p>
+<p>结束动画的开始时间和结束时间控制,恰到好处.</p>
+<h2 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h2><p><a href="https://github.com/iwenyupinlun01/zanDemo" target="_blank" rel="noopener">demo</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/18/抖音点赞动画的实现/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-通过单例、归档存储多个用户数据 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1587,163 +1753,6 @@ unowned修饰类似于 OC 中的 assign,self 指向的是当前对象的地址,�
 
 
   
-    <article id="post-Swift中Result类型的强大功能" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/20/Swift中Result类型的强大功能/">Swift中Result类型的强大功能</a>
-    </h1>
-  
-
-        
-        <a href="/2019/04/20/Swift中Result类型的强大功能/" class="archive-article-date">
-  	<time datetime="2019-04-20T14:59:07.606Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Swift类型系统的一大好处是它可以让我们在处理各种操作的结果时消除很多歧义。通过泛型和枚举值等功能，我们可以轻松创建类型，让我们利用编译器来确保我们以正确的方式处理结果。</p>
-<p>这种类型的一个例子是Result类型 - 虽然它（尚未）构建到标准库中，但它是一种在许多不同的Swift项目中很常见的类型。我们将探讨这种结果类型，以及它与Swift的一些语言功能结合使用时可以做的一些很酷的事情。</p>
-<h3 id="网络请求是我们经常用到的场景，而网络请求一般会有2种结果："><a href="#网络请求是我们经常用到的场景，而网络请求一般会有2种结果：" class="headerlink" title="网络请求是我们经常用到的场景，而网络请求一般会有2种结果："></a>网络请求是我们经常用到的场景，而网络请求一般会有2种结果：</h3><p>成功</p>
-<p>失败 让我们来看看afnetworking框架是怎么去处理他们的结果的：</p>
-<pre><code>AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
-[session GET:@&quot;需要请求的url&quot; parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
-        NSLog(@&quot;请求成功&quot;);
-} failure:^(NSURLSessionDataTask *task, NSError *error) {
-        NSLog(@&quot;请求失败&quot;);        
-}];
-</code></pre><p>显然，他通过2个block来处理成功与失败的回调，但是，我们能不能用一个对象去处理完这种事情呢？？？ <strong><em>Result</em></strong>类型可以帮到你…..</p>
-<pre><code>public protocol TDWSuccessedProtocol {
-
-}
-
-public protocol TDWFailedProtocol {
-
-}
-
-public enum TDWResult&lt;T:TDWSuccessedProtocol, Error:TDWFailedProtocol&gt; {
-    case success(T)
-    case failure(Error)
-
-    public init(value:T) {
-        self = .success(value)
-    }
-
-    public init(error:Error) {
-        self = .failure(error)
-    }
-
-}
-</code></pre><p>以上就是一个很基础的<strong><em>Result</em></strong>的类型。</p>
-<h3 id="我们先定义2个协议："><a href="#我们先定义2个协议：" class="headerlink" title="我们先定义2个协议："></a>我们先定义2个协议：</h3><ul>
-<li>TDWSuccessedProtocol 成功的协议，可以扩展成功的对象需要的任何东西。</li>
-<li>TDWFailedProtocol 失败的协议，可以扩展失败的对象需要的任何东西。</li>
-</ul>
-<h3 id="我们创建一个TDWResult枚举"><a href="#我们创建一个TDWResult枚举" class="headerlink" title="我们创建一个TDWResult枚举"></a>我们创建一个TDWResult枚举</h3><p>枚举有2个泛型，T<strong><em>继承</em></strong>TDWSuccessedProtocol，Error<strong><em>继承</em></strong>TDWFailedProtocol。枚举有2种情况，一种是成功（success），一种是失败（failure），还有对应的初始化。<br>这样，我们就完成了一个<strong><em>Result</em></strong>类型的定义了</p>
-<p>网络请求的例子</p>
-<pre><code>struct TDWSuccess:TDWSuccessedProtocol {
-
-}
-
-struct TDWFailure:TDWFailedProtocol {
-
-}
-
-typealias Completion = (_ result:TDWResult&lt;TDWSuccess,TDWFailure&gt;)-&gt;Void
-
-class TDWNetworkTest {
-
-    class func tdw_request(parameters:String,completion:@escaping Completion) {
-
-        //network request
-
-        if parameters.count &gt; 0 {
-            let successResult = TDWSuccess()
-            completion(TDWResult(value: successResult))
-
-        } else {
-
-            let failResult = TDWFailure()
-            completion(TDWResult(error: failResult))
-
-        }
-
-
-    }
-
-}
-</code></pre><p>调用:</p>
-<pre><code>TDWNetworkTest.tdw_request(parameters: &quot;abc&quot;) {(result) in
-
-            switch result {
-
-            case .success(let response):
-                print(response)
-
-            case .failure(let response):
-                print(response)
-            }
-
-        }
-</code></pre><p>这样做的话，我们要扩展就比较简单了，不用再多定义个block，多定义元组，我们直接在<strong><em>TDWResult</em></strong>里面多定义一种case就可以了，扩展性就大大增强了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/04/20/Swift中Result类型的强大功能/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -1857,11 +1866,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1909,11 +1918,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
