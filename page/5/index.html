@@ -152,6 +152,160 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS 中处理定时任务的常用方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/08/29/iOS 中处理定时任务的常用方法/">iOS 中处理定时任务的常用方法</a>
+    </h1>
+  
+
+        
+        <a href="/2019/08/29/iOS 中处理定时任务的常用方法/" class="archive-article-date">
+  	<time datetime="2019-08-29T03:03:58.790Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目开发中，经常会在代码中处理一些需要延时或定时执行的任务，iOS 中处理定时任务的方法包括 performSelector 方法、NSTimer、GCD、CADisplayLink，其本质都是通过RunLoop来实现，下面我们就对这几个方法做一些总结。</p>
+<h2 id="1-performSelector方法"><a href="#1-performSelector方法" class="headerlink" title="1. performSelector方法"></a>1. performSelector方法</h2><p>在NSRunLoop.h中有对NSObject类的扩展方法，简单易用：</p>
+<pre><code>@interface NSObject (NSDelayedPerforming)
+
+- (void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay inModes:(NSArray&lt;NSRunLoopMode&gt; *)modes;
+- (void)performSelector:(SEL)aSelector withObject:(nullable id)anArgument afterDelay:(NSTimeInterval)delay;
+
++ (void)cancelPreviousPerformRequestsWithTarget:(id)aTarget selector:(SEL)aSelector object:(nullable id)anArgument;
++ (void)cancelPreviousPerformRequestsWithTarget:(id)aTarget;
+
+@end
+</code></pre><h2 id="2-NSTimer"><a href="#2-NSTimer" class="headerlink" title="2. NSTimer"></a>2. NSTimer</h2><p>NSTimer 是最常使用的定时器，使用方式简单，NSTimer 是也通过添加到RunLoop中被触发并进行工作的，桥接 CFRunLoopTimerRef。NSTimer中定义的常用方法如下：</p>
+<pre><code>+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti invocation:(NSInvocation *)invocation repeats:(BOOL)yesOrNo;
++ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti invocation:(NSInvocation *)invocation repeats:(BOOL)yesOrNo;
+
++ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;
++ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti target:(id)aTarget selector:(SEL)aSelector userInfo:(nullable id)userInfo repeats:(BOOL)yesOrNo;
+
++ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer *timer))block API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
++ (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer *timer))block API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
+
+- (instancetype)initWithFireDate:(NSDate *)date interval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer *timer))block API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
+- (instancetype)initWithFireDate:(NSDate *)date interval:(NSTimeInterval)ti target:(id)t selector:(SEL)s userInfo:(nullable id)ui repeats:(BOOL)rep NS_DESIGNATED_INITIALIZER;
+</code></pre><p>以下是初始化NSTimer的不同方式：</p>
+<pre><code>// 自动加入currentRunLoop
+self.timer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
+//self.timer = [NSTimer scheduledTimerWithTimeInterval:5.0 repeats:YES block:^(NSTimer * _Nonnull timer) { }];
+
+// 手动加入RunLoop
+self.timer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
+[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
+
+// 指定timer触发时刻
+NSTimeInterval timeInterval = [self timeIntervalSinceReferenceDate] + 30;
+NSDate *newDate = [NSDate dateWithTimeIntervalSinceReferenceDate:timeInterval];
+self.timer = [[NSTimer alloc] initWithFireDate:newDate interval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
+[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
+</code></pre><p>如果当前界面中有UITableView，则在 UITableView 在滚动过程中，上述代码中的定时器到了时间并没有触发。根据RunLoop的相关知识，同一时刻 RunLoop 只运行在一种 Mode 上，并且只有这个 Mode 相关联的源或定时器会被传递消息，mainRunLoop 一般处于  NSDefaultRunLoopMode，但是在滚动或者点击事件等触发时，mainRunLoop 切换至  NSEventTrackingRunLoopMode ，而上面  timer 被加入的正是 NSDefaultRunLoopMode （未指明也默认加入默认模式），所以滑动时未触发定时操作。<br>解决方法：添加timer到mainRunLoop的NSRunLoopCommonMode中或者子线程中，需要注意的是加入子线程时要手动开启并运行子线程的RunLoop。</p>
+<pre><code>self.timer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
+[[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
+</code></pre><p>NSRunLoopCommonMode这是一组可配置的常用模式。将输入源与此模式相关联也会将其与组中的每个模式相关联。对于Cocoa应用程序，此集合默认包括NSDefaultRunLoopMode，NSPanelRunLoopMode和NSEventTrackingRunLoopMode。</p>
+<p>注意：</p>
+<ul>
+<li>iOS10以前初始化的timer在运行期间会对target进行持有，因此，在释放时需要手动调用invalidate方法，并置nil；</li>
+<li>timer不能在当前宿主的dealloc方法中调用，因为timer没有被释放前，当前宿主不会执行dealloc方法；</li>
+<li>当前RunLoop会切换Mode，因此可能导致timer不是立刻被触发。</li>
+<li>在同一线程中，timer重复执行期间，有其他耗时任务时，在改耗时任务完成前也不会触发定时，在耗时任务完成后，timer的定时任务会继续执行。</li>
+<li>dispatch_source_set_timer中设置启动时间，dispatch_time_t可通过两个方法生成：dispatch_time 和 dispatch_walltime</li>
+</ul>
+<h2 id="3-GCD定时器"><a href="#3-GCD定时器" class="headerlink" title="3. GCD定时器"></a>3. GCD定时器</h2><p>我们也可以通过GCD中的方法实现定时器来处理定时任务，实现的代码逻辑如下：</p>
+<pre><code>// 1. 创建 dispatch source，指定检测事件为定时
+dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, dispatch_get_global_queue(&quot;Timer_Queue&quot;, 0));
+// 2. 设置定时器启动时间、间隔
+dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC,  0 * NSEC_PER_SEC); 
+// 3. 设置callback
+dispatch_source_set_event_handler(timer, ^{
+        NSLog(@&quot;timer fired&quot;);
+    });
+dispatch_source_set_event_handler(timer, ^{
+       //取消定时器时一些操作
+    });
+// 4. 启动定时器（刚创建的source处于被挂起状态）
+dispatch_resume(timer);
+// 5. 暂停定时器
+dispatch_suspend(timer);
+// 6. 取消定时器
+dispatch_source_cancel(timer);
+timer = nil;
+</code></pre><p>当我们想要timer只是延时执行一次时，只调用以下方法即可：</p>
+<pre><code>// 在主线程中延时5s中执行
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
+    });
+</code></pre><p>注意：</p>
+<ul>
+<li>正在执行的 block，在调用dispatch_suspend(timer)时，当前block并不会立即停止而是继续执行至完成；</li>
+<li>dispatch source在挂起时，直接设置为 nil 或者重新赋值都会造成crash，需要在activate的状态下调用dispatch_source_cancel(timer)后置为 nil 或者重新赋值；</li>
+<li>dispatch_source_cancel方法可以在dispatch_source_set_event_handler中调用，即timer可内部持有也可外部持有；</li>
+<li>dispatch_resume和dispatch_suspend调用需成对出现，否则会crash；</li>
+<li>dispatch source会比 NSTimer 更精准一些。</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/08/29/iOS 中处理定时任务的常用方法/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Sign in with Apple" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2269,119 +2423,6 @@ NSDictionary *userInfo = @{
 
 
   
-    <article id="post-KVO监听数组" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/KVO监听数组/">KVO监听数组</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/23/KVO监听数组/" class="archive-article-date">
-  	<time datetime="2019-06-23T11:48:48.015Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近遇到一个新的需求，要求在某个页面中添加一个collectionView，collectionView的高度随着数据源的长度来改变，从而达到改变父View的高度，如下图红框部分则为collectionView，整个视图布局在scrollview上，由collectionView的高度去撑父视图的高度。楼主试图通过监听collectionView的数据源长度来改变视图高度。</p>
-<p>但我们知道，KVO监听的是指针变化，可变数组里加了个元素，这个数组的内容变了，但是指针没有变，所以不会调用KVO</p>
-<p>首先，数组不能直接使用KVO使用监听。当我们想要使用KVO监听数组的状态时改变然后尽心操作时，我们需要进行一下几部。</p>
-<p>1.KVO不能监听UIViewController中的数组。我们需要先创建一个模型，将数组添加值模型中。</p>
-<pre><code>@interface SelectedsArr : NSObject
-
-@property (nonatomic, strong) NSMutableArray *selecteds;///&lt;选中的选项集合
-
-@end
-</code></pre><p>2.建立观察者以及观察者对象</p>
-<pre><code>[self.selectedsArr addObserver:self forKeyPath:@&quot;selecteds&quot; options:NSKeyValueObservingOptionNew context:nil];
-</code></pre><p>3.处理Key的变化</p>
-<p>这里，很重要，当向模型中的可变数组添加新成员时，不能直接用[self.selectedsArr.selecteds addObject:]方法。而使用该用下面的方法</p>
-<pre><code>[self.selectedsArr mutableArrayValueForKey:@&quot;selecteds&quot;] addObject:]];
-</code></pre><p>4.在下面的方法添加监听到变化后要执行的语句</p>
-<pre><code>- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void *)context{
-
-}
-</code></pre><p>5.移除监听</p>
-<pre><code>[self removeObserver:self forKeyPath:@&quot;selecteds&quot;];
-</code></pre><h2 id="改进一下"><a href="#改进一下" class="headerlink" title="改进一下"></a>改进一下</h2><p>我们只要每次都变更我们要监听数据的地址就好了。因此简化版操作如下，mediaUploadView是包含了collectionView的直接父视图，seleteImagesArray为collectionView的数据源</p>
-<pre><code>//1.建立观察者以及观察者对象
-[self.mediaUploadView addObserver:self forKeyPath:@&quot;seleteImagesArray&quot; options:NSKeyValueObservingOptionNew context:nil];
-
-//2.数组的增删方法（注意这里的写法，用mutableArrayValueForKey，这个不仅把元素加进去了， 而且还重新生成了一个可变数组来赋值给控制器属性的那个数组，这样就能被KVO检测到指针变化）
-[[weakself mutableArrayValueForKey:@&quot;seleteImagesArray&quot;] addObject:weakself.addImageModel];
-[[weakself mutableArrayValueForKey:@&quot;seleteImagesArray&quot;] removeLastObject];
-[[weakself mutableArrayValueForKey:@&quot;seleteImagesArray&quot;] addObjectsFromArray:tempArray];
-
-//3.处理Key的变化
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSString *,id&gt; *)change context:(void *)context
-{
-    NSInteger rows = ceilf(self.mediaUploadView.seleteImagesArray.count/3.0);
-    self.meadiaUploadViewHeight.constant = (ITEM_WIDTH_HEIGHT+20)*rows;
-}
-
-//4.最后一步也很重要，否则引起崩溃
-- (void)dealloc {
-    [self.mediaUploadView removeObserver:self forKeyPath:@&quot;seleteImagesArray&quot; context:nil];
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/KVO监听数组/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
@@ -2487,15 +2528,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2503,15 +2540,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2523,11 +2564,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
