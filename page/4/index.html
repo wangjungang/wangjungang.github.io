@@ -152,6 +152,337 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-迁至WKWebView跨过的那些坑" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/05/迁至WKWebView跨过的那些坑/">迁至WKWebView跨过的那些坑</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/05/迁至WKWebView跨过的那些坑/" class="archive-article-date">
+  	<time datetime="2019-09-05T06:38:49.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS中有两种网页视图可以加载网页除了系统的那个控制器。一种是UIWebView，另一种是WKWebView，其实WKWebView就是想替代UIWebView的，因为我们都知道UIWebView非常占内存等一些问题，但是现在很多人还在使用UIWebView这是为啥呢？而且官方也宣布在iOS12中废弃了UIWebView让我们尽快使用WKWebView。其实也就是这些东西：<strong>页面尺寸问题、JS交互、请求拦截、cookie带不上的问题。</strong>所以有时想要迁移还得解决这些问题，所以还是很烦的，所以一一解决喽。</p>
+<h2 id="页面尺寸的问题"><a href="#页面尺寸的问题" class="headerlink" title="页面尺寸的问题"></a>页面尺寸的问题</h2><p>我们知道有些网页在UIWebView上显示好好地，使用WKWebView就会出现尺寸的问题，这时很纳闷，安卓也不会，你总不说是前端的问题吧？但其实是WKWebView中网页是需要适配一下，所以自己添加JS吧，当然和前端关系好就可以叫他加的。下面通过设置配置中的userContentController来添加JS。</p>
+<pre><code>WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+NSString *jScript = @&quot;var meta = document.createElement(&apos;meta&apos;); meta.setAttribute(&apos;name&apos;, &apos;viewport&apos;); meta.setAttribute(&apos;content&apos;, &apos;width=device-width&apos;); document.getElementsByTagName(&apos;head&apos;)[0].appendChild(meta);&quot;;
+WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+WKUserContentController *wkUController = [[WKUserContentController alloc] init];
+[wkUController addUserScript:wkUScript];
+configuration.userContentController = wkUController;
+</code></pre><h2 id="JS交互"><a href="#JS交互" class="headerlink" title="JS交互"></a>JS交互</h2><p>我们都知道在UIWebView中可以使用自家的JavaScriptCore来进行交互非常的方便。在JavaScriptCore中有三者比较常用那就是JSContext(上下文)、JSValue（类型转换）、JSExport(js调OC模型方法)。</p>
+<h3 id="在UIWebView中的便利交互方法"><a href="#在UIWebView中的便利交互方法" class="headerlink" title="在UIWebView中的便利交互方法"></a>在UIWebView中的便利交互方法</h3><pre><code>//JSContext就为其提供着运行环境 H5上下文
+- (void)webViewDidFinishLoad:(UIWebView *)webView{
+    JSContext *jsContext = [self.webView valueForKeyPath:@&quot;documentView.webView.mainFrame.javaScriptContext&quot;];
+    self.jsContext = jsContext;
+}
+// 执行脚本增加js全局变量
+[self.jsContext evaluateScript:@&quot;var arr = [3, &apos;3&apos;, &apos;abc&apos;];&quot;];
+// ⚠️添加JS方法，需要注意的是添加的方法会覆盖原有的JS方法，因为我们是在网页加载成功后获取上下文来操作的。
+// 无参数的
+self.jsContext[@&quot;alertMessage&quot;] = ^() {
+   NSLog(@&quot;JS端调用alertMessage时就会跑到这里来！&quot;);
+};
+// 带参数的，值必须进行转换
+ self.jsContext[@&quot;showDict&quot;] = ^(JSValue *value) {
+    NSArray *args = [JSContext currentArguments];
+    JSValue *dictValue = args[0];
+    NSDictionary *dict = dictValue.toDictionary;
+    NSLog(@&quot;%@&quot;,dict);
+ };
+// 获取JS中的arr数据
+JSValue *arrValue = self.jsContext[@&quot;arr&quot;];
+// 异常捕获
+self.jsContext.exceptionHandler = ^(JSContext *context, JSValue *exception) {
+    weakSelf.jsContext.exception = exception;
+    NSLog(@&quot;exception == %@&quot;,exception);
+};
+// 给JS中的对象重新赋值
+OMJSObject *omObject = [[OMJSObject alloc] init];
+self.jsContext[@&quot;omObject&quot;] = omObject;
+NSLog(@&quot;omObject == %d&quot;,[omObject getSum:20 num2:40]);
+
+// 我们都知道object必须要遵守JSExport协议时，js可以直接调用object中的方法，并且需要把函数名取个别名。在JS端可以调用getS，OC可以继续使用这个getSum这个方法
+@protocol OMProtocol &lt;JSExport&gt;
+// 协议 - 协议方法 
+JSExportAs(getS, -(int)getSum:(int)num1 num2:(int)num2);
+@end
+</code></pre><h3 id="在WKWebView中如何做呢？"><a href="#在WKWebView中如何做呢？" class="headerlink" title="在WKWebView中如何做呢？"></a>在WKWebView中如何做呢？</h3><p>不能像上面那样，系统提供的是通过以下两种方法，所以是比较难受，而且还得前端使用messageHandler来调用，即安卓和iOS分开处理。</p>
+<pre><code>// 直接调用js
+NSString *jsStr = @&quot;var arr = [3, &apos;3&apos;, &apos;abc&apos;]; &quot;;
+[self.webView evaluateJavaScript:jsStr completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+   NSLog(@&quot;%@----%@&quot;,result, error);
+}];
+// 下面是注册名称后，js使用messageHandlers调用了指定名称就会进入到代理中
+
+// OC我们添加了js名称后
+- (void)viewDidLoad{
+  //...
+  [wkUController addScriptMessageHandler:self name:@&quot;showtime&quot;];
+  configuration.userContentController = wkUController;
+}
+
+// JS中messageHandlers调用我们在OC中的名称一致时就会进入后面的到OC的代理
+window.webkit.messageHandlers.showtime.postMessage(&apos;&apos;);
+
+// 代理，判断逻辑
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message{
+    if ([message.name isEqualToString:@&quot;showtime&quot;]) {
+        NSLog(@&quot;来了！&quot;);
+    }
+    NSLog(@&quot;message == %@ --- %@&quot;,message.name,message.body); 
+}
+
+// 最后在dealloc必须移除
+[self.userContentController removeScriptMessageHandlerForName:@&quot;showtime&quot;];
+</code></pre><h3 id="一直用一直爽的交互"><a href="#一直用一直爽的交互" class="headerlink" title="一直用一直爽的交互"></a>一直用一直爽的交互</h3><p>我们上面写了两者的一些交互，虽然可以用呢，但是没有带一种很简单很轻松的境界，所以有一个开源库：WebViewJavaScriptBridge。这个开源库可以同时兼容两者，而且交互很简单，但是你必须得前端一起，否则就哦豁了。</p>
+<pre><code>// 使用
+self.wjb = [WebViewJavascriptBridge bridgeForWebView:self.webView];
+// 如果你要在VC中实现 UIWebView的代理方法 就实现下面的代码(否则省略)
+[self.wjb setWebViewDelegate:self];
+
+// 注册js方法名称
+[self.wjb registerHandler:@&quot;jsCallsOC&quot; handler:^(id data, WVJBResponseCallback responseCallback) {
+   NSLog(@&quot;currentThread == %@&quot;,[NSThread currentThread]);
+   NSLog(@&quot;data == %@ -- %@&quot;,data,responseCallback);
+}];
+
+// 调用JS
+dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [self.wjb callHandler:@&quot;OCCallJSFunction&quot; data:@&quot;OC调用JS&quot; responseCallback:^(id responseData) {
+           NSLog(@&quot;currentThread == %@&quot;,[NSThread currentThread]);
+           NSLog(@&quot;调用完JS后的回调：%@&quot;,responseData);
+        }];
+});
+</code></pre><p>前端使用实例如下，具体使用方法可以查看WebViewJavaScriptBridge。</p>
+<pre><code>function setupWebViewJavascriptBridge(callback) {
+    if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
+    if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
+    window.WVJBCallbacks = [callback];
+    var WVJBIframe = document.createElement(&apos;iframe&apos;);
+    WVJBIframe.style.display = &apos;none&apos;;
+    WVJBIframe.src = &apos;https://__bridge_loaded__&apos;;
+    document.documentElement.appendChild(WVJBIframe);
+    setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
+}
+
+setupWebViewJavascriptBridge(function(bridge) {
+
+    /* Initialize your app here */
+
+    bridge.registerHandler(&apos;JS Echo&apos;, function(data, responseCallback) {
+        console.log(&quot;JS Echo called with:&quot;, data)
+        responseCallback(data)
+    })
+    bridge.callHandler(&apos;ObjC Echo&apos;, {&apos;key&apos;:&apos;value&apos;}, function responseCallback(responseData) {
+        console.log(&quot;JS received response:&quot;, responseData)
+    })
+})
+</code></pre><h2 id="请求拦截"><a href="#请求拦截" class="headerlink" title="请求拦截"></a>请求拦截</h2><p>我们UIWebView在早期是使用- (BOOL)webView:(UIWebView <em>)webView shouldStartLoadWithRequest:(NSURLRequest </em>)request navigationType:(UIWebViewNavigationType)navigationType来根据scheme、host、pathComponents进行拦截做自定义逻辑处理。但是这种方法不是很灵活，于是就使用NSURLProtocol来进行拦截，例如微信拦截淘宝一样，直接显示一个提示。又或者是拦截请求调用本地的接口，打开相机、录音、相册等功能。还能直接拦截后改变原有的request，直接返回数据或者其他的url，在一些去除广告时可以的用得上。</p>
+<p>我们使用的时候必须要使用NSURLProtocol的子类来进行一些操作。并在使用前需要注册自定义的Class。拦截后记得进行标记一下，防止自循环多执行。可惜的是在WKWebView中不能进行拦截后处理的操作，只能监听却改变不了。源于WKWebView采用的是webkit加载，和系统的浏览器一样的机制。</p>
+<pre><code>// 子类
+@interface OMURLProtocol : NSURLProtocol&lt;NSURLSessionDataDelegate&gt;
+@property (nonatomic, strong) NSURLSession *session;
+@end
+
+// 注册
+[NSURLProtocol registerClass:[OMURLProtocol class]];
+// 1. 首先会在这里来进行拦截，返回YES则表示需要经过我们自定义处理，NO则走系统处理
++ (BOOL)canInitWithRequest:(NSURLRequest *)request;
+
+// 2.拦截处理将会进入下一个环节, 返回一个标准化的request，可以在这里进行重定向
++ (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request;
+
+// 3.是否成功拦截都会走这个方法, 可以在这里进行一些自定义处理
+- (void)startLoading;
+
+// 4. 任何网络请求都会走上面的拦截处理，即使我们重定向后还会再走一次或多次流程，需要标记来处理
+// 根据request获取标记值来决定是否需要拦截，在canInitWithRequest内处理
++ (nullable id)propertyForKey:(NSString *)key inRequest:(NSURLRequest *)request;
+// 标记
++ (void)setProperty:(id)value forKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
+// 移除标记
++ (void)removePropertyForKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
+</code></pre><h3 id="请求头或数据混乱问题"><a href="#请求头或数据混乱问题" class="headerlink" title="请求头或数据混乱问题"></a>请求头或数据混乱问题</h3><p>还需要注意的一点是，如果实现线了拦截处理的话，我们在使用AFN和URLSession进行访问的时候拦截会发现数据或请求头可能和你拦截处理后的数据或请求不符合预期，这是因为我们在拦截的时候只是先请求了A后请求了B，这是不符合预期的，虽然URLConnection不会但是已被废弃不值得提倡使用。我们通过在拦截的时候通过LLDB打印session中配置的协议时，发现是这样的没有包含我们自定义的协议，我们通过Runtime交换方法交换protocolClasses方法，我们实现我们自己的protocolClasses方法。但是为了保证系统原有的属性，我们应该在系统原有的协议表上加上我们的协议类。在当前我们虽然可以通过[NSURLSession sharedSession].configuration.protocolClasses;获取系统默认的协议类，但是如果我们在当前自定义的类里protocolClasses写的话会造成死循环，因为我们交换了该属性的getter方法。我们使用保存类名然后存储至NSUserDefaults，取值时在还原class。</p>
+<pre><code>po session.configuration.protocolClasses
+&lt;__NSArrayI 0x600001442d00&gt;(
+_NSURLHTTPProtocol,
+_NSURLDataProtocol,
+_NSURLFTPProtocol,
+_NSURLFileProtocol,
+NSAboutURLProtocol
+)
+
+
+--- // 自定义返回我们的协议类
+- (NSArray *)protocolClasses {
+    NSArray *originalProtocols = [OMURLProtocol readOriginalProtocols];
+    NSMutableArray *newProtocols = [NSMutableArray arrayWithArray:originalProtocols];
+    [newProtocols addObject:[OMURLProtocol class]];
+    return newProtocols;
+}
+
+// 我们再次打印时发现已经加上我们自定义的协议类了
+po session.configuration.protocolClasses
+&lt;__NSArrayM 0x60000041a4f0&gt;(
+_NSURLHTTPProtocol,
+_NSURLDataProtocol,
+_NSURLFTPProtocol,
+_NSURLFileProtocol,
+NSAboutURLProtocol,
+OMURLProtocol
+)
+</code></pre><hr>
+<pre><code>// 存储系统原有的协议类
++ (void)saveOriginalProtocols: (NSArray&lt;Class&gt; *)protocols{
+    NSMutableArray *protocolNameArray = [NSMutableArray array];
+    for (Class protocol in protocols){
+        [protocolNameArray addObject:NSStringFromClass(protocol)];
+    }
+    NSLog(@&quot;协议数组为： %@&quot;, protocolNameArray);
+    [[NSUserDefaults standardUserDefaults] setObject:protocolNameArray forKey:originalProtocolsKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+// 获取系统原有的协议类
++ (NSArray&lt;Class&gt; *)readOriginalProtocols{
+    NSArray *classNames = [[NSUserDefaults standardUserDefaults] valueForKey:originalProtocolsKey];
+    NSMutableArray *origianlProtocols = [NSMutableArray array];
+    for (NSString *name in classNames){
+        Class class = NSClassFromString(name);
+        [origianlProtocols addObject: class];
+    }
+    return origianlProtocols;
+}
+</code></pre><hr>
+<pre><code>+ (void)hookNSURLSessionConfiguration{
+    NSArray *originalProtocols = [NSURLSession sharedSession].configuration.protocolClasses;
+    [self saveOriginalProtocols:originalProtocols];
+    Class cls = NSClassFromString(@&quot;__NSCFURLSessionConfiguration&quot;) ?: NSClassFromString(@&quot;NSURLSessionConfiguration&quot;);
+    Method originalMethod = class_getInstanceMethod(cls, @selector(protocolClasses));
+    Method stubMethod = class_getInstanceMethod([self class], @selector(protocolClasses));
+    if (!originalMethod || !stubMethod) {
+        [NSException raise:NSInternalInconsistencyException format:@&quot;没有这个方法 无法交换&quot;];
+    }
+    method_exchangeImplementations(originalMethod, stubMethod);
+}
+</code></pre><h3 id="Cookie的携带问题"><a href="#Cookie的携带问题" class="headerlink" title="Cookie的携带问题"></a>Cookie的携带问题</h3><p>很多应用场景中需要使用session来进行处理，在UIWebView中很容易做到携带这些Cookie，但是由于WKWebView的机制不一样，跨域会出现丢失cookie的情况是很糟糕的。目前有两种用法：脚本和手动添加cookie。脚本不太靠谱，建议使用手动添加更为保险。</p>
+<p>// 使用脚本来添加cookie</p>
+<pre><code>// 获取去cookie数据
+- (NSString *)cookieString
+{
+    NSMutableString *script = [NSMutableString string];
+    [script appendString:@&quot;var cookieNames = document.cookie.split(&apos;; &apos;).map(function(cookie) { return cookie.split(&apos;=&apos;)[0] } );\n&quot;];
+    for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]) {
+
+        if ([cookie.value rangeOfString:@&quot;&apos;&quot;].location != NSNotFound) {
+            continue;
+        }
+        [script appendFormat:@&quot;if (cookieNames.indexOf(&apos;%@&apos;) == -1) { document.cookie=&apos;%@&apos;; };\n&quot;, cookie.name, cookie.kc_formatCookieString];
+    }
+    return script;
+}
+
+// 添加cookie
+WKUserScript * cookieScript = [[WKUserScript alloc] initWithSource:[self cookieString] injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
+[[[WKUserContentController alloc] init] addUserScript: cookieScript];
+</code></pre><p>// 添加一个分类来修复cookie丢失的问题</p>
+<pre><code>@interface NSURLRequest (Cookie)
+
+- (NSURLRequest *)fixCookie;
+
+@end
+
+@implementation NSURLRequest (Cookie)
+
+- (NSURLRequest *)fixCookie{
+    NSMutableURLRequest *fixedRequest;
+    if ([self isKindOfClass:[NSMutableURLRequest class]]) {
+        fixedRequest = (NSMutableURLRequest *)self;
+    } else {
+        fixedRequest = self.mutableCopy;
+    }
+    //防止Cookie丢失
+    NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:[NSHTTPCookieStorage sharedHTTPCookieStorage].cookies];
+    if (dict.count) {
+        NSMutableDictionary *mDict = self.allHTTPHeaderFields.mutableCopy;
+        [mDict setValuesForKeysWithDictionary:dict];
+        fixedRequest.allHTTPHeaderFields = mDict;
+    }
+    return fixedRequest;
+}
+
+@end
+
+
+  // 使用场景
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+    [navigationAction.request fixCookie];
+    decisionHandler(WKNavigationActionPolicyAllow);
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/05/迁至WKWebView跨过的那些坑/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-大型互联网公司分布式ID方案总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2676,164 +3007,6 @@ NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富�
 
 
   
-    <article id="post-iOS适配Dark模式（swift）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/29/iOS适配Dark模式（swift）/">iOS适配Dark模式（swift）</a>
-    </h1>
-  
-
-        
-        <a href="/2019/08/29/iOS适配Dark模式（swift）/" class="archive-article-date">
-  	<time datetime="2019-08-29T04:04:01.216Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天的 WWDC 19 上发布了 iOS 13，我们来看下如何适配 DarkMode</p>
-<p>DarkMode 主要从两个方面来适配，一是颜色，二是图片，适配的代码不是很多，接下来让我们一起来看看具体是怎么操作的吧。</p>
-<h2 id="颜色"><a href="#颜色" class="headerlink" title="颜色"></a>颜色</h2><p>iOS 13 之前 UIColor 只能表示一种颜色，从 iOS 13 开始 UIColor 是一个动态的颜色，它可以在 LightMode 和 DarkMode 拥有不同的颜色。</p>
-<p>iOS 13 下 UIColor 增加了很多动态颜色，我们来看下用系统提供的颜色能实现怎么样的效果。</p>
-<pre><code>// UIColor 增加的颜色
-@available(iOS 13.0, *)
-open class var systemBackground: UIColor { get }
-@available(iOS 13.0, *)
-open class var label: UIColor { get }
-@available(iOS 13.0, *)
-open class var placeholderText: UIColor { get }
-...
-
-view.backgroundColor = UIColor.systemBackground
-label.textColor = UIColor.label
-placeholderLabel.textColor = UIColor.placeholderText
-</code></pre><p><img src="http://img.wangjungang.cn/4k9GcY.png" alt=""></p>
-<p>怎么样，看起来和 iOS 13 之前设置一个颜色的方法一样吧，用这种动态颜色，系统直接替我们完成了适配的工作，是不是很方便呢。</p>
-<h3 id="如何自己创建一个动态的-UIColor"><a href="#如何自己创建一个动态的-UIColor" class="headerlink" title="如何自己创建一个动态的 UIColor"></a>如何自己创建一个动态的 UIColor</h3><p>上面我们说到系统提供了一些动态的颜色供我们使用，但是在正常开发中，系统提供的颜色肯定是不够用的，所以我们要自己创建动态颜色。</p>
-<p>iOS 13 下 UIColor 增加了一个初始化方法，我们可以用这个初始化方法来创建动态颜色。</p>
-<pre><code>@available(iOS 13.0, *)
-public init(dynamicProvider: @escaping (UITraitCollection) -&gt; UIColor)
-</code></pre><p>这个方法要求传一个闭包进去，当系统从 LightMode 和 DarkMode 之间切换的时候就会触发这个回调。</p>
-<p>这个闭包返回一个 UITraitCollection 类，我们要用这个类的 userInterfaceStyle 属性。<br>userInterfaceStyle 是一个枚举，声明如下</p>
-<pre><code>@available(iOS 12.0, *)
-public enum UIUserInterfaceStyle : Int {
-    case unspecified
-    case light
-    case dark
-}
-</code></pre><p>这个枚举会告诉我们当前是 LightMode or DarkMode</p>
-<p>现在我们创建两个 UIColor 并赋值给 view.backgroundColor 和 label，代码如下</p>
-<h2 id="图片适配"><a href="#图片适配" class="headerlink" title="图片适配"></a>图片适配</h2><p>打开 Assets.xcassets 把图片拖拽进去，我们可以看到这样的页面</p>
-<p><img src="http://img.wangjungang.cn/TfjhVe.png" alt=""></p>
-<p>然后我们在右侧工具栏中点击最后一栏，点击 Appearances 选择 Any, Dark，如图所示</p>
-<p><img src="http://img.wangjungang.cn/odW7Fi.png" alt=""></p>
-<p>我们把 DarkMode 的图片拖进去，如图所示</p>
-<p><img src="http://img.wangjungang.cn/rUnCyF.png" alt=""></p>
-<p>最后我们加上 ImageView 的代码</p>
-<pre><code>imageView.image = UIImage(named: &quot;icon&quot;)
-</code></pre><p>现在我们就已经完成颜色和图片的 DarkMode 适配，是不是很简单呢 (手动滑稽)</p>
-<h2 id="如何获取当前模式-Light-or-Dark"><a href="#如何获取当前模式-Light-or-Dark" class="headerlink" title="如何获取当前模式 (Light or Dark)"></a>如何获取当前模式 (Light or Dark)</h2><p>我们可以看到，不管是颜色还是图片，适配都是系统完成的，我们不用关心现在是什么样的样式。</p>
-<p>但是在某些场景下，我们可能会有根据当前样式来做一些其他适配的需求，这时我们就需要知道现在什么样式。</p>
-<p>我们可以在 UIViewController 或 UIView 中调用 traitCollection.userInterfaceStyle 来获取当前视图的样式，代码如下</p>
-<pre><code>if trainCollection.userInterfaceStyle == .dark {
-    // Dark
-} else {
-    // Light
-}
-</code></pre><p>那么我们什么时候需要用这样的方法做适配呢，比如说当我们使用 CGColor 的时候，上面说到 UIColor 在 iOS 13 下变成了一个动态颜色，但是 CGColor 仍然只能表示单一的颜色，所以当我们使用到 CGColor 的时候，我们就可以用上面的方法做适配。</p>
-<h3 id="颜色-1"><a href="#颜色-1" class="headerlink" title="颜色"></a>颜色</h3><p>对于 CGColor 我们还有还有另一种适配方法，代码如下</p>
-<pre><code>let resolvedColor = labelColor.resolvedColor(with: traitCollection)
-layer.borderColor = resolvedColor.cgColor
-</code></pre><p>resolvedColor 方法会根据传递进去的 traitCollection 返回对应的颜色。</p>
-<h3 id="对于-UIImage-我们也有类似的方法，代码如下"><a href="#对于-UIImage-我们也有类似的方法，代码如下" class="headerlink" title="对于 UIImage 我们也有类似的方法，代码如下"></a>对于 UIImage 我们也有类似的方法，代码如下</h3><pre><code>let image = UIImage(named: &quot;icon&quot;)
-let resovledImage = image?.imageAsset?.image(with: traitCollection)
-</code></pre><h2 id="如何监听模式变化"><a href="#如何监听模式变化" class="headerlink" title="如何监听模式变化"></a>如何监听模式变化</h2><p>上面我们说了如何获取当前模式，但是我们要搭配监听方法一起使用，当 light dark 模式切换的时候，要把上面的代码再执行一遍。系统为我们提供了一个回调方法，当 light dark 切换时就会触发这个方法。</p>
-<pre><code>override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-    super.traitCollectionDidChange(previousTraitCollection)
-    if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-        // 适配代码
-    }
-}
-</code></pre><p>题外话<br>如果你觉得这样为 CGColor 做适配很麻烦，那么不妨试试 XYColor 这个框架。</p>
-<h2 id="如何改变当前模式"><a href="#如何改变当前模式" class="headerlink" title="如何改变当前模式"></a>如何改变当前模式</h2><p>我们可以看到在动图中是直接改系统的模式，从而让 App 的模式修改，但是对于某些有夜间模式功能的 App 来说，如果用户打开了夜间模式，那么即使现在系统是 light 模式，也要强制用 dark 模式。</p>
-<p>我们可以用以下代码将当前 UIViewController 或 UIView 的模式。</p>
-<pre><code>overrideUserInterfaceStyle = .dark
-print(traitCollection.userInterfaceStyle)  // dark
-</code></pre><p>我们可以看到设置了 overrideUserInterfaceStyle 之后，traitCollection.userInterfaceStyle 就是我们设置后的模式了。</p>
-<h4 id="需要给每一个-Controller-和-View-都设置一遍吗"><a href="#需要给每一个-Controller-和-View-都设置一遍吗" class="headerlink" title="需要给每一个 Controller 和 View 都设置一遍吗"></a>需要给每一个 Controller 和 View 都设置一遍吗</h4><p>答案是不需要，我们先来看一张图。</p>
-<p><img src="http://img.wangjungang.cn/FtsSoE.png" alt=""></p>
-<p>当我们设置一个 controller 为 dark 之后，这个 controller 下的 view，都会是 dark mode，但是后续推出的 controller 仍然是跟随系统的样式。</p>
-<p>因为苹果对 overrideUserInterfaceStyle 属性的解释是这样的。</p>
-<p>当我们在一个普通的 controlle, view 上重写这个属性，只会影响当前的视图，不会影响前面的 controller 和后续推出的  controller。</p>
-<p>但是当我们在 window 上设置 overrideUserInterfaceStyle 的时候，就会影响 window 下所有的 controller, view，包括后续推出的 controller。</p>
-<p>我们回到刚刚的问题上，如果 App 打开夜间模式，那么很简单我们只需要设置 window 的 overrideUserInterfaceStyle 属性就好了。</p>
-<p>题外话： 当我们用 Xcode11 创建项目，我们会发现项目结构发生了变化，window 从 AppDelegate 移到 SceneDelegate 中。那么如何获取 SceneDelegate 中的 window 呢，代码如下</p>
-<pre><code>// 这里就简单介绍一下，实际项目中，如果是iOS应用这么写没问题，但是对于iPadOS应用还需要判断scene的状态是否激活
-let scene = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
-scene?.window?.overrideUserInterfaceStyle = .dark
-</code></pre><h2 id="其他内容"><a href="#其他内容" class="headerlink" title="其他内容"></a>其他内容</h2><h3 id="Status-Bar"><a href="#Status-Bar" class="headerlink" title="Status Bar"></a>Status Bar</h3><p>之前 Status Bar 有两种状态，default 和 lightContent</p>
-<p>现在 Status Bar 有三种状态，default,  darkContent 和 lightContent</p>
-<p>现在的 darkContent 对应之前的 default，现在的 default 会根据情况自动选择 darkContent 和 lightContent</p>
-<h3 id="UIActivityIndicatorView"><a href="#UIActivityIndicatorView" class="headerlink" title="UIActivityIndicatorView"></a>UIActivityIndicatorView</h3><p>之前的 UIActivityIndicatorView 有三种 style 分别为 whiteLarge, white 和 gray，现在全部废弃。</p>
-<p>增加两种 style 分别为 medium 和 large，指示器颜色用 color 属性修改。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/29/iOS适配Dark模式（swift）/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -2951,10 +3124,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
@@ -2984,6 +3153,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
