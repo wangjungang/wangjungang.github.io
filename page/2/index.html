@@ -152,6 +152,186 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Git的各种撤销" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/06/Git的各种撤销/">Git的各种撤销</a>
+    </h1>
+  
+
+        
+        <a href="/2020/03/06/Git的各种撤销/" class="archive-article-date">
+  	<time datetime="2020-03-06T03:19:08.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Git各种撤销操作"><a href="#Git各种撤销操作" class="headerlink" title="Git各种撤销操作"></a>Git各种撤销操作</h3><hr>
+<h4 id="1-git-checkout-–-file"><a href="#1-git-checkout-–-file" class="headerlink" title="1,  git checkout – file"></a>1,  git checkout – file</h4><p>可以撤销add和commit之后的文件</p>
+<pre><code>git checkout -- a.txt
+</code></pre><h4 id="2-git-checkout-branch-a-txt"><a href="#2-git-checkout-branch-a-txt" class="headerlink" title="2,  git checkout branch a.txt"></a>2,  git checkout branch a.txt</h4><p>用另外一个分支的文件替换当前分支的文件</p>
+<pre><code>git checkout master a.txt
+</code></pre><h4 id="3-git-rm-a-txt"><a href="#3-git-rm-a-txt" class="headerlink" title="3, git rm a.txt"></a>3, git rm a.txt</h4><p>直接删除某个文件</p>
+<pre><code>git rm a.txt
+git commit -m &quot;del a.txt&quot;
+</code></pre><h4 id="4，-git-reset-–soft-–mixed-–hard-lt-commit-id-gt"><a href="#4，-git-reset-–soft-–mixed-–hard-lt-commit-id-gt" class="headerlink" title="4， git reset –soft|–mixed|–hard &lt;commit_id&gt;"></a>4， git reset –soft|–mixed|–hard &lt;commit_id&gt;</h4><p>回退到某一个提交</p>
+<p>1.第一种情况：还没有push，只是在本地commit</p>
+<pre><code>这里的&lt;commit_id&gt;就是每次commit的SHA-1，可以在log里查看到
+--mixed    会保留源码,只是将git commit和index 信息回退到了某个版本.
+--soft   保留源码,只回退到commit信息到某个版本.不涉及index的回退,如果还需要提交,直接commit即可.
+--hard    源码也会回退到某个版本,commit和index 都会回退到某个版本.(注意,这种方式是改变本地代码仓库源码)
+</code></pre><p>简单总结一下，其实就是–soft 、–mixed以及–hard是三个恢复等级。使用–soft就仅仅将头指针恢复，已经add的缓存以及工作空间的所有东西都不变。如果使用–mixed，就将头恢复掉，已经add的缓存也会丢失掉，工作空间的代码什么的是不变的。如果使用–hard，那么一切就全都恢复了，头变，aad的缓存消失，代码什么的也恢复到以前状态。</p>
+<pre><code>git log
+// 如果没有你想要的就在冒号状态下一直回车，退出是在冒号下输入q
+git reset --hard f185d0ec
+git push -f
+// 强制提交
+
+// 如果又后悔了，想回到最新的
+git reflog
+// 重复上边的步骤
+</code></pre><p>2.commit push 代码已经更新到远程仓库</p>
+<pre><code>git revert &lt;commit_id&gt;
+git push -f
+</code></pre><p>revert 之后你的本地代码会回滚到指定的历史版本,这时你再 git push 既可以把线上的代码更新。<br>注意：git revert是用一次新的commit来回滚之前的commit，git reset是直接删除指定的commit，看似达到的效果是一样的,其实完全不同。</p>
+<p>第一:上面我们说的如果你已经push到线上代码库, reset 删除指定commit以后,你git push可能导致一大堆冲突.但是revert 并不会.</p>
+<p>第二:如果在日后现有分支和历史分支需要合并的时候,reset 恢复部分的代码依然会出现在历史分支里.但是revert 方向提交的commit 并不会出现在历史分支里.</p>
+<p>第三:reset 是在正常的commit历史中,删除了指定的commit,这时 HEAD 是向后移动了,而 revert 是在正常的commit历史中再commit一次,只不过是反向提交,他的 HEAD 是一直向前的.</p>
+<h4 id="5-git-reset-HEAD-1"><a href="#5-git-reset-HEAD-1" class="headerlink" title="5, git reset HEAD~1"></a>5, git reset HEAD~1</h4><p>按提交步骤回退,~后边的数字是回退几次命令<br>(假如merge了一个其他的分支并提交）</p>
+<pre><code>git merge branch2
+git push
+
+// 现在要撤回
+
+git reset HEAD~1
+git checkout .
+// 如果只是个别文件可以git checkout aa.txt bb.txt
+git push -f
+</code></pre><h4 id="6-git-rebase-–onto-baseBranch-from-to"><a href="#6-git-rebase-–onto-baseBranch-from-to" class="headerlink" title="6, git rebase –onto baseBranch from to"></a>6, git rebase –onto baseBranch from to</h4><p>删除中间的某次commit</p>
+<p>我们先提交几次记录</p>
+<pre><code>git log
+</code></pre><p>我们会看到如下信息</p>
+<pre><code>commit aa1f22523b7c27c692a59588a72d396a97ae04be (HEAD -&gt; branch2)
+Author:
+Date:   Tue Jul 10 21:34:55 2018 +0800
+
+    4
+
+commit cb10df56ea102a558c24625e4ebbb296e0b9d1e8
+Author:
+Date:   Tue Jul 10 21:34:38 2018 +0800
+
+    3
+
+commit 6407cefa0631920cfe8e12bfebc5f1f72c373b07
+Author
+Date:   Tue Jul 10 21:34:24 2018 +0800
+
+    2
+
+commit 3427ac34d38fb6bb06cfd222896e7e3a7a837219
+Author:
+Date:   Tue Jul 10 21:34:10 2018 +0800
+</code></pre><p>我们要删掉3的那次commit，我所在的分支是branch2，–onto后边第一个参数是base，也就是要删掉的commit的上一个commit，</p>
+<p>第二个参数是我们要拼接的commit起始位置，第三个是结束位置</p>
+<p>~表示分支的上一次或者上几次commit</p>
+<pre><code>git rebase --onto branch2~3 branch2~1 branch2
+
+执行完会发现冲突，这时候删掉第3次commit的代码，解决完冲突，然后恢复到最后一次commit
+git add .
+git rebase --continue
+</code></pre><p>再git log，会发现，第三次commit已经没有了</p>
+<pre><code>commit 20586673a513c53709f1e75f786e501c62d6537d (HEAD -&gt; branch2)
+Author: 
+Date:   Tue Jul 10 21:34:55 2018 +0800
+
+    4
+
+commit 6407cefa0631920cfe8e12bfebc5f1f72c373b07
+Author: 
+Date:   Tue Jul 10 21:34:24 2018 +0800
+
+    2
+
+commit 3427ac34d38fb6bb06cfd222896e7e3a7a837219
+Author: 
+Date:   Tue Jul 10 21:34:10 2018 +0800
+
+    1
+</code></pre><h4 id="7，git-commit-–amend"><a href="#7，git-commit-–amend" class="headerlink" title="7，git commit –amend"></a>7，git commit –amend</h4><pre><code>git commit --amend
+</code></pre><p>此时处于vim状态，按c开始编辑，修改完按esc退出编辑，连续按两次大写Z，退出</p>
+<p>修改之前几次的<br>比如要修改的commit是倒数第三条，使用下述命令：</p>
+<pre><code>git rebase -i HEAD~3
+把pick改为edit
+然后 :wq
+git commit --amend
+退出保存 :wq，然后回到正常状态
+git rebase --continue
+git push -f 推送到服务端
+</code></pre><h4 id="8-git-merge-–squash-branch"><a href="#8-git-merge-–squash-branch" class="headerlink" title="8, git merge –squash branch"></a>8, git merge –squash branch</h4><p>合并的时候不想携带分支的commit信息，合并到master的时候只会留下一条信息</p>
+<pre><code>git merge --squash branch
+git add .
+ git commit -m &quot;merge branch&quot;
+git push
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Git</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/03/06/Git的各种撤销/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-史上最强无痕埋点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2370,282 +2550,6 @@ StoryBoard name: 这个Scene使用的哪个storyboard。
 
 
   
-    <article id="post-RxSwift + MJRefresh 自动管理刷新状态" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/">RxSwift + MJRefresh 自动管理刷新状态</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/" class="archive-article-date">
-  	<time datetime="2019-09-26T02:29:03.451Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><p>首先定义一个有关刷新状态的枚举类型：</p>
-<pre><code>/// 可按照自己的需求添加，由于我没有用到 mj_footer.beginRefreshing()，
-/// 所以没有定义相关的枚举。
-enum RefreshStatus {
-    case none
-    case beingHeaderRefresh
-    case endHeaderRefresh
-    case endFooterRefresh
-    // 这个枚举由于在我项目中经常用到，所以我定一个关联值的枚举。
-    // 项目中需要：
-    //  - 数据为空的时候隐藏 `mj_footer`，否则显示；
-    //  - 然后判断没有更多数据就调用 `endRefreshingWithNoMoreData()`
-    //    否则 `endRefreshing()`
-    case footerStatus(isHidden: Bool, isNoMoreData: Bool)
-}
-</code></pre><p>无需过多纠结，后面会演示枚举如何使用。</p>
-<h2 id="BehaviorSubject"><a href="#BehaviorSubject" class="headerlink" title="BehaviorSubject"></a>BehaviorSubject</h2><p> 接下来要介绍一个跟 RxSwift 有关的一个类型 BehaviorSubject，我们会在文章用到它。</p>
-<p>  BehaviorSubject 向所有订阅者发布事件，并向新的订阅者提供最近（或最初）的值。</p>
-<p>  怎么理解？来看看代码：<br>  <br>      func addObserver(_ id: String) -&gt; Disposable {<br>        return subscribe { print(“Subscription:”, id, “Event:”, $0) }<br>    }</p>
-<pre><code>let disposeBag = DisposeBag()
-let subject = BehaviorSubject(value: &quot;🔴&quot;)
-
-subject.addObserver(&quot;1&quot;).disposed(by: disposeBag)
-subject.onNext(&quot;🐶&quot;)
-subject.onNext(&quot;🐱&quot;)
-
-subject.addObserver(&quot;2&quot;).disposed(by: disposeBag)
-subject.onNext(&quot;🅰️&quot;)
-subject.onNext(&quot;🅱️&quot;)
-
-/**
-Subscription: 1 Event: next(🔴)
-Subscription: 1 Event: next(🐶)
-Subscription: 1 Event: next(🐱)
-Subscription: 2 Event: next(🐱)
-Subscription: 1 Event: next(🅰️)
-Subscription: 2 Event: next(🅰️)
-Subscription: 1 Event: next(🅱️)
-Subscription: 2 Event: next(🅱️)
-Subscription: 1 Event: next(🍐)
-Subscription: 2 Event: next(🍐)
-Subscription: 1 Event: next(🍊)
-Subscription: 2 Event: next(🍊)
-*/
-</code></pre><p>总结一下：BehaviorSubject 从上至下接收它发出的最新（原始值也属于发出的事件元素）值。并向新的订阅者提供最新值，所以这里我们 订阅2号 会接收到前面发出的最新元素，稍后才是 订阅2号 自己发出的元素事件。</p>
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p> 好了，下面我们就用上面学到的所有知识来写一个自动管理刷新状态案例。<br> 假设有这样一个需求：<br>  <br>  <br>    // ViewController.swift</p>
-<pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
-// 不传参数则不创建。自动管理刷新状态。
-viewModel.refreshStatusBind(to: tableView, {
-    // 处理头部刷新。
-}) {
-    // 处理尾部刷新。
-}.disposed(by: bag)
-</code></pre><p>如何做到这一点？看到方法是从 viewModel 里面调出来的，那我们就去 viewModel 里面看一看究竟。</p>
-<pre><code>class ViewModel: Refreshable {
-
-    lazy var list = Variable&lt;[MnlDakaCommentModel]&gt;([])
-    let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
-    let reload = PublishSubject&lt;Bool&gt;()
-    let bag = DisposeBag()
-
-    init() {
-        reload.subscribe(onNext: { [weak self] (isDown) in
-            guard let `self` = self else {
-                return
-            }
-            // 发送请求
-            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
-                let list = result.value?[&quot;list&quot;].arrayObject
-                let models = decode([MnlDakaCommentModel].self, from: list) ?? []
-            }
-        }
-    }
-}
-</code></pre><p> 这里你就知道了吧？任何实现 Refreshable 必须实现 refreshStatus 属性，如果你足够眼尖应该看到，上面的 ViewModel 同样定义一个类型一样 refreshStatus 属性，为的就是实现协议中规定的属性。</p>
-<p>  好了，有个这个属性之后，我们就可以愉快的管理刷新状态了，比如想让它结束刷新，我们可以拿到 refreshStatus 属性，比如在 ViewModel 里，我们可以这样：</p>
-<pre><code>// 发送请求
-MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
-    let list = result.value?[&quot;list&quot;].arrayObject
-    let models = decode([MnlDakaCommentModel].self, from: list) ?? []
-    // 请求完成需要结束刷新：
-    // refreshStatus.onNext(.endFooterRefresh)
-    // 或者判断没有更多数据时：
-    // refreshStatus.onNext(isHidden: false, isNoMoreData: true)
-}
-</code></pre><p> 这时你肯定问了，凭什么我这样发送消息就可以管理刷新状态了？你逗我呢？之前讲 BehaviorSubject 的时候不是有讲到订阅 (subscribe) 吗？既然这里发送消息了，肯定会在接收到发出的元素的时候做了什么处理吧？</p>
-<p>  问得好！问得非常好！问得太————好了。好吧，我老实交代，就来说下接收到元素时我都做了什么？<br>  <br>      extension Refreshable {</p>
-<pre><code>    func refreshStatusBind(to scrollView: UIScrollView, _ header: (() -&gt; Void)? = nil, _ footer: (() -&gt; Void)? = nil) -&gt; Disposable {
-
-        if header != nil {
-            scrollView.mj_header = MJRefreshNormalHeader {
-                // 处理头部方法时结束尾部刷新。
-                scrollView.mj_footer?.endRefreshing()
-                header?()
-            }
-        }
-        if footer != nil {
-            scrollView.mj_footer = MJRefreshAutoNormalFooter {
-                // 处理尾部方法时结束头部刷新。
-                scrollView.mj_header?.endRefreshing()
-                footer?()
-            }
-        }
-
-        return refreshStatus.subscribe(onNext: { (status) in
-            switch status {
-            case .none:
-                // 未发生任何状态事件时隐藏尾部。
-                scrollView.mj_footer?.isHidden = true
-            case .beginHeaderRefresh:
-                scrollView.mj_header?.beginRefreshing()
-            case .endHeaderRefresh:
-                scrollView.mj_header?.endRefreshing()
-            case .endFooterRefresh:
-                scrollView.mj_footer?.endRefreshing()
-            case .endAllRefresh:
-                // 结束全部拉刷新
-                scrollView.mj_header?.endRefreshing()
-                scrollView.mj_footer?.endRefreshing()
-            case .footerStatus(let isHidden, let isNone):
-                // 根据关联值确定 footer 的状态。
-                scrollView.mj_footer?.isHidden = isHidden
-                // 处理尾部状态时，如果之前正在刷新头部，则结束刷新，
-                // 至此，我们无需写判断结束头部刷新的代码，在这里自动处理。
-                scrollView.mj_header?.endRefreshing()
-                if isNone {
-                    scrollView.mj_footer?.endRefreshingWithNoMoreData()
-                }else {
-                    scrollView.mj_footer?.endRefreshing()
-                }
-            }
-        })
-    }
-}
-</code></pre><p>给 Refreshable 加一个扩展，我们先来看方法的第一部分：创建头部和尾部刷新控件。这段代码很容易看懂，结合前面放在 ViewController.swift 里的代码：</p>
-<pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
-// 不传参数则不创建。自动管理刷新状态。
-viewModel.refreshStatusBind(to: tableView, {
-    // 处理头部刷新。
-}) {
-    // 处理尾部刷新。
-}.disposed(by: bag)
-</code></pre><p> 无非就是传闭包参数的时候创建对应的刷新控件，并把传进去的闭包作为控件的刷新事件。因为我已经把 UIScrollView 作为参数传进来了，所以可以直接拿到它创建刷新控件。</p>
-<p>  在到第二部分，这就是一个真正监听状态改变的部分了，是根据发出的消息做出改变的反应。这样，我们在 ViewModel 里发送消息，这里就能接收到并作出对应的改变。
-  </p>
-<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><h3 id="ViewController-swift"><a href="#ViewController-swift" class="headerlink" title="ViewController.swift"></a>ViewController.swift</h3><pre><code>import UIKit
-import RxSwift
-
-class ViewController: UITableViewController {
-
-    lazy var viewModel = ViewModel()
-    let bag = DisposeBag()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        /// 创建刷新控件。
-        viewModel.refreshStatusBind(to: tableView, { [weak self] in
-            // 处理头部刷新。
-            self?.viewModel.reload.onNext(false)
-        }) { [weak self] in
-            // 处理尾部刷新。
-            self?.viewModel.reload.onNext(true)
-        }.disposed(by: bag)
-
-        // 给 viewModel 中的 reload 发送消息，让其请求数据。
-        // 参数 Bool 表示是否上拉。
-        viewModel.reload.onNext(false)
-    }
-}
-</code></pre><h3 id="ViewModel-swift"><a href="#ViewModel-swift" class="headerlink" title="ViewModel.swift"></a>ViewModel.swift</h3><pre><code>import UIKit
-import RxSwift
-
-class ViewModel: Refreshable {
-
-    lazy var list = Variable&lt;[Model]&gt;([])
-    let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
-    let reload = PublishSubject&lt;Bool&gt;()
-    let bag = DisposeBag()
-
-    init() {
-        reload.subscribe(onNext: { [weak self] (isReload) in
-
-            guard let `self` = self else {
-                return
-            }
-
-            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in
-
-                let list = result.value?[&quot;list&quot;].arrayObject
-                let models = decode([MnlDakaCommentModel].self, from: list) ?? []
-
-                self.list.value = isReload ? models : self.list.value + models
-
-                let count = result.value?[&quot;count&quot;].int ?? 0
-                // 发送刷新状态给订阅者，让其作出改变。
-                // 如果列表个数和总数相等，则判断它为没有更多数据。
-                self.refreshStatus.onNext(.footerStatus(isHidden: self.list.value.isEmpty,
-                                                        isNoMoreData: self.list.value.count == count))
-            }
-        }).disposed(by: bag)
-    }
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -2759,7 +2663,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2767,7 +2671,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2791,11 +2695,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2815,11 +2719,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
