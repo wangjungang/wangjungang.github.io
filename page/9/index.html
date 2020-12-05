@@ -152,6 +152,220 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-JavaBean及其用法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/21/JavaBean及其用法/">JavaBean及其用法</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/21/JavaBean及其用法/" class="archive-article-date">
+  	<time datetime="2019-02-21T06:56:55.198Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>JavaBean是一个遵循特定写法的Java类，它通常具有如下特点：</p>
+<ul>
+<li>这个Java类必须具有一个无参的构造函数</li>
+<li>属性必须私有化。</li>
+<li>私有化的属性必须通过public类型的方法暴露给其它程序，并且方法的命名也必须遵守一定的命名规范。</li>
+</ul>
+<p>JavaBean的范例</p>
+<pre><code>package gacl.javabean.study;
+
+/**
+ * @author gacl
+ * Person类就是一个最简单的JavaBean
+ */
+public class Person {
+
+    //------------------Person类封装的私有属性---------------------------------------
+    // 姓名 String类型
+    private String name;
+    // 性别 String类型
+    private String sex;
+    // 年龄 int类型
+    private int age;
+    //是否已婚 boolean类型
+    private boolean married;
+    //---------------------------------------------------------
+
+    //------------------Person类的无参数构造方法---------------------------------------
+    /**
+     * 无参数构造方法
+     */
+    public Person() {
+
+    }
+    //---------------------------------------------------------
+
+    //------------------Person类对外提供的用于访问私有属性的public方法---------------------------------------
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public boolean isMarried() {
+        return married;
+    }
+
+    public void setMarried(boolean married) {
+        this.married = married;
+    }
+    //---------------------------------------------------------
+}
+</code></pre><p>　　JavaBean在J2EE开发中，通常用于封装数据，对于遵循以上写法的JavaBean组件，其它程序可以通过反射技术实例化JavaBean对象，并且通过反射那些遵守命名规范的方法，从而获知JavaBean的属性，进而调用其属性保存数据。
+　　
+　</p>
+<h2 id="JavaBean的属性"><a href="#JavaBean的属性" class="headerlink" title="JavaBean的属性"></a>JavaBean的属性</h2><p>JavaBean的属性可以是任意类型，并且一个JavaBean可以有多个属性。每个属性通常都需要具有相应的setter、 getter方法，setter方法称为属性修改器，getter方法称为属性访问器。</p>
+<p>　属性修改器必须以小写的set前缀开始，后跟属性名，且属性名的第一个字母要改为大写，例如，name属性的修改器名称为setName，password属性的修改器名称为setPassword。<br>　<br>　　属性访问器通常以小写的get前缀开始，后跟属性名，且属性名的第一个字母也要改为大写，例如，name属性的访问器名称为getName，password属性的访问器名称为getPassword。<br>　　<br>　　一个JavaBean的某个属性也可以只有set方法或get方法，这样的属性通常也称之为只写、只读属性。
+　　</p>
+<h2 id="在JSP中使用JavaBean"><a href="#在JSP中使用JavaBean" class="headerlink" title="在JSP中使用JavaBean"></a>在JSP中使用JavaBean</h2><p>JSP技术提供了三个关于JavaBean组件的动作元素，即JSP标签，它们分别为：</p>
+<ul>
+<li><a href="jsp:useBean" target="_blank" rel="noopener">jsp:useBean</a>标签：用于在JSP页面中查找或实例化一个JavaBean组件。</li>
+<li><a href="jsp:setProperty" target="_blank" rel="noopener">jsp:setProperty</a>标签：用于在JSP页面中设置一个JavaBean组件的属性。</li>
+<li><a href="jsp:getProperty" target="_blank" rel="noopener">jsp:getProperty</a>标签：用于在JSP页面中获取一个JavaBean组件的属性。</li>
+</ul>
+<h3 id="jsp-useBean标签"><a href="#jsp-useBean标签" class="headerlink" title="jsp:useBean标签"></a><a href="jsp:useBean" target="_blank" rel="noopener">jsp:useBean</a>标签</h3><p><a href="jsp:useBean" target="_blank" rel="noopener">jsp:useBean</a>标签用于在指定的域范围内查找指定名称的JavaBean对象，如果存在则直接返回该JavaBean对象的引用，如果不存在则实例化一个新的JavaBean对象并将它以指定的名称存储到指定的域范围中。 </p>
+<p>　常用语法：<br>　<br>&lt;jsp:useBean id=”beanName” class=”package.class” scope=”page|request|session|application”/&gt;</p>
+<p>“id”属性用于指定JavaBean实例对象的引用名称和其存储在域范围中的名称。<br>　　<br>“class”属性用于指定JavaBean的完整类名（即必须带有包名）。<br>　　<br>“scope”属性用于指定JavaBean实例对象所存储的域范围，其取值只能是page、request、session和application等四个值中的一个，其默认值是page。</p>
+<p><a href="jsp:useBean" target="_blank" rel="noopener">jsp:useBean</a>标签使用范例：</p>
+<pre><code>&lt;%@ page language=&quot;java&quot; import=&quot;java.util.*&quot; pageEncoding=&quot;UTF-8&quot;%&gt;
+&lt;%--
+在jsp中使用jsp:useBean标签来实例化一个Java类的对象
+&lt;jsp:useBean id=&quot;person&quot; class=&quot;gacl.javabean.study.Person&quot; scope=&quot;page&quot;/&gt;
+    ┝&lt;jsp:useBean&gt;：表示在JSP中要使用JavaBean。
+    ┝id:表示生成的实例化对象，凡是在标签中看见了id，则肯定表示一个实例对象。
+    ┝class：此对象对应的包.类名称
+    ┝scope：此javaBean的保存范围，四种范围：page、request、session、application
+--%&gt;
+&lt;jsp:useBean id=&quot;person&quot; class=&quot;gacl.javabean.study.Person&quot; scope=&quot;page&quot;/&gt;
+&lt;%
+    //person对象在上面已经使用jsp:useBean标签实例化了，因此在这里可以直接使用person对象
+    //使用setXxx方法为对象的属性赋值
+    //为person对象的name属性赋值
+    person.setName(&quot;孤傲苍狼&quot;);
+    //为person对象的Sex属性赋值
+    person.setSex(&quot;男&quot;);
+    //为person对象的Age属性赋值
+    person.setAge(24);
+    //为person对象的married属性赋值
+    person.setMarried(false);
+%&gt;
+&lt;!DOCTYPE HTML&gt;
+&lt;html&gt;
+  &lt;head&gt;
+    &lt;title&gt;jsp:useBean标签使用范例&lt;/title&gt;
+  &lt;/head&gt;
+
+  &lt;body&gt;
+    &lt;%--使用getXxx()方法获取对象的属性值 --%&gt;
+    &lt;h2&gt;姓名：&lt;%=person.getName()%&gt;&lt;/h2&gt;
+    &lt;h2&gt;性别：&lt;%=person.getSex()%&gt;&lt;/h2&gt;
+    &lt;h2&gt;年龄：&lt;%=person.getAge()%&gt;&lt;/h2&gt;
+    &lt;h2&gt;已婚：&lt;%=person.isMarried()%&gt;&lt;/h2&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><h3 id="jsp-setProperty标签"><a href="#jsp-setProperty标签" class="headerlink" title="jsp:setProperty标签"></a><a href="jsp:setProperty" target="_blank" rel="noopener">jsp:setProperty</a>标签</h3><p><a href="jsp:setProperty" target="_blank" rel="noopener">jsp:setProperty</a>标签用于设置和访问JavaBean对象的属性。</p>
+<p>语法格式一：</p>
+<pre><code>&lt;jsp:setProperty name=&quot;beanName&quot; property=&quot;propertyName value=&quot;string字符串&quot;/&gt;
+</code></pre><p>语法格式二：</p>
+<pre><code>&lt;jsp:setProperty name=&quot;beanName&quot; property=&quot;propertyName&quot; value=&quot;&lt;%= expression %&gt;&quot; /&gt;
+</code></pre><p>语法格式三</p>
+<pre><code>&lt;jsp:setProperty name=&quot;beanName&quot; property=&quot;propertyName&quot; param=&quot;parameterName&quot;/&gt;
+</code></pre><p>语法格式四：</p>
+<pre><code>&lt;jsp:setProperty name=&quot;beanName&quot; property= &quot;*&quot; /&gt;
+</code></pre><p>name属性用于指定JavaBean对象的名称。 </p>
+<p>property属性用于指定JavaBean实例对象的属性名。</p>
+<p>value属性用于指定JavaBean对象的某个属性的值，value的值可以是字符串，也可以是表达式。为字符串时，该值会自动转化为JavaBean属性相应的类型，如果value的值是一个表达式，那么该表达式的计算结果必须与所要设置的JavaBean属性的类型一致。  </p>
+<p>param属性用于将JavaBean实例对象的某个属性值设置为一个请求参数值，该属性值同样会自动转换成要设置的JavaBean属性的类型。</p>
+<h3 id="jsp-getProperty标签"><a href="#jsp-getProperty标签" class="headerlink" title="jsp:getProperty标签"></a><a href="jsp:getProperty" target="_blank" rel="noopener">jsp:getProperty</a>标签</h3><pre><code>&lt;jsp:getProperty&gt;标签用于读取JavaBean对象的属性，也就是调用JavaBean对象的getter方法，然后将读取的属性值转换成字符串后插入进输出的响应正文中。
+
+语法：
+    　　&lt;jsp:getProperty name=&quot;beanInstanceName&quot; property=&quot;PropertyName&quot; /&gt;
+　　　　name属性用于指定JavaBean实例对象的名称，其值应与&lt;jsp:useBean&gt;标签的id属性值相同。 
+　　　　property属性用于指定JavaBean实例对象的属性名。
+　　如果一个JavaBean实例对象的某个属性的值为null，那么，使用&lt;jsp:getProperty&gt;标签输出该属性的结果将是一个内容为“null”的字符串。
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/21/JavaBean及其用法/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Hexo博客部署到腾讯云教程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1542,170 +1756,6 @@ var type: String?
 
 
   
-    <article id="post-Hexo博客多台电脑设备同步管理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/31/Hexo博客多台电脑设备同步管理/">Hexo博客多台电脑设备同步管理</a>
-    </h1>
-  
-
-        
-        <a href="/2019/01/31/Hexo博客多台电脑设备同步管理/" class="archive-article-date">
-  	<time datetime="2019-01-31T08:55:51.207Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近一直在折腾Hexo博客, 玩的可谓是不亦乐乎啊; 这里就整理一下之前遗留的一些问题和一些个性化配置</p>
-<h2 id="个性化配置"><a href="#个性化配置" class="headerlink" title="个性化配置"></a>个性化配置</h2><h3 id="返回顶部按钮显示滚动进度"><a href="#返回顶部按钮显示滚动进度" class="headerlink" title="返回顶部按钮显示滚动进度"></a>返回顶部按钮显示滚动进度</h3><ul>
-<li>打开主题配置文件 ~themes/next/_config.yml 找到sidebar字段</li>
-<li><p>把scrollpercent的属性改为true即可, 如下:</p>
-<pre><code>sidebar:
-# Sidebar Position - 侧栏位置（只对Pisces | Gemini两种风格有效）
-  position: left        //靠左放置
-  #position: right      //靠右放置
-
-# Sidebar Display - 侧栏显示时机（只对Muse | Mist两种风格有效）
-  #display: post        //默认行为，在文章页面（拥有目录列表）时显示
-  display: always       //在所有页面中都显示
-  #display: hide        //在所有页面中都隐藏（可以手动展开）
-  #display: remove      //完全移除
-
-  offset: 12            //文章间距（只对Pisces | Gemini两种风格有效）
-
-  b2t: false            //返回顶部按钮（只对Pisces | Gemini两种风格有效）
-   scrollpercent: true   //返回顶部按钮的百分比
-</code></pre></li>
-</ul>
-<h2 id="多设备管理博客"><a href="#多设备管理博客" class="headerlink" title="多设备管理博客"></a>多设备管理博客</h2><p>正常情况下, 我们博客的相关配置信息都是在本地的, 并未上传服务器, 这样当我们想在其他设备, 比如公司的电脑或者原电脑重装了系统, 那么我们便无法再维护我们的博客了</p>
-<h3 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><ul>
-<li>首先你需要在电脑上配置相关环境</li>
-</ul>
-<p>安装Node.js</p>
-<p>安装Git</p>
-<p>安装hexo</p>
-<h3 id="创建分支"><a href="#创建分支" class="headerlink" title="创建分支"></a>创建分支</h3><ul>
-<li><p>hexo生成的静态博客文件都是上传到GitHub上的, 且默认放在master分支上, 而一些相关的配置文件都在本地</p>
-</li>
-<li><p>hexo的源文件（部署环境文件）可以都放在hexo分支上（可以新创建一个hexo分支），换新电脑时，直接git clone hexo分支</p>
-</li>
-</ul>
-<p>对username.github.io仓库新建hexo分支</p>
-<p>在Github的username.github.io仓库上新建一个hexo(分支名字可自定义)分支, 在下图箭头位置输入分支名字,回车即可创建成功</p>
-<p><img src="http://img.wangjungang.cn/WX20190131-170809@2x.png" alt=""></p>
-<h3 id="设置默认分支"><a href="#设置默认分支" class="headerlink" title="设置默认分支"></a>设置默认分支</h3><p><img src="http://img.wangjungang.cn/WX20190131-171538@2x.png" alt=""></p>
-<h3 id="配置文件上传导Github"><a href="#配置文件上传导Github" class="headerlink" title="配置文件上传导Github"></a>配置文件上传导Github</h3><p>该步骤需要在搭建博客的电脑上操作(博客配置文件和主题配置文件所在的电脑上操作)</p>
-<h3 id="克隆hexo分支"><a href="#克隆hexo分支" class="headerlink" title="克隆hexo分支"></a>克隆hexo分支</h3><ul>
-<li>将上述新建的hexo分支克隆到本地, 在终端中cd进入该username.github.io文件目录</li>
-<li>在当前目录使用Git Bash执行git branch命令查看当前所在分支，应为新建的分支hexo</li>
-<li><p>如果用Sourcetree软件管理代码的话, 克隆到本地的项目可能没有username.github.io层级, 所有文件都在根目录下, 操作上都不影响, 只需要记住操作要在文件的根目录下即可</p>
-<pre><code>$ git branch
-*hexo
-</code></pre><h3 id="上传部署文件"><a href="#上传部署文件" class="headerlink" title="上传部署文件"></a>上传部署文件</h3></li>
-<li><p>先将本地博客的部署文件（Hexo目录下的全部文件）全部拷贝进username.github.io文件目录中去</p>
-</li>
-<li><p>然后安装要用到的一些插件, 有的可能不需要, 但都安装了貌似没有任何影响</p>
-<pre><code>npm install hexo-generator-index --save
-npm install hexo-generator-archive --save
-npm install hexo-generator-category --save
-npm install hexo-generator-tag --save
-npm install hexo-server --save
-npm install hexo-deployer-git --save
-npm install hexo-deployer-heroku --save
-npm install hexo-deployer-rsync --save
-npm install hexo-deployer-openshift --save
-npm install hexo-renderer-marked@0.2 --save
-npm install hexo-renderer-stylus@0.2 --save
-npm install hexo-generator-feed@1 --save
-npm install hexo-generator-sitemap@1 --save
-npm install hexo-generator-search --save
-npm install hexo-generator-searchdb --save
-</code></pre></li>
-<li><p>最后就是讲所有的文件都提交到hexo分支</p>
-</li>
-</ul>
-<p>提交时考虑以下注意事项</p>
-<p>将themes目录以内中的主题的.git目录删除（如果有），因为一个git仓库中不能包含另一个git仓库，否则提交主题文件夹会失败</p>
-<p>后期需要更新主题时在另一个地方git clone下来该主题的最新版本，然后将内容拷到当前主题目录即可</p>
-<ul>
-<li>最后用终端或者管理工具将所有文件提交到hexo分支</li>
-</ul>
-<p>master分支和hexo分支各自保存着一个版本，master分支用于保存博客静态资源，提供博客页面供人访问；hexo分支用于备份博客部署文件，供自己维护更新，两者在一个GitHub仓库内也不会有任何冲突</p>
-<h3 id="同步到其他电脑"><a href="#同步到其他电脑" class="headerlink" title="同步到其他电脑"></a>同步到其他电脑</h3><ul>
-<li><p>将新电脑的生成的ssh key添加到GitHub账户上</p>
-</li>
-<li><p>在新电脑上克隆username.github.io仓库的hexo分支到本地，此时本地git仓库处于hexo分支</p>
-</li>
-<li><p>切换到username.github.io目录，执行npm install(由于仓库有一个.gitignore文件，里面默认是忽略掉 node_modules文件夹的，也就是说仓库的hexo分支并没有存储该目录，所以需要install下)</p>
-</li>
-<li><p>如果node_modules文件没有丢失, 可不执行该操作</p>
-</li>
-<li><p>到这里了就可以开始在自己的电脑上写博客了！</p>
-</li>
-<li><p>需要注意的是每次更新博客之后, 都要把相关修改上传到hexo分支</p>
-</li>
-<li><p>每次换电脑更新博客的时候, 在修改之前最好也要git pull拉取一下最新的更新</p>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Hexo</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/01/31/Hexo博客多台电脑设备同步管理/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
@@ -1811,7 +1861,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1819,11 +1869,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1847,15 +1905,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
