@@ -152,6 +152,98 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS改变图片颜色" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/21/iOS改变图片颜色/">iOS改变图片颜色</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/21/iOS改变图片颜色/" class="archive-article-date">
+  	<time datetime="2019-02-21T07:24:36.731Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在做项目的时候碰到了一个需求，就是设计做的图片的颜色和需求不符合，需要把图片的颜色改变一下。下面是改变图片颜色的方法。</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>首先我们创建一个UIImage的Category，名为ChangeColor。这个名为ChangeColor的Category只有一个方法，即-(UIImage<em>)imageChangeColor:(UIColor</em>)color。这个方法的具体实现如下：</p>
+<pre><code>#import &quot;UIImage+ChangeColor.h&quot;@implementation UIImage (ChangeColor)//绘图-(UIImage*)imageChangeColor:(UIColor*)color
+{    //获取画布
+    UIGraphicsBeginImageContextWithOptions(self.size, NO, 0.0f);    //画笔沾取颜色
+    [color setFill];    
+    CGRect bounds = CGRectMake(0, 0, self.size.width, self.size.height);    UIRectFill(bounds);    //绘制一次
+    [self drawInRect:bounds blendMode:kCGBlendModeOverlay alpha:1.0f];    //再绘制一次
+    [self drawInRect:bounds blendMode:kCGBlendModeDestinationIn alpha:1.0f];    //获取图片
+    UIImage *img = UIGraphicsGetImageFromCurrentImageContext();    UIGraphicsEndImageContext();    return img;
+}
+</code></pre><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>首先我们看一下不改变颜色时，真实的图片颜色</p>
+<pre><code>UIImage *image = [UIImage imageNamed:@&quot;qr-code&quot;];UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+[imageView setFrame:CGRectMake(100, 100, 100, 100)];
+[self.view addSubview:imageView];
+</code></pre><p>然后我们改变图片的颜色为绿色：</p>
+<pre><code>UIImage *image = [UIImage imageNamed:@&quot;qr-code&quot;];UIImageView *imageView = [[UIImageView alloc] initWithImage:[image imageChangeColor:[UIColor blueColor]]];
+[imageView setFrame:CGRectMake(100, 100, 100, 100)];
+[self.view addSubview:imageView];
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/21/iOS改变图片颜色/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-JavaBean及其用法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1543,219 +1635,6 @@ About to set score to 100
 
 
   
-    <article id="post-深入理解Swift中的Class和Struct" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/13/深入理解Swift中的Class和Struct/">深入理解Swift中的Class和Struct</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/13/深入理解Swift中的Class和Struct/" class="archive-article-date">
-  	<time datetime="2019-02-13T08:53:47.039Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Class和Struct是Swift中很重要的两种数据结构，同时也是Swift面试题必问的一道题。所以对Class和Struct理解透彻对我们学习Swift有很大的帮助。</p>
-<h2 id="理解Class"><a href="#理解Class" class="headerlink" title="理解Class"></a>理解Class</h2><h3 id="Class的定义和使用"><a href="#Class的定义和使用" class="headerlink" title="Class的定义和使用"></a>Class的定义和使用</h3><pre><code>class Animal {
-    var name: String?
-    var weight = 0.0
-}
-
-let cat = Animal()
-cat.name = &quot;cat&quot;
-cat.weight = 10
-
-print(&quot;cat&apos;s name: \(cat.name!), cat&apos;s weight: \(cat.weight)&quot;) //cat&apos;s name: cat, cat&apos;s weight: 10.0
-</code></pre><h3 id="Class是引用类型"><a href="#Class是引用类型" class="headerlink" title="Class是引用类型"></a>Class是引用类型</h3><p>当值传递的时候，它是传递对已有instance的引用。下面用代码来解释一下这句话：</p>
-<pre><code>let cat = Animal()
-cat.name = &quot;cat&quot;
-cat.weight = 10
-
-let blackCat = cat
-blackCat.name = &quot;blackCat&quot;
-
-print(&quot;cat&apos;s name: \(cat.name!)&quot;) // cat&apos;s name: blackCat
-</code></pre><p>通过上面的代码可以了解到，其实cat和blackCat指向的是同一个Animal的instance。它们只是这个instance的两个不同的名字而已。</p>
-<h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><p>我们看到上述代码把cat和blackCat声明为了let，但是我们依然可以修改它的属性，因为cat和blackCat引用的instance并没有改变，它们还是引用之前instance，我们只是修改的instance的属性。但是不能将cat或者blackCat指向另一个实例，如blackCat = Animal()会提示Cannot assign to value: ‘blackCat’ is a ‘let’ constant的错误。</p>
-<h3 id="Identity-Operators"><a href="#Identity-Operators" class="headerlink" title="Identity Operators"></a>Identity Operators</h3><p>Swift 提供===和!==来判断两个变量或者常量是不是引用同一个instance(只用于class，想一想为什么struct不需要).</p>
-<pre><code>if blackCat === cat {
-    print(&quot;Identical&quot;) //Identical
-} else {
-    print(&quot;Not identical&quot;)
-}
-</code></pre><p>===和==是不一样的。</p>
-<p>===：代表两个变量或者常量引用的同一个instance</p>
-<p>==：代表两个变量或者常量的值是否相同，并不一定是引用的同一个instance</p>
-<p>如果想让自定义的class支持==操作符，可以使该类遵守Equatable</p>
-<pre><code>class Animal {
-    var name: String?
-    var weight = 0.0
-}
-
-extension Animal: Equatable {
-    static func == (lhs: Animal, rhs: Animal) -&gt; Bool {
-        return lhs.name == rhs.name &amp;&amp; lhs.weight == rhs.weight
-    }
-}
-
-let cat = Animal()
-cat.name = &quot;cat&quot;
-cat.weight = 10
-
-let blackCat = cat
-blackCat.name = &quot;catName&quot;
-
-let whiteCat = Animal()
-whiteCat.name = &quot;catName&quot;
-whiteCat.weight = 10.0
-
-if blackCat === cat {
-    print(&quot;Identical&quot;) //Identical
-} else {
-    print(&quot;Not identical&quot;)
-}
-
-if whiteCat === blackCat {
-    print(&quot;Identical&quot;) 
-} else {
-    print(&quot;Not identical&quot;) //Not identical
-}
-
-if whiteCat == blackCat {
-    print(&quot;Equal&quot;)
-} else {
-    print(&quot;Not Equal&quot;) //Equal
-}
-</code></pre><h2 id="理解Struct"><a href="#理解Struct" class="headerlink" title="理解Struct"></a>理解Struct</h2><h3 id="Struct的定义和使用"><a href="#Struct的定义和使用" class="headerlink" title="Struct的定义和使用"></a>Struct的定义和使用</h3><pre><code>struct FPoint {
-    var x = 0.0
-    var y = 0.0
-    //当在struct修改属性的时候需要使用mutating
-    mutating func addX(add: Double) {
-        self.x = self.x + add
-    }
-}
-
-let p1 = FPoint()
-print(&quot;p1&apos;s x : \(p1.x), p1&apos;s y: \(p1.y)&quot;) // p1&apos;s x : 0.0, p1&apos;s y: 0.0
-</code></pre><h3 id="Struct是值类型"><a href="#Struct是值类型" class="headerlink" title="Struct是值类型"></a>Struct是值类型</h3><p>当值进行传递的时候，它会copy传递的值。下面用代码来解释一下这句话:</p>
-<pre><code>var p2 = p1
-p2.x = 3.0
-print(&quot;p1&apos;s x : \(p1.x), p1&apos;s y: \(p1.y); p2&apos;s x : \(p2.x), p2&apos;s y: \(p2.y)&quot;)
-//p1&apos;s x : 1.0, p1&apos;s y: 2.0; p2&apos;s x : 3.0, p2&apos;s y: 2.0
-</code></pre><p>通过上述代码我们可以看到，将p1赋值给p2之后改变p2的值并不会影响p1的值，这是因为在将p1赋值给p2的时候是拷贝一个instance值与p1相同，然后将拷贝的instance赋值给p2。</p>
-<h3 id="Note-1"><a href="#Note-1" class="headerlink" title="Note"></a>Note</h3><p>如果struct的instance声明为let，是不能改变instance的值的。如</p>
-<pre><code>let p1 = FPoint(x: 1.0, y: 2.0)
-p1.x = 10.0 //报错:Cannot assign to property: &apos;p1&apos; is a &apos;let&apos; constant
-</code></pre><h2 id="在项目中如何选择Struct和Class"><a href="#在项目中如何选择Struct和Class" class="headerlink" title="在项目中如何选择Struct和Class"></a>在项目中如何选择Struct和Class</h2><ul>
-<li>默认使用struct</li>
-<li>当你需要继承Objective-C某些类的的时候使用class</li>
-<li>当你需要控制唯一性时使用class</li>
-<li><p>使用struct和protocol来实现model继承和共享行为，如下代码所示:</p>
-<pre><code>protocol AnimalCommonProtocol {
-    var name: String? { get set }
-    var weight: Double { get set }
-    func run()
-}
-
-struct Cat : AnimalCommonProtocol {
-    func run() {
-        print(&quot;cat run&quot;)
-    }
-    var name: String?
-    var weight: Double
-    var gender: String?
-}
-
-struct Dog : AnimalCommonProtocol {
-    func run() {
-        print(&quot;dog run&quot;)
-    }
-
-var name: String?
-var weight: Double
-var type: String?
-}
-</code></pre><p>总结起来就是一句话：能使用struct就不要使用class</p>
-</li>
-</ul>
-<h3 id="为什么优选struct"><a href="#为什么优选struct" class="headerlink" title="为什么优选struct"></a>为什么优选struct</h3><ul>
-<li>使用struct不需要考虑内存泄漏和多线程读写的问题，因为在传递值的时候它会进行值的copy</li>
-<li>struct存储在stack中，class存储在heap中，struct更快</li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="相同点"><a href="#相同点" class="headerlink" title="相同点"></a>相同点</h3><ul>
-<li>都能定义property、method、initializers</li>
-<li>都支持protocol、extension</li>
-</ul>
-<h3 id="不同点"><a href="#不同点" class="headerlink" title="不同点"></a>不同点</h3><ul>
-<li>class是引用类型；struct是值类型</li>
-<li>class支持继承；struct不支持继承</li>
-<li>class声明的方法修改属性不需要mutating关键字；struct需要</li>
-<li>class没有提供默认的memberwise initializer；struct提供默认的memberwise initializer</li>
-<li>class支持引用计数(Reference counting)；struct不支持</li>
-<li>class支持Type casting；struct不支持</li>
-<li>class支持Deinitializers；struct不支持</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/13/深入理解Swift中的Class和Struct/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
@@ -1861,10 +1740,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
@@ -1901,11 +1776,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1913,15 +1788,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">

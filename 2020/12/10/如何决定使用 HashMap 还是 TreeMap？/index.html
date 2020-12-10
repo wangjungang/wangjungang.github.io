@@ -6,28 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>iOS适配Dark模式（OC） | Blog</title>
+  <title>如何决定使用 HashMap 还是 TreeMap？ | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面iOS 13终于引来了暗黑模式。 每当新特性的到来，iOS开发者们既紧张又有点小兴奋，怀揣着被虐的心态，让我们来看看暗黑模式到底是个啥。 虽然这是一个设计驱动的需求，但是本着一颗虔诚(暴躁)的心，我们还是要一步步来，“工欲善其事、必先利其器”，搞清楚应该怎么做。 下载 Xcode11，跑起来你的项目。模拟器启动后，在“设置”-“开发者”中打开“Dark Appearance”后，你的项目就">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="介绍TreeMap&amp;lt;K,V&amp;gt;的Key值是要求实现java.lang.Comparable，所以迭代的时候TreeMap默认是按照Key值升序排序的；TreeMap的实现是基于红黑树结构。适用于按自然顺序或自定义顺序遍历键（key）。 HashMap&amp;lt;K,V&amp;gt;的Key值实现散列hashCode()，分布是散列的、均匀的，不支持排序；数据结构主要是桶(数组)，链表或红黑树。适用">
+<meta name="keywords" content="Java">
 <meta property="og:type" content="article">
-<meta property="og:title" content="iOS适配Dark模式（OC）">
-<meta property="og:url" content="http://yoursite.com/2019/08/29/iOS适配Dark模式（OC/index.html">
+<meta property="og:title" content="如何决定使用 HashMap 还是 TreeMap？">
+<meta property="og:url" content="http://yoursite.com/2020/12/10/如何决定使用 HashMap 还是 TreeMap？/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面iOS 13终于引来了暗黑模式。 每当新特性的到来，iOS开发者们既紧张又有点小兴奋，怀揣着被虐的心态，让我们来看看暗黑模式到底是个啥。 虽然这是一个设计驱动的需求，但是本着一颗虔诚(暴躁)的心，我们还是要一步步来，“工欲善其事、必先利其器”，搞清楚应该怎么做。 下载 Xcode11，跑起来你的项目。模拟器启动后，在“设置”-“开发者”中打开“Dark Appearance”后，你的项目就">
+<meta property="og:description" content="介绍TreeMap&amp;lt;K,V&amp;gt;的Key值是要求实现java.lang.Comparable，所以迭代的时候TreeMap默认是按照Key值升序排序的；TreeMap的实现是基于红黑树结构。适用于按自然顺序或自定义顺序遍历键（key）。 HashMap&amp;lt;K,V&amp;gt;的Key值实现散列hashCode()，分布是散列的、均匀的，不支持排序；数据结构主要是桶(数组)，链表或红黑树。适用">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://img.wangjungang.cn/Lpkxxs.png">
-<meta property="og:image" content="http://img.wangjungang.cn/JQQHYK.png">
-<meta property="og:image" content="http://img.wangjungang.cn/sXRNaH.png">
-<meta property="og:image" content="http://img.wangjungang.cn/Q2JXtr.png">
-<meta property="og:image" content="http://img.wangjungang.cn/dgaWfi.png">
-<meta property="og:image" content="http://img.wangjungang.cn/BXxZgC.png">
-<meta property="og:image" content="http://img.wangjungang.cn/SUAYYg.png">
-<meta property="og:updated_time" content="2019-08-29T06:22:34.218Z">
+<meta property="og:updated_time" content="2020-12-10T05:29:28.156Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS适配Dark模式（OC）">
-<meta name="twitter:description" content="写在前面iOS 13终于引来了暗黑模式。 每当新特性的到来，iOS开发者们既紧张又有点小兴奋，怀揣着被虐的心态，让我们来看看暗黑模式到底是个啥。 虽然这是一个设计驱动的需求，但是本着一颗虔诚(暴躁)的心，我们还是要一步步来，“工欲善其事、必先利其器”，搞清楚应该怎么做。 下载 Xcode11，跑起来你的项目。模拟器启动后，在“设置”-“开发者”中打开“Dark Appearance”后，你的项目就">
-<meta name="twitter:image" content="http://img.wangjungang.cn/Lpkxxs.png">
+<meta name="twitter:title" content="如何决定使用 HashMap 还是 TreeMap？">
+<meta name="twitter:description" content="介绍TreeMap&amp;lt;K,V&amp;gt;的Key值是要求实现java.lang.Comparable，所以迭代的时候TreeMap默认是按照Key值升序排序的；TreeMap的实现是基于红黑树结构。适用于按自然顺序或自定义顺序遍历键（key）。 HashMap&amp;lt;K,V&amp;gt;的Key值实现散列hashCode()，分布是散列的、均匀的，不支持排序；数据结构主要是桶(数组)，链表或红黑树。适用">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -163,205 +155,64 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-iOS适配Dark模式（OC" class="article article-type-post " itemscope itemprop="blogPost">
+            <article id="post-如何决定使用 HashMap 还是 TreeMap？" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
     <h1 class="article-title" itemprop="name">
-      iOS适配Dark模式（OC）
+      如何决定使用 HashMap 还是 TreeMap？
     </h1>
   
 
         
-        <a href="/2019/08/29/iOS适配Dark模式（OC/" class="archive-article-date">
-  	<time datetime="2019-08-29T04:25:47.552Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
+        <a href="/2020/12/10/如何决定使用 HashMap 还是 TreeMap？/" class="archive-article-date">
+  	<time datetime="2020-12-10T05:15:18.436Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-10</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS 13终于引来了暗黑模式。</p>
-<p>每当新特性的到来，iOS开发者们既紧张又有点小兴奋，怀揣着被虐的心态，让我们来看看暗黑模式到底是个啥。</p>
-<p>虽然这是一个设计驱动的需求，但是本着一颗虔诚(暴躁)的心，我们还是要一步步来，“工欲善其事、必先利其器”，搞清楚应该怎么做。</p>
-<p>下载 Xcode11，跑起来你的项目。模拟器启动后，在“设置”-“开发者”中打开“Dark Appearance”后，你的项目就自动运行在暗黑模式了。</p>
-<p>有些界面会很奇怪，这很正常，可以从一个界面入手，一步步优化它。</p>
-<p>开发者主要从颜色和图片两个方面进行适配，我们不需要关心切换模式时该如何操作，这些都由系统帮我们实现</p>
-<h2 id="颜色适配"><a href="#颜色适配" class="headerlink" title="颜色适配"></a>颜色适配</h2><p>iOS13 之前 UIColor只能表示一种颜色，而从 iOS13 开始UIColor是一个动态的颜色，在Light Mode和Dark Mode可以分别设置不同的颜色。</p>
-<p>iOS13系统提供了一些动态颜色</p>
-<pre><code>@property (class, nonatomic, readonly) UIColor *systemBrownColor        API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *systemIndigoColor       API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *systemGray2Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemGray3Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemGray4Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemGray5Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemGray6Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *labelColor              API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *secondaryLabelColor     API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *tertiaryLabelColor      API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *quaternaryLabelColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *linkColor               API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *placeholderTextColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *separatorColor          API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *opaqueSeparatorColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-@property (class, nonatomic, readonly) UIColor *systemBackgroundColor                   API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *secondarySystemBackgroundColor          API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *tertiarySystemBackgroundColor           API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemGroupedBackgroundColor            API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *secondarySystemGroupedBackgroundColor   API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *tertiarySystemGroupedBackgroundColor    API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *systemFillColor                         API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *secondarySystemFillColor                API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *tertiarySystemFillColor                 API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-@property (class, nonatomic, readonly) UIColor *quaternarySystemFillColor               API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
-</code></pre><p>实例</p>
-<p>[self.view setBackgroundColor:[UIColor systemBackgroundColor]];<br>[self.titleLabel setTextColor:[UIColor labelColor]];<br>[self.detailLabel setTextColor:[UIColor placeholderTextColor]];</p>
-<h3 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h3><p><img src="http://img.wangjungang.cn/Lpkxxs.png" alt=""></p>
-<p>用法和iOS13之前的一样，使用系统提供的这些动态颜色，不需要其他的适配操作</p>
-<h3 id="自定义动态UIColor"><a href="#自定义动态UIColor" class="headerlink" title="自定义动态UIColor"></a>自定义动态UIColor</h3><p>在实际开发过程，系统提供的这些颜色还远远不够，因此我们需要创建更多的动态颜色</p>
-<h4 id="初始化动态UIColor方法"><a href="#初始化动态UIColor方法" class="headerlink" title="初始化动态UIColor方法"></a>初始化动态UIColor方法</h4><p>iOS13 UIColor增加了两个初始化方法，使用以下方法可以创建动态UIColor</p>
-<p>注:一个是类方法，一个是实例方法</p>
-<pre><code>+ (UIColor *)colorWithDynamicProvider:(UIColor * (^)(UITraitCollection *))dynamicProvider API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-- (UIColor *)initWithDynamicProvider:(UIColor * (^)(UITraitCollection *))dynamicProvider API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
-</code></pre><ul>
-<li>这两个方法要求传一个block进去</li>
-<li>当系统在LightMode和DarkMode之间相互切换时就会触发此回调</li>
-<li>这个block会返回一个UITraitCollection类</li>
-<li><p>我们需要使用其属性userInterfaceStyle，它是一个枚举类型，会告诉我们当前是LightMode还是DarkMode</p>
-<pre><code>typedef NS_ENUM(NSInteger, UIUserInterfaceStyle) {
-    UIUserInterfaceStyleUnspecified,
-    UIUserInterfaceStyleLight,
-    UIUserInterfaceStyleDark,
-} API_AVAILABLE(tvos(10.0)) API_AVAILABLE(ios(12.0)) API_UNAVAILABLE(watchos);
-</code></pre></li>
-</ul>
-<h4 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h4><pre><code>UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
-        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
-            return [UIColor redColor];
-        }
-        else {
-            return [UIColor greenColor];
-        }
-    }];
-
- [self.bgView setBackgroundColor:dyColor];
-</code></pre><h4 id="效果展示-1"><a href="#效果展示-1" class="headerlink" title="效果展示"></a>效果展示</h4><p><img src="http://img.wangjungang.cn/JQQHYK.png" alt=""></p>
-<h2 id="图片适配"><a href="#图片适配" class="headerlink" title="图片适配"></a>图片适配</h2><ul>
-<li>打开Assets.xcassets</li>
-<li>新建一个Image set</li>
-</ul>
-<p><img src="http://img.wangjungang.cn/sXRNaH.png" alt=""></p>
+        <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>TreeMap&lt;K,V&gt;的Key值是要求实现java.lang.Comparable，所以迭代的时候TreeMap默认是按照Key值升序排序的；TreeMap的实现是基于红黑树结构。适用于按自然顺序或自定义顺序遍历键（key）。</p>
+<p>HashMap&lt;K,V&gt;的Key值实现散列hashCode()，分布是散列的、均匀的，不支持排序；数据结构主要是桶(数组)，链表或红黑树。适用于在Map中插入、删除和定位元素。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>如果你需要得到一个有序的结果时就应该使用TreeMap（因为HashMap中元素的排列顺序是不固定的）。除此之外，由于HashMap有更好的性能，所以大多不需要排序的时候我们会使用HashMap。</p>
+<h2 id="拓展"><a href="#拓展" class="headerlink" title="拓展"></a>拓展</h2><h3 id="1、HashMap-和-TreeMap-的实现"><a href="#1、HashMap-和-TreeMap-的实现" class="headerlink" title="1、HashMap 和 TreeMap 的实现"></a>1、HashMap 和 TreeMap 的实现</h3><p>HashMap：基于哈希表实现。使用HashMap要求添加的键类明确定义了hashCode()和equals()[可以重写hashCode()和equals()]，为了优化HashMap空间的使用，您可以调优初始容量和负载因子。</p>
 <ul>
-<li><p>打开右侧工具栏，点击最后一栏，找到Appearances，选择Any，Dark<br><img src="http://img.wangjungang.cn/Q2JXtr.png" alt=""></p>
-</li>
-<li><p>将两种模式下不同的图片资源都拖进去</p>
-</li>
+<li>HashMap(): 构建一个空的哈希映像</li>
 </ul>
-<p><img src="http://img.wangjungang.cn/dgaWfi.png" alt=""></p>
 <ul>
-<li><p>使用该图片</p>
-<pre><code>[_logoImage setImage:[UIImage imageNamed:@&quot;icon_logo&quot;]];
-</code></pre></li>
+<li>HashMap(Map m): 构建一个哈希映像，并且添加映像m的所有映射</li>
 </ul>
-<p><img src="http://img.wangjungang.cn/BXxZgC.png" alt=""></p>
-<p>大功告成，完成颜色和图片的Dark Mode适配</p>
-<h2 id="获取当前模式-Light-or-Dark"><a href="#获取当前模式-Light-or-Dark" class="headerlink" title="获取当前模式(Light or Dark)"></a>获取当前模式(Light or Dark)</h2><p>有时候我们需要知道当前处于什么模式，并根据不同的模式执行不同的操作</p>
-<p>iOS13中CGColor依然只能表示单一的颜色</p>
-<p>通过调用UITraitCollection.currentTraitCollection.userInterfaceStyle<br>获取当前模式</p>
-<h4 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h4><pre><code>if (UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-      [self.titleLabel setText:@&quot;DarkMode&quot;];
- }
-  else {
-      [self.titleLabel setText:@&quot;LightMode&quot;];
-  }
-</code></pre><h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="监听模式切换"><a href="#监听模式切换" class="headerlink" title="监听模式切换"></a>监听模式切换</h3><p>有时我们需要监听系统模式的变化，并作出响应</p>
-<p>那么我们就需要在需要监听的viewController中，重写下列函数</p>
-<pre><code>// 注意:参数为变化前的traitCollection
-- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection;
+<ul>
+<li>HashMap(int initialCapacity): 构建一个拥有特定容量的空的哈希映像</li>
+</ul>
+<ul>
+<li>HashMap(int initialCapacity, float loadFactor): 构建一个拥有特定容量和加载因子的空的哈希映像</li>
+</ul>
+<ul>
+<li>TreeMap：基于红黑树实现。TreeMap没有调优选项，因为该树总处于平衡状态。</li>
+</ul>
+<ul>
+<li>TreeMap()：构建一个空的映像树</li>
+</ul>
+<ul>
+<li>TreeMap(Map m): 构建一个映像树，并且添加映像m中所有元素</li>
+</ul>
+<ul>
+<li>TreeMap(Comparator c): 构建一个映像树，并且使用特定的比较器对关键字进行排序</li>
+</ul>
+<ul>
+<li>TreeMap(SortedMap s): 构建一个映像树，添加映像树s中所有映射，并且使用与有序映像s相同的比较器排序</li>
+</ul>
+<p>###2、HashMap 和 TreeMap 都是非线程安全<br>HashMap继承AbstractMap抽象类，TreeMap继承自SortedMap接口。<br>AbstractMap抽象类：覆盖了equals()和hashCode()方法以确保两个相等映射返回相同的哈希码。如果两个映射大小相等、包含同样的键且每个键在这两个映射中对应的值都相同，则这两个映射相等。映射的哈希码是映射元素哈希码的总和，其中每个元素是Map.Entry接口的一个实现。因此，不论映射内部顺序如何，两个相等映射会报告相同的哈希码。</p>
+<p>SortedMap接口：它用来保持键的有序顺序。SortedMap接口为映像的视图(子集)，包括两个端点提供了访问方法。除了排序是作用于映射的键以外，处理SortedMap和处理SortedSet一样。添加到SortedMap实现类的元素必须实现Comparable接口，否则您必须给它的构造函数提供一个Comparator接口的实现。TreeMap类是它的唯一一个实现。</p>
+<p>###3、TreeMap中默认是按照升序进行排序的，如何让他降序<br>通过自定义的比较器来实现<br>定义一个比较器类，实现Comparator接口，重写compare方法，有两个参数，这两个参数通过调用compareTo进行比较，而compareTo默认规则是：</p>
+<p>如果参数字符串等于此字符串，则返回 0 值；</p>
+<p>如果此字符串小于字符串参数，则返回一个小于 0 的值；</p>
+<p>如果此字符串大于字符串参数，则返回一个大于 0 的值。</p>
 
-// 判断两个UITraitCollection对象是否不同
-- (BOOL)hasDifferentColorAppearanceComparedToTraitCollection:(UITraitCollection *)traitCollection;
-</code></pre><h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-    // trait发生了改变
-    if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
-    // 执行操作
-    }
-    }
-</code></pre><h3 id="CGColor适配"><a href="#CGColor适配" class="headerlink" title="CGColor适配"></a>CGColor适配</h3><p>我们知道iOS13后，UIColor能够表示动态颜色，但是CGColor依然只能表示一种颜色，那么对于CALayer等对象如何适配暗黑模式呢?当然是利用上一节提到的监听模式切换的方法啦。</p>
-<h4 id="方式一-resolvedColor"><a href="#方式一-resolvedColor" class="headerlink" title="方式一:resolvedColor"></a>方式一:resolvedColor</h4><pre><code>// 通过当前traitCollection得到对应UIColor
-// 将UIColor转换为CGColor
-- (UIColor *)resolvedColorWithTraitCollection:(UITraitCollection *)traitCollection;
-</code></pre><p>示例</p>
-<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-
-    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
-        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
-            return [UIColor redColor];
-        }
-        else {
-            return [UIColor greenColor];
-        }
-    }];
-    UIColor *resolvedColor = [dyColor resolvedColorWithTraitCollection:previousTraitCollection];
-    layer.backgroundColor = resolvedColor.CGColor;
-</code></pre><h4 id="方式二-performAsCurrent"><a href="#方式二-performAsCurrent" class="headerlink" title="方式二:performAsCurrent"></a>方式二:performAsCurrent</h4><pre><code>// 使用当前trainCollection调用此方法
-- (void)performAsCurrentTraitCollection:(void (^)(void))actions;
-</code></pre><p>示例</p>
-<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-
-    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
-        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
-            return [UIColor redColor];
-        }
-        else {
-            return [UIColor greenColor];
-        }
-    }];
-    [self.traitCollection performAsCurrentTraitCollection:^{
-        layer.backgroundColor = dyColor.CGColor;
-    }];
-
-}
-</code></pre><h4 id="最简单的方法"><a href="#最简单的方法" class="headerlink" title="最简单的方法"></a>最简单的方法</h4><p>直接设置为一个动态UIColor的CGColor即可</p>
-<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
-    [super traitCollectionDidChange:previousTraitCollection];
-    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
-        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
-            return [UIColor redColor];
-        }
-        else {
-            return [UIColor greenColor];
-        }
-    }];
-        layer.backgroundColor = dyColor.CGColor;
-}
-</code></pre><p>!!! 设置layer颜色都是在traitCollectionDidChange中，意味着如果没有发生模式切换，layer将会没有颜色，需要设置一个基本颜色</p>
-<h3 id="模式切换时打印log"><a href="#模式切换时打印log" class="headerlink" title="模式切换时打印log"></a>模式切换时打印log</h3><p>模式切换时自动打印log，就不需要我们一次又一次的执行po命令了</p>
-<p>在Xcode菜单栏Product-&gt;Scheme-&gt;Edit Scheme</p>
-<p>选择Run-&gt;Arguments-&gt;Arguments Passed On Launch</p>
-<p>添加以下命令即可</p>
-<p>-UITraitCollectionChangeLoggingEnabled YES</p>
-<p><img src="http://img.wangjungang.cn/SUAYYg.png" alt=""></p>
-<h2 id="强行设置App模式"><a href="#强行设置App模式" class="headerlink" title="强行设置App模式"></a>强行设置App模式</h2><p>当系统设置为Light Mode时，对某些App的个别页面希望一直显示Dark Mode下的样式，这个时候就需要强行设置当前ViewController的模式了</p>
-<pre><code>// 设置当前view或viewCongtroller的模式
-@property(nonatomic) UIUserInterfaceStyle overrideUserInterfaceStyle;
-</code></pre><h4 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h4><pre><code>// 设置为Dark Mode即可
-[self setOverrideUserInterfaceStyle:UIUserInterfaceStyleDark];
-</code></pre><p>注意!!!</p>
-<p>当我们强行设置当前viewController为Dark Mode后，这个viewController下的view都是Dark Mode</p>
-<p>由这个ViewController present出的ViewController不会受到影响，依然跟随系统的模式<br>要想一键设置App下所有的ViewController都是Dark Mode，请直接在Window上执行<br>overrideUserInterfaceStyle</p>
-<p>对window.rootViewController强行设置Dark Mode也不会影响后续present出的ViewController的模式</p>
-<h2 id="NSAttributedString优化"><a href="#NSAttributedString优化" class="headerlink" title="NSAttributedString优化"></a>NSAttributedString优化</h2><h3 id="不建议的做法"><a href="#不建议的做法" class="headerlink" title="不建议的做法"></a>不建议的做法</h3><pre><code>NSDictionary *dic = @{NSFontAttributeName:[UIFont systemFontOfSize:16]};
-NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富文本文案&quot; attributes:dic];
-</code></pre><h3 id="推荐的做法"><a href="#推荐的做法" class="headerlink" title="推荐的做法"></a>推荐的做法</h3><pre><code>// 添加一个NSForegroundColorAttributeName属性
-NSDictionary *dic = @{NSFontAttributeName:[UIFont systemFontOfSize:16],NSForegroundColorAttributeName:[UIColor labelColor]};
-NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富文本文案&quot; attributes:dic];
-</code></pre>
       
 
       
@@ -395,7 +246,7 @@ NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富�
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
         		</li>
       		
 		</ul>
@@ -451,7 +302,7 @@ NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富�
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/08/29/iOS适配Dark模式（OC/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/12/10/如何决定使用 HashMap 还是 TreeMap？/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -465,18 +316,9 @@ NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富�
   
 <nav id="article-nav">
   
-    <a href="/2019/09/03/git rebase 什么时候用/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          git rebase 什么时候用
-        
-      </div>
-    </a>
   
-  
-    <a href="/2019/08/29/iOS适配Dark模式（swift）/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">iOS适配Dark模式（swift）</div>
+    <a href="/2020/12/05/ButterKnife被弃用，ViewBinding才是findView的未来？/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">ButterKnife被弃用，ViewBinding才是findView的未来？</div>
       <i class="icon-circle-right"></i>
     </a>
   
