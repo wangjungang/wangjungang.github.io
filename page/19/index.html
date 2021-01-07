@@ -152,6 +152,90 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-OC中的isa指针" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/06/OC中的isa指针/">OC中的isa指针</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/06/OC中的isa指针/" class="archive-article-date">
+  	<time datetime="2018-09-06T15:01:36.931Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="isa指针"><a href="#isa指针" class="headerlink" title="isa指针"></a>isa指针</h2><p>在Objective-C中，任何类的定义都是对象。类和类的实例（对象）没有任何本质上的区别。任何对象都有isa指针。</p>
+<p>Class 是一个 objc_class 结构类型的指针, id是一个 objc_object 结构类型的指针.</p>
+<p>isa：是一个Class 类型的指针. 每个实例对象有个isa的指针,他指向对象的类，而Class里也有个isa的指针, 指向meteClass(元类)。元类保存了类方法的列表。当类方法被调用时，先会从本身查找类方法的实现，如果没有，元类会向他父类查找该方法。同时注意的是：元类（meteClass）也是类，它也是对象。元类也有isa指针,它的isa指针最终指向的是一个根元类(root meteClass).根元类的isa指针指向本身，这样形成了一个封闭的内循环。</p>
+<p>super_class：父类，如果该类已经是最顶层的根类,那么它为NULL。</p>
+<p>version：类的版本信息,默认为0</p>
+<p>info：供运行期使用的一些位标识。</p>
+<p>instance_size：该类的实例变量大小</p>
+<p>ivars：成员变量的数组</p>
+<p>每一个对象本质上都是一个类的实例。其中类定义了成员变量和成员方法的列表。对象通过对象的isa指针指向类。</p>
+<p>每一个类本质上都是一个对象，类其实是元类（meteClass）的实例。元类定义了类方法的列表。类通过类的isa指针指向元类。</p>
+<p>所有的元类最终继承一个根元类，根元类isa指针指向本身，形成一个封闭的内循环。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/06/OC中的isa指针/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-关于数组和链表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1219,227 +1303,6 @@ typedef void(^TestBlock)(void);
 
 
   
-    <article id="post-iOS开发之XLForm的使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/01/iOS开发之XLForm的使用/">iOS开发之XLForm的使用</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/01/iOS开发之XLForm的使用/" class="archive-article-date">
-  	<time datetime="2018-08-01T07:20:49.513Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-01</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS开发中，开发”表单”界面，字段稍微多一点的一般都用UITableView来做，而XLForm就是这样一个框架，它是创建动态表格视图最牛逼的iOS库， 用它实现表单功能，非常简单，省心省力。</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/735757-1979f0af7638203c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/540" alt=""></p>
-<h2 id="导入项目"><a href="#导入项目" class="headerlink" title="导入项目"></a>导入项目</h2><p>可以适用cocoapods 导入</p>
-<h2 id="改造表单ViewController"><a href="#改造表单ViewController" class="headerlink" title="改造表单ViewController"></a>改造表单ViewController</h2><p>让ViewController继承自XLFormViewController,并重写下面的两个方法</p>
-<pre><code>@interface OneViewController : XLFormViewController
-
-@end
-
-
-@implementation OneViewController
-
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self){
-        [self initializeForm];
-    }
-    return self;
-}
-
-- (id)initWithCoder:(NSCoder *)aDecoder {
-    self = [super initWithCoder:aDecoder];
-    if (self){
-        [self initializeForm];
-    }
-    return self;
-}
-@end
-</code></pre><h2 id="三、构造表单"><a href="#三、构造表单" class="headerlink" title="三、构造表单"></a>三、构造表单</h2><pre><code>- (void)initializeForm {
-
-    // 设置是否显示Cell之间分界线
-    //self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    // 设置Section的高度
-    self.tableView.sectionHeaderHeight = 30;
-
-    XLFormDescriptor * form;//form，一个表单只有一个
-    XLFormSectionDescriptor * section;//section，一个表单可能有多个
-    XLFormRowDescriptor * row; //row，每个section可能有多个row
-
-    // Form
-    form = [XLFormDescriptor formDescriptor];
-
-
-    // First section
-    section = [XLFormSectionDescriptor formSection];
-    section.title = @&quot;用户&quot;;
-    [form addFormSection:section];
-    // 普通文本
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;username&quot; rowType:XLFormRowDescriptorTypeText];
-    // 设置placeholder
-    [row.cellConfig setObject:@&quot;用户名&quot; forKey:@&quot;textField.placeholder&quot;];
-    // 设置文本颜色
-    [row.cellConfig setObject:[UIColor redColor] forKey:@&quot;textField.textColor&quot;];
-    [section addFormRow:row];
-    // 密码
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;password&quot; rowType:XLFormRowDescriptorTypePassword];
-    // 设置placeholder的颜色
-    NSAttributedString *attrString = [[NSAttributedString alloc] initWithString:@&quot;密码&quot; attributes:
-                                      @{NSForegroundColorAttributeName:[UIColor greenColor],
-                                        }];
-    [row.cellConfig setObject:attrString forKey:@&quot;textField.attributedPlaceholder&quot;];
-    [section addFormRow:row];
-
-
-
-    // Second Section
-    section = [XLFormSectionDescriptor formSection];
-    section.title = @&quot;日期&quot;;
-    [form addFormSection:section];
-    // 日期选择器
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;birthday&quot; rowType:XLFormRowDescriptorTypeDate title:@&quot;出生日期&quot;];
-    row.value = [NSDate dateWithTimeIntervalSinceNow:60*60*24];
-    [section addFormRow:row];
-
-
-
-     // Third Section
-    section = [XLFormSectionDescriptor formSection];
-    section.title = @&quot;头像&quot;;
-    [form addFormSection:section];
-    // 图片选择
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;userpic&quot; rowType:XLFormRowDescriptorTypeImage];
-    [section addFormRow:row];
-
-
-
-    // Fourth Section
-    section = [XLFormSectionDescriptor formSection];
-    section.title = @&quot;选择器&quot;;
-    [form addFormSection:section];
-    // 选择器
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;sex&quot; rowType:XLFormRowDescriptorTypeSelectorPush];
-    row.noValueDisplayText = @&quot;暂无&quot;;
-    row.selectorTitle = @&quot;性别选择&quot;;
-    row.selectorOptions = @[@&quot;男&quot;,@&quot;女&quot;,@&quot;其他&quot;];
-    row.title = @&quot;性别&quot;;
-    [row.cellConfigForSelector setObject:[UIColor redColor] forKey:@&quot;textLabel.textColor&quot;];
-    [row.cellConfigForSelector setObject:[UIColor greenColor] forKey:@&quot;detailTextLabel.textColor&quot;];
-    [section addFormRow:row];
-
-
-
-    // Fifth Section
-    section = [XLFormSectionDescriptor formSection];
-    section.title = @&quot;加固&quot;;
-    [form addFormSection:section];
-    // 开关
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;enforce&quot; rowType:XLFormRowDescriptorTypeBooleanSwitch title:@&quot;加固&quot;];
-    [section addFormRow:row];
-
-
-    // Sixth Section
-    section = [XLFormSectionDescriptor formSection];
-    [form addFormSection:section];
-    // 按钮
-    row = [XLFormRowDescriptor formRowDescriptorWithTag:@&quot;conform&quot; rowType:XLFormRowDescriptorTypeButton];
-    row.title = @&quot;确定&quot;;
-    [section addFormRow:row];
-
-
-    self.form = form;
-}
-
--(void)didSelectFormRow:(XLFormRowDescriptor *)formRow{
-
-    // 判断是不是点击了确定按钮
-    if([formRow.tag isEqualToString:@&quot;conform&quot;] &amp;&amp; formRow.rowType == XLFormRowDescriptorTypeButton){
-
-        //获取表单所有到的值
-        NSDictionary *values =  [self formValues];
-
-        NSLog(@&quot;%@&quot;, values);
-
-    }
-
-    [super didSelectFormRow:formRow];
-
-}
-
-//重写改该方法 上面的方法就不会调用了
-//-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-//
-//    NSLog(@&quot;%s&quot;, __func__);
-//
-//}
-
-
-@end
-</code></pre><h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><p><img src="https://upload-images.jianshu.io/upload_images/735757-b3bfc036fd7a2035.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/656" alt=""></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/01/iOS开发之XLForm的使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/18/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="page-number" href="/page/18/">18</a><span class="page-number current">19</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/20/">Next &raquo;</a>
@@ -1454,7 +1317,7 @@ typedef void(^TestBlock)(void);
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2020 wangjungang
+    		&copy; 2021 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1549,7 +1412,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1557,15 +1424,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">

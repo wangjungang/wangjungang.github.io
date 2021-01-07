@@ -152,6 +152,161 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-好好看看 KVC &amp;&amp; KVO" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/21/好好看看 KVC && KVO/">好好看看 KVC &amp;&amp; KVO</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/21/好好看看 KVC && KVO/" class="archive-article-date">
+  	<time datetime="2019-02-21T07:34:53.020Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><h3 id="字典快速赋值"><a href="#字典快速赋值" class="headerlink" title="字典快速赋值"></a>字典快速赋值</h3><p>KVC 可以将字典里面和 model 同名的 property 进行快速赋值 setValuesForKeysWithDictionary</p>
+<pre><code>//前提：model 中的各个 property 必须和 NSDictionary 中的属性一致
+- (instancetype)initWithDic:(NSDictionary *)dic{
+    BannerModel *model = [BannerModel new];
+    [model setValuesForKeysWithDictionary:dic];
+    return model;  
+}
+</code></pre><p>但是这里会有2种特殊情况。</p>
+<ul>
+<li>情况一 在 model 里面有 property 但是在 NSDictionary 里面没有这个值</li>
+</ul>
+<p>运行上面的代码，代码不崩溃，只不过在输出值的时候输出了 null</p>
+<ul>
+<li>情况二 在 NSDictionary 中存在某个值，但是在 model 里面没有值</li>
+</ul>
+<p>运行后编译成功，但是代码奔溃掉。原因是 KVC 。所以我们只需要实现这么一个方法。甚至不需要写函数体部分</p>
+<pre><code>- (void)setValue:(id)value forUndefinedKey:(NSString *)key{
+
+}
+</code></pre><ul>
+<li>情况三 如果 Dictionary 和 Model 中的 property 不同名</li>
+</ul>
+<p>我们照样可以利用 setValue:forUndefinedKey: 去处理</p>
+<pre><code>//model
+@property (nonatomic,copy)NSString *name;
+@property (nonatomic,copy)NSString *sex;
+@property (nonatomic,copy) NSString* age;
+//NSDictionary
+NSDictionary *dic = @{@&quot;username&quot;:@&quot;张三&quot;,@&quot;sex&quot;:@&quot;男&quot;,@&quot;id&quot;:@&quot;22&quot;};
+
+-(void)setValue:(id)value forUndefinedKey:(NSString *)key{
+    if([key isEqualToString:@&quot;id&quot;]){
+        self.age=value;
+    }
+    if([key isEqualToString:@&quot;username&quot;]){
+        self.name=value;
+    }
+}    
+</code></pre><ul>
+<li><p>情况四 如果我们观察对象的属性是数组，我们经常会观察不到变化，因为 KVO 是观察 setter 方法。我们可以用 mutableArrayValueForKeyPath 进行属性的操作</p>
+<pre><code>NSMutableArray *hobbies = [_person mutableArrayValueForKeyPath:@&quot;hobbies&quot;];
+[hobbies addObject:@&quot;Web&quot;];
+</code></pre></li>
+<li>情况五 注册依赖键.</li>
+</ul>
+<p>KVO 可以观察属性的二级属性对象的所有属性变化。说人话就是“假如 Person 类有个 Dog 类，Dog 类有 name、fur、weight 等属性，我们给 Person 的 Dog 属性观察，假如 Dog 的任何属性变化是，Person 的观察者对象都可以拿到当前的变化值。我们只需要在 Person 中写下面的方法即可”</p>
+<pre><code>[self.person  addObserver:self
+        forKeyPath:NSStringFromSelector(@selector(dog))
+           options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+           context:ContextMark];
+
+self.person.dog.name = @&quot;啸天犬&quot;;
+self.person.dog.weight = 50;
+
+
+// Person.m
++ (NSSet&lt;NSString *&gt; *)keyPathsForValuesAffectingValueForKey:(NSString *)key {
+    NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
+
+    if ([key isEqualToString:@&quot;dog&quot;]) {
+        NSArray *affectingKeys = @[@&quot;name&quot;, @&quot;fur&quot;, @&quot;weight&quot;];
+        keyPaths = [keyPaths setByAddingObjectsFromArray:affectingKeys];
+    }
+    return keyPaths;
+}
+</code></pre><h2 id="KVO的本质"><a href="#KVO的本质" class="headerlink" title="KVO的本质"></a>KVO的本质</h2><p>kVO 是Objective-C 对观察者模式的实现。也是 Cocoa Binding 的基础。</p>
+<h3 id="几个基本的知识点"><a href="#几个基本的知识点" class="headerlink" title="几个基本的知识点"></a>几个基本的知识点</h3><ul>
+<li><p>1 KVO 观察者和属性被观察的对象之间不是强引用的关系</p>
+</li>
+<li><p>2 KVO 的触发分为自动触发模式和手动触发模式2种。通常我们使用的都是自动通知，注册观察者之后，当条件触发的时候会自动调用-(void)observeValueForKeyPath…  如果需要实现手动通知，我们需要使用下面的方法</p>
+<pre><code>+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
+    return NO;
+}
+</code></pre></li>
+<li><p>3 若类有实例变量 NSString *_foo， 调用 setValue:forKey: 是以 foo 还是 _foo 作为 key ？<br>都可以</p>
+</li>
+<li><p>4 KVC 的 keyPath 中的集合运算符如何使用</p>
+</li>
+<li><p>5 KVO 和 KVC 的 keyPath 一定是属性吗？ 可以是成员变量</p>
+</li>
+</ul>
+<h3 id="KVO的缺陷"><a href="#KVO的缺陷" class="headerlink" title="KVO的缺陷"></a>KVO的缺陷</h3><p>KVO 虽然很强大，你只能重写 -<br>observeValueForKeyPath:ofObject:change:context: 来获得通知，想要提供自定义的 selector ，不行；想要传入一个 block，没门儿。感觉如果加入 block 就更棒了。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/21/好好看看 KVC && KVO/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS改变图片颜色" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1528,113 +1683,6 @@ protocol SecondViewControllerDelegate{
 
 
   
-    <article id="post-Swift中的willSet与didSet" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/14/Swift中的willSet与didSet/">Swift中的willSet与didSet</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/14/Swift中的willSet与didSet/" class="archive-article-date">
-  	<time datetime="2019-02-14T03:45:24.909Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="简单介绍"><a href="#简单介绍" class="headerlink" title="简单介绍"></a>简单介绍</h2><p>属性观察器监控和响应属性值的变化，每次属性被设置值的时候都会调用属性观察器，甚至新的值和现在的值相同的时候也不例外。</p>
-<p>可以为除了延迟存储属性之外的其他存储属性添加属性观察器，也可以通过重载属性的方式为继承的属性（包括存储属性和计算属性）添加属性观察器。</p>
-<p>注意：</p>
-<p>不需要为无法重载的计算属性添加属性观察器，因为可以通过 setter 直接监控和响应值的变化。</p>
-<h2 id="监测方式"><a href="#监测方式" class="headerlink" title="监测方式"></a>监测方式</h2><p>可以为属性添加如下的一个或全部观察器：</p>
-<ul>
-<li>willSet在设置新的值之前调用</li>
-<li>didSet在新的值被设置之后立即调用</li>
-</ul>
-<h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>willset观察器会将新的属性值作为固定参数传入，在willSet的实现代码中可以为这个参数指定一个名称，如果不指定则参数仍然可用，这时使用默认名称</p>
-<p>newValue表示。类似地，didSet观察器会将旧的属性值作为参数传入，可以为该参数命名或者使用默认参数名oldValue。</p>
-<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>willSet和didSet观察器在属性初始化过程中不会被调用，它们只会当属性的值在初始化之外的地方被设置时被调用。</p>
-<h2 id="实现例子"><a href="#实现例子" class="headerlink" title="实现例子"></a>实现例子</h2><pre><code>class Student{
-    var score:Int = 0{
-        willSet{
-           print(&quot;About to set score to \(newValue)&quot;)
-        }
-        didSet{
-            if score &gt; oldValue  {
-                print(&quot;这次分数进步了 \(score - oldValue) scores&quot;)
-            }
-        }
-    }
-}
-let student = Student()
-student.score = 80
-student.score = 90
-student.score = 100
-</code></pre><h3 id="打印结果"><a href="#打印结果" class="headerlink" title="打印结果"></a>打印结果</h3><pre><code>About to set score to 80
-进步了 80 scores
-About to set score to 90
-进步了 10 scores
-About to set score to 100
-进步了 10 scores
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/14/Swift中的willSet与didSet/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/20/">20</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
@@ -1649,7 +1697,7 @@ About to set score to 100
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2020 wangjungang
+    		&copy; 2021 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1744,7 +1792,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1752,15 +1804,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
