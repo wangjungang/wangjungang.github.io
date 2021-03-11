@@ -8,15 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>安卓防连点的一个极简操作 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="keywords" content="Android">
+  <meta name="description" content="直接上代码import android.view.View; public class ClickUtils {     public static void fastClickChecked(View v, View.OnClickListener listener){         if(v==null)return;         v.setOnClickListener(v1 -&amp;gt">
+<meta name="keywords" content="Android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="安卓防连点的一个极简操作">
 <meta property="og:url" content="http://yoursite.com/2021/03/11/安卓防连点的一个极简操作/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="直接上代码import android.view.View; public class ClickUtils {     public static void fastClickChecked(View v, View.OnClickListener listener){         if(v==null)return;         v.setOnClickListener(v1 -&amp;gt">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-03-11T08:32:29.347Z">
+<meta property="og:updated_time" content="2021-03-11T08:34:46.621Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="安卓防连点的一个极简操作">
+<meta name="twitter:description" content="直接上代码import android.view.View; public class ClickUtils {     public static void fastClickChecked(View v, View.OnClickListener listener){         if(v==null)return;         v.setOnClickListener(v1 -&amp;gt">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -172,7 +175,26 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="直接上代码"><a href="#直接上代码" class="headerlink" title="直接上代码"></a>直接上代码</h2><pre><code>import android.view.View;
+public class ClickUtils {
+    public static void fastClickChecked(View v, View.OnClickListener listener){
+        if(v==null)return;
+        v.setOnClickListener(v1 -&gt; {
+            listener.onClick(v1);
+            v1.setClickable(false);
+            v.postDelayed(() -&gt; {
+                v.setClickable(true);
+            }, 500);
+        });
+    }
+}
+</code></pre><h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>注意：此调用方式使用时并没有比原有view.setOnClickListener方式更加复杂。他甚至以更简单的方式来实现了防快速点击的效果。</p>
+<pre><code>//参数1，防连点的view  参数2，点击此view要执行的OnClickListener
+ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
+</code></pre><p>只需要传进view和监听，即可完成防连点效果。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>此处我是通过代理原view的点击，在原来view点击时，我采用先吧此view的clickable=false，然后通过view.postDelayed方法过500秒后再把它置为可以点击，这样就可以避免在小米华为手机上的连点时跳转页面的情况下连续跳转多个页面了。</p>
+<h2 id="写此工具类的一个原因"><a href="#写此工具类的一个原因" class="headerlink" title="写此工具类的一个原因"></a>写此工具类的一个原因</h2><p>其实写此工具类一个最根本的原因是，在安卓系统的有些手机上，快速点击程序的一些view进行跳转时会造成打开两个目标view的情况。而关于程序放连点我们实践过多种方式。但是通过尝试，有些方法不是使用繁琐，就是增加其他成本。例如gradle插件的方式会增加编译成本，使我们build软件时运行缓慢。增加编译时常，又比如rxJava的方式使用起来感觉过于繁琐。需要我们写的代码量太多，或者说运用两次时间间隔的方式通过动态点击计算是否触发事件，这种方式又太过复杂。所以我自己运用clickable方式写了一个原理简单且使用方便的工具类。</p>
+
       
 
       
@@ -408,19 +430,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -432,19 +450,23 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -456,11 +478,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -480,11 +502,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
