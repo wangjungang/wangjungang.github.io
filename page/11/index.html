@@ -152,6 +152,302 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS 关于启动app播放视频功能" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/28/iOS 关于启动app播放视频功能/">iOS 关于启动app播放视频功能</a>
+    </h1>
+  
+
+        
+        <a href="/2019/01/28/iOS 关于启动app播放视频功能/" class="archive-article-date">
+  	<time datetime="2019-01-28T07:41:05.044Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>我们经常会看到我们在第一次使用app的时候，会播放一段视频，以便我们来了解app。如何实现呢</p>
+<p><img src="http://img.wangjungang.cn/WX20190128-154354@2x.png" alt=""></p>
+<h3 id="1、我们要在LaunchScreen-storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。"><a href="#1、我们要在LaunchScreen-storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。" class="headerlink" title="1、我们要在LaunchScreen.storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。"></a>1、我们要在LaunchScreen.storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。</h3><p><img src="http://img.wangjungang.cn/WX20190128-160237@2x.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/WX20190128-160322@2x.png" alt=""></p>
+<h3 id="2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器"><a href="#2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器" class="headerlink" title="2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器"></a>2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器</h3><pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+ZYLauchMovieViewController *vc = [[ZYLauchMovieViewController alloc] init];
+window.rootViewController = vc;
+self.window = window;
+[self.window makeKeyAndVisible];
+return YES;
+}
+</code></pre><p>注意</p>
+<p><img src="http://img.wangjungang.cn/WX20190128-160421@2x.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/WX20190128-160508@2x.png" alt=""></p>
+<h3 id="3、设置四个属性，"><a href="#3、设置四个属性，" class="headerlink" title="3、设置四个属性，"></a>3、设置四个属性，</h3><p>1、播放开始之前的图片startPlayerImageView，防止出现留黑的问题，</p>
+<p>2、播放中断的图片pausePlayerImageView，也是防止跳转的时候出现问题，</p>
+<p>3、定时器timer，为了在进入app3秒之后显示进入应用按钮，</p>
+<p>4、结束按钮也就是进入应用的按钮enterMainButton，为了让用户跳过视频。</p>
+<pre><code>/** 播放开始之前的图片 */
+@property (nonatomic , strong)UIImageView *startPlayerImageView;
+/** 播放中断时的图片 */
+@property (nonatomic , strong)UIImageView *pausePlayerImageView;
+/** 定时器 */
+@property (nonatomic , strong)NSTimer *timer;
+/** 结束按钮 */
+@property (nonatomic , strong)UIButton *enterMainButton;
+</code></pre><h3 id="4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮"><a href="#4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮" class="headerlink" title="4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮"></a>4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮</h3><pre><code>// 设置界面
+- (void)setupView {
+self.startPlayerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@&quot;lauch&quot;]];
+_startPlayerImageView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
+[self.contentOverlayView addSubview:_startPlayerImageView];
+//是否是第一次进入视频
+if (![self isFirstLauchApp]) {
+//设置进入主界面的按钮
+[self setupEnterMainButton];
+}
+}
+
+//设置进入主界面的按钮
+- (void)setupEnterMainButton {
+self.enterMainButton = [UIButton buttonWithType:UIButtonTypeCustom];
+_enterMainButton.frame = CGRectMake(24, kScreenHeight - 32 - 48, kScreenWidth - 48, 48);
+_enterMainButton.layer.borderWidth =1;
+_enterMainButton.layer.cornerRadius = 24;
+_enterMainButton.layer.borderColor = [UIColor whiteColor].CGColor;
+[_enterMainButton setTitle:@&quot;进入应用&quot; forState:UIControlStateNormal];
+_enterMainButton.hidden = YES;
+[self.view addSubview:_enterMainButton];
+[_enterMainButton addTarget:self action:@selector(enterMainAction:) forControlEvents:UIControlEventTouchUpInside];
+//设置定时器当视频播放到第三秒时 展示进入应用
+self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(showEnterMainButton) userInfo:nil repeats:YES];
+}
+</code></pre><p>在这里我们开一个定时器，让按钮在3s之后再显示</p>
+<p>//显示进入按钮（定时器的方法）</p>
+<pre><code>- (void)showEnterMainButton {
+AVAssetImageGenerator *gen = [[AVAssetImageGenerator alloc] initWithAsset:self.player.currentItem.asset];
+gen.appliesPreferredTrackTransform = YES;
+NSError *error = nil;
+CMTime actualTime;
+CMTime now = self.player.currentTime;
+[gen setRequestedTimeToleranceAfter:kCMTimeZero];
+[gen setRequestedTimeToleranceBefore:kCMTimeZero];
+[gen copyCGImageAtTime:now actualTime:&amp;actualTime error:&amp;error];
+NSInteger currentPlayBackTime = (NSInteger)CMTimeGetSeconds(actualTime);
+if (currentPlayBackTime &gt;= 3) {
+self.enterMainButton.hidden = NO;
+static dispatch_once_t onceToken;
+dispatch_once(&amp;onceToken, ^{
+self.enterMainButton.alpha = 0;
+[UIView animateWithDuration:0.5 animations:^{
+self.enterMainButton.alpha = 1;
+} completion:nil];
+});
+}
+if (currentPlayBackTime &gt; 5) {
+//防止没有显现出来
+self.enterMainButton.alpha = 1;
+self.enterMainButton.hidden = NO;
+[self.timer invalidate];
+self.timer = nil;
+}
+}
+</code></pre><p>//进入应用的按钮点击事件</p>
+<pre><code>- (void)enterMainAction:(UIButton *)btn {
+//视频暂停
+[self.player pause];
+self.pausePlayerImageView = [[UIImageView alloc] init];
+_pausePlayerImageView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
+[self.contentOverlayView addSubview:_pausePlayerImageView];
+self.pausePlayerImageView.contentMode = UIViewContentModeScaleAspectFit;
+//获取当前暂停时的截图,也就是设置结束时候的图片
+[self getoverPlayerImage];
+}
+</code></pre><p>//截图的获取方法</p>
+<pre><code>- (void)getoverPlayerImage {
+AVAssetImageGenerator *gen = [[AVAssetImageGenerator alloc] initWithAsset:self.player.currentItem.asset];
+gen.appliesPreferredTrackTransform = YES;
+NSError *error = nil;
+CMTime actualTime;
+CMTime now = self.player.currentTime;
+[gen setRequestedTimeToleranceAfter:kCMTimeZero];
+[gen setRequestedTimeToleranceBefore:kCMTimeZero];
+CGImageRef image = [gen copyCGImageAtTime:now actualTime:&amp;actualTime error:&amp;error];
+if (!error) {
+UIImage *thumb = [[UIImage alloc] initWithCGImage:image];
+self.pausePlayerImageView.image = thumb;
+}
+NSLog(@&quot;%f , %f&quot;,CMTimeGetSeconds(now),CMTimeGetSeconds(actualTime));
+NSLog(@&quot;%@&quot;,error);
+//视频播放结束
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+[self moviePlaybackComplete];
+});
+}
+</code></pre><h3 id="5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次"><a href="#5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次" class="headerlink" title="5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次"></a>5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次</h3><pre><code>//设置监听
+
+
+- (void)addNotification {
+[[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillEnterForeground) name:UIApplicationDidBecomeActiveNotification object:nil];//进入前台
+if ([self isFirstLauchApp]) {
+//第二次进入app视频需要直接结束
+[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackComplete) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];//视频播放结束
+}else {
+//第一次进入app视频需要轮播
+[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackAgain) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];//视频播放结束
+}
+[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackStart) name:AVPlayerItemTimeJumpedNotification object:nil];//播放开始
+}
+</code></pre><p>//实现监听的方法</p>
+<p>//开始播放移除我们刚开始加的图片，不然无法看到视频</p>
+<pre><code>- (void)moviePlaybackStart {
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+[self.startPlayerImageView removeFromSuperview];
+self.startPlayerImageView = nil;
+});
+}
+</code></pre><p>//视频播放完成移除图片，进入主界面</p>
+<pre><code>- (void)moviePlaybackComplete {
+//发送推送之后就删除  否则 界面显示有问题
+[[NSNotificationCenter defaultCenter] removeObserver:self
+name:AVPlayerItemDidPlayToEndTimeNotification
+object:nil];
+[self.startPlayerImageView removeFromSuperview];
+self.startPlayerImageView = nil;
+[self.pausePlayerImageView removeFromSuperview];
+self.pausePlayerImageView = nil;
+if (self.timer){
+[self.timer invalidate];
+self.timer = nil;
+}
+//进入主界面
+[self enterMain];
+}
+</code></pre><p>//app进入活动时播放视频</p>
+<pre><code>- (void)viewWillEnterForeground
+
+{
+
+NSLog(@&quot;app enter foreground&quot;);
+
+if (!self.player) {
+
+[self prepareMovie];
+
+}
+
+//播放视频
+
+[self.player play];
+
+}
+</code></pre><p>//第一次进入app的时候，再一次播放视频</p>
+<pre><code>- (void)moviePlaybackAgain {
+self.startPlayerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@&quot;lauchAgain&quot;]];
+_startPlayerImageView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
+[self.contentOverlayView addSubview:_startPlayerImageView];
+[self.pausePlayerImageView removeFromSuperview];
+self.pausePlayerImageView = nil;
+NSString *filePath = [[NSBundle mainBundle] pathForResource:@&quot;opening_long_1080*1920.mp4&quot; ofType:nil];
+//初始化player
+self.player = [AVPlayer playerWithURL:[NSURL fileURLWithPath:filePath]];
+self.showsPlaybackControls = NO;
+//播放视频
+[self.player play];
+}
+</code></pre><h3 id="6、在viewDidLoad中初始化视频"><a href="#6、在viewDidLoad中初始化视频" class="headerlink" title="6、在viewDidLoad中初始化视频"></a>6、在viewDidLoad中初始化视频</h3><pre><code>- (void)prepareMovie {
+//首次运行
+NSString *filePath = nil;
+if (![self isFirstLauchApp]) {
+//第一次安装
+filePath = [[NSBundle mainBundle] pathForResource:@&quot;opening_long_1080*1920.mp4&quot; ofType:nil];
+[self setIsFirstLauchApp:YES];
+}else {
+filePath = [[NSBundle mainBundle] pathForResource:@&quot;opening_short_1080*1920.mp4&quot; ofType:nil];
+}
+//初始化player
+self.player = [AVPlayer playerWithURL:[NSURL fileURLWithPath:filePath]];
+self.showsPlaybackControls = NO;
+//播放视频
+[self.player play];
+}
+</code></pre><h3 id="7、进入主界面的方法以及判断是否第一次进入app"><a href="#7、进入主界面的方法以及判断是否第一次进入app" class="headerlink" title="7、进入主界面的方法以及判断是否第一次进入app"></a>7、进入主界面的方法以及判断是否第一次进入app</h3><p>//进入主界面</p>
+<pre><code>- (void)enterMain {
+AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+UIViewController *main = [[UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:[NSBundle mainBundle]] instantiateInitialViewController];
+delegate.window.rootViewController = main;
+[delegate.window makeKeyWindow];
+}
+
+#pragma mark -- 是否第一次进入app
+- (BOOL)isFirstLauchApp {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:kIsFirstLauchApp];
+}
+- (void)setIsFirstLauchApp:(BOOL)isFirstLauchApp
+{
+    [[NSUserDefaults standardUserDefaults] setBool:isFirstLauchApp forKey:kIsFirstLauchApp];
+}
+</code></pre><p>第一步：先给一张初始的图片，然后判断是不是第一次进入app，第一次就设置一个进入应用的按钮，点击截图一张放在视频上方进入主界面，然后开一个定时器，当视频播放到第3s的时候显示按钮。</p>
+<p>第二步:监听视频的开始播放、结束播放，以及app是否进入活动状态；开始播放的时候移除第一张图片；结束播放的时候移除图片，移除定时器，进入主界面；进入活动状态时候播放视频。</p>
+<p>第三步：初始化player，加载本地视频，播放视频</p>
+<p><a href="https://github.com/zhangyqyx/startMovie" target="_blank" rel="noopener">Demo</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/01/28/iOS 关于启动app播放视频功能/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-textView的字数输入限制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1472,121 +1768,6 @@ print(strValue!.hashValue) //确定一定会有值可以用！
 
 
   
-    <article id="post-关于@available" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/19/关于@available/">关于@available</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/19/关于@available/" class="archive-article-date">
-  	<time datetime="2018-12-19T11:02:25.066Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-19</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Swift 2.0 中，引入了可用性的概念。对于函数，类，协议等，可以使用@available声明这些类型的生命周期依赖于特定的平台和操作系统版本。而#available用在判断语句中（if, guard, while等），在不同的平台上做不同的逻辑。</p>
-<h2 id="available"><a href="#available" class="headerlink" title="@available"></a>@available</h2><h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><p>@available放在函数（方法），类或者协议前面。表明这些类型适用的平台和操作系统。看下面一个例子：</p>
-<pre><code>@available(iOS 9, *)
-func myMethod() {
-    // do something
-}
-</code></pre><p>@available(iOS 9, <em>)必须包含至少2个特性参数，其中iOS 9表示必须在 iOS 9 版本以上才可用。如果你部署的平台包括 iOS 8 , 在调用此方法后，编译器会报错。<br>另外一个特性参数：星号（</em>），表示包含了所有平台，目前有以下几个平台：</p>
-<ul>
-<li>iOS</li>
-<li>iOSApplicationExtension</li>
-<li>OSX</li>
-<li>OSXApplicationExtension</li>
-<li>watchOS</li>
-<li>watchOSApplicationExtension</li>
-<li>tvOS</li>
-<li>tvOSApplicationExtension</li>
-</ul>
-<p>一般来讲，如果没有特殊的情况，都使用*表示全平台。</p>
-<p>@available(iOS 9, <em>)是一种简写形式。全写形式是@available(iOS, introduced=9.0)。introduced=9.0参数表示指定平台(iOS)从 9.0 开始引入该声明。为什么可以采用简写形式呢？当只有introduced这样一种参数时，就可以简写成以上简写形式。同理：@available(iOS 8.0, OSX 10.10, </em>) 这样也是可以的。表示同时在多个平台上（iOS 8.0 及其以上；OSX 10.10及其以上）的可用性。</p>
-<p>另外，@available还有其他一些参数可以使用，分别是：</p>
-<ul>
-<li><p>deprecated=版本号：从指定平台某个版本开始过期该声明</p>
-</li>
-<li><p>obsoleted=版本号：从指定平台某个版本开始废弃（注意弃用的区别，deprecated是还可以继续使用，只不过是不推荐了，obsoleted是调用就会编译错误）该声明</p>
-</li>
-<li><p>message=信息内容：给出一些附加信息</p>
-</li>
-<li><p>unavailable：指定平台上是无效的</p>
-</li>
-<li><p>renamed=新名字：重命名声明</p>
-</li>
-</ul>
-<h2 id="available-1"><a href="#available-1" class="headerlink" title="#available"></a>#available</h2><h3 id="用法-1"><a href="#用法-1" class="headerlink" title="用法"></a>用法</h3><pre><code>#available 用在条件语句代码块中，判断不同的平台下，做不同的逻辑处理，比如：
-
-if #available(iOS 8, *) {
-        // iOS 8 及其以上系统运行
-}
-
-
-guard #available(iOS 8, *) else {
-    return //iOS 8 以下系统就直接返回
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/19/关于@available/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/10/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/12/">Next &raquo;</a>
@@ -1692,7 +1873,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1700,15 +1881,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1760,11 +1941,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
