@@ -8,18 +8,20 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Android对Java的修改-SimpleDateFormat类 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="简介Android会对部分OpenJDK中的代码进行一些修改，本篇记录一下因为这些修改而踩过的一些坑。">
+  <meta name="description" content="简介Android会对部分OpenJDK中的代码进行一些修改，本篇记录一下因为这些修改而踩过的一些坑。 问题描述一个在线上运行良好的Date工具类在写单元测试时一直报ParseException，代码如下 public static String utc2Local(String utcTime) {     String utcTimePatten = &amp;quot;yyyy-MM-dd&amp;apos">
 <meta name="keywords" content="Java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android对Java的修改-SimpleDateFormat类">
 <meta property="og:url" content="http://yoursite.com/2021/03/11/Android对Java的修改-SimpleDateFormat类/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="简介Android会对部分OpenJDK中的代码进行一些修改，本篇记录一下因为这些修改而踩过的一些坑。">
+<meta property="og:description" content="简介Android会对部分OpenJDK中的代码进行一些修改，本篇记录一下因为这些修改而踩过的一些坑。 问题描述一个在线上运行良好的Date工具类在写单元测试时一直报ParseException，代码如下 public static String utc2Local(String utcTime) {     String utcTimePatten = &amp;quot;yyyy-MM-dd&amp;apos">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-03-11T05:58:27.724Z">
+<meta property="og:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b3785ca49d04320b3f6658ad4d859fa~tplv-k3u1fbpfcp-watermark.image?imageslim">
+<meta property="og:updated_time" content="2021-03-11T06:01:10.086Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android对Java的修改-SimpleDateFormat类">
-<meta name="twitter:description" content="简介Android会对部分OpenJDK中的代码进行一些修改，本篇记录一下因为这些修改而踩过的一些坑。">
+<meta name="twitter:description" content="简介Android会对部分OpenJDK中的代码进行一些修改，本篇记录一下因为这些修改而踩过的一些坑。 问题描述一个在线上运行良好的Date工具类在写单元测试时一直报ParseException，代码如下 public static String utc2Local(String utcTime) {     String utcTimePatten = &amp;quot;yyyy-MM-dd&amp;apos">
+<meta name="twitter:image" content="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b3785ca49d04320b3f6658ad4d859fa~tplv-k3u1fbpfcp-watermark.image?imageslim">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -176,7 +178,47 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Android会对部分OpenJDK中的代码进行一些修改，本篇记录一下因为这些修改而踩过的一些坑。</p>
-
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>一个在线上运行良好的Date工具类在写单元测试时一直报ParseException，代码如下</p>
+<pre><code>public static String utc2Local(String utcTime) {
+    String utcTimePatten = &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ssZZZZZ&quot;;
+    String localTimePatten = &quot;yyyy.MM.dd&quot;;
+    SimpleDateFormat utcFormater = new SimpleDateFormat(utcTimePatten);
+    utcFormater.setTimeZone(TimeZone.getTimeZone(&quot;UTC&quot;));//时区定义并进行时间获取
+    Date gpsUTCDate = null;
+    try {
+        gpsUTCDate = utcFormater.parse(formatTimeStr(utcTime));
+    } catch (Exception e) {
+        e.printStackTrace();
+        return utcTime;
+    }
+    SimpleDateFormat localFormater = new SimpleDateFormat(localTimePatten);
+    localFormater.setTimeZone(TimeZone.getDefault());
+    String localTime = localFormater.format(gpsUTCDate.getTime());
+    return localTime;
+}
+</code></pre><p>这里传入的参数utcTime为”2020-01-01 08:00:00+08:00”</p>
+<p>这段代码在Android环境下运行良好，但在单元测试下一直报错</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>Android对OpenJDK中的SimpleDateFormat进行了修改，具体在subParseNumericZone方法中：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b3785ca49d04320b3f6658ad4d859fa~tplv-k3u1fbpfcp-watermark.image?imageslim" alt=""></p>
+<p>可以看到，OpenJDK原本是不支持带冒号的写法的，而在Android中修改了subParseNumericZone方法，使其可以解析带冒号的写法。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>解决方法也很简单，在测试时直接修改入参，去掉入参中的冒号就好了：</p>
+<pre><code>try (MockedStatic&lt;DateUtils&gt; mockedDateUtils = Mockito.mockStatic(DateUtils.class, new CallsRealMethods())) {
+    mockedDateUtils.when(() -&gt; {
+           DateUtils.utc2Local(argThat((argument) -&gt; {
+            int index = argument.length() - 3;
+            return argument.charAt(index) == &apos;:&apos;;
+        ));
+    }).then((invocation) -&gt; {
+        String utcTime = invocation.getArgument(0, String.class);
+        String fixedDate = formatDate;
+        int index = formatDate.length() - 3;
+        if (formatDate.charAt(index) == &apos;:&apos;) {
+            fixedDate = formatDate.substring(0, index) + formatDate.substring(index + 1);
+        }
+        return DateUtils.utc2Local(fixedDate);
+    });
+}
+</code></pre>
       
 
       
@@ -420,15 +462,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -441,6 +479,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -460,11 +502,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
