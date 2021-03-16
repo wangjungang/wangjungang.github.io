@@ -152,6 +152,95 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS响应链(Responder Chain)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/05/09/iOS响应链(Responder Chain)/">iOS响应链(Responder Chain)</a>
+    </h1>
+  
+
+        
+        <a href="/2019/05/09/iOS响应链(Responder Chain)/" class="archive-article-date">
+  	<time datetime="2019-05-09T07:19:19.069Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS响应者链(Responder Chain)是支撑App界面交互的重要基础，点击、滑动、旋转、摇晃等都离不开其背后的响应者链，所以每个iOS开发人员都应该彻底掌握响应者链的响应逻辑</p>
+<h2 id="一次完整的触摸事件的传递响应的基本过程"><a href="#一次完整的触摸事件的传递响应的基本过程" class="headerlink" title="一次完整的触摸事件的传递响应的基本过程"></a>一次完整的触摸事件的传递响应的基本过程</h2><p> UIAppliction –&gt; UIWiondw –&gt;递归找到最适合处理事件的控件–&gt;控件调用touches方法–&gt;判断是否实现touches方法–&gt;没有实现默认会将事件传递给上一个响应者–&gt;找到上一个响应者</p>
+<p>UIResponder 是所有响应对象的基类，在UIResponder类中定义了处理上述各种事件的接口。我们熟悉的 UIApplication、 UIViewController、 UIWindow 和所有继承自UIView的UIKit类都直接或间接的继承自UIResponder，所以它们的实例都是可以构成响应者链的响应者对象。</p>
+<h2 id="事件的分发和传递。"><a href="#事件的分发和传递。" class="headerlink" title="事件的分发和传递。"></a>事件的分发和传递。</h2><p>1.当iOS程序中发生触摸事件后，系统会将事件加入到UIApplication管理的一个任务队列中</p>
+<p>2.UIApplication将处于任务队列最前端的事件向下分发。即UIWindow。</p>
+<p>3.UIWindow将事件向下分发，即UIView。</p>
+<p>4.UIView首先看自己是否能处理事件，触摸点是否在自己身上。如果能，那么继续寻找子视图。</p>
+<p>5.遍历子控件，重复以上两步。</p>
+<p>6.如果没有找到，那么自己就是事件处理者。如果</p>
+<p>7.如果自己不能处理，那么不做任何处理</p>
+<p>其中 UIView不接受事件处理的情况主要有以下三种</p>
+<p>1）alpha &lt;0.01</p>
+<p>2)userInteractionEnabled = NO</p>
+<p>3.hidden ＝ YES.</p>
+<p>这个从父控件到子控件寻找处理事件最合适的view的过程，如果父视图不接受事件处理（上面三种情况），则子视图也不能接收事件。事件只要触摸了就会产生，关键在于是否有最合适的view来处理和接收事件，如果遍历到最后都没有最合适的view来接收事件，则该事件被废弃。</p>
+<h3 id="响应者链"><a href="#响应者链" class="headerlink" title="响应者链"></a>响应者链</h3><p>响应链是从最合适的view开始传递，处理事件传递给下一个响应者，响应者链的传递方法是事件传递的反方法，如果所有响应者都不处理事件，则事件被丢弃。我们通常用响应者链来获取上几级响应者，方法是UIResponder的nextResponder方法。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/05/09/iOS响应链(Responder Chain)/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS中的Promise" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2127,300 +2216,6 @@ result.append(newElement)
 
 
   
-    <article id="post-录音、音频的拼接剪切以及边录边压缩转码" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/22/录音、音频的拼接剪切以及边录边压缩转码/">录音、音频的拼接剪切以及边录边压缩转码</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/22/录音、音频的拼接剪切以及边录边压缩转码/" class="archive-article-date">
-  	<time datetime="2019-02-22T08:14:36.359Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="总体内容"><a href="#总体内容" class="headerlink" title="总体内容"></a>总体内容</h2><p>1.录音实现</p>
-<p>2.录音的编辑 (拼接音频:可以设置多段，音频的剪切：按照时间段剪切)</p>
-<p>3.lame静态库进行压缩转码</p>
-<h2 id="录音实现"><a href="#录音实现" class="headerlink" title="录音实现"></a>录音实现</h2><p>导入 AVFoundation 框架,多媒体的处理, 基本上都使用这个框架</p>
-<pre><code>#import &lt;avfoundation avfoundation.h=&quot;&quot;&gt;&lt;/avfoundation&gt;
-</code></pre><p>使用 AVAudioRecorder 进行录音，定义一个JKAudioTool 管理录音的类</p>
-<p>定义一个录音对象，懒加载</p>
-<pre><code>@property (nonatomic, strong) AVAudioRecorder *audioRecorder;
-
--(AVAudioRecorder *)audioRecorder
-{
-    if (!_audioRecorder) {
-
-   // 0. 设置录音会话
-   /**
-     AVAudioSessionCategoryPlayAndRecord: 可以边播放边录音(也就是平时看到的背景音乐)
-    */
-   [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
-   // 启动会话
-   [[AVAudioSession sharedInstance] setActive:YES error:nil];
-
-   // 1. 确定录音存放的位置
-   NSURL *url = [NSURL URLWithString:self.recordPath];
-
-   // 2. 设置录音参数
-   NSMutableDictionary *recordSettings = [[NSMutableDictionary alloc] init];
-   // 设置编码格式
-   /**
-     kAudioFormatLinearPCM: 无损压缩，内容非常大
-     kAudioFormatMPEG4AAC
-   */
-   [recordSettings setValue :[NSNumber numberWithInt: kAudioFormatLinearPCM] forKey: AVFormatIDKey];
-   // 采样率(通过测试的数据，根据公司的要求可以再去调整)，必须保证和转码设置的相同
-   [recordSettings setValue :[NSNumber numberWithFloat:11025.0] forKey: AVSampleRateKey];
-   // 通道数（必须设置为双声道, 不然转码生成的 MP3 会声音尖锐变声.）
-   [recordSettings setValue :[NSNumber numberWithInt:2] forKey: AVNumberOfChannelsKey];
-   //音频质量,采样质量(音频质量越高，文件的大小也就越大)
-   [recordSettings setValue:[NSNumber numberWithInt:AVAudioQualityMin] forKey:AVEncoderAudioQualityKey];
-
-   // 3. 创建录音对象
-   _audioRecorder = [[AVAudioRecorder alloc] initWithURL:url settings:recordSettings error:nil];
-   _audioRecorder.meteringEnabled = YES;
- }
-   return _audioRecorder;
-}
-</code></pre><p>提示：设置 AVAudioSessionCategoryPlayAndRecord: 可以边播放边录音(也就是平时看到的背景音乐)</p>
-<ul>
-<li><p>[[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];</p>
-</li>
-<li><p>AVSampleRateKey 必须保证和转码设置的相同.</p>
-</li>
-<li><p>AVNumberOfChannelsKey 必须设置为双声道, 不然转码生成的 MP3 会声音尖锐变声.</p>
-</li>
-</ul>
-<p>开始录音</p>
-<pre><code>- (void)beginRecordWithRecordPath: (NSString *)recordPath {
-    // 记录录音地址
-    _recordPath = recordPath;
-    // 准备录音
-    [self.audioRecorder prepareToRecord];
-    // 开始录音
-    [self.audioRecorder record];
-}
-</code></pre><p>结束录音</p>
-<pre><code>- (void)endRecord {
-     [self.audioRecorder stop];
-}
-</code></pre><p>暂停录音</p>
-<pre><code>- (void)pauseRecord {
-    [self.audioRecorder pause];
-}
-</code></pre><p>删除录音</p>
-<pre><code>- (void)deleteRecord {
-     [self.audioRecorder stop];
-     [self.audioRecorder deleteRecording];
-}
-</code></pre><p>重新录音</p>
-<pre><code>- (void)reRecord {
-
-    self.audioRecorder = nil;
-    [self beginRecordWithRecordPath:self.recordPath];
-}
-</code></pre><p>更新音频测量值</p>
-<pre><code>-(void)updateMeters
-{
-    [self.audioRecorder updateMeters];
-}
-</code></pre><p>提示：更新音频测量值，注意如果要更新音频测量值必须设置meteringEnabled为YES，通过音频测量值可以即时获得音频分贝等信息</p>
-<p>@property(getter=isMeteringEnabled) BOOL meteringEnabled：是否启用音频测量，默认为NO，一旦启用音频测量可以通过updateMeters方法更新测量值</p>
-<p>获得指定声道的分贝峰值</p>
-<pre><code>- (float)peakPowerForChannel0{
-
-    [self.audioRecorder updateMeters];
-    return [self.audioRecorder peakPowerForChannel:0];
-}
-</code></pre><p>提示：获得指定声道的分贝峰值，注意如果要获得分贝峰值必须在此之前调用updateMeters方法</p>
-<h2 id="录音的编辑"><a href="#录音的编辑" class="headerlink" title="录音的编辑"></a>录音的编辑</h2><p>理论基础</p>
-<ul>
-<li><p>AVAsset：音频源</p>
-</li>
-<li><p>AVAssetTrack：素材的轨道</p>
-</li>
-<li><p>AVMutableComposition ：一个用来合成视频的”合成器”</p>
-</li>
-<li><p>AVMutableCompositionTrack ：”合成器”中的轨道，里面可以插入各种对应的素材</p>
-</li>
-</ul>
-<p>拼接录音</p>
-<pre><code>#pragma mark 音频的拼接：追加某个音频在某个音频的后面
-/**
-   音频的拼接
-
-   @param fromPath 前段音频路径
-   @param toPath 后段音频路径
-   @param outputPath 拼接后的音频路径
- */
-+(void)addAudio:(NSString *)fromPath toAudio:(NSString *)toPath outputPath:(NSString *)outputPath{
-
-// 1. 获取两个音频源
-AVURLAsset *audioAsset1 = [AVURLAsset assetWithURL:[NSURL fileURLWithPath:fromPath]];
-AVURLAsset *audioAsset2 = [AVURLAsset assetWithURL:[NSURL fileURLWithPath:toPath]];
-
-// 2. 获取两个音频素材中的素材轨道
-AVAssetTrack *audioAssetTrack1 = [[audioAsset1 tracksWithMediaType:AVMediaTypeAudio] firstObject];
-AVAssetTrack *audioAssetTrack2 = [[audioAsset2 tracksWithMediaType:AVMediaTypeAudio] firstObject];
-
-// 3. 向音频合成器, 添加一个空的素材容器
-AVMutableComposition *composition = [AVMutableComposition composition];
-AVMutableCompositionTrack *audioTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:0];
-
-// 4. 向素材容器中, 插入音轨素材
-[audioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAsset2.duration) ofTrack:audioAssetTrack2 atTime:kCMTimeZero error:nil];
-[audioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, audioAsset1.duration) ofTrack:audioAssetTrack1 atTime:audioAsset2.duration error:nil];
-
-// 5. 根据合成器, 创建一个导出对象, 并设置导出参数
-AVAssetExportSession *session = [[AVAssetExportSession alloc] initWithAsset:composition presetName:AVAssetExportPresetAppleM4A];
-session.outputURL = [NSURL fileURLWithPath:outputPath];
-// 导出类型
-session.outputFileType = AVFileTypeAppleM4A;
-
-// 6. 开始导出数据
-[session exportAsynchronouslyWithCompletionHandler:^{
-
-      AVAssetExportSessionStatus status = session.status;
-      /**
-         AVAssetExportSessionStatusUnknown,
-         AVAssetExportSessionStatusWaiting,
-         AVAssetExportSessionStatusExporting,
-         AVAssetExportSessionStatusCompleted,
-         AVAssetExportSessionStatusFailed,
-         AVAssetExportSessionStatusCancelled
-       */
-      switch (status) {
-           case AVAssetExportSessionStatusUnknown:
-              NSLog(@&quot;未知状态&quot;);
-           break;
-           case AVAssetExportSessionStatusWaiting:
-              NSLog(@&quot;等待导出&quot;);
-           break;
-           case AVAssetExportSessionStatusExporting:
-              NSLog(@&quot;导出中&quot;);
-           break;
-           case AVAssetExportSessionStatusCompleted:{
-
-              NSLog(@&quot;导出成功，路径是：%@&quot;, outputPath);
-           }
-           break;
-           case AVAssetExportSessionStatusFailed:
-
-              NSLog(@&quot;导出失败&quot;);
-           break;
-           case AVAssetExportSessionStatusCancelled:
-              NSLog(@&quot;取消导出&quot;);
-           break;
-           default:
-           break;
-       }   
-     }];  
-}
-</code></pre><p>音频的剪辑</p>
-<pre><code>/**
-   音频的剪切
-
-   @param audioPath 要剪切的音频路径
-   @param fromTime 开始剪切的时间点
-   @param toTime 结束剪切的时间点
-   @param outputPath 剪切成功后的音频路径
-  */
-+(void)cutAudio:(NSString *)audioPath fromTime:(NSTimeInterval)fromTime toTime:(NSTimeInterval)toTime outputPath:(NSString *)outputPath{
-
- // 1. 获取音频源
- AVURLAsset *asset = [AVURLAsset assetWithURL:[NSURL fileURLWithPath:audioPath]];
-
- // 2. 创建一个音频会话, 并且,设置相应的配置
- AVAssetExportSession *session = [AVAssetExportSession exportSessionWithAsset:asset presetName:AVAssetExportPresetAppleM4A];
- session.outputFileType = AVFileTypeAppleM4A;
- session.outputURL = [NSURL fileURLWithPath:outputPath];
-CMTime startTime = CMTimeMake(fromTime, 1);
-CMTime endTime = CMTimeMake(toTime, 1);
-session.timeRange = CMTimeRangeFromTimeToTime(startTime, endTime);
-
- // 3. 导出
- [session exportAsynchronouslyWithCompletionHandler:^{
-      AVAssetExportSessionStatus status = session.status;
-      if (status == AVAssetExportSessionStatusCompleted)        
-      {
-            NSLog(@&quot;导出成功&quot;);
-      }
- }];
-}
-</code></pre><h2 id="lame静态库"><a href="#lame静态库" class="headerlink" title="lame静态库"></a>lame静态库</h2><h3 id="lame静态库的简介"><a href="#lame静态库的简介" class="headerlink" title="lame静态库的简介"></a>lame静态库的简介</h3><p>LAME 是一个开源的MP3音频压缩软件。LAME是一个递归缩写，来自LAME Ain’t an MP3 Encoder（LAME不是MP3编码器）。它自1998年以来由一个开源社区开发，目前是公认有损品质MP3中压缩效果最好的编码器。</p>
-<p>Lame 的转码压缩, 是把录制的 PCM 转码成 MP3, 所以录制的 AVFormatIDKey 设置成 kAudioFormatLinearPCM(无损压缩，内容非常大) , 生成的文件可以是 caf 或者 wav.</p>
-<h3 id="如何使用lame"><a href="#如何使用lame" class="headerlink" title="如何使用lame"></a>如何使用lame</h3><p>第一步: 下载 lame 的最新版本并解压</p>
-<p>第二步: 把下载的 lame 生成静态库,我们使用脚本</p>
-<p>下载 build 的脚本</p>
-<p>创建一个文件夹放 脚本 与 下载的lame</p>
-<p>修改脚本里面的 SOURCE=”lame” 名字与 下载的lame名字一致，也可以把 下载的lame名字 改为 lame,那么就不需要改脚本的内容</p>
-<p>改脚本为可执行脚本</p>
-<pre><code>chmod +x build-lame.sh
-</code></pre><p>执行脚本</p>
-<pre><code>./build-lame.sh
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/22/录音、音频的拼接剪切以及边录边压缩转码/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/7/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/9/">Next &raquo;</a>
@@ -2522,11 +2317,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2542,15 +2341,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2594,11 +2389,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
