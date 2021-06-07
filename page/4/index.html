@@ -152,6 +152,194 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Xcode11 新建工程中的SceneDelegate" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/">Xcode11 新建工程中的SceneDelegate</a>
+    </h1>
+  
+
+        
+        <a href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/" class="archive-article-date">
+  	<time datetime="2019-11-29T08:13:08.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Xcode 11 建新工程默认会创建通过 UIScene 管理多个 UIWindow 的应用，工程中除了 AppDelegate 外还会有一个 SceneDelegate，这是为了实现iPadOS支持多窗口的结果。AppDelegate.h不再有window属性，window属性被定义在了SceneDelegate.h中，AppDelegate中有新增的关于scene的代理方法，SceneDelegate中也有相应的代理方法。因此，当我们用Xcode11针对不同版本的iOS开发应用时，就要做一些适配。</p>
+<h2 id="样式"><a href="#样式" class="headerlink" title="样式"></a>样式</h2><p><img src="http://img.wangjungang.cn/MCTA26.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/eI9CO0.jpg" alt=""></p>
+<p>AppDelegate.h中多了两个默认的代理方法：</p>
+<pre><code>#pragma mark - UISceneSession lifecycle
+
+/*
+1.如果没有在APP的Info.plist文件中包含scene的配置数据，或者要动态更改场景配置数据，需要实现此方法。 UIKit会在创建新scene前调用此方法。
+2.方法会返回一个UISceneConfiguration对象，其包含其中包含场景详细信息，包括要创建的场景类型，用于管理场景的委托对象以及包含要显示的初始视图控制器的情节提要。 如果未实现此方法，则必须在应用程序的Info.plist文件中提供场景配置数据。
+
+总结下：默认在info.plist中进行了配置， 不用实现该方法也没有关系。如果没有配置就需要实现这个方法并返回一个UISceneConfiguration对象。
+配置参数中Application Session Role 是个数组，每一项有三个参数:
+Configuration Name:   当前配置的名字;
+Delegate Class Name:  与哪个Scene代理对象关联;
+StoryBoard name: 这个Scene使用的哪个storyboard。
+注意：代理方法中调用的是配置名为Default Configuration的Scene，则系统就会自动去调用SceneDelegate这个类。这样SceneDelegate和AppDelegate产生了关联。
+*/
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+    // Called when a new scene session is being created.
+    // Use this method to select a configuration to create the new scene with.
+    return [[UISceneConfiguration alloc] initWithName:@&quot;Default Configuration&quot; sessionRole:connectingSceneSession.role];
+}
+
+// 在分屏中关闭其中一个或多个scene时候回调用
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet&lt;UISceneSession *&gt; *)sceneSessions {
+    // Called when the user discards a scene session.
+    // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
+    // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+}
+</code></pre><p>SceneDelegate.m中的默认代理方法如下：</p>
+<pre><code>- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
+    // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
+    // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
+    // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+}
+
+- (void)sceneDidDisconnect:(UIScene *)scene {
+    // Called as the scene is being released by the system.
+    // This occurs shortly after the scene enters the background, or when its session is discarded.
+    // Release any resources associated with this scene that can be re-created the next time the scene connects.
+    // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
+}
+
+- (void)sceneDidBecomeActive:(UIScene *)scene {
+    // Called when the scene has moved from an inactive state to an active state.
+    // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+}
+
+- (void)sceneWillResignActive:(UIScene *)scene {
+    // Called when the scene will move from an active state to an inactive state.
+    // This may occur due to temporary interruptions (ex. an incoming phone call).
+}
+
+- (void)sceneWillEnterForeground:(UIScene *)scene {
+    // Called as the scene transitions from the background to the foreground.
+    // Use this method to undo the changes made on entering the background.
+}
+
+- (void)sceneDidEnterBackground:(UIScene *)scene {
+    // Called as the scene transitions from the foreground to the background.
+    // Use this method to save data, release shared resources, and store enough scene-specific state information
+    // to restore the scene back to its current state.
+}
+</code></pre><h2 id="1-不需要多窗口（multiple-windows）"><a href="#1-不需要多窗口（multiple-windows）" class="headerlink" title="1. 不需要多窗口（multiple windows）"></a>1. 不需要多窗口（multiple windows）</h2><p>如果需要支持iOS 13 及之前多个版本的iOS，且又不需要多个窗口的功能，可以<strong><em>删除项目info.plist文件中的Application Scene Manifest的配置数据</em></strong>，AppDelegate中关于Scene的代理方法、SceneDelegate的类是否删除都可以。<br>如果使用纯代码来实现显示界面，需要在AppDelegate.h中手动添加window属性，添加以下代码即可：</p>
+<pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    [self.window setBackgroundColor:[UIColor whiteColor]];
+
+    ViewController *con = [[ViewController alloc] init];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
+    [self.window setRootViewController:nav];
+    [self.window makeKeyAndVisible];
+    return YES;
+}
+</code></pre><h2 id="2-支持多窗口"><a href="#2-支持多窗口" class="headerlink" title="2. 支持多窗口"></a>2. 支持多窗口</h2><p>iOS 13项目info.plist中的配置项Application Scene Manifest是针对iPad multiple windows功能推出的。在保留Application Scene Manifest配置项不予删除时（其中，项目是否支持多窗口功能是个可勾选项），AppDelegate的生命周期方法不再起作用，需要在SceneDelegate中使用UIScene提供的生命周期方法，并且需要针对 iOS 13 需要在Scene中配置和 iOS 13 以下在AppDelegate中做两套配置。<br>下面是纯代码实现界面显示的代码：</p>
+<pre><code>//// AppDelegate.m中
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // Override point for customization after application launch.
+
+    if (@available(iOS 13.0, *)) {
+
+    } else {
+        self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        [self.window setBackgroundColor:[UIColor whiteColor]];
+
+        ViewController *con = [[ViewController alloc] init];
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
+        [self.window setRootViewController:nav];
+        [self.window makeKeyAndVisible];
+    }
+    return YES;
+}
+
+
+//// SceneDelegate.m中
+
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
+
+    //在这里手动创建新的window
+    if (@available(iOS 13.0, *)) {
+        UIWindowScene *windowScene = (UIWindowScene *)scene;
+        self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        [self.window setWindowScene:windowScene];
+        [self.window setBackgroundColor:[UIColor whiteColor]];
+
+        ViewController *con = [[ViewController alloc] init];
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
+        [self.window setRootViewController:nav];
+        [self.window makeKeyAndVisible];
+    }
+}
+</code></pre><p>注意：如果不使用storyboard，需要将配置中的storyboard项删除：</p>
+<p><img src="http://img.wangjungang.cn/UbOrNC.jpg" alt=""></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-RxSwift + MJRefresh 自动管理刷新状态" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2530,337 +2718,6 @@ public class MybatisDataSourceInterceptor implements Interceptor {
 
 
   
-    <article id="post-迁至WKWebView跨过的那些坑" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/05/迁至WKWebView跨过的那些坑/">迁至WKWebView跨过的那些坑</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/05/迁至WKWebView跨过的那些坑/" class="archive-article-date">
-  	<time datetime="2019-09-05T06:38:49.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS中有两种网页视图可以加载网页除了系统的那个控制器。一种是UIWebView，另一种是WKWebView，其实WKWebView就是想替代UIWebView的，因为我们都知道UIWebView非常占内存等一些问题，但是现在很多人还在使用UIWebView这是为啥呢？而且官方也宣布在iOS12中废弃了UIWebView让我们尽快使用WKWebView。其实也就是这些东西：<strong>页面尺寸问题、JS交互、请求拦截、cookie带不上的问题。</strong>所以有时想要迁移还得解决这些问题，所以还是很烦的，所以一一解决喽。</p>
-<h2 id="页面尺寸的问题"><a href="#页面尺寸的问题" class="headerlink" title="页面尺寸的问题"></a>页面尺寸的问题</h2><p>我们知道有些网页在UIWebView上显示好好地，使用WKWebView就会出现尺寸的问题，这时很纳闷，安卓也不会，你总不说是前端的问题吧？但其实是WKWebView中网页是需要适配一下，所以自己添加JS吧，当然和前端关系好就可以叫他加的。下面通过设置配置中的userContentController来添加JS。</p>
-<pre><code>WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-NSString *jScript = @&quot;var meta = document.createElement(&apos;meta&apos;); meta.setAttribute(&apos;name&apos;, &apos;viewport&apos;); meta.setAttribute(&apos;content&apos;, &apos;width=device-width&apos;); document.getElementsByTagName(&apos;head&apos;)[0].appendChild(meta);&quot;;
-WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
-WKUserContentController *wkUController = [[WKUserContentController alloc] init];
-[wkUController addUserScript:wkUScript];
-configuration.userContentController = wkUController;
-</code></pre><h2 id="JS交互"><a href="#JS交互" class="headerlink" title="JS交互"></a>JS交互</h2><p>我们都知道在UIWebView中可以使用自家的JavaScriptCore来进行交互非常的方便。在JavaScriptCore中有三者比较常用那就是JSContext(上下文)、JSValue（类型转换）、JSExport(js调OC模型方法)。</p>
-<h3 id="在UIWebView中的便利交互方法"><a href="#在UIWebView中的便利交互方法" class="headerlink" title="在UIWebView中的便利交互方法"></a>在UIWebView中的便利交互方法</h3><pre><code>//JSContext就为其提供着运行环境 H5上下文
-- (void)webViewDidFinishLoad:(UIWebView *)webView{
-    JSContext *jsContext = [self.webView valueForKeyPath:@&quot;documentView.webView.mainFrame.javaScriptContext&quot;];
-    self.jsContext = jsContext;
-}
-// 执行脚本增加js全局变量
-[self.jsContext evaluateScript:@&quot;var arr = [3, &apos;3&apos;, &apos;abc&apos;];&quot;];
-// ⚠️添加JS方法，需要注意的是添加的方法会覆盖原有的JS方法，因为我们是在网页加载成功后获取上下文来操作的。
-// 无参数的
-self.jsContext[@&quot;alertMessage&quot;] = ^() {
-   NSLog(@&quot;JS端调用alertMessage时就会跑到这里来！&quot;);
-};
-// 带参数的，值必须进行转换
- self.jsContext[@&quot;showDict&quot;] = ^(JSValue *value) {
-    NSArray *args = [JSContext currentArguments];
-    JSValue *dictValue = args[0];
-    NSDictionary *dict = dictValue.toDictionary;
-    NSLog(@&quot;%@&quot;,dict);
- };
-// 获取JS中的arr数据
-JSValue *arrValue = self.jsContext[@&quot;arr&quot;];
-// 异常捕获
-self.jsContext.exceptionHandler = ^(JSContext *context, JSValue *exception) {
-    weakSelf.jsContext.exception = exception;
-    NSLog(@&quot;exception == %@&quot;,exception);
-};
-// 给JS中的对象重新赋值
-OMJSObject *omObject = [[OMJSObject alloc] init];
-self.jsContext[@&quot;omObject&quot;] = omObject;
-NSLog(@&quot;omObject == %d&quot;,[omObject getSum:20 num2:40]);
-
-// 我们都知道object必须要遵守JSExport协议时，js可以直接调用object中的方法，并且需要把函数名取个别名。在JS端可以调用getS，OC可以继续使用这个getSum这个方法
-@protocol OMProtocol &lt;JSExport&gt;
-// 协议 - 协议方法 
-JSExportAs(getS, -(int)getSum:(int)num1 num2:(int)num2);
-@end
-</code></pre><h3 id="在WKWebView中如何做呢？"><a href="#在WKWebView中如何做呢？" class="headerlink" title="在WKWebView中如何做呢？"></a>在WKWebView中如何做呢？</h3><p>不能像上面那样，系统提供的是通过以下两种方法，所以是比较难受，而且还得前端使用messageHandler来调用，即安卓和iOS分开处理。</p>
-<pre><code>// 直接调用js
-NSString *jsStr = @&quot;var arr = [3, &apos;3&apos;, &apos;abc&apos;]; &quot;;
-[self.webView evaluateJavaScript:jsStr completionHandler:^(id _Nullable result, NSError * _Nullable error) {
-   NSLog(@&quot;%@----%@&quot;,result, error);
-}];
-// 下面是注册名称后，js使用messageHandlers调用了指定名称就会进入到代理中
-
-// OC我们添加了js名称后
-- (void)viewDidLoad{
-  //...
-  [wkUController addScriptMessageHandler:self name:@&quot;showtime&quot;];
-  configuration.userContentController = wkUController;
-}
-
-// JS中messageHandlers调用我们在OC中的名称一致时就会进入后面的到OC的代理
-window.webkit.messageHandlers.showtime.postMessage(&apos;&apos;);
-
-// 代理，判断逻辑
-- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message{
-    if ([message.name isEqualToString:@&quot;showtime&quot;]) {
-        NSLog(@&quot;来了！&quot;);
-    }
-    NSLog(@&quot;message == %@ --- %@&quot;,message.name,message.body); 
-}
-
-// 最后在dealloc必须移除
-[self.userContentController removeScriptMessageHandlerForName:@&quot;showtime&quot;];
-</code></pre><h3 id="一直用一直爽的交互"><a href="#一直用一直爽的交互" class="headerlink" title="一直用一直爽的交互"></a>一直用一直爽的交互</h3><p>我们上面写了两者的一些交互，虽然可以用呢，但是没有带一种很简单很轻松的境界，所以有一个开源库：WebViewJavaScriptBridge。这个开源库可以同时兼容两者，而且交互很简单，但是你必须得前端一起，否则就哦豁了。</p>
-<pre><code>// 使用
-self.wjb = [WebViewJavascriptBridge bridgeForWebView:self.webView];
-// 如果你要在VC中实现 UIWebView的代理方法 就实现下面的代码(否则省略)
-[self.wjb setWebViewDelegate:self];
-
-// 注册js方法名称
-[self.wjb registerHandler:@&quot;jsCallsOC&quot; handler:^(id data, WVJBResponseCallback responseCallback) {
-   NSLog(@&quot;currentThread == %@&quot;,[NSThread currentThread]);
-   NSLog(@&quot;data == %@ -- %@&quot;,data,responseCallback);
-}];
-
-// 调用JS
-dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [self.wjb callHandler:@&quot;OCCallJSFunction&quot; data:@&quot;OC调用JS&quot; responseCallback:^(id responseData) {
-           NSLog(@&quot;currentThread == %@&quot;,[NSThread currentThread]);
-           NSLog(@&quot;调用完JS后的回调：%@&quot;,responseData);
-        }];
-});
-</code></pre><p>前端使用实例如下，具体使用方法可以查看WebViewJavaScriptBridge。</p>
-<pre><code>function setupWebViewJavascriptBridge(callback) {
-    if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
-    if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
-    window.WVJBCallbacks = [callback];
-    var WVJBIframe = document.createElement(&apos;iframe&apos;);
-    WVJBIframe.style.display = &apos;none&apos;;
-    WVJBIframe.src = &apos;https://__bridge_loaded__&apos;;
-    document.documentElement.appendChild(WVJBIframe);
-    setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
-}
-
-setupWebViewJavascriptBridge(function(bridge) {
-
-    /* Initialize your app here */
-
-    bridge.registerHandler(&apos;JS Echo&apos;, function(data, responseCallback) {
-        console.log(&quot;JS Echo called with:&quot;, data)
-        responseCallback(data)
-    })
-    bridge.callHandler(&apos;ObjC Echo&apos;, {&apos;key&apos;:&apos;value&apos;}, function responseCallback(responseData) {
-        console.log(&quot;JS received response:&quot;, responseData)
-    })
-})
-</code></pre><h2 id="请求拦截"><a href="#请求拦截" class="headerlink" title="请求拦截"></a>请求拦截</h2><p>我们UIWebView在早期是使用- (BOOL)webView:(UIWebView <em>)webView shouldStartLoadWithRequest:(NSURLRequest </em>)request navigationType:(UIWebViewNavigationType)navigationType来根据scheme、host、pathComponents进行拦截做自定义逻辑处理。但是这种方法不是很灵活，于是就使用NSURLProtocol来进行拦截，例如微信拦截淘宝一样，直接显示一个提示。又或者是拦截请求调用本地的接口，打开相机、录音、相册等功能。还能直接拦截后改变原有的request，直接返回数据或者其他的url，在一些去除广告时可以的用得上。</p>
-<p>我们使用的时候必须要使用NSURLProtocol的子类来进行一些操作。并在使用前需要注册自定义的Class。拦截后记得进行标记一下，防止自循环多执行。可惜的是在WKWebView中不能进行拦截后处理的操作，只能监听却改变不了。源于WKWebView采用的是webkit加载，和系统的浏览器一样的机制。</p>
-<pre><code>// 子类
-@interface OMURLProtocol : NSURLProtocol&lt;NSURLSessionDataDelegate&gt;
-@property (nonatomic, strong) NSURLSession *session;
-@end
-
-// 注册
-[NSURLProtocol registerClass:[OMURLProtocol class]];
-// 1. 首先会在这里来进行拦截，返回YES则表示需要经过我们自定义处理，NO则走系统处理
-+ (BOOL)canInitWithRequest:(NSURLRequest *)request;
-
-// 2.拦截处理将会进入下一个环节, 返回一个标准化的request，可以在这里进行重定向
-+ (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request;
-
-// 3.是否成功拦截都会走这个方法, 可以在这里进行一些自定义处理
-- (void)startLoading;
-
-// 4. 任何网络请求都会走上面的拦截处理，即使我们重定向后还会再走一次或多次流程，需要标记来处理
-// 根据request获取标记值来决定是否需要拦截，在canInitWithRequest内处理
-+ (nullable id)propertyForKey:(NSString *)key inRequest:(NSURLRequest *)request;
-// 标记
-+ (void)setProperty:(id)value forKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
-// 移除标记
-+ (void)removePropertyForKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
-</code></pre><h3 id="请求头或数据混乱问题"><a href="#请求头或数据混乱问题" class="headerlink" title="请求头或数据混乱问题"></a>请求头或数据混乱问题</h3><p>还需要注意的一点是，如果实现线了拦截处理的话，我们在使用AFN和URLSession进行访问的时候拦截会发现数据或请求头可能和你拦截处理后的数据或请求不符合预期，这是因为我们在拦截的时候只是先请求了A后请求了B，这是不符合预期的，虽然URLConnection不会但是已被废弃不值得提倡使用。我们通过在拦截的时候通过LLDB打印session中配置的协议时，发现是这样的没有包含我们自定义的协议，我们通过Runtime交换方法交换protocolClasses方法，我们实现我们自己的protocolClasses方法。但是为了保证系统原有的属性，我们应该在系统原有的协议表上加上我们的协议类。在当前我们虽然可以通过[NSURLSession sharedSession].configuration.protocolClasses;获取系统默认的协议类，但是如果我们在当前自定义的类里protocolClasses写的话会造成死循环，因为我们交换了该属性的getter方法。我们使用保存类名然后存储至NSUserDefaults，取值时在还原class。</p>
-<pre><code>po session.configuration.protocolClasses
-&lt;__NSArrayI 0x600001442d00&gt;(
-_NSURLHTTPProtocol,
-_NSURLDataProtocol,
-_NSURLFTPProtocol,
-_NSURLFileProtocol,
-NSAboutURLProtocol
-)
-
-
---- // 自定义返回我们的协议类
-- (NSArray *)protocolClasses {
-    NSArray *originalProtocols = [OMURLProtocol readOriginalProtocols];
-    NSMutableArray *newProtocols = [NSMutableArray arrayWithArray:originalProtocols];
-    [newProtocols addObject:[OMURLProtocol class]];
-    return newProtocols;
-}
-
-// 我们再次打印时发现已经加上我们自定义的协议类了
-po session.configuration.protocolClasses
-&lt;__NSArrayM 0x60000041a4f0&gt;(
-_NSURLHTTPProtocol,
-_NSURLDataProtocol,
-_NSURLFTPProtocol,
-_NSURLFileProtocol,
-NSAboutURLProtocol,
-OMURLProtocol
-)
-</code></pre><hr>
-<pre><code>// 存储系统原有的协议类
-+ (void)saveOriginalProtocols: (NSArray&lt;Class&gt; *)protocols{
-    NSMutableArray *protocolNameArray = [NSMutableArray array];
-    for (Class protocol in protocols){
-        [protocolNameArray addObject:NSStringFromClass(protocol)];
-    }
-    NSLog(@&quot;协议数组为： %@&quot;, protocolNameArray);
-    [[NSUserDefaults standardUserDefaults] setObject:protocolNameArray forKey:originalProtocolsKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-// 获取系统原有的协议类
-+ (NSArray&lt;Class&gt; *)readOriginalProtocols{
-    NSArray *classNames = [[NSUserDefaults standardUserDefaults] valueForKey:originalProtocolsKey];
-    NSMutableArray *origianlProtocols = [NSMutableArray array];
-    for (NSString *name in classNames){
-        Class class = NSClassFromString(name);
-        [origianlProtocols addObject: class];
-    }
-    return origianlProtocols;
-}
-</code></pre><hr>
-<pre><code>+ (void)hookNSURLSessionConfiguration{
-    NSArray *originalProtocols = [NSURLSession sharedSession].configuration.protocolClasses;
-    [self saveOriginalProtocols:originalProtocols];
-    Class cls = NSClassFromString(@&quot;__NSCFURLSessionConfiguration&quot;) ?: NSClassFromString(@&quot;NSURLSessionConfiguration&quot;);
-    Method originalMethod = class_getInstanceMethod(cls, @selector(protocolClasses));
-    Method stubMethod = class_getInstanceMethod([self class], @selector(protocolClasses));
-    if (!originalMethod || !stubMethod) {
-        [NSException raise:NSInternalInconsistencyException format:@&quot;没有这个方法 无法交换&quot;];
-    }
-    method_exchangeImplementations(originalMethod, stubMethod);
-}
-</code></pre><h3 id="Cookie的携带问题"><a href="#Cookie的携带问题" class="headerlink" title="Cookie的携带问题"></a>Cookie的携带问题</h3><p>很多应用场景中需要使用session来进行处理，在UIWebView中很容易做到携带这些Cookie，但是由于WKWebView的机制不一样，跨域会出现丢失cookie的情况是很糟糕的。目前有两种用法：脚本和手动添加cookie。脚本不太靠谱，建议使用手动添加更为保险。</p>
-<p>// 使用脚本来添加cookie</p>
-<pre><code>// 获取去cookie数据
-- (NSString *)cookieString
-{
-    NSMutableString *script = [NSMutableString string];
-    [script appendString:@&quot;var cookieNames = document.cookie.split(&apos;; &apos;).map(function(cookie) { return cookie.split(&apos;=&apos;)[0] } );\n&quot;];
-    for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]) {
-
-        if ([cookie.value rangeOfString:@&quot;&apos;&quot;].location != NSNotFound) {
-            continue;
-        }
-        [script appendFormat:@&quot;if (cookieNames.indexOf(&apos;%@&apos;) == -1) { document.cookie=&apos;%@&apos;; };\n&quot;, cookie.name, cookie.kc_formatCookieString];
-    }
-    return script;
-}
-
-// 添加cookie
-WKUserScript * cookieScript = [[WKUserScript alloc] initWithSource:[self cookieString] injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
-[[[WKUserContentController alloc] init] addUserScript: cookieScript];
-</code></pre><p>// 添加一个分类来修复cookie丢失的问题</p>
-<pre><code>@interface NSURLRequest (Cookie)
-
-- (NSURLRequest *)fixCookie;
-
-@end
-
-@implementation NSURLRequest (Cookie)
-
-- (NSURLRequest *)fixCookie{
-    NSMutableURLRequest *fixedRequest;
-    if ([self isKindOfClass:[NSMutableURLRequest class]]) {
-        fixedRequest = (NSMutableURLRequest *)self;
-    } else {
-        fixedRequest = self.mutableCopy;
-    }
-    //防止Cookie丢失
-    NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:[NSHTTPCookieStorage sharedHTTPCookieStorage].cookies];
-    if (dict.count) {
-        NSMutableDictionary *mDict = self.allHTTPHeaderFields.mutableCopy;
-        [mDict setValuesForKeysWithDictionary:dict];
-        fixedRequest.allHTTPHeaderFields = mDict;
-    }
-    return fixedRequest;
-}
-
-@end
-
-
-  // 使用场景
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    [navigationAction.request fixCookie];
-    decisionHandler(WKNavigationActionPolicyAllow);
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/05/迁至WKWebView跨过的那些坑/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -2970,15 +2827,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3010,11 +2867,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3043,6 +2900,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">随笔</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -152,6 +152,151 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-MVP模式的学习" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/23/MVP模式的学习/">MVP模式的学习</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/23/MVP模式的学习/" class="archive-article-date">
+  	<time datetime="2019-06-23T12:02:00.876Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo</p>
+<p>打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。<br>MVP似乎有好多的变种，作者所说的这种有如下特点：<br>（原文如下：）</p>
+<pre><code>the view part of the MVP consists of both UIViews and UIViewController
+the view delegates user interactions to the presenter
+the presenter contains the logic to handle user interactions
+the presenter communicates with model layer, converts the data to UI friendly format, and updates the view
+the presenter has no dependencies to UIKit
+the view is passive (dump)
+稍微翻译一下
+MVP的 V 层是由UIViewController 和UIView 共同组成
+view 将委托presenter 对它自己的操作，（简单来说就是presenter发命令来控制view的交互，要你隐藏就隐藏，叫你show 你就乖乖的show）
+presenter拥有对 view交互的逻辑（就是上面说的意思）
+presenter跟model层通信，并将数据转化成对适应UI的数据并更新view
+presenter不需要依赖UIKit
+view层是单一，因为它是被动接受命令，没有主动能力
+</code></pre><p>presenter 作为业务逻辑的处理者，首先要向model层拿数据，所以它将可以向model层通信。其次，UI的处理权移交给了它，所以它需要与view成通讯，发送命令改变UI。同时，UI的响应将触发业务逻辑的处理，所以view 层向presenter层通讯，告诉他用户做了什么操作，需要你反馈对应的数据来更新UI。这样就完成了从用户交互获得交互反馈到整个业务逻辑。</p>
+<h2 id="先看看结构"><a href="#先看看结构" class="headerlink" title="先看看结构"></a>先看看结构</h2><p>UserViewProtocol 协议定义了一下方法，这些方法其实就是presenter对view层发送的命令</p>
+<pre><code>#import &lt;Foundation/Foundation.h&gt;
+@protocol UserViewProtocol &lt;NSObject&gt;
+-(void) userViewDataSource:(NSArray*)data;
+-(void) showIndicator;
+-(void) hideIndicator;
+-(void) showEmptyView;
+@end
+</code></pre><p>UserService 类是用来请求数据给presenter的，也能算是model层吧。我就只定义了一个方法。</p>
+<pre><code>-(void)getUserInfosSuccess:(SuccessHandler )success andFail:(FailHandler) failure
+</code></pre><p>这一层，其实也可以很复杂，这就涉及网络层的架构了</p>
+<p>ViewController类则是UI层，它实现了tableview自己的协议，还实现了用户交互的协议 UserViewProtocol，也就说，presenter向UI层发送命令，其实是发给UI层的viewController，实际上是控制器来被动的更新UI。这个不管是MVC还是MVP，view的实际控制权应该都是viewController，这个理解应该没错吧。<br>协议中的几个方法实现如下。</p>
+<pre><code>-(void)userViewDataSource:(NSArray*)data{
+ self.friendlyUIData = data;
+ [self.tableview reloadData];
+}
+-(void) showIndicator{
+ self.indicator.hidden = NO;
+}
+-(void) hideIndicator{
+ self.indicator.hidden = YES;
+}
+-(void) showEmptyView{
+ UIAlertController *alertView = [UIAlertController alertControllerWithTitle:@&quot;Alert&quot; message:@&quot;show empty view&quot; preferredStyle:UIAlertControllerStyleAlert];
+ [alertView addAction:[UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:nil]];
+ [self presentViewController:alertView animated:YES completion:^{
+ }];
+}
+</code></pre><p>另外，在viewDidload中，调用了presenter的两个public 方法</p>
+<pre><code>self.presenter = [Presenter new];
+[self.presenter attachView:self];
+[self.presenter fetchData];
+</code></pre><p>那就来看看Presenter类，这个类我在demo中加了不少的注释，主要是为了理清自己的思路</p>
+<p>先说attachView 方法，这个方法是对外公开的，目的就是为了将实现了UserViewProtocol 协议的对象（其实应该就是控制器，因为view的直接操作者就是view Controller）绑定到presenter 上，说白了就是presenter 可以直接拿到实现了UserViewProtocol 协议的对象，并且向他发送命令（协议实现的方法，前面有说到），具体该方法的实现</p>
+<pre><code>@interface Presenter()
+@property (nonatomic,strong) UserService *userService;
+@property (nonatomic,weak) id&lt;UserViewProtocol&gt; attachView;
+@end
+-(void)attachView:(id &lt;UserViewProtocol&gt;)view{
+ self.attachView = view;
+ self.userService  = [UserService new];
+}
+</code></pre><p>注意这里用了weak 来修饰attachView 树形，因为presenter和 viewController相互持有，所以必须要通过weak 来打破循环引用，这跟我们平时使用委托协议（ delegate）是一样的，只是名字换成了attachView 而已。</p>
+<p>再来说fetchData方法，公开这个方法，只是为了数据请求有个统一的接口，而不需要presenter分开多次调用，presenter自己处理所有事情，不让viewController参和进来。具体实现就看demo</p>
+<p>最后说一下</p>
+<pre><code>-(NSArray *)processOriginDataToUIFriendlyData:(NSArray *) originData{
+ NSMutableArray *friendlyUIData = [NSMutableArray new];
+ for (NSDictionary *dic in originData) {
+  if ([[dic valueForKey:@&quot;gender&quot;] isEqualToString:@&quot;males&quot;]) {
+   [friendlyUIData addObject:dic];
+  }
+ }
+ return friendlyUIData;
+}
+</code></pre><p>这个私有方法是将原始数据转换成UI所需要的数据，这样UI拿到数据就可以直接使用，而不用做各种判断，逻辑依然放在了presenter中。而且，这个数据处理可以做成协议，输出不同UI需要的数据，这个也可以看casatwy大神 关于view架构的文章。</p>
+<p><a href="https://github.com/HecvStyle/MVPDemo" target="_blank" rel="noopener">Demo</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/23/MVP模式的学习/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-runtime万能跳转界面" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1493,131 +1638,6 @@ wxmac (required dependencies)
 
 
   
-    <article id="post-通过优雅的方式强制旋转屏幕" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/05/12/通过优雅的方式强制旋转屏幕/">通过优雅的方式强制旋转屏幕</a>
-    </h1>
-  
-
-        
-        <a href="/2019/05/12/通过优雅的方式强制旋转屏幕/" class="archive-article-date">
-  	<time datetime="2019-05-12T07:47:18.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>方向旋转在日常App上基本都会用到，用的时候可能会因为赶工期而以实现功能为主，认真思考了为啥去这样做有没有bug或者后续的开发中是否还会用到。不只是屏幕旋转，还有其他的东西也是这样，导致之前做的时候感觉也会了，实际开发的时候，有时就会像喝断片一样。</p>
-<p>此文的目的是为了加深理解和巩固一下知识记忆，另外此文也附带了对屏幕旋转的一些理解和一些需要注意的地方，小心驶得万年船哇。</p>
-<h2 id="三个方向的枚举"><a href="#三个方向的枚举" class="headerlink" title="三个方向的枚举"></a>三个方向的枚举</h2><p>1.UIDeviceOrientation：是描述设备的方向，含有以下值：</p>
-<pre><code>UIDeviceOrientationUnknown,
-UIDeviceOrientationPortrait,            // 竖立
-UIDeviceOrientationPortraitUpsideDown,  // 倒竖
-UIDeviceOrientationLandscapeLeft,       // 横屏，home键在右边
-UIDeviceOrientationLandscapeRight,      // 横屏，home键在左边
-UIDeviceOrientationFaceUp,              // 屏幕朝上
-UIDeviceOrientationFaceDown             // 屏幕朝下
-</code></pre><p>其中UIDeviceOrientationLandscapeLeft可以这样理解：以home键或Home Indicator（下文仅用home键形容同等）为参照物，UIDeviceOrientationLandscapeRight就是设备向右旋转了，所以home键在左侧。反之亦然。</p>
-<p>2。UIInterfaceOrientation：描述的是页面的方向，含有以下值：</p>
-<pre><code>UIInterfaceOrientationUnknown            = UIDeviceOrientationUnknown,
-UIInterfaceOrientationPortrait           = UIDeviceOrientationPortrait,
-UIInterfaceOrientationPortraitUpsideDown = UIDeviceOrientationPortraitUpsideDown,
-UIInterfaceOrientationLandscapeLeft      = UIDeviceOrientationLandscapeRight,
-UIInterfaceOrientationLandscapeRight     = UIDeviceOrientationLandscapeLeft
-</code></pre><p>其中之所以UIInterfaceOrientationLandscapeLeft和UIDeviceOrientationLandscapeRight等价，就是因为设备旋转后，页面需要向反方向旋转才能符合正常使用的规范。</p>
-<p>3 UIInterfaceOrientationMask: 作用是在指定的视图控制器中支持的页面多种方向的集合，含有以下值</p>
-<pre><code>UIInterfaceOrientationMaskPortrait = (1 &lt;&lt; UIInterfaceOrientationPortrait),
-UIInterfaceOrientationMaskLandscapeLeft = (1 &lt;&lt; UIInterfaceOrientationLandscapeLeft),
-UIInterfaceOrientationMaskLandscapeRight = (1 &lt;&lt; UIInterfaceOrientationLandscapeRight),
-UIInterfaceOrientationMaskPortraitUpsideDown = (1 &lt;&lt; UIInterfaceOrientationPortraitUpsideDown),
-
-UIInterfaceOrientationMaskLandscape = (UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight),
-
-UIInterfaceOrientationMaskAll = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight | UIInterfaceOrientationMaskPortraitUpsideDown),
-
-UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight),
-</code></pre><p>第一个枚举是用来描述设备的方向；第二个枚举是用来描述页面的方向；第三个枚举则是用来描述页面可支持的方向集合。另外设备面朝上和朝下两种情况通常不做考虑。</p>
-<h2 id="获取设备的方向"><a href="#获取设备的方向" class="headerlink" title="获取设备的方向"></a>获取设备的方向</h2><p>1 可以通过获取设备的orientation属性值来判断当前设备的方向。</p>
-<p>2 有些时候需要通过监听来获取设备的方向，需要通过使用通知来监听，但是有个注意的地方就是从设备方向改变的通知中获取数据前后需要调用一对方法：<br>beginGeneratingDeviceOrientationNotifications和endGeneratingDeviceOrientationNotifications</p>
-<pre><code>// 通过通知名：UIDeviceOrientationDidChangeNotification 来获取
-// 调用生成设备方向变化的通知方法
-[[NSNotificationCenter defaultCenter] beginGeneratingDeviceOrientationNotifications];
-[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:UIDeviceOrientationDidChangeNotification object:nil];
-
-// ...
-
-// 移除通知前需调用结束生成设备方向变化的通知
-[[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-[[NSNotificationCenter defaultCenter] removeObserver:self];
-</code></pre><p>3 有点需要非常注意的是：如果用户在控制栏锁定了屏幕方向，收不到方向改变的通知，包括即使你所在的试图控制器支持多个方向，也只会强转第一个方向。</p>
-<p>4 还有一点就是状态栏的问题，如果没有设置状态的样式，在强转横屏时将会隐藏状态栏。</p>
-<p>5 另外使用此种方式时可能会收到状态UIDeviceOrientationUnknown，比如第一次进入app的过程中以及只支持竖屏的情况时，但是一般跳转时会有几次的方向回调的，当出现这个状态时可以返回竖屏的状态。</p>
-<h2 id="设备旋转的设置的几种方式"><a href="#设备旋转的设置的几种方式" class="headerlink" title="设备旋转的设置的几种方式"></a>设备旋转的设置的几种方式</h2><p>1 因为设备支持的方向旋转有几种方式</p>
-<p>项目工程的设置：在工程的General和info.plist中设置都是一样的，因为数据都存储在info.plist中</p>
-<p>AppDelegate中的设置：通过在代理中- (UIInterfaceOrientationMask)application:(UIApplication <em>)application supportedInterfaceOrientationsForWindow:(UIWindow </em>)window设置支持的方向。</p>
-<p>单个视图控制控制器的设置：需要其父控制器UITabBarController或UINavigationController也支持当前控制器的方向才行。</p>
-<p>2 上述方式设置可以简单理解为：项目工程的设置为App默认设置；AppDelegate中的设置为你当前设置的，所以会覆盖项目工程的设置；而单个视图控制器的设置为当前页面设置，但是受AppDelegate中的影响。</p>
-<p>3 默认创建应用将会默认勾选除 Portrait Upside down这个选项外的方向。</p>
-<p>4 即使你一个都不勾选，应用还是会默认以 Portrait 的方式。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/05/12/通过优雅的方式强制旋转屏幕/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/6/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/8/">Next &raquo;</a>
@@ -1727,15 +1747,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1767,11 +1787,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1800,6 +1820,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">随笔</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">

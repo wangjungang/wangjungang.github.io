@@ -152,6 +152,124 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-MySql分页查询优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/30/MySql分页查询优化/">MySql分页查询优化</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/30/MySql分页查询优化/" class="archive-article-date">
+  	<time datetime="2018-11-30T03:31:42.396Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-30</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当需要从数据库查询的表有上万条记录的时候，一次性查询所有结果会变得很慢，特别是随着数据量的增加特别明显，这时需要使用分页查询。对于数据库分页查询，也有很多种方法和优化的点。下面简单说一下我知道的一些方法。</p>
+<h2 id="一般分页查询"><a href="#一般分页查询" class="headerlink" title="一般分页查询"></a>一般分页查询</h2><p>一般分页查询采用limit page,pagesize 格式来操作</p>
+<p>例如</p>
+<p>需要查询user表中的第一页的数据，每一页数据有10个</p>
+<pre><code>SELECT * FROM New_info.user limit 1,10;
+</code></pre><p>如果查询user表中第二页的数据，每一页有15个数据</p>
+<pre><code>SELECT * FROM New_info.user limit 2,15;
+</code></pre><p>LIMIT 子句可以被用于指定 SELECT 语句返回的记录数。需注意以下几点：</p>
+<ul>
+<li>第一个参数指定第一个返回记录行的偏移量</li>
+<li>第二个参数指定返回记录行的最大数目</li>
+<li>如果只给定一个参数：它表示返回最大的记录行数目</li>
+<li>第二个参数为 -1 表示检索从某一个偏移量到记录集的结束所有的记录行</li>
+<li>初始记录行的偏移量是 0(而不是 1)</li>
+</ul>
+<p>弊端</p>
+<p>随着查询偏移的增大，尤其查询偏移大于10万以后，查询时间急剧增加。</p>
+<p>这种分页查询方式会从数据库第一条记录开始扫描，所以越往后，查询速度越慢，而且查询的数据越多，也会拖慢总查询速度。</p>
+<h2 id="使用子查询优化"><a href="#使用子查询优化" class="headerlink" title="使用子查询优化"></a>使用子查询优化</h2><p>这种方式先定位偏移位置的 id，然后往后查询，这种方式适用于 id 递增的情况。</p>
+<p>适应场景: 适用于数据量多的情况(元组数上万)</p>
+<pre><code>SELECT * FROM New_info.user where id&gt;10 limit 2,15;
+</code></pre><p>如果id不是递增的，容易漏掉数据</p>
+<h2 id="基于索引再排序"><a href="#基于索引再排序" class="headerlink" title="基于索引再排序"></a>基于索引再排序</h2><p>适应场景：</p>
+<p>适用于数据量多的情况（元祖数上万） 最好PRDER BY后的列对象是主键或者唯一 </p>
+<p>所以，使得ORDER BY操作能够利用索引被消除但结果集是稳定的</p>
+<p>原因：</p>
+<p>索引扫描，速度会很快，但是Mysql的排序操作，只有ASC没有DESC </p>
+<p>代码示例</p>
+<pre><code>SELECT * FROM New_info.user WHERE id&gt;(2*10) ORDER BY id ASC LIMIT 10;
+</code></pre><h2 id="基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）"><a href="#基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）" class="headerlink" title="基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）"></a>基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）</h2><p>适应场景：<br>大数据量</p>
+<p>原因：</p>
+<p>索引扫描，速度会很快，prepare语句比一般的查询语句块一点</p>
+<p>代码示例：</p>
+<pre><code>PREPARE stmt_name FROM SELECT * FROM 表名称 WHERE id_pk &gt; (？* ？) ORDER BY id_pk ASC LIMIT M
+</code></pre><h2 id="利用MySQL支持ORDER操作可以利用索引快速定位部分元组-避免全表扫描"><a href="#利用MySQL支持ORDER操作可以利用索引快速定位部分元组-避免全表扫描" class="headerlink" title="利用MySQL支持ORDER操作可以利用索引快速定位部分元组,避免全表扫描"></a>利用MySQL支持ORDER操作可以利用索引快速定位部分元组,避免全表扫描</h2><p>比如: 读第1000到1019行元组(pk是主键/唯一键).</p>
+<pre><code>SELECT * FROM your_table WHERE pk&gt;=1000 ORDER BY pk ASC LIMIT 0,20
+</code></pre><h2 id="利用”子查询-连接-索引”快速定位元组的位置-然后再读取元组-道理同方法5"><a href="#利用”子查询-连接-索引”快速定位元组的位置-然后再读取元组-道理同方法5" class="headerlink" title="利用”子查询/连接+索引”快速定位元组的位置,然后再读取元组. 道理同方法5"></a>利用”子查询/连接+索引”快速定位元组的位置,然后再读取元组. 道理同方法5</h2><p>例如(id是主键/唯一键,蓝色字体时变量):</p>
+<p>利用子查询示例:</p>
+<pre><code>SELECT * FROM your_table WHERE id &lt;= 
+(SELECT id FROM your_table ORDER BY id desc LIMIT ($page-1)*$pagesize ORDER BY id desc LIMIT $pagesize
+</code></pre><p>利用连接示例:</p>
+<pre><code>SELECT * FROM your_table AS t1 
+JOIN (SELECT id FROM your_table ORDER BY id desc LIMIT ($page-1)*$pagesize AS t2 
+WHERE t1.id &lt;= t2.id ORDER BY t1.id desc LIMIT $pagesize;
+</code></pre><p>mysql大数据量使用limit分页，随着页码的增大，查询效率越低下。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">MySql</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/30/MySql分页查询优化/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-从git add到branch" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1885,97 +2003,6 @@ let stringCell: StringCell? = createCell()
 
 
   
-    <article id="post-Runloop等待条件满足再向下执行但不主卡线程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/">Runloop等待条件满足再向下执行但不主卡线程</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/" class="archive-article-date">
-  	<time datetime="2018-11-27T04:27:18.019Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当我们需要等一个异步的结果才能向下执行代码，写回调又很麻烦，功能相对简单的时候</p>
-<pre><code>- (IBAction)start:(id)sender
-{
-pageStillLoading = YES;
-
-[NSThread detachNewThreadSelector:@selector(loadPageInBackground:)toTarget:self withObject:nil];
-
-[progress setHidden:NO];
-
-//执行代码
-while (pageStillLoading) {
-[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-}
-
-[progress setHidden:YES];
-
-}
-</code></pre><p>当loadPageInBackground方法执行完了之后才让pageStillLoading=NO把进度条隐藏。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/14/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/16/">Next &raquo;</a>
@@ -2085,15 +2112,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2125,11 +2152,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2158,6 +2185,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">随笔</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
