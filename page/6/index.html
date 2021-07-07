@@ -152,6 +152,257 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS适配Dark模式（OC" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/08/29/iOS适配Dark模式（OC/">iOS适配Dark模式（OC）</a>
+    </h1>
+  
+
+        
+        <a href="/2019/08/29/iOS适配Dark模式（OC/" class="archive-article-date">
+  	<time datetime="2019-08-29T04:25:47.552Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS 13终于引来了暗黑模式。</p>
+<p>每当新特性的到来，iOS开发者们既紧张又有点小兴奋，怀揣着被虐的心态，让我们来看看暗黑模式到底是个啥。</p>
+<p>虽然这是一个设计驱动的需求，但是本着一颗虔诚(暴躁)的心，我们还是要一步步来，“工欲善其事、必先利其器”，搞清楚应该怎么做。</p>
+<p>下载 Xcode11，跑起来你的项目。模拟器启动后，在“设置”-“开发者”中打开“Dark Appearance”后，你的项目就自动运行在暗黑模式了。</p>
+<p>有些界面会很奇怪，这很正常，可以从一个界面入手，一步步优化它。</p>
+<p>开发者主要从颜色和图片两个方面进行适配，我们不需要关心切换模式时该如何操作，这些都由系统帮我们实现</p>
+<h2 id="颜色适配"><a href="#颜色适配" class="headerlink" title="颜色适配"></a>颜色适配</h2><p>iOS13 之前 UIColor只能表示一种颜色，而从 iOS13 开始UIColor是一个动态的颜色，在Light Mode和Dark Mode可以分别设置不同的颜色。</p>
+<p>iOS13系统提供了一些动态颜色</p>
+<pre><code>@property (class, nonatomic, readonly) UIColor *systemBrownColor        API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *systemIndigoColor       API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *systemGray2Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemGray3Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemGray4Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemGray5Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemGray6Color        API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *labelColor              API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *secondaryLabelColor     API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *tertiaryLabelColor      API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *quaternaryLabelColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *linkColor               API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *placeholderTextColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *separatorColor          API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *opaqueSeparatorColor    API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+@property (class, nonatomic, readonly) UIColor *systemBackgroundColor                   API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *secondarySystemBackgroundColor          API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *tertiarySystemBackgroundColor           API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemGroupedBackgroundColor            API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *secondarySystemGroupedBackgroundColor   API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *tertiarySystemGroupedBackgroundColor    API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *systemFillColor                         API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *secondarySystemFillColor                API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *tertiarySystemFillColor                 API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+@property (class, nonatomic, readonly) UIColor *quaternarySystemFillColor               API_AVAILABLE(ios(13.0)) API_UNAVAILABLE(tvos, watchos);
+</code></pre><p>实例</p>
+<p>[self.view setBackgroundColor:[UIColor systemBackgroundColor]];<br>[self.titleLabel setTextColor:[UIColor labelColor]];<br>[self.detailLabel setTextColor:[UIColor placeholderTextColor]];</p>
+<h3 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a>效果展示</h3><p><img src="http://img.wangjungang.cn/Lpkxxs.png" alt=""></p>
+<p>用法和iOS13之前的一样，使用系统提供的这些动态颜色，不需要其他的适配操作</p>
+<h3 id="自定义动态UIColor"><a href="#自定义动态UIColor" class="headerlink" title="自定义动态UIColor"></a>自定义动态UIColor</h3><p>在实际开发过程，系统提供的这些颜色还远远不够，因此我们需要创建更多的动态颜色</p>
+<h4 id="初始化动态UIColor方法"><a href="#初始化动态UIColor方法" class="headerlink" title="初始化动态UIColor方法"></a>初始化动态UIColor方法</h4><p>iOS13 UIColor增加了两个初始化方法，使用以下方法可以创建动态UIColor</p>
+<p>注:一个是类方法，一个是实例方法</p>
+<pre><code>+ (UIColor *)colorWithDynamicProvider:(UIColor * (^)(UITraitCollection *))dynamicProvider API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+- (UIColor *)initWithDynamicProvider:(UIColor * (^)(UITraitCollection *))dynamicProvider API_AVAILABLE(ios(13.0), tvos(13.0)) API_UNAVAILABLE(watchos);
+</code></pre><ul>
+<li>这两个方法要求传一个block进去</li>
+<li>当系统在LightMode和DarkMode之间相互切换时就会触发此回调</li>
+<li>这个block会返回一个UITraitCollection类</li>
+<li><p>我们需要使用其属性userInterfaceStyle，它是一个枚举类型，会告诉我们当前是LightMode还是DarkMode</p>
+<pre><code>typedef NS_ENUM(NSInteger, UIUserInterfaceStyle) {
+    UIUserInterfaceStyleUnspecified,
+    UIUserInterfaceStyleLight,
+    UIUserInterfaceStyleDark,
+} API_AVAILABLE(tvos(10.0)) API_AVAILABLE(ios(12.0)) API_UNAVAILABLE(watchos);
+</code></pre></li>
+</ul>
+<h4 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h4><pre><code>UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
+        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
+            return [UIColor redColor];
+        }
+        else {
+            return [UIColor greenColor];
+        }
+    }];
+
+ [self.bgView setBackgroundColor:dyColor];
+</code></pre><h4 id="效果展示-1"><a href="#效果展示-1" class="headerlink" title="效果展示"></a>效果展示</h4><p><img src="http://img.wangjungang.cn/JQQHYK.png" alt=""></p>
+<h2 id="图片适配"><a href="#图片适配" class="headerlink" title="图片适配"></a>图片适配</h2><ul>
+<li>打开Assets.xcassets</li>
+<li>新建一个Image set</li>
+</ul>
+<p><img src="http://img.wangjungang.cn/sXRNaH.png" alt=""></p>
+<ul>
+<li><p>打开右侧工具栏，点击最后一栏，找到Appearances，选择Any，Dark<br><img src="http://img.wangjungang.cn/Q2JXtr.png" alt=""></p>
+</li>
+<li><p>将两种模式下不同的图片资源都拖进去</p>
+</li>
+</ul>
+<p><img src="http://img.wangjungang.cn/dgaWfi.png" alt=""></p>
+<ul>
+<li><p>使用该图片</p>
+<pre><code>[_logoImage setImage:[UIImage imageNamed:@&quot;icon_logo&quot;]];
+</code></pre></li>
+</ul>
+<p><img src="http://img.wangjungang.cn/BXxZgC.png" alt=""></p>
+<p>大功告成，完成颜色和图片的Dark Mode适配</p>
+<h2 id="获取当前模式-Light-or-Dark"><a href="#获取当前模式-Light-or-Dark" class="headerlink" title="获取当前模式(Light or Dark)"></a>获取当前模式(Light or Dark)</h2><p>有时候我们需要知道当前处于什么模式，并根据不同的模式执行不同的操作</p>
+<p>iOS13中CGColor依然只能表示单一的颜色</p>
+<p>通过调用UITraitCollection.currentTraitCollection.userInterfaceStyle<br>获取当前模式</p>
+<h4 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h4><pre><code>if (UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+      [self.titleLabel setText:@&quot;DarkMode&quot;];
+ }
+  else {
+      [self.titleLabel setText:@&quot;LightMode&quot;];
+  }
+</code></pre><h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="监听模式切换"><a href="#监听模式切换" class="headerlink" title="监听模式切换"></a>监听模式切换</h3><p>有时我们需要监听系统模式的变化，并作出响应</p>
+<p>那么我们就需要在需要监听的viewController中，重写下列函数</p>
+<pre><code>// 注意:参数为变化前的traitCollection
+- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection;
+
+// 判断两个UITraitCollection对象是否不同
+- (BOOL)hasDifferentColorAppearanceComparedToTraitCollection:(UITraitCollection *)traitCollection;
+</code></pre><h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    // trait发生了改变
+    if ([self.traitCollection hasDifferentColorAppearanceComparedToTraitCollection:previousTraitCollection]) {
+    // 执行操作
+    }
+    }
+</code></pre><h3 id="CGColor适配"><a href="#CGColor适配" class="headerlink" title="CGColor适配"></a>CGColor适配</h3><p>我们知道iOS13后，UIColor能够表示动态颜色，但是CGColor依然只能表示一种颜色，那么对于CALayer等对象如何适配暗黑模式呢?当然是利用上一节提到的监听模式切换的方法啦。</p>
+<h4 id="方式一-resolvedColor"><a href="#方式一-resolvedColor" class="headerlink" title="方式一:resolvedColor"></a>方式一:resolvedColor</h4><pre><code>// 通过当前traitCollection得到对应UIColor
+// 将UIColor转换为CGColor
+- (UIColor *)resolvedColorWithTraitCollection:(UITraitCollection *)traitCollection;
+</code></pre><p>示例</p>
+<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+
+    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
+        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
+            return [UIColor redColor];
+        }
+        else {
+            return [UIColor greenColor];
+        }
+    }];
+    UIColor *resolvedColor = [dyColor resolvedColorWithTraitCollection:previousTraitCollection];
+    layer.backgroundColor = resolvedColor.CGColor;
+</code></pre><h4 id="方式二-performAsCurrent"><a href="#方式二-performAsCurrent" class="headerlink" title="方式二:performAsCurrent"></a>方式二:performAsCurrent</h4><pre><code>// 使用当前trainCollection调用此方法
+- (void)performAsCurrentTraitCollection:(void (^)(void))actions;
+</code></pre><p>示例</p>
+<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+
+    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
+        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
+            return [UIColor redColor];
+        }
+        else {
+            return [UIColor greenColor];
+        }
+    }];
+    [self.traitCollection performAsCurrentTraitCollection:^{
+        layer.backgroundColor = dyColor.CGColor;
+    }];
+
+}
+</code></pre><h4 id="最简单的方法"><a href="#最简单的方法" class="headerlink" title="最简单的方法"></a>最简单的方法</h4><p>直接设置为一个动态UIColor的CGColor即可</p>
+<pre><code>- (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+    [super traitCollectionDidChange:previousTraitCollection];
+    UIColor *dyColor = [UIColor colorWithDynamicProvider:^UIColor * _Nonnull(UITraitCollection * _Nonnull trainCollection) {
+        if ([trainCollection userInterfaceStyle] == UIUserInterfaceStyleLight) {
+            return [UIColor redColor];
+        }
+        else {
+            return [UIColor greenColor];
+        }
+    }];
+        layer.backgroundColor = dyColor.CGColor;
+}
+</code></pre><p>!!! 设置layer颜色都是在traitCollectionDidChange中，意味着如果没有发生模式切换，layer将会没有颜色，需要设置一个基本颜色</p>
+<h3 id="模式切换时打印log"><a href="#模式切换时打印log" class="headerlink" title="模式切换时打印log"></a>模式切换时打印log</h3><p>模式切换时自动打印log，就不需要我们一次又一次的执行po命令了</p>
+<p>在Xcode菜单栏Product-&gt;Scheme-&gt;Edit Scheme</p>
+<p>选择Run-&gt;Arguments-&gt;Arguments Passed On Launch</p>
+<p>添加以下命令即可</p>
+<p>-UITraitCollectionChangeLoggingEnabled YES</p>
+<p><img src="http://img.wangjungang.cn/SUAYYg.png" alt=""></p>
+<h2 id="强行设置App模式"><a href="#强行设置App模式" class="headerlink" title="强行设置App模式"></a>强行设置App模式</h2><p>当系统设置为Light Mode时，对某些App的个别页面希望一直显示Dark Mode下的样式，这个时候就需要强行设置当前ViewController的模式了</p>
+<pre><code>// 设置当前view或viewCongtroller的模式
+@property(nonatomic) UIUserInterfaceStyle overrideUserInterfaceStyle;
+</code></pre><h4 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h4><pre><code>// 设置为Dark Mode即可
+[self setOverrideUserInterfaceStyle:UIUserInterfaceStyleDark];
+</code></pre><p>注意!!!</p>
+<p>当我们强行设置当前viewController为Dark Mode后，这个viewController下的view都是Dark Mode</p>
+<p>由这个ViewController present出的ViewController不会受到影响，依然跟随系统的模式<br>要想一键设置App下所有的ViewController都是Dark Mode，请直接在Window上执行<br>overrideUserInterfaceStyle</p>
+<p>对window.rootViewController强行设置Dark Mode也不会影响后续present出的ViewController的模式</p>
+<h2 id="NSAttributedString优化"><a href="#NSAttributedString优化" class="headerlink" title="NSAttributedString优化"></a>NSAttributedString优化</h2><h3 id="不建议的做法"><a href="#不建议的做法" class="headerlink" title="不建议的做法"></a>不建议的做法</h3><pre><code>NSDictionary *dic = @{NSFontAttributeName:[UIFont systemFontOfSize:16]};
+NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富文本文案&quot; attributes:dic];
+</code></pre><h3 id="推荐的做法"><a href="#推荐的做法" class="headerlink" title="推荐的做法"></a>推荐的做法</h3><pre><code>// 添加一个NSForegroundColorAttributeName属性
+NSDictionary *dic = @{NSFontAttributeName:[UIFont systemFontOfSize:16],NSForegroundColorAttributeName:[UIColor labelColor]};
+NSAttributedString *str = [[NSAttributedString alloc] initWithString:@&quot;富文本文案&quot; attributes:dic];
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/08/29/iOS适配Dark模式（OC/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS适配Dark模式（swift）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2175,199 +2426,6 @@ static inline bool isCircle(float cx, float cy, float r, float px, float py) {
 
 
   
-    <article id="post-使用贝塞尔曲线绘制水波纹" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/使用贝塞尔曲线绘制水波纹/">使用贝塞尔曲线绘制水波纹</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/23/使用贝塞尔曲线绘制水波纹/" class="archive-article-date">
-  	<time datetime="2019-06-23T13:48:06.223Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="思路："><a href="#思路：" class="headerlink" title="思路："></a>思路：</h2><p>使用贝塞尔曲线绘制正弦曲线；使用CAShapeLayer绘制形状；使用CADisplayLink做刷屏；</p>
-<p>CADisplayLink是一个能让我们以和屏幕刷新率相同的频率将内容画到屏幕上的定时器。一但 CADisplayLink以特定的模式注册到runloop之后，每当屏幕需要刷新的时候，runloop就会调用CADisplayLink绑定的target上的selector；iOS设备的刷新频率事60HZ也就是每秒60次。那么每一次刷新的时间就是1/60秒 大概16.7毫秒；下面直接上代码：</p>
-<h2 id="一-创建THWave类，继承于UIView"><a href="#一-创建THWave类，继承于UIView" class="headerlink" title="一. 创建THWave类，继承于UIView"></a>一. 创建THWave类，继承于UIView</h2><pre><code>/** 浪宽： 一个完整的浪的宽度 */
-@property (nonatomic, assign) CGFloat waveWidth;
-
-/** 浪高： 波峰到波谷的距离 */
-@property (nonatomic, assign) CGFloat waveHeight;
-
-/** 浪速： 浪线的移动速度 */
-@property (nonatomic, assign) CGFloat waveSpeed;
-
-/** 浪速： 浪的内填充颜色 */
-@property (nonatomic, strong) UIColor *waveColor;
-
-/** 返回浪的Y点 */
-@property (nonatomic, copy) WaveYBlock waveY;
-
-
-/** 开始波动 */
-- (void)startWaveAnimation;
-/** 结束波动 */
-- (void)endWaveAnimation;
-</code></pre><h2 id="二-创建CAShapeLayer"><a href="#二-创建CAShapeLayer" class="headerlink" title="二. 创建CAShapeLayer"></a>二. 创建CAShapeLayer</h2><pre><code>#pragma mark - initUI
-- (void)initUI{
-    // 设置底色
-    self.backgroundColor = [UIColor whiteColor];
-
-    // 创建layer
-    _waveLayer = [CAShapeLayer layer];
-    [self.layer addSublayer:_waveLayer];
-}
-
-#pragma mark - 设置浪高
-- (void)setWaveHeight:(CGFloat)waveHeight{
-    _waveHeight = waveHeight;
-
-    CGRect frame = self.bounds;
-    frame.origin.y = frame.size.height - self.waveHeight;
-    frame.size.height = self.waveHeight;
-    _waveLayer.frame = frame;
-
-}
-#pragma mark - 设置浪色
-- (void)setWaveColor:(UIColor *)waveColor{
-    _waveColor = waveColor;
-    _waveLayer.fillColor = waveColor.CGColor;
-}
-</code></pre><h2 id="三-创建刷屏器"><a href="#三-创建刷屏器" class="headerlink" title="三. 创建刷屏器"></a>三. 创建刷屏器</h2><pre><code>#pragma mark - 开始和结束动画
-- (void)startWaveAnimation{
-    self.timer = [CADisplayLink displayLinkWithTarget:self selector:@selector(wave)];
-    [self.timer addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-}
-- (void)endWaveAnimation{
-    [self.timer invalidate];
-    self.timer = nil;
-}
-</code></pre><h2 id="四-绘制"><a href="#四-绘制" class="headerlink" title="四. 绘制"></a>四. 绘制</h2><pre><code>// 动画实现
-- (void)wave{
-
-    // 1. 随机
-    int speed = [@(self.waveSpeed) intValue];
-    int num = arc4random() % speed;
-    self.offset += num;
-
-    CGFloat width = self.bounds.size.width;
-    CGFloat height = self.waveHeight;
-    CGFloat y = 0.f;
-    // 2. 绘线
-    UIBezierPath *path = [UIBezierPath bezierPath];
-    [path moveToPoint:CGPointMake(0, height)];
-    for (CGFloat x = 0.f; x &lt;= width; x++) {
-        y = height * sinf(2*M_PI/self.waveWidth *x - self.offset * 0.0045);
-        [path addLineToPoint:CGPointMake(x, y)];
-    }
-
-    // 3. 返回x等于中心点时的Y值
-    CGFloat centerX = self.bounds.size.width / 2.0;
-    CGFloat centerY = height * sinf(2*M_PI/self.waveWidth * centerX - self.offset * 0.0045);
-    if (self.waveY) {
-        self.waveY(centerY);
-    }
-
-    // 4. 闭合曲线
-    [path addLineToPoint:CGPointMake(width, height)];
-    [path addLineToPoint:CGPointMake(0, height)];
-    [path closePath];
-    self.waveLayer.path = path.CGPath;
-}
-</code></pre><h2 id="五-外部引用-顺便加条小船"><a href="#五-外部引用-顺便加条小船" class="headerlink" title="五. 外部引用,顺便加条小船"></a>五. 外部引用,顺便加条小船</h2><pre><code>#pragma mark - creatWave
--(void)creatWave{
-    // 1. view 增加浪
-    [self.view addSubview: ({
-        THWave *wave = [[THWave alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 300)];
-        wave.waveHeight = 18;
-        wave.waveSpeed = 15;
-        wave.waveWidth = 300;
-        wave.waveColor = [UIColor colorWithRed:48/255.0 green:204/255.0 blue:249/255.0 alpha:1];
-
-        // 2. 浪增加船
-        UIImageView *boat;
-        [wave addSubview:({
-            boat = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@&quot;boat&quot;]];
-            boat.bounds = CGRectMake(0, 0, 123.3, 106.6);
-            boat.contentMode = UIViewContentModeScaleToFill;
-            boat;
-        })];
-
-        // 3. 弱化，调整船的位置
-        __weak typeof(self)weakSelf = self;
-        __weak typeof(wave)weakWave = wave;
-        wave.waveY = ^(CGFloat waveY){
-            CGRect frame = boat.bounds;
-            frame.origin.x = CGRectGetWidth(weakSelf.view.frame)/2.0 - CGRectGetWidth(frame)/2.0;
-            frame.origin.y = weakWave.bounds.size.height - boat.bounds.size.height - weakWave.waveHeight + waveY;
-            boat.frame = frame;
-        };
-        [wave startWaveAnimation];
-        wave;
-    })];
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/使用贝塞尔曲线绘制水波纹/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -2469,10 +2527,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
@@ -2485,7 +2539,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2493,11 +2551,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2509,6 +2563,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
@@ -2517,19 +2575,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2549,11 +2607,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">随笔</a>
+                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
+                <a href="javascript:void(0)" class="js-tag color3">随笔</a>
               </li>
              
               <li class="article-tag-list-item">
