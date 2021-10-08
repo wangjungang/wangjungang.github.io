@@ -152,6 +152,160 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Git进阶使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/20/Git进阶使用/">Git进阶使用</a>
+    </h1>
+  
+
+        
+        <a href="/2020/03/20/Git进阶使用/" class="archive-article-date">
+  	<time datetime="2020-03-20T02:52:19.557Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>git reflog处理代码丢失 &amp; 协作开发保证git信息简洁</p>
+<h2 id="git-reflog-解决提交代码丢失-detached-head"><a href="#git-reflog-解决提交代码丢失-detached-head" class="headerlink" title="git reflog 解决提交代码丢失 detached-head"></a>git reflog 解决提交代码丢失 detached-head</h2><p>reflog 是 Git 操作的一道安全保障，它能够记录几乎所有本地仓库的改变。包括所有分支 commit 提交，已经删除（其实并未被实际删除）commit 都会被记录。总结而言，只要 HEAD 发生变化，就可以通过 reflog 查看到。</p>
+<p>日常开发中，切换分支误操作，造成本地代码修改丢失。</p>
+<p>此时，可以借助 git reflog 找回丢失的代码修改</p>
+<h3 id="丢失产生原因和步骤"><a href="#丢失产生原因和步骤" class="headerlink" title="丢失产生原因和步骤"></a>丢失产生原因和步骤</h3><p>首先在 master 分支上开发，此时线上出现 bug 且回到旧版本的 tag。这时 master 分支上有一部分代码修改但未提交。</p>
+<p>在 master 分支上执行 git status，有未提交的代码，如下图所示</p>
+<p><img src="http://img.wangjungang.cn/0YgXDo.jpg" alt=""></p>
+<p>在 master 分支上执行 git tag查看标签信息，如下图所示</p>
+<p><img src="http://img.wangjungang.cn/bAMk3d.jpg" alt=""></p>
+<p>此时有未提交的代码，然后执行 git checkout v1.0</p>
+<p><img src="http://img.wangjungang.cn/B99qds.jpg" alt=""></p>
+<p>这个时候，提示当前分支为 detached HEAD</p>
+<p>然后再执行 git add ./git commit 和 git checkout master，切换回 master 分支。这个时候发现 detached HEAD 分支不见了，master 分支上未提交的代码也不见了。</p>
+<h3 id="代码找回"><a href="#代码找回" class="headerlink" title="代码找回"></a>代码找回</h3><p>执行 git reflog 查看提交记录</p>
+<p><img src="http://img.wangjungang.cn/VQg53Y.jpg" alt=""></p>
+<p>查找对应提交的 commitId 为 247e11b，然后执行下述命令行，找回丢失的代码</p>
+<pre><code>git checkout 247e11b    //检出对应的提交
+git checkout -b diff    //新建一个新的diff分支
+git checkout master     //切换到master分支
+git merge diff          //将新建的diff分支合并到master分支
+</code></pre><h2 id="删除所有历史提交记录"><a href="#删除所有历史提交记录" class="headerlink" title="删除所有历史提交记录"></a>删除所有历史提交记录</h2><p>此处介绍如何删除所有历史提交记录，形成一个全新的仓库。</p>
+<ul>
+<li><p>Checkout</p>
+<pre><code>git checkout --orphan new_branch
+</code></pre></li>
+<li><p>Add all the files</p>
+<pre><code>git add -A
+
+//等效于 git add --all 或 git add .
+</code></pre></li>
+</ul>
+<hr>
+<p>git add 中使用参数 -A 或 –all 表示追踪所有操作，包含新增、修改和删除</p>
+<p>Git 2.0版开始，-A 参数为默认参数，即 git add . 等效于 git add -A 或 git add –all</p>
+<ul>
+<li><p>Commit the changes</p>
+<pre><code>git commit -am &quot;commit message&quot;
+</code></pre></li>
+<li><p>Delete the branch</p>
+<pre><code>git branch -D master   //同时删除本地和远程分支
+</code></pre></li>
+<li><p>Rename the current branch to master</p>
+<pre><code>git branch -m master
+</code></pre><ul>
+<li><p>force update your repository</p>
+<pre><code>git push -f origin master
+</code></pre></li>
+</ul>
+</li>
+</ul>
+<p>下面对上述步骤进行说明</p>
+<h3 id="git-checkout-–orphan"><a href="#git-checkout-–orphan" class="headerlink" title="git checkout –orphan"></a>git checkout –orphan</h3><p>如果你的某个分支上积累了无数次的无意义的提交，git log 信息满天飞，那么可以使用 git checkout –orphan &lt;new_branch_name&gt;</p>
+<p>基于当前分支创建一个新的“孤儿(orphan)”的分支，没有任何提交历史，但包含当前分支所有内容</p>
+<p>执行上述命令后，工作区（Workspace）中所有文件均被认为在该操作中新增(git statue 查看状态，所有文件状态均为 new file，如下图所示)，此时执行 git add . 会把所有文件添加到缓存区（Index）</p>
+<p><img src="http://img.wangjungang.cn/mLQAVc.jpg" alt=""></p>
+<p>严格意义上说，执行 git checkout –orphan &lt;new_branch_name&gt; 后，创建的并不是一个分支，因为此时 HEAD 指向的引用中没有 commit 值。只有在进行一次提交后，它才算得上真正的分支。</p>
+<pre><code>orphan 译为“孤儿”，该参数表示创建一个孤立的分支，没有任何提交历史，且与当前分支不存在任何关系（查看提交信息，可发现其为一个孤立的点，如下图所示）
+
+孤儿（orphan）无父辈信息，同理，创建的分支也不包含任何历史提交信息
+</code></pre><p><img src="http://img.wangjungang.cn/U5cr5r.jpg" alt=""></p>
+<h3 id="git-branch-m"><a href="#git-branch-m" class="headerlink" title="git branch -m"></a>git branch -m</h3><p>重命名</p>
+<h3 id="git-push-f-origin-master"><a href="#git-push-f-origin-master" class="headerlink" title="git push -f origin master"></a>git push -f origin master</h3><h2 id="git-项目协作——保证git信息简洁"><a href="#git-项目协作——保证git信息简洁" class="headerlink" title="git 项目协作——保证git信息简洁"></a>git 项目协作——保证git信息简洁</h2><p>###同一分支 git pull 使用 rebase</p>
+<p>默认情况下，git pull 使用的是 merge 行为。多人协作开发时，会产生不必要的 merge 提交记录，造成提交链混乱不堪。</p>
+<pre><code>推荐在同一个分支更新代码时，使用 git pull --rebase。
+
+# 为某个分支单独设置，这里是设置 dev 分支
+git config branch.dev.rebase true
+# 全局设置，所有的分支 git pull 均使用 --rebase
+git config --global pull.rebase true
+git config --global branch.autoSetupRebase always
+</code></pre><h3 id="分支合并使用-merge-–no-ff"><a href="#分支合并使用-merge-–no-ff" class="headerlink" title="分支合并使用 merge –no-ff"></a>分支合并使用 merge –no-ff</h3><h4 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h4><p>Fast-Forward：当前分支合并到另一分支时，如果没有冲突要解决，就会直接移动文件指针，并且不会产生合并提交记录。该过程中，存在git 文件指针快速移动， 因此该过程称为 Fast-Forward。</p>
+<p>–no-ff(no fast foward)：每一次的合并，都会创建一个新的 commit 记录。使用 –no-ff，可以保持原有分支提交链的完整性，并且当该分支被删除时，提交信息依旧存在。</p>
+<p><img src="http://img.wangjungang.cn/It5GH9.jpg" alt=""></p>
+<p>结合上图分析，在 dev（绿色） 分支上检出 feature-1 分支（蓝色），且 dev 分支不进行任何提交</p>
+<p>直接 merge，默认采用 Fast-Forward，两个分支的提交链会合并为一条直线，不利于后期代码审查和维护</p>
+<p>使用 git merge –no-ff feature-1 合并代码，会产生一个新的提交，且两个分支的提交链不会重叠，利于后<br>期代码审查和维护</p>
+<h3 id="merge-默认设置"><a href="#merge-默认设置" class="headerlink" title="merge 默认设置"></a>merge 默认设置</h3><p>git merge 默认使用 fast-forward，可以通过如下方式，修改为默认使用 –no-ff。</p>
+<pre><code>git config --global merge.commit no
+git config --global merge.ff no
+</code></pre><p>此外，SourceTree 在设置中也可以设置 –no-ff。</p>
+<p><img src="http://img.wangjungang.cn/bmHTbr.jpg" alt=""></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">git</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/03/20/Git进阶使用/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-浅谈Swift的内存管理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2536,270 +2690,6 @@ NSArray *modelArray = [模型类名 objectArrayWithKeyValuesArray:字段数组];
 
 
   
-    <article id="post-那些年，用swift踩过的坑" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/23/那些年，用swift踩过的坑/">那些年，用swift踩过的坑</a>
-    </h1>
-  
-
-        
-        <a href="/2020/02/23/那些年，用swift踩过的坑/" class="archive-article-date">
-  	<time datetime="2020-02-22T16:45:56.211Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-23</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>总结了笔者日常使用 Swift 的一些小 Tips。</p>
-<h2 id="Safe-amp-Fast"><a href="#Safe-amp-Fast" class="headerlink" title="Safe&amp; Fast"></a>Safe&amp; Fast</h2><h3 id="1-能用-let，尽量不用-var"><a href="#1-能用-let，尽量不用-var" class="headerlink" title="1. 能用 let，尽量不用 var"></a>1. 能用 let，尽量不用 var</h3><p>ObjC 的 Foundation 层几乎都是继承 NSObject 实现的，平时都在操作指针，所以要区分 Mutable 和 Imutable 的设计，比如 NSString 和 NSMutableString。</p>
-<p>Swift 使用了 let 和 var 关键字直接用于区分是否可变。可变会更容易出错，所以尽量采用不可变设计，等到需要改变才改为 var 吧。</p>
-<h3 id="2-尽量不用-！"><a href="#2-尽量不用-！" class="headerlink" title="2. 尽量不用 ！"></a>2. 尽量不用 ！</h3><p>！遇到 nil 时会 crash（包括 as! 进行强制转换）。可以使用 if let/guard let/case let 配合 as? 将可选值消化掉。可能返回 nil 的 API，为什么要自己骗自己呢？</p>
-<p>当遇到 ObjC 代码暴露给 Swift 使用时，给接口 .h 文件加上 NS_ASSUME_NONNULL_BEGIN 和 NS_ASSUME_NONNULL_END 并检查接口参数是否可以为 nil 吧。</p>
-<h3 id="3-多定义-struct，少定义-class"><a href="#3-多定义-struct，少定义-class" class="headerlink" title="3. 多定义 struct，少定义 class"></a>3. 多定义 struct，少定义 class</h3><p>struct 是值类型，class 是引用类型。类类型分配在堆区，默认浅拷贝，容易被不经意间被改变，而值类型分配在栈区，默认深拷贝。并且 Swift 还有写时复制（copy on write）。</p>
-<p>即使是使用 class 时，也仅在必要时（如桥接到 ObjC，使用 Runtime 一些特性）继承自 NSObject。</p>
-<h3 id="4-能用-Swift-标准库类型，尽量不用对应的-Foundation-类型"><a href="#4-能用-Swift-标准库类型，尽量不用对应的-Foundation-类型" class="headerlink" title="4. 能用 Swift 标准库类型，尽量不用对应的 Foundation 类型"></a>4. 能用 Swift 标准库类型，尽量不用对应的 Foundation 类型</h3><p>多使用 String、Array、Dictionary、Int、Bool，少使用 Foundation 里面的 NSString、NSArray、NSDictionary、NSNumber。Cocoa Foundation 里面的都是类类型，而 Swift 标准库的是值类型，有很多标准库的方便方法。</p>
-<p>还有用 print 代替 NSLog。</p>
-<h3 id="5-优先使用内置高阶函数"><a href="#5-优先使用内置高阶函数" class="headerlink" title="5. 优先使用内置高阶函数"></a>5. 优先使用内置高阶函数</h3><p>forEach，map，compactMap，flatMap，zip，reduce 是好帮手，代替一些使用变量并在循环中处理的例子吧。用上高阶函数，不仅代码更清晰，还能将状态控制在更小的作用域内。</p>
-<h3 id="6-使用-try-catch-捕获错误"><a href="#6-使用-try-catch-捕获错误" class="headerlink" title="6. 使用 try catch 捕获错误"></a>6. 使用 try catch 捕获错误</h3><p>和 ObjC 基本都在函数的回调中返回 NSError 不一样，Swift 函数可以使用 throw 关键字抛出错误。</p>
-<pre><code>func test() throws {
-     //... 
-}
-
-do {
-  try test()
-} catch {
-  print(error)
-}
-
-// 如果对错误不敏感
-try? test()
-</code></pre><h3 id="7-对-String-判空时优先采用-isEmpty"><a href="#7-对-String-判空时优先采用-isEmpty" class="headerlink" title="7. 对 String 判空时优先采用 isEmpty"></a>7. 对 String 判空时优先采用 isEmpty</h3><p>Swift 里面的 String 的 index 和 count 不是一一对应的（兼容 Unicode），所以 stirng.count == 0 的效率不如 string.isEmpty。</p>
-<h2 id="Clean-Code"><a href="#Clean-Code" class="headerlink" title="Clean Code"></a>Clean Code</h2><h3 id="8-文件名字去掉前缀"><a href="#8-文件名字去掉前缀" class="headerlink" title="8. 文件名字去掉前缀"></a>8. 文件名字去掉前缀</h3><p>Swift 有着 framework 级别的命名空间，所以命名重复时可以通过 framework 名确定，不用担心重复命名问题。</p>
-<p>尽量只有在需要桥接给 ObjC 时，才使用 @objc(前缀 + 类名) 进行别名声明。</p>
-<h3 id="9-省略-self"><a href="#9-省略-self" class="headerlink" title="9. 省略 self"></a>9. 省略 self</h3><p>对应访问成员变量，方法时，都不用像 ObjC 那些写 self 了。</p>
-<p>只在闭包内、函数实参和成员变量名字相同和方法形参需要自身时使用。闭包内 self 是强制的，并且可以提醒注意循环引用问题。函数调用时实参名和成员变量相同时，函数作用域内会优先使用函数实参，所以访问成员变量是需要 self。</p>
-<h3 id="10-省略-init"><a href="#10-省略-init" class="headerlink" title="10. 省略 init()"></a>10. 省略 init()</h3><p>直接使用 ClassA()，代替 ClassA.init()，代码更简洁。</p>
-<h3 id="11-能推导的类型不用显式编写"><a href="#11-能推导的类型不用显式编写" class="headerlink" title="11. 能推导的类型不用显式编写"></a>11. 能推导的类型不用显式编写</h3><pre><code>// no bad
-let flag:Bool = false
-// better
-let flag = false
-
-// not bad
-view.contentMode = UIView.ContentMode.center
-// better
-view.contentMode = .center
-</code></pre><h3 id="12-使用默认形参，简化接口设计"><a href="#12-使用默认形参，简化接口设计" class="headerlink" title="12. 使用默认形参，简化接口设计"></a>12. 使用默认形参，简化接口设计</h3><p>在设计接口时，不再需要为每一个形参是否需要而编写一个方法了，减少方法数吧。</p>
-<pre><code>// not bad
-func test() {
-    //...
-}
-
-func test(param1:String) {
-    //...
-}
-
-func test(param2:String) {
-    //...
-}
-
-// better
-func test(param1:String = &quot;&quot;, param2:String = &quot;&quot;) {
-    //...
-}
-</code></pre><h3 id="13-使用-表示不使用的返回值"><a href="#13-使用-表示不使用的返回值" class="headerlink" title="13. 使用 _ 表示不使用的返回值"></a>13. 使用 _ 表示不使用的返回值</h3><pre><code>var a = [0]
-let _ = a.removeLast()
-
-[0].forEach{ _ in print(&quot;hh&quot;)}
-</code></pre><p>而对于自己设计的接口，如果返回值无关紧要，只是附加功能的话，可以使用 @discardableResult 进行标注。</p>
-<h3 id="14-使用-来定义和关键字重名的方法和属性"><a href="#14-使用-来定义和关键字重名的方法和属性" class="headerlink" title="14. 使用  来定义和关键字重名的方法和属性"></a>14. 使用 <code></code> 来定义和关键字重名的方法和属性</h3><p>比如系统有个 default 关键字，而你也希望使用这个命名时就能派上用场</p>
-<pre><code>let `default` = A()
-
-func `default`() {}
-</code></pre><h3 id="15-Strong-Weak-Dance-很简单"><a href="#15-Strong-Weak-Dance-很简单" class="headerlink" title="15. Strong-Weak Dance 很简单"></a>15. Strong-Weak Dance 很简单</h3><p>比起 ObjC 里需要每次需要写</p>
-<pre><code>__weak typeof(self) weak_self = self;
-__typeof__(self) strong_self = weak_self;
-</code></pre><p>尽管很多人会采用宏来简化，但重复的宏定义又会冲突，且 ObjC 没有访问权限关键字。</p>
-<p>Swift 在闭包中可以使用 weak 和 unowned 指定闭包对值的捕获，配合 guard 就可以实现同样的功能。</p>
-<pre><code>test(){ [weak self] in 
-        guard let self = self else { return }
-    // self is strong without retain cycle
-}
-</code></pre><h3 id="16-类型嵌套"><a href="#16-类型嵌套" class="headerlink" title="16. 类型嵌套"></a>16. 类型嵌套</h3><p>类型嵌套用于在类型里定义类型，让类型的命名空间的精细化程度更高。</p>
-<pre><code>struct GameService {
-    enum APIError {
-        enum ResultError {
-            case noResult
-        }
-    }
-      // use APIError
-}
-// use GameService.APIError
-</code></pre><h3 id="17-func-嵌套"><a href="#17-func-嵌套" class="headerlink" title="17. func 嵌套"></a>17. func 嵌套</h3><p>有时候某一块逻辑只需要在方法内复用或者做逻辑分割，可以在方法内定义方法，这样访问域会更清晰。</p>
-<pre><code>func big(){
-    func small() {
-    //...
-  }
-  small()
-}
-</code></pre><h3 id="18-使用闭包做初始化"><a href="#18-使用闭包做初始化" class="headerlink" title="18. 使用闭包做初始化"></a>18. 使用闭包做初始化</h3><p>有时候初始化时一个对象时还需要赋值其中的一些属性，这个时候就可以使用闭包代码块的整合。</p>
-<pre><code>let someView: UIView = {
-    let view = UIView(frame:.zero)
-  view.backgroundColor = .red
-  return view
-}()
-</code></pre><h3 id="19-使用更简洁的函数实参和形参"><a href="#19-使用更简洁的函数实参和形参" class="headerlink" title="19. 使用更简洁的函数实参和形参"></a>19. 使用更简洁的函数实参和形参</h3><p>和 ObjC 不同，有形参实参的 Swift，可以在调用和编写的时候都有更合适简洁的表达。</p>
-<pre><code>// not bad
-func updateWithView(view:UIView)
-updateWithView(view:viewA)
-// better
-func updateWithView(_ view:UIView)
-updateWith(view:viewA)
-
-// not bad
-func didSelectAtIndex(index:Int)
-didSelectAtIndex(index:2)
-// better
-func didSelect(at index:Int)
-didSelect(at:2)
-</code></pre><h3 id="20-Enum-用于命名空间声明"><a href="#20-Enum-用于命名空间声明" class="headerlink" title="20. Enum 用于命名空间声明"></a>20. Enum 用于命名空间声明</h3><p>定义一些常量时，用命名空间做隔离是最好的，Swift 的 Enum 比较适合用于命名空间的定义，能嵌套，且不存在初始化方法不会被用于其他作用。</p>
-<pre><code>enum Event {
-    enum Name {
-        static let login = &quot;event.name.login&quot;
-    }
-}
-
-// use 
-Event.Name.login
-// not allow
-Event()
-</code></pre><h3 id="21-使用-返回默认值"><a href="#21-使用-返回默认值" class="headerlink" title="21. 使用 ?? 返回默认值"></a>21. 使用 ?? 返回默认值</h3><pre><code>// not bad
-var name:String?
-if let aName = dic[&quot;name&quot;] as? String {
-    name = aName
-} else {
-  name = &quot;&quot;
-}
-
-// better
-let name = dic[&quot;name&quot;] as? String ?? &quot;&quot;
-</code></pre><h3 id="22-使用字符串插值"><a href="#22-使用字符串插值" class="headerlink" title="22. 使用字符串插值"></a>22. 使用字符串插值</h3><p>除了常规的字符串插值，Swift5 还增加了更强大可自定义的字符串插值系统</p>
-<pre><code>let a = 2
-print(&quot;\(a) is 2&quot;)
-</code></pre><h2 id="Syntactic-sugar"><a href="#Syntactic-sugar" class="headerlink" title="Syntactic sugar"></a>Syntactic sugar</h2><h3 id="23-更-POP（Protocol-Oriented-Programming，面向协议编程）"><a href="#23-更-POP（Protocol-Oriented-Programming，面向协议编程）" class="headerlink" title="23. 更 POP（Protocol Oriented Programming，面向协议编程）"></a>23. 更 POP（Protocol Oriented Programming，面向协议编程）</h3><p>Swift 在设计上，为协议做了很多强大的功能。Swift 标准库里大量的方法和类都使用了协议进行抽象。在编写代码时优先考虑使用协议进行逻辑的抽象</p>
-<h3 id="24-优先使用-guard"><a href="#24-优先使用-guard" class="headerlink" title="24. 优先使用 guard"></a>24. 优先使用 guard</h3><p>guard 是 if 的反义词，可以提前将异常情况 return。配合 guard let 使用，可以在正常分支下使用正确的条件。</p>
-<pre><code>guard let a = a as? String else { return }
-// 下面的 a 就是 string 并且 non-nil 的了
-</code></pre><h3 id="25-尝试元组"><a href="#25-尝试元组" class="headerlink" title="25. 尝试元组"></a>25. 尝试元组</h3><p>元组（Tuple）是个包含多个值的简单对象，使用元组，可以简单的用来函数返回多参数，也可以在集合类型中存取一对对的值。</p>
-<pre><code>typealias Pair&lt;T&gt; = (T, T)
-
-let pair = Pair(1, 2)
-</code></pre><h3 id="26-尝试范型"><a href="#26-尝试范型" class="headerlink" title="26. 尝试范型"></a>26. 尝试范型</h3><p>比起 ObjC 仅支持在集合类型里使用轻量级范型，Swift 的范型更强大，除了集合，还支持类、枚举、协议（Associate Type）。</p>
-<pre><code>protocol View {
-    associatedtype Model
-
-    func update(model:Model)
-}
-</code></pre><h3 id="27-尝试枚举"><a href="#27-尝试枚举" class="headerlink" title="27. 尝试枚举"></a>27. 尝试枚举</h3><p>比起 ObjC 那和 C 语言差不多的枚举，Swift 的枚举更强大。Swift 的枚举不一定需要 Int 作为枚举的原始值，可以不需要原始值，也可以使用 String、Float、Boolean 作为原始值。能在枚举值上关联值，实现很多有趣的功能（Rx，Promise 的状态机）。能给枚举编写函数，能给枚举增加 Extension。</p>
-<pre><code>enum State&lt;Value&gt; {
-    case pending
-    case fulfill(value:Value)
-    case reject(reason:Error)
-    mutating func update(to state:State){
-        guard case .pending = self else {
-            return
-        }
-        self = state
-    }
-}
-</code></pre><h3 id="28-尝试-Extension"><a href="#28-尝试-Extension" class="headerlink" title="28. 尝试 Extension"></a>28. 尝试 Extension</h3><p>和 ObjC 的 Categories 类似，拓展可以添加类的方法。Swift 的 Extension 还能拓展值类型，枚举的方法，且不需要新建文件编写和支持权限访问关键字。通过 Extension，还能给 Protocol 增加默认实现。也能在 Extension 中遵循协议，让方法划分更加清晰。</p>
-<pre><code>fileprivate extension Date {
-    var toString: String {
-        //...
-    }
-}
-
-Date().toString
-</code></pre><h3 id="29-lazy-关键字"><a href="#29-lazy-关键字" class="headerlink" title="29. lazy 关键字"></a>29. lazy 关键字</h3><p>懒加载不需要像 ObjC 一样重写 getter 方法，并判空了，在属性前面加上 lazy 关键字就可以实现了。</p>
-<pre><code>lazy var view = UIView(frame:.zero)
-</code></pre><h3 id="30-where-关键字"><a href="#30-where-关键字" class="headerlink" title="30. where 关键字"></a>30. where 关键字</h3><p>where 关键字可以对范围进行限定</p>
-<h3 id="31-typealias-关键字"><a href="#31-typealias-关键字" class="headerlink" title="31. typealias 关键字"></a>31. typealias 关键字</h3><p>typealias 可以用来命名闭包类型、协议类型、范型类型，还支持组合</p>
-<pre><code>typealias NewName&lt;D&gt; = ClassA&lt;D&gt;&amp;ProtocolA&amp;ProtocolB
-</code></pre><h3 id="32-Result-类型"><a href="#32-Result-类型" class="headerlink" title="32. Result 类型"></a>32. Result 类型</h3><p>Result 是一个枚举类型，包含成功或者失败的枚举值，并持有相应成功或者失败的值，通过范型确定类型信息。因为成功和失败是互斥的，这样就可以避免多个可选参数返回。</p>
-<p>比如对网络请求回调进行改造：</p>
-<pre><code>URLSession.shared.dataTask(with: request) { result in
-    switch result {
-    case .success(let (data, _)):
-        handle(data: data)
-    case .failure(let error):
-        handle(error: error)
-    }
-}
-</code></pre><h3 id="33-KVO"><a href="#33-KVO" class="headerlink" title="33. KVO"></a>33. KVO</h3><p>在 ObjC 中，开发者更习惯用类似 FBKVOController 等第三方库进行 KVO 的监听，那是因为原生的写法太难用了。Swift 为 KVO 增加了闭包的 API，更简洁好用。</p>
-<pre><code>scrollObserver = observe(\.scrollView!.contentOffset, options: [.new], changeHandler: { object, change in
-     //...
-})
-</code></pre><p>同理，Swift 的 GCD API 也是专门经过 Swift 化的，也更加简洁好用</p>
-<h3 id="34-Codable"><a href="#34-Codable" class="headerlink" title="34. Codable"></a>34. Codable</h3><p>在 Swift4 加入 Codable 协议后，JSON 等通用结构转模型，终于有了原生的支持</p>
-<h3 id="35-SwiftUI-amp-Combine"><a href="#35-SwiftUI-amp-Combine" class="headerlink" title="35. SwiftUI&amp;Combine"></a>35. SwiftUI&amp;Combine</h3><p>在 WWDC19 推出的 Swift Only 的库，SwiftUI 有着类似 React 的声明式 UI 开发框架，配合实时调试，在 Demo 和简单页面，跨 Apple 平台应用适配时有一定优势。而 Combine 时类似 RxSwift 的响应式编程框架，能使事件流更统一。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/23/那些年，用swift踩过的坑/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -2905,11 +2795,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">

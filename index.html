@@ -152,6 +152,121 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Swift中的Any&amp;AnyObject" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/08/Swift中的Any&AnyObject/">Swift中的Any&amp;AnyObject</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/08/Swift中的Any&AnyObject/" class="archive-article-date">
+  	<time datetime="2021-10-08T07:27:15.345Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Swift中三大类"><a href="#Swift中三大类" class="headerlink" title="Swift中三大类"></a>Swift中三大类</h2><p>这个地方敲重点记下，目前Swift的数据，无非被这三大类定义：</p>
+<ul>
+<li><p>struct（结构体）</p>
+</li>
+<li><p>enum（枚举）</p>
+</li>
+<li><p>class（类）</p>
+</li>
+</ul>
+<p>其中struct和enum可以说是同根同源，都在栈上，程序猿不用管理它的生命周期。</p>
+<p>class在堆上，程序猿需要管理它的生命周期。</p>
+<p>再者栈上的struct和enum都是值类型，堆上的class是引用类型。</p>
+<p>不懂先记下来，这些都是需要实战才能完全理解的。</p>
+<h2 id="Any"><a href="#Any" class="headerlink" title="Any"></a>Any</h2><p>我们先看看Any到底是个啥东西：</p>
+<pre><code>protocol Any {}
+</code></pre><p>Any其实是一个空协议，并且根据查阅资料看，三大类在创建的时候，都隐式的遵守了这个协议，你可以理解成为这样：</p>
+<pre><code>struct Person: Any {}
+
+class Animal: Any {}
+
+enum Type: Any {}
+</code></pre><p>可以这么说，Any可以表示Swift语言构建的任何类型。</p>
+<p>追加一句：包括函数类型，即闭包类型。像() -&gt; Void也可以用Any表示</p>
+<h2 id="AnyObject"><a href="#AnyObject" class="headerlink" title="AnyObject"></a>AnyObject</h2><p>AnyObject其实就表示的就比较单一了，它表示的是类的类型。我摘选了一部分源码和注释，大家看看就理解了。</p>
+<pre><code>/// The protocol to which all classes implicitly conform.
+///
+/// You use `AnyObject` when you need the flexibility of an untyped object or
+/// when you use bridged Objective-C methods and properties that return an
+/// untyped result. `AnyObject` can be used as the concrete type for an
+/// instance of any class, class type, or class-only protocol.
+
+public typealias AnyObject
+</code></pre><p>大家可能会好奇，那么我们经常这么写代码：</p>
+<pre><code>class AClass: NSObject {}
+</code></pre><p>AnyObject和NSObject到底啥关系？</p>
+<p>其实有两点我要解释：</p>
+<ul>
+<li><p>写class的时候不需要都继承NSObject，Swift中的class会隐式继承一个特有的Swift.SwiftObject。建议IDE提示你需要添加NSObject的时候，再添加，一般这种时候都是需要实现代理。</p>
+</li>
+<li><p>AnyObject可以表示class，而class: NSObject怎么看都只是class的更细化分支，所以可以理解AnyObject包容了NSObject。</p>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Swift</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/08/Swift中的Any&AnyObject/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Swift-适配深色模式与UIColor扩展" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1890,106 +2005,6 @@ class ThreadTest {
 
 
   
-    <article id="post-Dialog圆角问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/01/09/Dialog圆角问题/">Dialog圆角问题</a>
-    </h1>
-  
-
-        
-        <a href="/2021/01/09/Dialog圆角问题/" class="archive-article-date">
-  	<time datetime="2021-01-09T11:45:01.669Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Dialog圆角无效问题</p>
-<p>同样是setBackgroundDrawableResource或setBackgroundDrawable无效的问题; 共分两种情形, 一是有标题的Dialog, 另一种是无标题的Dialog</p>
-<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>Dialog设置背景实质上用的是Dialog.setContentView方法, 而Android系统提供的Dialog本身是有标题的布局空间的, 当通过Window设置把标题隐藏掉后, 无标题下做个圆角是给剩下的FrameLayout做圆角, 这样就很好理解了。</p>
-<h2 id="控制Dialog标题显示隐藏的方式"><a href="#控制Dialog标题显示隐藏的方式" class="headerlink" title="控制Dialog标题显示隐藏的方式"></a>控制Dialog标题显示隐藏的方式</h2><pre><code>requestWindowFeature(Window.FEATURE_NO_TITLE)
-</code></pre><p>or</p>
-<pre><code>&lt;style name=&quot;AndoDialog&quot;&gt;
-        &lt;item name=&quot;android:windowNoTitle&quot;&gt;false&lt;/item&gt;&lt;!--false 有标题 true无标题--&gt;
-&lt;/style&gt;
-</code></pre><h3 id="有标题"><a href="#有标题" class="headerlink" title="有标题"></a>有标题</h3><p>直接设置window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom)即可, 并不是一些博客中所说的如下配置:</p>
-<pre><code>//没用
-window.setBackgroundDrawableResource(android.R.color.transparent)
-window.decorView.setPadding(0, 0, 0, 0)
-</code></pre><h3 id="无标题"><a href="#无标题" class="headerlink" title="无标题"></a>无标题</h3><p>无标题处理圆角问题, 就是给FrameLayout做圆角</p>
-<p>无标题时 window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom) 设置不生效, 需要对Dialog的布局文件进行调整。 如底部弹窗左上角和右上角是圆角, 设置圆角背景的同时加上paddingXXX属性,数值与<br>drawable中android:xxxRadius=”10dp”相等。</p>
-<pre><code>//Dialog顶层布局中
-android:paddingTop=&quot;10&quot;
-android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
-</code></pre><h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><p>rectangle_ando_dialog_bottom.xml</p>
-<pre><code> &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
-    android:shape=&quot;rectangle&quot;&gt;
-    &lt;corners
-        android:topLeftRadius=&quot;10dp&quot;
-        android:topRightRadius=&quot;10dp&quot; /&gt;
-
-    &lt;solid android:color=&quot;@color/color_ando_dialog_white&quot; /&gt;
-&lt;/shape&gt;
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/01/09/Dialog圆角问题/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -2095,11 +2110,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">

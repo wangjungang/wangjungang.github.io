@@ -152,6 +152,98 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-swift内存管理之weak与unowned" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/20/swift内存管理之weak与unowned/">swift内存管理之weak与unowned</a>
+    </h1>
+  
+
+        
+        <a href="/2019/04/20/swift内存管理之weak与unowned/" class="archive-article-date">
+  	<time datetime="2019-04-20T14:50:27.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。</p>
+<h2 id="weak"><a href="#weak" class="headerlink" title="weak"></a>weak</h2><p>日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。</p>
+<pre><code>weak var delegate: SomeDelegate?
+
+lazy var someClosure: () -&gt; Void = { [weak self] in
+    guard let self = self else { retrun }
+    self.balabala
+}
+</code></pre><p>当我们赋值给一个被标记 weak 的变量时，它的引用计数不会被改变。而且当这个弱引用变量所引用的对象被释放时，这个变量将被自动设为 nil。这也是弱引用必须被声明为 Optional 的原因。</p>
+<h2 id="unowned"><a href="#unowned" class="headerlink" title="unowned"></a>unowned</h2><pre><code>unowned let someInstance: SomeClass
+
+lazy var someClosure: () -&gt; Void = { [unowned self] in
+    self.balabala
+}
+</code></pre><p>在使用 unowned 时，我们不需要将变量声明为 Optional。</p>
+<p>需要注意的是。对于被 unowned 标记的变量，即使它的原来引用已经被释放，它仍然会保持对被已经释放了的对象的一个 “无效的” 引用，它不是 Optional ，也不会被指向 nil。所以，当我们试图访问这样的 unowned 引用时，程序就会发生错误。</p>
+<p>根据苹果的官方文档的建议。当我们知道两个对象的生命周期并不相关，那么我们必须使用 weak。相反，非强引用对象拥有和强引用对象同样或者更长的生命周期的话，则应该使用 unowned。</p>
+<p>例如，ViewControler 对它的 SubView 的引用可以使用 unowned。因为 ViewControler 的生命周期一定比对它的 SubView 长。</p>
+<p>而在使用服务时，则需要看情况使用 weak。因为服务的初始化方法可能是被工厂模式或 Service Locator 所封装。这些服务可能在某些时候被重构为单例，此时它们的生命周期发生了改变。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/04/20/swift内存管理之weak与unowned/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-swift中的枚举" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2189,137 +2281,6 @@ extension RxDataSourcesWithHeaderController: UITableViewDelegate {
 
 
   
-    <article id="post-Rxswift总结（二）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/22/Rxswift总结（二）/">Rxswift总结（二）</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/22/Rxswift总结（二）/" class="archive-article-date">
-  	<time datetime="2019-02-22T06:30:04.592Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><h3 id="UILabel"><a href="#UILabel" class="headerlink" title="UILabel"></a>UILabel</h3><p>文字绑定到 UILabel</p>
-<pre><code> let label = UILabel()
- label.frame = CGRect.init(x: 10, y: 110, width: 200, height: 40)
- self.view.addSubview(label)
-//MARK: 值绑定
-Observable.just(&quot;Hello RxSwift&quot;)
-        .bind(to: label.rx.text)
-        .disposed(by: DisposeBag())
-</code></pre><h3 id="UITextFiled"><a href="#UITextFiled" class="headerlink" title="UITextFiled"></a>UITextFiled</h3><p>监听单个 textField 内容的变化</p>
-<pre><code>lazy var textFiled: UITextField = {
-    let textfiled = UITextField()
-    textfiled.frame = CGRect.init(x: 30, y: 200, width: 100, height: 40)
-    return textfiled
-}()
-
-
-self.view.addSubview(self.textFiled)
-
-// MARK:监听textFiled的变化
-
-        textFiled.rx.text.orEmpty.asObservable().subscribe(onNext: {
-        print(&quot;你输入的是: \($0)&quot;)
-    }).disposed(by: DisposeBag())
-
-    textFiled.rx.text.orEmpty.changed.subscribe(onNext: {
-        print(&quot;你输入的是: \($0)&quot;)
-    }).disposed(by: DisposeBag())
-</code></pre><h3 id="UIButton"><a href="#UIButton" class="headerlink" title="UIButton"></a>UIButton</h3><pre><code>let disposeBag = DisposeBag()
-lazy var submitBtn: UIButton = {
-    let btn = UIButton.init()
-    btn.frame = CGRect.init(x: 40, y: 270, width: 100, height: 50)
-    btn.backgroundColor = UIColor.orange
-    btn.setTitle(&quot;点击&quot;, for: UIControl.State.normal)
-    btn.setTitleColor(UIColor.black, for: UIControl.State.normal)
-    return btn
-}()
-
-//按钮点击
-   self.submitBtn.rx.tap
-        .subscribe(onNext: { [weak self] in
-            self?.showMessage(&quot;按钮被点击&quot;)
-
-        })
-        .disposed(by: disposeBag)
-
-    self.submitBtn.rx.tap
-        .bind { [weak self] in
-            self?.showMessage(&quot;按钮被点击&quot;)
-        }
-        .disposed(by: disposeBag)
-
-       //显示消息提示框
-func showMessage(_ text: String) {
-    let alertController = UIAlertController(title: text, message: nil, preferredStyle: .alert)
-    let cancelAction = UIAlertAction(title: &quot;确定&quot;, style: .cancel, handler: nil)
-    alertController.addAction(cancelAction)
-    self.present(alertController, animated: true, completion: nil)
-}     
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/22/Rxswift总结（二）/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/8/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/10/">Next &raquo;</a>
@@ -2425,11 +2386,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">

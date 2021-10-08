@@ -6,15 +6,20 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives: 2019/2 | Blog</title>
+  <title>Swift中的Any&amp;AnyObject | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Blog">
-<meta property="og:url" content="http://yoursite.com/archives/2019/02/index.html">
+  <meta name="description" content="Swift中三大类这个地方敲重点记下，目前Swift的数据，无非被这三大类定义：  struct（结构体）  enum（枚举）  class（类）   其中struct和enum可以说是同根同源，都在栈上，程序猿不用管理它的生命周期。 class在堆上，程序猿需要管理它的生命周期。 再者栈上的struct和enum都是值类型，堆上的class是引用类型。 不懂先记下来，这些都是需要实战才能完全理解">
+<meta name="keywords" content="Swift">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Swift中的Any&amp;AnyObject">
+<meta property="og:url" content="http://yoursite.com/2021/10/08/Swift中的Any&AnyObject/index.html">
 <meta property="og:site_name" content="Blog">
+<meta property="og:description" content="Swift中三大类这个地方敲重点记下，目前Swift的数据，无非被这三大类定义：  struct（结构体）  enum（枚举）  class（类）   其中struct和enum可以说是同根同源，都在栈上，程序猿不用管理它的生命周期。 class在堆上，程序猿需要管理它的生命周期。 再者栈上的struct和enum都是值类型，堆上的class是引用类型。 不懂先记下来，这些都是需要实战才能完全理解">
 <meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2021-10-08T07:29:11.884Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
+<meta name="twitter:title" content="Swift中的Any&amp;AnyObject">
+<meta name="twitter:description" content="Swift中三大类这个地方敲重点记下，目前Swift的数据，无非被这三大类定义：  struct（结构体）  enum（枚举）  class（类）   其中struct和enum可以说是同根同源，都在栈上，程序猿不用管理它的生命周期。 class在堆上，程序猿需要管理它的生命周期。 再者栈上的struct和enum都是值类型，堆上的class是引用类型。 不懂先记下来，这些都是需要实战才能完全理解">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -150,405 +155,207 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-Swift中的Any&amp;AnyObject" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Swift中的Any&amp;AnyObject
+    </h1>
+  
+
+        
+        <a href="/2021/10/08/Swift中的Any&AnyObject/" class="archive-article-date">
+  	<time datetime="2021-10-08T07:27:15.345Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
+</a>
+        
+      </header>
     
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="Swift中三大类"><a href="#Swift中三大类" class="headerlink" title="Swift中三大类"></a>Swift中三大类</h2><p>这个地方敲重点记下，目前Swift的数据，无非被这三大类定义：</p>
+<ul>
+<li><p>struct（结构体）</p>
+</li>
+<li><p>enum（枚举）</p>
+</li>
+<li><p>class（类）</p>
+</li>
+</ul>
+<p>其中struct和enum可以说是同根同源，都在栈上，程序猿不用管理它的生命周期。</p>
+<p>class在堆上，程序猿需要管理它的生命周期。</p>
+<p>再者栈上的struct和enum都是值类型，堆上的class是引用类型。</p>
+<p>不懂先记下来，这些都是需要实战才能完全理解的。</p>
+<h2 id="Any"><a href="#Any" class="headerlink" title="Any"></a>Any</h2><p>我们先看看Any到底是个啥东西：</p>
+<pre><code>protocol Any {}
+</code></pre><p>Any其实是一个空协议，并且根据查阅资料看，三大类在创建的时候，都隐式的遵守了这个协议，你可以理解成为这样：</p>
+<pre><code>struct Person: Any {}
+
+class Animal: Any {}
+
+enum Type: Any {}
+</code></pre><p>可以这么说，Any可以表示Swift语言构建的任何类型。</p>
+<p>追加一句：包括函数类型，即闭包类型。像() -&gt; Void也可以用Any表示</p>
+<h2 id="AnyObject"><a href="#AnyObject" class="headerlink" title="AnyObject"></a>AnyObject</h2><p>AnyObject其实就表示的就比较单一了，它表示的是类的类型。我摘选了一部分源码和注释，大家看看就理解了。</p>
+<pre><code>/// The protocol to which all classes implicitly conform.
+///
+/// You use `AnyObject` when you need the flexibility of an untyped object or
+/// when you use bridged Objective-C methods and properties that return an
+/// untyped result. `AnyObject` can be used as the concrete type for an
+/// instance of any class, class type, or class-only protocol.
+
+public typealias AnyObject
+</code></pre><p>大家可能会好奇，那么我们经常这么写代码：</p>
+<pre><code>class AClass: NSObject {}
+</code></pre><p>AnyObject和NSObject到底啥关系？</p>
+<p>其实有两点我要解释：</p>
+<ul>
+<li><p>写class的时候不需要都继承NSObject，Swift中的class会隐式继承一个特有的Swift.SwiftObject。建议IDE提示你需要添加NSObject的时候，再添加，一般这种时候都是需要实现代理。</p>
+</li>
+<li><p>AnyObject可以表示class，而class: NSObject怎么看都只是class的更细化分支，所以可以理解AnyObject包容了NSObject。</p>
+</li>
+</ul>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
       
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/02/22/录音、音频的拼接剪切以及边录边压缩转码/" class="archive-article-date">
-  	<time datetime="2019-02-22T08:14:36.359Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/22/录音、音频的拼接剪切以及边录边压缩转码/">录音、音频的拼接剪切以及边录边压缩转码</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Swift</a>
         		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/10/08/Swift中的Any&AnyObject/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/02/22/UITableView + Refresh/" class="archive-article-date">
-  	<time datetime="2019-02-22T07:37:28.676Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2021/10/08/Swift-适配深色模式与UIColor扩展/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Swift:适配深色模式与UIColor扩展</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/22/UITableView + Refresh/">UITableView + Refresh</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/02/22/UITableView + RxDataSources/" class="archive-article-date">
-  	<time datetime="2019-02-22T07:32:54.645Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/22/UITableView + RxDataSources/">UITableView + RxDataSources</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/02/22/RXSwift-TableView/" class="archive-article-date">
-  	<time datetime="2019-02-22T07:26:09.327Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/22/RXSwift-TableView/">RXSwift-TableView</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/02/22/Rxswift总结（二）/" class="archive-article-date">
-  	<time datetime="2019-02-22T06:30:04.592Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/22/Rxswift总结（二）/">Rxswift总结（二）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/02/21/Rxswift总结(一)/" class="archive-article-date">
-  	<time datetime="2019-02-21T11:02:04.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/21/Rxswift总结(一)/">Rxswift总结（一）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/02/21/好好看看 KVC && KVO/" class="archive-article-date">
-  	<time datetime="2019-02-21T07:34:53.020Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/21/好好看看 KVC && KVO/">好好看看 KVC &amp;&amp; KVO</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/02/21/iOS改变图片颜色/" class="archive-article-date">
-  	<time datetime="2019-02-21T07:24:36.731Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/21/iOS改变图片颜色/">iOS改变图片颜色</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/02/21/JavaBean及其用法/" class="archive-article-date">
-  	<time datetime="2019-02-21T06:56:55.198Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/21/JavaBean及其用法/">JavaBean及其用法</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/02/20/Hexo博客部署到腾讯云教程/" class="archive-article-date">
-  	<time datetime="2019-02-20T05:58:16.146Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-20</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/02/20/Hexo博客部署到腾讯云教程/">Hexo博客部署到腾讯云教程</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Hexo</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
-    <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/archives/2019/02/page/2/">2</a><a class="extend next" rel="next" href="/archives/2019/02/page/2/">Next &raquo;</a>
-    </nav>
   
 
 
@@ -576,8 +383,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

@@ -152,6 +152,137 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Rxswift总结（二）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/22/Rxswift总结（二）/">Rxswift总结（二）</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/22/Rxswift总结（二）/" class="archive-article-date">
+  	<time datetime="2019-02-22T06:30:04.592Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><h3 id="UILabel"><a href="#UILabel" class="headerlink" title="UILabel"></a>UILabel</h3><p>文字绑定到 UILabel</p>
+<pre><code> let label = UILabel()
+ label.frame = CGRect.init(x: 10, y: 110, width: 200, height: 40)
+ self.view.addSubview(label)
+//MARK: 值绑定
+Observable.just(&quot;Hello RxSwift&quot;)
+        .bind(to: label.rx.text)
+        .disposed(by: DisposeBag())
+</code></pre><h3 id="UITextFiled"><a href="#UITextFiled" class="headerlink" title="UITextFiled"></a>UITextFiled</h3><p>监听单个 textField 内容的变化</p>
+<pre><code>lazy var textFiled: UITextField = {
+    let textfiled = UITextField()
+    textfiled.frame = CGRect.init(x: 30, y: 200, width: 100, height: 40)
+    return textfiled
+}()
+
+
+self.view.addSubview(self.textFiled)
+
+// MARK:监听textFiled的变化
+
+        textFiled.rx.text.orEmpty.asObservable().subscribe(onNext: {
+        print(&quot;你输入的是: \($0)&quot;)
+    }).disposed(by: DisposeBag())
+
+    textFiled.rx.text.orEmpty.changed.subscribe(onNext: {
+        print(&quot;你输入的是: \($0)&quot;)
+    }).disposed(by: DisposeBag())
+</code></pre><h3 id="UIButton"><a href="#UIButton" class="headerlink" title="UIButton"></a>UIButton</h3><pre><code>let disposeBag = DisposeBag()
+lazy var submitBtn: UIButton = {
+    let btn = UIButton.init()
+    btn.frame = CGRect.init(x: 40, y: 270, width: 100, height: 50)
+    btn.backgroundColor = UIColor.orange
+    btn.setTitle(&quot;点击&quot;, for: UIControl.State.normal)
+    btn.setTitleColor(UIColor.black, for: UIControl.State.normal)
+    return btn
+}()
+
+//按钮点击
+   self.submitBtn.rx.tap
+        .subscribe(onNext: { [weak self] in
+            self?.showMessage(&quot;按钮被点击&quot;)
+
+        })
+        .disposed(by: disposeBag)
+
+    self.submitBtn.rx.tap
+        .bind { [weak self] in
+            self?.showMessage(&quot;按钮被点击&quot;)
+        }
+        .disposed(by: disposeBag)
+
+       //显示消息提示框
+func showMessage(_ text: String) {
+    let alertController = UIAlertController(title: text, message: nil, preferredStyle: .alert)
+    let cancelAction = UIAlertAction(title: &quot;确定&quot;, style: .cancel, handler: nil)
+    alertController.addAction(cancelAction)
+    self.present(alertController, animated: true, completion: nil)
+}     
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/22/Rxswift总结（二）/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Rxswift总结(一)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1578,136 +1709,6 @@ hexo deploy
 
 
   
-    <article id="post-精确还原UI稿多行文字间距" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/15/精确还原UI稿多行文字间距/">精确还原UI稿多行文字间距</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/15/精确还原UI稿多行文字间距/" class="archive-article-date">
-  	<time datetime="2019-02-15T07:14:39.643Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-15</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><img src="http://img.wangjungang.cn/WX20190215-151500@2x.png" alt=""></p>
-<p>关于 iOS 中多行文字行间距这个问题蛋疼了几年了，回忆一下整个历程：</p>
-<p>在工程师实现设计稿的时候，文本框的对齐是一个经常遇到且棘手的问题。明明已经遵照设计师的标注实现，但结果却与设计稿有很大差异。</p>
-<ul>
-<li><p>「label 为什么有这么大的上下边距呢？」</p>
-</li>
-<li><p>「行距是 1.2 倍但是效果完全不一样！」</p>
-</li>
-</ul>
-<p>这时候只能靠手工一点一点试，而且由于 app 开发不能像 web 一样及时生效，很浪费时间，且不够精确。</p>
-<p>我们的目标是: 只需按照标注 coding，即可像素般准确实现设计稿中的文字对齐与行间距样式。为了解决这个问题，我们需要先明确一些概念。</p>
-<h2 id="文本的度量"><a href="#文本的度量" class="headerlink" title="文本的度量"></a>文本的度量</h2><p>我们只看纵向:</p>
-<ul>
-<li>baseline: 相当于坐标原点。大部分的拉丁字母底部与此对齐，汉字的中下部与此对齐（这是设定）</li>
-<li>ascent, descent: 相当于字体可绘制区域的上下最大值。根据自己的观察，ascent 并不一定是最高字符的高度（比如上图的 f），在大部分字体中，ascent 会比最高的字符还要高一些，上面会有个空间。 desecnt 同理。（descent 为负值）</li>
-<li>leading: 即行间距。但这个行间距与平时所说的行间距并不是一个东西。在文本编辑器中，选择不同字体的时候，视觉上的每行的距离并不是一样的。有可能就是 leading 不同。这个值可能为 0。（对于 iOS 上的 SF 系列字体，它的值就是 0 ）</li>
-<li>line height: 即行高。它的值定义为 ascent + descent + leading。（descent 为负值，所以准确的写应该取绝对值）。这也是我们最关心的一个值。</li>
-</ul>
-<p>这些值都是字体的属性，是字体的设计者制定的，不可变，不同的字体会不一样。</p>
-<p>平时用来表示字体大小的「字号」并不对应上图中的任何值，也就没有一个直接的几何意义。字号准确的说法是 point size。对于一个 point size 是 15 的 SFUI 字体，它的 line height 为 17.900390625, 约为 point size 的 1.2 倍。所以对于这个字体的一行文字，它的行高为 17.900390625。如果硬要显示在 15.0 高度的矩形内，g 和 f 应该会显示不全。</p>
-<h2 id="行间距"><a href="#行间距" class="headerlink" title="行间距"></a>行间距</h2><p>line height 所代表的高度只是一行文字的高度。可以把一行文字看做以 line height 为高的矩形，多行文字就是这些矩形纵向排列。矩形的间距就是通常我们说的行间距:</p>
-<p><img src="http://img.wangjungang.cn/WX20190215-152506@2x.png" alt=""></p>
-<p>而通常所说的「行间距」「行高」「line height mutiple」 这样的词语，描述的就是这个间距的大小。</p>
-<ul>
-<li>「行间距」: 直接对应间距的值</li>
-<li>「行高」: line height + 间距。可以认为是，除了首行与尾行，每行实际所占的高度</li>
-<li>line height mutiple: 即是「 x 倍行高」中的数值。line_height_mutiple = 「行高」/ line_height</li>
-</ul>
-<h2 id="不同平台的实现效果"><a href="#不同平台的实现效果" class="headerlink" title="不同平台的实现效果"></a>不同平台的实现效果</h2><h3 id="iOS"><a href="#iOS" class="headerlink" title="iOS"></a>iOS</h3><p>使用 autolayout 的一行 UIlabel 的高度即为所使用字体的 line height。但 autolayout 中，view 的 frame 的小数点精度会对齐到像素精度。所以 15 号字体的 label 高度为 18.0 point 。</p>
-<p>对于多行文字的行间距，可以通过 attributedString 中的 paragraph style 来控制。paragraph style 可以设定如下值:</p>
-<ul>
-<li>lineHeightMultiple: 同上面所说的。</li>
-<li>minimumLineHeight/maximumLineHeight: 即「行高」</li>
-</ul>
-<p>这两个值都会改变行高，只是写法不同而已。但使用它们控制行间距有一个问题，如果行高大于字体的 line height，那么多余的空间将会放在这行的上面: baseline 所在的位置是矩形底边 + ( leading + descent ) 的位置。一个常见的情况，圆形的 avatar 与右侧的 label 顶端对齐，如果使用 lineHeightMultiple，那么为了达到视觉上的对齐，avatar 与 label 的 frame.y 就会不一样。不是很理想。（在使用 insets 或 background color 的时候就会很麻烦）</p>
-<ul>
-<li>lineSpacing: 即行间距。</li>
-</ul>
-<p>使用 lineSpacing 只会在每行之间添加间距。在首行与尾行外侧并没有额外的空白（当然，line height 里所带的空白仍然存在）。比较符合我们行间距的设定，不存在上面提到的问题。但不同 point size 为了有同样的效果，需要设定不同的 lineSpacing，不如 lineHeightMultiple 使用方便。</p>
-<h3 id="Sketch-App"><a href="#Sketch-App" class="headerlink" title="Sketch App"></a>Sketch App</h3><p>Sketch 是常见的 UI 设计工具。sketch 中的一个单行文本框的高度同 ios 一样，即精确到整数的 line height。（以前并不是，至于从什么版本开始我也不清楚。）（但文本框的高度可以设为小于 line height，而且并不会截断文字显示。此时文字会居中对齐，但在 iOS 中如此操作，文字会顶端对齐，截断下面。）</p>
-<p>sketch 对于多行文本设定非常简单，只有一个 lineHeight 值，对应于上文中的「行高」。设定 lineHeight 的效果是文字的每一行都变高了，原有的文字在每行内居中对齐。这个效果与 iOS 中使用 minimumLineHeight 是不一样的，后者是向下对齐。而与 iOS 中使用 lineSpacing 不同，首行和尾行外侧也会多出同样的空白边距。</p>
-<h2 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h2><p>可以看出，不同平台对于这些参数的实现形式是不一样的，这就造成了开头所说的问题。为了解决这个问题，需要统一两个平台的效果:</p>
-<p>我们这样约定显示规则: （这种约定不是唯一的选择，但这样设定更方便使用和理解）</p>
-<ul>
-<li>使用相同的字体: SF UI（或 SF Pro）</li>
-<li>单行文本: 文本框高度等于 font 的 line height</li>
-<li>多行文本: 只在行与行之间加入 spacing，同使用 iOS lineSpacing 的效果。并使用 multiple 来描述 spacing 的大小。</li>
-</ul>
-<p>通过以下的方式可以实现上述效果:</p>
-<h3 id="字体"><a href="#字体" class="headerlink" title="字体:"></a>字体:</h3><p>iOS : 使用系统默认字体 SF UI，可以使用 systemFontOfSize 方法获得（systemFontOfSize:weight: 方法也可以，字重没有影响）。注意不能直接使用 PingFang SC 字体，它与 SF UI 的 line height 不同。</p>
-<p>sketch: 使用 SF UI Text 或 SF UI Display，两者在横向上都会有误差，原因后面会说明。同样不能直接使用 PingFang SC，虽然在使用 SF UI 的中文会 fall back 到 PingFang SC, 但两者的 line height 不同，PingFang SC 会更大一点。</p>
-<h3 id="单行文本："><a href="#单行文本：" class="headerlink" title="单行文本："></a>单行文本：</h3><p>iOS: UILabel，使用 autolayout（view 高度精确到像素）。或者其他等同效果的 view，内部使用 textKit 的都有一样的效果1。UILabel 在（只有一行，有中文，paragraph style 中的 line spacing 不为零）的情况下有个小 bug，view 的高度会比 line height 大。解决办法是去掉 lineSpacing，或者设定 view 高度等于 font.lineHeight。</p>
-<p>sketch: 对于纯英文的情况下，使用 text layer 的默认高度即可，不要手动更改行高。如果有中文，view 高度会比 SF 字体的 line height 高。需要使用插件设定文本的 line height multiple 为 1（后面介绍）。</p>
-<h3 id="多行文本"><a href="#多行文本" class="headerlink" title="多行文本"></a>多行文本</h3><p>iOS: 行间距的设置使用 lineSpacing 属性实现。设定 lineSpacing = font.lineHeight * (multiple - 1.0 ) 。其中存在取整的问题需要注意2。</p>
-<p>sketch: 使用插件直接设置 line height multiple。比如想要 1.2 倍行高，直接输入 1.2。</p>
-<p>因为 sketch 无法直接达到想要的效果，为此写了一个插件 sketch-engineer-friendly-text。它可以通过输入的 multiple 值和字体的本身的 line height 自动计算行高。并把文本上下多余的「行间距」切掉。</p>
-<p>这样，我们统一了两个平台的显示效果，工程师在开发的时候只需直接遵照设计图上的参数，即可快速准确实现文字的显示样式。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/15/精确还原UI稿多行文字间距/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/9/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/page/11/">11</a><a class="page-number" href="/page/12/">12</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/11/">Next &raquo;</a>
@@ -1813,11 +1814,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">

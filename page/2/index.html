@@ -152,6 +152,106 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Dialog圆角问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/01/09/Dialog圆角问题/">Dialog圆角问题</a>
+    </h1>
+  
+
+        
+        <a href="/2021/01/09/Dialog圆角问题/" class="archive-article-date">
+  	<time datetime="2021-01-09T11:45:01.669Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Dialog圆角无效问题</p>
+<p>同样是setBackgroundDrawableResource或setBackgroundDrawable无效的问题; 共分两种情形, 一是有标题的Dialog, 另一种是无标题的Dialog</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>Dialog设置背景实质上用的是Dialog.setContentView方法, 而Android系统提供的Dialog本身是有标题的布局空间的, 当通过Window设置把标题隐藏掉后, 无标题下做个圆角是给剩下的FrameLayout做圆角, 这样就很好理解了。</p>
+<h2 id="控制Dialog标题显示隐藏的方式"><a href="#控制Dialog标题显示隐藏的方式" class="headerlink" title="控制Dialog标题显示隐藏的方式"></a>控制Dialog标题显示隐藏的方式</h2><pre><code>requestWindowFeature(Window.FEATURE_NO_TITLE)
+</code></pre><p>or</p>
+<pre><code>&lt;style name=&quot;AndoDialog&quot;&gt;
+        &lt;item name=&quot;android:windowNoTitle&quot;&gt;false&lt;/item&gt;&lt;!--false 有标题 true无标题--&gt;
+&lt;/style&gt;
+</code></pre><h3 id="有标题"><a href="#有标题" class="headerlink" title="有标题"></a>有标题</h3><p>直接设置window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom)即可, 并不是一些博客中所说的如下配置:</p>
+<pre><code>//没用
+window.setBackgroundDrawableResource(android.R.color.transparent)
+window.decorView.setPadding(0, 0, 0, 0)
+</code></pre><h3 id="无标题"><a href="#无标题" class="headerlink" title="无标题"></a>无标题</h3><p>无标题处理圆角问题, 就是给FrameLayout做圆角</p>
+<p>无标题时 window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom) 设置不生效, 需要对Dialog的布局文件进行调整。 如底部弹窗左上角和右上角是圆角, 设置圆角背景的同时加上paddingXXX属性,数值与<br>drawable中android:xxxRadius=”10dp”相等。</p>
+<pre><code>//Dialog顶层布局中
+android:paddingTop=&quot;10&quot;
+android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
+</code></pre><h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><p>rectangle_ando_dialog_bottom.xml</p>
+<pre><code> &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
+    android:shape=&quot;rectangle&quot;&gt;
+    &lt;corners
+        android:topLeftRadius=&quot;10dp&quot;
+        android:topRightRadius=&quot;10dp&quot; /&gt;
+
+    &lt;solid android:color=&quot;@color/color_ando_dialog_white&quot; /&gt;
+&lt;/shape&gt;
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/01/09/Dialog圆角问题/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-用100行代码构建一个多样式RecyclerView适配器" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2153,160 +2253,6 @@ class ViewController: UIViewController {
 
 
   
-    <article id="post-Git进阶使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/20/Git进阶使用/">Git进阶使用</a>
-    </h1>
-  
-
-        
-        <a href="/2020/03/20/Git进阶使用/" class="archive-article-date">
-  	<time datetime="2020-03-20T02:52:19.557Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>git reflog处理代码丢失 &amp; 协作开发保证git信息简洁</p>
-<h2 id="git-reflog-解决提交代码丢失-detached-head"><a href="#git-reflog-解决提交代码丢失-detached-head" class="headerlink" title="git reflog 解决提交代码丢失 detached-head"></a>git reflog 解决提交代码丢失 detached-head</h2><p>reflog 是 Git 操作的一道安全保障，它能够记录几乎所有本地仓库的改变。包括所有分支 commit 提交，已经删除（其实并未被实际删除）commit 都会被记录。总结而言，只要 HEAD 发生变化，就可以通过 reflog 查看到。</p>
-<p>日常开发中，切换分支误操作，造成本地代码修改丢失。</p>
-<p>此时，可以借助 git reflog 找回丢失的代码修改</p>
-<h3 id="丢失产生原因和步骤"><a href="#丢失产生原因和步骤" class="headerlink" title="丢失产生原因和步骤"></a>丢失产生原因和步骤</h3><p>首先在 master 分支上开发，此时线上出现 bug 且回到旧版本的 tag。这时 master 分支上有一部分代码修改但未提交。</p>
-<p>在 master 分支上执行 git status，有未提交的代码，如下图所示</p>
-<p><img src="http://img.wangjungang.cn/0YgXDo.jpg" alt=""></p>
-<p>在 master 分支上执行 git tag查看标签信息，如下图所示</p>
-<p><img src="http://img.wangjungang.cn/bAMk3d.jpg" alt=""></p>
-<p>此时有未提交的代码，然后执行 git checkout v1.0</p>
-<p><img src="http://img.wangjungang.cn/B99qds.jpg" alt=""></p>
-<p>这个时候，提示当前分支为 detached HEAD</p>
-<p>然后再执行 git add ./git commit 和 git checkout master，切换回 master 分支。这个时候发现 detached HEAD 分支不见了，master 分支上未提交的代码也不见了。</p>
-<h3 id="代码找回"><a href="#代码找回" class="headerlink" title="代码找回"></a>代码找回</h3><p>执行 git reflog 查看提交记录</p>
-<p><img src="http://img.wangjungang.cn/VQg53Y.jpg" alt=""></p>
-<p>查找对应提交的 commitId 为 247e11b，然后执行下述命令行，找回丢失的代码</p>
-<pre><code>git checkout 247e11b    //检出对应的提交
-git checkout -b diff    //新建一个新的diff分支
-git checkout master     //切换到master分支
-git merge diff          //将新建的diff分支合并到master分支
-</code></pre><h2 id="删除所有历史提交记录"><a href="#删除所有历史提交记录" class="headerlink" title="删除所有历史提交记录"></a>删除所有历史提交记录</h2><p>此处介绍如何删除所有历史提交记录，形成一个全新的仓库。</p>
-<ul>
-<li><p>Checkout</p>
-<pre><code>git checkout --orphan new_branch
-</code></pre></li>
-<li><p>Add all the files</p>
-<pre><code>git add -A
-
-//等效于 git add --all 或 git add .
-</code></pre></li>
-</ul>
-<hr>
-<p>git add 中使用参数 -A 或 –all 表示追踪所有操作，包含新增、修改和删除</p>
-<p>Git 2.0版开始，-A 参数为默认参数，即 git add . 等效于 git add -A 或 git add –all</p>
-<ul>
-<li><p>Commit the changes</p>
-<pre><code>git commit -am &quot;commit message&quot;
-</code></pre></li>
-<li><p>Delete the branch</p>
-<pre><code>git branch -D master   //同时删除本地和远程分支
-</code></pre></li>
-<li><p>Rename the current branch to master</p>
-<pre><code>git branch -m master
-</code></pre><ul>
-<li><p>force update your repository</p>
-<pre><code>git push -f origin master
-</code></pre></li>
-</ul>
-</li>
-</ul>
-<p>下面对上述步骤进行说明</p>
-<h3 id="git-checkout-–orphan"><a href="#git-checkout-–orphan" class="headerlink" title="git checkout –orphan"></a>git checkout –orphan</h3><p>如果你的某个分支上积累了无数次的无意义的提交，git log 信息满天飞，那么可以使用 git checkout –orphan &lt;new_branch_name&gt;</p>
-<p>基于当前分支创建一个新的“孤儿(orphan)”的分支，没有任何提交历史，但包含当前分支所有内容</p>
-<p>执行上述命令后，工作区（Workspace）中所有文件均被认为在该操作中新增(git statue 查看状态，所有文件状态均为 new file，如下图所示)，此时执行 git add . 会把所有文件添加到缓存区（Index）</p>
-<p><img src="http://img.wangjungang.cn/mLQAVc.jpg" alt=""></p>
-<p>严格意义上说，执行 git checkout –orphan &lt;new_branch_name&gt; 后，创建的并不是一个分支，因为此时 HEAD 指向的引用中没有 commit 值。只有在进行一次提交后，它才算得上真正的分支。</p>
-<pre><code>orphan 译为“孤儿”，该参数表示创建一个孤立的分支，没有任何提交历史，且与当前分支不存在任何关系（查看提交信息，可发现其为一个孤立的点，如下图所示）
-
-孤儿（orphan）无父辈信息，同理，创建的分支也不包含任何历史提交信息
-</code></pre><p><img src="http://img.wangjungang.cn/U5cr5r.jpg" alt=""></p>
-<h3 id="git-branch-m"><a href="#git-branch-m" class="headerlink" title="git branch -m"></a>git branch -m</h3><p>重命名</p>
-<h3 id="git-push-f-origin-master"><a href="#git-push-f-origin-master" class="headerlink" title="git push -f origin master"></a>git push -f origin master</h3><h2 id="git-项目协作——保证git信息简洁"><a href="#git-项目协作——保证git信息简洁" class="headerlink" title="git 项目协作——保证git信息简洁"></a>git 项目协作——保证git信息简洁</h2><p>###同一分支 git pull 使用 rebase</p>
-<p>默认情况下，git pull 使用的是 merge 行为。多人协作开发时，会产生不必要的 merge 提交记录，造成提交链混乱不堪。</p>
-<pre><code>推荐在同一个分支更新代码时，使用 git pull --rebase。
-
-# 为某个分支单独设置，这里是设置 dev 分支
-git config branch.dev.rebase true
-# 全局设置，所有的分支 git pull 均使用 --rebase
-git config --global pull.rebase true
-git config --global branch.autoSetupRebase always
-</code></pre><h3 id="分支合并使用-merge-–no-ff"><a href="#分支合并使用-merge-–no-ff" class="headerlink" title="分支合并使用 merge –no-ff"></a>分支合并使用 merge –no-ff</h3><h4 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h4><p>Fast-Forward：当前分支合并到另一分支时，如果没有冲突要解决，就会直接移动文件指针，并且不会产生合并提交记录。该过程中，存在git 文件指针快速移动， 因此该过程称为 Fast-Forward。</p>
-<p>–no-ff(no fast foward)：每一次的合并，都会创建一个新的 commit 记录。使用 –no-ff，可以保持原有分支提交链的完整性，并且当该分支被删除时，提交信息依旧存在。</p>
-<p><img src="http://img.wangjungang.cn/It5GH9.jpg" alt=""></p>
-<p>结合上图分析，在 dev（绿色） 分支上检出 feature-1 分支（蓝色），且 dev 分支不进行任何提交</p>
-<p>直接 merge，默认采用 Fast-Forward，两个分支的提交链会合并为一条直线，不利于后期代码审查和维护</p>
-<p>使用 git merge –no-ff feature-1 合并代码，会产生一个新的提交，且两个分支的提交链不会重叠，利于后<br>期代码审查和维护</p>
-<h3 id="merge-默认设置"><a href="#merge-默认设置" class="headerlink" title="merge 默认设置"></a>merge 默认设置</h3><p>git merge 默认使用 fast-forward，可以通过如下方式，修改为默认使用 –no-ff。</p>
-<pre><code>git config --global merge.commit no
-git config --global merge.ff no
-</code></pre><p>此外，SourceTree 在设置中也可以设置 –no-ff。</p>
-<p><img src="http://img.wangjungang.cn/bmHTbr.jpg" alt=""></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">git</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/20/Git进阶使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -2412,11 +2358,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
