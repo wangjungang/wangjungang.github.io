@@ -152,6 +152,110 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-关于GCD的信号量" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/12/关于GCD的信号量/">关于GCD的信号量</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/12/关于GCD的信号量/" class="archive-article-date">
+  	<time datetime="2018-09-12T14:54:10.618Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当我们在处理一系列线程的时候，当数量达到一定量，在以前我们可能会选择使用NSOperationQueue来处理并发控制，但如何在GCD中快速的控制并发呢？答案就是dispatch_semaphore，对经常做unix开发的人来讲，我所介绍的内容可能就显得非常入门级了，信号量在他们的多线程开发中再平常不过了。</p>
+<p>信号量是一个整形值并且具有一个初始计数值，并且支持两个操作：信号通知和等待。当一个信号量被信号通知，其计数会被增加。当一个线程在一个信号量上等待时，线程会被阻塞（如果有必要的话），直至计数器大于零，然后线程会减少这个计数。</p>
+<p>在GCD中有三个函数是semaphore的操作，分别是：</p>
+<pre><code>dispatch_semaphore_creat 
+
+创建一个semaphore
+
+dispatch_semaphore_signal
+
+发送一个信号
+
+dispathc_semaphore_wait
+
+等待信号
+</code></pre><p>简单的介绍一下这三个函数，第一个函数有一个整形的参数，我们可以理解为信号的总量，dispatch_semaphore_signal是发送一个信号，自然会让信号总量加1，dispatch_semaphore_wait等待信号，当信号总量少于0的时候就会一直等待，否则就可以正常的执行，并让信号总量-1，根据这样的原理，我们便可以快速的创建一个并发控制来同步任务和有限资源访问控制。</p>
+<pre><code>　dispatch_group_t group = dispatch_group_create(); 
+dispatch_semaphore_t semaphore = dispatch_semaphore_create(10); 
+dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0); 
+for (int i = 0; i &lt; 100; i++) 
+{ 
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER); 
+    dispatch_group_async(group, queue, ^{ 
+        NSLog(@&quot;%i&quot;,i); 
+        sleep(2); 
+        dispatch_semaphore_signal(semaphore); 
+    }); 
+} 
+dispatch_group_wait(group, DISPATCH_TIME_FOREVER); 
+dispatch_release(group); 
+dispatch_release(semaphore); 
+</code></pre><p>简单的介绍一下这一段代码，创建了一个初使值为10的semaphore，每一次for循环都会创建一个新的线程，线程结束的时候会发送一个信号，线程创建之前会信号等待，所以当同时创建了10个线程之后，for循环就会阻塞，等待有线程结束之后会增加一个信号才继续执行，如此就形成了对并发的控制，如上就是一个并发数为10的一个线程队列。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/12/关于GCD的信号量/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS程序启动内部过程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1280,105 +1384,6 @@ static struct _category_t _OBJC_$_CATEGORY_Person_$_categoryPerson __attribute__
 
 
   
-    <article id="post-关于数组和链表" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/06/关于数组和链表/">关于数组和链表</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/06/关于数组和链表/" class="archive-article-date">
-  	<time datetime="2018-09-06T14:28:49.016Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>修炼内功，数据结构这东西永远是程序的核心，关于数组，链表，hash这些东西，需要时不时的总结回顾一下。</p>
-<p>大致总结一下特点和区别，拿几个人一起去看电影时坐座位为例。</p>
-<h2 id="数组的特点"><a href="#数组的特点" class="headerlink" title="数组的特点"></a>数组的特点</h2><p>在内存中，数组是一块连续的区域。 拿上面的看电影来说，这几个人在电影院必须坐在一起。</p>
-<p>数组需要预留空间，在使用前要先申请占内存的大小，可能会浪费内存空间。 比如看电影时，为了保证10个人能坐在一起，必须提前订好10个连续的位置。这样的好处就是能保证10个人可以在一起。但是这样的缺点是，如果来的人不够10个，那么剩下的位置就浪费了。如果临时有多来了个人，那么10个就不够用了，这时可能需要将第11个位置上的人挪走，或者是他们11个人重新去找一个11连坐的位置，效率都很低。如果没有找到符合要求的作为，那么就没法坐了。</p>
-<p>插入数据和删除数据效率低，插入数据时，这个位置后面的数据在内存中都要向后移。删除数据时，这个数据后面的数据都要往前移动。 比如原来去了5个人，然后后来又去了一个人要坐在第三个位置上，那么第三个到第五个都要往后移动一个位子，将第三个位置留给新来的人。 当这个人走了的时候，因为他们要连在一起的，所以他后面几个人要往前移动一个位置，把这个空位补上。</p>
-<p>随机读取效率很高。因为数组是连续的，知道每一个数据的内存地址，可以直接找到给地址的数据。</p>
-<p>并且不利于扩展，数组定义的空间不够时要重新定义数组。</p>
-<h2 id="链表的特点"><a href="#链表的特点" class="headerlink" title="链表的特点"></a>链表的特点</h2><p>在内存中可以存在任何地方，不要求连续。 在电影院几个人可以随便坐。</p>
-<p>每一个数据都保存了下一个数据的内存地址，通过这个地址找到下一个数据。 第一个人知道第二个人的座位号，第二个人知道第三个人的座位号……<br>增加数据和删除数据很容易。 再来个人可以随便坐，比如来了个人要做到第三个位置，那他只需要把自己的位置告诉第二个人，然后问第二个人拿到原来第三个人的位置就行了。其他人都不用动。</p>
-<p>查找数据时效率低，因为不具有随机访问性，所以访问某个位置的数据都要从第一个数据开始访问，然后根据第一个数据保存的下一个数据的地址找到第二个数据，以此类推。 要找到第三个人，必须从第一个人开始问起。</p>
-<p>不指定大小，扩展方便。链表大小不用定义，数据随意增删。</p>
-<h2 id="各自的优缺点"><a href="#各自的优缺点" class="headerlink" title="各自的优缺点"></a>各自的优缺点</h2><h3 id="数组的优点"><a href="#数组的优点" class="headerlink" title="数组的优点"></a>数组的优点</h3><p>随机访问性强</p>
-<p>查找速度快</p>
-<h3 id="数组的缺点"><a href="#数组的缺点" class="headerlink" title="数组的缺点"></a>数组的缺点</h3><p>插入和删除效率低</p>
-<p>可能浪费内存</p>
-<p>内存空间要求高，必须有足够的连续内存空间。</p>
-<p>数组大小固定，不能动态拓展</p>
-<h3 id="链表的优点"><a href="#链表的优点" class="headerlink" title="链表的优点"></a>链表的优点</h3><p>插入删除速度快</p>
-<p>内存利用率高，不会浪费内存</p>
-<p>大小没有固定，拓展很灵活。</p>
-<h3 id="链表的缺点"><a href="#链表的缺点" class="headerlink" title="链表的缺点"></a>链表的缺点</h3><p>不能随机查找，必须从第一个开始遍历，查找效率低</p>
-<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><p>   哈希表结合了数组的快速查询的优点又能融合链表方便快捷的增加删除元素的优势</p>
-<p>   所谓的hash，简单的说就是散列，即将输入的数据通过hash函数得到一个key值，输入的数据存储到数组中下标为key值的数组单元中去。</p>
-<p>我们发现，不相同的数据通过hash函数得到相同的key值。这时候，就产生了hash冲突。解决hash冲突的方式有两种。一种是挂链式，也叫拉链法。挂链式的思想在产生冲突的hash地址指向一个链表，将具有相同的key值的数据存放到链表中。另一种是建立一个公共溢出区。将所有产生冲突的数据都存放到公共溢出区，也可以使问题解决。</p>
-<p>hash表其实是结合了数组和链表的优点，进行的折中方案。平衡了数组和链表的优缺点。hash的具体实现有很多种，但是需要解决冲突的问题。​</p>
-<p>不相同的数据通过hash函数得到相同的key值。这时候，就产生了hash冲突。解决hash冲突的方式有两种。一种是挂链式，也叫拉链法。挂链式的思想在产生冲突的hash地址指向一个链表，将具有相同的key值的数据存放到链表中。另一种是建立一个公共溢出区。将所有产生冲突的数据都存放到公共溢出区，也可以使问题解决。​</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/06/关于数组和链表/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/18/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="page-number" href="/page/18/">18</a><span class="page-number current">19</span><a class="page-number" href="/page/20/">20</a><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/20/">Next &raquo;</a>
@@ -1480,7 +1485,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1492,23 +1505,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1516,7 +1521,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1536,10 +1541,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
@@ -1549,6 +1550,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
