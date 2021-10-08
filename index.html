@@ -152,6 +152,150 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Swift-适配深色模式与UIColor扩展" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/08/Swift-适配深色模式与UIColor扩展/">Swift:适配深色模式与UIColor扩展</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/08/Swift-适配深色模式与UIColor扩展/" class="archive-article-date">
+  	<time datetime="2021-10-08T07:02:24.916Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="配置info-plist锁死模式"><a href="#配置info-plist锁死模式" class="headerlink" title="配置info.plist锁死模式"></a>配置info.plist锁死模式</h2><p>如果你的App在之前的iOS版本跑的挺好的，特别是那种浅色系风格的App，只是在深色模式下变得奇丑无比的话，有一种简单暴力的方法去适配深色模式。</p>
+<p>那就是将你的App锁死在浅色模式或者黑色模式。这样无论外面设置怎么修改，App的配色岿然不动。</p>
+<p>修改的方法也特别简单，在App中info.plist文件，添加如下代码就可以了。</p>
+<p>锁死浅色：</p>
+<pre><code>&lt;key&gt;UIUserInterfaceStyle&lt;/key&gt;
+&lt;string&gt;Light&lt;/string&gt;
+</code></pre><p>锁死深色：</p>
+<pre><code>&lt;key&gt;UIUserInterfaceStyle&lt;/key&gt;
+&lt;string&gt;Dark&lt;/string&gt;
+</code></pre><p>如果你要比较细化的适配浅色和深色，请接着往下看。</p>
+<h2 id="UIColor分类"><a href="#UIColor分类" class="headerlink" title="UIColor分类"></a>UIColor分类</h2><p>抽取一个构造方法，可以传入浅色与深色的方法，生成一个UIColor，我的方法如下：</p>
+<pre><code>//MARK: - LightMode与DarkMode的颜色思路
+extension UIColor {
+
+    /// 便利构造函数(配合cssHex函数使用 更好)
+    /// - Parameters:
+    ///   - lightThemeColor: 明亮主题的颜色
+    ///   - darkThemeColor: 黑暗主题的颜色
+
+    public convenience init(lightThemeColor: UIColor, darkThemeColor: UIColor? = nil) {
+        if #available(iOS 13.0, *) {
+            self.init { (traitCollection) -&gt; UIColor in
+                switch traitCollection.userInterfaceStyle {
+                    case .light:
+                        return lightThemeColor
+                    case .unspecified:
+                        return lightThemeColor
+                    case .dark:
+                        return darkThemeColor ?? lightThemeColor
+                    @unknown default:
+                        fatalError()
+                }
+            }
+        } else {
+            self.init(cgColor: lightThemeColor.cgColor)
+        }
+    }
+}
+</code></pre><p>最好对于App类常用的颜色都进行UIColor的分类扩展编写。比如下面这种：</p>
+<pre><code>extension UIColor {
+
+    /// 文字颜色 light为黑 dark为白
+    static let playAndroidTitle = UIColor(lightThemeColor: .black, darkThemeColor: .white)
+
+    /// 背景颜色 light为白 dark为黑
+    static let playAndroidBg = UIColor(lightThemeColor: .white, darkThemeColor: .black)
+
+}
+</code></pre><p>使用的时候这样就可以了：</p>
+<pre><code>let label = UILabel()
+label.textColor = .playAndroidTitle
+</code></pre><h2 id="UIColor的colorName-API使用"><a href="#UIColor的colorName-API使用" class="headerlink" title="UIColor的colorName API使用"></a>UIColor的colorName API使用</h2><p>另外我们可以通过iOS 11之后的新API与配置方法进行深色模式的适配：</p>
+<p>先在Assets新建色彩资源：<br><img src="http://img.wangjungang.cn/uPic/ZdvVYH.jpg" alt=""></p>
+<p>2.设置好颜色配置。</p>
+<p>3.调用</p>
+<p>系统api如下</p>
+<pre><code>extension UIColor {
+    @available(iOS 11.0, *)
+    public /*not inherited*/ init?(named name: String) // load from main bundle
+
+    @available(iOS 11.0, *)
+    public /*not inherited*/ init?(named name: String, in bundle: Bundle?, compatibleWith traitCollection: UITraitCollection?)
+
+}
+</code></pre><p>编写分类：</p>
+<pre><code>extension UIColor {
+
+    /// UIColor的原始调用，硬编码不够安全，而且返回的还是一个可选类型，需要注意
+    /// 可以考虑使用R函数
+    static let theme = UIColor.colorNamed(&quot;mainTheme&quot;)
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Swift</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/08/Swift-适配深色模式与UIColor扩展/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Android中的轻量级指针" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1846,404 +1990,9 @@ android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
 
 
   
-    <article id="post-用100行代码构建一个多样式RecyclerView适配器" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/">用100行代码构建一个多样式RecyclerView适配器</a>
-    </h1>
-  
-
-        
-        <a href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/" class="archive-article-date">
-  	<time datetime="2021-01-09T11:39:21.155Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>RecyclerView多样式布局的框架有很多，大家熟悉已久的BaseRecyclerViewAdapterHelper，vlayout等等，包括google在新版本RecyclerView中推出的MergeAdapter(后面重命名为ConcatAdapter了)等。既然有这么多现成的框架，为什么还要去自己编写一个呢?很多时候这些框架考虑的都是常见通用性场景，在某些奇葩的产品设计需求中也许并不适用，这也是这篇文章出现的原因。</p>
-<p>目前多样式适配器框架总体的设计方案有两种，一种是BaseRecyclerViewAdapterHelper这种极度简化开发者编写的代码量，用最简洁的方式去实现多样式。另外一种就是ConcatAdapter这种，将每种样式设计为单独模块(子适配器)，视图创建，数据绑定都在该模块内部处理，再用一个主适配器将这些子适配器进行包装关联。本文采用的是第二种设计方式。</p>
-<h2 id="由于代码量极少，下面就不多说了，直接贴代码："><a href="#由于代码量极少，下面就不多说了，直接贴代码：" class="headerlink" title="由于代码量极少，下面就不多说了，直接贴代码："></a>由于代码量极少，下面就不多说了，直接贴代码：</h2><h3 id="1-视图构建器，保持原生api命名方式"><a href="#1-视图构建器，保持原生api命名方式" class="headerlink" title="1. 视图构建器，保持原生api命名方式"></a>1. 视图构建器，保持原生api命名方式</h3><pre><code>&lt;ViewTypeCreator.kt&gt;
-abstract class ViewTypeCreator&lt;T, VH : ViewHolder&gt; {
-
-    abstract fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): VH
-
-    abstract fun onBindViewHolder(holder: VH, data: T)
-
-    abstract fun match(data: T): Boolean
-
-    open fun getItemId(position: Int) = RecyclerView.NO_ID
-
-}
-</code></pre><h3 id="2-数据适配器"><a href="#2-数据适配器" class="headerlink" title="2.数据适配器"></a>2.数据适配器</h3><pre><code>&lt;MultiTypeAdapter.kt&gt;
-abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() {
-    private val dataCache: ArrayList&lt;Class&lt;*&gt;&gt; = ArrayList()
-    private val creatorCache: SparseArray&lt;SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt;&gt; = SparseArray()
-    private val viewTypeCache: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = SparseArray()
-
-    abstract fun getData(position: Int): Any
-
-    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) {
-        registerCreatorInner(T::class.java, creator)
-    }
-
-    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) {
-        var index = dataCache.indexOf(clazz)
-        if (index == -1) {
-            dataCache.add(clazz)
-            index = dataCache.size - 1
-        }
-        var cache = creatorCache[index]
-        if (cache == null) {
-            cache = SparseArray()
-        }
-        val id = System.identityHashCode(creator)
-        @Suppress(&quot;UNCHECKED_CAST&quot;)
-        cache.put(id, creator as ViewTypeCreator&lt;Any, *&gt;)
-        creatorCache.put(index, cache)
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        val data = getData(position)
-        val viewType = getCreatorViewType(data)
-        return if (viewType != -1) {
-            viewType
-        } else
-            super.getItemViewType(position)
-    }
-
-    override fun getItemId(position: Int): Long {
-        val itemViewType = getItemViewType(position)
-        val viewCreator = getViewCreatorByViewType(itemViewType)
-        return viewCreator.getItemId(position)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val viewCreator: ViewTypeCreator&lt;*, *&gt; = getViewCreatorByViewType(viewType)
-        return viewCreator.onCreateViewHolder(LayoutInflater.from(parent.context), parent)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val data = getData(position)
-        @Suppress(&quot;UNCHECKED_CAST&quot;)
-        val viewCreator: ViewTypeCreator&lt;Any, ViewHolder&gt; =
-            getViewCreatorByViewType(getItemViewType(position)) as ViewTypeCreator&lt;Any, ViewHolder&gt;
-        viewCreator.onBindViewHolder(holder, data)
-    }
-
-    private fun getCreatorViewType(data: Any): Int {
-        val clazz: Class&lt;*&gt; = data::class.java
-        var viewType: Int
-        val index = dataCache.indexOf(clazz)
-        if (dataCache.size &gt; 0 &amp;&amp; index != -1) {
-            val creators: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = creatorCache[index]
-            // The Data bind more than one viewTypeCreator.
-            if (creators.size() &gt; 1) {
-                creators.forEach { id, viewCreator -&gt;
-                    if (viewCreator.match(data)) {
-                        viewType = id
-                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
-                            viewTypeCache.put(viewType, viewCreator)
-                        }
-                        return viewType
-                    }
-                }
-            }
-            // The Data only bind one viewTypeCreator.
-            else if (creators.size() == 1) {
-                viewType = creators.keyAt(0)
-                if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
-                    viewTypeCache.put(viewType, creators.valueAt(0))
-                }
-                return viewType
-            }
-        }
-        throw RuntimeException(&quot;Current dataType [$clazz] is not found in DataTypeCache:\n$dataCache \nPlease check the Type of data for your custom creator.&quot;)
-    }
-
-    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; {
-        return viewTypeCache[viewType]
-    }
-}
-</code></pre><h2 id="好了，代码就这么多，下面简单介绍下原理："><a href="#好了，代码就这么多，下面简单介绍下原理：" class="headerlink" title="好了，代码就这么多，下面简单介绍下原理："></a>好了，代码就这么多，下面简单介绍下原理：</h2><h3 id="1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法"><a href="#1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法" class="headerlink" title="1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:"></a>1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:</h3><pre><code>fun match(data: T): Boolean
-</code></pre><p>这里面接收一个数据类型参数，需要返回一个Boolean值，通常的产品设计常见一种数据类型应该是对应一种视图类型，但是就是存在这么奇葩的设计，比如返回一个Person数据类型，如果sex为男需要展示一种样式(左右布局:头像在左边，右边显示简介)，如果sex为女则需要展示另一种样式(上下布局:头像在中间，下面显示简介)，这样的场景就可以这样定义两种视图:</p>
-<pre><code>&lt;ManCreator.kt&gt;
-class ManCreator : ViewTypeCreator&lt;Person, ManCreator.Holder&gt;() {
-    ...
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
-        return Holder(inflater.inflate(R.layout.view_type_man, parent, false))
-    }
-    // 当person为男性的时候会通过该Creator创建视图
-    override fun match(data: Person) = data.sex == Sex.MAN
-}
-
-&lt;WomanCreator.kt&gt;
-class WomanCreator : ViewTypeCreator&lt;Person, WomanCreator.Holder&gt;() {
-    ...
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
-        return Holder(inflater.inflate(R.layout.view_type_female, parent, false))
-    }
-    // 当person为女性的时候会通过该Creator创建视图
-    override fun match(data: Person) = data.sex == Sex.WOMAN
-}
-</code></pre><h3 id="2-适配器，当然是继承RecyclerView-Adapter"><a href="#2-适配器，当然是继承RecyclerView-Adapter" class="headerlink" title="2.适配器，当然是继承RecyclerView.Adapter"></a>2.适配器，当然是继承RecyclerView.Adapter</h3><p>先介绍一下3个缓存：</p>
-<pre><code>&lt;MultiTypeAdapter.kt&gt;
-abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() {
-    // 按数据顺序，存储数据类型
-    private val dataCache: ArrayList&lt;Class&lt;*&gt;&gt; = ArrayList()// [DataType]
-    // 存储ViewTypeCreator，索引为该数据类型在缓存的下标，由于一个数据类型可对应多个Creator，
-    // 因此使用集合存储
-    private val creatorCache: SparseArray&lt;SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt;&gt; = SparseArray()// DataTypeIndex - [ViewTypeCreators]
-    // 存储ViewTypeCreator，索引为对应的viewType，一对一的关系，该缓存是为了快速查找
-    private val viewTypeCache: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = SparseArray()// ViewType - ViewTypeCreator
-}
-</code></pre><p>接下来看下注册视图构建器的方法：</p>
-<pre><code>&lt;MultiTypeAdapter.kt&gt;
-    // 自动读取泛型Data数据的类型进行存储
-    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) {
-        registerCreatorInner(T::class.java, creator)
-    }
-
-    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) {
-        var index = dataCache.indexOf(clazz)
-        if (index == -1) {
-            // 如果没有存储过进行缓存
-            dataCache.add(clazz)
-            index = dataCache.size - 1
-        }
-        // 初始化该Data数据类型对应的ViewTypeCreator集合
-        var cache = creatorCache[index]
-        if (cache == null) {
-            cache = SparseArray()
-        }
-        // 构造唯一标识作为索引
-        val id = System.identityHashCode(creator)
-        @Suppress(&quot;UNCHECKED_CAST&quot;)
-        cache.put(id, creator as ViewTypeCreator&lt;Any, *&gt;)
-        creatorCache.put(index, cache)
-    }
-</code></pre><p>最后按照RecyclerView.Adapter调用流程分析下原理：</p>
-<pre><code>&lt;MultiTypeAdapter.kt&gt;
-    // 获取当前索引的数据
-    abstract fun getData(position: Int): Any
-
-    override fun getItemViewType(position: Int): Int {
-        val data = getData(position)// 1.获取当前索引对应的数据
-        val viewType = getCreatorViewType(data)// 2.根据当前数据获取ViewType
-        return if (viewType != -1) {
-            viewType
-        } else
-            super.getItemViewType(position)
-    }
-
-    private fun getCreatorViewType(data: Any): Int {
-        val clazz: Class&lt;*&gt; = data::class.java// 获取data数据的class类型
-        var viewType: Int
-        val index = dataCache.indexOf(clazz)// 查找出该data在缓存中的索引
-        if (dataCache.size &gt; 0 &amp;&amp; index != -1) {// 判断是否注册过该data对应的ViewTypeCreator
-            val creators: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = creatorCache[index]// 获取该data对应的ViewTypeCreator集合
-            // The Data bind more than one viewTypeCreator.
-            if (creators.size() &gt; 1) {// 一个data数据对应多种viewType
-                creators.forEach { id, viewCreator -&gt;
-                    if (viewCreator.match(data)) {// 遍历ViewTypeCreator，并且判断是否符合条件，也就是上面说的match匹配方法
-                        viewType = id// viewType就是上面根据ViewTypeCreator实例获取到的唯一id：System.identityHashCode
-                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) {// 如果viewTypeCache没有缓存过，则添加入缓存
-                            viewTypeCache.put(viewType, viewCreator)// 这一级缓存是为了能够快速根据viewType查找对应的ViewTypeCreator
-                        }
-                        return viewType
-                    }
-                }
-            }
-            // The Data only bind one viewTypeCreator.
-            else if (creators.size() == 1) {// 一个data数据对应一种viewType
-                viewType = creators.keyAt(0)
-                if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
-                    viewTypeCache.put(viewType, creators.valueAt(0))
-                }
-                return viewType
-            }
-        }
-        throw RuntimeException(&quot;Current dataType [$clazz] is not found in DataTypeCache:\n$dataCache \nPlease check the Type of data for your custom creator.&quot;)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // 根据viewType查找到对应的ViewTypeCreator，并且通过onCreateViewHolder构建Holer视图
-        val viewCreator: ViewTypeCreator&lt;*, *&gt; = getViewCreatorByViewType(viewType)
-        return viewCreator.onCreateViewHolder(LayoutInflater.from(parent.context), parent)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // 根据viewType查找到对应的ViewTypeCreator，并且通过onBindViewHolder绑定数据
-        val data = getData(position)
-        @Suppress(&quot;UNCHECKED_CAST&quot;)
-        val viewCreator: ViewTypeCreator&lt;Any, ViewHolder&gt; =
-            getViewCreatorByViewType(getItemViewType(position)) as ViewTypeCreator&lt;Any, ViewHolder&gt;
-        viewCreator.onBindViewHolder(holder, data)
-    }
-
-    // 根据viewType查找到对应的ViewTypeCreator
-    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; {
-        return viewTypeCache[viewType]
-    }
-</code></pre><p>以上就是MultiTypeAdapter的所有代码</p>
-<h3 id="3-下面举个使用案例："><a href="#3-下面举个使用案例：" class="headerlink" title="3.下面举个使用案例："></a>3.下面举个使用案例：</h3><p>先定义一个适配器，继承MultiTypeAdapter</p>
-<pre><code>class SampleAdapter : MultiTypeAdapter() {
-
-    val data = mutableListOf&lt;Any&gt;()
-
-    override fun getData(position: Int) = data[position]
-
-    override fun getItemCount() = data.size
-}
-</code></pre><p>定义两种展示文字和一种展示图片的viewType</p>
-<pre><code>// 文字数据类型定义：包含主标题和副标题
-data class Title(val mainTitle: String = &quot;&quot;, val subTitle: String = &quot;&quot;)
-// 文字样式1
-class MainTitleCreator : ViewTypeCreator&lt;Title, MainTitleCreator.Holder&gt;() {
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val title: TextView = itemView.findViewById(R.id.main_title)
-    }
-
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
-        return Holder(inflater.inflate(R.layout.view_type_main_title, parent, false))
-    }
-
-    override fun onBindViewHolder(holder: Holder, data: Title) {
-        holder.title.text = data.mainTitle
-    }
-
-    override fun match(data: Title): Boolean {
-        return !TextUtils.isEmpty(data.mainTitle) &amp;&amp; TextUtils.isEmpty(data.subTitle)
-    }
-}
-// 文字样式2
-class SubTitleCreator : ViewTypeCreator&lt;Title, SubTitleCreator.Holder&gt;() {
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val title: TextView = itemView.findViewById(R.id.sub_title)
-    }
-
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
-        return Holder(inflater.inflate(R.layout.view_type_sub_title, parent, false))
-    }
-
-    override fun onBindViewHolder(holder: Holder, data: Title) {
-        holder.title.text = data.subTitle
-    }
-
-    override fun match(data: Title): Boolean {
-        return !TextUtils.isEmpty(data.subTitle) &amp;&amp; TextUtils.isEmpty(data.mainTitle)
-    }
-}
-
-// 图片样式
-class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val image: ImageView = itemView.findViewById(R.id.image)
-    }
-
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
-        return Holder(inflater.inflate(R.layout.view_type_image, parent, false))
-    }
-
-    override fun onBindViewHolder(holder: Holder, data: Int) {
-        holder.image.setImageResource(data)
-    }
-
-    override fun match(data: Int): Boolean {
-        return false
-    }
-}
-</code></pre><p>注册viewTypeCreator</p>
-<pre><code>class MainActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        recycler_view.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        val adapter = SampleAdapter().apply {
-            // image type
-            registerCreator(ImageCreator())
-            // text type
-            registerCreator(TextCreator())
-            // the same bean but different view type
-            registerCreator(MainTitleCreator())
-            registerCreator(SubTitleCreator())
-        }
-        fillData(adapter)
-        recycler_view.adapter = adapter
-    }
-
-    private fun fillData(adapter: SampleAdapter) {
-        for (i in 0..10) {
-            adapter.data.run {
-                add(R.drawable.test)
-                add(&quot;I am string&quot;)
-                add(Title(&quot;I am MainTitle&quot;))
-                add(Title(&quot;&quot;, &quot;I am SubTitle&quot;))
-            }
-        }
-    }
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 
@@ -2346,11 +2095,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2374,11 +2123,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2390,11 +2139,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2419,10 +2172,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Other</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">

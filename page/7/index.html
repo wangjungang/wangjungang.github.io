@@ -152,6 +152,204 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-关于日志模式及日志级别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/07/02/关于日志模式及日志级别/">iOS关于日志模式及日志级别</a>
+    </h1>
+  
+
+        
+        <a href="/2019/07/02/关于日志模式及日志级别/" class="archive-article-date">
+  	<time datetime="2019-07-02T08:55:06.088Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-02</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在开发中我们经常要通过Log(日志)来调试问题, 而上线后不需要打印Log,而且平常开发每做一个模块如果可以将log按照级别打印出来,对分析问题帮助很大.</p>
+<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><p>通过导入一个头文件以实现开启或关闭Log模式,实现选择Log级别.通过导入#include &lt;syslog.h&gt;以实现打印不同级别的Log.</p>
+<p>为什么使用syslog ? 因为它不仅可以在Xcode控制台打印信息,还可能在Mac终端中打印出日志信息,这样的好处是比如我们有一个app store的app出了问题,我们可以在app中调节log level到debug模式,然后使用数据线连接设备, 这样再复现问题可以将相关的Log即时打印出来.对分析问题帮助很大.</p>
+<h2 id="简要分析"><a href="#简要分析" class="headerlink" title="简要分析"></a>简要分析</h2><h3 id="1-Log模式"><a href="#1-Log模式" class="headerlink" title="1. Log模式"></a>1. Log模式</h3><p>为什么设置log模式,很简单,因为上线后的app不必打印log, 而且如果开发中想取消所有相关打印也可以直接通过该宏定义决定.</p>
+<p>本例中如果在代码中定义了kXDXDebugMode则启用打印log模式,否则关闭.</p>
+<h3 id="2-Log级别"><a href="#2-Log级别" class="headerlink" title="2.Log级别"></a>2.Log级别</h3><p>本例中通过五个函数来打印不同级别log,如下</p>
+<pre><code>#define kModuleName &quot;Hello&quot;
+...
+    int i = 1; int j = 2;
+    log4cplus_fatal(kModuleName, &quot;world1 , %d,%d&quot;,i,j);
+    log4cplus_error(kModuleName, &quot;world2&quot;);
+    log4cplus_warn(kModuleName, &quot;world3&quot;);
+    log4cplus_info(kModuleName, &quot;world4&quot;);
+    log4cplus_debug(kModuleName, &quot;world5&quot;);
+</code></pre><p>比如我们在开发中可能独立承担一个模块,而此模块单单做完如果出现问题就需要调试,但是如果我们的Log足够清晰是可以迅速帮助我们找到问题所在,这里将Log分为5个级别<br>以下是个人对于打印Log的一些建议,并不是说一定要按照如下.</p>
+<p>XDX_IOS_FLAG_FATAL : 严重级别</p>
+<p>此类错误出现时,表明程序因为某某问题已经彻底无法运行下去,我们在使用此log时可以附加说明当前碰到的重大问题及产生原因,以便调试.</p>
+<p>XDX_IOS_FLAG_ERROR : 出错级别</p>
+<p>此类打印可用于出现一般错误,比如某个方法调用返回失败, 因为一般而言代码预期是正确的, 所以此类Log不会打印的太频繁, 打开此级别后我们可以清晰看到程序哪些地方出现问题.</p>
+<p>XDX_IOS_FLAG_WARN : 警告级别</p>
+<p>此类错误一般较低于error级别,即在一些可能出错的地方, 但实际并没有出错, 比如当视频帧数量小于0表示出错情况,我们为了预防,可以在视频帧数量小于5时使用此类添加一条预防的Log.</p>
+<p>XDX_IOS_FLAG_INFO : 重要信息级别</p>
+<p>此类级别一般用于打印模块中一些重要的点, 比如我们可以在某个类初始化完成时打印此类中初始化好的一些重要信息,或者在使用某个功能前做一个打印,这样对于追踪代码十分有效.</p>
+<p>XDX_IOS_FLAG_DEBUG : 调试级别</p>
+<p>此类级别表明我们当前正在临时打印一些log为了去调试程序, 或者说我们为了观察某个现象但是需要频繁打印, 比如相机回调中打印时间戳,因为相机每秒钟出来几十帧数据,所以打印十分频繁,我们可以使用此级别在开发中作为调试信息,一般不建议在正常使用中开启此级别.<br>综上所述,即log级别越高,log数量应该是越少,这样我们可以在开发中根据如上所述的情况合理选择使用哪个级别的log. Log级别是有包含关系的, 即低的log级别可以包含比自身高的log级别.</p>
+<h3 id="3-模块名"><a href="#3-模块名" class="headerlink" title="3. 模块名"></a>3. 模块名</h3><p>这里封装的格式如下,即一条log分为两部分,前面是模块名,后面是具体log内容,使用这种格式可以帮助我们通过过滤某个模块中的Log, 十分直观清晰</p>
+<pre><code>#define log4cplus_fatal(category, logFmt, ...) \
+if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_FATAL) \
+syslog(LOG_CRIT, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
+</code></pre><p>举例如下:</p>
+<pre><code>#define kModuleName &quot;Hello&quot;
+
+...
+
+
+- (void)test {
+    int i = 0;
+    log4cplus_debug(kModuleName, &quot;Hello World - %d&quot;,i);
+}
+</code></pre><h3 id="4-注意"><a href="#4-注意" class="headerlink" title="4.注意"></a>4.注意</h3><p>因为我们使用的syslog,所以OC中的格式符%@是不可用的.但是任何OC中的字符串都可通过UTF8String转为C语言字符串,所以并不影响我们的使用.</p>
+<h3 id="5-使用方式"><a href="#5-使用方式" class="headerlink" title="5.使用方式"></a>5.使用方式</h3><p>每次编译前设置log级别</p>
+<p>如果不需要在项目中通过UI动态更改log级别,则可以直接使用如下方式将头文件拖入项目,然后在需要使用log的地方将其导入.这种方式简单方便,仅仅通过每次运行前更改宏定义即可转变log级别.</p>
+<p>在运行后通过UI更改</p>
+<p>那么需要将头文件的XDX_IOS_LOG_LEVEL全局静态变量换为外部变量,然后取消下面这段代码,最后在控制UI的类中定义并通过交互更改此值即可.</p>
+<pre><code>#ifdef XDXLogLevelFatal
+static const int XDX_IOS_LOG_LEVEL = XDX_IOS_FLAG_FATAL;
+#elif defined(XDXLogLevelError)
+static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR);
+#elif defined(XDXLogLevelWarn)
+static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN);
+#elif defined(XDXLogLevelInfo)
+static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN | XDX_IOS_FLAG_INFO);
+#elif defined(XDXLogLevelDebug)
+static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN | XDX_IOS_FLAG_INFO | XDX_IOS_FLAG_DEBUG);
+#endif
+</code></pre><h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><pre><code>#include &lt;syslog.h&gt;
+#ifndef XDX_IOS
+#define XDX_IOS
+#endif
+
+#pragma - Please select your log mode and log level
+
+// Note: Only debug mode will print log. You could also set mode for log level.
+#define kXDXDebugMode
+// XDXLogLevelFatal , XDXLogLevelError , XDXLogLevelWarn , XDXLogLevelInfo , XDXLogLevelDebug
+#define XDXLogLevelDebug
+
+#pragma ----------------------------------
+
+#ifdef kXDXDebugMode
+
+static const int XDX_IOS_FLAG_FATAL = 0x10;
+static const int XDX_IOS_FLAG_ERROR = 0x08;
+static const int XDX_IOS_FLAG_WARN  = 0x04;
+static const int XDX_IOS_FLAG_INFO  = 0x02;
+static const int XDX_IOS_FLAG_DEBUG = 0x01;
+
+#ifdef XDXLogLevelFatal
+static const int XDX_IOS_LOG_LEVEL = XDX_IOS_FLAG_FATAL;
+#elif defined(XDXLogLevelError)
+static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR);
+#elif defined(XDXLogLevelWarn)
+static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN);
+#elif defined(XDXLogLevelInfo)
+static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN | XDX_IOS_FLAG_INFO);
+#elif defined(XDXLogLevelDebug)
+static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN | XDX_IOS_FLAG_INFO | XDX_IOS_FLAG_DEBUG);
+#endif
+
+
+
+#define log4cplus_fatal(category, logFmt, ...) \
+if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_FATAL) \
+syslog(LOG_CRIT, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
+
+#define log4cplus_error(category, logFmt, ...) \
+if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_ERROR) \
+syslog(LOG_ERR, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
+
+#define log4cplus_warn(category, logFmt, ...) \
+if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_WARN) \
+syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
+
+#define log4cplus_info(category, logFmt, ...) \
+if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_INFO) \
+syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
+
+#define log4cplus_debug(category, logFmt, ...) \
+if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_DEBUG) \
+syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
+
+
+#else
+
+#define log4cplus_fatal(category, logFmt, ...); \
+
+#define log4cplus_error(category, logFmt, ...); \
+
+#define log4cplus_warn(category, logFmt, ...); \
+
+#define log4cplus_info(category, logFmt, ...); \
+
+#define log4cplus_debug(category, logFmt, ...); \
+
+#endif
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/07/02/关于日志模式及日志级别/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-#define和const的使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1574,89 +1772,9 @@ wifeModel.name = nil;
 
 
   
-    <article id="post-使用UIWebView导致内存暴涨的问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/16/使用UIWebView导致内存暴涨的问题/">使用UIWebView导致内存暴涨的问题</a>
-    </h1>
-  
-
-        
-        <a href="/2019/06/16/使用UIWebView导致内存暴涨的问题/" class="archive-article-date">
-  	<time datetime="2019-06-16T00:59:40.213Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>如果项目不需要支持iOS7用系统提供的更加高效的WKWebView。</p>
-<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>查看资料因为Html里的js导致的内存泄漏，每次打开一个连接就会把“WebKitCacheModelPreferenceKey”设置成1.</p>
-<p>UIWebView增加</p>
-<pre><code>- （void）webViewDidFinishLoad:（UIWebView *）webView {
-[[NSUserDefaults standardUserDefaults] setInteger ：0 forKey：@“WebKitCacheModelPreferenceKey”];
-}
-</code></pre><h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>你将有一个大的内存使用和泄漏大量的数据！但是有一个黑客来解决这个问题：revert什么做，当你打开一个链接。实际上，导致此泄漏的关键属性是WebKitCacheModelPreferenceKey应用程序设置。当您在UIWebView中打开链接时，此属性会自动设置为值“1”。所以，解决方案是将其设置为0…</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/16/使用UIWebView导致内存暴涨的问题/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/6/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/8/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/6/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/8/">Next &raquo;</a>
     </nav>
   
 
@@ -1759,11 +1877,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1787,11 +1905,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1803,11 +1921,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1832,10 +1954,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Other</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">

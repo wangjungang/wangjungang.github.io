@@ -152,6 +152,401 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-用100行代码构建一个多样式RecyclerView适配器" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/">用100行代码构建一个多样式RecyclerView适配器</a>
+    </h1>
+  
+
+        
+        <a href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/" class="archive-article-date">
+  	<time datetime="2021-01-09T11:39:21.155Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-09</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>RecyclerView多样式布局的框架有很多，大家熟悉已久的BaseRecyclerViewAdapterHelper，vlayout等等，包括google在新版本RecyclerView中推出的MergeAdapter(后面重命名为ConcatAdapter了)等。既然有这么多现成的框架，为什么还要去自己编写一个呢?很多时候这些框架考虑的都是常见通用性场景，在某些奇葩的产品设计需求中也许并不适用，这也是这篇文章出现的原因。</p>
+<p>目前多样式适配器框架总体的设计方案有两种，一种是BaseRecyclerViewAdapterHelper这种极度简化开发者编写的代码量，用最简洁的方式去实现多样式。另外一种就是ConcatAdapter这种，将每种样式设计为单独模块(子适配器)，视图创建，数据绑定都在该模块内部处理，再用一个主适配器将这些子适配器进行包装关联。本文采用的是第二种设计方式。</p>
+<h2 id="由于代码量极少，下面就不多说了，直接贴代码："><a href="#由于代码量极少，下面就不多说了，直接贴代码：" class="headerlink" title="由于代码量极少，下面就不多说了，直接贴代码："></a>由于代码量极少，下面就不多说了，直接贴代码：</h2><h3 id="1-视图构建器，保持原生api命名方式"><a href="#1-视图构建器，保持原生api命名方式" class="headerlink" title="1. 视图构建器，保持原生api命名方式"></a>1. 视图构建器，保持原生api命名方式</h3><pre><code>&lt;ViewTypeCreator.kt&gt;
+abstract class ViewTypeCreator&lt;T, VH : ViewHolder&gt; {
+
+    abstract fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): VH
+
+    abstract fun onBindViewHolder(holder: VH, data: T)
+
+    abstract fun match(data: T): Boolean
+
+    open fun getItemId(position: Int) = RecyclerView.NO_ID
+
+}
+</code></pre><h3 id="2-数据适配器"><a href="#2-数据适配器" class="headerlink" title="2.数据适配器"></a>2.数据适配器</h3><pre><code>&lt;MultiTypeAdapter.kt&gt;
+abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() {
+    private val dataCache: ArrayList&lt;Class&lt;*&gt;&gt; = ArrayList()
+    private val creatorCache: SparseArray&lt;SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt;&gt; = SparseArray()
+    private val viewTypeCache: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = SparseArray()
+
+    abstract fun getData(position: Int): Any
+
+    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) {
+        registerCreatorInner(T::class.java, creator)
+    }
+
+    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) {
+        var index = dataCache.indexOf(clazz)
+        if (index == -1) {
+            dataCache.add(clazz)
+            index = dataCache.size - 1
+        }
+        var cache = creatorCache[index]
+        if (cache == null) {
+            cache = SparseArray()
+        }
+        val id = System.identityHashCode(creator)
+        @Suppress(&quot;UNCHECKED_CAST&quot;)
+        cache.put(id, creator as ViewTypeCreator&lt;Any, *&gt;)
+        creatorCache.put(index, cache)
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        val data = getData(position)
+        val viewType = getCreatorViewType(data)
+        return if (viewType != -1) {
+            viewType
+        } else
+            super.getItemViewType(position)
+    }
+
+    override fun getItemId(position: Int): Long {
+        val itemViewType = getItemViewType(position)
+        val viewCreator = getViewCreatorByViewType(itemViewType)
+        return viewCreator.getItemId(position)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val viewCreator: ViewTypeCreator&lt;*, *&gt; = getViewCreatorByViewType(viewType)
+        return viewCreator.onCreateViewHolder(LayoutInflater.from(parent.context), parent)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val data = getData(position)
+        @Suppress(&quot;UNCHECKED_CAST&quot;)
+        val viewCreator: ViewTypeCreator&lt;Any, ViewHolder&gt; =
+            getViewCreatorByViewType(getItemViewType(position)) as ViewTypeCreator&lt;Any, ViewHolder&gt;
+        viewCreator.onBindViewHolder(holder, data)
+    }
+
+    private fun getCreatorViewType(data: Any): Int {
+        val clazz: Class&lt;*&gt; = data::class.java
+        var viewType: Int
+        val index = dataCache.indexOf(clazz)
+        if (dataCache.size &gt; 0 &amp;&amp; index != -1) {
+            val creators: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = creatorCache[index]
+            // The Data bind more than one viewTypeCreator.
+            if (creators.size() &gt; 1) {
+                creators.forEach { id, viewCreator -&gt;
+                    if (viewCreator.match(data)) {
+                        viewType = id
+                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
+                            viewTypeCache.put(viewType, viewCreator)
+                        }
+                        return viewType
+                    }
+                }
+            }
+            // The Data only bind one viewTypeCreator.
+            else if (creators.size() == 1) {
+                viewType = creators.keyAt(0)
+                if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
+                    viewTypeCache.put(viewType, creators.valueAt(0))
+                }
+                return viewType
+            }
+        }
+        throw RuntimeException(&quot;Current dataType [$clazz] is not found in DataTypeCache:\n$dataCache \nPlease check the Type of data for your custom creator.&quot;)
+    }
+
+    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; {
+        return viewTypeCache[viewType]
+    }
+}
+</code></pre><h2 id="好了，代码就这么多，下面简单介绍下原理："><a href="#好了，代码就这么多，下面简单介绍下原理：" class="headerlink" title="好了，代码就这么多，下面简单介绍下原理："></a>好了，代码就这么多，下面简单介绍下原理：</h2><h3 id="1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法"><a href="#1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法" class="headerlink" title="1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:"></a>1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:</h3><pre><code>fun match(data: T): Boolean
+</code></pre><p>这里面接收一个数据类型参数，需要返回一个Boolean值，通常的产品设计常见一种数据类型应该是对应一种视图类型，但是就是存在这么奇葩的设计，比如返回一个Person数据类型，如果sex为男需要展示一种样式(左右布局:头像在左边，右边显示简介)，如果sex为女则需要展示另一种样式(上下布局:头像在中间，下面显示简介)，这样的场景就可以这样定义两种视图:</p>
+<pre><code>&lt;ManCreator.kt&gt;
+class ManCreator : ViewTypeCreator&lt;Person, ManCreator.Holder&gt;() {
+    ...
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+        return Holder(inflater.inflate(R.layout.view_type_man, parent, false))
+    }
+    // 当person为男性的时候会通过该Creator创建视图
+    override fun match(data: Person) = data.sex == Sex.MAN
+}
+
+&lt;WomanCreator.kt&gt;
+class WomanCreator : ViewTypeCreator&lt;Person, WomanCreator.Holder&gt;() {
+    ...
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+        return Holder(inflater.inflate(R.layout.view_type_female, parent, false))
+    }
+    // 当person为女性的时候会通过该Creator创建视图
+    override fun match(data: Person) = data.sex == Sex.WOMAN
+}
+</code></pre><h3 id="2-适配器，当然是继承RecyclerView-Adapter"><a href="#2-适配器，当然是继承RecyclerView-Adapter" class="headerlink" title="2.适配器，当然是继承RecyclerView.Adapter"></a>2.适配器，当然是继承RecyclerView.Adapter</h3><p>先介绍一下3个缓存：</p>
+<pre><code>&lt;MultiTypeAdapter.kt&gt;
+abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() {
+    // 按数据顺序，存储数据类型
+    private val dataCache: ArrayList&lt;Class&lt;*&gt;&gt; = ArrayList()// [DataType]
+    // 存储ViewTypeCreator，索引为该数据类型在缓存的下标，由于一个数据类型可对应多个Creator，
+    // 因此使用集合存储
+    private val creatorCache: SparseArray&lt;SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt;&gt; = SparseArray()// DataTypeIndex - [ViewTypeCreators]
+    // 存储ViewTypeCreator，索引为对应的viewType，一对一的关系，该缓存是为了快速查找
+    private val viewTypeCache: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = SparseArray()// ViewType - ViewTypeCreator
+}
+</code></pre><p>接下来看下注册视图构建器的方法：</p>
+<pre><code>&lt;MultiTypeAdapter.kt&gt;
+    // 自动读取泛型Data数据的类型进行存储
+    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) {
+        registerCreatorInner(T::class.java, creator)
+    }
+
+    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) {
+        var index = dataCache.indexOf(clazz)
+        if (index == -1) {
+            // 如果没有存储过进行缓存
+            dataCache.add(clazz)
+            index = dataCache.size - 1
+        }
+        // 初始化该Data数据类型对应的ViewTypeCreator集合
+        var cache = creatorCache[index]
+        if (cache == null) {
+            cache = SparseArray()
+        }
+        // 构造唯一标识作为索引
+        val id = System.identityHashCode(creator)
+        @Suppress(&quot;UNCHECKED_CAST&quot;)
+        cache.put(id, creator as ViewTypeCreator&lt;Any, *&gt;)
+        creatorCache.put(index, cache)
+    }
+</code></pre><p>最后按照RecyclerView.Adapter调用流程分析下原理：</p>
+<pre><code>&lt;MultiTypeAdapter.kt&gt;
+    // 获取当前索引的数据
+    abstract fun getData(position: Int): Any
+
+    override fun getItemViewType(position: Int): Int {
+        val data = getData(position)// 1.获取当前索引对应的数据
+        val viewType = getCreatorViewType(data)// 2.根据当前数据获取ViewType
+        return if (viewType != -1) {
+            viewType
+        } else
+            super.getItemViewType(position)
+    }
+
+    private fun getCreatorViewType(data: Any): Int {
+        val clazz: Class&lt;*&gt; = data::class.java// 获取data数据的class类型
+        var viewType: Int
+        val index = dataCache.indexOf(clazz)// 查找出该data在缓存中的索引
+        if (dataCache.size &gt; 0 &amp;&amp; index != -1) {// 判断是否注册过该data对应的ViewTypeCreator
+            val creators: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = creatorCache[index]// 获取该data对应的ViewTypeCreator集合
+            // The Data bind more than one viewTypeCreator.
+            if (creators.size() &gt; 1) {// 一个data数据对应多种viewType
+                creators.forEach { id, viewCreator -&gt;
+                    if (viewCreator.match(data)) {// 遍历ViewTypeCreator，并且判断是否符合条件，也就是上面说的match匹配方法
+                        viewType = id// viewType就是上面根据ViewTypeCreator实例获取到的唯一id：System.identityHashCode
+                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) {// 如果viewTypeCache没有缓存过，则添加入缓存
+                            viewTypeCache.put(viewType, viewCreator)// 这一级缓存是为了能够快速根据viewType查找对应的ViewTypeCreator
+                        }
+                        return viewType
+                    }
+                }
+            }
+            // The Data only bind one viewTypeCreator.
+            else if (creators.size() == 1) {// 一个data数据对应一种viewType
+                viewType = creators.keyAt(0)
+                if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
+                    viewTypeCache.put(viewType, creators.valueAt(0))
+                }
+                return viewType
+            }
+        }
+        throw RuntimeException(&quot;Current dataType [$clazz] is not found in DataTypeCache:\n$dataCache \nPlease check the Type of data for your custom creator.&quot;)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        // 根据viewType查找到对应的ViewTypeCreator，并且通过onCreateViewHolder构建Holer视图
+        val viewCreator: ViewTypeCreator&lt;*, *&gt; = getViewCreatorByViewType(viewType)
+        return viewCreator.onCreateViewHolder(LayoutInflater.from(parent.context), parent)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        // 根据viewType查找到对应的ViewTypeCreator，并且通过onBindViewHolder绑定数据
+        val data = getData(position)
+        @Suppress(&quot;UNCHECKED_CAST&quot;)
+        val viewCreator: ViewTypeCreator&lt;Any, ViewHolder&gt; =
+            getViewCreatorByViewType(getItemViewType(position)) as ViewTypeCreator&lt;Any, ViewHolder&gt;
+        viewCreator.onBindViewHolder(holder, data)
+    }
+
+    // 根据viewType查找到对应的ViewTypeCreator
+    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; {
+        return viewTypeCache[viewType]
+    }
+</code></pre><p>以上就是MultiTypeAdapter的所有代码</p>
+<h3 id="3-下面举个使用案例："><a href="#3-下面举个使用案例：" class="headerlink" title="3.下面举个使用案例："></a>3.下面举个使用案例：</h3><p>先定义一个适配器，继承MultiTypeAdapter</p>
+<pre><code>class SampleAdapter : MultiTypeAdapter() {
+
+    val data = mutableListOf&lt;Any&gt;()
+
+    override fun getData(position: Int) = data[position]
+
+    override fun getItemCount() = data.size
+}
+</code></pre><p>定义两种展示文字和一种展示图片的viewType</p>
+<pre><code>// 文字数据类型定义：包含主标题和副标题
+data class Title(val mainTitle: String = &quot;&quot;, val subTitle: String = &quot;&quot;)
+// 文字样式1
+class MainTitleCreator : ViewTypeCreator&lt;Title, MainTitleCreator.Holder&gt;() {
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val title: TextView = itemView.findViewById(R.id.main_title)
+    }
+
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+        return Holder(inflater.inflate(R.layout.view_type_main_title, parent, false))
+    }
+
+    override fun onBindViewHolder(holder: Holder, data: Title) {
+        holder.title.text = data.mainTitle
+    }
+
+    override fun match(data: Title): Boolean {
+        return !TextUtils.isEmpty(data.mainTitle) &amp;&amp; TextUtils.isEmpty(data.subTitle)
+    }
+}
+// 文字样式2
+class SubTitleCreator : ViewTypeCreator&lt;Title, SubTitleCreator.Holder&gt;() {
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val title: TextView = itemView.findViewById(R.id.sub_title)
+    }
+
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+        return Holder(inflater.inflate(R.layout.view_type_sub_title, parent, false))
+    }
+
+    override fun onBindViewHolder(holder: Holder, data: Title) {
+        holder.title.text = data.subTitle
+    }
+
+    override fun match(data: Title): Boolean {
+        return !TextUtils.isEmpty(data.subTitle) &amp;&amp; TextUtils.isEmpty(data.mainTitle)
+    }
+}
+
+// 图片样式
+class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val image: ImageView = itemView.findViewById(R.id.image)
+    }
+
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+        return Holder(inflater.inflate(R.layout.view_type_image, parent, false))
+    }
+
+    override fun onBindViewHolder(holder: Holder, data: Int) {
+        holder.image.setImageResource(data)
+    }
+
+    override fun match(data: Int): Boolean {
+        return false
+    }
+}
+</code></pre><p>注册viewTypeCreator</p>
+<pre><code>class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        recycler_view.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        val adapter = SampleAdapter().apply {
+            // image type
+            registerCreator(ImageCreator())
+            // text type
+            registerCreator(TextCreator())
+            // the same bean but different view type
+            registerCreator(MainTitleCreator())
+            registerCreator(SubTitleCreator())
+        }
+        fillData(adapter)
+        recycler_view.adapter = adapter
+    }
+
+    private fun fillData(adapter: SampleAdapter) {
+        for (i in 0..10) {
+            adapter.data.run {
+                add(R.drawable.test)
+                add(&quot;I am string&quot;)
+                add(Title(&quot;I am MainTitle&quot;))
+                add(Title(&quot;&quot;, &quot;I am SubTitle&quot;))
+            }
+        }
+    }
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Flutter&amp;Android启动页(闪屏页)的加载流程和优化方案" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1912,543 +2307,9 @@ git config --global merge.ff no
 
 
   
-    <article id="post-浅谈Swift的内存管理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/09/浅谈Swift的内存管理/">浅谈Swift的内存管理</a>
-    </h1>
-  
-
-        
-        <a href="/2020/03/09/浅谈Swift的内存管理/" class="archive-article-date">
-  	<time datetime="2020-03-09T03:32:27.365Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h2><p>和OC一样, 在Swift中也是采用基于引用计数的ARC内存管理方案(针对堆空间的内存管理)</p>
-<p>在Swift的ARC中有三种引用</p>
-<ul>
-<li><p>强引用(strong reference)：默认情况下，代码中涉及到的引用都是强引用</p>
-</li>
-<li><p>弱引用(weak reference)：通过weak定义弱引用</p>
-</li>
-<li><p>无主引用(unowned reference)：通过unowned定义无主引用</p>
-</li>
-</ul>
-<h3 id="weak"><a href="#weak" class="headerlink" title="weak"></a>weak</h3><p>弱引用(weak reference)：通过weak定义弱引用</p>
-<ul>
-<li><p>必须是可选类型的var，因为实例销毁后，ARC会自动将弱引用设置为nil</p>
-</li>
-<li><p>ARC自动给弱引用设置nil时，不会触发属性观察</p>
-</li>
-</ul>
-<p>在介绍weak弱引用之前, 先看一下下面一段代码</p>
-<pre><code>class Animal {
-    deinit {
-        print(&quot;Animal deinit&quot;)
-    }
-}
-
-func test() {
-    let animal = Animal()
-}
-
-print(&quot;will deinit&quot;)
-test()
-print(&quot;did deinit&quot;)
-</code></pre><p>上面这段代码中在test函数调用结束之后, 该作用的内存就会被回收, animal对象自然就会被销毁, 毫无疑问上面的输出结果应该是</p>
-<pre><code>will deinit
-Animal deinit
-did deinit
-</code></pre><p>同样下面这段代码, 同样也是在a1对象被置为nil的时候内存会被回收, 对象就会被销毁</p>
-<pre><code>var a1: Animal? = Animal()
-print(&quot;will deinit&quot;)
-a1 = nil
-print(&quot;did deinit&quot;)
-</code></pre><p>下面是一个被weak修饰的弱引用对象,</p>
-<p>我们都知道, 被weak修饰的弱引用对象, 在对象销毁的时候, 会被自动置为nil</p>
-<p>所以被weak修饰的弱引用对象必须是可选类型的var, 两个条件缺一不可</p>
-<pre><code>weak var a2: Animal? = Animal()
-
-// 以下两种方式都会报错的
-weak var a2: Animal = Animal()
-weak let a2: Animal? = Animal()
-</code></pre><h3 id="unowned"><a href="#unowned" class="headerlink" title="unowned"></a>unowned</h3><ul>
-<li>无主引用(unowned reference)：通过unowned定义无主引用</li>
-<li>不会产生强引用，实例销毁后仍然存储着实例的内存地址(类似于OC中的unsafe_unretained）</li>
-<li>试图在实例销毁后访问无主引用，会产生运行时错误（如下野指针)</li>
-</ul>
-<p>需要注意的是</p>
-<p>weak、unowned只能用在类实例上面, 如下所示</p>
-<pre><code>// 该协议表示只能被类遵守, AnyObject代表所有的类实例
-protocol Liveable: AnyObject {}
-class Person {}
-
-weak var p0: Person?
-weak var p1: AnyObject?
-// 所有能遵循Liveable协议的肯定都是类
-weak var p2: Liveable?
-
-unowned var p10: Person?
-unowned var p11: AnyObject?
-unowned var p12: Liveable?
-</code></pre><h2 id="循环引用"><a href="#循环引用" class="headerlink" title="循环引用"></a>循环引用</h2><ul>
-<li>weak、unowned都能解决循环引用的问题，unowned要比weak少一些性能消耗</li>
-<li>在生命周期中可能会变为nil的使用weak</li>
-<li>初始化赋值后再也不会变为nil的使用unowne</li>
-<li>说道循环引用就自然想到了闭包</li>
-</ul>
-<h3 id="闭包的循环引用"><a href="#闭包的循环引用" class="headerlink" title="闭包的循环引用"></a>闭包的循环引用</h3><p>闭包表达式默认会对用到的外层对象产生额外的强引用（对外层对象进行了retain操作）, 看一下下面的代码中deinit会被调用吗?</p>
-<pre><code>class Person {
-    var fn: (() -&gt; ())?
-    func run() { print(&quot;run&quot;) }
-    deinit { print(&quot;deinit&quot;) }
-}
-
-func test() {
-    let p = Person()
-    p.fn = { 
-        p.run()
-    }
-}
-
-test()
-</code></pre><p>上面代码中, p对象强引用着fn闭包, fn闭包也强引用着p对象, 自然就造成了循环引用问题</p>
-<p>最后没有任何输出结果, 我们看一下上述代码的汇编执行过程</p>
-<p><img src="http://img.wangjungang.cn/5fV1VJ.jpg" alt=""></p>
-<p>下面这段代码其实是等价的</p>
-<pre><code>func test() {
-    let p = Person()
-    p.fn = { [unowned p] in
-        p.run()
-    }
-}
-
-// 和上面等价代码
-func test() {
-    let p = Person()
-    p.fn = { [unowned ownedP = p, weak weakP = p] in
-        ownedP.run()
-        // weakP?.run()
-    }
-}
-</code></pre><p>特别注意点</p>
-<p>这里要区分捕获列表和参数列表, 下面看看fn有参数的情况下</p>
-<pre><code>class Person {
-    var fn: ((Int) -&gt; ())?
-    func run() { print(&quot;run&quot;) }
-    deinit { print(&quot;deinit&quot;) }
-}
-
-func test() {
-    let p = Person()
-    p.fn = {
-        (num) in
-        print(&quot;num = \(num)&quot;)
-    }
-}
-</code></pre><p>那么闭包的参数列表和捕获列表同时存在的情况如下代码所示</p>
-<pre><code>func test() {
-    let p = Person()
-    p.fn = {
-        [weak p](num) in
-        print(&quot;num = \(num)&quot;)
-        p?.run()
-    }
-}
-</code></pre><h3 id="self的循环引用"><a href="#self的循环引用" class="headerlink" title="self的循环引用"></a>self的循环引用</h3><p>如果想在引用闭包的同时引用self, 这个闭包必须是lazy的</p>
-<p>因为实例在初始化完毕之后才能引用self</p>
-<pre><code>class Person {
-    lazy var fn: (() -&gt; ()) = {
-        self.run()
-    }
-    func run() { print(&quot;run&quot;) }
-    deinit { print(&quot;deinit&quot;) }
-}
-
-func test() {
-    let p = Person()
-    p.fn()
-}
-
-test()
-</code></pre><p>上面代码中如果fn闭包去掉lazy, 编译器会直接报错</p>
-<p>在Swift中, 为了保证初始化的安全, 设定了两段式初始化, 在所有的存储属性被初始化完成之后, 初始化器才能够使用self</p>
-<p>而且在上述fn闭包中, 如果fn内部用到了实例成员(属性和方法), 则编译器会强制要求明确写出self<br>lazy既保证只有在使用的时候才会被初始化一次</p>
-<p>但是上述代码同样存在循环引用的问题, Person对象强引用着fn闭包, fn闭包也强引用着self</p>
-<p>同样使用weak和unowned解决循环引用的问题</p>
-<pre><code>// weak解决循环引用
-lazy var fn: (() -&gt; ()) = {
-    [weak self] in
-    self?.run()
-}
-
-// unowned解决循环引用
-lazy var fn: (() -&gt; ()) = {
-    [unowned self] in
-    self.run()
-}
-</code></pre><p>另外再看看下面这种情况, 是都存在循环引用的问题</p>
-<pre><code>class Student {
-    var age: Int = 2
-    lazy var getAge: Int = {
-        self.age
-    }()
-    deinit { print(&quot;deinit&quot;) }
-}
-
-func test() {
-    let p = Student()
-    print(p.getAge)
-}
-
-test()
-
-/* 输出结果
-2
-deinit
-*/
-</code></pre><p>通过输出结果看一看出调用了deinit, 说明对象最终被释放, 并未出现循环引用的问题, 下面比较一下</p>
-<pre><code>// 存在循环引用
-class Person {
-    lazy var fn: (() -&gt; ()) = {
-        self.run()
-    }
-    func run() { print(&quot;run&quot;) }
-    deinit { print(&quot;deinit&quot;) }
-}
-
-// 不存在循环引用
-class Student {
-    var age: Int = 2
-    lazy var getAge: Int = {
-        self.age
-    }()
-    deinit { print(&quot;deinit&quot;) }
-}
-</code></pre><p>上述两种写法的区别, 本质上说</p>
-<p>Person对象中的fn闭包属于闭包赋值</p>
-<p>Student对象那个中的getAge属于闭包调用(类似函数调用)</p>
-<p>相当于在在Student对象调用getAge结束之后, 作用域内的变量就会被释放</p>
-<pre><code>// getAge也可以写成如下形式
-lazy var getAge: Int = {
-    return self.age
-}()
-
-// 也可以理解为
-lazy var getAge: Int = self.age
-</code></pre><h2 id="内存访问冲突"><a href="#内存访问冲突" class="headerlink" title="内存访问冲突"></a>内存访问冲突</h2><p>在Swift中的内存访问冲突主要在两个访问满足下列条件时发生</p>
-<ul>
-<li>至少一个是写入操作</li>
-<li>它们访问的是同一块内存</li>
-<li>它们的访问时间重叠(比如在同一个函数内)</li>
-</ul>
-<p>对比看看以下两个函数操作</p>
-<pre><code>// 不存在内存访问冲突
-var number = 1
-func plus(_ num: inout Int) -&gt; Int {
-    return num + 1
-}
-number = plus(&amp;number)
-
-// 存在内存访问冲突
-var step = 1
-func increment(_ num: inout Int) {
-    num += step
-}
-increment(&amp;step)
-</code></pre><p>上面第二部分代码就是同时对step变量执行读写操作, 运行时会报出如下错误</p>
-<pre><code>Simultaneous accesses to 0x100002028, but modification requires exclusive access.
-</code></pre><p>再看下面对于结构体和元组的使用, 这里先定义一个全局函数和一个结构体</p>
-<pre><code>// 改变两个传入参数的值, 读取并修改传入参数的值
-func balance(_ x: inout Int, _ y: inout Int) {
-    let sum = x + y
-    x = sum / 2
-    y = sum - x
-}
-
-// 定义Player结构体
-struct Player {
-    var name: String
-    var health: Int
-    var energy: Int
-    mutating func shareHealth(with teammate: inout Player) {
-        balance(&amp;teammate.health, &amp;health)
-    }
-}
-</code></pre><p>再看下面的使用示例, 两者都会有一个内存访问冲突的错误</p>
-<pre><code>// 这里读写的是同一个maria
-var maria = Player(name: &quot;Maria&quot;, health: 50, energy: 10)
-balance(&amp;maria.health, &amp;maria.energy)
-
-// 这里读写的是同一个tuple
-var tuple = (health: 10, energy: 20)
-balance(&amp;tuple.health, &amp;tuple.energy)
-</code></pre><p>但是有时候的确会有上面这种访问同一块内存的需求, 如果下面的条件满足, 就说明重叠访问结构体的属性是安全的</p>
-<ul>
-<li>访问的是实例存储属性, 不是计算属性或者类属性</li>
-<li>结构体是局部变量而非全局变量</li>
-<li>结构体要么没有被闭包捕获要么只被非逃逸闭包捕获</li>
-</ul>
-<hr>
-<pre><code>// 这里可以在局部作用域内定义成局部变量, 就不会有问题了
-func test() {
-    var maria = Player(name: &quot;Maria&quot;, health: 50, energy: 10)
-    var tuple = (health: 10, energy: 20)
-    balance(&amp;tuple.health, &amp;tuple.energy)
-    balance(&amp;maria.health, &amp;maria.energy)
-}
-</code></pre><h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><pre><code>class Person {}
-var person = Person()
-</code></pre><p>在Swift中class声明的类(Person)是引用类型, 初始化的person对象其本质上就是一个指针变量</p>
-<p>而person里面存储的就是这个指针变量的地址值, 也就可以根据这个地址值去访问被分配的内存空间</p>
-<p>指针在某种意义上被定性为不安全的, 举个例子:</p>
-<p>当前指针变量的地址值对应的空间只有32个字节, 但有可能访问的是超过32个字节的空间, 这样就可能会出问题的</p>
-<h3 id="指针分类"><a href="#指针分类" class="headerlink" title="指针分类"></a>指针分类</h3><p>在Swift中也有专门的指针类型，这些都被定性为Unsafe（不安全的），常见的有以下4种类型</p>
-<ul>
-<li>UnsafePointer<pointee>, 类似于C语言中的const Pointee *, 只能访问内存不能修改内存, 这里的Pointee是指泛型</pointee></li>
-<li>UnsafeMutablePointer<pointee>类似于C语言中的Pointee *, 可以访问和修改内存, 这里的Pointee是指泛型</pointee></li>
-<li>UnsafeRawPointer类似于const void *, 不支持泛型</li>
-<li>UnsafeMutableRawPointer类似于void, 不支持泛型</li>
-</ul>
-<p>下面看一下具体的使用示例</p>
-<pre><code>var age = 10
-func sum1(_ ptr: UnsafeMutablePointer&lt;Int&gt;) {
-    // 通过访问pointee属性, 获取ptr指针的内存地址所存储的值
-    // UnsafeMutablePointer的pointee属性是可读可写的
-    ptr.pointee += 10
-}
-func sum2(_ ptr: UnsafePointer&lt;Int&gt;) {
-    // UnsafePointer的pointee属性是只读的
-    // ptr.pointee += 10
-    print(ptr.pointee)
-}
-func sum3(_ num: inout Int) {
-    // 
-    num += 10
-}
-
-// 和inout输入输出参数一样接受变量的地址值
-sum1(&amp;age)
-sum2(&amp;age)
-sum3(&amp;age)
-print(age)
-
-
-func sum4(_ ptr: UnsafeMutableRawPointer) {
-    // 可读可写, 取值
-    print(&quot;age = &quot;, ptr.load(as: Int.self))
-    // 可读可写, 赋值
-    ptr.storeBytes(of: 50, as: Int.self)
-}
-func sum5(_ ptr: UnsafeRawPointer) {
-    // 只读, 取值
-    print(&quot;age = &quot;, ptr.load(as: Int.self))
-}
-
-sum4(&amp;age)
-sum5(&amp;age)
-</code></pre><h3 id="获得变量的指针"><a href="#获得变量的指针" class="headerlink" title="获得变量的指针"></a>获得变量的指针</h3><p>Swift中有可以直接获取变量的指针的方法</p>
-<pre><code>// 获取可变的变量指针, value参数接受变量地址
-@inlinable public func withUnsafeMutablePointer&lt;T, Result&gt;(to value: inout T, _ body: (UnsafeMutablePointer&lt;T&gt;) throws -&gt; Result) rethrows -&gt; Result
-// 获取不可变的变量指针, value参数接受变量
-@inlinable public func withUnsafePointer&lt;T, Result&gt;(to value: T, _ body: (UnsafePointer&lt;T&gt;) throws -&gt; Result) rethrows -&gt; Result
-// 获取不可变的变量指针, value参数接受变量地址
-@inlinable public func withUnsafePointer&lt;T, Result&gt;(to value: inout T, _ body: (UnsafePointer&lt;T&gt;) throws -&gt; Result) rethrows -&gt; Result
-</code></pre><p>上述方法中返回值默认是变量的指针地址, 也可以是其他的数据类型, 主要取决于body闭包的返回值, 返回值类型由闭包中的Result泛型决定</p>
-<pre><code>var age = 10
-var ptr1 = withUnsafeMutablePointer(to: &amp;age) { $0 }   // UnsafeMutablePointer&lt;Int&gt;
-var ptr2 = withUnsafePointer(to: &amp;age) { $0 }          // UnsafePointer&lt;Int&gt;
-ptr1.pointee = 22
-print(ptr2.pointee) // 22
-print(ptr2)         // 0x0000000100008310
-
-var ptr3 = withUnsafeMutablePointer(to: &amp;age) { UnsafeMutableRawPointer($0) }   // UnsafeMutableRawPointer
-var ptr4 = withUnsafePointer(to: &amp;age) { UnsafeRawPointer($0) }                 // UnsafeRawPointer
-// as参数是需要存储什么类型的数据
-ptr3.storeBytes(of: 33, as: Int.self)
-print(ptr4.load(as: Int.self)) // 33
-print(ptr4)         // 0x0000000100008310
-</code></pre><h3 id="创建指针"><a href="#创建指针" class="headerlink" title="创建指针"></a>创建指针</h3><p>之前获取到的指针都是根据已经存在的内存获取的</p>
-<p>这里就看看重新分配一块内存指向堆空间</p>
-<h4 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h4><p>Swift提供了malloc直接分配内存创建指针的方式</p>
-<pre><code>// 根据需要分配的内存大小创建一个指针
-public func malloc(_ __size: Int) -&gt; UnsafeMutableRawPointer!
-// 释放内存
-public func free(_: UnsafeMutableRawPointer!)
-
-
-// 下面这两个函数, 是赋值和取值的函数, 之前简单介绍过
-// 参数一: 需要存储的值
-// 参数二: 偏移量, 从第几个字节开始存储, 默认从第一个
-// 参数三: 需要存储的值的类型
-@inlinable public func storeBytes&lt;T&gt;(of value: T, toByteOffset offset: Int = 0, as: T.Type)
-
-// 参数一: 偏移量, 从第几个字节开始存储, 默认从第一个
-// 参数二: 需要存储的值的类型
-@inlinable public func load&lt;T&gt;(fromByteOffset offset: Int = 0, as type: T.Type) -&gt; T
-</code></pre><p>代码示例如下</p>
-<pre><code>// 创建指针
-var ptr = malloc(16)
-// 存储值
-ptr?.storeBytes(of: 10, as: Int.self)
-// 这里toByteOffset参数如果传0, 就会覆盖前8个字节的数据
-ptr?.storeBytes(of: 12, toByteOffset: 8, as: Int.self)
-// 取值
-print(ptr?.load(as: Int.self) ?? 0)
-print(ptr?.load(fromByteOffset: 8, as: Int.self) ?? 0)
-// 销毁, 释放内存
-free(ptr)
-</code></pre><h4 id="allocate"><a href="#allocate" class="headerlink" title="allocate"></a>allocate</h4><p>使用allocate方式创建指针, 代码示例如下</p>
-<pre><code>// byteCount: 需要申请的字节数, alignment: 对其字节数
-var ptr2 = UnsafeMutableRawPointer.allocate(byteCount: 16, alignment: 1)
-// 存储
-ptr2.storeBytes(of: 9, as: Int.self)
-
-// 根据字节偏移存储
-// 这里的ptr3是ptr2偏移8个字节的新的指针地址
-var ptr3 = ptr2.advanced(by: 8)  // UnsafeMutableRawPointer
-ptr3.storeBytes(of: 12, as: Int.self)
-
-// 上面这种方式等价于
-ptr2.storeBytes(of: 12, toByteOffset: 8, as: Int.self)
-
-// 取值同样
-print(ptr2.load(as: Int.self))
-// 下面这两种取值方式也是一样的
-print(ptr2.advanced(by: 8).load(as: Int.self))
-print(ptr2.load(fromByteOffset: 8, as: Int.self))
-
-// 释放内存
-ptr2.deallocate()
-</code></pre><p>这里需要注意的地方</p>
-<p>只有UnsafeMutableRawPointer才有allocate分配方法, UnsafeRawPointer是没有这个方法的</p>
-<p>下面说到的UnsafeMutablePointer<t>类型也是, UnsafePointer<t>没有allocate分配方法</t></t></p>
-<pre><code>// capacity: 容量, 即可以存储3个Int类型的数据, 也就是24个字节
-var ptr = UnsafeMutablePointer&lt;Int&gt;.allocate(capacity: 3)
-// 初始化内存, 用10初始化钱8个字节
-ptr.initialize(to: 10)
-// 用10初始化前两个容量的内存, 即16个字节
-ptr.initialize(repeating: 10, count: 2)
-// 使用successor获取下一个存储位, 也就是下一个Int的位置
-var ptr1 = ptr.successor()  //  UnsafeMutablePointer&lt;Int&gt;
-ptr1.initialize(to: 20)
-// 存储第三个Int值
-ptr.successor().successor().initialize(to: 30)
-
-// 取值的两种方式
-print(ptr.pointee)        // 第一个值
-print((ptr + 1).pointee)  // 第二个值
-print((ptr + 2).pointee)  // 第三个值
-
-// 下面这种方式和上面等价
-print(ptr[0])
-print(ptr[1])
-print(ptr[2])
-
-// 前面如果使用了initialize, 则必须调用反初始化
-// 而且count要和上面allocate(capacity: 3)的capacity一致, 否则会造成内存泄露的问题
-ptr.deinitialize(count: 3)
-ptr.deallocate()
-</code></pre><h3 id="指针之间的转换"><a href="#指针之间的转换" class="headerlink" title="指针之间的转换"></a>指针之间的转换</h3><p>前面提到过Swift中的指针类型有四种</p>
-<ul>
-<li>UnsafePointer<pointee>类似于const Pointee *</pointee></li>
-<li>UnsafeMutablePointer<pointee>类似于Pointee *</pointee></li>
-<li>UnsafeRawPointer类似于const void *</li>
-<li>UnsafeMutableRawPointer类似于void *</li>
-</ul>
-<p>那么上面的类型, 能否通过其中的一种创建另外一种指针呢, 下面我们来看一下</p>
-<h4 id="init"><a href="#init" class="headerlink" title="init"></a>init</h4><p>UnsafeMutableRawPointer中有一个初始化方法可以根据UnsafeMutablePointer创建自身</p>
-<pre><code>public init&lt;T&gt;(_ other: UnsafeMutablePointer&lt;T&gt;)
-
-var ptr = UnsafeMutablePointer&lt;Int&gt;.allocate(capacity: 3)
-var ptr1 = UnsafeMutableRawPointer(ptr)
-</code></pre><h4 id="assumingMemoryBound"><a href="#assumingMemoryBound" class="headerlink" title="assumingMemoryBound"></a>assumingMemoryBound</h4><p>反过来, UnsafeMutableRawPointer也提供了一个方法用于创建UnsafePointer</p>
-<pre><code>public func assumingMemoryBound&lt;T&gt;(to: T.Type) -&gt; UnsafePointer&lt;T&gt;
-
-var ptr = UnsafeMutableRawPointer.allocate(byteCount: 16, alignment: 1)
-var ptr1 = ptr.assumingMemoryBound(to: Int.self)
-// 初始化前8个字节
-ptr1.pointee = 11
-// 初始化后8个字节
-// 特别注意, 这里的(ptr + 8)是指ptr向后偏移8个字节, 要和之前的区分开
-(ptr + 8).assumingMemoryBound(to: Int.self).pointee = 12
-
-ptr.deallocate()
-</code></pre><h4 id="unsafeBitCast"><a href="#unsafeBitCast" class="headerlink" title="unsafeBitCast"></a>unsafeBitCast</h4><p>unsafeBitCast是忽略数据类型的强制转换，不会因为数据类型的变化而改变原来的内存数</p>
-<pre><code>// 把第一个参数类型转成第二个参数类型
-@inlinable public func unsafeBitCast&lt;T, U&gt;(_ x: T, to type: U.Type) -&gt; U
-
-
-var ptr = UnsafeMutableRawPointer.allocate(byteCount: 16, alignment: 1)
-unsafeBitCast(ptr, to: UnsafeMutablePointer&lt;Int&gt;.self).pointee = 13
-// 注意, 这里的(ptr + 8)是指ptr向后偏移8个字节, 要和之前的区分开
-unsafeBitCast(ptr + 8, to: UnsafeMutablePointer&lt;Double&gt;.self).pointee = 14.23
-
-ptr.deallocate()
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/09/浅谈Swift的内存管理/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 
@@ -2551,11 +2412,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2579,11 +2440,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2595,11 +2456,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2624,10 +2489,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Other</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">

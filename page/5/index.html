@@ -152,6 +152,145 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-mysql快速生成百万条测试数据的方法mysql快速生成百万条测试数据的方法" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/15/mysql快速生成百万条测试数据的方法mysql快速生成百万条测试数据的方法/">mysql快速生成百万条测试数据的方法</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/15/mysql快速生成百万条测试数据的方法mysql快速生成百万条测试数据的方法/" class="archive-article-date">
+  	<time datetime="2019-09-15T03:39:05.927Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>有时候我们需要对大数据进行测试，本地一般没有那么多数据，就需要我们自己生成一些。下面会借助内存表的特点进行生成百万条测试数据。</p>
+<h2 id="创建一个临时内存表-做数据插入的时候会比较快些"><a href="#创建一个临时内存表-做数据插入的时候会比较快些" class="headerlink" title="创建一个临时内存表, 做数据插入的时候会比较快些"></a>创建一个临时内存表, 做数据插入的时候会比较快些</h2><pre><code>-- 创建一个临时内存表
+DROP TABLE IF EXISTS `vote_record_memory`;
+CREATE TABLE `vote_record_memory` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `user_id` varchar(20) NOT NULL DEFAULT &apos;&apos;,
+    `vote_num` int(10) unsigned NOT NULL DEFAULT &apos;0&apos;,
+    `group_id` int(10) unsigned NOT NULL DEFAULT &apos;0&apos;,
+    `status` tinyint(2) unsigned NOT NULL DEFAULT &apos;1&apos;,
+    `create_time` datetime NOT NULL DEFAULT &apos;0000-00-00 00:00:00&apos;,
+    PRIMARY KEY (`id`),
+    KEY `index_user_id` (`user_id`) USING HASH
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+</code></pre><h2 id="创建一个普通表，用作模拟大数据的测试用例"><a href="#创建一个普通表，用作模拟大数据的测试用例" class="headerlink" title="创建一个普通表，用作模拟大数据的测试用例"></a>创建一个普通表，用作模拟大数据的测试用例</h2><pre><code>DROP TABLE IF EXISTS `vote_record`;
+CREATE TABLE `vote_record` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+    `user_id` varchar(20) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;用户Id&apos;,
+    `vote_num` int(10) unsigned NOT NULL DEFAULT &apos;0&apos; COMMENT &apos;投票数&apos;,
+    `group_id` int(10) unsigned NOT NULL DEFAULT &apos;0&apos; COMMENT &apos;用户组id 0-未激活用户 1-普通用户 2-vip用户 3-管理员用户&apos;,
+    `status` tinyint(2) unsigned NOT NULL DEFAULT &apos;1&apos; COMMENT &apos;状态 1-正常 2-已删除&apos;,
+    `create_time` int(10) unsigned NOT NULL DEFAULT &apos;0000-00-00 00:00:00&apos; COMMENT &apos;创建时间&apos;,
+    PRIMARY KEY (`id`),
+    KEY `index_user_id` (`user_id`) USING HASH COMMENT &apos;用户ID哈希索引&apos;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT=&apos;投票记录表&apos;;
+</code></pre><h2 id="为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。"><a href="#为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。" class="headerlink" title="为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。"></a>为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。</h2><pre><code>-- 创建生成长度为n的随机字符串的函数
+DELIMITER // -- 修改MySQL delimiter：&apos;//&apos;
+DROP FUNCTION IF EXISTS `rand_string` //
+SET NAMES utf8 //
+CREATE FUNCTION `rand_string` (n INT) RETURNS VARCHAR(255) CHARSET &apos;utf8&apos;
+BEGIN 
+    DECLARE char_str varchar(100) DEFAULT &apos;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&apos;;
+    DECLARE return_str varchar(255) DEFAULT &apos;&apos;;
+    DECLARE i INT DEFAULT 0;
+    WHILE i &lt; n DO
+        SET return_str = concat(return_str, substring(char_str, FLOOR(1 + RAND()*62), 1));
+        SET i = i+1;
+    END WHILE;
+    RETURN return_str;
+END //
+</code></pre><h2 id="为了操作方便，我们再创建一个插入数据的存储过程"><a href="#为了操作方便，我们再创建一个插入数据的存储过程" class="headerlink" title="为了操作方便，我们再创建一个插入数据的存储过程"></a>为了操作方便，我们再创建一个插入数据的存储过程</h2><pre><code>-- 创建插入数据的存储过程
+DELIMITER //
+DROP PROCEDURE IF EXISTS `add_vote_record_memory` //
+CREATE PROCEDURE `add_vote_record_memory`(IN n INT)
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE vote_num INT DEFAULT 0;
+    DECLARE group_id INT DEFAULT 0;
+    DECLARE status TINYINT DEFAULT 1;
+    WHILE i &lt; n DO
+        SET vote_num = FLOOR(1 + RAND() * 10000);
+        SET group_id = FLOOR(0 + RAND()*3);
+        SET status = FLOOR(1 + RAND()*2);
+        INSERT INTO `vote_record_memory` VALUES (NULL, rand_string(20), vote_num, group_id, status, NOW());
+        SET i = i + 1;
+    END WHILE;
+END //
+DELIMITER ;  -- 改回默认的 MySQL delimiter：&apos;;&apos;
+</code></pre><h2 id="开始执行存储过程，等待生成数据-10W条生成大约需要40分钟"><a href="#开始执行存储过程，等待生成数据-10W条生成大约需要40分钟" class="headerlink" title="开始执行存储过程，等待生成数据(10W条生成大约需要40分钟)"></a>开始执行存储过程，等待生成数据(10W条生成大约需要40分钟)</h2><pre><code>-- 调用存储过程 生成100W条数据
+CALL add_vote_record_memory(1000000);
+</code></pre><h2 id="查询内存表已生成记录-为了下步测试，目前仅生成了105645条"><a href="#查询内存表已生成记录-为了下步测试，目前仅生成了105645条" class="headerlink" title="查询内存表已生成记录(为了下步测试，目前仅生成了105645条)"></a>查询内存表已生成记录(为了下步测试，目前仅生成了105645条)</h2><pre><code>SELECT count(*) FROM `vote_record_memory`;
+-- count(*)
+-- 105646
+</code></pre><h2 id="把数据从内存表插入到普通表中-10w条数据13s就插入完了"><a href="#把数据从内存表插入到普通表中-10w条数据13s就插入完了" class="headerlink" title="把数据从内存表插入到普通表中(10w条数据13s就插入完了)"></a>把数据从内存表插入到普通表中(10w条数据13s就插入完了)</h2><pre><code>INSERT INTO vote_record SELECT * FROM `vote_record_memory`;
+</code></pre><h2 id="查询普通表已的生成记录"><a href="#查询普通表已的生成记录" class="headerlink" title="查询普通表已的生成记录"></a>查询普通表已的生成记录</h2><pre><code>SELECT count(*) FROM `vote_record`;
+-- count(*)
+-- 105646
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">mysql</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/15/mysql快速生成百万条测试数据的方法mysql快速生成百万条测试数据的方法/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-如何使用 AutoLayout 自动计算 ScrollView 的 contentSize" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2999,321 +3138,9 @@ id *add(id obj)
 
 
   
-    <article id="post-IAP自动订阅类型总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/04/IAP自动订阅类型总结/">IAP自动订阅类型总结</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/04/IAP自动订阅类型总结/" class="archive-article-date">
-  	<time datetime="2019-09-04T02:31:27.771Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS 的 App 内购类型有四种：</p>
-<p>消耗型商品：只可使用一次的产品，使用之后即失效，必须再次购买。<br>示例：钓鱼 App 中的鱼食。</p>
-<p>非消耗型商品：只需购买一次，不会过期或随着使用而减少的产品。<br>示例：游戏 App 的赛道。</p>
-<p>自动续期订阅：允许用户在固定时间段内购买动态内容的产品。除非用户选择取消，否则此类订阅会自动续期。<br>示例：每月订阅提供流媒体服务的 App。</p>
-<p>非续期订阅：允许用户购买有时限性服务的产品。此 App 内购买项目的内容可以是静态的。此类订阅不会自动续期。<br>示例：为期一年的已归档文章目录订阅。</p>
-<hr>
-<p>经过完成这次的项目，我觉得其中最麻烦的就是 自动续期订阅 类型。因为其他几类都是一次性的内购类型，而只有自定续期订阅类是有连续性的，其中还有免费试用期、促销期的概念，用户还可以取消续订，恢复续订等。后台也需要有很多相应的逻辑操作。在这里总结一下完成自动续订订阅类型过程中遇到的问题和一些坑，希望帮助到大家。</p>
-<h2 id="创建自动续订类型时需要注意的地方"><a href="#创建自动续订类型时需要注意的地方" class="headerlink" title="创建自动续订类型时需要注意的地方"></a>创建自动续订类型时需要注意的地方</h2><h3 id="1、App-专用共享密钥："><a href="#1、App-专用共享密钥：" class="headerlink" title="1、App 专用共享密钥："></a>1、App 专用共享密钥：</h3><p>需要创建一个 “App 专用共享密钥”，它是用于接收此 App 自动续订订阅收据的唯一代码。这个秘钥用来想苹果服务器进行校验票据 receipt，不仅需要传 receipt，还需要传这个秘钥。<br>如果您需要将此 App 转让给其他开发人员，或者需要将主共享密钥设置为专用，可能需要使用 App 专用共享密钥。</p>
-<p><img src="http://img.wangjungang.cn/LjAIqn.png" alt=""></p>
-<h3 id="2、订阅群组："><a href="#2、订阅群组：" class="headerlink" title="2、订阅群组："></a>2、订阅群组：</h3><p>创建自动续订类型的时候，如果还不存在订阅群组，就需要创建一个，以向用户提供一系列内容供应、服务等级或时限。名字可以自己随便起，就是给自己看的，有代表意义就行，一个群组下可以有多个自动续订订阅。如果你要搞促销优惠，那么每个顾客可以享受每个订阅群组的一个推介促销优惠一次。</p>
-<p>一个订阅群组中的订阅是 互斥 的，这意味着用户只能一次订阅一个群组中的一个选项。如果你希望用户能够一次购买多个订阅，你可以将这些 App 内购买项目放在不同的订阅群组中。</p>
-<p><img src="http://img.wangjungang.cn/XP0rI4.png" alt=""></p>
-<h3 id="3、订阅状态-URL："><a href="#3、订阅状态-URL：" class="headerlink" title="3、订阅状态 URL："></a>3、订阅状态 URL：</h3><p>自动续订订阅还需要填写订阅状态 URL。在 App 信息 里配置，这个 URL 配置以后，我们后台就能收到 server to server 的通知了。文章最后后详细讲后台的相关操作。</p>
-<p><img src="http://img.wangjungang.cn/7JJYTs.png" alt=""></p>
-<h3 id="4、推介促销优惠："><a href="#4、推介促销优惠：" class="headerlink" title="4、推介促销优惠："></a>4、推介促销优惠：</h3><p>推介促销优惠 可以设置各种优惠，比如像我们公司的项目采取的就是前七天免费试用，当然你也可以设置前两个月半价等等。</p>
-<p><img src="http://img.wangjungang.cn/C5oaTJ.png" alt=""></p>
-<p>这个推介促销优惠的三种类型：</p>
-<p><img src="http://img.wangjungang.cn/VLS4G9.png" alt=""></p>
-<p>⚠️ 注意：此价格面向新顾客。推介促销优惠可用于吸引 新顾客。就是说这个用户享受过七天免费试用了，那么下次就享受不了了，这个是由苹果去判断的。 下面是苹果让谨记的原话：</p>
-<ul>
-<li>顾客可以享受每个订阅群组的一个推介促销优惠</li>
-<li>您可以针对每个地区设置一个当前推介促销优惠和一个未来推介促销优惠</li>
-<li>您可以在 App Store Connect 中管理地区销售范围、开始和结束日期</li>
-<li>如果您已推广您的 App 内购买项目，推介促销优惠将显示在您的 App Store 产品页上</li>
-<li>推介促销优惠适用于运行 iOS 10、Apple TVOS 10 和 macOS 10.12.6 及更高版本的顾客</li>
-</ul>
-<h2 id="内购流程"><a href="#内购流程" class="headerlink" title="内购流程"></a>内购流程</h2><h3 id="1-流程简述"><a href="#1-流程简述" class="headerlink" title="1. 流程简述"></a>1. 流程简述</h3><p><img src="http://img.wangjungang.cn/dcImLo.png" alt=""></p>
-<p>用户向苹果服务器发起购买请求，收到购买完成的回调（购买完成后会把钱打给申请内购的银行卡内）</p>
-<p>购买成功流程结束后, 向服务器发起验证凭证（app端自己也可以不依靠服务器自行验证）</p>
-<p>自己的服务器工作分 4 步：</p>
-<ul>
-<li>3.1  接收 iOS 端发过来的购买凭证。</li>
-<li>3.2  判断凭证是否已经存在或验证过，然后存储该凭证。</li>
-<li>3.3  将该凭证发送到苹果的服务器（区分沙盒环境还是正式环境）验证，并将验证结果返回给客户端。</li>
-<li>3.4  修改用户相应的会员权限或发放虚拟物品。</li>
-</ul>
-<hr>
-<p>简单来说就是将该购买凭证用 Base64 编码，然后 POST 给苹果的验证服务器，苹果将验证结果以 JSON 形式返回。</p>
-<p><img src="http://img.wangjungang.cn/rcuTvA.png" alt=""></p>
-<h3 id="2-具体实现"><a href="#2-具体实现" class="headerlink" title="2. 具体实现"></a>2. 具体实现</h3><p>自动订阅类型需要注意： app开始运行时，一定要添加监听</p>
-<pre><code>[[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-</code></pre><p>因为自动订阅类型，除了第一次购买行为是用户主动触发的。后续续费都是 Apple 自动完成的，一般在要过期的前 24 小时开始，苹果会尝试扣费，扣费成功的话会在 APP 下次启动的时候主动推送给 APP。所以，APP 启动的时候一定要添加上面的那句话。</p>
-<p>⚠️ 订单结束后一定要执行 finishTransaction 操作</p>
-<pre><code>[[SKPaymentQueue defaultQueue] finishTransaction:transaction];
-</code></pre><p>下面看一下重要的几个代理方法的实现： 首先要引入苹果内购必须要的一个库 StoreKit</p>
-<pre><code>#import &lt;StoreKit/StoreKit.h&gt;
-</code></pre><p>（1） 开始调起支付流程，请求商品信息，这里需要用到SKProductsRequestDelegate，它是商品请求回调，可告诉你有没有这个商品</p>
-<pre><code>/**
- 调起支付，请求商品信息
- @param productId 商品Id（在苹果connect上配置的内购地址）
- */
-- (void)payWithAppleProductID:(NSString *)productId {
-
-    if ([SKPaymentQueue canMakePayments]) {
-        // 如果允许应用内付费购买
-        // 把商品ID信息放入一个集合中
-        NSArray *productIdentifiers = [[NSArray alloc] initWithObjects: productId, nil];
-        NSSet * set = [NSSet setWithArray:productIdentifiers];
-        // 请求内购商品信息，只返回你请求的产品（主要用于验证商品的有效性）
-        SKProductsRequest * request = [[SKProductsRequest alloc] initWithProductIdentifiers:set];
-        request.delegate = self;
-        [request start];
-
-    } else {
-        // 如果用户手机禁止应用内付费购买.
-        // 则弹出开启购买权限开关的提示等...
-    }
-}
-
-#pragma mark - SKProductRequestDelegate 
-/**
- 收到产品返回信息
- SKProductsRequest是苹果封装好的一个对象，该对象有两个属性。
- products是一个数组，代表的是你获取到的所有商品信息，每个商品  都是一个数组元素。
- invalidProductIdentifiers是无效的商品id的数组，此id对应的是你在苹果后台构建的商品id。
- */
-- (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response{
-
-    NSLog(@&quot;--------------收到产品反馈消息---------------------&quot;);
-    NSArray *product = response.products;
-    if([product count] == 0){
-        [SVProgressHUD dismiss];
-        NSLog(@&quot;--------------没有商品------------------&quot;);
-        return;
-    }
-
-    NSLog(@&quot;productID:%@&quot;, response.invalidProductIdentifiers);
-    NSLog(@&quot;产品付费数量:%lu&quot;,(unsigned long)[product count]);
-
-    SKProduct *requestProduct = nil;
-    for (SKProduct *pro in product) {
-        NSLog(@&quot;%@&quot;, [pro description]);
-        NSLog(@&quot;%@&quot;, [pro localizedTitle]);
-        NSLog(@&quot;%@&quot;, [pro localizedDescription]);
-        NSLog(@&quot;%@&quot;, [pro price]);
-        NSLog(@&quot;%@&quot;, [pro productIdentifier]);
-        // 如果后台消费条目的ID与我这里需要请求的一样（用于确保订单的正确性）
-        if([pro.productIdentifier isEqualToString:_currentProId]){
-            requestProduct = pro;
-        }
-    }
-
-    // 发送购买请求
-    //SKPayment *payment = [SKPayment paymentWithProduct:requestProduct];// 不可变的
-    SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:requestProduct];// 可变的
-    payment.applicationUsername = @&quot;123456&quot;;// 发起支付时候指定用户的userId
-    [[SKPaymentQueue defaultQueue] addPayment:payment];
-}
-
-// 请求失败
-- (void)request:(SKRequest *)request didFailWithError:(NSError *)error{
-    NSLog(@&quot;------------------错误-----------------:%@&quot;, error);
-}
-
-- (void)requestDidFinish:(SKRequest *)request{
-    NSLog(@&quot;------------反馈信息结束-----------------&quot;);
-}
-</code></pre><p>在发送购买请求的时候，我绑定了当前登录用户的 id</p>
-<pre><code>payment.applicationUsername = [Global sharedGlobal].loginInfo.userId;
-</code></pre><p>这样在之后收到交易回调的时候，我可以根据携带的applicationUsername 来判断当前用户是否是同一个用户，如果是同一个用户再去验证票据。但不要完全依赖这个参数，因为在网上也看到有人说这个参数有时候会为空，所以我们在验证的时候要首先判断是否为空，如果不为空，再去和当前用户 id 比对。如果为空，就照常接着走验证票据流程就行了。</p>
-<ul>
-<li>SKProductsRequest 是苹果封装好的一个对象，该对象有两个属性。</li>
-<li>属性 products 是一个数组，代表的是你获取到的所有商品信息，每个商品都是一个数组元素。</li>
-<li>属性 invalidProductIdentifiers 是无效的商品id的数组，此id对应的是你在苹果后台构建的商品id。</li>
-</ul>
-<pre><code>// Array of SKProduct instances.
-@property(nonatomic, readonly) NSArray&lt;SKProduct *&gt; *products NS_AVAILABLE(10_7, 3_0);
-
-// Array of invalid product identifiers.
-@property(nonatomic, readonly) NSArray&lt;NSString *&gt; *invalidProductIdentifiers NS_AVAILABLE(10_7, 3_0);
-</code></pre><p>（2）判断购买结果，这里需要用到 SKPaymentTransactionObserver，SKPaymentTransactionObserver 是交易观察者，用来告诉你交易进行到哪个步骤了。</p>
-<pre><code>// 13.监听购买结果
-- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transaction {
-
-    for (SKPaymentTransaction *tran in transaction){
-
-        switch (tran.transactionState) {
-            case SKPaymentTransactionStatePurchased:
-                NSLog(@&quot;交易完成&quot;);
-                // 订阅特殊处理
-                if (tran.originalTransaction) {
-                    // 如果是自动续费的订单,originalTransaction会有内容
-                    NSLog(@&quot;自动续费的订单,originalTransaction = %@&quot;,tran.originalTransaction);
-                } else {
-                    // 普通购买，以及第一次购买自动订阅
-                    NSLog(@&quot;普通购买，以及第一次购买自动订阅&quot;);
-                }
-                 if ([Global sharedGlobal].loginInfo.logined) {
-                    // 只有登录了才去处理票据 和 执行finish操作
-                    NSString *orderUserId = [[tran payment] applicationUsername];// 得到该订单的用户Id
-                    if ((orderUserId &amp;&amp; orderUserId.length &gt; 0 &amp;&amp; [[Global sharedGlobal].loginInfo.userId isEqualToString:orderUserId]) || (nil == orderUserId || orderUserId.length == 0)) {
-                        // 当订单的userId和当前userId一致 或者 订单userId为空时才处理票据、执行finish操作
-                        [self completeTransaction:tran];
-                        [[SKPaymentQueue defaultQueue] finishTransaction:tran];// 销毁本次操作，由本地数据库进行记录和恢复
-                    }
-                }
-                break;
-            case SKPaymentTransactionStatePurchasing:
-                NSLog(@&quot;商品添加进列表&quot;);
-                break;
-            case SKPaymentTransactionStateRestored:
-                NSLog(@&quot;已经购买过商品&quot;);
-                [[SKPaymentQueue defaultQueue] finishTransaction:tran];
-                break;
-            case SKPaymentTransactionStateFailed:
-                NSLog(@&quot;交易失败&quot;);
-                [[SKPaymentQueue defaultQueue] finishTransaction:tran];
-                break;
-            default:
-                break;
-        }
-    }
-}
-
-// 交易结束,当交易结束后还要去appstore上验证支付信息是否都正确,只有所有都正确后,我们就可以给用户方法我们的虚拟物品了。
-- (void)completeTransaction:(SKPaymentTransaction *)transaction {
-
-    NSString * str = [[NSString alloc] initWithData:transaction.transactionReceipt encoding:NSUTF8StringEncoding];
-    NSString *environment = [self environmentForReceipt:str];
-    NSLog(@&quot;----- 完成交易调用的方法completeTransaction 1--------%@&quot;,environment);
-    // 验证凭据，获取到苹果返回的交易凭据
-    NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];// appStoreReceiptURL iOS7.0增加的，购买交易完成后，会将凭据存放在该地址
-    NSData *receiptData = [NSData dataWithContentsOfURL:receiptURL];// 从沙盒中获取到购买凭据
-    NSString *encodeStr = [receiptData base64EncodedStringWithOptions:NSDataBase64EncodingEndLineWithLineFeed];// BASE64 常用的编码方案，通常用于数据传输，以及加密算法的基础算法，传输过程中能够保证数据传输的稳定性，BASE64是可以编码和解码的
-
-    if (![UserOrderInfo isHasReceiptDate:encodeStr]) {
-        // 如果本地数据库没有此条票据记录
-        NSString *environmentStr;
-        if ([environment isEqualToString:@&quot;environment=Sandbox&quot;]) {
-            environmentStr = @&quot;sandbox&quot;;
-        } else {
-            environmentStr = @&quot;product&quot;;
-        }
-        // 将票据POST给自己的服务器去校验...        
-    }
-}
-</code></pre><p>要发给后台同事的交易凭据长度会很大，一开始是 7000 多位，所以后台限制了 10000 位长度，结果随着订阅增多，交易凭据也越来越大，最后都达到了 3 万多位，后台只好把长度改为了 30 万位限制。</p>
-<p>我在以上的基础上，添加了本地数据的订单记录，以防止掉单，在验证票据之前先把所有数据包括票据都插入到了本地数据库，并且执行了 Objc [[SKPaymentQueue defaultQueue] finishTransaction:transaction];<br>也就是告知苹果我的支付流程已经结束了。这样如果中途程序闪退或者其他情况出现，在下次启动 app 的时候会率先查询本地数据库有无未完成的订单操作并继续内购流程。就不依赖苹果自动的通知来继续完成内购了，因为苹果内购绑定的是 appleId，而大部分公司需求都是绑定自己 app 的用户 id。自己进行本地记录回复能更好的处理这种情况，当然如果用户换了设备当然就没办法了。</p>
-<h2 id="各种情况"><a href="#各种情况" class="headerlink" title="各种情况"></a>各种情况</h2><h3 id="1-Upgrades-and-Plan-Changes升级和计划变更"><a href="#1-Upgrades-and-Plan-Changes升级和计划变更" class="headerlink" title="1. Upgrades and Plan Changes升级和计划变更"></a>1. Upgrades and Plan Changes升级和计划变更</h3><p>用户可以在 App Store 或您应用的界面中的帐户设置中管理他们的订阅。对于每个订阅，App Store 会显示订阅组提供的所有续订选项。用户可以轻松更改其服务级别，并根据需要随时选择升级，降级或交叉评级。任何持续时间的降级或具有不同持续时间的交叉等级将在下一个续订日期生效。</p>
-<p>您可以查看收据的 “订阅自动续订首选项” 字段，以了解用户选择的任何计划更改，这些更改将在下一个续订日期生效。</p>
-<h3 id="2-Expiration-and-Renewal到期和续订"><a href="#2-Expiration-and-Renewal到期和续订" class="headerlink" title="2. Expiration and Renewal到期和续订"></a>2. Expiration and Renewal到期和续订</h3><p>订阅续订过程在到期日期前十天开始。在这十天内，App Store会检查可能会延迟或阻止订阅自动续订的任何结算问题，例如：</p>
-<ul>
-<li>客户的付款方式不再有效，</li>
-<li>自用户购买订阅以来，产品价格上涨，</li>
-<li>该产品已不再可用。</li>
-</ul>
-<p>App Store 可以通知用户任何问题，以便他们可以在订阅到期之前解决它，并避免其订阅服务中断。<br>在订阅到期之前的 24 小时内，App Store 开始尝试自动续订。App Store 会多次尝试在一段时间内自动续订订阅，但如果尝试失败次数过多，最终会停止。</p>
-<ul>
-<li>注意： 对于与帐单相关的问题，App Store 可能会尝试续订最多 60 天的订阅。您可以在收据中检查订阅重试标记，以确定 App Store 是否仍在尝试续订订阅。</li>
-</ul>
-<h3 id="3-Cancellation消除"><a href="#3-Cancellation消除" class="headerlink" title="3. Cancellation消除"></a>3. Cancellation消除</h3><p>订阅在购买时全额支付。用户只能通过联系 Apple 客户服务获得退款。例如，如果用户意外购买了错误的产品，客户支持可以取消订阅并发出全部或部分退款。客户可以在订阅期间取消订阅，但订阅仍在同一时期结束时支付。</p>
-<p>要检查 Apple 客户支持是否已取消购买，请在收据中查找 “取消日期” 字段。如果该字段包含日期，则无论订阅的到期日期如何，购买都已取消。关于提供内容或服务，将取消的交易视为没有进行过购买。</p>
-<p>根据您的应用提供的产品类型，您可能需要检查当前有效的订阅期，或者您可能需要检查所有过去的订阅期。例如，杂志应用程序需要检查所有过去的订阅期，以确定用户应该访问哪些问题。具有流服务的应用程序仅需要检查当前活动的订阅以确定用户是否应该有权访问其服务。</p>
-<h2 id="服务端验证"><a href="#服务端验证" class="headerlink" title="服务端验证"></a>服务端验证</h2><p>其实内购也可以完全靠客户端自己去验证，但是为了安全起见，大部分公司都会选择让服务器端去验证订单的有效性。当然我们项目也不例外。</p>
-<p>首先要在 itunes connection 上配置自动续期订阅下，可以参考下面的苹果官方文档，《启用针对自动续期订阅的服务器通知》。</p>
-<p>自动续订订阅和其他类型的区别还有必须在 App Store Connect 中生成一个 共享密钥，把这个秘钥发给后台同事，并且我们填写好 订阅状态 URL。</p>
-<p>如果这样配置了 server to server 的通知，后台就会收到下面的几种状态更新通知类型：<br>有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
-<p><img src="http://img.wangjungang.cn/TYYXkx.png" alt=""></p>
-<p>由此可以看出并没有用户正常续订的通知，这块就和安卓不一样了，安卓是会有续订的通知的。苹果是默认就续订上了，取消才会有通知。</p>
-<p>一开始后台这边也是遇到了很多不懂的问题，最后发现同一个订单凭据是可以一直使用的，不管你后面续订了多少次，随便这些中的一个凭据发给苹果验证，就能得到所有的订单信息和订阅状态，这样每个周期结束的时候（试用期最后一天或者月底），就可以根据票据信息去得到用户是否仍然续订的信息，这样就可以决定是否继续给下个月的 VIP 了。</p>
-<h2 id="沙盒测试"><a href="#沙盒测试" class="headerlink" title="沙盒测试"></a>沙盒测试</h2><p>因为我们的项目要求第一次购买自动续订的享受七天免费试用期，而一个苹果沙盒账号只能享受一次免费试用期，所以导致我每自测一次都要申请一个新的沙盒账号，提交给测试部门测试的时候又要申请一堆账号，最后申请了 47 个沙盒账号……<br>在我们测试自动续期订阅时，时限会缩短。此外，测试订阅最多仅能自动续期 6 次。</p>
-<p><img src="http://img.wangjungang.cn/cO1BpR.png" alt=""></p>
-<p>和安卓相比，苹果测试起来没那么友好，尤其是没办法模拟用户手动取消订阅的场景，因为沙盒账号没有办法管理订阅。而安卓是可以测试这一场景的。</p>
-<p>另外需要注意，沙盒账号的续订，如果一直打开着 app，可能过了 5 分钟续订周期也不会收到通知，最好是杀死 app，5 分钟后重新启动，这样就会收到续订的通知了。</p>
-<p>使用户能够管理订阅 在非沙盒账号的情况下，项目中可以设置为打开此 URL 启动iTunes 或 iTunes Store 并显示“管理订阅”页面。 buy.itunes.apple.com/WebObjects/…</p>
-<p>⚠️注意：如果你是通过 TestFlight 安装的，那么就不用使用沙盒账号进行购买了，需要使用真实的账号进行购买，当然也不会扣除你的钱的，只不过弹窗的说明变了，如下图：</p>
-<p><img src="http://img.wangjungang.cn/pt6tdV.png" alt=""></p>
-<h2 id="关于审核"><a href="#关于审核" class="headerlink" title="关于审核"></a>关于审核</h2><h3 id="1-自动续订订阅的说明一定要有。"><a href="#1-自动续订订阅的说明一定要有。" class="headerlink" title="1. 自动续订订阅的说明一定要有。"></a>1. 自动续订订阅的说明一定要有。</h3><p>自动续订订阅，一定要在 app 中有详细的说明，类似下图这种：</p>
-<p><img src="http://img.wangjungang.cn/a8wjWU.png" alt=""></p>
-<p>上面只是个例子，我们的 app 只做了会员服务协议，没有右边那个自动续费条款也没事儿。 除了在 app 里要写，在 iTunes Connect 的应用描述里也要写，以喜马拉雅为例，如下图：</p>
-<p><img src="http://img.wangjungang.cn/Crb03m.jpg" alt=""></p>
-<p>如果没有这些说明苹果基本是会拒你的。</p>
-<h3 id="不允许强制用户必须登录才能购买"><a href="#不允许强制用户必须登录才能购买" class="headerlink" title="不允许强制用户必须登录才能购买"></a>不允许强制用户必须登录才能购买</h3><p>因为苹果规定所有内购绑定的账号都应该是 apple 账号，所以不登陆你 app 自己的账号也应该可以购买，也就是游客状态下也要能购买，不然就耽误苹果赚钱了。</p>
-<p>关于这个问题有两个解决办法：</p>
-<ul>
-<li>（1）做游客模式可购买（未登录是绑定设备，下一个账号登录以后绑定账号）</li>
-<li>（2）必须登录才可以使用 app。</li>
-</ul>
-<p>当然也可以做一个审核接口来应对。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/04/IAP自动订阅类型总结/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
     </nav>
   
 
@@ -3416,11 +3243,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3444,11 +3271,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3460,11 +3287,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3489,10 +3320,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Other</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
