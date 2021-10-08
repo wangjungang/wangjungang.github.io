@@ -152,6 +152,108 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS中NSNotification的套路" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/12/16/iOS中NSNotification的套路/">iOS中NSNotification的套路</a>
+    </h1>
+  
+
+        
+        <a href="/2019/12/16/iOS中NSNotification的套路/" class="archive-article-date">
+  	<time datetime="2019-12-16T12:36:18.860Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>常用的不说了，说一下我目前遇到的tip</p>
+<h2 id="发送通知与响应通知都在一个线程"><a href="#发送通知与响应通知都在一个线程" class="headerlink" title="发送通知与响应通知都在一个线程"></a>发送通知与响应通知都在一个线程</h2><p>这一点与KVO类似。<br>NSNotification不能跨线程：即响应通知的action，默认是与postNotification在同一个线程的，若想在指定线程中执行响应通知的方法，可以使用带有block的addObserver方法，或者使用dispatch_async(xxx)。</p>
+<p>如果需要跨线程，可以使用带有block的通知接口。</p>
+<pre><code>dispatch_group_async(manager.completionGroup ?: url_session_manager_completion_group(), manager.completionQueue ?: dispatch_get_main_queue(), ^{
+            if (self.completionHandler) {
+                self.completionHandler(task.response, responseObject, error);
+            }
+
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingTaskDidCompleteNotification object:task userInfo:userInfo];
+            });
+        });
+</code></pre><p>为了保证在主线程发送通知。 这一点可以在一些网络请求数据到达时, 用于刷新界面。</p>
+<pre><code>dispatch_async(dispatch_get_main_queue(), ^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationFilterMaterialRequestFinished object:self userInfo:nil];
+    });
+</code></pre><h2 id="在指定线程接收通知"><a href="#在指定线程接收通知" class="headerlink" title="在指定线程接收通知"></a>在指定线程接收通知</h2><ul>
+<li><p>使用queue和block</p>
+</li>
+<li><p>使用mach port</p>
+</li>
+</ul>
+<p>上面说到，收发都在一个线程中，如果想要做到，在某个指定的线程接收通知，该如何做呢？苹果文档上提及了实现思路。</p>
+<p>先简单介绍下mach port，它主要用来线程间通信。简单来说，就是接收线程中注册NSMachPort，在另外的线程中使用此port发送消息，则注册线程会收到相应消息，调用handleMachMessage来处理。</p>
+<p>主要思路：</p>
+<p>定义一个中间对象NotificationHandler，用来专门接收通知，包括一个队列，接收通知的线程，mach port，lock。</p>
+<p>首先NotificationHandler会注册一个通知，对应的处理函数为processNotification，当在其他线程中post时，processNotification会被调用，进行如下处理。如果收到的通知跟指定的线程一样，则处理消息，反之，则添加到队列，同时通过port发送消息给指定线程。注意多线程中，对队列的处理，要加锁。</p>
+<p>指定线程收到回调handleMachMessage，首先会将通知删除，然后调用processNotification进行处理，继续以上过程。</p>
+<p>。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/12/16/iOS中NSNotification的套路/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-使用RunLoop检测卡顿" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2334,244 +2436,6 @@ CALL add_vote_record_memory(1000000);
 
 
   
-    <article id="post-如何使用 AutoLayout 自动计算 ScrollView 的 contentSize" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/06/如何使用 AutoLayout 自动计算 ScrollView 的 contentSize/">如何使用 AutoLayout 自动计算 ScrollView 的 contentSize</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/06/如何使用 AutoLayout 自动计算 ScrollView 的 contentSize/" class="archive-article-date">
-  	<time datetime="2019-09-06T13:16:07.048Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在日常开发中，令人看了就想素质三连的代码，莫过于手动计算各种数字的代码。如下图，看了真的是头皮发麻。</p>
-<p><img src="http://img.wangjungang.cn/vVa4dU.jpg" alt=""></p>
-<p>那么，我们如何避免上面的问题，从而使我们的代码变得友好、可读性更高呢(主要为了保住我们为数不多的头发😭)？答案就是使用 AutoLayout 让系统自动计算数字。</p>
-<p>下面，我们举一个实际的例子来一步一步的实现：使用 AutoLayout 自动计算 ScrollView 的 contentSize 。</p>
-<h3 id="先来说一下实现的大体步骤："><a href="#先来说一下实现的大体步骤：" class="headerlink" title="先来说一下实现的大体步骤："></a>先来说一下实现的大体步骤：</h3><ul>
-<li><p>设置 scrollView 的约束</p>
-<ul>
-<li>约束上下左右间距为 0</li>
-</ul>
-</li>
-<li><p>创建一个 contentView ,设置 contentView 的约束</p>
-<ul>
-<li>上下左右间距为 0</li>
-<li>宽度和 scrollView 的父视图相等</li>
-<li>高度和 scrollView 的父视图相等，且优先级要低(这一步很重要，千万不要写错)</li>
-</ul>
-</li>
-<li><p>将所有子控件添加到 contentView (而不是直接添加到 scrollView 上)，并设置好子控件的内部约束</p>
-</li>
-</ul>
-<h3 id="设置-scrollView-的约束"><a href="#设置-scrollView-的约束" class="headerlink" title="设置 scrollView 的约束"></a>设置 scrollView 的约束</h3><p>首先，给使用的 scrollView 添加完整的约束：</p>
-<pre><code>// 1. 设置 scrollView 的约束
-view.addSubview(scrollView)
-scrollView.translatesAutoresizingMaskIntoConstraints = false
-
-NSLayoutConstraint.activate([
-    scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-    scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-    scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-    scrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
-    ])
-</code></pre><h3 id="创建-contentView，设置-contentView-的约束"><a href="#创建-contentView，设置-contentView-的约束" class="headerlink" title="创建 contentView，设置 contentView 的约束"></a>创建 contentView，设置 contentView 的约束</h3><p>设置完 scrollView，接下来设置 contentView 的约束：</p>
-<pre><code>    // 2. 设置 contentView
-    let contentView = UIView(frame: .zero)
-    scrollView.addSubview(contentView)
-    contentView.translatesAutoresizingMaskIntoConstraints = false
-
-    let contentViewHeightAnchor = contentView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor)
-    // 2.1 高度和 scrollView 的父视图相等，且`优先级要低`
-    contentViewHeightAnchor.priority = UILayoutPriority(rawValue: 1)
-
-    NSLayoutConstraint.activate([
-        contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-        contentView.leftAnchor.constraint(equalTo: scrollView.leftAnchor),
-        contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-        contentView.rightAnchor.constraint(equalTo: scrollView.rightAnchor),
-        contentView.widthAnchor.constraint(equalTo: view.widthAnchor),
-        contentViewHeightAnchor
-        ])
-
-### 添加子控件，设置内部约束
-
-设置完 scrollView 和 contentView 的约束，只需设置内部子控件的约束，剩下的工作就可以交给 AutoLayout 去做了。
-
-// 3.添加子控件，设置内部约束
-titleLabel.text = &quot;titleLabel&quot;
-contentView.addSubview(titleLabel)
-
-titleLabel.translatesAutoresizingMaskIntoConstraints = false
-NSLayoutConstraint.activate([
-    titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-    titleLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10),
-    titleLabel.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10)
-    ])
-
-contentLabel.text = &quot;将此处替换为你自己的字符串（超过一屏），即可看见滑动效果。&quot;
-contentLabel.numberOfLines = 0
-contentView.addSubview(contentLabel)
-
-contentLabel.translatesAutoresizingMaskIntoConstraints = false
-NSLayoutConstraint.activate([
-    contentLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-    contentLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
-    contentLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor)
-    ])
-
-bottomLabel.text = &quot;bottomLabel&quot;
-contentView.addSubview(bottomLabel)
-
-bottomLabel.translatesAutoresizingMaskIntoConstraints = false
-NSLayoutConstraint.activate([
-    bottomLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 10),
-    bottomLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
-    bottomLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor),
-    bottomLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
-    ])
-</code></pre><p>到这里，我们就大功告成了。妈妈再也不用担心我手动计算数字了😏 (成功保住了自己的头发)。</p>
-<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><pre><code>class TestViewController: UIViewController {
-    let scrollView = UIScrollView(frame: .zero)
-    let titleLabel = UILabel(frame: .zero)
-    let contentLabel = UILabel(frame: .zero)
-    let bottomLabel = UILabel(frame: .zero)
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = UIColor.white
-        setupSubviews()
-    }
-}
-
-extension TestViewController {
-    func setupSubviews() {
-        // 1. 设置 scrollView 的约束
-        view.addSubview(scrollView)
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            scrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
-            ])
-        // 2. 设置 contentView
-        let contentView = UIView(frame: .zero)
-        scrollView.addSubview(contentView)
-
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-
-        let contentViewHeightAnchor = contentView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor)
-        // 2.1 高度和 scrollView 的父视图相等，且`优先级要低`
-        contentViewHeightAnchor.priority = UILayoutPriority(rawValue: 1)
-
-        NSLayoutConstraint.activate([
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leftAnchor.constraint(equalTo: scrollView.leftAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.rightAnchor.constraint(equalTo: scrollView.rightAnchor),
-            contentView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            contentViewHeightAnchor
-            ])
-
-        // 3.添加子控件，设置内部约束
-        titleLabel.text = &quot;titleLabel&quot;
-        contentView.addSubview(titleLabel)
-
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            titleLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10),
-            titleLabel.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10)
-            ])
-
-        contentLabel.text = &quot;将此处替换为你自己的字符串（超过一屏），即可看见滑动效果&quot;
-        contentLabel.numberOfLines = 0
-        contentView.addSubview(contentLabel)
-
-        contentLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            contentLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
-            contentLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
-            contentLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor)
-            ])
-
-        bottomLabel.text = &quot;bottomLabel&quot;
-        contentView.addSubview(bottomLabel)
-
-        bottomLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            bottomLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 10),
-            bottomLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
-            bottomLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor),
-            bottomLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
-            ])
-    }
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/06/如何使用 AutoLayout 自动计算 ScrollView 的 contentSize/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -2673,11 +2537,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2713,11 +2577,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2733,15 +2597,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -152,6 +152,191 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-OC自定义通知的封装（PSSNotificationCenter）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/16/OC自定义通知的封装（PSSNotificationCenter）/">OC自定义通知的封装（PSSNotificationCenter）</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/16/OC自定义通知的封装（PSSNotificationCenter）/" class="archive-article-date">
+  	<time datetime="2019-06-16T00:45:39.391Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-16</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>作为iOS开发者，大家应该都使用过系统通知（NSNotificationCenter），无非就是三步，1. 注册通知，2.发送通知，3.销毁观察者，我在这里就不多解释了；。如果忘记销毁观察者，ios9之前是会崩溃的。因此我就有了自己实现全局一对多分发通知的想法，于是封装了PSSNotificationCenter</p>
+<h2 id="系统通知如何使用"><a href="#系统通知如何使用" class="headerlink" title="系统通知如何使用"></a>系统通知如何使用</h2><h3 id="通知的使用步骤"><a href="#通知的使用步骤" class="headerlink" title="通知的使用步骤"></a>通知的使用步骤</h3><p>1.注册通知</p>
+<pre><code>[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveSysNoti) name:@&quot;target&quot; object:nil];
+
+- (void)receiveSysNoti:(NSNotification *)noti {
+    NSLog(@&quot;%@&quot;, [[NSThread currentThread] isMainThread] ? @&quot;收到系统通知：主线程&quot; : @&quot;收到系统通知：子线程&quot;);
+}
+</code></pre><p>2.在需要的时候发送通知</p>
+<pre><code>[[NSNotificationCenter defaultCenter] postNotificationName:@&quot;target&quot; object:nil];
+</code></pre><p>3.移出观察者</p>
+<p>如果iOS9之前，不移除观察者是会崩溃的，而且崩溃不会有断点，如果你继承了友盟，甚至不会给你打印崩溃信息，很难找，所以务必要记得。</p>
+<pre><code>// 移除目标所有通知
+   [[NSNotificationCenter defaultCenter] removeObserver:self];
+   // 移除目标对应通知
+   [[NSNotificationCenter defaultCenter] removeObserver:self name:@&quot;target&quot; object:nil];
+</code></pre><h3 id="系统通知还可以使用block的方式："><a href="#系统通知还可以使用block的方式：" class="headerlink" title="系统通知还可以使用block的方式："></a>系统通知还可以使用block的方式：</h3><p>但是使用block方式会有内存问题，即便用上面两个方法移除，block本身依旧被NotificationCenter持有，当发送通知时依然会运行；请看代码</p>
+<pre><code>// 注册通知
+[[NSNotificationCenter defaultCenter] addObserverForName:@&quot;block&quot; object:nil queue:nil usingBlock:^(NSNotification * _Nonnull note) {
+    NSLog(@&quot;block方式受到系统通知&quot;);
+}];
+
+// 点击注销通知
+- (IBAction)click3:(id)sender {
+    // [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@&quot;block&quot; object:nil];
+}
+// 点击发送通知
+- (IBAction)clickSysNoti:(id)sender {
+    [[NSNotificationCenter defaultCenter] postNotificationName:@&quot;block&quot; object:nil];
+}
+</code></pre><p>上述代码，首先点击发送通知，控制台会打印block方式受到系统通，然后点击注销通知，再点击发送通知，依然会打印；如果退出当前控制器，并且再进入一次控制器，点击发送通知，控制器会打印2次，证明block没有被销毁</p>
+<p>那么为什么会出现这种情况呢？</p>
+<p>首先，在使用block方式注册通知的时候，我们只是传了block，并没有传Observer监听者，NSNotificationCenter直接持有block，而我们用的两个注销方式都是针对target-action方式的；我并没有找到block方式的通知的注销方法，所以如果你使用通知，我建议使用target-action方式，或者用我封装的PSSNotificationCenter</p>
+<h2 id="系统通知的原理，以及出现的常见问题"><a href="#系统通知的原理，以及出现的常见问题" class="headerlink" title="系统通知的原理，以及出现的常见问题"></a>系统通知的原理，以及出现的常见问题</h2><h3 id="使用target-action方式的原理大概是这个样子的："><a href="#使用target-action方式的原理大概是这个样子的：" class="headerlink" title="使用target-action方式的原理大概是这个样子的："></a>使用target-action方式的原理大概是这个样子的：</h3><p>在ios9之前，有些类是不支持weak指针的，所以使用的是unsafe_unretained类型的指针；顾名思义，unsafe_unretained的意思就是不安全的，不会对对象持有的指针，weak所指向的地址被注销时，指针自动指向nil，向nil指针发送消息是不会崩溃的；而unsafe_unretained指针指向的内存被销毁时，是不会指向nil的，从而导致野指针，所以ios9之前是需要注销的；</p>
+<p>当你调用注销方法时，NSNotificationCenter会把指针指向nil，避免出现野指针</p>
+<p>内存大概是这个样子的</p>
+<p>NSNotificationCenter 内部根据每个通知名称name都引用着一个数组（这个数组应该是弱引用数组NSHashTable），数组里存着每个注册者的target-action，当发通知时（[[NSNotificationCenter defaultCenter] postNotificationName:@”target” object:nil];），会根据NotificationName找到对应的数组，然后便利数组里的target-action，达到批量分发的功能。</p>
+<h3 id="使用block方式大概是这个样子的："><a href="#使用block方式大概是这个样子的：" class="headerlink" title="使用block方式大概是这个样子的："></a>使用block方式大概是这个样子的：</h3><p>注册通知时，不需要你传Observer，NSNotificationCenter根据NotificationName持有一个数组，然后把block放到这个数组中，当你调用postNotification时，根据NotificationName找到对应数组并遍历调用；（但是会出现block不会被释放的问题）</p>
+<h3 id="子线程发送通知时："><a href="#子线程发送通知时：" class="headerlink" title="子线程发送通知时："></a>子线程发送通知时：</h3><p>在发送时都是遍历target-action或block调用方法，因此，在子线程发送通知，方法调用也是发生在子线程，也就是说，接收也是默认在子线程的，所以如果你需要在接收通知时刷新UI，建议跳转到主线程哦。</p>
+<p>target-action方式需要声明单独的方法接收，如果支持ios9之前的版本还得注销，真是好麻烦。block方式呢，还会出现内存问题，API提供的较少，因此我决定，封装一款自己的通知 - PSSNotificationCenter</p>
+<h2 id="PSSNotificationCenter-自己封装的全局通知"><a href="#PSSNotificationCenter-自己封装的全局通知" class="headerlink" title="PSSNotificationCenter 自己封装的全局通知"></a>PSSNotificationCenter 自己封装的全局通知</h2><p>封装这个框架，首先，不能存在内存问题；其次，用法必须简单容易理解。因此我选择block方式进行封装；</p>
+<ul>
+<li><p>使用方法：不需要注销，也不存在内存问题，子线程发通知也会自动跳转到主线程接收通知，是线程安全的。</p>
+<pre><code>// 注册通知
+    // 不带NotificationName，字用默认的name kDefaultNotificationName。observer必须传，而且要是NSObject
+    [[PSSNotificationCenter defaultCenter] addEvent:^(id info) {
+        NSLog(@&quot;%@&quot;, info);
+    } observer:self.obj_1];
+
+    [[PSSNotificationCenter defaultCenter] addEvent:^(id info) {
+        NSLog(@&quot;%@&quot;, info);
+    } observer:self];
+
+    [[PSSNotificationCenter defaultCenter] addEvent:^(id info) {
+
+    } eventName:@&quot;PSS&quot; observer:self];
+
+// 发送通知
+    [[PSSNotificationCenter defaultCenter] postDefaultNotification:@&quot;11111&quot;];
+    [[PSSNotificationCenter defaultCenter] postNotificationByName:@&quot;PSS&quot; info:@&quot;附带信息&quot;];
+</code></pre></li>
+</ul>
+<h2 id="实现原理及源代码"><a href="#实现原理及源代码" class="headerlink" title="实现原理及源代码"></a>实现原理及源代码</h2><p>PSSNotificationCenter下有一个Dictionary，结构大致如下：</p>
+<pre><code>@property (nonatomic, strong) NSMutableDictionary &lt;NSString *, NSMapTable&lt;NSString *, PSSEventSet *&gt; *&gt; *eventDict;
+
+@{
+      @&quot;通知的名字_1&quot;: @{ // 这个字典是NSMapTable，可以对持有的Value弱引用
+              @&quot;观察者内存地址生成的字符串_1&quot;: PSSEventSet对象,
+              @&quot;观察者内存地址生成的字符串_2&quot;: PSSEventSet对象,
+              },
+      @&quot;通知的名字_1&quot;: @{ // 这个字典是NSMapTable
+              @&quot;观察者内存地址生成的字符串_1&quot;: PSSEventSet对象,
+              @&quot;观察者内存地址生成的字符串_2&quot;: PSSEventSet对象,
+              },
+};
+</code></pre><p>NSMapTable： 类似于字典，可以对value进行弱引用；</p>
+<p>PSSEventSet： 动态添加给观察者的属性</p>
+<pre><code>@interface PSSEventSet : NSObject
+@property (nonatomic, strong) NSMutableArray&lt;PSSBlockObject *&gt; *blockObjectArray;
+@end
+</code></pre><p>PSSBlockObject： 用于持有block</p>
+<pre><code>typedef void(^PSSNotiEvent)(id info);
+
+@interface PSSBlockObject : NSObject
+
+@property (nonatomic, copy) PSSNotiEvent eventHandler;
+
+@end
+</code></pre><p>.h中暴露的方法</p>
+<pre><code>#define kDefaultNotificationName @&quot;PSSDefaultNotification&quot;
+@class PSSEventSet;
+@interface PSSNotificationCenter : NSObject
+
++ (instancetype)defaultCenter;
+
+- (void)addEvent:(PSSNotiEvent)event observer:(NSObject *)observer;
+- (void)addEvent:(PSSNotiEvent)event eventName:(NSString *)eventName observer:(NSObject *)observer;
+
+/// info: 传值
+- (void)postNotificationByName:(NSString *)name info:(id)info;
+- (void)postDefaultNotification:(id)info;
+/// 移出对应通知事件
+- (void)removeNotificationName:(NSString *)name;
+/// 移出所有通知下的 observer对应的事件（不给此observer发送事件了）
+- (void)removeObserver:(NSObject *)observer;
+- (void)removeObserverByEventSet:(PSSEventSet *)eventSet;
+/// 移出对应通知下，对应observer的事件
+- (void)removeNotificationName:(NSString *)name observer:(NSObject *)observer;
+/// 移出所有事件
+- (void)removeAllNoti;
+
+@end
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/16/OC自定义通知的封装（PSSNotificationCenter）/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-用Swift写一个通知中心" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1727,366 +1912,6 @@ print(Rubbish&lt;Int&gt;.price(100).getPrice())
 
 
   
-    <article id="post-多线程之线程安全" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/20/多线程之线程安全/">多线程之线程安全</a>
-    </h1>
-  
-
-        
-        <a href="/2019/04/20/多线程之线程安全/" class="archive-article-date">
-  	<time datetime="2019-04-20T13:44:11.468Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在单线程的情形下，任务依次串行执行是不存在线程安全问题的。在单线程的情形下，如果多线程都是访问共享资源而不去修改共享资源也可以保证线程安全，比如：设置只读属性的全局变量。线程不安全是由于多线程访问造成的，是由于多线程访问和修改共享资源而引起不可预测的结果。而线程锁可以有效的解决线程安全问题</p>
-<p>iOS 多线程开发中为保证线程安全而常用的几种锁：NSLock、dispatch_semaphore、NSCondition、NSRecursiveLock、NSConditionLock、@synchronized，这几种锁各有优点，适用于不同的场景，下面我们就来依次介绍一下。</p>
-<h2 id="iOS中的锁"><a href="#iOS中的锁" class="headerlink" title="iOS中的锁"></a>iOS中的锁</h2><h3 id="NSLock"><a href="#NSLock" class="headerlink" title="NSLock"></a>NSLock</h3><p>NSLock 是OC层封装底层线程操作来实现的一种锁，继承NSLocking协议，在此我们不讨论各种锁的实现细节，因为基本用不到。NSLock使用非常简单：</p>
-<pre><code>NSLock *lock = [NSLock alloc] init];
-
-// 加锁
-[lock lock];
-
-/*
-* 被加锁的代码区间
-*/
-
-// 解锁
-[lock Unlock];
-</code></pre><p>我们以车站购票为例子，多个窗口同时售票，每个窗口有人循环购票:</p>
-<pre><code>// 定义NSLock变量
-@property (nonatomic, strong) NSLock *lock;
-// 实例化
-_lock = [[NSLock alloc] init];
-
-/*******************************************************************************/
-
-// 调用测试方法
-dispatch_queue_t queue = dispatch_queue_create(&quot;QiMultiThreadSafeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);
-
-    for (NSInteger i=0; i&lt;10; i++) {
-        dispatch_async(queue, ^{
-            [self testNSLock];
-        });
-    }
-}
-
-/*******************************************************************************/
-
-// 测试方法
-- (void)testNSLock {
-
-    while (1) {
-        [_lock lock];
-        if (_ticketCount &gt; 0) {
-            _ticketCount --;
-            NSLog(@&quot;---&gt;&gt; %@已购票1张，剩余%ld张&quot;, [NSThread currentThread], (long)_ticketCount);
-        }
-        else {
-            [_lock unlock];
-            return;
-        }
-        [_lock unlock];
-        sleep(0.2);
-    }
-}
-</code></pre><h3 id="dispatch-semaphore"><a href="#dispatch-semaphore" class="headerlink" title="dispatch_semaphore"></a>dispatch_semaphore</h3><p>dispatch_semaphore 是 GCD 提供的，使用信号量来控制并发线程的数量（可同时进入并执行加锁代码块的线程的数量），相关的三个函数：</p>
-<pre><code>// 创建信号量
-dispatch_semaphore_create(long value); 
-
-//等待信号
-dispatch_semaphore_wait(dispatch_semaphore_t dsema, dispatch_time_t timeout);
-
-发送信号
-dispatch_semaphore_signal(dispatch_semaphore_t dsema);
-
-//! 定义信号量semaphore
-@property (nonatomic, strong) dispatch_semaphore_t semaphore;
-//! 实例化
-_semaphore = dispatch_semaphore_create(1);
-
-/*******************************************************************************/
-
-// 调用测试方法
-- (void)multiThread {
-
-dispatch_queue_t queue = dispatch_queue_create(&quot;QiMultiThreadSafeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);
-for (NSInteger i=0; i&lt;2; i++) {
-    dispatch_async(queue, ^{
-        [self testDispatchSemaphore:i];
-    });
-}
-}
-
-/*******************************************************************************/
-
-// 测试方法
-- (void)testDispatchSemaphore:(NSInteger)num {
-
-while (1) {
-    // 参数1为信号量；参数2为超时时间；ret为返回值
-    //dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
-    long ret = dispatch_semaphore_wait(_semaphore, dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.21*NSEC_PER_SEC)));
-    if (ret == 0) {
-        if (_ticketCount &gt; 0) {
-            NSLog(@&quot;%d 窗口 卖了第%d张票&quot;, (int)num, (int)_ticketCount);
-            _ticketCount --;
-        }
-        else {
-            dispatch_semaphore_signal(_semaphore);
-            NSLog(@&quot;%d 卖光了&quot;, (int)num);
-            break;
-        }
-        [NSThread sleepForTimeInterval:0.2];
-        dispatch_semaphore_signal(_semaphore);
-    }
-    else {
-        NSLog(@&quot;%d %@&quot;, (int)num, @&quot;超时了&quot;);
-    }
-
-    [NSThread sleepForTimeInterval:0.2];
-}
-}
-</code></pre><p>当第一各参数semaphore取值为1时，dispatch_semaphore_wait(semaphore, timeout)与dispatch_semaphore_signal(signal)成对出现，所达到的效果就跟NSLock中的lock和unlock是一样的。区别在于当semaphore取值为n时，则可以有n个线程同时访问被保护的临界区，即可以控制多个线程并发。第二个参数为dispatch_time_t类型，如果直接输入一个非dispatch_time_t的值会导致dispatch_semaphore_wait方法偶尔返回非0值。</p>
-<h3 id="NSCondition"><a href="#NSCondition" class="headerlink" title="NSCondition"></a>NSCondition</h3><p>NSCondition 常用于生产者-消费者模式，它继承于NSLocking协议，同样有lock和unlock方法。条件变量有点像信号量，提供了线程阻塞与信号机制，因此可以用来阻塞某个线程，并等待数据就绪，再唤醒线程。</p>
-<pre><code>NSCondition *lock = [[NSCondition alloc] init];
-
-//线程A
-[lock lock];
-
-[lock wait]; // 线程被挂起
-
-[lock unlock];
-
-//线程2
-sleep(1);//以保证让线程2的代码后执行
-
-[lock lock];
-
-[lock signal]; // 唤醒线程1
-
-[lock unlock];
-</code></pre><p>我们执行了两次for循环，起了两批新线程，一批来add数据，另一批来remove数据。其中add数据方法加锁，remove数据方法也加了锁：</p>
-<pre><code>// 定义变量
-@property (nonatomic, strong) NSCondition *condition;
-// 实例化
-_condition = [[NSCondition alloc] init];
-
-/*******************************************************************************/
-
-// 调用测试方法
-- (void)multiThread {
-
-    dispatch_queue_t queue = dispatch_queue_create(&quot;QiMultiThreadSafeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);
-
-    for (NSInteger i=0; i&lt;10; i++) {
-        dispatch_async(queue, ^{
-            [self testNSConditionAdd];
-        });
-    }
-
-    for (NSInteger i=0; i&lt;10; i++) {
-        dispatch_async(queue, ^{
-            [self testNSConditionRemove];
-        });
-    }
-}
-
-/*******************************************************************************/
-
-// 测试方法
-- (void)testNSConditionAdd {
-
-    [_condition lock];
-
-    // 生产数据
-    NSObject *object = [NSObject new];
-    [_ticketsArr addObject:object];
-    NSLog(@&quot;---&gt;&gt;%@ add&quot;, [NSThread currentThread]);
-    [_condition signal];
-
-    [_condition unlock];
-}
-
-- (void)testNSConditionRemove {
-
-    [_condition lock];
-
-    // 消费数据
-    if (!_ticketsArr.count) {
-        NSLog(@&quot;---&gt;&gt; wait&quot;);
-        [_condition wait];
-    }
-    [_ticketsArr removeObjectAtIndex:0];
-    NSLog(@&quot;---&gt;&gt;%@ remove&quot;, [NSThread currentThread]);
-
-    [_condition unlock];
-}
-</code></pre><h3 id="NSConditionLock"><a href="#NSConditionLock" class="headerlink" title="NSConditionLock"></a>NSConditionLock</h3><p>NSConditionLock 为条件锁，lockWhenCondition:方法是当condition参数与初始化时候的 condition 相等时才可加锁。而unlockWithCondition:方法并不是当 Condition 符合条件时才解锁，而是解锁之后，修改 Condition 的值。NSConditionLock 借助 NSCondition 来实现，它的本质就是一个生产者-消费者模型。“条件被满足”可以理解为生产者提供了新的内容NSConditionLock 的内部持有一个 NSCondition 对象，以及 _condition_value 属性，在初始化时就会对这个属性进行赋值:</p>
-<pre><code>// 设置条件
-#define CONDITION_NO_DATA   100
-#define CONDITION_HAS_DATA  101
-
-/*******************************************************************************/
-
-// 初始化条件锁对象
-@property (nonatomic, strong) NSConditionLock *conditionLock;
-// 实例化
-_conditionLock = [[NSConditionLock alloc] initWithCondition:CONDITION_NO_DATA];
-
-/*******************************************************************************/
-
-// 调用测试方法
-- (void)multiThread {
-
-    dispatch_queue_t queue = dispatch_queue_create(&quot;QiMultiThreadSafeQueue&quot;, DISPATCH_QUEUE_CONCURRENT);
-
-    for (NSInteger i=0; i&lt;10; i++) {
-        dispatch_async(queue, ^{
-            [self testNSConditionLockAdd];
-        });
-    }
-
-    for (NSInteger i=0; i&lt;10; i++) {
-        dispatch_async(queue, ^{
-            [self testNSConditionLockRemove];
-        });
-    }
-}
-
-/*******************************************************************************/
-
-// 测试方法
-- (void)testNSConditionLockAdd {
-
-    // 满足CONDITION_NO_DATA时，加锁
-    [_conditionLock lockWhenCondition:CONDITION_NO_DATA];
-
-    // 生产数据
-    NSObject *object = [NSObject new];
-    [_ticketsArr addObject:object];
-    NSLog(@&quot;----&gt;&gt;%@ add&quot;, [NSThread currentThread]);
-    [_condition signal];
-
-    // 有数据，解锁并设置条件
-    [_conditionLock unlockWithCondition:CONDITION_HAS_DATA];
-}
-
-- (void)testNSConditionLockRemove {
-
-    // 有数据时，加锁
-    [_conditionLock lockWhenCondition:CONDITION_HAS_DATA];
-
-    // 消费数据
-    if (!_ticketsArr.count) {
-        NSLog(@&quot;----&gt;&gt; wait&quot;);
-        [_condition wait];
-    }
-    [_ticketsArr removeObjectAtIndex:0];
-    NSLog(@&quot;----&gt;&gt;%@ remove&quot;, [NSThread currentThread]);
-
-    //3. 没有数据，解锁并设置条件
-    [_conditionLock unlockWithCondition:CONDITION_NO_DATA];
-}
-</code></pre><h3 id="NSRecursiveLock"><a href="#NSRecursiveLock" class="headerlink" title="NSRecursiveLock"></a>NSRecursiveLock</h3><p>顾名思义，NSRecursiveLock定义的是一个递归锁，这个锁可以被同一线程多次请求，而不会引起死锁。这主要是用在循环或递归操作中。NSRecursiveLock在识别到递归时，只加1次锁，在递归返回时也只解锁1次。</p>
-<pre><code>// 初始化锁对象
-@property (nonatomic, strong) NSRecursiveLock *recursiveLock;
-_recursiveLock = [[NSRecursiveLock alloc] init];
-
-/*******************************************************************************/
-
-// 加锁的递归方法
-- (void)testNSRecursiveLock:(NSInteger)tag {
-
-    [_recursiveLock lock];
-
-    if (tag &gt; 0) {
-
-        [self testNSRecursiveLock:tag - 1];
-        NSLog(@&quot;---&gt;&gt; %ld&quot;, (long)tag);
-    }
-
-    [_recursiveLock unlock];
-}
-</code></pre><h3 id="synchronized"><a href="#synchronized" class="headerlink" title="@synchronized"></a>@synchronized</h3><p>@synchronized是一个 OC 层面的锁，非常简单易用。参数需要传一个 OC 对象，它实际上是把这个对象当做锁的唯一标识。使用时直接将加锁的代码区间放入花括号中即可，但是它的缺点也显而易见，虽然易用，但是没有之上介绍几个锁的复杂功能</p>
-<pre><code>- (void)testSynchronized {
-
-    @synchronized (self) {
-
-        if (_ticketCount &gt; 0) {
-
-            _ticketCount --;
-            NSLog(@&quot;---&gt;&gt; %@已购票1张，剩余%ld张&quot;, [NSThread currentThread], (long)_ticketCount);
-        }
-    }
-}
-</code></pre><p>原子操作</p>
-<p>原子操作是指不可打断的操作，也就是说线程在执行操作过程中，不会被操作系统挂起，而是一定会执行完。如文章开头出图中17+1 = 18这个动作，在整个运算过程中，就属于一个原子操作。<br>变量属性Property中的原子定义</p>
-<p>一般我们定义一个变量 @property (nonatomic, strong) NSMutableArray *ticketsArr;</p>
-<p>nonatomic：非原子属性，不会为setter方法加锁，适合内存小的移动设备；</p>
-<p>atomic：原子属性，默认为setter方法加锁（默认就是atomic），线程安全。</p>
-<p>PS： 在iOS开发过程中，一般都将属性声明为nonatomic，尽量避免多线程抢夺同一资源，尽量将加锁等资源抢夺业务交给服务器。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/04/20/多线程之线程安全/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/7/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/9/">Next &raquo;</a>
@@ -2188,11 +2013,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2228,11 +2053,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2248,15 +2073,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">

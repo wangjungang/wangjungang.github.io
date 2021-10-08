@@ -152,6 +152,244 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-如何使用 AutoLayout 自动计算 ScrollView 的 contentSize" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/06/如何使用 AutoLayout 自动计算 ScrollView 的 contentSize/">如何使用 AutoLayout 自动计算 ScrollView 的 contentSize</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/06/如何使用 AutoLayout 自动计算 ScrollView 的 contentSize/" class="archive-article-date">
+  	<time datetime="2019-09-06T13:16:07.048Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在日常开发中，令人看了就想素质三连的代码，莫过于手动计算各种数字的代码。如下图，看了真的是头皮发麻。</p>
+<p><img src="http://img.wangjungang.cn/vVa4dU.jpg" alt=""></p>
+<p>那么，我们如何避免上面的问题，从而使我们的代码变得友好、可读性更高呢(主要为了保住我们为数不多的头发😭)？答案就是使用 AutoLayout 让系统自动计算数字。</p>
+<p>下面，我们举一个实际的例子来一步一步的实现：使用 AutoLayout 自动计算 ScrollView 的 contentSize 。</p>
+<h3 id="先来说一下实现的大体步骤："><a href="#先来说一下实现的大体步骤：" class="headerlink" title="先来说一下实现的大体步骤："></a>先来说一下实现的大体步骤：</h3><ul>
+<li><p>设置 scrollView 的约束</p>
+<ul>
+<li>约束上下左右间距为 0</li>
+</ul>
+</li>
+<li><p>创建一个 contentView ,设置 contentView 的约束</p>
+<ul>
+<li>上下左右间距为 0</li>
+<li>宽度和 scrollView 的父视图相等</li>
+<li>高度和 scrollView 的父视图相等，且优先级要低(这一步很重要，千万不要写错)</li>
+</ul>
+</li>
+<li><p>将所有子控件添加到 contentView (而不是直接添加到 scrollView 上)，并设置好子控件的内部约束</p>
+</li>
+</ul>
+<h3 id="设置-scrollView-的约束"><a href="#设置-scrollView-的约束" class="headerlink" title="设置 scrollView 的约束"></a>设置 scrollView 的约束</h3><p>首先，给使用的 scrollView 添加完整的约束：</p>
+<pre><code>// 1. 设置 scrollView 的约束
+view.addSubview(scrollView)
+scrollView.translatesAutoresizingMaskIntoConstraints = false
+
+NSLayoutConstraint.activate([
+    scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+    scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+    scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+    scrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
+    ])
+</code></pre><h3 id="创建-contentView，设置-contentView-的约束"><a href="#创建-contentView，设置-contentView-的约束" class="headerlink" title="创建 contentView，设置 contentView 的约束"></a>创建 contentView，设置 contentView 的约束</h3><p>设置完 scrollView，接下来设置 contentView 的约束：</p>
+<pre><code>    // 2. 设置 contentView
+    let contentView = UIView(frame: .zero)
+    scrollView.addSubview(contentView)
+    contentView.translatesAutoresizingMaskIntoConstraints = false
+
+    let contentViewHeightAnchor = contentView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor)
+    // 2.1 高度和 scrollView 的父视图相等，且`优先级要低`
+    contentViewHeightAnchor.priority = UILayoutPriority(rawValue: 1)
+
+    NSLayoutConstraint.activate([
+        contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+        contentView.leftAnchor.constraint(equalTo: scrollView.leftAnchor),
+        contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+        contentView.rightAnchor.constraint(equalTo: scrollView.rightAnchor),
+        contentView.widthAnchor.constraint(equalTo: view.widthAnchor),
+        contentViewHeightAnchor
+        ])
+
+### 添加子控件，设置内部约束
+
+设置完 scrollView 和 contentView 的约束，只需设置内部子控件的约束，剩下的工作就可以交给 AutoLayout 去做了。
+
+// 3.添加子控件，设置内部约束
+titleLabel.text = &quot;titleLabel&quot;
+contentView.addSubview(titleLabel)
+
+titleLabel.translatesAutoresizingMaskIntoConstraints = false
+NSLayoutConstraint.activate([
+    titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+    titleLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10),
+    titleLabel.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10)
+    ])
+
+contentLabel.text = &quot;将此处替换为你自己的字符串（超过一屏），即可看见滑动效果。&quot;
+contentLabel.numberOfLines = 0
+contentView.addSubview(contentLabel)
+
+contentLabel.translatesAutoresizingMaskIntoConstraints = false
+NSLayoutConstraint.activate([
+    contentLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+    contentLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
+    contentLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor)
+    ])
+
+bottomLabel.text = &quot;bottomLabel&quot;
+contentView.addSubview(bottomLabel)
+
+bottomLabel.translatesAutoresizingMaskIntoConstraints = false
+NSLayoutConstraint.activate([
+    bottomLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 10),
+    bottomLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
+    bottomLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor),
+    bottomLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
+    ])
+</code></pre><p>到这里，我们就大功告成了。妈妈再也不用担心我手动计算数字了😏 (成功保住了自己的头发)。</p>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><pre><code>class TestViewController: UIViewController {
+    let scrollView = UIScrollView(frame: .zero)
+    let titleLabel = UILabel(frame: .zero)
+    let contentLabel = UILabel(frame: .zero)
+    let bottomLabel = UILabel(frame: .zero)
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor.white
+        setupSubviews()
+    }
+}
+
+extension TestViewController {
+    func setupSubviews() {
+        // 1. 设置 scrollView 的约束
+        view.addSubview(scrollView)
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            scrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
+            ])
+        // 2. 设置 contentView
+        let contentView = UIView(frame: .zero)
+        scrollView.addSubview(contentView)
+
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+
+        let contentViewHeightAnchor = contentView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor)
+        // 2.1 高度和 scrollView 的父视图相等，且`优先级要低`
+        contentViewHeightAnchor.priority = UILayoutPriority(rawValue: 1)
+
+        NSLayoutConstraint.activate([
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leftAnchor.constraint(equalTo: scrollView.leftAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.rightAnchor.constraint(equalTo: scrollView.rightAnchor),
+            contentView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            contentViewHeightAnchor
+            ])
+
+        // 3.添加子控件，设置内部约束
+        titleLabel.text = &quot;titleLabel&quot;
+        contentView.addSubview(titleLabel)
+
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            titleLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10),
+            titleLabel.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10)
+            ])
+
+        contentLabel.text = &quot;将此处替换为你自己的字符串（超过一屏），即可看见滑动效果&quot;
+        contentLabel.numberOfLines = 0
+        contentView.addSubview(contentLabel)
+
+        contentLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            contentLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            contentLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
+            contentLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor)
+            ])
+
+        bottomLabel.text = &quot;bottomLabel&quot;
+        contentView.addSubview(bottomLabel)
+
+        bottomLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            bottomLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 10),
+            bottomLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
+            bottomLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor),
+            bottomLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
+            ])
+    }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/06/如何使用 AutoLayout 自动计算 ScrollView 的 contentSize/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Swift 5.1 (3) - 字符串" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -3073,253 +3311,6 @@ id *add(id obj)
 
 
   
-    <article id="post-公网搭建gitlab" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/03/公网搭建gitlab/">公网搭建gitlab</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/03/公网搭建gitlab/" class="archive-article-date">
-  	<time datetime="2019-09-03T02:50:50.111Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-03</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://img.wangjungang.cn/D2rEIc.png" alt=""></p>
-<p>在公网搭建的 GitLab 频频遇到安全挑战，然而其实只需要做一两个简单的动作，维护成本就能够大大降低，并且还能避免未被许可的内容，被搜索引擎爬虫暴露的到处都是。</p>
-<p>本篇文章，我们就来聊聊公网搭建的 GitLab 代码仓库的安全小细节。</p>
-<h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>公网搭建 GitLab ，常见的攻击面主要有：</p>
-<ul>
-<li>运行宿主机系统部分</li>
-<li>运行宿主机网络部分</li>
-<li>应用 Web 程序漏洞</li>
-<li>应用 SSH 漏洞</li>
-</ul>
-<p>前两点可以通过 SLB + VPC 进行网络隔离，来降低被攻击风险。后两点除了保证最快跟进系统安全补丁，升级应用版本外，其实还有更好的解决方案，毕竟存放着数据的程序，每次升级都有未知的风险：</p>
-<p>解决 Web 漏洞可以通过加一层 Basic Auth 来解决。<br>解决 SSH 攻击风险，可以通过加一个简单的日志监控程序来解决：参考之前文章中 监控 GitLab SSH 端口 小节。</p>
-<p>但是加一层 Basic Auth 其实会对 GitLab 使用造成一些麻烦。</p>
-<h2 id="为-GitLab-添加请求验证"><a href="#为-GitLab-添加请求验证" class="headerlink" title="为 GitLab 添加请求验证"></a>为 GitLab 添加请求验证</h2><p>GitLab 程序本身并不支持 Basic Auth，这里需要使用一个 Web 前端软件来完成这部分的工作，比如：Nginx、Traefik。</p>
-<p>我这里选择使用 Traefik，因为配置更简单，具体配置可以参考之前文章的“ 添加网络请求验证 ”小节。</p>
-<p>在配置声明里添加一句话就够了，比如这样：</p>
-<pre><code>- &quot;traefik.gitlab.frontend.auth.basic=soulteary:$apr1$E86fARwM$tXmggGAtCEDKqsBCSvDA3/
-</code></pre><p>这样处理之后，所有的 HTTP 请求就都会被验证是否是合法访问啦。而其他的端口和协议则不受影响，比如开在22端口的 SSH 服务等。</p>
-<h3 id="Basic-Auth-到底是什么"><a href="#Basic-Auth-到底是什么" class="headerlink" title="Basic Auth 到底是什么"></a>Basic Auth 到底是什么</h3><p>当访问页面的时候，会展示类似下面的对话框，要求用户登陆，否则会提示 401 Unauthorized。</p>
-<p><img src="http://img.wangjungang.cn/BS7Nnz.png" alt=""></p>
-<p>当爬虫/安全检测工具请求页面的时候，如果没有提交用户名和密码，获得的结果也是一样。</p>
-<pre><code>curl -I https://gitlab.domain/
-HTTP/2 401
-content-type: text/plain
-vary: Accept-Encoding
-www-authenticate: Basic realm=&quot;traefik&quot;
-content-length: 17
-date: Sat, 03 Aug 2019 18:22:17 GMT
-</code></pre><p>如果你输入了正确的用户名以及用户密码，你会发现在你的请求参数中会出现一个额外的请求参数 authorization。</p>
-<p><img src="http://img.wangjungang.cn/Y7TN8b.png" alt=""></p>
-<p>参数数值一般由两部分构成，第一部分表示加密方式（加密协议名称），第二部分则是你的身份信息（更多信息详见 RFC 7617）。</p>
-<p>现代浏览器一般会很智能的在你第一次正确输入之后，将身份信息记录下来，携带在后续的每一次请求中，如果是使用程序或者工具的话，则需要手动将 authorization 信息加入到每一个 HTTP 的请求头中。</p>
-<p>然而 Basic Auth 挡住了外来者随意访问的同时，还挡住了 GitLab CI Runner。</p>
-<p><img src="http://img.wangjungang.cn/Lzjr90.png" alt=""></p>
-<p>这是怎么回事呢，我们继续往下看。</p>
-<h2 id="解救被拦住的-CI-Runner"><a href="#解救被拦住的-CI-Runner" class="headerlink" title="解救被拦住的 CI Runner"></a>解救被拦住的 CI Runner</h2><p>在解释为什么 CI Runner 会被 Basic Auth 拦住时，我们需要先了解另外一个协议规范 RFC1738 中对于 HTTP 协议的定义：</p>
-<pre><code>//&lt;user&gt;:&lt;password&gt;@&lt;host&gt;:&lt;port&gt;/&lt;url-path&gt;
-</code></pre><p>当我们使用客户端（浏览器、curl等工具）请求这类格式的地址时，部分客户端会将 user:password 部分转换为标准的 HTTP Authorization 请求头。</p>
-<h3 id="默认-CI-Runner-行为"><a href="#默认-CI-Runner-行为" class="headerlink" title="默认 CI Runner 行为"></a>默认 CI Runner 行为</h3><p>在不做任何修改时，CI 直接执行会报错，日志输出类似下面：</p>
-<pre><code>Running with gitlab-runner 12.0.2 (d0b76032)
-  on ci-runner sGNUJnq6
-Using Shell executor...
-Running on ci-runner...
-Fetching changes with git depth set to 50...
-Initialized empty Git repository in /data/runner/builds/sGNUJnq6/0/config/project/.git/
-Created fresh repository.
-remote: 401 Unauthorized
-fatal: Authentication failed for &apos;https://gitlab-ci-token:[MASKED]@gitlab.domain/repo.git/&apos;
-ERROR: Job failed: exit status 1
-</code></pre><p>结合文章前面的内容，我们知道这里是缺少了 Authorization 请求头，那么我们尝试给请求补上这个请求头，在 CI 和 GitLab 中间搭建一台 Proxy ，让 CI 请求 GitLab 数据的时候，自动完成“认证”。</p>
-<h3 id="请求自动添加验证信息"><a href="#请求自动添加验证信息" class="headerlink" title="请求自动添加验证信息"></a>请求自动添加验证信息</h3><p>如果使用 Nginx 搭建一个支持 GET/POST 请求的代理，核心配置如下：</p>
-<pre><code>location / {
-    forward-http-post-requests-via-rewrite
-    proxy_pass https://192.168.0.123;
-    proxy_redirect https://192.168.0.123/ /;
-    proxy_read_timeout 10s;
-    proxy_set_header Host &apos;gitlab.domain&apos;;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection &apos;upgrade&apos;;
-    proxy_set_header Authorization &apos;Basic YmFhaABCD&apos;;
-    proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    proxy_set_header X-Forwarded-Proto &apos;https&apos;;
-    proxy_http_version 1.1;
-}
-</code></pre><p>再次使用 curl 对 GitLab 进行请求，发现没有出现之前的 401 非验证提示：</p>
-<pre><code>curl -I https://gitlab.domain/
-HTTP/2 302
-cache-control: no-cache
-content-type: text/html; charset=utf-8
-date: Sat, 03 Aug 2019 18:45:39 GMT
-location: https://gitlab.domain/users/sign_in
-referrer-policy: strict-origin-when-cross-origin
-referrer-policy: strict-origin-when-cross-origin
-server: nginx
-strict-transport-security: max-age=315360000
-vary: Accept-Encoding
-x-content-type-options: nosniff
-x-download-options: noopen
-x-frame-options: DENY
-x-permitted-cross-domain-policies: none
-x-request-id: Z8uahE5gN39
-x-runtime: 0.012164
-x-ua-compatible: IE=edge
-x-xss-protection: 1; mode=block
-</code></pre><p>打开项目配置，会发现 Runner 已经上线。</p>
-<p><img src="http://img.wangjungang.cn/5he9SF.png" alt=""></p>
-<p>###CI 构建依旧是失败的</p>
-<p>继续在 GitLab Runner 运行 CI 流水线，会看到还是报错无法通过构建。</p>
-<pre><code>Running with gitlab-runner 12.2.0~beta.1803.g41d5c6ad (41d5c6ad)
-  on ci-runner S8sY8o6A
-Using Shell executor...
-Running on ci-runner...
-Fetching changes with git depth set to 50...
-Reinitialized existing Git repository in /data/runner/builds/S8sY8o6A/0/project/.git/
-&gt; GitLab: The project you were looking for could not be found.
-fatal: Could not read from remote repository.
-
-Please make sure you have the correct access rights
-and the repository exists.
-ERROR: Job failed: exit status 1
-</code></pre><p>还记得前面提到过的 Authorization 请求头和 HTTP RFC规范吗？GitLab Runner 在处理 CI 任务的时候，使用的是<a href="https://gitlab-ci-token:[MASKED]@gitlab.domain/repo.git/" target="_blank" rel="noopener">https://gitlab-ci-token:[MASKED]@gitlab.domain/repo.git/</a> 这样的 HTTP 协议，请求中的用户名和密码和 Nginx ProxyPass 中的字段“八字不合”。</p>
-<p>那么不使用 HTTP 协议，使用 SSH 协议或许能解决问题。</p>
-<h3 id="尝试使用-SSH-协议"><a href="#尝试使用-SSH-协议" class="headerlink" title="尝试使用 SSH 协议"></a>尝试使用 SSH 协议</h3><p>虽然官方没有直接提供这个功能，但是从官方文档中看到有一个 clone_url，查找代码发现实现很简单，只需要稍微改造就能够满足我们的需求：</p>
-<pre><code>// GetRemoteURL checks if the default clone URL is overwritten by the runner
-// configuration option: &apos;CloneURL&apos;. If it is, we use that to create the clone
-// URL.
-func (b *Build) GetRemoteURL() string {
-    cloneURL := strings.TrimRight(b.Runner.CloneURL, &quot;/&quot;)
-
-    if !strings.HasPrefix(cloneURL, &quot;http&quot;) {
-        return b.GitInfo.RepoURL
-    }
-
-    variables := b.GetAllVariables()
-    ciJobToken := variables.Get(&quot;CI_JOB_TOKEN&quot;)
-    ciProjectPath := variables.Get(&quot;CI_PROJECT_PATH&quot;)
-
-    splits := strings.SplitAfterN(cloneURL, &quot;://&quot;, 2)
-
-    return fmt.Sprintf(&quot;%sgitlab-ci-token:%s@%s/%s.git&quot;, splits[0], ciJobToken, splits[1], ciProjectPath)
-}
-</code></pre><p>改动后的代码如下：</p>
-<pre><code>// GetRemoteURL checks if the default clone URL is overwritten by the runner
-// configuration option: &apos;CloneURL&apos;. If it is, we use that to create the clone
-// URL.
-func (b *Build) GetRemoteURL() string {
-    cloneURL := strings.TrimRight(b.Runner.CloneURL, &quot;/&quot;)
-
-    if !strings.HasPrefix(cloneURL, &quot;http&quot;) &amp;&amp; !strings.HasPrefix(cloneURL, &quot;ssh&quot;) {
-        return b.GitInfo.RepoURL
-    }
-
-    variables := b.GetAllVariables()
-    ciJobToken := variables.Get(&quot;CI_JOB_TOKEN&quot;)
-    ciProjectPath := variables.Get(&quot;CI_PROJECT_PATH&quot;)
-
-    splits := strings.SplitAfterN(cloneURL, &quot;://&quot;, 2)
-
-
-    if strings.HasPrefix(cloneURL, &quot;ssh&quot;) {
-        ciProjectPath = strings.TrimLeft(ciProjectPath, &quot;/&quot;)
-        return fmt.Sprintf(&quot;git@%s:/%s.git&quot;, splits[1], ciProjectPath)
-    }
-
-
-    return fmt.Sprintf(&quot;%sgitlab-ci-token:%s@%s/%s.git&quot;, splits[0], ciJobToken, splits[1], ciProjectPath)
-}
-</code></pre><p>###执行 CI 成功</p>
-<p>再次执行 CI 任务，会发现已经能够顺利的进行啦。</p>
-<pre><code>Running on ci-runner...
-Fetching changes with git depth set to 50...
-Reinitialized existing Git repository in /data/runner/builds/S8sY8o6A/0/project.git/
-Checking out 860587f6 as master...
-Skipping Git submodules setup
-Warning: Permanently added &apos;192.168.x.x&apos; (ECDSA) to the list of known hosts.
-From gitlab.domain:project
-   3957006..860587f  master     -&gt; origin/master
-Updating 3957006..860587f
-Fast-forward
- .gitlab-ci.yml | 6 +++---
- README.md      | 1 +
- 2 files changed, 4 insertions(+), 3 deletions(-)
-Stopping service ...
-
-Stopping service ... done
-Removing service ...
-
-Removing service ... done
-Network service is external, skipping
-Creating service ...
-
-Creating service ... done
-Job succeeded
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">git</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/03/公网搭建gitlab/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/21/">21</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
@@ -3421,11 +3412,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">iOS</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3461,11 +3452,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3481,15 +3472,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
