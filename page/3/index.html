@@ -152,6 +152,167 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-RxSwift：Driver与UI控件初体验" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/04/04/RxSwift：Driver与UI控件初体验/">RxSwift：Driver与UI控件初体验</a>
+    </h1>
+  
+
+        
+        <a href="/2020/04/04/RxSwift：Driver与UI控件初体验/" class="archive-article-date">
+  	<time datetime="2020-04-04T01:42:52.558Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>输入电话号码的区号和八位数主体号码，下面的Label实时更新最新的输入，如果区号为3位数，点击按钮，按钮名字变成“变！”</p>
+<p>Ps：目前还不会，同时满足上面两位，下面三位的的约束，以后会更新的</p>
+<p>文件名：ViewController.swift</p>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><pre><code>//
+//  ViewController.swift
+//  RxSwiftTest
+//
+//
+
+import UIKit
+import RxSwift
+import RxCocoa
+import SnapKit
+
+class ViewController: UIViewController {
+
+    var textField1: UITextField!
+    var textField2: UITextField!
+    var label: UILabel!
+    var btn: UIButton!
+    let disposeBag = DisposeBag()
+
+    override func viewDidLoad() {
+
+        textField1 = UITextField()
+        textField2 = UITextField()
+        label = UILabel()
+        btn = UIButton()
+
+        textField1.layer.borderWidth = 1
+        textField2.layer.borderWidth = 1
+        label.textAlignment = .center
+        btn.setTitle(&quot;点我&quot;, for: .normal)
+        btn.layer.borderWidth = 1
+        btn.setTitleColor(UIColor.black, for: .normal)
+
+        view.addSubview(textField1)
+        view.addSubview(textField2)
+        view.addSubview(label)
+        view.addSubview(btn)
+
+        textField1.snp.makeConstraints { (make) in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(200)
+            make.height.equalTo(30)
+            make.width.equalTo(200)
+        }
+
+        textField2.snp.makeConstraints { (make) in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(textField1.snp.bottom).offset(30)
+            make.height.equalTo(30)
+            make.width.equalTo(200)
+        }
+
+        label.snp.makeConstraints { (make) in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(textField2.snp.bottom).offset(30)
+            make.height.equalTo(30)
+            make.width.equalTo(500)
+        }
+
+        btn.snp.makeConstraints { (make) in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(label.snp.bottom).offset(30)
+            make.height.equalTo(30)
+            make.width.equalTo(40)
+        }
+
+        Observable.combineLatest(textField1.rx.text.orEmpty, textField2.rx.text.orEmpty){
+            &quot;你输入的电话号码是\($0)-\($1)&quot;
+        }
+        .asDriver(onErrorJustReturn: &quot;&quot;)
+        .drive(label.rx.text)
+        .disposed(by: disposeBag)
+
+        textField1.rx.text.orEmpty.asObservable().asDriver(onErrorJustReturn: &quot;&quot;)
+        .map{ $0.count == 3 }
+        .drive(btn.rx.isEnabled)
+        .disposed(by: disposeBag)
+
+        btn.rx.tap
+        .subscribe(onNext: { [weak self] in
+                self?.btn.setTitle(&quot;变！&quot;, for: .normal)
+            })
+        .disposed(by: disposeBag)
+    }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">RxSwift</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/04/04/RxSwift：Driver与UI控件初体验/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-一个可选的属性" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2556,164 +2717,6 @@ default == nil
 
 
   
-    <article id="post-规范化团队 git 提交信息" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/04/规范化团队 git 提交信息/">规范化团队 git 提交信息</a>
-    </h1>
-  
-
-        
-        <a href="/2020/03/04/规范化团队 git 提交信息/" class="archive-article-date">
-  	<time datetime="2020-03-04T02:44:34.905Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><img src="http://img.wangjungang.cn/Nent9Z.png" alt=""><br>同一个工程项目，为了方便管理，git 的 commit 信息最好按照一定的格式规范，以便在需要的时候方便使用。什么是方便的时候，比如出现了一个线上 bug，所以需要回滚操作，知道了提交信息可以方便的定位问题。代码 review 的时候也知道了该次 commit 干了什么，所以 commit 标准化好处很多，不再举例。</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>可以马上想到的是利用 shell 结合 git hook 实现在 git commit 阶段检查输入是否符合规范。符合就通过，不符合就终止，并给出提示信息。</p>
-<h3 id="规范是什么"><a href="#规范是什么" class="headerlink" title="规范是什么"></a>规范是什么</h3><p>常见的分类有下面几种：</p>
-<ul>
-<li>build：修改项目的的构建系统（xcodebuild、webpack、glup等）的提交</li>
-<li>ci：修改项目的持续集成流程（Kenkins、Travis等）的提交</li>
-<li>chore：构建过程或辅助工具的变化</li>
-<li>docs：文档提交（documents）</li>
-<li>feat：新增功能（feature）</li>
-<li>fix：修复 bug</li>
-<li>pref：性能、体验相关的提交</li>
-<li>refactor：代码重构</li>
-<li>revert：回滚某个更早的提交</li>
-<li>style：不影响程序逻辑的代码修改、主要是样式方面的优化、修改</li>
-<li>test：测试相关的开发</li>
-</ul>
-<h3 id="轮子"><a href="#轮子" class="headerlink" title="轮子"></a>轮子</h3><p>在 github 上有 commitlint 这个项目，它可以很方便的在工程中做配置，并允许你自定义上面说的「规范」、「分类」。</p>
-<p>commitlint：用于检查提交信息</p>
-<p>husky：hook 工具，用于 git-commit 和 git-push 阶段。</p>
-<p>怎么用</p>
-<ul>
-<li>初始化一个 node 项目：npm init -y</li>
-<li>安装所需依赖。npm install –save-dev @commitlint/config-conventional @commitlint/cli husky</li>
-<li>在工程根目录下新建配置文件，名称为 commitlint.config.js。</li>
-<li>在 commitlint.config.js 中添加配置信息</li>
-</ul>
-<hr>
-<pre><code>const types = [
-  &apos;build&apos;, 
-  &apos;ci&apos;, 
-  &apos;chore&apos;,
-  &apos;docs&apos;, 
-  &apos;feat&apos;, 
-  &apos;fix&apos;, 
-  &apos;pref&apos;, 
-  &apos;refactor&apos;, 
-  &apos;revert&apos;, 
-  &apos;style&apos;, 
-  &apos;test&apos;
-];
-
-typeEnum = {
-  rules: {
-    &apos;type-enum&apos;: [2, &apos;always&apos;, types]
-  },
-  value: () =&gt; types
-}
-
-module.exports = {
-    extends: [
-      &quot;@commitlint/config-conventional&quot;
-    ],
-    rules: {
-      &apos;type-case&apos;: [0],
-      &apos;type-empty&apos;: [0],
-      &apos;scope-empty&apos;: [0],
-      &apos;scope-case&apos;: [0],
-      &apos;subject-full-stop&apos;: [0, &apos;never&apos;],
-      &apos;subject-case&apos;: [0, &apos;never&apos;],
-      &apos;header-max-length&apos;: [0, &apos;always&apos;, 72],
-      &apos;type-enum&apos;: typeEnum.rules[&apos;type-enum&apos;]
-    }
-  };
-</code></pre><p>在 package.json 文件中添加以下代码，代码层级跟 devDependencies 同级。</p>
-<pre><code>&quot;husky&quot;: {
-    &quot;hooks&quot;: {
-        &quot;pre-commit&quot;: &quot;echo &apos;哈喽，小伙伴们，在这里可以做测试相关的逻辑哦，一般结合公司的 ci&apos;&quot;,
-        &quot;commit-msg&quot;: &quot;commitlint -E HUSKY_GIT_PARAMS&quot;,
-        &quot;pre-push&quot;: &quot;echo 提交代码前需要先进行单元测试 &amp;&amp; 可以做测试相关&quot;
-    }
-}
-</code></pre><p>上面的流程配置完成，当你在提交 commit 信息的输入的内容，如果不符合 <type>: <subject> 规则，会终止并给出提示信息。</subject></type></p>
-<p>type 就是上面的种类；subject 就是需要提交的文字概括。比如：feature：增加摇一摇推荐酒店功能。</p>
-<p>小说明：如果某次提交想禁用 husky，可以添加参数 –no-verify。git commit –no-verify -m “xxx”</p>
-<p>贴个效果图</p>
-<p><img src="http://img.wangjungang.cn/I33Toj.png" alt=""></p>
-<h3 id="流程说明"><a href="#流程说明" class="headerlink" title="流程说明"></a>流程说明</h3><p>安装包 husky 的时候，会在目录 .git/hooks/ 下生成一堆 shell 脚本，负责 git 的 hook。</p>
-<p>“commit-msg”: “commitlint -E HUSKY_GIT_PARAMS” 这个配置告诉 git hooks，当执行 git commit -m 的时候触发 commit-msg 钩子，并通知 husky，从而执行 commitlint -E HUSKY_GIT_PARAMS，实际上执行的是 ./node_modules/husky/bin/run.js，读取 commitlint.config.js 里的配置，然后对我们 commit -m 里的字符串校验，如不通过则输出错误信息并终止。</p>
-<h2 id="拓展篇"><a href="#拓展篇" class="headerlink" title="拓展篇"></a>拓展篇</h2><p>git commit 的几个钩子，也暴露出来了，所以可以结合时机做一些额外的逻辑。</p>
-<ul>
-<li>pre-commit：在 git commit 之前触发</li>
-<li>commit-msg：在编写 commit 信息的时候触发</li>
-<li>pre-push：在 git push 之前触发</li>
-</ul>
-<p>所以基于上述时机，可以根据项目特点做一些别的事情。比如 code lint、unit test 代码覆盖率检测、changelog 自动生成、unit test 脚本等、也可以借此机会产生 lint 报表</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">git</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/04/规范化团队 git 提交信息/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -2847,15 +2850,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2863,11 +2862,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2875,7 +2874,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2884,10 +2891,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

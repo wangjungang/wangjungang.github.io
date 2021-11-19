@@ -152,6 +152,336 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-轻松实现Label的全方位对齐" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/15/轻松实现Label的全方位对齐/">轻松实现Label的全方位对齐</a>
+    </h1>
+  
+
+        
+        <a href="/2018/10/15/轻松实现Label的全方位对齐/" class="archive-article-date">
+  	<time datetime="2018-10-15T06:16:13.019Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>ARUILabelTextAlign</p>
+<ol>
+<li>实现 UILabel文本在 左(上 中 下)、中(上 中 下）、右(上 中 下) 9个方位显示；</li>
+</ol>
+<ol start="2">
+<li>提供富文本底部不对齐的解决方案；</li>
+</ol>
+<h2 id="核心代码："><a href="#核心代码：" class="headerlink" title="核心代码："></a>核心代码：</h2><h3 id="ARAlignLabel-h"><a href="#ARAlignLabel-h" class="headerlink" title="ARAlignLabel.h"></a>ARAlignLabel.h</h3><pre><code>#import 
+@class ARMaker;
+
+typedef NS_ENUM(NSUInteger, textAlignType)
+{
+    textAlignType_top = 10,   // 顶部对齐
+    textAlignType_left,       // 左边对齐
+    textAlignType_bottom,     // 底部对齐
+    textAlignType_right,      // 右边对齐
+    textAlignType_center      // 水平/垂直对齐（默认中心对齐）
+};
+
+@interface ARAlignLabel : UILabel
+
+/**
+ *  根据对齐方式进行文本对齐
+ *
+ *  @param alignType 对齐block
+ */
+- (void)textAlign:(void(^)(ARMaker *make))alignType;
+
+@end
+
+
+//工具类
+@interface ARMaker : NSObject
+
+/* 存放对齐样式 */
+@property(nonatomic, strong) NSMutableArray *typeArray;
+
+/**
+ *  添加对齐样式
+ */
+- (ARMaker *(^)(textAlignType type))addAlignType;
+
+@end
+</code></pre><h3 id="ARAlignLabel-m"><a href="#ARAlignLabel-m" class="headerlink" title="ARAlignLabel.m"></a>ARAlignLabel.m</h3><pre><code>#import &quot;ARAlignLabel.h&quot;
+
+@interface ARAlignLabel ()
+
+/* 对齐方式 */
+@property(nonatomic, strong) NSArray *typeArray;
+//上
+@property(nonatomic, assign) BOOL hasTop;
+//左
+@property(nonatomic, assign) BOOL hasLeft;
+//下
+@property(nonatomic, assign) BOOL hasBottom;
+//右
+@property(nonatomic, assign) BOOL hasRight;
+
+@end
+
+@implementation ARAlignLabel
+
+- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
+    CGRect textRect = [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
+    if (self.typeArray){
+        for (int i=0; i&lt;self.typeArray.count; i++) {
+            textAlignType type = [self.typeArray[i] integerValue];
+            switch (type) {
+                case textAlignType_top:  //顶部对齐
+                    self.hasTop = YES;
+                    textRect.origin.y = bounds.origin.y;
+                    break;
+                case textAlignType_left: //左部对齐
+                    self.hasLeft = YES;
+                    textRect.origin.x = bounds.origin.x;
+                    break;
+                case textAlignType_bottom: //底部对齐
+                    self.hasBottom = YES;
+                    textRect.origin.y = bounds.size.height - textRect.size.height;
+                    break;
+                case textAlignType_right: //右部对齐
+                    self.hasRight = YES;
+                    textRect.origin.x = bounds.size.width - textRect.size.width;
+                    break;
+                case textAlignType_center:
+                    if (self.hasTop) {  //上中
+                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
+                    }
+                    else if (self.hasLeft) { //左中
+                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
+                    }
+                    else if (self.hasBottom) { //下中
+                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
+                    }
+                    else if (self.hasRight) { //右中
+                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
+                    }
+                    else{   //上下左右居中
+                        textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
+                        textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    return textRect;
+}
+
+- (void)drawTextInRect:(CGRect)requestedRect {
+    CGRect actualRect = requestedRect;
+    if (self.typeArray) {
+        actualRect = [self textRectForBounds:requestedRect limitedToNumberOfLines:self.numberOfLines];
+    }
+    [super drawTextInRect:actualRect];
+}
+
+- (void)textAlign:(void(^)(ARMaker *make))alignType {
+    ARMaker *make = [[ARMaker alloc]init];
+    alignType(make);
+    self.typeArray = make.typeArray;
+}
+
+@end
+
+//工具类
+@implementation ARMaker
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.typeArray = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (ARMaker *(^)(enum textAlignType type))addAlignType {
+    __weak typeof (self) weakSelf = self;
+    return ^(enum textAlignType type) {
+        [weakSelf.typeArray addObject:@(type)];
+        return weakSelf;
+    };
+}
+
+@end
+</code></pre><h3 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h3><pre><code>- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.view.backgroundColor = [UIColor whiteColor];
+
+    if (_index == 9) {
+        //富文本底部对齐
+        [self attributedTextAgainOfBottom];
+    }else {
+        ARAlignLabel *label = [[ARAlignLabel alloc] initWithFrame:CGRectMake(kScreenWidth/2.0 - 150, 300, 300, 80)];
+        label.backgroundColor = [UIColor orangeColor];
+        label.textColor = [UIColor blackColor];
+        label.font = [UIFont systemFontOfSize:18];
+        label.text = @&quot;爱学习，爱编程，爱咖啡可乐&quot;;
+        label.numberOfLines = 1;
+        [self.view addSubview:label];
+
+        switch (_index) {
+            case 0:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_top);
+                }];
+                break;
+            case 1:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_center);
+                }];
+                break;
+            case 2:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_left).addAlignType(textAlignType_bottom);
+                }];
+                break;
+            case 3:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_center).addAlignType(textAlignType_top);
+                }];
+                break;
+            case 4:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_center);
+                }];
+                break;
+            case 5:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_center).addAlignType(textAlignType_bottom);
+                }];
+                break;
+            case 6:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_top);
+                }];
+                break;
+            case 7:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_center);
+                }];
+                break;
+            case 8:
+                [label textAlign:^(ARMaker *make) {
+                    make.addAlignType(textAlignType_right).addAlignType(textAlignType_bottom);
+                }];
+                break;
+            default:
+                break;
+        }
+    }
+}
+</code></pre><h3 id="富文本底部对齐"><a href="#富文本底部对齐" class="headerlink" title="富文本底部对齐"></a>富文本底部对齐</h3><pre><code>//富文本底部对齐
+- (void)attributedTextAgainOfBottom {
+
+    CGFloat space = 10.0;
+
+    ARAlignLabel *leftLB = [[ARAlignLabel alloc] initWithFrame:CGRectMake(20, 200, kScreenWidth/2.0 - 20 - space/2.0, 80)];
+    leftLB.backgroundColor = [UIColor lightGrayColor];
+    leftLB.textColor = [UIColor blackColor];
+    leftLB.numberOfLines = 1;
+    [self.view addSubview:leftLB];
+    //右下
+    [leftLB textAlign:^(ARMaker *make) {
+        make.addAlignType(textAlignType_center);
+    }];
+
+    NSMutableAttributedString  *attributedArr = [[NSMutableAttributedString alloc] initWithString:@&quot;单价 $123&quot;];
+    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:40], NSForegroundColorAttributeName:[UIColor blackColor]} range:NSMakeRange(0, 1)];
+    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:25], NSForegroundColorAttributeName:[UIColor blackColor]} range:NSMakeRange(1, 1)];
+    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20], NSForegroundColorAttributeName:[UIColor blueColor]} range:NSMakeRange(3, 1)];
+    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:35], NSForegroundColorAttributeName:[UIColor redColor]} range:NSMakeRange(4, attributedArr.length - 4)];
+
+    leftLB.attributedText = attributedArr;
+
+
+    //对齐之后
+    ARAlignLabel *rightLB = [[ARAlignLabel alloc] initWithFrame:CGRectMake(kScreenWidth/2.0 + space/2.0, 200, leftLB.frame.size.width, 80)];
+    rightLB.backgroundColor = [UIColor lightGrayColor];
+    rightLB.textColor = [UIColor blackColor];
+    rightLB.numberOfLines = 1;
+    [self.view addSubview:rightLB];
+    //左下
+    [rightLB textAlign:^(ARMaker *make) {
+        make.addAlignType(textAlignType_center);
+    }];
+
+    //设置部分文字的偏移量 (0是让文字保持原来的位置, 负值是让文字下移，正值是让文字上移)
+    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(1) range:NSMakeRange(0, 1)];
+    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(0) range:NSMakeRange(1, 1)];
+    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(-2) range:NSMakeRange(3, 1)];
+    [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(-3) range:NSMakeRange(4, attributedArr.length - 4)];
+
+    rightLB.attributedText = attributedArr;
+
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/10/15/轻松实现Label的全方位对齐/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS 和常见的离屏渲染Say Goodbye！" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1291,118 +1621,6 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
 
 
   
-    <article id="post-iOS分类(category),类扩展(extension)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/14/iOS分类(category),类扩展(extension)/">iOS分类(category),类扩展(extension)</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/14/iOS分类(category),类扩展(extension)/" class="archive-article-date">
-  	<time datetime="2018-09-14T08:30:59.916Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-14</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>category和extension这两个东西，基本上属于每天都要遇到的，他们之间有什么区别，该如何选择和使用，需要好好总结记录一下。</p>
-<h3 id="假想一个背景"><a href="#假想一个背景" class="headerlink" title="假想一个背景"></a>假想一个背景</h3><p>在大型项目，企业级开发中多人同时维护同一个类，此时程序员A因为某项需求只想给当前类currentClass添加一个方法newMethod，那该怎么办呢？ 最简单粗暴的方式是把newMethod添加到currentClass中，然后直接实现该方法就OK了。 但考虑到OC是单继承的，子类可以拥有父类的方法和属性。 如果把newMethod写到currentClass中，那么currentClass的子类也会拥有newMethod。但真正的需求是只需要currentClass拥有newMethod，而currentClass的子类不会拥有。 苹果为了解决这个问题，就引入了分类（Category）的概念。</p>
-<h2 id="分类-category"><a href="#分类-category" class="headerlink" title="分类  category"></a>分类  category</h2><h3 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h3><p> 分类（Category）是OC中的特有语法，它是表示一个指向分类的结构体的指针。可以给某一个类扩充一些方法（不修改原来类的代码），原则上它只能增加方法，不能增加成员（实例）变量。具体原因看源码组成:</p>
-<p> category源码</p>
-<pre><code> typedef struct objc_category *Category;
-struct objc_category {
-  char *category_name                          OBJC2_UNAVAILABLE; // 分类名
-  char *class_name                             OBJC2_UNAVAILABLE; // 分类所属的类名
-  struct objc_method_list *instance_methods    OBJC2_UNAVAILABLE; // 实例方法列表
-  struct objc_method_list *class_methods       OBJC2_UNAVAILABLE; // 类方法列表
-  struct objc_protocol_list *protocols         OBJC2_UNAVAILABLE; // 分类所实现的协议列表
-}
-</code></pre><p>通过上面我们可以发现，这个结构体主要包含了分类定义的实例方法与类方法，其中instance_methods 列表是 objc_class 中方法列表的一个子集，而class_methods列表是元类方法列表的一个子集。 但这个结构体里面</p>
-<p>根本没有属性列表， 根本没有属性列表， 根本没有属性列表。</p>
-<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>1.分类是用于给原有类添加方法的,因为分类的结构体指针中，没有属性列表，只有方法列表。所以&lt; 原则上讲它只能添加方法, 不能添加属性(成员变量),实际上可以通过其它方式添加属性&gt; ;   </p>
-<p>2.分类中的可以写@property, 但不会生成setter/getter方法, 也不会生成实现以及私有的成员变量（编译时会报警告）; </p>
-<p>3.可以在分类中访问原有类中.h中的属性; </p>
-<p>4.如果分类中有和原有类同名的方法, 会优先调用分类中的方法, 就是说会忽略原有类的方法。所以同名方法调用的优先级为 分类 &gt; 本类 &gt; 父类。因此在开发中尽量不要覆盖原有类; </p>
-<p>5.如果多个分类中都有和原有类中同名的方法, 那么调用该方法的时候执行谁由编译器决定；编译器会执行最后一个参与编译的分类中的方法。</p>
-<h2 id="类扩展-extension"><a href="#类扩展-extension" class="headerlink" title="类扩展 extension"></a>类扩展 extension</h2><p>这个东西每天都要见，但是大多数人不在意它</p>
-<p>这是一个类的.m文件</p>
-<pre><code>#import &quot;ZDMessageViewController.h&quot;
-
-@interface ZDMessageViewController ()
-@property(nonatomic,strong) NSMutableArray *allDataMutableArray;
-@end
-
-
-@interface XXX ()
-//私有属性
-//私有方法（如果不实现，编译时会报警,Method definition for &apos;XXX&apos; not found）
-@end
-</code></pre><p>这个东西就叫做类扩展，可以为一个类添加一些私有的成员变量和方法，其方法也在.m中实现</p>
-<h2 id="分类与类扩展的区别："><a href="#分类与类扩展的区别：" class="headerlink" title="分类与类扩展的区别："></a>分类与类扩展的区别：</h2><p>1 类别中原则上智能增加方法</p>
-<p>能添加属性的问题只是通过runtime解决没有setter/getter的问题而已</p>
-<p>2 类扩展不仅可以增加方法，还可以增加实例变量（或者属性），只是该实例变量默认只是@private类型的（只能在自身类使用，不能再子类或者其他地方使用）</p>
-<p>3 类扩展中声明的方法没有被实现，编译器会报警，但是类别中声明的方法没有被实现，编译器不会有任何警告。这是因为类扩展是在编译阶段被添加到类中，而类别是在运行时添加到类中</p>
-<p>4 类扩展不能像类别那样拥有独立的实现部分 @implementaton 部分。也就是说，类扩展所声明的方法必须依托对应的类的实现部分来实现</p>
-<p>5 定义在.m文件中的类扩展方法为私有方法，定义在.h中的类扩展的方法为公有方法。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/14/iOS分类(category),类扩展(extension)/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/17/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><a class="page-number" href="/page/20/">20</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/19/">Next &raquo;</a>
@@ -1536,15 +1754,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1552,11 +1766,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1564,7 +1778,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1573,10 +1795,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
