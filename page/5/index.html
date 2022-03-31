@@ -152,6 +152,681 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Xcode11 新建工程中的SceneDelegate" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/">Xcode11 新建工程中的SceneDelegate</a>
+    </h1>
+  
+
+        
+        <a href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/" class="archive-article-date">
+  	<time datetime="2019-11-29T08:13:08.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Xcode 11 建新工程默认会创建通过 UIScene 管理多个 UIWindow 的应用，工程中除了 AppDelegate 外还会有一个 SceneDelegate，这是为了实现iPadOS支持多窗口的结果。AppDelegate.h不再有window属性，window属性被定义在了SceneDelegate.h中，AppDelegate中有新增的关于scene的代理方法，SceneDelegate中也有相应的代理方法。因此，当我们用Xcode11针对不同版本的iOS开发应用时，就要做一些适配。</p>
+<h2 id="样式"><a href="#样式" class="headerlink" title="样式"></a>样式</h2><p><img src="http://img.wangjungang.cn/MCTA26.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/eI9CO0.jpg" alt=""></p>
+<p>AppDelegate.h中多了两个默认的代理方法：</p>
+<pre><code>#pragma mark - UISceneSession lifecycle
+
+/*
+1.如果没有在APP的Info.plist文件中包含scene的配置数据，或者要动态更改场景配置数据，需要实现此方法。 UIKit会在创建新scene前调用此方法。
+2.方法会返回一个UISceneConfiguration对象，其包含其中包含场景详细信息，包括要创建的场景类型，用于管理场景的委托对象以及包含要显示的初始视图控制器的情节提要。 如果未实现此方法，则必须在应用程序的Info.plist文件中提供场景配置数据。
+
+总结下：默认在info.plist中进行了配置， 不用实现该方法也没有关系。如果没有配置就需要实现这个方法并返回一个UISceneConfiguration对象。
+配置参数中Application Session Role 是个数组，每一项有三个参数:
+Configuration Name:   当前配置的名字;
+Delegate Class Name:  与哪个Scene代理对象关联;
+StoryBoard name: 这个Scene使用的哪个storyboard。
+注意：代理方法中调用的是配置名为Default Configuration的Scene，则系统就会自动去调用SceneDelegate这个类。这样SceneDelegate和AppDelegate产生了关联。
+*/
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+    // Called when a new scene session is being created.
+    // Use this method to select a configuration to create the new scene with.
+    return [[UISceneConfiguration alloc] initWithName:@&quot;Default Configuration&quot; sessionRole:connectingSceneSession.role];
+}
+
+// 在分屏中关闭其中一个或多个scene时候回调用
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet&lt;UISceneSession *&gt; *)sceneSessions {
+    // Called when the user discards a scene session.
+    // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
+    // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+}
+</code></pre><p>SceneDelegate.m中的默认代理方法如下：</p>
+<pre><code>- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
+    // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
+    // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
+    // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
+}
+
+- (void)sceneDidDisconnect:(UIScene *)scene {
+    // Called as the scene is being released by the system.
+    // This occurs shortly after the scene enters the background, or when its session is discarded.
+    // Release any resources associated with this scene that can be re-created the next time the scene connects.
+    // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
+}
+
+- (void)sceneDidBecomeActive:(UIScene *)scene {
+    // Called when the scene has moved from an inactive state to an active state.
+    // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+}
+
+- (void)sceneWillResignActive:(UIScene *)scene {
+    // Called when the scene will move from an active state to an inactive state.
+    // This may occur due to temporary interruptions (ex. an incoming phone call).
+}
+
+- (void)sceneWillEnterForeground:(UIScene *)scene {
+    // Called as the scene transitions from the background to the foreground.
+    // Use this method to undo the changes made on entering the background.
+}
+
+- (void)sceneDidEnterBackground:(UIScene *)scene {
+    // Called as the scene transitions from the foreground to the background.
+    // Use this method to save data, release shared resources, and store enough scene-specific state information
+    // to restore the scene back to its current state.
+}
+</code></pre><h2 id="1-不需要多窗口（multiple-windows）"><a href="#1-不需要多窗口（multiple-windows）" class="headerlink" title="1. 不需要多窗口（multiple windows）"></a>1. 不需要多窗口（multiple windows）</h2><p>如果需要支持iOS 13 及之前多个版本的iOS，且又不需要多个窗口的功能，可以<strong><em>删除项目info.plist文件中的Application Scene Manifest的配置数据</em></strong>，AppDelegate中关于Scene的代理方法、SceneDelegate的类是否删除都可以。<br>如果使用纯代码来实现显示界面，需要在AppDelegate.h中手动添加window属性，添加以下代码即可：</p>
+<pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+
+    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    [self.window setBackgroundColor:[UIColor whiteColor]];
+
+    ViewController *con = [[ViewController alloc] init];
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
+    [self.window setRootViewController:nav];
+    [self.window makeKeyAndVisible];
+    return YES;
+}
+</code></pre><h2 id="2-支持多窗口"><a href="#2-支持多窗口" class="headerlink" title="2. 支持多窗口"></a>2. 支持多窗口</h2><p>iOS 13项目info.plist中的配置项Application Scene Manifest是针对iPad multiple windows功能推出的。在保留Application Scene Manifest配置项不予删除时（其中，项目是否支持多窗口功能是个可勾选项），AppDelegate的生命周期方法不再起作用，需要在SceneDelegate中使用UIScene提供的生命周期方法，并且需要针对 iOS 13 需要在Scene中配置和 iOS 13 以下在AppDelegate中做两套配置。<br>下面是纯代码实现界面显示的代码：</p>
+<pre><code>//// AppDelegate.m中
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // Override point for customization after application launch.
+
+    if (@available(iOS 13.0, *)) {
+
+    } else {
+        self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        [self.window setBackgroundColor:[UIColor whiteColor]];
+
+        ViewController *con = [[ViewController alloc] init];
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
+        [self.window setRootViewController:nav];
+        [self.window makeKeyAndVisible];
+    }
+    return YES;
+}
+
+
+//// SceneDelegate.m中
+
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
+
+    //在这里手动创建新的window
+    if (@available(iOS 13.0, *)) {
+        UIWindowScene *windowScene = (UIWindowScene *)scene;
+        self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+        [self.window setWindowScene:windowScene];
+        [self.window setBackgroundColor:[UIColor whiteColor]];
+
+        ViewController *con = [[ViewController alloc] init];
+        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
+        [self.window setRootViewController:nav];
+        [self.window makeKeyAndVisible];
+    }
+}
+</code></pre><p>注意：如果不使用storyboard，需要将配置中的storyboard项删除：</p>
+<p><img src="http://img.wangjungang.cn/UbOrNC.jpg" alt=""></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-RxSwift + MJRefresh 自动管理刷新状态" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/">RxSwift + MJRefresh 自动管理刷新状态</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/" class="archive-article-date">
+  	<time datetime="2019-09-26T02:29:03.451Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><p>首先定义一个有关刷新状态的枚举类型：</p>
+<pre><code>/// 可按照自己的需求添加，由于我没有用到 mj_footer.beginRefreshing()，
+/// 所以没有定义相关的枚举。
+enum RefreshStatus {
+    case none
+    case beingHeaderRefresh
+    case endHeaderRefresh
+    case endFooterRefresh
+    // 这个枚举由于在我项目中经常用到，所以我定一个关联值的枚举。
+    // 项目中需要：
+    //  - 数据为空的时候隐藏 `mj_footer`，否则显示；
+    //  - 然后判断没有更多数据就调用 `endRefreshingWithNoMoreData()`
+    //    否则 `endRefreshing()`
+    case footerStatus(isHidden: Bool, isNoMoreData: Bool)
+}
+</code></pre><p>无需过多纠结，后面会演示枚举如何使用。</p>
+<h2 id="BehaviorSubject"><a href="#BehaviorSubject" class="headerlink" title="BehaviorSubject"></a>BehaviorSubject</h2><p> 接下来要介绍一个跟 RxSwift 有关的一个类型 BehaviorSubject，我们会在文章用到它。</p>
+<p>  BehaviorSubject 向所有订阅者发布事件，并向新的订阅者提供最近（或最初）的值。</p>
+<p>  怎么理解？来看看代码：<br>  <br>      func addObserver(_ id: String) -&gt; Disposable {<br>        return subscribe { print(“Subscription:”, id, “Event:”, $0) }<br>    }</p>
+<pre><code>let disposeBag = DisposeBag()
+let subject = BehaviorSubject(value: &quot;🔴&quot;)
+
+subject.addObserver(&quot;1&quot;).disposed(by: disposeBag)
+subject.onNext(&quot;🐶&quot;)
+subject.onNext(&quot;🐱&quot;)
+
+subject.addObserver(&quot;2&quot;).disposed(by: disposeBag)
+subject.onNext(&quot;🅰️&quot;)
+subject.onNext(&quot;🅱️&quot;)
+
+/**
+Subscription: 1 Event: next(🔴)
+Subscription: 1 Event: next(🐶)
+Subscription: 1 Event: next(🐱)
+Subscription: 2 Event: next(🐱)
+Subscription: 1 Event: next(🅰️)
+Subscription: 2 Event: next(🅰️)
+Subscription: 1 Event: next(🅱️)
+Subscription: 2 Event: next(🅱️)
+Subscription: 1 Event: next(🍐)
+Subscription: 2 Event: next(🍐)
+Subscription: 1 Event: next(🍊)
+Subscription: 2 Event: next(🍊)
+*/
+</code></pre><p>总结一下：BehaviorSubject 从上至下接收它发出的最新（原始值也属于发出的事件元素）值。并向新的订阅者提供最新值，所以这里我们 订阅2号 会接收到前面发出的最新元素，稍后才是 订阅2号 自己发出的元素事件。</p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p> 好了，下面我们就用上面学到的所有知识来写一个自动管理刷新状态案例。<br> 假设有这样一个需求：<br>  <br>  <br>    // ViewController.swift</p>
+<pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
+// 不传参数则不创建。自动管理刷新状态。
+viewModel.refreshStatusBind(to: tableView, {
+    // 处理头部刷新。
+}) {
+    // 处理尾部刷新。
+}.disposed(by: bag)
+</code></pre><p>如何做到这一点？看到方法是从 viewModel 里面调出来的，那我们就去 viewModel 里面看一看究竟。</p>
+<pre><code>class ViewModel: Refreshable {
+
+    lazy var list = Variable&lt;[MnlDakaCommentModel]&gt;([])
+    let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
+    let reload = PublishSubject&lt;Bool&gt;()
+    let bag = DisposeBag()
+
+    init() {
+        reload.subscribe(onNext: { [weak self] (isDown) in
+            guard let `self` = self else {
+                return
+            }
+            // 发送请求
+            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
+                let list = result.value?[&quot;list&quot;].arrayObject
+                let models = decode([MnlDakaCommentModel].self, from: list) ?? []
+            }
+        }
+    }
+}
+</code></pre><p> 这里你就知道了吧？任何实现 Refreshable 必须实现 refreshStatus 属性，如果你足够眼尖应该看到，上面的 ViewModel 同样定义一个类型一样 refreshStatus 属性，为的就是实现协议中规定的属性。</p>
+<p>  好了，有个这个属性之后，我们就可以愉快的管理刷新状态了，比如想让它结束刷新，我们可以拿到 refreshStatus 属性，比如在 ViewModel 里，我们可以这样：</p>
+<pre><code>// 发送请求
+MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
+    let list = result.value?[&quot;list&quot;].arrayObject
+    let models = decode([MnlDakaCommentModel].self, from: list) ?? []
+    // 请求完成需要结束刷新：
+    // refreshStatus.onNext(.endFooterRefresh)
+    // 或者判断没有更多数据时：
+    // refreshStatus.onNext(isHidden: false, isNoMoreData: true)
+}
+</code></pre><p> 这时你肯定问了，凭什么我这样发送消息就可以管理刷新状态了？你逗我呢？之前讲 BehaviorSubject 的时候不是有讲到订阅 (subscribe) 吗？既然这里发送消息了，肯定会在接收到发出的元素的时候做了什么处理吧？</p>
+<p>  问得好！问得非常好！问得太————好了。好吧，我老实交代，就来说下接收到元素时我都做了什么？<br>  <br>      extension Refreshable {</p>
+<pre><code>    func refreshStatusBind(to scrollView: UIScrollView, _ header: (() -&gt; Void)? = nil, _ footer: (() -&gt; Void)? = nil) -&gt; Disposable {
+
+        if header != nil {
+            scrollView.mj_header = MJRefreshNormalHeader {
+                // 处理头部方法时结束尾部刷新。
+                scrollView.mj_footer?.endRefreshing()
+                header?()
+            }
+        }
+        if footer != nil {
+            scrollView.mj_footer = MJRefreshAutoNormalFooter {
+                // 处理尾部方法时结束头部刷新。
+                scrollView.mj_header?.endRefreshing()
+                footer?()
+            }
+        }
+
+        return refreshStatus.subscribe(onNext: { (status) in
+            switch status {
+            case .none:
+                // 未发生任何状态事件时隐藏尾部。
+                scrollView.mj_footer?.isHidden = true
+            case .beginHeaderRefresh:
+                scrollView.mj_header?.beginRefreshing()
+            case .endHeaderRefresh:
+                scrollView.mj_header?.endRefreshing()
+            case .endFooterRefresh:
+                scrollView.mj_footer?.endRefreshing()
+            case .endAllRefresh:
+                // 结束全部拉刷新
+                scrollView.mj_header?.endRefreshing()
+                scrollView.mj_footer?.endRefreshing()
+            case .footerStatus(let isHidden, let isNone):
+                // 根据关联值确定 footer 的状态。
+                scrollView.mj_footer?.isHidden = isHidden
+                // 处理尾部状态时，如果之前正在刷新头部，则结束刷新，
+                // 至此，我们无需写判断结束头部刷新的代码，在这里自动处理。
+                scrollView.mj_header?.endRefreshing()
+                if isNone {
+                    scrollView.mj_footer?.endRefreshingWithNoMoreData()
+                }else {
+                    scrollView.mj_footer?.endRefreshing()
+                }
+            }
+        })
+    }
+}
+</code></pre><p>给 Refreshable 加一个扩展，我们先来看方法的第一部分：创建头部和尾部刷新控件。这段代码很容易看懂，结合前面放在 ViewController.swift 里的代码：</p>
+<pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
+// 不传参数则不创建。自动管理刷新状态。
+viewModel.refreshStatusBind(to: tableView, {
+    // 处理头部刷新。
+}) {
+    // 处理尾部刷新。
+}.disposed(by: bag)
+</code></pre><p> 无非就是传闭包参数的时候创建对应的刷新控件，并把传进去的闭包作为控件的刷新事件。因为我已经把 UIScrollView 作为参数传进来了，所以可以直接拿到它创建刷新控件。</p>
+<p>  在到第二部分，这就是一个真正监听状态改变的部分了，是根据发出的消息做出改变的反应。这样，我们在 ViewModel 里发送消息，这里就能接收到并作出对应的改变。
+  </p>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><h3 id="ViewController-swift"><a href="#ViewController-swift" class="headerlink" title="ViewController.swift"></a>ViewController.swift</h3><pre><code>import UIKit
+import RxSwift
+
+class ViewController: UITableViewController {
+
+    lazy var viewModel = ViewModel()
+    let bag = DisposeBag()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        /// 创建刷新控件。
+        viewModel.refreshStatusBind(to: tableView, { [weak self] in
+            // 处理头部刷新。
+            self?.viewModel.reload.onNext(false)
+        }) { [weak self] in
+            // 处理尾部刷新。
+            self?.viewModel.reload.onNext(true)
+        }.disposed(by: bag)
+
+        // 给 viewModel 中的 reload 发送消息，让其请求数据。
+        // 参数 Bool 表示是否上拉。
+        viewModel.reload.onNext(false)
+    }
+}
+</code></pre><h3 id="ViewModel-swift"><a href="#ViewModel-swift" class="headerlink" title="ViewModel.swift"></a>ViewModel.swift</h3><pre><code>import UIKit
+import RxSwift
+
+class ViewModel: Refreshable {
+
+    lazy var list = Variable&lt;[Model]&gt;([])
+    let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
+    let reload = PublishSubject&lt;Bool&gt;()
+    let bag = DisposeBag()
+
+    init() {
+        reload.subscribe(onNext: { [weak self] (isReload) in
+
+            guard let `self` = self else {
+                return
+            }
+
+            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in
+
+                let list = result.value?[&quot;list&quot;].arrayObject
+                let models = decode([MnlDakaCommentModel].self, from: list) ?? []
+
+                self.list.value = isReload ? models : self.list.value + models
+
+                let count = result.value?[&quot;count&quot;].int ?? 0
+                // 发送刷新状态给订阅者，让其作出改变。
+                // 如果列表个数和总数相等，则判断它为没有更多数据。
+                self.refreshStatus.onNext(.footerStatus(isHidden: self.list.value.isEmpty,
+                                                        isNoMoreData: self.list.value.count == count))
+            }
+        }).disposed(by: bag)
+    }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-RxDataSource 使用套路与解释" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/26/RxDataSource 使用套路与解释/">RxDataSource 使用套路与解释</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/26/RxDataSource 使用套路与解释/" class="archive-article-date">
+  	<time datetime="2019-09-26T02:16:26.933Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://img.wangjungang.cn/JkhDIp.png" alt=""></p>
+<h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>RxSwift 非常强大，用得好，很爽</p>
+<h3 id="套路：-tableView-刷新以后，就是有了数据源，怎样来一个回调。"><a href="#套路：-tableView-刷新以后，就是有了数据源，怎样来一个回调。" class="headerlink" title="套路： tableView 刷新以后，就是有了数据源，怎样来一个回调。"></a>套路： tableView 刷新以后，就是有了数据源，怎样来一个回调。</h3><p>场景举例，就是两表关联。 RxDataSource，怎样列表刷新出来，就自动选择第一个。然后子列表根据上一个列表的选择，确认要刷新的数据。</p>
+<h3 id="问题：RxDataSource-专注于列表视图的数据处理，自动选择第一个-row-是-tableViewDelegate-干的事情。"><a href="#问题：RxDataSource-专注于列表视图的数据处理，自动选择第一个-row-是-tableViewDelegate-干的事情。" class="headerlink" title="问题：RxDataSource 专注于列表视图的数据处理，自动选择第一个 row 是 tableViewDelegate 干的事情。"></a>问题：RxDataSource 专注于列表视图的数据处理，自动选择第一个 row 是 tableViewDelegate 干的事情。</h3><p><img src="http://img.wangjungang.cn/7REpyv.jpg" alt=""></p>
+<p>左边一个列表 tableView, 右边一个列表 tableView , 两个列表之间的数据存在关联，左边列表是一级选项，右边列表是对应左边的二级选项。</p>
+<h3 id="一般可以这么做"><a href="#一般可以这么做" class="headerlink" title="一般可以这么做"></a>一般可以这么做</h3><pre><code>private var lastIndex : NSInteger = 0
+
+// ...
+
+// 看这一段代码，就够了
+let leftDataSource = RxTableViewSectionedReloadDataSource&lt;CategoryLeftSection&gt;( configureCell: { [weak self] ds, tv, ip, item in
+            guard  let strongSelf = self else { return UITableViewCell()}
+            let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
+            cell.model = item
+            // 看这一句代码，就够了
+            if ip.row == strongSelf.lastIndex {
+                   // ...
+                    tv.selectRow(at: ip, animated: false, scrollPosition: .top)
+                    tv.delegate?.tableView!(tv, didSelectRowAt: ip)
+            }
+            return cell
+        })
+
+        vmOutput!.sections.asDriver().drive(self.leftMenuTableView.rx.items(dataSource: leftDataSource)).disposed(by: rx.disposeBag)
+
+// 选择左边列表，给右边提供的数据
+let rightPieceListData = self.leftMenuTableView.rx.itemSelected.distinctUntilChanged().flatMapLatest {
+        [weak self](indexPath) -&gt;  Observable&lt;[SubItems]&gt; in
+            guard let strongSelf = self else { return Observable.just([]) }
+
+            strongSelf.currentIndex = indexPath.row
+            if indexPath.row == strongSelf.viewModel.vmDatas.value.count - 1 {
+                // ...
+                strongSelf.leftMenuTableView.selectRow(at: strongSelf.currentSelectIndexPath, animated: false, scrollPosition: .top)
+                strongSelf.leftMenuTableView.delegate?.tableView!(strongSelf.leftMenuTableView, didSelectRowAt: strongSelf.currentSelectIndexPath!)
+                return Observable.just((strongSelf.currentListData)!)
+            }
+            if let subItems = strongSelf.viewModel.vmDatas.value[indexPath.row].subnav {
+                // ...
+                var reult:[SubItems] = subItems
+                // ...
+                strongSelf.currentListData = reult
+                strongSelf.currentSelectIndexPath = indexPath
+                return Observable.just(reult)
+            }
+            return Observable.just([])
+        }.share(replay: 1)
+
+        // 右边列表的数据源，具体 cell 的配置方法
+        let rightListDataSource =  RxTableViewSectionedReloadDataSource&lt;CategoryRightSection&gt;( configureCell: { [weak self]ds, tv, ip, item in
+            guard let strongSelf = self else { return UITableViewCell() }
+            if strongSelf.lastIndex != strongSelf.currentIndex {
+                tv.scrollToRow(at: ip, at: .top, animated: false)
+                strongSelf.lastIndex = strongSelf.currentIndex
+            }
+            if ip.row == 0 {
+                let cell :CategoryListBannerCell = CategoryListBannerCell()
+                cell.model = item
+                return cell
+            } else {
+                let cell : CategoryListSectionCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell2&quot;, for: ip) as! CategoryListSectionCell
+                cell.model = item
+                return cell
+            }
+        })
+        // 设置右边列表的代理
+        rightListTableView.rx.setDelegate(self).disposed(by: rx.disposeBag)
+        // 右边列表需要取得的数据，传递给右边列表的配置方法
+        rightPieceListData.map{ [CategoryRightSection(items:$0)] }.bind(to: self.rightListTableView.rx.items(dataSource: rightListDataSource))
+            .disposed(by: rx.disposeBag)
+</code></pre><p>上面这个实现很 Low, 选择的时机是这个 if ip.row == strongSelf.lastIndex { ， 当更新数据到指定 cell 时候，操作。</p>
+<p>程序可以跑，但是不优雅。</p>
+<p>如果把上面的逻辑翻译成面向对象，就是：</p>
+<pre><code>open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {
+           let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
+            cell.model = item
+            // 看这一句代码，就够了
+            if ip.row == strongSelf.lastIndex {
+                   // ...
+                    tv.selectRow(at: ip, animated: false, scrollPosition: .top)
+                    tv.delegate?.tableView!(tv, didSelectRowAt: ip)
+                    // ...
+
+            }
+            return cell
+    }
+</code></pre><p>这样展开，清晰了一些。我们是不会这么用的，如果不用 Rx, 直接 OOP. 我们是这么用 刷新完了之后，选中一下</p>
+<pre><code>tableView.reloadData()
+tv.selectRow(at: ip, animated: false, scrollPosition: .top)
+</code></pre><p>// 其他操作</p>
+<pre><code>open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {
+            let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
+            cell.model = item
+            return cell
+    }
+</code></pre><h3 id="看一看源码"><a href="#看一看源码" class="headerlink" title="看一看源码"></a>看一看源码</h3><p>leftDataSource 通过泛型指明每个 tableView section 的数据结构，他唯一的参数是一个闭包， configureCell .</p>
+<pre><code>let rightListDataSource =  RxTableViewSectionedReloadDataSource&lt;CategoryLeftSection&gt;( configureCell: { [weak self] ds, tv, ip, item in
+// ...
+}
+</code></pre><p>configureCell 实际上就是系统提供的代理方法 open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {<br>RxDataSource 的源代码挺清晰的，首先采用前提条件 precondition, row 确保不会越界。然后调用 configureCell 匿名函数。这样的设计，借用了 Swift 中函数是一级公民，函数可以像值一样传递。</p>
+<h3 id="更好的调用时机"><a href="#更好的调用时机" class="headerlink" title="更好的调用时机:"></a>更好的调用时机:</h3><p>继承 TableViewSectionedDataSource, 创建自己想要的子类，任意根据需求改方法。</p>
+<p>做一个继承</p>
+<pre><code>final class MyDataSource&lt;S: SectionModelType&gt;: RxTableViewSectionedReloadDataSource&lt;S&gt; {
+    private let relay = PublishRelay&lt;Void&gt;()
+    var rxRealoded: Signal&lt;Void&gt; {
+        return relay.asSignal()
+    }
+
+    override func tableView(_ tableView: UITableView, observedEvent: Event&lt;[S]&gt;) {
+        super.tableView(tableView, observedEvent: observedEvent)
+        // Do diff
+        // Notify update
+        relay.accept(())
+    }
+
+}
+</code></pre><p>因为这个场景下， super.tableView(tableView, observedEvent: observedEvent), 调用之后，需要接受一下事件，以后把它发送出去。所以要用一个 PublishSubject.<br>PublishRelay 是对 PublishSubject 的封装，区别是他的功能没 PublishSubject 那么强，PublishRelay 少两个状态，完成 completed 和出错 error， 适合更加专门的场景。</p>
+<p>Signal 信号嘛，共享事件流 SharedSequence。他是对 Observable 的封装。具有在主线程调用等特性，更适用于搞 UI .</p>
+<p>简单优化下，代码语义更加明确</p>
+<pre><code>// left menu 数据源
+        let leftDataSource = MyDataSource&lt;CategoryLeftSection&gt;( configureCell: { ds, tv, ip, item in
+            let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
+            cell.model = item
+            return cell
+        })
+        // 刷新完了，做一下选择
+        leftDataSource.rxRealoded.emit(onNext: { [weak self] in
+            guard let self = self else { return }
+            let indexPath = IndexPath(row: 0, section: 0)
+            self.leftMenuTableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableView.ScrollPosition.none)
+            self.leftMenuTableView.delegate?.tableView?(self.leftMenuTableView, didSelectRowAt: indexPath)
+        }).disposed(by: rx.disposeBag)
+
+// ...
+// 其余不变
+</code></pre><h3 id="所谓代码的语义"><a href="#所谓代码的语义" class="headerlink" title="所谓代码的语义"></a>所谓代码的语义</h3><p>FRP 就是把要干嘛，直接写清楚，不会像 OOP 那样，过度的见缝插针，调用到了，就改一下状态。</p>
+<p>声明式编程是只在一处修改。就算把那一处修改，声明式编程也只在一处调用。OOP 就找的比较辛苦。</p>
+<p><a href="https://github.com/Thecompanyprojects/RXDataSourceDemo" target="_blank" rel="noopener">github</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/26/RxDataSource 使用套路与解释/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-使用 RXSwift 构建 UITableView" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2043,1483 +2718,6 @@ public class MybatisDataSourceInterceptor implements Interceptor {
 
 
   
-    <article id="post-迁至WKWebView跨过的那些坑" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/05/迁至WKWebView跨过的那些坑/">迁至WKWebView跨过的那些坑</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/05/迁至WKWebView跨过的那些坑/" class="archive-article-date">
-  	<time datetime="2019-09-05T06:38:49.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS中有两种网页视图可以加载网页除了系统的那个控制器。一种是UIWebView，另一种是WKWebView，其实WKWebView就是想替代UIWebView的，因为我们都知道UIWebView非常占内存等一些问题，但是现在很多人还在使用UIWebView这是为啥呢？而且官方也宣布在iOS12中废弃了UIWebView让我们尽快使用WKWebView。其实也就是这些东西：<strong>页面尺寸问题、JS交互、请求拦截、cookie带不上的问题。</strong>所以有时想要迁移还得解决这些问题，所以还是很烦的，所以一一解决喽。</p>
-<h2 id="页面尺寸的问题"><a href="#页面尺寸的问题" class="headerlink" title="页面尺寸的问题"></a>页面尺寸的问题</h2><p>我们知道有些网页在UIWebView上显示好好地，使用WKWebView就会出现尺寸的问题，这时很纳闷，安卓也不会，你总不说是前端的问题吧？但其实是WKWebView中网页是需要适配一下，所以自己添加JS吧，当然和前端关系好就可以叫他加的。下面通过设置配置中的userContentController来添加JS。</p>
-<pre><code>WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-NSString *jScript = @&quot;var meta = document.createElement(&apos;meta&apos;); meta.setAttribute(&apos;name&apos;, &apos;viewport&apos;); meta.setAttribute(&apos;content&apos;, &apos;width=device-width&apos;); document.getElementsByTagName(&apos;head&apos;)[0].appendChild(meta);&quot;;
-WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
-WKUserContentController *wkUController = [[WKUserContentController alloc] init];
-[wkUController addUserScript:wkUScript];
-configuration.userContentController = wkUController;
-</code></pre><h2 id="JS交互"><a href="#JS交互" class="headerlink" title="JS交互"></a>JS交互</h2><p>我们都知道在UIWebView中可以使用自家的JavaScriptCore来进行交互非常的方便。在JavaScriptCore中有三者比较常用那就是JSContext(上下文)、JSValue（类型转换）、JSExport(js调OC模型方法)。</p>
-<h3 id="在UIWebView中的便利交互方法"><a href="#在UIWebView中的便利交互方法" class="headerlink" title="在UIWebView中的便利交互方法"></a>在UIWebView中的便利交互方法</h3><pre><code>//JSContext就为其提供着运行环境 H5上下文
-- (void)webViewDidFinishLoad:(UIWebView *)webView{
-    JSContext *jsContext = [self.webView valueForKeyPath:@&quot;documentView.webView.mainFrame.javaScriptContext&quot;];
-    self.jsContext = jsContext;
-}
-// 执行脚本增加js全局变量
-[self.jsContext evaluateScript:@&quot;var arr = [3, &apos;3&apos;, &apos;abc&apos;];&quot;];
-// ⚠️添加JS方法，需要注意的是添加的方法会覆盖原有的JS方法，因为我们是在网页加载成功后获取上下文来操作的。
-// 无参数的
-self.jsContext[@&quot;alertMessage&quot;] = ^() {
-   NSLog(@&quot;JS端调用alertMessage时就会跑到这里来！&quot;);
-};
-// 带参数的，值必须进行转换
- self.jsContext[@&quot;showDict&quot;] = ^(JSValue *value) {
-    NSArray *args = [JSContext currentArguments];
-    JSValue *dictValue = args[0];
-    NSDictionary *dict = dictValue.toDictionary;
-    NSLog(@&quot;%@&quot;,dict);
- };
-// 获取JS中的arr数据
-JSValue *arrValue = self.jsContext[@&quot;arr&quot;];
-// 异常捕获
-self.jsContext.exceptionHandler = ^(JSContext *context, JSValue *exception) {
-    weakSelf.jsContext.exception = exception;
-    NSLog(@&quot;exception == %@&quot;,exception);
-};
-// 给JS中的对象重新赋值
-OMJSObject *omObject = [[OMJSObject alloc] init];
-self.jsContext[@&quot;omObject&quot;] = omObject;
-NSLog(@&quot;omObject == %d&quot;,[omObject getSum:20 num2:40]);
-
-// 我们都知道object必须要遵守JSExport协议时，js可以直接调用object中的方法，并且需要把函数名取个别名。在JS端可以调用getS，OC可以继续使用这个getSum这个方法
-@protocol OMProtocol &lt;JSExport&gt;
-// 协议 - 协议方法 
-JSExportAs(getS, -(int)getSum:(int)num1 num2:(int)num2);
-@end
-</code></pre><h3 id="在WKWebView中如何做呢？"><a href="#在WKWebView中如何做呢？" class="headerlink" title="在WKWebView中如何做呢？"></a>在WKWebView中如何做呢？</h3><p>不能像上面那样，系统提供的是通过以下两种方法，所以是比较难受，而且还得前端使用messageHandler来调用，即安卓和iOS分开处理。</p>
-<pre><code>// 直接调用js
-NSString *jsStr = @&quot;var arr = [3, &apos;3&apos;, &apos;abc&apos;]; &quot;;
-[self.webView evaluateJavaScript:jsStr completionHandler:^(id _Nullable result, NSError * _Nullable error) {
-   NSLog(@&quot;%@----%@&quot;,result, error);
-}];
-// 下面是注册名称后，js使用messageHandlers调用了指定名称就会进入到代理中
-
-// OC我们添加了js名称后
-- (void)viewDidLoad{
-  //...
-  [wkUController addScriptMessageHandler:self name:@&quot;showtime&quot;];
-  configuration.userContentController = wkUController;
-}
-
-// JS中messageHandlers调用我们在OC中的名称一致时就会进入后面的到OC的代理
-window.webkit.messageHandlers.showtime.postMessage(&apos;&apos;);
-
-// 代理，判断逻辑
-- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message{
-    if ([message.name isEqualToString:@&quot;showtime&quot;]) {
-        NSLog(@&quot;来了！&quot;);
-    }
-    NSLog(@&quot;message == %@ --- %@&quot;,message.name,message.body); 
-}
-
-// 最后在dealloc必须移除
-[self.userContentController removeScriptMessageHandlerForName:@&quot;showtime&quot;];
-</code></pre><h3 id="一直用一直爽的交互"><a href="#一直用一直爽的交互" class="headerlink" title="一直用一直爽的交互"></a>一直用一直爽的交互</h3><p>我们上面写了两者的一些交互，虽然可以用呢，但是没有带一种很简单很轻松的境界，所以有一个开源库：WebViewJavaScriptBridge。这个开源库可以同时兼容两者，而且交互很简单，但是你必须得前端一起，否则就哦豁了。</p>
-<pre><code>// 使用
-self.wjb = [WebViewJavascriptBridge bridgeForWebView:self.webView];
-// 如果你要在VC中实现 UIWebView的代理方法 就实现下面的代码(否则省略)
-[self.wjb setWebViewDelegate:self];
-
-// 注册js方法名称
-[self.wjb registerHandler:@&quot;jsCallsOC&quot; handler:^(id data, WVJBResponseCallback responseCallback) {
-   NSLog(@&quot;currentThread == %@&quot;,[NSThread currentThread]);
-   NSLog(@&quot;data == %@ -- %@&quot;,data,responseCallback);
-}];
-
-// 调用JS
-dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [self.wjb callHandler:@&quot;OCCallJSFunction&quot; data:@&quot;OC调用JS&quot; responseCallback:^(id responseData) {
-           NSLog(@&quot;currentThread == %@&quot;,[NSThread currentThread]);
-           NSLog(@&quot;调用完JS后的回调：%@&quot;,responseData);
-        }];
-});
-</code></pre><p>前端使用实例如下，具体使用方法可以查看WebViewJavaScriptBridge。</p>
-<pre><code>function setupWebViewJavascriptBridge(callback) {
-    if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
-    if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
-    window.WVJBCallbacks = [callback];
-    var WVJBIframe = document.createElement(&apos;iframe&apos;);
-    WVJBIframe.style.display = &apos;none&apos;;
-    WVJBIframe.src = &apos;https://__bridge_loaded__&apos;;
-    document.documentElement.appendChild(WVJBIframe);
-    setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
-}
-
-setupWebViewJavascriptBridge(function(bridge) {
-
-    /* Initialize your app here */
-
-    bridge.registerHandler(&apos;JS Echo&apos;, function(data, responseCallback) {
-        console.log(&quot;JS Echo called with:&quot;, data)
-        responseCallback(data)
-    })
-    bridge.callHandler(&apos;ObjC Echo&apos;, {&apos;key&apos;:&apos;value&apos;}, function responseCallback(responseData) {
-        console.log(&quot;JS received response:&quot;, responseData)
-    })
-})
-</code></pre><h2 id="请求拦截"><a href="#请求拦截" class="headerlink" title="请求拦截"></a>请求拦截</h2><p>我们UIWebView在早期是使用- (BOOL)webView:(UIWebView <em>)webView shouldStartLoadWithRequest:(NSURLRequest </em>)request navigationType:(UIWebViewNavigationType)navigationType来根据scheme、host、pathComponents进行拦截做自定义逻辑处理。但是这种方法不是很灵活，于是就使用NSURLProtocol来进行拦截，例如微信拦截淘宝一样，直接显示一个提示。又或者是拦截请求调用本地的接口，打开相机、录音、相册等功能。还能直接拦截后改变原有的request，直接返回数据或者其他的url，在一些去除广告时可以的用得上。</p>
-<p>我们使用的时候必须要使用NSURLProtocol的子类来进行一些操作。并在使用前需要注册自定义的Class。拦截后记得进行标记一下，防止自循环多执行。可惜的是在WKWebView中不能进行拦截后处理的操作，只能监听却改变不了。源于WKWebView采用的是webkit加载，和系统的浏览器一样的机制。</p>
-<pre><code>// 子类
-@interface OMURLProtocol : NSURLProtocol&lt;NSURLSessionDataDelegate&gt;
-@property (nonatomic, strong) NSURLSession *session;
-@end
-
-// 注册
-[NSURLProtocol registerClass:[OMURLProtocol class]];
-// 1. 首先会在这里来进行拦截，返回YES则表示需要经过我们自定义处理，NO则走系统处理
-+ (BOOL)canInitWithRequest:(NSURLRequest *)request;
-
-// 2.拦截处理将会进入下一个环节, 返回一个标准化的request，可以在这里进行重定向
-+ (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request;
-
-// 3.是否成功拦截都会走这个方法, 可以在这里进行一些自定义处理
-- (void)startLoading;
-
-// 4. 任何网络请求都会走上面的拦截处理，即使我们重定向后还会再走一次或多次流程，需要标记来处理
-// 根据request获取标记值来决定是否需要拦截，在canInitWithRequest内处理
-+ (nullable id)propertyForKey:(NSString *)key inRequest:(NSURLRequest *)request;
-// 标记
-+ (void)setProperty:(id)value forKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
-// 移除标记
-+ (void)removePropertyForKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
-</code></pre><h3 id="请求头或数据混乱问题"><a href="#请求头或数据混乱问题" class="headerlink" title="请求头或数据混乱问题"></a>请求头或数据混乱问题</h3><p>还需要注意的一点是，如果实现线了拦截处理的话，我们在使用AFN和URLSession进行访问的时候拦截会发现数据或请求头可能和你拦截处理后的数据或请求不符合预期，这是因为我们在拦截的时候只是先请求了A后请求了B，这是不符合预期的，虽然URLConnection不会但是已被废弃不值得提倡使用。我们通过在拦截的时候通过LLDB打印session中配置的协议时，发现是这样的没有包含我们自定义的协议，我们通过Runtime交换方法交换protocolClasses方法，我们实现我们自己的protocolClasses方法。但是为了保证系统原有的属性，我们应该在系统原有的协议表上加上我们的协议类。在当前我们虽然可以通过[NSURLSession sharedSession].configuration.protocolClasses;获取系统默认的协议类，但是如果我们在当前自定义的类里protocolClasses写的话会造成死循环，因为我们交换了该属性的getter方法。我们使用保存类名然后存储至NSUserDefaults，取值时在还原class。</p>
-<pre><code>po session.configuration.protocolClasses
-&lt;__NSArrayI 0x600001442d00&gt;(
-_NSURLHTTPProtocol,
-_NSURLDataProtocol,
-_NSURLFTPProtocol,
-_NSURLFileProtocol,
-NSAboutURLProtocol
-)
-
-
---- // 自定义返回我们的协议类
-- (NSArray *)protocolClasses {
-    NSArray *originalProtocols = [OMURLProtocol readOriginalProtocols];
-    NSMutableArray *newProtocols = [NSMutableArray arrayWithArray:originalProtocols];
-    [newProtocols addObject:[OMURLProtocol class]];
-    return newProtocols;
-}
-
-// 我们再次打印时发现已经加上我们自定义的协议类了
-po session.configuration.protocolClasses
-&lt;__NSArrayM 0x60000041a4f0&gt;(
-_NSURLHTTPProtocol,
-_NSURLDataProtocol,
-_NSURLFTPProtocol,
-_NSURLFileProtocol,
-NSAboutURLProtocol,
-OMURLProtocol
-)
-</code></pre><hr>
-<pre><code>// 存储系统原有的协议类
-+ (void)saveOriginalProtocols: (NSArray&lt;Class&gt; *)protocols{
-    NSMutableArray *protocolNameArray = [NSMutableArray array];
-    for (Class protocol in protocols){
-        [protocolNameArray addObject:NSStringFromClass(protocol)];
-    }
-    NSLog(@&quot;协议数组为： %@&quot;, protocolNameArray);
-    [[NSUserDefaults standardUserDefaults] setObject:protocolNameArray forKey:originalProtocolsKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-// 获取系统原有的协议类
-+ (NSArray&lt;Class&gt; *)readOriginalProtocols{
-    NSArray *classNames = [[NSUserDefaults standardUserDefaults] valueForKey:originalProtocolsKey];
-    NSMutableArray *origianlProtocols = [NSMutableArray array];
-    for (NSString *name in classNames){
-        Class class = NSClassFromString(name);
-        [origianlProtocols addObject: class];
-    }
-    return origianlProtocols;
-}
-</code></pre><hr>
-<pre><code>+ (void)hookNSURLSessionConfiguration{
-    NSArray *originalProtocols = [NSURLSession sharedSession].configuration.protocolClasses;
-    [self saveOriginalProtocols:originalProtocols];
-    Class cls = NSClassFromString(@&quot;__NSCFURLSessionConfiguration&quot;) ?: NSClassFromString(@&quot;NSURLSessionConfiguration&quot;);
-    Method originalMethod = class_getInstanceMethod(cls, @selector(protocolClasses));
-    Method stubMethod = class_getInstanceMethod([self class], @selector(protocolClasses));
-    if (!originalMethod || !stubMethod) {
-        [NSException raise:NSInternalInconsistencyException format:@&quot;没有这个方法 无法交换&quot;];
-    }
-    method_exchangeImplementations(originalMethod, stubMethod);
-}
-</code></pre><h3 id="Cookie的携带问题"><a href="#Cookie的携带问题" class="headerlink" title="Cookie的携带问题"></a>Cookie的携带问题</h3><p>很多应用场景中需要使用session来进行处理，在UIWebView中很容易做到携带这些Cookie，但是由于WKWebView的机制不一样，跨域会出现丢失cookie的情况是很糟糕的。目前有两种用法：脚本和手动添加cookie。脚本不太靠谱，建议使用手动添加更为保险。</p>
-<p>// 使用脚本来添加cookie</p>
-<pre><code>// 获取去cookie数据
-- (NSString *)cookieString
-{
-    NSMutableString *script = [NSMutableString string];
-    [script appendString:@&quot;var cookieNames = document.cookie.split(&apos;; &apos;).map(function(cookie) { return cookie.split(&apos;=&apos;)[0] } );\n&quot;];
-    for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]) {
-
-        if ([cookie.value rangeOfString:@&quot;&apos;&quot;].location != NSNotFound) {
-            continue;
-        }
-        [script appendFormat:@&quot;if (cookieNames.indexOf(&apos;%@&apos;) == -1) { document.cookie=&apos;%@&apos;; };\n&quot;, cookie.name, cookie.kc_formatCookieString];
-    }
-    return script;
-}
-
-// 添加cookie
-WKUserScript * cookieScript = [[WKUserScript alloc] initWithSource:[self cookieString] injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
-[[[WKUserContentController alloc] init] addUserScript: cookieScript];
-</code></pre><p>// 添加一个分类来修复cookie丢失的问题</p>
-<pre><code>@interface NSURLRequest (Cookie)
-
-- (NSURLRequest *)fixCookie;
-
-@end
-
-@implementation NSURLRequest (Cookie)
-
-- (NSURLRequest *)fixCookie{
-    NSMutableURLRequest *fixedRequest;
-    if ([self isKindOfClass:[NSMutableURLRequest class]]) {
-        fixedRequest = (NSMutableURLRequest *)self;
-    } else {
-        fixedRequest = self.mutableCopy;
-    }
-    //防止Cookie丢失
-    NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:[NSHTTPCookieStorage sharedHTTPCookieStorage].cookies];
-    if (dict.count) {
-        NSMutableDictionary *mDict = self.allHTTPHeaderFields.mutableCopy;
-        [mDict setValuesForKeysWithDictionary:dict];
-        fixedRequest.allHTTPHeaderFields = mDict;
-    }
-    return fixedRequest;
-}
-
-@end
-
-
-  // 使用场景
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-    [navigationAction.request fixCookie];
-    decisionHandler(WKNavigationActionPolicyAllow);
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/05/迁至WKWebView跨过的那些坑/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-大型互联网公司分布式ID方案总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/05/大型互联网公司分布式ID方案总结/">大型互联网公司分布式ID方案总结</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/05/大型互联网公司分布式ID方案总结/" class="archive-article-date">
-  	<time datetime="2019-09-05T06:26:24.083Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>ID是数据的唯一标识，传统的做法是利用UUID和数据库的自增ID，在互联网企业中，大部分公司使用的都是Mysql，并且因为需要事务支持，所以通常会使用Innodb存储引擎，UUID太长以及无序，所以并不适合在Innodb中来作为主键，自增ID比较合适，但是随着公司的业务发展，数据量将越来越大，需要对数据进行分表，而分表后，每个表中的数据都会按自己的节奏进行自增，很有可能出现ID冲突。这时就需要一个单独的机制来负责生成唯一ID，生成出来的ID也可以叫做分布式ID，或全局ID。下面来分析各个生成分布式ID的机制。</p>
-<p><img src="http://img.wangjungang.cn/ALQ2nU.jpg" alt=""></p>
-<h2 id="数据库自增ID"><a href="#数据库自增ID" class="headerlink" title="数据库自增ID"></a>数据库自增ID</h2><p>第一种方案仍然还是基于数据库的自增ID，需要单独使用一个数据库实例，在这个实例中新建一个单独的表：</p>
-<p>表结构如下</p>
-<pre><code>CREATE DATABASE `SEQID`;
-
-CREATE TABLE SEQID.SEQUENCE_ID (
-    id bigint(20) unsigned NOT NULL auto_increment, 
-    stub char(10) NOT NULL default &apos;&apos;,
-    PRIMARY KEY (id),
-    UNIQUE KEY stub (stub)
-) ENGINE=MyISAM;
-</code></pre><p>可以使用下面的语句生成并获取到一个自增ID</p>
-<pre><code>begin;
-replace into SEQUENCE_ID (stub) VALUES (&apos;anyword&apos;);
-select last_insert_id();
-commit;
-</code></pre><p>stub字段在这里并没有什么特殊的意义，只是为了方便的去插入数据，只有能插入数据才能产生自增id。而对于插入我们用的是replace，replace会先看是否存在stub指定值一样的数据，如果存在则先delete再insert，如果不存在则直接insert。</p>
-<p>这种生成分布式ID的机制，需要一个单独的Mysql实例，虽然可行，但是基于性能与可靠性来考虑的话都不够，业务系统每次需要一个ID时，都需要请求数据库获取，性能低，并且如果此数据库实例下线了，那么将影响所有的业务系统。</p>
-<p>为了解决数据库可靠性问题，我们可以使用第二种分布式ID生成方案。</p>
-<h2 id="数据库多主模式"><a href="#数据库多主模式" class="headerlink" title="数据库多主模式"></a>数据库多主模式</h2><p>如果我们两个数据库组成一个主从模式集群，正常情况下可以解决数据库可靠性问题，但是如果主库挂掉后，数据没有及时同步到从库，这个时候会出现ID重复的现象。我们可以使用双主模式集群，也就是两个Mysql实例都能单独的生产自增ID，这样能够提高效率，但是如果不经过其他改造的话，这两个Mysql实例很可能会生成同样的ID。需要单独给每个Mysql实例配置不同的起始值和自增步长。</p>
-<p>第一台Mysql实例配置：</p>
-<pre><code>set @@auto_increment_offset = 1;     -- 起始值
-set @@auto_increment_increment = 2;  -- 步长
-</code></pre><p>第二台Mysql实例配置</p>
-<pre><code>set @@auto_increment_offset = 2;     -- 起始值
-set @@auto_increment_increment = 2;  -- 步长
-</code></pre><p>经过上面的配置后，这两个Mysql实例生成的id序列如下：<br>mysql1,起始值为1,步长为2,ID生成的序列为：1,3,5,7,9,…<br>mysql2,起始值为2,步长为2,ID生成的序列为：2,4,6,8,10,…</p>
-<p>对于这种生成分布式ID的方案，需要单独新增一个生成分布式ID应用，比如<br>DistributIdService，该应用提供一个接口供业务应用获取ID，业务应用需要一个ID时，通过rpc的方式请求DistributIdService，DistributIdService随机去上面的两个Mysql实例中去获取ID。</p>
-<p>实行这种方案后，就算其中某一台Mysql实例下线了，也不会影响DistributIdService，DistributIdService仍然可以利用另外一台Mysql来生成ID。</p>
-<p>但是这种方案的扩展性不太好，如果两台Mysql实例不够用，需要新增Mysql实例来提高性能时，这时就会比较麻烦。</p>
-<p>现在如果要新增一个实例mysql3，要怎么操作呢？</p>
-<p>第一，mysql1、mysql2的步长肯定都要修改为3，而且只能是人工去修改，这是需要时间的。</p>
-<p>第二，因为mysql1和mysql2是不停在自增的，对于mysql3的起始值我们可能要定得大一点，以给充分的时间去修改mysql1，mysql2的步长。</p>
-<p>第三，在修改步长的时候很可能会出现重复ID，要解决这个问题，可能需要停机才行。<br>为了解决上面的问题，以及能够进一步提高DistributIdService的性能，如果使用第三种生成分布式ID机制。</p>
-<h2 id="号段模式"><a href="#号段模式" class="headerlink" title="号段模式"></a>号段模式</h2><p>我们可以使用号段的方式来获取自增ID，号段可以理解成批量获取，比如DistributIdService从数据库获取ID时，如果能批量获取多个ID并缓存在本地的话，那样将大大提供业务应用获取ID的效率。</p>
-<p>比如DistributIdService每次从数据库获取ID时，就获取一个号段，比如(1,1000]，这个范围表示了1000个ID，业务应用在请求DistributIdService提供ID时，<br>DistributIdService只需要在本地从1开始自增并返回即可，而不需要每次都请求数据库，一直到本地自增到1000时，也就是当前号段已经被用完时，才去数据库重新获取下一号段。</p>
-<p>所以，我们需要对数据库表进行改动，如下：</p>
-<pre><code>CREATE TABLE id_generator (
-  id int(10) NOT NULL,
-  current_max_id bigint(20) NOT NULL COMMENT &apos;当前最大id&apos;,
-  increment_step int(10) NOT NULL COMMENT &apos;号段的长度&apos;,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-</code></pre><p>这个数据库表用来记录自增步长以及当前自增ID的最大值（也就是当前已经被申请的号段的最后一个值），因为自增逻辑被移到DistributIdService中去了，所以数据库不需要这部分逻辑了。</p>
-<p>这种方案不再强依赖数据库，就算数据库不可用，那么DistributIdService也能继续支撑一段时间。但是如果DistributIdService重启，会丢失一段ID，导致ID空洞。</p>
-<p>为了提高DistributIdService的高可用，需要做一个集群，业务在请求DistributIdService集群获取ID时，会随机的选择某一个DistributIdService节点进行获取，对每一个DistributIdService节点来说，数据库连接的是同一个数据库，那么可能会产生多个DistributIdService节点同时请求数据库获取号段，那么这个时候需要利用乐观锁来进行控制，比如在数据库表中增加一个version字段，在获取号段时使用如下SQL：</p>
-<pre><code>update id_generator set current_max_id=#{newMaxId}, version=version+1 where version = #{version}
-</code></pre><p>因为newMaxId是DistributIdService中根据oldMaxId+步长算出来的，只要上面的update更新成功了就表示号段获取成功了。</p>
-<p>为了提供数据库层的高可用，需要对数据库使用多主模式进行部署，对于每个数据库来说要保证生成的号段不重复，这就需要利用最开始的思路，再在刚刚的数据库表中增加起始值和步长，比如如果现在是两台Mysql，那么<br>mysql1将生成号段（1,1001]，自增的时候序列为1，3，4，5，7….<br>mysql1将生成号段（2,1002]，自增的时候序列为2，4，6，8，10…</p>
-<p>在TinyId中还增加了一步来提高效率，在上面的实现中，ID自增的逻辑是在DistributIdService中实现的，而实际上可以把自增的逻辑转移到业务应用本地，这样对于业务应用来说只需要获取号段，每次自增时不再需要请求调用DistributIdService了。</p>
-<p>作者：1点25<br>链接：<a href="https://juejin.im/post/5d6fc8eff265da03ef7a324b" target="_blank" rel="noopener">https://juejin.im/post/5d6fc8eff265da03ef7a324b</a><br>来源：掘金<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
-<h2 id="雪花算法"><a href="#雪花算法" class="headerlink" title="雪花算法"></a>雪花算法</h2><p>上面的三种方法总的来说是基于自增思想的，而接下来就介绍比较著名的雪花算法-snowflake。</p>
-<p>我们可以换个角度来对分布式ID进行思考，只要能让负责生成分布式ID的每台机器在每毫秒内生成不一样的ID就行了。</p>
-<p>snowflake是twitter开源的分布式ID生成算法，是一种算法，所以它和上面的三种生成分布式ID机制不太一样，它不依赖数据库。</p>
-<p>核心思想是：分布式ID固定是一个long型的数字，一个long型占8个字节，也就是64个bit，原始snowflake算法中对于bit的分配如下图：</p>
-<p><img src="http://img.wangjungang.cn/3EhNZe.jpg" alt=""></p>
-<ul>
-<li><p>第一个bit位是标识部分，在java中由于long的最高位是符号位，正数是0，负数是1，一般生成的ID为正数，所以固定为0。</p>
-</li>
-<li><p>时间戳部分占41bit，这个是毫秒级的时间，一般实现上不会存储当前的时间戳，而是时间戳的差值（当前时间-固定的开始时间），这样可以使产生的ID从更小值开始；41位的时间戳可以使用69年，(1L &lt;&lt; 41) / (1000L <em> 60 </em> 60 <em> 24 </em> 365) = 69年</p>
-</li>
-<li><p>工作机器id占10bit，这里比较灵活，比如，可以使用前5位作为数据中心机房标识，后5位作为单机房机器标识，可以部署1024个节点。</p>
-</li>
-<li>序列号部分占12bit，支持同一毫秒内同一个节点可以生成4096个ID</li>
-</ul>
-<p>根据这个算法的逻辑，只需要将这个算法用Java语言实现出来，封装为一个工具方法，那么各个业务应用可以直接使用该工具方法来获取分布式ID，只需保证每个业务应用有自己的工作机器id即可，而不需要单独去搭建一个获取分布式ID的应用。</p>
-<p>在大厂里，其实并没有直接使用snowflake，而是进行了改造，因为snowflake算法中最难实践的就是工作机器id，原始的snowflake算法需要人工去为每台机器去指定一个机器id，并配置在某个地方从而让snowflake从此处获取机器id。</p>
-<p>但是在大厂里，机器是很多的，人力成本太大且容易出错，所以大厂对snowflake进行了改造。</p>
-<h3 id="百度（uid-generator）"><a href="#百度（uid-generator）" class="headerlink" title="百度（uid-generator）"></a>百度（uid-generator）</h3><p>uid-generator使用的就是snowflake，只是在生产机器id，也叫做workId时有所不同。<br>uid-generator中的workId是由uid-generator自动生成的，并且考虑到了应用部署在docker上的情况，在uid-generator中用户可以自己去定义workId的生成策略，默认提供的策略是：应用启动时由数据库分配。说的简单一点就是：应用在启动时会往数据库表(uid-generator需要新增一个WORKER_NODE表)中去插入一条数据，数据插入成功后返回的该数据对应的自增唯一id就是该机器的workId，而数据由host，port组成。</p>
-<p>对于uid-generator中的workId，占用了22个bit位，时间占用了28个bit位，序列化占用了13个bit位，需要注意的是，和原始的snowflake不太一样，时间的单位是秒，而不是毫秒，workId也不一样，同一个应用每重启一次就会消费一个workId。</p>
-<p><a href="https://github.com/baidu/uid-generator" target="_blank" rel="noopener">github</a></p>
-<h3 id="美团（Leaf）"><a href="#美团（Leaf）" class="headerlink" title="美团（Leaf）"></a>美团（Leaf）</h3><p>美团的Leaf也是一个分布式ID生成框架。它非常全面，即支持号段模式，也支持snowflake模式。号段模式这里就不介绍了，和上面的分析类似。</p>
-<p>Leaf中的snowflake模式和原始snowflake算法的不同点，也主要在workId的生成，Leaf中workId是基于ZooKeeper的顺序Id来生成的，每个应用在使用Leaf-snowflake时，在启动时都会都在Zookeeper中生成一个顺序Id，相当于一台机器对应一个顺序节点，也就是一个workId。</p>
-<p><a href="https://github.com/Meituan-Dianping/Leaf" target="_blank" rel="noopener">github</a></p>
-<h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><p>这里额外再介绍一下使用Redis来生成分布式ID，其实和利用Mysql自增ID类似，可以利用Redis中的incr命令来实现原子性的自增与返回，比如：</p>
-<pre><code>127.0.0.1:6379&gt; set seq_id 1     // 初始化自增ID为1
-OK
-127.0.0.1:6379&gt; incr seq_id      // 增加1，并返回
-(integer) 2
-127.0.0.1:6379&gt; incr seq_id      // 增加1，并返回
-(integer) 3
-</code></pre><p>使用redis的效率是非常高的，但是要考虑持久化的问题。Redis支持RDB和AOF两种持久化的方式。</p>
-<p>RDB持久化相当于定时打一个快照进行持久化，如果打完快照后，连续自增了几次，还没来得及做下一次快照持久化，这个时候Redis挂掉了，重启Redis后会出现ID重复。</p>
-<p>AOF持久化相当于对每条写命令进行持久化，如果Redis挂掉了，不会出现ID重复的现象，但是会由于incr命令过得，导致重启恢复数据时间过长。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">算法</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/05/大型互联网公司分布式ID方案总结/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-Swift 关键字" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/05/Swift 关键字/">Swift 关键字</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/05/Swift 关键字/" class="archive-article-date">
-  	<time datetime="2019-09-05T02:31:03.745Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>对于自身能力的严格要求，可以帮助实现我们所有梦寐以求的东西。</p>
-<h2 id="声明式关键字"><a href="#声明式关键字" class="headerlink" title="声明式关键字"></a>声明式关键字</h2><h3 id="associatedtype"><a href="#associatedtype" class="headerlink" title="associatedtype"></a>associatedtype</h3><p>在协议中，定义一个类型的占位符名称。直到协议被实现，该占位符才会被指定具体的类型。</p>
-<pre><code>protocol Entertainment  
-{  
-    associatedtype MediaType  
-}
-
-class Foo : Entertainment  
-{  
-    typealias MediaType = String //可以指定任意类型
-}
-</code></pre><h3 id="class"><a href="#class" class="headerlink" title="class"></a>class</h3><p>通用、灵活的结构体，是程序的基础组成部分。与 struct 类似，不同之处在于：</p>
-<ul>
-<li><p>允许一个类继承另一个类的特性。</p>
-</li>
-<li><p>类型转换，允许在运行时检查和指定一个类的实际类型。</p>
-</li>
-<li><p>析构方法允许类的实例释放所有资源。</p>
-</li>
-<li><p>引用计数允许多个引用指向一个实例。</p>
-<pre><code>class Person
-{
-var name:String
-var age:Int
-var gender:String
-}
-</code></pre></li>
-</ul>
-<p>###deinit<br>当一个类的实例即将被销毁时，会调用这个方法。</p>
-<pre><code>class Person  
-{  
-    var name:String  
-    var age:Int  
-    var gender:String
-
-    deinit  
-    {  
-        //从堆中释放，并释放的资源
-    }  
-}
-</code></pre><p>###enum<br>定义了包含一组有关联的值的类型，并可以以一种类型安全的方式使用这些值。在 Swift 中，枚举是一等类型，拥有在其它语言中只有 class 才会支持的特性</p>
-<pre><code>enum Gender  
-{  
-    case male  
-    case female  
-}
-</code></pre><h3 id="extension"><a href="#extension" class="headerlink" title="extension"></a>extension</h3><p>允许给已有的类、结构体、枚举、协议类型，添加新功能</p>
-<pre><code>class Person  
-{  
-    var name:String = &quot;&quot;  
-    var age:Int = 0  
-    var gender:String = &quot;&quot;  
-}
-
-extension Person  
-{  
-    func printInfo()  
-    {  
-        print(&quot;My name is \(name), I&apos;m \(age) years old and I&apos;m a \(gender).&quot;)  
-    }  
-}
-</code></pre><h3 id="fileprivate"><a href="#fileprivate" class="headerlink" title="fileprivate"></a>fileprivate</h3><p>访问控制权限，只允许在定义源文件中访问</p>
-<pre><code>class Person  
-{  
-    fileprivate var jobTitle:String = &quot;&quot;  
-}
-
-extension Person  
-{
-    //当 extension 和 class 在同一个文件中时，允许访问
-    func printJobTitle()  
-    {  
-        print(&quot;My job is (jobTitle)&quot;)  
-    }  
-}
-</code></pre><h3 id="func"><a href="#func" class="headerlink" title="func"></a>func</h3><p>包含用户执行特定任务的代码块</p>
-<pre><code>func addNumbers(num1:Int, num2:Int) -&gt; Int  
-{  
-    return num1+num2  
-}
-</code></pre><h3 id="import"><a href="#import" class="headerlink" title="import"></a>import</h3><p>引入一个以独立单元构建的框架或者应用</p>
-<pre><code>import UIKit
-
-//可以使用 UIKit 框架下的所有代码
-class Foo {}
-</code></pre><h3 id="init"><a href="#init" class="headerlink" title="init"></a>init</h3><p>类、结构体、枚举的实例的初始化准备过程</p>
-<pre><code>class Person
-{  
-    init()  
-    {  
-        //设置默认值，实例准备被使用
-    }  
-}
-</code></pre><h3 id="inout"><a href="#inout" class="headerlink" title="inout"></a>inout</h3><p>将一个值传入函数，并可以被函数修改，然后将值传回到调用处，来替换初始值。适用于引用类型和值类型。</p>
-<pre><code>func dangerousOp(_ error:inout NSError?)  
-{  
-    error = NSError(domain: &quot;&quot;, code: 0, userInfo: [&quot;&quot;:&quot;&quot;])  
-}
-
-var potentialError:NSError?
-dangerousOp(&amp;potentialError)
-
-//代码运行到这里，potentialError 不再是 nil，而是已经被初始化
-</code></pre><h3 id="internal"><a href="#internal" class="headerlink" title="internal"></a>internal</h3><p>访问控制权限，允许同一个模块下的所有源文件访问，如果在不同模块下则不允许访问。</p>
-<pre><code>class Person  
-{  
-    internal var jobTitle:String = &quot;&quot;  
-}
-
-let aPerson = Person()  
-aPerson.jobTitle = &quot;This can set anywhere in the application&quot;
-</code></pre><h3 id="let"><a href="#let" class="headerlink" title="let"></a>let</h3><p>定义一个不可变的变量</p>
-<pre><code>let constantString = &quot;This cannot be mutated going forward&quot;
-</code></pre><h3 id="open"><a href="#open" class="headerlink" title="open"></a>open</h3><p>访问控制权限，允许在定义的模块外也可以访问源文件里的所有类，并进行子类化。对于类成员，允许在定义的模块之外访问和重写。</p>
-<pre><code>open var foo:String? //这个属性允许在 app 内或 app 外重写和访问。在开发框架的时候，会应用到这个访问修饰符。
-</code></pre><h3 id="operator"><a href="#operator" class="headerlink" title="operator"></a>operator</h3><pre><code>特殊符号，用于检查、修改、组合值。
-
-//一元运算符 &quot;-&quot;，改变值的符号
-let foo = 5  
-let anotherFoo = -foo //anotherFoo 等于 -5
-
-//二元运算符 &quot;+&quot; 将两个值相加
-let box = 5 + 3
-
-//逻辑运算符 &quot;&amp;&amp;&quot; 将两个布尔值进行组合运算
-if didPassCheckOne &amp;&amp; didPassCheckTwo
-
-//三元运算符需要使用三个值
-let isLegalDrinkingAgeInUS:Bool = age &gt;= 21 ? true : false
-</code></pre><h3 id="private"><a href="#private" class="headerlink" title="private"></a>private</h3><p>访问控制权限，只允许实体在定义的类以及相同源文件内的 extension 中访问。</p>
-<pre><code>class Person  
-{  
-    private var jobTitle:String = &quot;&quot;  
-}
-
-// 当 extension 和 class 不在同一个源文件时
-extension Person  
-{
-    // 无法编译通过，只有在同一个源文件下才可以访问
-    func printJobTitle()  
-    {  
-        print(&quot;My job is (jobTitle)&quot;)  
-    }  
-}
-</code></pre><h3 id="protocol"><a href="#protocol" class="headerlink" title="protocol"></a>protocol</h3><p>定义了一组方法、属性或其它要求，用于满足特定任务和一系列功能。</p>
-<pre><code>protocol Blog  
-{  
-    var wordCount:Int { get set }  
-    func printReaderStats()  
-}
-
-class TTIDGPost : Blog  
-{  
-    var wordCount:Int
-
-    init(wordCount:Int)  
-    {  
-        self.wordCount = wordCount  
-    }
-
-    func printReaderStats()  
-    {  
-        //打印 post 的数据  
-    }  
-}
-</code></pre><h3 id="public"><a href="#public" class="headerlink" title="public"></a>public</h3><p>访问控制权限，允许在定义的模块外也可以访问源文件里的所有类，但只有在同一个模块内可以进行子类化。对于类成员，允许在同个模块下访问和重写。</p>
-<pre><code>public var foo:String? //只允许在 app 内重写和访问。
-</code></pre><h3 id="static"><a href="#static" class="headerlink" title="static"></a>static</h3><p>用于定义类方法，在类型本身进行调用。此外还可以定义静态成员。</p>
-<pre><code>class Person  
-{  
-    var jobTitle:String?
-
-    static func assignRandomName(_ aPerson:Person)  
-    {  
-        aPerson.jobTitle = &quot;Some random job&quot;  
-    }  
-}
-
-let somePerson = Person()  
-Person.assignRandomName(somePerson)  
-//somePerson.jobTitle 的值是 &quot;Some random job&quot;
-</code></pre><h3 id="struct"><a href="#struct" class="headerlink" title="struct"></a>struct</h3><p>通用、灵活的结构体，是程序的基础组成部分，并提供了默认初始化方法。与 class 不同，当 struct 在代码中被传递时，是被拷贝的，并不使用引用计数。除此之外，struct 没有下面的这些功能：</p>
-<p>使用继承。</p>
-<p>运行时的类型转换。</p>
-<p>使用析构方法。</p>
-<pre><code>struct Person
-{
-var name:String
-var age:Int
-var gender:String
-}
-</code></pre><h3 id="subscript"><a href="#subscript" class="headerlink" title="subscript"></a>subscript</h3><p>访问集合、列表、序列中成员元素的快捷方式。</p>
-<pre><code>var postMetrics = [&quot;Likes&quot;:422, &quot;ReadPercentage&quot;:0.58, &quot;Views&quot;:3409]  
-let postLikes = postMetrics[&quot;Likes&quot;]
-</code></pre><h3 id="typealias"><a href="#typealias" class="headerlink" title="typealias"></a>typealias</h3><p>给代码中已经存在的类，取别名。</p>
-<pre><code>typealias JSONDictionary = [String: AnyObject]
-
-func parseJSON(_ deserializedData:JSONDictionary){}
-</code></pre><h3 id="var"><a href="#var" class="headerlink" title="var"></a>var</h3><p>定义可变变量。</p>
-<pre><code>var mutableString = &quot;&quot;  
-mutableString = &quot;Mutated&quot;
-</code></pre><h2 id="语气中的关键词"><a href="#语气中的关键词" class="headerlink" title="语气中的关键词"></a>语气中的关键词</h2><h3 id="break"><a href="#break" class="headerlink" title="break"></a>break</h3><p>终止程序中循环的执行，比如if语句，switch语句</p>
-<pre><code>for idx in 0...3  
-{  
-    if idx % 2 == 0  
-    {  
-        //当 idx 等于偶数时，退出 for 循环  
-        break  
-    }  
-}
-</code></pre><h3 id="case"><a href="#case" class="headerlink" title="case"></a>case</h3><p>该语句在 switch 语句中列出，在每个分支可以进行模式匹配。</p>
-<pre><code>let box = 1
-
-switch box  
-{  
-    case 0:  
-    print(&quot;Box equals 0&quot;)  
-    case 1:  
-    print(&quot;Box equals 1&quot;)  
-    default:  
-    print(&quot;Box doesn&apos;t equal 0 or 1&quot;)  
-}
-</code></pre><h3 id="continue"><a href="#continue" class="headerlink" title="continue"></a>continue</h3><p>用于终止循环的当前迭代，并进入下一次迭代，而不会停止整个循环的执行</p>
-<pre><code>for idx in 0...3  
-{  
-    if idx % 2 == 0  
-    {  
-        //直接开始循环的下一次迭代
-        continue  
-    }
-
-    print(&quot;This code never fires on even numbers&quot;)  
-}
-</code></pre><h3 id="default"><a href="#default" class="headerlink" title="default"></a>default</h3><p>用户涵盖在switch语句中，所有未明确列出的枚举成员</p>
-<pre><code>let box = 1
-
-switch box  
-{  
-    case 0:  
-    print(&quot;Box equals 0&quot;)  
-    case 1:  
-    print(&quot;Box equals 1&quot;)  
-    default:  
-    print(&quot;Covers any scenario that doesn&apos;t get addressed above.&quot;)  
-}
-</code></pre><h3 id="defer"><a href="#defer" class="headerlink" title="defer"></a>defer</h3><p>用于在程序离开当前作用域之前，执行一段代码。</p>
-<pre><code>func cleanUpIO()  
-{  
-    defer  
-    {  
-        print(&quot;This is called right before exiting scope&quot;)  
-    }
-
-
-    //关闭文件流等。  
-}
-</code></pre><h3 id="do"><a href="#do" class="headerlink" title="do"></a>do</h3><p>用于表示处理错误代码段的开始。</p>
-<pre><code>do  
-{  
-    try expression  
-    //语句
-}  
-catch someError ex  
-{  
-    //处理错误
-}
-</code></pre><h3 id="else"><a href="#else" class="headerlink" title="else"></a>else</h3><p>与 if 语句结合使用。当条件为 true，执行一段代码。当条件为 false，执行另一段代码。</p>
-<pre><code>if val &gt; 1  
-{  
-    print(&quot;val is greater than 1&quot;)  
-}  
-else  
-{  
-    print(&quot;val is not greater than 1&quot;)  
-}
-</code></pre><h3 id="fallthrough"><a href="#fallthrough" class="headerlink" title="fallthrough"></a>fallthrough</h3><p>显式地允许从当前 case 跳转到下一个相邻 case 继续执行代码。</p>
-<pre><code>let box = 1
-
-switch box  
-{  
-    case 0:  
-    print(&quot;Box equals 0&quot;)  
-    fallthrough  
-    case 1:  
-    print(&quot;Box equals 0 or 1&quot;)  
-    default:  
-    print(&quot;Box doesn&apos;t equal 0 or 1&quot;)  
-}
-</code></pre><h3 id="for"><a href="#for" class="headerlink" title="for"></a>for</h3><p>在序列上迭代，比如一组特定范围内的数字，数组中的元素，字符串中的字符。*与关键字 in 成对使用。</p>
-<pre><code>for _ in 0..&lt;3 { print (&quot;This prints 3 times&quot;) }
-</code></pre><h3 id="guard"><a href="#guard" class="headerlink" title="guard"></a>guard</h3><p>当有一个以上的条件不满足要求时，将离开当前作用域。同时还提供解包可选类型的功能。</p>
-<pre><code>private func printRecordFromLastName(userLastName: String?)
-{  
-    guard let name = userLastName, name != &quot;Null&quot; else  
-    {  
-        //userLastName = &quot;Null&quot;，需要提前退出
-        return  
-    }
-
-    //继续执行代码
-    print(dataStore.findByLastName(name))  
-}
-</code></pre><h3 id="if"><a href="#if" class="headerlink" title="if"></a>if</h3><p>当条件满足时，执行代码。</p>
-<pre><code>if 1 &gt; 2  
-{  
-    print(&quot;This will never execute&quot;)  
-}
-</code></pre><h3 id="in"><a href="#in" class="headerlink" title="in"></a>in</h3><p>在序列上迭代，比如一组特定范围内的数字，数组中的元素，字符串中的字符。*与关键字 key 搭配使用。</p>
-<pre><code>for _ in 0..&lt;3 { print (&quot;This prints 3 times&quot;) }
-</code></pre><h3 id="repeat"><a href="#repeat" class="headerlink" title="repeat"></a>repeat</h3><p>在使用循环的判断条件之前，先执行一次循环中的代码。</p>
-<pre><code>repeat  
-{  
-    print(&quot;Always executes at least once before the condition is considered&quot;)  
-}  
-while 1 &gt; 2
-</code></pre><h3 id="return"><a href="#return" class="headerlink" title="return"></a>return</h3><p>立刻终止当前上下文，离开当前作用域，此外在返回时可以额外携带一个值。</p>
-<pre><code>func doNothing()  
-{  
-    return //直接离开当前上下文
-
-    let anInt = 0  
-    print(&quot;This never prints (anInt)&quot;)  
-}
-</code></pre><p>和</p>
-<pre><code>func returnName() -&gt; String?  
-{  
-    return self.userName //离开，并返回 userName 的值
-}
-</code></pre><h3 id="switch"><a href="#switch" class="headerlink" title="switch"></a>switch</h3><p>将给定的值与分支进行比较。执行第一个模式匹配成功的分支代码。</p>
-<pre><code>let box = 1
-
-switch box  
-{  
-    case 0:  
-    print(&quot;Box equals 0&quot;)  
-    fallthrough  
-    case 1:  
-    print(&quot;Box equals 0 or 1&quot;)  
-    default:  
-    print(&quot;Box doesn&apos;t equal 0 or 1&quot;)  
-}
-</code></pre><h3 id="where"><a href="#where" class="headerlink" title="where"></a>where</h3><p>要求关联类型必须遵守特定协议，或者类型参数和关联类型必须保持一致。也可以用于在 case 中提供额外条件，用于满足控制表达式。</p>
-<p>where 从句可以应用于多种场景。以下例子指明了 where 的主要应用场景，泛型中的模式匹配。</p>
-<pre><code>protocol Nameable  
-{  
-    var name:String {get set}  
-}
-
-func createdFormattedName(_ namedEntity:T) -&gt; String where T:Equatable  
-{  
-    //只有当实体同时遵守 Nameable 和 Equatable 协议的时候，才允许调用这个函数
-    return &quot;This things name is &quot; + namedEntity.name  
-}
-</code></pre><p>和</p>
-<pre><code>for i in 0…3 where i % 2 == 0  
-{  
-    print(i) //打印 0 和 2  
-}
-</code></pre><h3 id="while"><a href="#while" class="headerlink" title="while"></a>while</h3><p>循环执行特定的一段语句，直到条件不满足时，停止循环。</p>
-<pre><code>while foo != bar  
-{  
-    print(&quot;Keeps going until the foo == bar&quot;)  
-}
-</code></pre><h2 id="表达式和类型中的关键字"><a href="#表达式和类型中的关键字" class="headerlink" title="表达式和类型中的关键字"></a>表达式和类型中的关键字</h2><h3 id="Any"><a href="#Any" class="headerlink" title="Any"></a>Any</h3><p>用于表示任意类型的实例，包括函数类型。</p>
-<pre><code>var anything = [Any]()
-
-anything.append(&quot;Any Swift type can be added&quot;)  
-anything.append(0)  
-anything.append({(foo: String) -&gt; String in &quot;Passed in (foo)&quot;})
-</code></pre><h3 id="as"><a href="#as" class="headerlink" title="as"></a>as</h3><p>类型转换运算符，用于尝试将值转成其它类型。</p>
-<pre><code>var anything = [Any]()
-
-anything.append(&quot;Any Swift type can be added&quot;)  
-anything.append(0)  
-anything.append({(foo: String) -&gt; String in &quot;Passed in (foo)&quot; })
-
-let intInstance = anything[1] as? Int
-</code></pre><p>或者</p>
-<pre><code>var anything = [Any]()
-
-anything.append(&quot;Any Swift type can be added&quot;)  
-anything.append(0)  
-anything.append({(foo: String) -&gt; String in &quot;Passed in (foo)&quot; })
-
-for thing in anything  
-{  
-    switch thing  
-    {  
-        case 0 as Int:  
-        print(&quot;It&apos;s zero and an Int type&quot;)  
-        case let someInt as Int:  
-        print(&quot;It&apos;s an Int that&apos;s not zero but (someInt)&quot;)  
-        default:  
-        print(&quot;Who knows what it is&quot;)  
-    }  
-}
-</code></pre><h3 id="catch"><a href="#catch" class="headerlink" title="catch"></a>catch</h3><p>如果在 do 中抛出一个错误，catch 会尝试进行匹配，并决定如何处理错误</p>
-<pre><code>do  
-{  
-    try haveAWeekend(4)  
-}  
-catch WeekendError.Overtime(let hoursWorked)  
-{  
-    print(&quot;You worked (hoursWorked) more than you should have&quot;)  
-}  
-catch WeekendError.WorkAllWeekend  
-{  
-    print(&quot;You worked 48 hours :-0&quot;)  
-}  
-catch  
-{  
-    print(&quot;Gulping the weekend exception&quot;)  
-}
-</code></pre><h3 id="false"><a href="#false" class="headerlink" title="false"></a>false</h3><p>Swift 用于表示布尔值的两个常量值之一，true 的相反值。</p>
-<pre><code>let alwaysFalse = false  
-let alwaysTrue = true
-
-if alwaysFalse { print(&quot;Won&apos;t print, alwaysFalse is false 😉&quot;)}
-</code></pre><h3 id="is"><a href="#is" class="headerlink" title="is"></a>is</h3><p>类型检查运算符，用于确定实例是否为某个子类类型。</p>
-<pre><code>class Person {}  
-class Programmer : Person {}  
-class Nurse : Person {}
-
-let people = [Programmer(), Nurse()]
-
-for aPerson in people  
-{  
-    if aPerson is Programmer  
-    {  
-        print(&quot;This person is a dev&quot;)  
-    }  
-    else if aPerson is Nurse  
-    {  
-        print(&quot;This person is a nurse&quot;)  
-    }  
-}
-</code></pre><h3 id="nil"><a href="#nil" class="headerlink" title="nil"></a>nil</h3><p>在 Swift 中表示任意类型的无状态值。</p>
-<pre><code>与 Objective-C 中的 nil 不同，Objective-C 中的 nil 表示指向不存在对象的指针。
-
-class Person{}  
-struct Place{}
-
-//任何 Swift 类型或实例可以为 nil
-var statelessPerson:Person? = nil  
-var statelessPlace:Place? = nil  
-var statelessInt:Int? = nil  
-var statelessString:String? = nil
-</code></pre><h3 id="super"><a href="#super" class="headerlink" title="super"></a>super</h3><p>在子类中，暴露父类的方法、属性、下标。</p>
-<pre><code>class Person  
-{  
-    func printName()  
-    {  
-        print(&quot;Printing a name. &quot;)  
-    }  
-}
-
-class Programmer : Person  
-{  
-    override func printName()  
-    {  
-        super.printName()  
-        print(&quot;Hello World!&quot;)  
-    }  
-}
-
-let aDev = Programmer()  
-aDev.printName() //打印 Printing a name. Hello World!
-</code></pre><h3 id="self"><a href="#self" class="headerlink" title="self"></a>self</h3><p>任何类型的实例都拥有的隐式属性，等同于实例本身。此外还可以用于区分函数参数和成员属性名称相同的情况。</p>
-<pre><code>class Person  
-{  
-    func printSelf()  
-    {  
-        print(&quot;This is me: (self)&quot;)  
-    }  
-}
-
-let aPerson = Person()  
-aPerson.printSelf() //打印 &quot;This is me: Person&quot;
-</code></pre><h3 id="Self"><a href="#Self" class="headerlink" title="Self"></a>Self</h3><p>在协议中，表示遵守当前协议的实体类型。</p>
-<pre><code>protocol Printable  
-{  
-    func printTypeTwice(otherMe:Self)  
-}
-
-struct Foo : Printable  
-{  
-    func printTypeTwice(otherMe: Foo)  
-    {  
-        print(&quot;I am me plus (otherMe)&quot;)  
-    }  
-}
-
-let aFoo = Foo()  
-let anotherFoo = Foo()
-
-aFoo.printTypeTwice(otherMe: anotherFoo) //打印 I am me plus Foo()
-</code></pre><h3 id="throw"><a href="#throw" class="headerlink" title="throw"></a>throw</h3><p>用于在当前上下文，显式抛出 error。</p>
-<pre><code>enum WeekendError: Error  
-{  
-    case Overtime  
-    case WorkAllWeekend  
-}
-
-func workOvertime () throws  
-{  
-    throw WeekendError.Overtime  
-}
-</code></pre><h3 id="throws"><a href="#throws" class="headerlink" title="throws"></a>throws</h3><pre><code>enum WeekendError: Error  
-{  
-    case Overtime  
-    case WorkAllWeekend  
-}
-
-func workOvertime () throws  
-{  
-    throw WeekendError.Overtime  
-}
-
-//&quot;throws&quot; 表明在调用方法时，需要使用 try，try?，try!
-try workOvertime()
-</code></pre><h3 id="true"><a href="#true" class="headerlink" title="true"></a>true</h3><p>Swift 用于表示布尔值的两个常量值之一，表示为真。</p>
-<pre><code>let alwaysFalse = false  
-let alwaysTrue = true
-
-if alwaysTrue { print(&quot;Always prints&quot;)}
-</code></pre><p>###try</p>
-<p>表明接着调用的函数可能会抛出 error。有三种不同的使用方式：try，try?， try!。</p>
-<pre><code>let aResult = try dangerousFunction() //处理 error，或者继续传递 error  
-let aResult = try! dangerousFunction() //程序可能会闪退  
-if let aResult = try? dangerousFunction() //解包可选类型。
-</code></pre><h2 id="模式中的关键字"><a href="#模式中的关键字" class="headerlink" title="模式中的关键字"></a>模式中的关键字</h2><h3 id=""><a href="#" class="headerlink" title="_"></a>_</h3><p>用于匹配或省略任意值的通配符</p>
-<pre><code>for _ in 0..&lt;3  
-{  
-    print(&quot;Just loop 3 times, index has no meaning&quot;)  
-}
-</code></pre><p>另一种用法</p>
-<pre><code>let _ = Singleton() //忽略不使用的变量
-</code></pre><h2 id="以-开头的关键字"><a href="#以-开头的关键字" class="headerlink" title="以#开头的关键字"></a>以#开头的关键字</h2><h3 id="available"><a href="#available" class="headerlink" title="#available"></a>#available</h3><p>基于平台参数，通过 if，while，guard 语句的条件，在运行时检查 API 的可用性。</p>
-<pre><code>if #available(iOS 10, *)  
-{  
-    print(&quot;iOS 10 APIs are available&quot;)  
-}
-</code></pre><h3 id="colorLiteral"><a href="#colorLiteral" class="headerlink" title="#colorLiteral"></a>#colorLiteral</h3><p>在 playground 中使用的字面表达式，用于创建颜色选取器，选取后赋值给变量。</p>
-<pre><code>let aColor = #colorLiteral //创建颜色选取器
-</code></pre><h3 id="column"><a href="#column" class="headerlink" title="#column"></a>#column</h3><p>一种特殊的字面量表达式，用于获取字面量表示式的起始列数。</p>
-<pre><code>class Person  
-{  
-    func printInfo()  
-    {  
-        print(&quot;Some person info - on column (#column)&quot;)
-    }  
-}
-
-let aPerson = Person()  
-aPerson.printInfo() //Some person info - on column 53
-</code></pre><h3 id="else-1"><a href="#else-1" class="headerlink" title="#else"></a>#else</h3><p>条件编译控制语句，用于控制程序在不同条件下执行不同代码。与 #if 语句结合使用。当条件为 true，执行对应代码。当条件为 false，执行另一段代码。</p>
-<pre><code>#if os(iOS)  
-print(&quot;Compiled for an iOS device&quot;)  
-#else  
-print(&quot;Not on an iOS device&quot;)  
-#endif
-</code></pre><h3 id="elseif"><a href="#elseif" class="headerlink" title="#elseif"></a>#elseif</h3><p>条件编译控制语句，用于控制程序在不同条件下执行代码。与 #if 语句结合使用。当条件为 true，执行对应代码。</p>
-<pre><code>#if os(iOS)  
-print(&quot;Compiled for an iOS device&quot;)  
-#elseif os(macOS)  
-print(&quot;Compiled on a mac computer&quot;)  
-#endif
-</code></pre><h3 id="endif"><a href="#endif" class="headerlink" title="#endif"></a>#endif</h3><p>条件编译控制语句，用于控制程序在不同条件下执行代码。用于表明条件编译代码的结尾。</p>
-<pre><code>#if os(iOS)  
-print(&quot;Compiled for an iOS device&quot;)  
-#endif
-</code></pre><h3 id="file"><a href="#file" class="headerlink" title="#file"></a>#file</h3><p>特殊字面量表达式，返回当前代码所在源文件的名称。</p>
-<pre><code>class Person  
-{  
-    func printInfo()  
-    {  
-        print(&quot;Some person info - inside file (#file)&quot;)
-    }  
-}
-
-let aPerson = Person()  
-aPerson.printInfo() //Some person info - inside file /*代码所在 playground 文件路径*/
-</code></pre><h3 id="fileReference"><a href="#fileReference" class="headerlink" title="#fileReference"></a>#fileReference</h3><p>playground 字面量语法，用于创建文件选取器，选取并返回 NSURL 实例。</p>
-<pre><code>let fontFilePath = #fileReference //创建文件选取器
-</code></pre><h3 id="function"><a href="#function" class="headerlink" title="#function"></a>#function</h3><p>特殊字面量表达式，返回函数名称。在方法中，返回方法名。在属性的 getter 或者 setter 中，返回属性名。在特殊的成员中，比如 init 或 subscript 中，返回关键字名称。在文件的最顶层时，返回当前所在模块名称。</p>
-<pre><code>class Person  
-{  
-    func printInfo()  
-    {  
-        print(&quot;Some person info - inside function (#function)&quot;)
-    }  
-}
-
-let aPerson = Person()  
-aPerson.printInfo() //Some person info - inside function printInfo()
-</code></pre><h3 id="if-1"><a href="#if-1" class="headerlink" title="#if"></a>#if</h3><p>条件编译控制语句，用于控制程序在不同条件下编译代码。通过判断条件，决定是否执行代码。</p>
-<pre><code>#if os(iOS)  
-print(&quot;Compiled for an iOS device&quot;)  
-#endif
-</code></pre><h3 id="imageLiteral"><a href="#imageLiteral" class="headerlink" title="#imageLiteral"></a>#imageLiteral</h3><p>playground 字面量语法，创建图片选取器，选择并返回 UIImage 实例</p>
-<pre><code>let anImage = #imageLiteral //在 playground 文件中选取图片
-</code></pre><h3 id="line"><a href="#line" class="headerlink" title="#line"></a>#line</h3><p>特殊字面量表达式，用于获取当前代码的行数。</p>
-<pre><code>class Person  
-{  
-    func printInfo()  
-    {  
-        print(&quot;Some person info - on line number (#line)&quot;)
-    }  
-}
-
-let aPerson = Person()  
-aPerson.printInfo() //Some person info - on line number 5
-</code></pre><h3 id="selector"><a href="#selector" class="headerlink" title="#selector"></a>#selector</h3><p>用于创建 Objective-C selector 的表达式，可以静态检查方法是否存在，并暴露给 Objective-C。</p>
-<pre><code>//静态检查，确保 doAnObjCMethod 方法存在  
-control.sendAction(#selector(doAnObjCMethod), to: target, forEvent: event)
-</code></pre><h3 id="sourceLocation"><a href="#sourceLocation" class="headerlink" title="#sourceLocation"></a>#sourceLocation</h3><p>行控制语句，可以指定与原先完全不同的行数和源文件名。通常在 Swift 诊断、debug 时使用。</p>
-<pre><code>#sourceLocation(file:&quot;foo.swift&quot;, line:6)
-
-//打印新值
-print(#file)  
-print(#line)
-
-//重置行数和文件名
-#sourceLocation()
-
-print(#file)  
-print(#line)
-</code></pre><h2 id="特定上下文中的关键字"><a href="#特定上下文中的关键字" class="headerlink" title="特定上下文中的关键字"></a>特定上下文中的关键字</h2><p>这些关键字，在处于对应上下文之外时，可以用作标识符。</p>
-<h3 id="associativity"><a href="#associativity" class="headerlink" title="associativity"></a>associativity</h3><p>指明同一优先级的运算符，在缺少大括号的情况，按什么顺序结合。使用 left、right、none。</p>
-<pre><code>infix operator ~ { associativity right precedence 140 }  
-4 ~ 8
-</code></pre><h3 id="convenience"><a href="#convenience" class="headerlink" title="convenience"></a>convenience</h3><p>次等的便利构造器，最后会调用指定构造器初始化实例。</p>
-<pre><code>class Person  
-{  
-    var name:String
-
-    init(_ name:String)  
-    {  
-        self.name = name  
-    }
-
-    convenience init()  
-    {  
-        self.init(&quot;No Name&quot;)  
-    }  
-}
-
-let me = Person()  
-print(me.name)//打印 &quot;No Name&quot;
-</code></pre><h3 id="dynamic"><a href="#dynamic" class="headerlink" title="dynamic"></a>dynamic</h3><p>指明编译器不会对类成员或者函数的方法进行内联或虚拟化。这意味着对这个成员的访问是使用 Objective-C 运行时进行动态派发的（代替静态调用）。</p>
-<pre><code>class Person  
-{  
-    //隐式指明含有 &quot;objc&quot; 属性
-    //这对依赖于 Objc-C 黑魔法的库或者框架非常有用
-    //比如 KVO、KVC、Swizzling
-    dynamic var name:String?  
-}
-</code></pre><h3 id="didSet"><a href="#didSet" class="headerlink" title="didSet"></a>didSet</h3><p>属性观察者，当值存储到属性后马上调用。</p>
-<pre><code>var data = [1,2,3]  
-{  
-    didSet  
-    {  
-        tableView.reloadData()  
-    }  
-}
-</code></pre><h3 id="final"><a href="#final" class="headerlink" title="final"></a>final</h3><p>防止方法、属性、下标被重写。</p>
-<pre><code>final class Person {}  
-class Programmer : Person {} //编译错误
-</code></pre><h3 id="get"><a href="#get" class="headerlink" title="get"></a>get</h3><p>返回成员的值。还可以用在计算型属性上，间接获取其它属性的值。</p>
-<pre><code>class Person  
-{  
-    var name:String  
-    {  
-        get { return self.name }  
-        set { self.name = newValue}  
-    }
-
-    var indirectSetName:String  
-    {  
-        get  
-        {  
-            if let aFullTitle = self.fullTitle  
-            {  
-                return aFullTitle  
-            }  
-            return &quot;&quot;  
-        }
-
-        set (newTitle)  
-        {  
-            //如果没有定义 newTitle，可以使用 newValue
-            self.fullTitle = &quot;(self.name) :(newTitle)&quot;  
-        }
-    }  
-}
-</code></pre><h3 id="infix"><a href="#infix" class="headerlink" title="infix"></a>infix</h3><p>指明一个用于两个值之间的运算符。如果一个全新的全局运算符被定义为 infix，还需要指定优先级。</p>
-<pre><code>let twoIntsAdded = 2 + 3
-</code></pre><h3 id="indirect"><a href="#indirect" class="headerlink" title="indirect"></a>indirect</h3><p>指明在枚举类型中，存在成员使用相同枚举类型的实例作为关联值的情况。</p>
-<pre><code>indirect enum Entertainment  
-{  
-    case eventType(String)  
-    case oneEvent(Entertainment)  
-    case twoEvents(Entertainment, Entertainment)  
-}
-
-let dinner = Entertainment.eventType(&quot;Dinner&quot;)  
-let movie = Entertainment.eventType(&quot;Movie&quot;)
-
-let dateNight = Entertainment.twoEvents(dinner, movie)
-</code></pre><h3 id="lazy"><a href="#lazy" class="headerlink" title="lazy"></a>lazy</h3><p>指明属性的初始值，直到第一次被使用时，才进行初始化。</p>
-<pre><code>class Person  
-{  
-    lazy var personalityTraits = {  
-        //昂贵的数据库开销  
-        return [&quot;Nice&quot;, &quot;Funny&quot;]  
-    }()  
-}
-let aPerson = Person()  
-aPerson.personalityTraits //当 personalityTraits 首次被访问时，数据库才开始工作
-</code></pre><h3 id="left"><a href="#left" class="headerlink" title="left"></a>left</h3><p>指明运算符的结合性是从左到右。在没有使用大括号时，可以用于正确判断同一优先级运算符的执行顺序。</p>
-<pre><code>//&quot;-&quot; 运算符的结合性是从左到右
-10-2-4 //根据结合性，可以看做 (10-2) - 4
-</code></pre><h3 id="mutating"><a href="#mutating" class="headerlink" title="mutating"></a>mutating</h3><p>允许在方法中修改结构体或者枚举实例的属性值。</p>
-<pre><code>struct Person  
-{  
-    var job = &quot;&quot;
-
-    mutating func assignJob(newJob:String)  
-    {  
-        self = Person(job: newJob)  
-    }  
-}
-
-var aPerson = Person()  
-aPerson.job //&quot;&quot;
-
-aPerson.assignJob(newJob: &quot;iOS Engineer at Buffer&quot;)  
-aPerson.job //iOS Engineer at Buffer
-</code></pre><h3 id="none"><a href="#none" class="headerlink" title="none"></a>none</h3><p>是一个没有结合性的运算符。不允许这样的运算符相邻出现。</p>
-<pre><code>//&quot;&lt;&quot; 是非结合性的运算符
-1 &lt; 2 &lt; 3 //编译失败
-</code></pre><h3 id="nonmutating"><a href="#nonmutating" class="headerlink" title="nonmutating"></a>nonmutating</h3><p>指明成员的 setter 方法不会修改实例的值，但可能会有其它后果。</p>
-<pre><code>enum Paygrade  
-{  
-    case Junior, Middle, Senior, Master
-
-    var experiencePay:String?  
-    {  
-        get  
-        {  
-            database.payForGrade(String(describing:self))  
-        }
-
-        nonmutating set  
-        {  
-            if let newPay = newValue  
-            {  
-                database.editPayForGrade(String(describing:self), newSalary:newPay)  
-            }  
-        }  
-    }  
-}
-
-let currentPay = Paygrade.Middle
-
-//将 Middle pay 更新为 45k, 但不会修改 experiencePay 值
-currentPay.experiencePay = &quot;$45,000&quot;
-</code></pre><h3 id="optional"><a href="#optional" class="headerlink" title="optional"></a>optional</h3><p>用于指明协议中的可选方法。遵守该协议的实体类可以不实现这个方法。</p>
-<pre><code>@objc protocol Foo  
-{  
-    func requiredFunction()  
-    @objc optional func optionalFunction()  
-}
-
-class Person : Foo  
-{  
-    func requiredFunction()  
-    {  
-        print(&quot;Conformance is now valid&quot;)  
-    }  
-}
-</code></pre><h3 id="override"><a href="#override" class="headerlink" title="override"></a>override</h3><p>指明子类会提供自定义实现，覆盖父类的实例方法、类型方法、实例属性、类型属性、下标。如果没有实现，则会直接继承自父类。</p>
-<pre><code>class Person  
-{  
-    func printInfo()  
-    {  
-        print(&quot;I&apos;m just a person!&quot;)  
-    }  
-}
-
-class Programmer : Person  
-{  
-    override func printInfo()  
-    {  
-        print(&quot;I&apos;m a person who is a dev!&quot;)  
-    }  
-}
-
-let aPerson = Person()  
-let aDev = Programmer()
-
-aPerson.printInfo() //打印 I&apos;m just a person!  
-aDev.printInfo() //打印 I&apos;m a person who is a dev!
-</code></pre><h3 id="postfix"><a href="#postfix" class="headerlink" title="postfix"></a>postfix</h3><p>位于值后面的运算符。</p>
-<pre><code>var optionalStr:String? = &quot;Optional&quot;  
-print(optionalStr!)
-</code></pre><h3 id="precedence"><a href="#precedence" class="headerlink" title="precedence"></a>precedence</h3><p>指明某个运算符的优先级高于别的运算符，从而被优先使用。</p>
-<pre><code>infix operator ~ { associativity right precedence 140 }  
-4 ~ 8
-</code></pre><h3 id="prefix"><a href="#prefix" class="headerlink" title="prefix"></a>prefix</h3><p>位于值前面的运算符。</p>
-<pre><code>var anInt = 2  
-anInt = -anInt //anInt 等于 -2
-</code></pre><h3 id="required"><a href="#required" class="headerlink" title="required"></a>required</h3><p>确保编译器会检查该类的所有子类，全部实现了指定的构造器方法。</p>
-<pre><code>class Person  
-{  
-    var name:String?
-
-    required init(_ name:String)  
-    {  
-        self.name = name  
-    }  
-}
-
-class Programmer : Person  
-{  
-    //如果不实现这个方法，编译不会通过
-    required init(_ name: String)  
-    {  
-        super.init(name)  
-    }  
-}
-</code></pre><h3 id="right"><a href="#right" class="headerlink" title="right"></a>right</h3><p>指明运算符的结合性是从右到左的。在没有使用大括号时，可以用于正确判断同一优先级运算符的顺序。</p>
-<pre><code>//&quot;??&quot; 运算符结合性是从右到左
-var box:Int?  
-var sol:Int? = 2
-
-let foo:Int = box ?? sol ?? 0 //Foo 等于 2
-</code></pre><h3 id="set"><a href="#set" class="headerlink" title="set"></a>set</h3><p>通过获取的新值来设置成员的值。同样可以用于计算型属性来间接设置其它属性。如果计算型属性的 setter 没有定义新值的名称，可以使用默认的 newValue。</p>
-<pre><code>class Person  
-{  
-    var name:String  
-    {  
-        get { return self.name }  
-        set { self.name = newValue}  
-    }
-
-    var indirectSetName:String  
-    {  
-        get  
-        {  
-            if let aFullTitle = self.fullTitle  
-            {  
-                return aFullTitle  
-            }  
-            return &quot;&quot;  
-        }
-
-        set (newTitle)  
-        {  
-            //如果没有定义 newTitle，可以使用 newValue
-            self.fullTitle = &quot;(self.name) :(newTitle)&quot;  
-        }  
-    }  
-}
-</code></pre><h3 id="Type"><a href="#Type" class="headerlink" title="Type"></a>Type</h3><p>表示任意类型的类型，包括类类型、结构类型、枚举类型、协议类型。</p>
-<pre><code>class Person {}  
-class Programmer : Person {}
-
-let aDev:Programmer.Type = Programmer.self
-</code></pre><h3 id="unowned"><a href="#unowned" class="headerlink" title="unowned"></a>unowned</h3><p>让循环引用中的实例 A 不要强引用实例 B。前提条件是实例 B 的生命周期要长于 A 实例。</p>
-<pre><code>class Person  
-{  
-    var occupation:Job?  
-}
-
-//当 Person 实例不存在时，job 也不会存在。job 的生命周期取决于持有它的 Person。
-class Job  
-{  
-    unowned let employee:Person
-
-    init(with employee:Person)  
-    {  
-        self.employee = employee  
-    }  
-}
-</code></pre><h3 id="weak"><a href="#weak" class="headerlink" title="weak"></a>weak</h3><p>允许循环引用中的实例 A 弱引用实例 B ，而不是强引用。实例 B 的生命周期更短，并会被先释放。</p>
-<pre><code>class Person  
-{  
-    var residence:House?  
-}
-
-class House  
-{  
-    weak var occupant:Person?  
-}
-
-var me:Person? = Person()  
-var myHome:House? = House()
-
-me!.residence = myHome  
-myHome!.occupant = me
-
-me = nil  
-myHome!.occupant // myHome 等于 nil
-</code></pre><h3 id="willSet"><a href="#willSet" class="headerlink" title="willSet"></a>willSet</h3><p>属性观察者，在值存储到属性之前调用。</p>
-<pre><code>class Person  
-{  
-    var name:String?  
-    {  
-        willSet(newValue) {print(&quot;I&apos;ve got a new name, it&apos;s (newValue)!&quot;)}  
-    }  
-}
-
-let aPerson = Person()  
-aPerson.name = &quot;Jordan&quot; //在赋值之前，打印 &quot;I&apos;ve got a new name, it&apos;s Jordan!&quot;
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/05/Swift 关键字/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
@@ -3534,7 +2732,7 @@ aPerson.name = &quot;Jordan&quot; //在赋值之前，打印 &quot;I&apos;ve got
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2021 wangjungang
+    		&copy; 2022 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -3653,11 +2851,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3673,11 +2871,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3685,7 +2883,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3693,7 +2891,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3710,6 +2908,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
             
             <div class="clearfix"></div>

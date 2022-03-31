@@ -152,6 +152,610 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-MySql分页查询优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/30/MySql分页查询优化/">MySql分页查询优化</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/30/MySql分页查询优化/" class="archive-article-date">
+  	<time datetime="2018-11-30T03:31:42.396Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-30</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当需要从数据库查询的表有上万条记录的时候，一次性查询所有结果会变得很慢，特别是随着数据量的增加特别明显，这时需要使用分页查询。对于数据库分页查询，也有很多种方法和优化的点。下面简单说一下我知道的一些方法。</p>
+<h2 id="一般分页查询"><a href="#一般分页查询" class="headerlink" title="一般分页查询"></a>一般分页查询</h2><p>一般分页查询采用limit page,pagesize 格式来操作</p>
+<p>例如</p>
+<p>需要查询user表中的第一页的数据，每一页数据有10个</p>
+<pre><code>SELECT * FROM New_info.user limit 1,10;
+</code></pre><p>如果查询user表中第二页的数据，每一页有15个数据</p>
+<pre><code>SELECT * FROM New_info.user limit 2,15;
+</code></pre><p>LIMIT 子句可以被用于指定 SELECT 语句返回的记录数。需注意以下几点：</p>
+<ul>
+<li>第一个参数指定第一个返回记录行的偏移量</li>
+<li>第二个参数指定返回记录行的最大数目</li>
+<li>如果只给定一个参数：它表示返回最大的记录行数目</li>
+<li>第二个参数为 -1 表示检索从某一个偏移量到记录集的结束所有的记录行</li>
+<li>初始记录行的偏移量是 0(而不是 1)</li>
+</ul>
+<p>弊端</p>
+<p>随着查询偏移的增大，尤其查询偏移大于10万以后，查询时间急剧增加。</p>
+<p>这种分页查询方式会从数据库第一条记录开始扫描，所以越往后，查询速度越慢，而且查询的数据越多，也会拖慢总查询速度。</p>
+<h2 id="使用子查询优化"><a href="#使用子查询优化" class="headerlink" title="使用子查询优化"></a>使用子查询优化</h2><p>这种方式先定位偏移位置的 id，然后往后查询，这种方式适用于 id 递增的情况。</p>
+<p>适应场景: 适用于数据量多的情况(元组数上万)</p>
+<pre><code>SELECT * FROM New_info.user where id&gt;10 limit 2,15;
+</code></pre><p>如果id不是递增的，容易漏掉数据</p>
+<h2 id="基于索引再排序"><a href="#基于索引再排序" class="headerlink" title="基于索引再排序"></a>基于索引再排序</h2><p>适应场景：</p>
+<p>适用于数据量多的情况（元祖数上万） 最好PRDER BY后的列对象是主键或者唯一 </p>
+<p>所以，使得ORDER BY操作能够利用索引被消除但结果集是稳定的</p>
+<p>原因：</p>
+<p>索引扫描，速度会很快，但是Mysql的排序操作，只有ASC没有DESC </p>
+<p>代码示例</p>
+<pre><code>SELECT * FROM New_info.user WHERE id&gt;(2*10) ORDER BY id ASC LIMIT 10;
+</code></pre><h2 id="基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）"><a href="#基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）" class="headerlink" title="基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）"></a>基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）</h2><p>适应场景：<br>大数据量</p>
+<p>原因：</p>
+<p>索引扫描，速度会很快，prepare语句比一般的查询语句块一点</p>
+<p>代码示例：</p>
+<pre><code>PREPARE stmt_name FROM SELECT * FROM 表名称 WHERE id_pk &gt; (？* ？) ORDER BY id_pk ASC LIMIT M
+</code></pre><h2 id="利用MySQL支持ORDER操作可以利用索引快速定位部分元组-避免全表扫描"><a href="#利用MySQL支持ORDER操作可以利用索引快速定位部分元组-避免全表扫描" class="headerlink" title="利用MySQL支持ORDER操作可以利用索引快速定位部分元组,避免全表扫描"></a>利用MySQL支持ORDER操作可以利用索引快速定位部分元组,避免全表扫描</h2><p>比如: 读第1000到1019行元组(pk是主键/唯一键).</p>
+<pre><code>SELECT * FROM your_table WHERE pk&gt;=1000 ORDER BY pk ASC LIMIT 0,20
+</code></pre><h2 id="利用”子查询-连接-索引”快速定位元组的位置-然后再读取元组-道理同方法5"><a href="#利用”子查询-连接-索引”快速定位元组的位置-然后再读取元组-道理同方法5" class="headerlink" title="利用”子查询/连接+索引”快速定位元组的位置,然后再读取元组. 道理同方法5"></a>利用”子查询/连接+索引”快速定位元组的位置,然后再读取元组. 道理同方法5</h2><p>例如(id是主键/唯一键,蓝色字体时变量):</p>
+<p>利用子查询示例:</p>
+<pre><code>SELECT * FROM your_table WHERE id &lt;= 
+(SELECT id FROM your_table ORDER BY id desc LIMIT ($page-1)*$pagesize ORDER BY id desc LIMIT $pagesize
+</code></pre><p>利用连接示例:</p>
+<pre><code>SELECT * FROM your_table AS t1 
+JOIN (SELECT id FROM your_table ORDER BY id desc LIMIT ($page-1)*$pagesize AS t2 
+WHERE t1.id &lt;= t2.id ORDER BY t1.id desc LIMIT $pagesize;
+</code></pre><p>mysql大数据量使用limit分页，随着页码的增大，查询效率越低下。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">MySql</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/30/MySql分页查询优化/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-从git add到branch" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/28/从git add到branch/">从git add到branch</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/28/从git add到branch/" class="archive-article-date">
+  	<time datetime="2018-11-28T12:28:57.028Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近想把代码传到GitHub上,结果我发现的demo的npm全是本地安装，上穿到GitHub要死要死，几百M，然后我就搜了下怎么不上传node_modules弄了半天也没成功，于是准备静下心学一下git，也当一个笔记日后好翻阅.<br>研究前我的只会5个命令</p>
+<pre><code>$ git init 
+$ git add .
+$ git commit -m &quot;提交的xxxxx&quot;
+$ git pull
+$ git push
+</code></pre><h2 id="Git是什么"><a href="#Git是什么" class="headerlink" title="Git是什么"></a>Git是什么</h2><p>Git是一个开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。<br>Git 是 Linus Torvalds 为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制软件。<br>Git 与常用的版本控制工具 CVS, Subversion 等不同，它采用了分布式版本库的方式，不必服务器端软件支持。</p>
+<h2 id="GIT-的工作流程"><a href="#GIT-的工作流程" class="headerlink" title="GIT 的工作流程"></a>GIT 的工作流程</h2><ul>
+<li>克隆 Git 资源作为工作目录。</li>
+<li>在克隆的资源上添加或修改文件。</li>
+<li>如果其他人修改了，你可以更新资源。</li>
+<li>在提交前查看修改。</li>
+<li>提交修改。</li>
+<li>在修改完成后，如果发现错误，可以撤回提交并再次修改并提交。</li>
+</ul>
+<h2 id="本地仓库-版本库"><a href="#本地仓库-版本库" class="headerlink" title="本地仓库(版本库)"></a>本地仓库(版本库)</h2><p>版本库：工作区有一个隐藏目录.git，这个不算工作区，而是Git的版本库。</p>
+<h3 id="本地版本库是什么"><a href="#本地版本库是什么" class="headerlink" title="本地版本库是什么"></a>本地版本库是什么</h3><p>什么是版本库呢？版本库又名仓库，英文名repository，你可以简单理解成一个目录，这个目录里面的所有文件都可以被Git管理起来，每个文件的修改、删除，Git都能跟踪，以便任何时刻都可以追踪历史，或者在将来某个时刻可以“还原”。</p>
+<h2 id="暂存区"><a href="#暂存区" class="headerlink" title="暂存区"></a>暂存区</h2><p>暂存区：英文叫stage, 或index。一般存放在 “.git目录下” 下的index文件（.git/index）中，所以我们把暂存区有时也叫作索引（index）。</p>
+<h2 id="工作区"><a href="#工作区" class="headerlink" title="工作区"></a>工作区</h2><p>工作区：就是你在电脑里能看到的目录。</p>
+<h2 id="Git的基本使用"><a href="#Git的基本使用" class="headerlink" title="Git的基本使用"></a>Git的基本使用</h2><pre><code>$ git init，              //初始化本地仓库 .git
+$ git status -sb，        //显示当前所有文件的状态
+$ git diff                //查看更改，查看difference，显示的格式正是Unix通用的diff格式,
+$ git add 文件路径        //用来将变动加到暂存区
+$ git commit -m &quot;信息&quot;    //用来正式提交变动，提交至 .git 仓库如果有新的变动，我们只需要依次执行 git add xxx 和 git commit -m &apos;xxx&apos; 两个命令即可
+$ git log                 //查看变更历史
+</code></pre><h2 id="版本回退"><a href="#版本回退" class="headerlink" title="版本回退"></a>版本回退</h2><p>当我提交了几个commit，假设我们现在有3个版本(1,2,3)，现在是版本3，发现刚刚的提交错误了，想撤回回到版本2</p>
+<pre><code>$ git reset --hard               //重置暂存区与工作区，与上一次commit保持一致
+</code></pre><p>然后你由发现刚刚的提交是正确的,又想回到版本3，再输入下面这个命令，相当于你那个回退没有做</p>
+<pre><code>$ git reset --hard [commitid]     //重置当前分支的HEAD为指定commit，同时重置暂存区和工作区，与指定commit一致
+//commitid 使用git log --stat查看
+</code></pre><p>平行世界B</p>
+<p>在平时世界B的你，刚刚把版本回退到了版本2，于是睡觉去了，第二天，发现版本3才是对的，可是使用git log已经查看不到commit信息了，怎么办？</p>
+<pre><code>$ git reflog                      //用来记录你的每一次命令,显示当前分支的最近几次提交
+</code></pre><p>场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令<br>    $ git checkout – file</p>
+<p>场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令</p>
+<pre><code>$ git reset HEAD file
+</code></pre><p>，就回到了场景1，第二步按场景1操作。<br>场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，</p>
+<pre><code>git reset --hard
+</code></pre><p>不过前提是没有推送到远程仓库。</p>
+<h2 id="删除文件"><a href="#删除文件" class="headerlink" title="删除文件"></a>删除文件</h2><pre><code>$ git rm [file1] [file2] ...      //删除工作区文件，并且将这次删除放入暂存区
+</code></pre><p>另一种情况是删错了，因为版本库里还有呢，所以可以很轻松地把误删的文件恢复到最新版本：</p>
+<pre><code>$ git checkout -- test.txt
+</code></pre><h2 id="分支-branch"><a href="#分支-branch" class="headerlink" title="分支(branch)"></a>分支(branch)</h2><ul>
+<li>分支在实际中有什么用呢？假设你准备开发一个新功能，但是需要两周才能完成，第一周你写了50%的代码，如果立刻提交，由于代码还没写完，不完整的代码库会导致别人不能干活了。如果等代码全部写完再一次提交，又存在丢失每天进度的巨大风险。</li>
+</ul>
+<ul>
+<li>现在有了分支，就不用怕了。你创建了一个属于你自己的分支，别人看不到，还继续在原来的分支上正常工作，而你在自己的分支上干活，想提交就提交，直到开发完毕后，再一次性合并到原来的分支上，这样，既安全，又不影响别人工作。</li>
+</ul>
+<ul>
+<li>你已经知道，每次提交，Git都把它们串成一条时间线，这条时间线就是一个分支。截止到目前，只有一条时间线，在Git里，这个分支叫主分支，即master分支。HEAD严格来说不是指向提交，而是指向master，master才是指向提交的，所以，HEAD指向的就是当前分支。</li>
+</ul>
+<h3 id="如何使用分支"><a href="#如何使用分支" class="headerlink" title="如何使用分支"></a>如何使用分支</h3><pre><code>$ git checkout -b [branch]                //新建一个分支，并切换到该分支
+$ git branch                              //命令会列出所有分支，当前分支前面会标一个*号。
+$ git add . 
+$ git commit -m &quot;提交分支branch&quot;
+$ git checkout master                     //切换回master分支
+$ git merge [branch]                      //把branch分支合并到master分支
+$ git branch -d branch                     //合并完成后删除branch分支
+
+查看分支：git branch
+
+创建分支：git branch &lt;name&gt;
+
+切换分支：git checkout &lt;name&gt;
+
+创建+切换分支：git checkout -b &lt;name&gt;
+
+合并某分支到当前分支：git merge &lt;name&gt;
+
+删除分支：git branch -d &lt;name&gt;
+</code></pre><h3 id="分支冲突"><a href="#分支冲突" class="headerlink" title="分支冲突"></a>分支冲突</h3><p>比如现在我们的文件是这样的</p>
+<pre><code>fuck &apos;webpack&apos;                      //master分支
+</code></pre><p>我们创建并且切换到parcel分支</p>
+<pre><code>$ git checkout -b parcel     
+</code></pre><p>修改文本内容</p>
+<p>fuck ‘webpack —&gt; parcel no.1<br>提交到暂存区</p>
+<pre><code>$ git add .
+$ git commit &quot;嘻嘻&quot;                      //parcel分支
+</code></pre><p>切回master分支</p>
+<pre><code>$ git checkout master
+</code></pre><p>修改文本内容</p>
+<pre><code>fuck &apos;webpack&apos; --&gt; fuck fuck &apos;webpack&apos;
+提交到暂存区
+</code></pre><p>这样我们的两个分支内容不一样，有了冲突，我们提交试一下</p>
+<pre><code>$ git merge parcel                      //把parcel分支合并到当前master分支
+</code></pre><p>然后就冲突了</p>
+<pre><code>$ git status                        //可以告诉我们冲突的文件：
+# On branch master
+# Your branch is ahead of &apos;origin/master&apos; by 2 commits.
+#
+# Unmerged paths:
+#   (use &quot;git add/rm &lt;file&gt;...&quot; as appropriate to mark resolution)
+#
+#       both modified:     fuck.txt
+#
+</code></pre><p>我们得手动修改当前master分支的内容与parcel分支内容相同</p>
+<p>fuck fuck ‘webpack’ –&gt; parcel no.1<br>再次提交</p>
+<pre><code>$ git add .
+$ git commit &quot;扑扑&quot;                      //maser分支
+</code></pre><p>最后，删除parcel分支</p>
+<pre><code>git branch -d parcel
+</code></pre><h3 id="分支管理策略"><a href="#分支管理策略" class="headerlink" title="分支管理策略"></a>分支管理策略</h3><p>通常，合并分支时，如果可能，Git会用Fast forward模式(默认模式)，但这种模式下，删除分支后，会丢掉分支信息。</p>
+<p>如果要强制禁用Fast forward模式，Git就会在合并分支时生成一个新的commit，这样，从分支历史上就可以看出分支信息。</p>
+<p>例如</p>
+<pre><code>$ git checkout -b dev                                 //首先，仍然创建并切换dev分支：
+$ git add readme.txt                                  //修改readme.txt文件，并提交一个新的commit
+$ git checkout master                                 //现在，我们切换回master分支
+$ git merge --no-ff -m &quot;merge with no-ff&quot; dev         //准备合并dev分支，请注意--no-ff参数，表示禁用Fast forward
+$ git log --graph --pretty=oneline --abbrev-commit    //合并后，我们用git log看看分支历史：
+//合并分支时，加上--no-ff参数就可以用普通模式合并，合并后的历史有分支，能看出来曾经做过合并，而fast forward合并就看不出来曾经做过合并。
+</code></pre><h2 id="团队分支管理"><a href="#团队分支管理" class="headerlink" title="团队分支管理"></a>团队分支管理</h2><p>在实际开发中，我们应该按照几个基本原则进行分支管理：<br>首先，master分支应该是非常稳定的，也就是仅用来发布新版本，平时不能在上面干活；</p>
+<p>那在哪干活呢？干活都在dev分支上，也就是说，dev分支是不稳定的，到某个时候，比如1.0版本发布时，再把dev分支合并到master上，在master分支发布1.0版本；</p>
+<p>你和你的小伙伴们每个人都在dev分支上干活，每个人都有自己的分支，时不时地往dev分支上合并就可以了。</p>
+<p>团队分支应该是这样的</p>
+<pre><code>|- master                       //正式版
+  |- dev                        //测试版
+    |- michael                  //队员michael-adc
+    |- bob                      //队员bob-肉
+    |- bibi                     //队员bibi-大腿
+</code></pre><h3 id="Bug分支"><a href="#Bug分支" class="headerlink" title="Bug分支"></a>Bug分支</h3><p>软件开发中，bug就像家常便饭一样。有了bug就需要修复，在Git中，由于分支是如此的强大，所以，每个bug都可以通过一个新的临时分支来修复，修复后，合并分支，然后将临时分支删除。</p>
+<p>当你接到一个修复一个代号101的bug的任务时，很自然地，你想创建一个分支issue-101来修复它，但是，等等，当前正在dev上进行的工作还没有提交</p>
+<pre><code>------------                                              //我们在dev分支上，发现master分支上有代号101号bug
+$ git stash                                               //冷冻现在在dev分支上的工作状态 冻结吧！  
+$ git checkout master                                     //这个bug发生在master主分支上,我们切回master分支
+$ git checkout -b issue-101                               //创建代号101的修复bug分支
+修改你的bug
+$ git add readme.txt                                      //提交到暂存区
+$ git commit -m &quot;fix bug 101&quot;                             //注意填写信息，以免日后查证
+$ git checkout master                                     //切换回master分支
+$ git merge --no-ff -m &quot;merged bug fix 101&quot; issue-101     //合并分支，注意不使用fast forward模式
+$ git branch -d issue-101                                 //删除issue-101分支
+$ git checkout dev                                        //bug 改完了，是时候回到dev继续写bug了
+$ git stash list                                          //查看刚刚的冻结现场
+$ git stash pop                                           //git stash pop，恢复的同时把stash内容也删了：
+//一是用git stash apply恢复，但是恢复后，stash内容并不删除，你需要用git stash drop来删除
+</code></pre><h3 id="开发一个新测试功能"><a href="#开发一个新测试功能" class="headerlink" title="开发一个新测试功能"></a>开发一个新测试功能</h3><p>开发一个新feature，最好新建一个分支；</p>
+<p>如果要丢弃一个没有被合并过的分支，可以通过git branch -D <name>强行删除。</name></p>
+<h3 id="多人协作"><a href="#多人协作" class="headerlink" title="多人协作"></a>多人协作</h3><p>当你从远程仓库克隆时，实际上Git自动把本地的master分支和远程的master分支对应起来了，并且，远程仓库的默认名称是origin。 要查看远程库的信息，用git remote -v</p>
+<p>###推送分支</p>
+<p>推送分支，就是把该分支上的所有本地提交推送到远程库。推送时，要指定本地分支，这样，Git就会把该分支推送到远程库对应的远程分支上:</p>
+<pre><code>$ git push origin master
+</code></pre><p>如果是推送到其他分支</p>
+<pre><code>$ git push origin dev
+</code></pre><p>但是，并不是一定要把本地分支往远程推送，那么，哪些分支需要推送，哪些不需要呢？</p>
+<ul>
+<li>master分支是主分支，因此要时刻与远程同步；</li>
+</ul>
+<ul>
+<li>dev分支是开发分支，团队所有成员都需要在上面工作，所以也需要与远程同步；</li>
+</ul>
+<ul>
+<li>bug分支只用于在本地修复bug，就没必要推到远程了，除非老板要看看你每周到底修复了几个bug；</li>
+</ul>
+<ul>
+<li>feature分支是否推到远程，取决于你是否和你的小伙伴合作在上面开发。</li>
+</ul>
+<p>多人协作时，大家都会往master和dev分支上推送各自的修改。<br>当你的小伙伴从远程库clone时，默认情况下，你的小伙伴只能看到本地的master分支。 </p>
+<p>现在，你的小伙伴要在dev分支上开发，就必须创建远程origin的dev分支到本地，于是他用这个命令创建本地dev分支：</p>
+<pre><code>$ git checkout -b dev origin/dev
+你的小伙伴已经向origin/dev分支推送了他的提交，而碰巧你也对同样的文件作了修改，并试图推送
+推送失败，因为你的小伙伴的最新提交和你试图推送的提交有冲突，解决办法也很简单，Git已经提示我们，先用git pull把最新的提交从origin/dev抓下来，然后，在本地合并，解决冲突，再推送：
+git pull也失败了，原因是没有指定本地dev分支与远程origin/dev分支的链接，根据提示，设置dev和origin/dev的链接：
+$ git branch --set-upstream dev origin/dev
+</code></pre><p>再pull<br>这回git pull成功，但是合并有冲突，需要手动解决，解决的方法和分支管理中的解决冲突完全一样。解决后，提交，再push：</p>
+<p>因此，多人协作的工作模式通常是这样：</p>
+<p>首先，可以试图用git push origin branch-name推送自己的修改；</p>
+<p>如果推送失败，则因为远程分支比你的本地更新，需要先用git pull试图合并；</p>
+<p>如果合并有冲突，则解决冲突，并在本地提交；</p>
+<p>没有冲突或者解决掉冲突后，再用git push origin branch-name推送就能成功！</p>
+<p>如果git pull提示“no tracking information”，则说明本地分支和远程分支的链接关系没有创建，用命令<br>git branch –set-upstream branch-name origin/branch-name</p>
+<p>这就是多人协作的工作模式，一旦熟悉了，就非常简单。</p>
+<p>查看远程库信息，使用git remote -v</p>
+<p>本地新建的分支如果不推送到远程，对其他人就是不可见的；</p>
+<p>从本地推送分支，使用git push origin branch-name，如果推送失败，先用git pull抓取远程的新提交；</p>
+<p>在本地创建和远程分支对应的分支，使用git checkout -b branch-name origin/branch-name，本地和远程分支的名称最好一致；</p>
+<p>建立本地分支和远程分支的关联，使用git branch –set-upstream branch-name origin/branch-name；</p>
+<p>从远程抓取分支，使用git pull，如果有冲突，要先处理冲突。</p>
+<h2 id="标签管理"><a href="#标签管理" class="headerlink" title="标签管理"></a>标签管理</h2><p>###创建标签</p>
+<ul>
+<li>命令git tag <name>用于新建一个标签，默认为HEAD，也可以指定一个commit id；</name></li>
+</ul>
+<ul>
+<li>git tag -a <tagname> -m “blablabla…”可以指定标签信息；</tagname></li>
+</ul>
+<ul>
+<li>git tag -s <tagname> -m “blablabla…”可以用PGP签名标签；</tagname></li>
+</ul>
+<ul>
+<li>命令git tag可以查看所有标签。</li>
+</ul>
+<ul>
+<li><p>还可以创建带有说明的标签，用-a指定标签名，-m指定说明文字：</p>
+<p>  $ git tag -a v0.1 -m “version 0.1 released” 3628164</p>
+</li>
+</ul>
+<h3 id="操作标签"><a href="#操作标签" class="headerlink" title="操作标签"></a>操作标签</h3><p>如果标签打错了，还可以修改</p>
+<pre><code>$ git tag -d v0.1
+</code></pre><p>如果要推送某个标签到远程，使用命令</p>
+<pre><code>$ git push origin &lt;tagname&gt;
+</code></pre><p>或者，一次性推送全部尚未推送到远程的本地标签：</p>
+<pre><code>$ git push origin --tags
+</code></pre><p>如果标签已经推送到远程，要删除远程标签就麻烦一点，先从本地删除：</p>
+<pre><code>$ git tag -d v0.9
+</code></pre><p>然后，从远程删除。删除命令也是push，但是格式如下：</p>
+<pre><code>git push origin :refs/tags/&lt;tagname&gt;
+</code></pre><h2 id="忽略特殊文件"><a href="#忽略特殊文件" class="headerlink" title="忽略特殊文件"></a>忽略特殊文件</h2><p>在Git工作区的根目录下创建一个特殊的.gitignore文件，然后把要忽略的文件名填进去，Git就会自动忽略这些文件。<br>不需要从头写.gitignore文件，GitHub已经为我们准备了各种配置文件，只需要组合一下就可以使用了。所有配置文件可以直接在线浏览：.gitignore</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Git</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/28/从git add到branch/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-mysql基本知识点梳理和查询优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/28/mysql基本知识点梳理和查询优化/">mysql基本知识点梳理和查询优化</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/28/mysql基本知识点梳理和查询优化/" class="archive-article-date">
+  	<time datetime="2018-11-28T08:13:24.177Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>本文主要是总结了工作中一些常用的操作，以及不合理的操作，在对慢查询进行优化时收集的一些有用的资料和信息，本文适合有mysql基础的开发人员。</p>
+<h3 id="一、索引相关"><a href="#一、索引相关" class="headerlink" title="一、索引相关"></a>一、索引相关</h3><p>1.索引基数：</p>
+<p>基数是数据列所包含的不同值的数量。例如，某个数据列包含值1、3、7、4、7、3，那么它的基数就是4。索引的基数相对于数据表行数较高（也就是说，列中包含很多不同的值，重复的值很少）的时候，它的工作效果最好。如果某数据列含有很多不同的年龄，索引会很快地分辨数据行。如果某个数据列用于记录性别（只有”M”和”F”两种值），那么索引的用处就不大。如果值出现的几率几乎相等，那么无论搜索哪个值都可能得到一半的数据行。在这些情况下，最好根本不要使用索引，因为查询优化器发现某个值出现在表的数据行中的百分比很高的时候，它一般会忽略索引，进行全表扫描。惯用的百分比界线是”30%”。</p>
+<p>2.索引失败的原因</p>
+<pre><code>对索引列运算，运算包括（+、-、*、/、！、&lt;&gt;、%、like&apos;%_&apos;（%放在前面）
+类型错误，如字段类型为varchar，where条件用number。
+对索引应用内部函数，这种情况下应该建立基于函数的索引
+如select * from template t where ROUND(t.logicdb_id) = 1
+此时应该建ROUND(t.logicdb_id)为索引，mysql8.0开始支持函数索引，5.7可以通过虚拟列的方式来支持，之前只能新建一个ROUND(t.logicdb_id)列然后去维护
+如果条件有or，即使其中有条件带索引也不会使用（这也是为什么建议少使用or的原因），如果想使用or，又想索引有效，只能将or条件中的每个列加上索引
+如果列类型是字符串，那一定要在条件中数据使用引号，否则不使用索引；
+B-tree索引 is null不会走,is not null会走,位图索引 is null,is not null 都会走
+组合索引遵循最左原则
+</code></pre><h4 id="索引的建立"><a href="#索引的建立" class="headerlink" title="索引的建立"></a>索引的建立</h4><p>最重要的肯定是根据业务经常查询的语句</p>
+<p>尽量选择区分度高的列作为索引，区分度的公式是 COUNT(DISTINCT col) / COUNT(*)。表示字段不重复的比率，比率越大我们扫描的记录数就越少</p>
+<p>如果业务中唯一特性最好建立唯一键，一方面可以保证数据的正确性，另一方面索引的效率能大大提高</p>
+<h3 id="二、EXPLIAN中有用的信息"><a href="#二、EXPLIAN中有用的信息" class="headerlink" title="二、EXPLIAN中有用的信息"></a>二、EXPLIAN中有用的信息</h3><h4 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h4><p>desc 或者 explain 加上你的sql<br>extended explain加上你的sql，然后通过show warnings可以查看实际执行的语句，这一点也是非常有用的，很多时候不同的写法经过sql分析之后实际执行的代码是一样的</p>
+<h4 id="提高性能的特性"><a href="#提高性能的特性" class="headerlink" title="提高性能的特性"></a>提高性能的特性</h4><p>索引覆盖(covering index)：需要查询的数据在索引上都可以查到不需要回表 EXTRA列显示using index</p>
+<p>ICP特性(Index Condition Pushdown)：本来index仅仅是data access的一种访问模式，存数引擎通过索引回表获取的数据会传递到MySQL server层进行where条件过滤,5.6版本开始当ICP打开时，如果部分where条件能使用索引的字段，MySQL server会把这部分下推到引擎层，可以利用index过滤的where条件在存储引擎层进行数据过滤。EXTRA显示using index condition。需要了解mysql的架构图分为server和存储引擎层</p>
+<p>索引合并(index merge)：对多个索引分别进行条件扫描，然后将它们各自的结果进行合并(intersect/union)。一般用OR会用到，如果是AND条件，考虑建立复合索引。EXPLAIN显示的索引类型会显示index_merge，EXTRA会显示具体的合并算法和用到的索引</p>
+<h4 id="extra字段"><a href="#extra字段" class="headerlink" title="extra字段"></a>extra字段</h4><p>1、using filesort： 说明MySQL会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。MySQL中无法利用索引完成的排序操作称为“文件排序” ，其实不一定是文件排序，内部使用的是快排</p>
+<p>2、using temporary：  使用了临时表保存中间结果，MySQL在对查询结果排序时使用临时表。常见于排序order by和分组查询group by</p>
+<p>3、using index： 表示相应的SELECT操作中使用了覆盖索引（Covering Index），避免访问了表的数据行，效率不错。</p>
+<p>4、impossible where： WHERE子句的值总是false，不能用来获取任何元组</p>
+<p>5、select tables optimized away： 在没有GROUP BY子句的情况下基于索引优化MIN/MAX操作或者对于MyISAM存储引擎优化COUNT(*)操作， 不必等到执行阶段再进行计算，查询执行计划生成的阶段即完成优化</p>
+<p>6、distinct： 优化distinct操作，在找到第一匹配的元祖后即停止找同样值的操作</p>
+<p>using filesort,using temporary这两项出现时需要注意下，这两项是十分耗费性能的，在使用group by的时候，虽然没有使用order by，如果没有索引，是可能同时出现using filesort,using temporary的，因为group by就是先排序在分组，如果没有排序的需要，可以加上一个order by NULL来避免排序，这样using filesort就会去除，能提升一点性能。</p>
+<h4 id="type字段"><a href="#type字段" class="headerlink" title="type字段"></a>type字段</h4><p>system：表只有一行记录（等于系统表），这是const类型的特例，平时不会出现</p>
+<p>const：如果通过索引依次就找到了，const用于比较主键索引或者unique索引。 因为只能匹配一行数据，所以很快。如果将主键置于where列表中，MySQL就能将该查询转换为一个常量</p>
+<p>eq_ref：唯一性索引扫描，对于每个索引键，表中只有一条记录与之匹配。常见于主键或唯一索引扫描</p>
+<p>ref：非唯一性索引扫描，返回匹配某个单独值的所有行。本质上也是一种索引访问，它返回所有匹配 某个单独值的行，然而它可能会找到多个符合条件的行，所以它应该属于查找和扫描的混合体</p>
+<p>range：只检索给定范围的行，使用一个索引来选择行。key列显示使用了哪个索引，一般就是在你的where语句中出现between、&lt;、&gt;、in等的查询，这种范围扫描索引比全表扫描要好，因为只需要开始于缩印的某一点，而结束于另一点，不用扫描全部索引</p>
+<p>index：Full Index Scan ，index与ALL的区别为index类型只遍历索引树，这通常比ALL快，因为索引文件通常比数据文件小。 （也就是说虽然ALL和index都是读全表， 但index是从索引中读取的，而ALL是从硬盘读取的）</p>
+<p>all：Full Table Scan，遍历全表获得匹配的行</p>
+<h3 id="三、字段类型和编码"><a href="#三、字段类型和编码" class="headerlink" title="三、字段类型和编码"></a>三、字段类型和编码</h3><ul>
+<li><p>mysql返回字符串长度：CHARACTER_LENGTH方法(CHAR_LENGTH一样的)返回的是字符数，LENGTH函数返回的是字节数，一个汉字三个字节</p>
+</li>
+<li><p>varvhar等字段建立索引长度计算语句：select count(distinct left(test,5))/count(*) from table; 越趋近1越好</p>
+</li>
+<li><p>mysql的utf8最大是3个字节不支持emoji表情符号，必须只用utf8mb4。需要在mysql配置文件中配置客户端字符集为utf8mb4。jdbc的连接串不支持配置characterEncoding=utf8mb4，最好的办法是在连接池中指定初始化sql，例如：hikari连接池，其他连接池类似spring.datasource.hikari.connection-init-sql=set names utf8mb4。否则需要每次执行sql前都先执行set names utf8mb4。</p>
+</li>
+<li><p>msyql排序规则(一般使用_bin和_genera_ci)：</p>
+</li>
+</ul>
+<p>utf8_genera_ci不区分大小写，ci为case insensitive的缩写，即大小写不敏感，</p>
+<p>utf8_general_cs区分大小写，cs为case sensitive的缩写，即大小写敏感，但是目前MySQL版本中已经不支持类似于***_genera_cs的排序规则，直接使用utf8_bin替代。</p>
+<p>utf8_bin将字符串中的每一个字符用二进制数据存储，区分大小写。</p>
+<p>那么，同样是区分大小写，utf8_general_cs和utf8_bin有什么区别？</p>
+<p>cs为case sensitive的缩写，即大小写敏感；bin的意思是二进制，也就是二进制编码比较。</p>
+<p>utf8_general_cs排序规则下，即便是区分了大小写，但是某些西欧的字符和拉丁字符是不区分的，比如ä=a，但是有时并不需要ä=a，所以才有utf8_bin</p>
+<p>utf8_bin的特点在于使用字符的二进制的编码进行运算，任何不同的二进制编码都是不同的，因此在utf8_bin排序规则下：ä&lt;&gt;a</p>
+<h3 id="四、SQL语句总结"><a href="#四、SQL语句总结" class="headerlink" title="四、SQL语句总结"></a>四、SQL语句总结</h3><h4 id="常用的但容易忘的："><a href="#常用的但容易忘的：" class="headerlink" title="常用的但容易忘的："></a>常用的但容易忘的：</h4><ul>
+<li><p>如果有主键或者唯一键冲突则不插入：insert ignore into</p>
+</li>
+<li><p>如果有主键或者唯一键冲突则更新,注意这个会影响自增的增量：INSERT INTO room_remarks(room_id,room_remarks) VALUE(1,”sdf”) ON DUPLICATE KEY UPDATE room_remarks=”234”</p>
+</li>
+<li><p>如果有就用新的替代，values如果不包含自增列，自增列的值会变化： REPLACE INTO room_remarks(room_id,room_remarks) VALUE(1,”sdf”)</p>
+</li>
+<li><p>备份表：CREATE TABLE user_info SELECT * FROM user_info</p>
+</li>
+<li><p>复制表结构：CREATE TABLE user_v2 LIKE user</p>
+</li>
+<li><p>从查询语句中导入：INSERT INTO user_v2 SELECT * FROM user或者INSERT INTO user_v2(id,num) SELECT id,num FROM user</p>
+</li>
+<li><p>连表更新：UPDATE user a, room b SET a.num=a.num+1 WHERE a.room_id=b.id</p>
+</li>
+<li><p>连表删除：DELETE user FROM user,black WHERE user.id=black.id</p>
+</li>
+</ul>
+<h4 id="锁相关"><a href="#锁相关" class="headerlink" title="锁相关"></a>锁相关</h4><ul>
+<li>共享锁： select id from tb_test where id = 1 lock in share mode;</li>
+</ul>
+<ul>
+<li>排它锁： select id from tb_test where id = 1 for update</li>
+</ul>
+<h4 id="优化时用到："><a href="#优化时用到：" class="headerlink" title="优化时用到："></a>优化时用到：</h4><ul>
+<li>强制使用某个索引： select * from table force index(idx_user) limit 2;</li>
+<li>禁止使用某个索引： select * from table ignore index(idx_user) limit 2;</li>
+<li>禁用缓存(在测试时去除缓存的影响)： select SQL_NO_CACHE from table limit 2;</li>
+</ul>
+<h4 id="查看状态"><a href="#查看状态" class="headerlink" title="查看状态"></a>查看状态</h4><ul>
+<li><p>查看字符集 SHOW VARIABLES LIKE ‘character_set%’;</p>
+</li>
+<li><p>查看排序规则 SHOW VARIABLES LIKE ‘collation%’;</p>
+</li>
+</ul>
+<h4 id="SQL编写注意"><a href="#SQL编写注意" class="headerlink" title="SQL编写注意"></a>SQL编写注意</h4><ul>
+<li>where语句的解析顺序是从右到左，条件尽量放where不要放having</li>
+<li>采用延迟关联(deferred join)技术优化超多分页场景，比如limit 10000,10,延迟关联可以避免回表</li>
+<li>distinct语句非常损耗性能，可以通过group by来优化</li>
+<li>连表尽量不要超过三个表</li>
+</ul>
+<h3 id="五、踩坑"><a href="#五、踩坑" class="headerlink" title="五、踩坑"></a>五、踩坑</h3><ul>
+<li><p>如果有自增列，truncate语句会把自增列的基数重置为0，有些场景用自增列作为业务上的id需要十分重视</p>
+</li>
+<li><p>聚合函数会自动滤空，比如a列的类型是int且全部是NULL，则SUM(a)返回的是NULL而不是0</p>
+</li>
+<li><p>mysql判断null相等不能用“a=null”,这个结果永远为UnKnown，where和having中,UnKnown永远被视为false，check约束中，UnKnown就会视为true来处理。所以要用“a is null”处理</p>
+</li>
+</ul>
+<h3 id="六、千万大表在线修改"><a href="#六、千万大表在线修改" class="headerlink" title="六、千万大表在线修改"></a>六、千万大表在线修改</h3><p>mysql在表数据量很大的时候，如果修改表结构会导致锁表，业务请求被阻塞。mysql在5.6之后引入了在线更新，但是在某些情况下还是会锁表，所以一般都采用pt工具( Percona Toolkit)</p>
+<p>如对表添加索引：</p>
+<pre><code>pt-online-schema-change --user=&apos;root&apos; --host=&apos;localhost&apos; --ask-pass --alter &quot;add index idx_user_id(room_id,create_time)&quot; D=fission_show_room_v2,t=room_favorite_info --execute
+</code></pre><h3 id="七、慢查询日志"><a href="#七、慢查询日志" class="headerlink" title="七、慢查询日志"></a>七、慢查询日志</h3><p>有时候如果线上请求超时，应该去关注下慢查询日志，慢查询的分析很简单，先找到慢查询日志文件的位置，然后利用mysqldumpslow去分析。查询慢查询日志信息可以直接通过执行sql命令查看相关变量，常用的sql如下：</p>
+<pre><code>-- 查看慢查询配置
+-- slow_query_log  慢查询日志是否开启
+-- slow_query_log_file 的值是记录的慢查询日志到文件中
+-- long_query_time 指定了慢查询的阈值
+-- log_queries_not_using_indexes 是否记录所有没有利用索引的查询
+SHOW VARIABLES LIKE &apos;%quer%&apos;;
+
+-- 查看慢查询是日志还是表的形式
+SHOW VARIABLES LIKE &apos;log_output&apos;
+
+-- 查看慢查询的数量
+SHOW GLOBAL STATUS LIKE &apos;slow_queries&apos;;
+</code></pre><p>mysqldumpslow的工具十分简单，我主要用到的是参数如下：</p>
+<p>-t:限制输出的行数，我一般取前十条就够了</p>
+<p>-s:根据什么来排序默认是平均查询时间at，我还经常用到c查询次数，因为查询次数很频繁但是时间不高也是有必要优化的，还有t查询时间，查看那个语句特别卡。</p>
+<p>-v:输出详细信息</p>
+<h3 id="八、查看sql进程和杀死进程"><a href="#八、查看sql进程和杀死进程" class="headerlink" title="八、查看sql进程和杀死进程"></a>八、查看sql进程和杀死进程</h3><p>如果你执行了一个sql的操作，但是迟迟没有返回，你可以通过查询进程列表看看他的实际执行状况，如果该sql十分耗时，为了避免影响线上可以用kill命令杀死进程，通过查看进程列表也能直观的看下当前sql的执行状态，如果当前数据库负载很高，在进程列表可能会出现，大量的进程夯住，执行时间很长。命令如下：</p>
+<pre><code>--查看进程列表
+SHOW PROCESSLIST;
+--杀死某个进程
+kill 183665
+</code></pre><h3 id="九、一些数据库性能的思考"><a href="#九、一些数据库性能的思考" class="headerlink" title="九、一些数据库性能的思考"></a>九、一些数据库性能的思考</h3><p>在对公司慢查询日志做优化的时候，很多时候可能是忘了建索引，像这种问题很容易解决，加个索引就行了。但是有两种情况就不是简单能加索引能解决了：</p>
+<ul>
+<li><p>业务代码循环读数据库： 考虑这样一个场景，获取用户粉丝列表信息 加入分页是十个 其实像这样的sql是十分简单的，通过连表查询性能也很高，但是有时候，很多开发采用了取出一串id，然后循环读每个id的信息，这样如果id很多对数据库的压力是很大的，而且性能也很低</p>
+</li>
+<li><p>统计sql：很多时候，业务上都会有排行榜这种，发现公司有很多地方直接采用数据库做计算，在对一些大表的做聚合运算的时候，经常超过五秒，这些sql一般很长而且很难优化， 像这种场景，如果业务允许（比如一致性要求不高或者是隔一段时间才统计的），可以专门在从库里面做统计。另外我建议还是采用redis缓存来处理这种业务</p>
+</li>
+<li><p>超大分页: 在慢查询日志中发现了一些超大分页的慢查询如 limit 40000,1000，因为mysql的分页是在server层做的，可以采用延迟关联在减少回表。但是看了相关的业务代码正常的业务逻辑是不会出现这样的请求的，所以很有可能是有恶意用户在刷接口，所以最好在开发的时候也对接口加上校验拦截这些恶意请求。</p>
+</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">数据库</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/28/mysql基本知识点梳理和查询优化/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-didSelectRowAtIndexPath中改变自定义Cell属性问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1399,967 +2003,6 @@ let stringCell: StringCell? = createCell()
 
 
   
-    <article id="post-Runloop等待条件满足再向下执行但不主卡线程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/">Runloop等待条件满足再向下执行但不主卡线程</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/" class="archive-article-date">
-  	<time datetime="2018-11-27T04:27:18.019Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当我们需要等一个异步的结果才能向下执行代码，写回调又很麻烦，功能相对简单的时候</p>
-<pre><code>- (IBAction)start:(id)sender
-{
-pageStillLoading = YES;
-
-[NSThread detachNewThreadSelector:@selector(loadPageInBackground:)toTarget:self withObject:nil];
-
-[progress setHidden:NO];
-
-//执行代码
-while (pageStillLoading) {
-[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-}
-
-[progress setHidden:YES];
-
-}
-</code></pre><p>当loadPageInBackground方法执行完了之后才让pageStillLoading=NO把进度条隐藏。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS 利用运行时将对象序列化与反序列化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/">iOS 利用运行时将对象序列化与反序列化</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/" class="archive-article-date">
-  	<time datetime="2018-11-27T04:17:03.170Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在iOS中想要把一些对象数据存储到本地需要那个对象实现NSCoding协议下的两个方法</p>
-<pre><code>-(void) encodeWithCoder:(NSCoder *)encoder;
-
--(id) initWithCoder:(NSCoder *)decoder;
-</code></pre><p>然后在这两个方法中实现对象序列化与反序列化的操作.</p>
-<p>例如: </p>
-<p>Person类有两个属性</p>
-<pre><code>@property (nonatomic, copy) NSString *userName;
-@property (nonatomic, copy) NSString *passWord;
-</code></pre><p>那么如果需要实现Person类的序列化与反序列化就需要在上述两个方法中分别实现</p>
-<pre><code>-(void) encodeWithCoder:(NSCoder *)encoder {
-    [encoder encodeObject:_userName forKey:@&quot;userName&quot;];
-    [encoder encodeObject:_passWord forKey:@&quot;passWord&quot;];
-}
-
--(id) initWithCoder:(NSCoder *)decoder {
-    _userName = [decoder decodeObjectForKey:@&quot;userName&quot;];
-    _passWord = [decoder decodeObjectForKey:@&quot;passWord&quot;];
-}
-</code></pre><p>最后在需要对象序列化的地方调用</p>
-<pre><code>BOOL isSuccess = [NSKeyedArchiver archiveRootObject:person toFile:@&quot;archiver.dat&quot;];
-</code></pre><p>返回布尔类型可以检查序列化操作是否成功.<br>然后在需要对象反序列化的地方调用</p>
-<pre><code>Person *person = [NSKeyedUnarchiver unarchiveObjectWithFile: @&quot;archiver.dat&quot;];
-</code></pre><p>获得已序列化的对象.<br>当然,序列化的对象可以是实现了Coding协议的对象数组或者其他.</p>
-<h3 id="那么重点儿来了……"><a href="#那么重点儿来了……" class="headerlink" title="那么重点儿来了……"></a>那么重点儿来了……</h3><p>在我的项目中我写了N个需要序列化的对象,然后在N个需要序列化的对象中又有N个属性,然后可能还要不定期的增加、修改、删除某些属性,那我不就需要每天辗转这些序列化对象中做一些很无聊的工作吗?<br>一想到这个我都能烦死,那该怎么办呢?</p>
-<p>我想到了运行时中是有可以动态获取类属性的方法实现的.于是我在某个类中做了以下工作:</p>
-<pre><code>//解码
- - (id)initWithCoder:(NSCoder *)coder
- {
-    unsigned int iVarCount = 0;
-    Ivar *iVarList = class_copyIvarList([self class], &amp;iVarCount);//取得变量列表,[self class]表示对自身类进行操作
-    for (int i = 0; i &lt; iVarCount; i++) {
-        Ivar var = *(iVarList + i);
-        const char * varName = ivar_getName(var);//取得变量名字，将作为key
-        NSString *key = [NSString stringWithUTF8String:varName];
-        //decode
-        id  value = [coder decodeObjectForKey:key];//解码
-        if (value) {
-            [self setValue:value forKey:key];//使用KVC强制写入到对象中
-        }
-    }
-    free(iVarList);//记得释放内存
-    return self;
-}
-//编码
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-    unsigned int varCount = 0;
-    Ivar *ivarList = class_copyIvarList([self class], &amp;varCount);
-    for (int i = 0; i &lt; varCount; i++) {
-        Ivar var = *(ivarList + i);
-        const char *varName = ivar_getName(var);
-        NSString *key = [NSString stringWithUTF8String:varName];
-        id varValue = [self valueForKey:key];//使用KVC获取key对应的变量值
-        if (varValue) {
-            [coder encodeObject:varValue forKey:key];
-        }
-    }
-    free(ivarList);
-}
-</code></pre><p>照以上写法儿一般情况下都是可以满足需求的,因为该实现中获取变量时都是指定当前类，也就是[self class].当序列化对象不是直接继承NSObject时会遗漏掉父类的属性. </p>
-<p>所以我们需要对NSObject的上层所有序列对象的类属性进行编解码.但是在用class_copyIvarList获取父类属性的时候程序在[self valueForKey:key]崩掉了.后来了解到获取父类属性用class_copyPropertyList是正常的,如果这样的话在方法中只能做判断是否是当前类了.所以只要把以下代码复制粘贴到 你的序列化对象中就可以不再关注对象的.m文件动态添加、删除、修改类属性了. </p>
-<p>另外在其他地方了解到一个问题,那就是</p>
-<pre><code>iOS中打印propertyList会发现有 superClass、
-
-description、debugDescription、hash等四个属性。对这几个
-
-属性进行encode操作会导致crash。因此在encode前需要屏蔽掉这些key
-
-    - (id)initWithCoder:(NSCoder *)coder    
-{    
-    Class cls = [self class];   
-    while (cls != [NSObject class]) {   
-        /*判断是自身类还是父类*/    
-        BOOL bIsSelfClass = (cls == [self class]);  
-        unsigned int iVarCount = 0; 
-        unsigned int propVarCount = 0;  
-        unsigned int sharedVarCount = 0;    
-        Ivar *ivarList = bIsSelfClass ? class_copyIvarList([cls class], &amp;iVarCount) : NULL;/*变量列表，含属性以及私有变量*/   
-        objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/   
-        sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   
-
-        for (int i = 0; i &lt; sharedVarCount; i++) {  
-            const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); 
-            NSString *key = [NSString stringWithUTF8String:varName];   
-            id varValue = [coder decodeObjectForKey:key]; 
-            NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;];   
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { 
-                [self setValue:varValue forKey:key];    
-            }   
-        }   
-        free(ivarList); 
-        free(propList); 
-        cls = class_getSuperclass(cls); 
-    }   
-    return self;    
-}   
-
-- (void)encodeWithCoder:(NSCoder *)coder    
-{   
-    Class cls = [self class];   
-    while (cls != [NSObject class]) {   
-        /*判断是自身类还是父类*/    
-        BOOL bIsSelfClass = (cls == [self class]);  
-        unsigned int iVarCount = 0; 
-        unsigned int propVarCount = 0;  
-        unsigned int sharedVarCount = 0;    
-        Ivar *ivarList = bIsSelfClass ? class_copyIvarList([cls class], &amp;iVarCount) : NULL;/*变量列表，含属性以及私有变量*/   
-        objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/ 
-        sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   
-
-        for (int i = 0; i &lt; sharedVarCount; i++) {  
-            const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); 
-            NSString *key = [NSString stringWithUTF8String:varName];    
-            /*valueForKey只能获取本类所有变量以及所有层级父类的属性，不包含任何父类的私有变量(会崩溃)*/  
-            id varValue = [self valueForKey:key];
-            NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;];    
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { 
-                [coder encodeObject:varValue forKey:key];   
-            }   
-        }   
-        free(ivarList); 
-        free(propList); 
-        cls = class_getSuperclass(cls); 
-    }   
-}
-</code></pre><p>但是这样的话我那么多序列化对象难道要一个一个粘贴过去么? </p>
-<p>能不能再做一层封装? </p>
-<p>答案是肯定的 </p>
-<p>在项目中新建一个.h文件 </p>
-<p><img src="https://img-blog.csdn.net/20180716095810557?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
-<p>然后复制下面的代码到.h文件中</p>
-<pre><code>#import &lt;objc/runtime.h&gt;
-
-#define SERIALIZER_CODER_DECODER()     \
-\
-- (id)initWithCoder:(NSCoder *)coder    \
-{   \
-    Class cls = [self class];   \
-    while (cls != [NSObject class]) {   \
-        /*判断是自身类还是父类*/    \
-        BOOL bIsSelfClass = (cls == [self class]);  \
-        unsigned int iVarCount = 0; \
-        unsigned int propVarCount = 0;  \
-        unsigned int sharedVarCount = 0;    \
-        Ivar *ivarList = bIsSelfClass ? class_copyIvarList([cls class], &amp;iVarCount) : NULL;/*变量列表，含属性以及私有变量*/   \
-        objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/   \
-        sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   \
-\
-        for (int i = 0; i &lt; sharedVarCount; i++) {  \
-            const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); \
-            NSString *key = [NSString stringWithUTF8String:varName];   \
-            id varValue = [coder decodeObjectForKey:key];   \
-            NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;]; \
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { \
-                [self setValue:varValue forKey:key];    \
-            }   \
-        }   \
-        free(ivarList); \
-        free(propList); \
-        cls = class_getSuperclass(cls); \
-    }   \
-    return self;    \
-}   \
-\
-- (void)encodeWithCoder:(NSCoder *)coder    \
-{   \
-    Class cls = [self class];   \
-    while (cls != [NSObject class]) {   \
-        /*判断是自身类还是父类*/    \
-        BOOL bIsSelfClass = (cls == [self class]);  \
-        unsigned int iVarCount = 0; \
-        unsigned int propVarCount = 0;  \
-        unsigned int sharedVarCount = 0;    \
-        Ivar *ivarList = bIsSelfClass ? class_copyIvarList([cls class], &amp;iVarCount) : NULL;/*变量列表，含属性以及私有变量*/   \
-        objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/ \
-        sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   \
-        \
-        for (int i = 0; i &lt; sharedVarCount; i++) {  \
-            const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); \
-            NSString *key = [NSString stringWithUTF8String:varName];    \
-            /*valueForKey只能获取本类所有变量以及所有层级父类的属性，不包含任何父类的私有变量(会崩溃)*/  \
-            id varValue = [self valueForKey:key];   \
-            NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;]; \
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { \
-                [coder encodeObject:varValue forKey:key];   \
-            }   \
-        }   \
-        free(ivarList); \
-        free(propList); \
-        cls = class_getSuperclass(cls); \
-    }   \
-}
-</code></pre><p>只需要在你需要序列化的对象中import你的.h文件然后直接调用</p>
-<pre><code>SERIALIZER_CODER_DECODER()
-</code></pre><p><img src="https://img-blog.csdn.net/2018071610055818?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-详解AFNetworking的HTTPS模块" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/26/详解AFNetworking的HTTPS模块/">详解AFNetworking的HTTPS模块</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/26/详解AFNetworking的HTTPS模块/" class="archive-article-date">
-  	<time datetime="2018-11-26T03:48:45.867Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>内容包括</p>
-<ul>
-<li><p>AFNetworking简介</p>
-</li>
-<li><p>ATS和HTTPS介绍</p>
-</li>
-<li><p>AF中的证书验证介绍</p>
-</li>
-<li><p>如何创建服务端和客户端自签名证书</p>
-</li>
-<li><p>如何创建简单的https服务器</p>
-</li>
-<li><p>对CA正式证书和自签名证书的各种情况进行代码验证</p>
-</li>
-</ul>
-<h2 id="1-0-AFNetworking简介"><a href="#1-0-AFNetworking简介" class="headerlink" title="1.0 AFNetworking简介"></a>1.0 AFNetworking简介</h2><p>AFNetworking（下面简称AF）是一个优秀的网络框架，从事iOS开发工作的同学几乎都用过它。</p>
-<p>同时，AF也是一个简单，高效的网络框架。</p>
-<p>AF3.0版本(3.2.1)是对NSURLSession的封装。NSURLSession是苹果公司的HTTP协议实现，它尽可能完整地实现了所有功能，但是同苹果的Autolayout有相同的问题，就是API复杂难用。</p>
-<p>因此在项目实践中，即使我们不使用AF，我们也需要对NSURLSession进行适度封装才能够得心应手。AF帮你做了这件事，而且可能做的更好。<br>AF将NSURLSession的复杂调用封装到框架内部，并向外提供了更加简单易懂的接口，它主要包含如下功能：</p>
-<ul>
-<li>提供了AFHTTPSessionManager用于HTTP请求(GET，POST，…)</li>
-<li>提供AFURLRequestSerialization用于请求封装，添加参数，设置header，传递数据</li>
-<li>提供AFURLResponseSerialization用于服务端返回数据的解析和过滤</li>
-<li>提供AFSecurityPolicy用于HTTPS协议证书验证</li>
-<li>提供了AFNetworkReachabilityManager用于网络状态监听</li>
-<li>提供了UIKit主要可用于图片缓存，类似于SDWebImage</li>
-</ul>
-<p>AF3.0的代码足够简单，各个模块也很容易理解，就不过多介绍了，我们着重分析一下AFSecurityPolicy这个模块。</p>
-<h2 id="2-0-ATS"><a href="#2-0-ATS" class="headerlink" title="2.0 ATS"></a>2.0 ATS</h2><p>iOS9.0版本中，包含了一个叫ATS的验证机制，要求App网络请求必须是安全的。主要包含2点：</p>
-<ul>
-<li><p>必须使用https</p>
-</li>
-<li><p>https证书必须是公信机构颁发的证书</p>
-</li>
-</ul>
-<p>对于其中上面的第二点，在代码层次没有强制要求，使用自签名证书也是可以正常请求的，可能会在审核阶段有此要求。</p>
-<h2 id="3-0-AF中的证书验证"><a href="#3-0-AF中的证书验证" class="headerlink" title="3.0 AF中的证书验证"></a>3.0 AF中的证书验证</h2><p>AF中实现了对服务端证书的验证功能，验证通过之后，即可正常进行网络请求。</p>
-<p>但是它没有实现客户端证书，所以如果服务器要求双向验证的时候，我们就需要对AF进行一些扩展了。</p>
-<p>服务端验证证书的代码在：AFURLSessionManager.m</p>
-<pre><code>- (void)URLSession:(NSURLSession *)session
-didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
- completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
-{
-    NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-    __block NSURLCredential *credential = nil;
-
-    if (self.sessionDidReceiveAuthenticationChallenge) {
-        disposition = self.sessionDidReceiveAuthenticationChallenge(session, challenge, &amp;credential);
-    } else {
-        if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-            if ([self.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host]) {
-                credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
-                if (credential) {
-                    disposition = NSURLSessionAuthChallengeUseCredential;
-                } else {
-                    disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-                }
-            } else {
-                disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
-            }
-        }
-    }
-
-    if (completionHandler) {
-        completionHandler(disposition, credential);
-    }
-}
-</code></pre><p>在NSURLSession中，当请求https的接口时，会触发- (void)URLSession:(NSURLSession <em>)session didReceiveChallenge:(NSURLAuthenticationChallenge </em>)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler回调，在这个回调中，你需要验证服务端发送过来的证书，并返回一个NSURLCredential对象。</p>
-<p>其中 disposition 这个变量用于表示你对证书的验证结果，NSURLSessionAuthChallengeUseCredential表示验证通过，其他值都表示验证失败。</p>
-<p>challenge.protectionSpace.authenticationMethod 这个枚举字符串表示的是回调触发的原因，其中，</p>
-<p>NSURLAuthenticationMethodServerTrust表示服务端发来证书，NSURLAuthenticationMethodClientCertificate表示服务端请求验证客户端证书。</p>
-<p>验证证书的方法在AFSecurityPolicy.m中</p>
-<pre><code>- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust
-                  forDomain:(NSString *)domain
-{
-    if (domain &amp;&amp; self.allowInvalidCertificates &amp;&amp; self.validatesDomainName &amp;&amp; (self.SSLPinningMode == AFSSLPinningModeNone || [self.pinnedCertificates count] == 0)) {
-        // https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NetworkingTopics/Articles/OverridingSSLChainValidationCorrectly.html
-        //  According to the docs, you should only trust your provided certs for evaluation.
-        //  Pinned certificates are added to the trust. Without pinned certificates,
-        //  there is nothing to evaluate against.
-        //
-        //  From Apple Docs:
-        //          &quot;Do not implicitly trust self-signed certificates as anchors (kSecTrustOptionImplicitAnchors).
-        //           Instead, add your own (self-signed) CA certificate to the list of trusted anchors.&quot;
-        NSLog(@&quot;In order to validate a domain name for self signed certificates, you MUST use pinning.&quot;);
-        return NO;
-    }
-
-    NSMutableArray *policies = [NSMutableArray array];
-    if (self.validatesDomainName) {
-        [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
-    } else {
-        [policies addObject:(__bridge_transfer id)SecPolicyCreateBasicX509()];
-    }
-
-    SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
-
-    if (self.SSLPinningMode == AFSSLPinningModeNone) {
-        return self.allowInvalidCertificates || AFServerTrustIsValid(serverTrust);
-    } else if (!AFServerTrustIsValid(serverTrust) &amp;&amp; !self.allowInvalidCertificates) {
-        return NO;
-    }
-
-    switch (self.SSLPinningMode) {
-        case AFSSLPinningModeNone:
-        default:
-            return NO;
-        case AFSSLPinningModeCertificate: {
-            NSMutableArray *pinnedCertificates = [NSMutableArray array];
-            for (NSData *certificateData in self.pinnedCertificates) {
-                [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
-            }
-            SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
-
-            if (!AFServerTrustIsValid(serverTrust)) {
-                return NO;
-            }
-
-            // obtain the chain after being validated, which *should* contain the pinned certificate in the last position (if it&apos;s the Root CA)
-            NSArray *serverCertificates = AFCertificateTrustChainForServerTrust(serverTrust);
-
-            for (NSData *trustChainCertificate in [serverCertificates reverseObjectEnumerator]) {
-                if ([self.pinnedCertificates containsObject:trustChainCertificate]) {
-                    return YES;
-                }
-            }
-
-            return NO;
-        }
-        case AFSSLPinningModePublicKey: {
-            NSUInteger trustedPublicKeyCount = 0;
-            NSArray *publicKeys = AFPublicKeyTrustChainForServerTrust(serverTrust);
-
-            for (id trustChainPublicKey in publicKeys) {
-                for (id pinnedPublicKey in self.pinnedPublicKeys) {
-                    if (AFSecKeyIsEqualToKey((__bridge SecKeyRef)trustChainPublicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
-                        trustedPublicKeyCount += 1;
-                    }
-                }
-            }
-            return trustedPublicKeyCount &gt; 0;
-        }
-    }
-
-    return NO;
-}
-</code></pre><p>代码解析：</p>
-<p>函数第一行就是一长串的逻辑判断，乍一看，这里看的人很懵，它包含的信息很多。但实际上它的作用是用来处理服务端自签名证书的。其他情况无需考虑此处逻辑。根据后面代码来看，如果你服务端证书使用的是自签名证书，AFSecurityPolicy的allowInvalidCertificates属性必须设为YES，所以这里判断会带上self.allowInvalidCertificates。</p>
-<p>接下来就是验证服务端证书的过程，SSLPinningMode 有3个值，AFSSLPinningModeNone表示服务端使用的是CA机构签发的正式证书，另外2个值表示服务端使用的是自签名证书。</p>
-<p>AFServerTrustIsValid这个函数使用的是Security.framework中的方法，用于验证服务端发送来的证书是否是可信任的，只要证书链中任何一个证书是已经信任的证书，那么这个服务端证书就是合法的。详细过程已经被Security.framework处理了，不需要我们做额外工作。关于证书链可以参考这里。</p>
-<p>第三部分代码就是服务端自签名证书的验证了，这种情况下，需要把服务端证书也放到客户端中一份。根据SSLPinningMode，你可以选择使用服务端证书或者服务端证书内的公钥。</p>
-<p>AFSSLPinningModeCertificate表示客户端需要保存一个服务端根证书，用于验证服务端证书是否合法。客户端需要将服务端证书的证书链上的任意一个证书拖入xcode工程中。</p>
-<p>自签名证书需要设置pinnedCertificates属性，把拖入xcode的证书加载到内存中，保存在pinnedCertificates数组中。通过SecTrustSetAnchorCertificates方法把数组中的证书同服务端返回的证书做证书链绑定，然后就可以用AFServerTrustIsValid方法验证证书是否合法了，如果服务端证书和我们客户端保存的证书可以正确匹配，这个函数就会返回YES。</p>
-<p>AFSSLPinningModePublicKey表示客户端需要保存一个服务端根证书公钥，用于验证服务端证书是否合法。客户端需要将服务端证书链上的任意一证书的公钥拖入xcode工程中。</p>
-<p>若使用公钥验证，则需要从服务端证书中取出公钥，同时取出客户端中保存的公钥，逐一比较，如果有匹配的就认为验证成功。</p>
-<p>根据上述分析，客户端对于证书的使用，有下面的3种情况：</p>
-<ul>
-<li>服务端使用CA机构颁发的正式证书</li>
-<li>服务端使用自签名证书</li>
-<li>服务端要验证客户端证书时，客户端使用自签名证书</li>
-</ul>
-<h2 id="4-0-证书验证实践"><a href="#4-0-证书验证实践" class="headerlink" title="4.0 证书验证实践"></a>4.0 证书验证实践</h2><p>我们对上面所述3种证书使用情形进行逐一验证。</p>
-<p>验证之前，我们需要做3个准备工作：</p>
-<ul>
-<li>第一是要把所需的证书创建出来</li>
-<li>第二是搭建简单的服务器用于测试</li>
-<li>第三是创建客户端工程引入AF3.0准备测试</li>
-</ul>
-<h2 id="4-1-创建证书"><a href="#4-1-创建证书" class="headerlink" title="4.1 创建证书"></a>4.1 创建证书</h2><p>https使用的证书都是基于X.509格式的。</p>
-<p>CA机构的正式证书一般是要花钱购买的，当然也有免费的，我之前在阿里云买过免费的证书。一般申请通过后，你可以把证书下载下来，其中主要包含私钥和各种格式的证书。</p>
-<p>自签名的证书就比较容易了，在mac中可以使用openssl命令来生成。<br>我写了一个简单的脚本，用于生成各种自签名证书，你可以把它保存到文件（文件名为：create.sh）中，在终端里执行。</p>
-<p>脚本会生成3种证书：根证书，客户端证书，服务端证书。</p>
-<p>其中不同的证书没有本质区别，只是用在不同的地方而已。<br>每种证书包含5个文件，分别是：</p>
-<ul>
-<li>der格式证书</li>
-<li>pem格式证书</li>
-<li>p12格式证书</li>
-<li>pem格式私钥</li>
-<li><p>csr格式证书申请文件</p>
-<pre><code>#!/bin/sh
-
-locale=&apos;CN&apos; #地区
-province=&apos;Beijing&apos; #省份
-city=$province #城市
-company=&apos;xxx&apos; #公司
-unit=&apos;yyy&apos; #部门
-hostname=&apos;127.0.0.1&apos; #域名
-email=&apos;hr@suning.com&apos; #邮箱
-
-#clean
-function clean(){
-    echo &apos;清理文件...&apos;
-    ls | grep -v create.sh | xargs rm -rf
-}
-
-#用法
-function usage(){
-    echo &apos;usage: ./create.sh 
-        [-l [localevalue]]
-        [-p [provincevalue]]
-        [-c [cityvalue]]
-        [-d [companyvalue]]
-        [-u [unitvalue]]
-        [-h [hostnamevalue]]
-        [-e [emailvalue]]
-    &apos;
-    exit
-}
-
-#参数
-if [ $# -gt 0 ]; then
-    while getopts &quot;cl:p:c:d:u:h:e&quot; arg;
-    do
-        case $arg in
-            c)
-                clean &amp;&amp; exit
-                ;;
-            l)
-                locale=$OPTARG
-                ;;
-            p)
-                province=$OPTARG
-                ;;
-            c)
-                city=$OPTARG
-                ;;
-            d)
-                company=$OPTARG
-                ;;
-            u)
-                unit=$OPTARG
-                ;;
-            h)
-                hostname=$OPTARG
-                ;;
-            e)
-                email=$OPTARG
-                ;;
-            ?)
-                usage
-                ;;
-        esac
-    done
-fi
-
-clean
-
-echo &apos;开始创建根证书...&apos;
-
-openssl genrsa -out ca-private-key.pem 1024
-openssl req -new -out ca-req.csr -key ca-private-key.pem &lt;&lt;EOF
-${locale}
-${province}
-${city}
-${company}
-${unit}
-${hostname}
-${email}
-
-EOF
-openssl x509 -req -in ca-req.csr -out ca-cert.pem -outform PEM -signkey ca-private-key.pem -days 3650
-openssl x509 -req -in ca-req.csr -out ca-cert.der -outform DER -signkey ca-private-key.pem -days 3650
-echo &apos;请输入根证书p12文件密码，直接回车表示密码为空字符串...&apos;
-openssl pkcs12 -export -clcerts -in ca-cert.pem -inkey ca-private-key.pem -out ca-cert.p12
-
-echo &apos;开始创建服务端证书...&apos;
-
-openssl genrsa -out server-private-key.pem 1024
-openssl req -new -out server-req.csr -key server-private-key.pem &lt;&lt; EOF
-${locale}
-${province}
-${city}
-${company}
-${unit}
-${hostname}
-${email}
-
-EOF
-openssl x509 -req -in server-req.csr -out server-cert.pem -outform PEM -signkey server-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
-openssl x509 -req -in server-req.csr -out server-cert.der -outform DER -signkey server-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
-echo &apos;请输入服务端证书p12文件密码，直接回车表示密码为空字符串...&apos;
-openssl pkcs12 -export -clcerts -in server-cert.pem -inkey server-private-key.pem -out server-cert.p12
-
-echo &apos;开始创建客户端证书...&apos;
-
-openssl genrsa -out client-private-key.pem 1024
-openssl req -new -out client-req.csr -key client-private-key.pem &lt;&lt; EOF
-${locale}
-${province}
-${city}
-${company}
-${unit}
-${hostname}
-${email}
-
-EOF
-openssl x509 -req -in client-req.csr -out client-cert.pem -outform PEM -signkey client-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
-openssl x509 -req -in client-req.csr -out client-cert.der -outform DER -signkey client-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
-echo &apos;请输入客户端证书p12文件密码，直接回车表示密码为空字符串...&apos;
-openssl pkcs12 -export -clcerts -in client-cert.pem -inkey client-private-key.pem -out client-cert.p12
-
-echo &apos;finishied&apos;
-</code></pre></li>
-</ul>
-<p>你可以按照步骤操作：</p>
-<p>复制脚本内容，保存到文件中，文件名为create.sh</p>
-<p>打开终端，通过cd命令进入create.sh所在的文件夹</p>
-<p>在终端内输入：chmod +x create.sh 点击回车</p>
-<p>在终端输入：./create.sh -h，此时会打印用法</p>
-<pre><code>usage: ./create.sh 
-    [-l [localevalue]]
-    [-p [provincevalue]]
-    [-c [cityvalue]]
-    [-d [companyvalue]]
-    [-u [unitvalue]]
-    [-h [hostnamevalue]]
-    [-e [emailvalue]]
-</code></pre><p>脚本有下面几种用法：</p>
-<ul>
-<li><p>./create.sh -h 打印用法</p>
-</li>
-<li><p>./create.sh -c 会清空生成的所有文件</p>
-</li>
-<li><p>./create.sh 直接回车，会使用默认参数生成证书</p>
-</li>
-<li><p>./create.sh + 用法中所述选项 会使用自定义的参数生成证书</p>
-</li>
-</ul>
-<h2 id="4-2-搭建简单的HTTPS服务器"><a href="#4-2-搭建简单的HTTPS服务器" class="headerlink" title="4.2 搭建简单的HTTPS服务器"></a>4.2 搭建简单的HTTPS服务器</h2><p>我们使用nodejs来搭建https服务器，请按照如下步骤操作：</p>
-<p>首先下载nodejs并安装</p>
-<p>建立一个文件夹，文件夹内创建一个文件，名字为package.json，内容如下：</p>
-<pre><code>{
-    &quot;name&quot;: &quot;test-https&quot;,
-    &quot;version&quot;: &quot;1.0.0&quot;,
-    &quot;main&quot;: &quot;app.js&quot;,
-    &quot;scripts&quot;: {
-        &quot;start&quot;: &quot;node app.js&quot;
-    },
-    &quot;debug&quot;: true,
-    &quot;dependencies&quot;: {
-        &quot;koa&quot;: &quot;2.5.2&quot;,
-        &quot;koa-router&quot;: &quot;7.4.0&quot;
-    }
-}
-</code></pre><p>建立另一个文件，名字为app.js，内容如下：</p>
-<pre><code>const Koa = require(&apos;koa&apos;);
-const https = require(&apos;https&apos;);
-const fs = require(&apos;fs&apos;);
-const router = require(&apos;koa-router&apos;)();
-
-const app = new Koa();
-
-//路由
-router.get(&apos;/&apos;, (ctx, next) =&gt; {
-    ctx.response.body = &apos;this is a simple node js https server response&apos;;
-})
-app.use(router.routes());
-
-//https
-https.createServer({
-    key: fs.readFileSync(&apos;./yourServerCertPrivatekey.key&apos;),
-    cert: fs.readFileSync(&apos;./yourServerCert.pem&apos;),
-    requestCert: true,
-    ca:[fs.readFileSync(&apos;./yourClientCert.pem&apos;)]
-}, app.callback()).listen(3000);
-
-console.log(`https app started at port 3000`)
-</code></pre><p>打开终端，使用cd命令进入我们创建的服务器文件夹，然后执行命令：npm install，等待命令完成(可能会比较慢，根据网络情况而定)。如出现下列字样表示安装成功(不一定完全相同)：</p>
-<pre><code>added 40 packages from 21 contributors and audited 53 packages in 8.446s
-found 0 vulnerabilities
-</code></pre><p>至此我们的简易https服务器就搭建完成了。我们可以使用命令：node app.js 来启动服务器。但是你会发现会报错，这是因为fs.readFileSync(filename)这句代码表示要读取一个证书文件，要确保文件存在才可以。我们后续根据需求来修改此处文件路径即可。</p>
-<p>服务器启动成功后，你可以在终端看到下面的文字：</p>
-<pre><code>https app started at port 3000
-</code></pre><h2 id="4-3-建立客户端工程"><a href="#4-3-建立客户端工程" class="headerlink" title="4.3 建立客户端工程"></a>4.3 建立客户端工程</h2><pre><code>-(void) test{
-    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] init];
-
-    //HTTPS验证代码，我们主要修改这里
-    AFSecurityPolicy *policy = [AFSecurityPolicy defaultPolicy];
-    policy.validatesDomainName = NO;//不验证域名，是为了测试方便，否则你需要修改host文件了
-    manager.securityPolicy = policy;
-
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    //请求地址就写这个
-    [manager GET:@&quot;https://127.0.0.1:3000/&quot; parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@&quot;succ and response = [%@]&quot;, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@&quot;fail&quot;);
-    }];
-}
-</code></pre><h2 id="4-4-服务端使用CA机构颁发的正式证书"><a href="#4-4-服务端使用CA机构颁发的正式证书" class="headerlink" title="4.4 服务端使用CA机构颁发的正式证书"></a>4.4 服务端使用CA机构颁发的正式证书</h2><p>这个是最简单的情况，AF已经支持，我们不需要做任何额外工作就能够支持。</p>
-<p>首先，我们将服务端的代码中的证书路径指向我们在CA机构申请好的服务端证书路径，其中key表示证书私钥，cert表示pem格式证书。另外将requestCert和ca这两个字段先删除，然后重新启动服务器。像下面这样：</p>
-<pre><code>... ...
-//https
-https.createServer({
-    key: fs.readFileSync(这里改成你的私钥路径),
-    cert: fs.readFileSync(这里改成你的pem格式证书路径)
-}, app.callback()).listen(3000);
-... ...
-</code></pre><p>然后，客户端的代码不需要修改。直接运行xcode，正常情况下你可以看到如下输出：</p>
-<pre><code>succ and response = [this is a simple node js https server response]
-</code></pre><h2 id="4-5-服务端使用自签名证书"><a href="#4-5-服务端使用自签名证书" class="headerlink" title="4.5 服务端使用自签名证书"></a>4.5 服务端使用自签名证书</h2><p>服务端代码不变，只是将证书和私钥路径修改为我们自签名的证书路径。</p>
-<p>上文中，我们已经创建过自签名的证书。</p>
-<p>首先把证书文件夹的私钥文件server-private-key.pem和证书文件server-cert.pem复制到服务器文件夹下。</p>
-<p>然后服务器代码修改如下：</p>
-<pre><code>... ...
-//https
-https.createServer({
-    key: fs.readFileSync(&apos;./server-private-key.pem&apos;),
-    cert: fs.readFileSync(&apos;./server-cert.pem&apos;)
-}, app.callback()).listen(3000);
-... ...
-</code></pre><p>重启服务器。</p>
-<p>客户端需要把证书文件夹内的server-cert.der文件拖入xcode中，然后将xcode中的证书修改名字为server-cert.cer。</p>
-<p>客户端代码做如下修改（请看注释）</p>
-<pre><code>-(void) test{
-    //使用服务器自签名证书，需要指定baseUrl属性。
-    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:@&quot;https://127.0.0.1:3000&quot;]];
-
-    //AFSSLPinningModeCertificate表示使用自签名证书
-    AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
-    //为了测试方便不验证域名，若要验证域名，则请求时的域名要和创建证书（创建证书的脚本执行时可指定域名）时的域名一致
-    policy.validatesDomainName = NO;
-    //自签名服务器证书需要设置allowInvalidCertificates为YES
-    policy.allowInvalidCertificates = YES;
-    //指定本地证书路径
-    policy.pinnedCertificates = [AFSecurityPolicy certificatesInBundle:[NSBundle mainBundle]];
-
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    [manager GET:@&quot;https://127.0.0.1:3000/&quot; parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-        NSLog(@&quot;succ and response = [%@]&quot;, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-        NSLog(@&quot;fail&quot;);
-    }];
-}
-</code></pre><p>运行工程，正常情况下，可以看到正确输出。</p>
-<h2 id="4-6-服务端验证客户端证书"><a href="#4-6-服务端验证客户端证书" class="headerlink" title="4.6 服务端验证客户端证书"></a>4.6 服务端验证客户端证书</h2><p>这叫做双向验证，客户端验证服务端无误之后，服务端也可以验证客户端证书，这样可以保证数据传输双方都是自己想要的目标。</p>
-<p>首先，把证书文件夹内的client-cert.pem文件复制到服务器文件夹内。</p>
-<p>然后修改服务端代码：</p>
-<pre><code>... ...
-//https
-https.createServer({
-    key: fs.readFileSync(&apos;./server-private-key.pem&apos;),
-    cert: fs.readFileSync(&apos;./server-cert.pem&apos;),
-    requestCert: true,//表示客户端需要证书
-    ca:[fs.readFileSync(&apos;./client-cert.pem&apos;)]//用于匹配客户端证书
-}, app.callback()).listen(3000);
-... ...
-</code></pre><p>重启服务器。</p>
-<p>客户端需要把证书文件夹内的client-cert.p12文件拖到xcode中。<br>客户端请求代码不需要修改。</p>
-<p>因为AF3.0并没有提供对客户端证书的支持，所以我们需要修改AF的代码。</p>
-<p>找到AFURLSessionManager.m文件，</p>
-<p>在- (void)URLSession:(NSURLSession <em>)session didReceiveChallenge:(NSURLAuthenticationChallenge </em>)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler方法。</p>
-<pre><code>- (void)URLSession:(NSURLSession *)session
-didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
- completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
-{
-    NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-    __block NSURLCredential *credential = nil;
-
-    if (self.sessionDidReceiveAuthenticationChallenge) {
-        disposition = self.sessionDidReceiveAuthenticationChallenge(session, challenge, &amp;credential);
-    } else {
-        NSString *authMethod = challenge.protectionSpace.authenticationMethod;
-        if ([authMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-            if ([self.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host]) {
-                credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
-                if (credential) {
-                    disposition = NSURLSessionAuthChallengeUseCredential;
-                } else {
-                    disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-                }
-            } else {
-                disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
-            }
-        } else if([authMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]){
-            NSData *p12Data = [NSData dataWithContentsOfFile:[NSBundle pathForResource:@&quot;client-cert&quot; ofType:@&quot;p12&quot; inDirectory:[NSBundle mainBundle].bundlePath]];
-            if([p12Data isKindOfClass:[NSData class]]){
-                SecTrustRef trust = NULL;
-                SecIdentityRef identity = NULL;
-                [[self class] extractIdentity:&amp;identity andTrust:&amp;trust fromPKCS12Data:p12Data];
-                if(identity){
-                    SecCertificateRef certificate = NULL;
-                    SecIdentityCopyCertificate(identity, &amp;certificate);
-                    const void *certs[] = {certificate};
-                    CFArrayRef certArray =CFArrayCreate(kCFAllocatorDefault, certs, 1, NULL);
-                    credential = [NSURLCredential credentialWithIdentity:identity certificates:(__bridge  NSArray*)certArray persistence:NSURLCredentialPersistencePermanent];
-                    disposition = NSURLSessionAuthChallengeUseCredential;
-                }else{
-                    disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-                }
-            }else{
-                disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-            }
-        } else {
-            disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-        }
-    }
-
-    if (completionHandler) {
-        completionHandler(disposition, credential);
-    }
-}
-
-+ (BOOL)extractIdentity:(SecIdentityRef*)outIdentity andTrust:(SecTrustRef *)outTrust fromPKCS12Data:(NSData *)inPKCS12Data {
-    OSStatus securityError = errSecSuccess;
-    //客户端证书密码
-    NSDictionary*optionsDictionary = [NSDictionary dictionaryWithObject: @&quot;&quot;
-                                                                 forKey: (__bridge id)kSecImportExportPassphrase];
-
-    CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
-    securityError = SecPKCS12Import((__bridge CFDataRef)inPKCS12Data,(__bridge CFDictionaryRef)optionsDictionary ,&amp;items);
-
-    if(securityError == 0) {
-        CFDictionaryRef myIdentityAndTrust = CFArrayGetValueAtIndex(items, 0);
-        const void *tempIdentity = NULL;
-        tempIdentity = CFDictionaryGetValue(myIdentityAndTrust, kSecImportItemIdentity);
-        *outIdentity = (SecIdentityRef)tempIdentity;
-        const void *tempTrust = NULL;
-        tempTrust = CFDictionaryGetValue(myIdentityAndTrust, kSecImportItemTrust);
-        *outTrust = (SecTrustRef)tempTrust;
-        return YES;
-    } else {
-        NSLog(@&quot;SecPKCS12Import is failed with error code %d&quot;, (int)securityError);
-        return NO;
-    }
-}
-</code></pre><p>值得注意的有2个地方：</p>
-<p>一个是p12文件的文件名，我们这里写死了client-cert.p12，可以根据具体情况做修改。<br>还有一个是p12文件的密码，在extractIdentity:方法的第三行，可以改成你的p12文件密码，密码可以为空。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/26/详解AFNetworking的HTTPS模块/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/15/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="page-number" href="/page/15/">15</a><span class="page-number current">16</span><a class="page-number" href="/page/17/">17</a><a class="page-number" href="/page/18/">18</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/17/">Next &raquo;</a>
@@ -2374,7 +2017,7 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2021 wangjungang
+    		&copy; 2022 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -2493,11 +2136,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2513,11 +2156,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2525,7 +2168,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2533,7 +2176,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2550,6 +2193,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
             
             <div class="clearfix"></div>

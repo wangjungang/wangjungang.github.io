@@ -152,6 +152,469 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-什么是RESTful API" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/13/什么是RESTful API/">什么是RESTful API</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/13/什么是RESTful API/" class="archive-article-date">
+  	<time datetime="2018-12-13T09:07:52.264Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>REST，即Representational State Transfer的缩写。直接翻译的意思是”表现层状态转化”。</p>
+<p>它是一种互联网应用程序的API设计理念：URL定位资源，用HTTP动词（GET,POST,DELETE,DETC）描述操作。</p>
+<p>近年来移动互联网的发展，前端设备层出不穷（手机、平板、桌面电脑、其他专用设备……），因此，必须有一种统一的机制，方便不同的前端设备与后端进行通信,于是RESTful诞生了，它可以通过一套统一的接口为 Web，iOS和Android提供服务。</p>
+<h3 id="URI"><a href="#URI" class="headerlink" title="URI"></a>URI</h3><p>即统一资源标识符，服务器上每一种资源，比如文档、图像、视频片段、程序 都由一个通用资源标识符（Uniform Resource Identifier, 简称”URI”）进行定位。</p>
+<h3 id="HTTP动词"><a href="#HTTP动词" class="headerlink" title="HTTP动词"></a>HTTP动词</h3><p>常用的HTTP动词有下面五个</p>
+<ul>
+<li>GET（SELECT）：从服务器取出资源（一项或多项）。</li>
+<li>POST（CREATE）：在服务器新建一个资源。</li>
+<li>PUT（UPDATE）：在服务器更新资源（客户端提供改变后的完整资源）。</li>
+<li>PATCH（UPDATE）：在服务器更新资源（客户端提供改变的属性）。</li>
+<li>DELETE（DELETE）：从服务器删除资源。</li>
+</ul>
+<h3 id="RESTful架构"><a href="#RESTful架构" class="headerlink" title="RESTful架构"></a>RESTful架构</h3><p>服务器上每一种资源，比如一个文件，一张图片，一部电影，都有对应的url地址，如果我们的客户端需要对服务器上的这个资源进行操作，就需要通过http协议执行相应的动作来操作它，比如进行获取，更新，删除。</p>
+<p>简单来说就是url地址中只包含名词表示资源，使用http动词表示动作进行操作资源</p>
+<p>举个例子：左边是错误的设计，而右边是正确的</p>
+<pre><code>GET /blog/getArticles --&gt; GET /blog/Articles  获取所有文章
+GET /blog/addArticles --&gt; POST /blog/Articles  添加一篇文章
+GET /blog/editArticles --&gt; PUT /blog/Articles  修改一篇文章 
+GET /rest/api/deleteArticles?id=1 --&gt; DELETE /blog/Articles/1  删除一篇文章
+</code></pre><h3 id="统一资源接口"><a href="#统一资源接口" class="headerlink" title="统一资源接口"></a>统一资源接口</h3><p>RESTful架构应该遵循统一接口原则，统一接口包含了一组受限的预定义的操作，不论什么样的资源，都是通过使用相同的接口进行资源的访问。接口应该使用标准的HTTP方法如GET，PUT和POST，并遵循这些方法的语义。</p>
+<p>如果按照HTTP方法的语义来暴露资源，那么接口将会拥有安全性和幂等性的特性，例如GET和HEAD请求都是安全的， 无论请求多少次，都不会改变服务器状态。而GET、HEAD、PUT和DELETE请求都是幂等的，无论对资源操作多少次， 结果总是一样的，后面的请求并不会产生比第一次更多的影响。</p>
+<p>下面列出了GET，DELETE，PUT和POST的典型用法:</p>
+<h4 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h4><ul>
+<li>安全且幂等</li>
+<li>获取表示</li>
+<li>变更时获取表示（缓存）</li>
+<li>200（OK） - 表示已在响应中发出</li>
+<li>204（无内容） - 资源有空表示</li>
+<li>301（Moved Permanently） - 资源的URI已被更新</li>
+<li>303（See Other） - 其他（如，负载均衡）</li>
+<li>304（not modified）- 资源未更改（缓存）</li>
+<li>400 （bad request）- 指代坏请求（如，参数错误）</li>
+<li>404 （not found）- 资源不存在</li>
+<li>406 （not acceptable）- 服务端不支持所需表示</li>
+<li>500 （internal server error）- 通用错误响应</li>
+<li>503 （Service Unavailable）- 服务端当前无法处理请求</li>
+</ul>
+<h4 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h4><ul>
+<li>不安全且不幂等</li>
+<li>使用服务端管理的（自动产生）的实例号创建资源</li>
+<li>创建子资源</li>
+<li>部分更新资源</li>
+<li>如果没有被修改，则不过更新资源（乐观锁）</li>
+<li>200（OK）- 如果现有资源已被更改</li>
+<li>201（created）- 如果新资源被创建</li>
+<li>202（accepted）- 已接受处理请求但尚未完成（异步处理）</li>
+<li>301（Moved Permanently）- 资源的URI被更新</li>
+<li>303（See Other）- 其他（如，负载均衡）</li>
+<li>400（bad request）- 指代坏请求</li>
+<li>404 （not found）- 资源不存在</li>
+<li>406 （not acceptable）- 服务端不支持所需表示</li>
+<li>409 （conflict）- 通用冲突</li>
+<li>412 （Precondition Failed）- 前置条件失败（如执行条件更新时的冲突）</li>
+<li>415 （unsupported media type）- 接受到的表示不受支持</li>
+<li>500 （internal server error）- 通用错误响应</li>
+<li>503 （Service Unavailable）- 服务当前无法处理请求</li>
+</ul>
+<h4 id="PUT"><a href="#PUT" class="headerlink" title="PUT"></a>PUT</h4><ul>
+<li>不安全但幂等</li>
+<li>用客户端管理的实例号创建一个资源</li>
+<li>通过替换的方式更新资源</li>
+<li>如果未被修改，则更新资源（乐观锁）</li>
+<li>200 （OK）- 如果已存在资源被更改</li>
+<li>201 （created）- 如果新资源被创建</li>
+<li>301（Moved Permanently）- 资源的URI已更改</li>
+<li>303 （See Other）- 其他（如，负载均衡）</li>
+<li>400 （bad request）- 指代坏请求</li>
+<li>404 （not found）- 资源不存在</li>
+<li>406 （not acceptable）- 服务端不支持所需表示</li>
+<li>409 （conflict）- 通用冲突</li>
+<li>412 （Precondition Failed）- 前置条件失败（如执行条件更新时的冲突）</li>
+<li>415 （unsupported media type）- 接受到的表示不受支持</li>
+<li>500 （internal server error）- 通用错误响应</li>
+<li>503 （Service Unavailable）- 服务当前无法处理请求</li>
+</ul>
+<h4 id="DELETE"><a href="#DELETE" class="headerlink" title="DELETE"></a>DELETE</h4><ul>
+<li>不安全但幂等</li>
+<li>删除资源</li>
+<li>200 （OK）- 资源已被删除</li>
+<li>301 （Moved Permanently）- 资源的URI已更改</li>
+<li>303 （See Other）- 其他，如负载均衡</li>
+<li>400 （bad request）- 指代坏请求</li>
+<li>404 （not found）- 资源不存在</li>
+<li>409 （conflict）- 通用冲突</li>
+<li>500 （internal server error）- 通用错误响应</li>
+<li>503 （Service Unavailable）- 服务端当前无法处理请求</li>
+</ul>
+<h3 id="POST和PUT用于创建资源时有什么区别"><a href="#POST和PUT用于创建资源时有什么区别" class="headerlink" title="POST和PUT用于创建资源时有什么区别?"></a>POST和PUT用于创建资源时有什么区别?</h3><p>POST和PUT在创建资源的区别在于，所创建的资源的名称(URI)是否由客户端决定。 例如为我的博文增加一个java的分类，生成的路径就是分类名/categories/java，那么就可以采用PUT方法。不过很多人直接把POST、GET、PUT、DELETE直接对应上CRUD，例如在一个典型的rails实现的RESTful应用中就是这么做的。</p>
+<p>我认为，这是因为rails默认使用服务端生成的ID作为URI的缘故，而不少人就是通过rails实践REST的，所以很容易造成这种误解。</p>
+<h3 id="客户端不一定都支持这些HTTP方法吧"><a href="#客户端不一定都支持这些HTTP方法吧" class="headerlink" title="客户端不一定都支持这些HTTP方法吧?"></a>客户端不一定都支持这些HTTP方法吧?</h3><p>的确有这种情况，特别是一些比较古老的基于浏览器的客户端，只能支持GET和POST两种方法。</p>
+<p>在实践上，客户端和服务端都可能需要做一些妥协。例如rails框架就支持通过隐藏参数_method=DELETE来传递真实的请求方法， 而像Backbone这样的客户端MVC框架则允许传递_method传输和设置X-HTTP-Method-Override头来规避这个问题。</p>
+<h3 id="统一接口是否意味着不能扩展带特殊语义的方法"><a href="#统一接口是否意味着不能扩展带特殊语义的方法" class="headerlink" title="统一接口是否意味着不能扩展带特殊语义的方法?"></a>统一接口是否意味着不能扩展带特殊语义的方法?</h3><p>统一接口并不阻止你扩展方法，只要方法对资源的操作有着具体的、可识别的语义即可，并能够保持整个接口的统一性。</p>
+<p>像WebDAV就对HTTP方法进行了扩展，增加了LOCK、UPLOCK等方法。而github的API则支持使用PATCH方法来进行issue的更新，例如:</p>
+<pre><code>PATCH /repos/:owner/:repo/issues/:number
+</code></pre><p>不过，需要注意的是，像PATCH这种不是HTTP标准方法的，服务端需要考虑客户端是否能够支持的问题。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">网络</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/13/什么是RESTful API/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-如何安全使用dispatch_sync" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/13/如何安全使用dispatch_sync/">如何安全使用dispatch_sync</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/13/如何安全使用dispatch_sync/" class="archive-article-date">
+  	<time datetime="2018-12-13T07:47:16.816Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS开发者在与线程打交道的方式中，使用最多的应该就是GCD框架了，没有之一。GCD将繁琐的线程抽象为了一个个队列，让开发者极易理解和使用。但其实队列的底层，依然是利用线程实现的，同样会有死锁的问题。本文将探讨如何规避disptach_sync接口引入的死锁问题。</p>
+<h2 id="GCD基础"><a href="#GCD基础" class="headerlink" title="GCD基础"></a>GCD基础</h2><p>GCD最基础的两个接口</p>
+<pre><code>dispatch_sync(dispatch_queue_t queue, dispatch_block_t block);
+dispatch_async(dispatch_queue_t queue, dispatch_block_t block);
+</code></pre><p>第一个参数queue为队列对象，第二个参数block为block对象。这两个接口可以将任务block扔到队列queue中去执行。</p>
+<p>开发者使用最频繁的，就是在子线程环境下，需要做UI更新时，我们可以将任务扔到主线程去执行，</p>
+<pre><code>dispatch_sync(dispatch_get_main_queue(), block);
+dispatch_async(dispatch_get_main_queue(), block);
+</code></pre><p>而dispatch_sync(dispatch_get_main_queue(), block)有可能引入死锁的问题。</p>
+<h3 id="async-VS-sync"><a href="#async-VS-sync" class="headerlink" title="async VS. sync"></a>async VS. sync</h3><p>disptach_async是异步扔一个block到queue中，即扔完我就不管了，继续执行我的下一行代码。实际上当下一行代码执行时，这个block还未执行，只是入了队列queue，queue会排队来执行这个block。</p>
+<p>而disptach_sync则是同步扔一个block到queue中，即扔了我就等着，等到queue排队把这个block执行完了之后，才继续执行下一行代码。</p>
+<h2 id="为什么要使用sync"><a href="#为什么要使用sync" class="headerlink" title="为什么要使用sync"></a>为什么要使用sync</h2><p>disptach_sync主要用于代码上下文对时序有强要求的场景。简单点说，就是下一行代码的执行，依赖于上一行代码的结果。例如说，我们需要在子线程中读取一个image对象，使用接口[UIImage imageNamed:]，但imageNamed:实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取image，然后再切回子线程拿到这个image，</p>
+<pre><code>// ...currently in a subthread
+__block UIImage *image;
+dispatch_sync_on_main_queue(^{
+    image = [UIImage imageNamed:@&quot;Resource/img&quot;];
+});
+attachment.image = image;
+</code></pre><p>这里我们必须使用sync。</p>
+<h2 id="为什么会死锁"><a href="#为什么会死锁" class="headerlink" title="为什么会死锁"></a>为什么会死锁</h2><p>假设当前我们的代码正在queue0中执行。然后我们调用disptach_sync将一个任务block1扔到queue0中执行，</p>
+<pre><code>// ... currently in queue0 or queue0&apos;s corresponding thread.
+dispatch_sync(queue0, block1);
+</code></pre><p>这时，dispatch_sync将等待queue0排队执行完block1，然后才能继续执行下一行代码。But，当前代码执行的环境也是queue0。假设当前执行的任务为block0。也就是说，block0在执行到一半时，需要等到自己的下一个任务block1执行完，自己才能继续执行。而block1排队在后面，需要等block0执行完才能执行。这时死锁就产生了，block0和block1互相等待执行，当前线程就卡死在dispatch_sync这行代码处。</p>
+<p>我们发现的卡死问题，一般都是主线程死锁。一种较为常见的情况是，本身就已经在主线程了，还同步向主线程扔了一个任务：</p>
+<pre><code>// ... currently in the main thread
+dispatch_sync(dispatch_get_main_queue(), block);
+</code></pre><h2 id="安全方式"><a href="#安全方式" class="headerlink" title="安全方式"></a>安全方式</h2><p>YYKit中提供了一个同步扔任务到主线程的安全方法：</p>
+<pre><code>/**
+ Submits a block for execution on a main queue and waits until the block completes.
+*/
+static inline void dispatch_sync_on_main_queue(void (^block)()) {
+    if (pthread_main_np()) {
+        block();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
+}
+</code></pre><p>其方式就是在扔任务给主线程之前，先检查当前线程是否已经是主线程，如果是，就不用调用GCD的队列调度接口dispatch_sync了，直接执行即可；如果不是主线程，那么调用GCD的dispatch_sync也不会卡死。</p>
+<p>但事实上并不是这样的，dispatch_sync_on_main_queue也可能会卡死，这个安全接口并不安全。这个接口只能保证两个block之间不因互相等待而死锁。多于两个block的互相依赖就束手无策了。</p>
+<p>举个例子，假设queue0是一个子线程的队列：</p>
+<pre><code>/* block0 */
+// ... currently in the main thread.
+dispatch_sync(queue0, ^{
+    /* block1 */
+    // ... currently in queue0&apos;s corresponding subthread.
+    dispatch_sync_on_main_queue(^{
+        /* block2 */
+    });
+});
+</code></pre><p>在上述代码中，block0正在主线程中执行，并且同步等待子线程执行完block1。block1又同步等待主线程执行完block2。而当前主线程正在执行block0，即block2的执行需要等到block0执行完。这样就成了block0–&gt;block1–&gt;block2–&gt;block0…这样一个循环等待，即死锁。由于block1的环境是子线程，所以安全API的线程判断不起任何作用。</p>
+<p>另举一个例子：</p>
+<pre><code>/* block0 */
+// ... currently in the main thread.
+[[NSNotificationCenter defaultCenter] postNotificationName:@&quot;aNotification&quot; object:nil];
+
+// ... in another context
+[[NSNotificationCenter defaultCenter] addObserverForName:@&quot;aNotification&quot;
+                                                  object:nil
+                                                   queue:queue0
+                                              usingBlock:^(NSNotification * _Nonnull note) {
+                                                  /* block1 */
+                                                  // ... currently in queue0&apos;s corresponding subthread.
+                                                  dispatch_sync_on_main_queue(^{
+                                                      /* block2 */
+                                                  });
+                                              }];
+</code></pre><p>由于通知NSNotification的执行是同步的，这里会出现和上一例一样的死锁情况：block0–&gt;block1–&gt;block2–&gt;block0…</p>
+<h2 id="如何定位死锁问题"><a href="#如何定位死锁问题" class="headerlink" title="如何定位死锁问题"></a>如何定位死锁问题</h2><p>1.死锁监测和堆栈上报机制</p>
+<p>要定位死锁的问题，我们需要知道在哪一行代码上死锁了，以及为什么会出现死锁。通常只要知道哪一行代码死锁了，我们就能通过代码分析出问题所在了。所以，如果死锁的时候，我们能够把堆栈上报上来，就能知道哪一行代码死锁了。这里需要有完善的死锁监测和堆栈上报机制。</p>
+<p>2.打印日志</p>
+<p>如果暂时没有人力或者技术支撑你去搭建完善的死锁监测和堆栈上报机制，那么你可以做一件简单的事情以协助你定位问题，那就是打印日志。在dispatch_sync或者加锁之前，打印一条日志。这样在用户反馈问题，或者测试重现问题的时候，提取日志便可分析出卡死的代码处。</p>
+<h2 id="如何安全使用dispatch-sync"><a href="#如何安全使用dispatch-sync" class="headerlink" title="如何安全使用dispatch_sync"></a>如何安全使用dispatch_sync</h2><p>答案是，尽量不要使用。没有哪一个接口是可以保证绝对安全的。必须要使用dispatch_sync的时候，尽量使用dispatch_sync_on_main_queue这个API。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/13/如何安全使用dispatch_sync/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-监听reloadData刷新列表完毕的时机" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/13/监听reloadData刷新列表完毕的时机/">监听reloadData刷新列表完毕的时机</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/13/监听reloadData刷新列表完毕的时机/" class="archive-article-date">
+  	<time datetime="2018-12-13T07:31:30.939Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>reloadData是一个异步方法，并不会等待UITableView或者UICollectionView（后面统称listView）真正刷新完毕后才执行后续代码，而是立即执行后续代码。我们执行reloadData的本意是刷新listView，随后会进入一系列的DataSource和Delegate回调，有些是和reloadData同步发生的，有些是异步发生的。</p>
+<ul>
+<li>同步：numberOfSectionsInCollectionView和numberOfItemsInSection</li>
+<li>异步：cellForItemAtIndexPath</li>
+<li>同步+异步：sizeForItemAtIndexPath</li>
+</ul>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>由于cell复用的原因，直接在reloadData后执行代码是有可能出问题的。比如在reloadData前保留了一个cell，在reloadData后，对这个cell（已经不是原来的cell了）进行某些操作，会出现一些异常问题。</p>
+<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>在reloadData前不是保留cell，二是保留当前cell对应的NSIndexPath，然后在reloadData完毕（listView真正刷新完毕）后通过方法cellForItemAtIndexPath:重新获取cell，然后进行相应的操作。</p>
+<h2 id="获取listView真正刷新完毕的时机的几种方法"><a href="#获取listView真正刷新完毕的时机的几种方法" class="headerlink" title="获取listView真正刷新完毕的时机的几种方法"></a>获取listView真正刷新完毕的时机的几种方法</h2><h3 id="方法1、通过layoutIfNeeded方法，强制重绘并等待完成。"><a href="#方法1、通过layoutIfNeeded方法，强制重绘并等待完成。" class="headerlink" title="方法1、通过layoutIfNeeded方法，强制重绘并等待完成。"></a>方法1、通过layoutIfNeeded方法，强制重绘并等待完成。</h3><pre><code>[self.collectionView reloadData];
+[self.collectionView layoutIfNeeded];
+// 刷新完成，执行后续需要执行的代码
+if ( self.didPlayIdx ) {
+    MyCell* cell = (MyCell*)[self.collectionView cellForItemAtIndexPath:self.didPlayIdx];
+    if (cell) {
+    [cell playWithPlayer:self.player];
+    }
+}
+</code></pre><h3 id="方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD-dispatch-main-queue中的任务，分别在休眠前和被唤醒后。设置listView-的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。"><a href="#方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD-dispatch-main-queue中的任务，分别在休眠前和被唤醒后。设置listView-的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。" class="headerlink" title="方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD dispatch main queue中的任务，分别在休眠前和被唤醒后。设置listView 的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。"></a>方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD dispatch main queue中的任务，分别在休眠前和被唤醒后。设置listView 的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。</h3><pre><code>[self.collectionView reloadData];  
+dispatch_async(dispatch_get_main_queue(), ^{  
+    // 刷新完成，执行后续代码
+    if ( self.didPlayIdx ) {
+        MyCell* cell = (MyCell*)[self.collectionView cellForItemAtIndexPath:self.didPlayIdx];
+        if (cell) {
+            [cell playWithPlayer:self.player];
+        }
+    }
+});
+</code></pre><p>知识点关联：GCD死锁、Runloop</p>
+<pre><code>// 发生死锁，永远不会执行任务2和3
+NSLog(@&quot;1&quot;);
+dispatch_sync(dispatch_get_main_queue(), ^{
+   NSLog(@&quot;2&quot;);
+});
+NSLog(@&quot;3&quot;);
+</code></pre><h3 id="方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成-复杂，但可以更好的理解方法一"><a href="#方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成-复杂，但可以更好的理解方法一" class="headerlink" title="方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成(复杂，但可以更好的理解方法一)"></a>方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成(复杂，但可以更好的理解方法一)</h3><pre><code>#import &quot;MyTableView.h&quot;
+
+@interface MyTableView()
+@property (nonatomic, copy) void (^reloadDataCompletionBlock)();
+@end
+
+@implementation MyTableView
+- (void)reloadDataWithCompletion:(void (^)())completionBlock {
+    self.reloadDataCompletionBlock = completionBlock;
+    [super reloadData];
+}
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if (self.reloadDataCompletionBlock) {
+        self.reloadDataCompletionBlock();
+        self.reloadDataCompletionBlock = nil;
+    }
+}
+@end
+
+// 调用的时候
+[self.tableView reloadDataWithCompletion:^{
+     NSLog(@&quot;完成刷新&quot;);
+}];
+</code></pre><h2 id="引申：更新UI放在主线程的原因"><a href="#引申：更新UI放在主线程的原因" class="headerlink" title="引申：更新UI放在主线程的原因"></a>引申：更新UI放在主线程的原因</h2><h3 id="原因一：安全-效率"><a href="#原因一：安全-效率" class="headerlink" title="原因一：安全+效率"></a>原因一：安全+效率</h3><p>因为UIKit框架不是线程安全的，当多个线程同时操作UI的时候，抢夺资源，导致崩溃，UI异常等问题。假如在两个线程中设置了同一张背景图片，很有可能就会由于背景图片被释放两次，使得程序崩溃。或者某一个线程中遍历找寻某个subView，然而在另一个线程中删除了该subView，那么就会造成错乱。apple有对大部分的绘图方法和诸如UIColor等类改写成线程安全可用，可还是建议将UI操作保证在主线程中。例如说，我们需要在子线程中读取一个image对象，使用接口[UIImage imageNamed:]，但imageNamed:实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取image，然后再切回子线程拿到这个image，这里我们必须使用sync。</p>
+<pre><code>__block UIImage *image;
+dispatch_sync_on_main_queue(^{
+    image = [UIImage imageNamed:@&quot;Resource/img&quot;];
+});
+attachment.image = image;
+
+// YYKit中提供了一个同步扔任务到主线程的安全方法：
+/**
+ Submits a block for execution on a main queue and waits until the block completes.
+*/
+static inline void dispatch_sync_on_main_queue(void (^block)()) {
+    if (pthread_main_np()) {
+        block();
+    } else {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
+}
+</code></pre><h3 id="原因二：用户体验"><a href="#原因二：用户体验" class="headerlink" title="原因二：用户体验"></a>原因二：用户体验</h3><p>iOS中只有主线程才能立即刷新UI。在子线程中是不能够更新UI，我们看到的子线程能够更新UI的原因是，等到子线程执行完毕，自动进入了主线程去执行子线程中更新UI的代码。由于子线程执行时间非常短暂，让我们误以为子线程可以更新UI。如果子线程一直在运行，则无法更新UI，因为没有办法进入主线程。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/13/监听reloadData刷新列表完毕的时机/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Swift的时区处理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1806,610 +2269,6 @@ NSString * const KEY_PASSWORD = @&quot;com.company.app.password&quot;;
 
 
   
-    <article id="post-MySql分页查询优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/30/MySql分页查询优化/">MySql分页查询优化</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/30/MySql分页查询优化/" class="archive-article-date">
-  	<time datetime="2018-11-30T03:31:42.396Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-30</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当需要从数据库查询的表有上万条记录的时候，一次性查询所有结果会变得很慢，特别是随着数据量的增加特别明显，这时需要使用分页查询。对于数据库分页查询，也有很多种方法和优化的点。下面简单说一下我知道的一些方法。</p>
-<h2 id="一般分页查询"><a href="#一般分页查询" class="headerlink" title="一般分页查询"></a>一般分页查询</h2><p>一般分页查询采用limit page,pagesize 格式来操作</p>
-<p>例如</p>
-<p>需要查询user表中的第一页的数据，每一页数据有10个</p>
-<pre><code>SELECT * FROM New_info.user limit 1,10;
-</code></pre><p>如果查询user表中第二页的数据，每一页有15个数据</p>
-<pre><code>SELECT * FROM New_info.user limit 2,15;
-</code></pre><p>LIMIT 子句可以被用于指定 SELECT 语句返回的记录数。需注意以下几点：</p>
-<ul>
-<li>第一个参数指定第一个返回记录行的偏移量</li>
-<li>第二个参数指定返回记录行的最大数目</li>
-<li>如果只给定一个参数：它表示返回最大的记录行数目</li>
-<li>第二个参数为 -1 表示检索从某一个偏移量到记录集的结束所有的记录行</li>
-<li>初始记录行的偏移量是 0(而不是 1)</li>
-</ul>
-<p>弊端</p>
-<p>随着查询偏移的增大，尤其查询偏移大于10万以后，查询时间急剧增加。</p>
-<p>这种分页查询方式会从数据库第一条记录开始扫描，所以越往后，查询速度越慢，而且查询的数据越多，也会拖慢总查询速度。</p>
-<h2 id="使用子查询优化"><a href="#使用子查询优化" class="headerlink" title="使用子查询优化"></a>使用子查询优化</h2><p>这种方式先定位偏移位置的 id，然后往后查询，这种方式适用于 id 递增的情况。</p>
-<p>适应场景: 适用于数据量多的情况(元组数上万)</p>
-<pre><code>SELECT * FROM New_info.user where id&gt;10 limit 2,15;
-</code></pre><p>如果id不是递增的，容易漏掉数据</p>
-<h2 id="基于索引再排序"><a href="#基于索引再排序" class="headerlink" title="基于索引再排序"></a>基于索引再排序</h2><p>适应场景：</p>
-<p>适用于数据量多的情况（元祖数上万） 最好PRDER BY后的列对象是主键或者唯一 </p>
-<p>所以，使得ORDER BY操作能够利用索引被消除但结果集是稳定的</p>
-<p>原因：</p>
-<p>索引扫描，速度会很快，但是Mysql的排序操作，只有ASC没有DESC </p>
-<p>代码示例</p>
-<pre><code>SELECT * FROM New_info.user WHERE id&gt;(2*10) ORDER BY id ASC LIMIT 10;
-</code></pre><h2 id="基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）"><a href="#基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）" class="headerlink" title="基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）"></a>基于索引使用prepare（第一个问号表示pageNum，第二个？表示每页元组数）</h2><p>适应场景：<br>大数据量</p>
-<p>原因：</p>
-<p>索引扫描，速度会很快，prepare语句比一般的查询语句块一点</p>
-<p>代码示例：</p>
-<pre><code>PREPARE stmt_name FROM SELECT * FROM 表名称 WHERE id_pk &gt; (？* ？) ORDER BY id_pk ASC LIMIT M
-</code></pre><h2 id="利用MySQL支持ORDER操作可以利用索引快速定位部分元组-避免全表扫描"><a href="#利用MySQL支持ORDER操作可以利用索引快速定位部分元组-避免全表扫描" class="headerlink" title="利用MySQL支持ORDER操作可以利用索引快速定位部分元组,避免全表扫描"></a>利用MySQL支持ORDER操作可以利用索引快速定位部分元组,避免全表扫描</h2><p>比如: 读第1000到1019行元组(pk是主键/唯一键).</p>
-<pre><code>SELECT * FROM your_table WHERE pk&gt;=1000 ORDER BY pk ASC LIMIT 0,20
-</code></pre><h2 id="利用”子查询-连接-索引”快速定位元组的位置-然后再读取元组-道理同方法5"><a href="#利用”子查询-连接-索引”快速定位元组的位置-然后再读取元组-道理同方法5" class="headerlink" title="利用”子查询/连接+索引”快速定位元组的位置,然后再读取元组. 道理同方法5"></a>利用”子查询/连接+索引”快速定位元组的位置,然后再读取元组. 道理同方法5</h2><p>例如(id是主键/唯一键,蓝色字体时变量):</p>
-<p>利用子查询示例:</p>
-<pre><code>SELECT * FROM your_table WHERE id &lt;= 
-(SELECT id FROM your_table ORDER BY id desc LIMIT ($page-1)*$pagesize ORDER BY id desc LIMIT $pagesize
-</code></pre><p>利用连接示例:</p>
-<pre><code>SELECT * FROM your_table AS t1 
-JOIN (SELECT id FROM your_table ORDER BY id desc LIMIT ($page-1)*$pagesize AS t2 
-WHERE t1.id &lt;= t2.id ORDER BY t1.id desc LIMIT $pagesize;
-</code></pre><p>mysql大数据量使用limit分页，随着页码的增大，查询效率越低下。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">MySql</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/30/MySql分页查询优化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-从git add到branch" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/28/从git add到branch/">从git add到branch</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/28/从git add到branch/" class="archive-article-date">
-  	<time datetime="2018-11-28T12:28:57.028Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-28</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近想把代码传到GitHub上,结果我发现的demo的npm全是本地安装，上穿到GitHub要死要死，几百M，然后我就搜了下怎么不上传node_modules弄了半天也没成功，于是准备静下心学一下git，也当一个笔记日后好翻阅.<br>研究前我的只会5个命令</p>
-<pre><code>$ git init 
-$ git add .
-$ git commit -m &quot;提交的xxxxx&quot;
-$ git pull
-$ git push
-</code></pre><h2 id="Git是什么"><a href="#Git是什么" class="headerlink" title="Git是什么"></a>Git是什么</h2><p>Git是一个开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。<br>Git 是 Linus Torvalds 为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制软件。<br>Git 与常用的版本控制工具 CVS, Subversion 等不同，它采用了分布式版本库的方式，不必服务器端软件支持。</p>
-<h2 id="GIT-的工作流程"><a href="#GIT-的工作流程" class="headerlink" title="GIT 的工作流程"></a>GIT 的工作流程</h2><ul>
-<li>克隆 Git 资源作为工作目录。</li>
-<li>在克隆的资源上添加或修改文件。</li>
-<li>如果其他人修改了，你可以更新资源。</li>
-<li>在提交前查看修改。</li>
-<li>提交修改。</li>
-<li>在修改完成后，如果发现错误，可以撤回提交并再次修改并提交。</li>
-</ul>
-<h2 id="本地仓库-版本库"><a href="#本地仓库-版本库" class="headerlink" title="本地仓库(版本库)"></a>本地仓库(版本库)</h2><p>版本库：工作区有一个隐藏目录.git，这个不算工作区，而是Git的版本库。</p>
-<h3 id="本地版本库是什么"><a href="#本地版本库是什么" class="headerlink" title="本地版本库是什么"></a>本地版本库是什么</h3><p>什么是版本库呢？版本库又名仓库，英文名repository，你可以简单理解成一个目录，这个目录里面的所有文件都可以被Git管理起来，每个文件的修改、删除，Git都能跟踪，以便任何时刻都可以追踪历史，或者在将来某个时刻可以“还原”。</p>
-<h2 id="暂存区"><a href="#暂存区" class="headerlink" title="暂存区"></a>暂存区</h2><p>暂存区：英文叫stage, 或index。一般存放在 “.git目录下” 下的index文件（.git/index）中，所以我们把暂存区有时也叫作索引（index）。</p>
-<h2 id="工作区"><a href="#工作区" class="headerlink" title="工作区"></a>工作区</h2><p>工作区：就是你在电脑里能看到的目录。</p>
-<h2 id="Git的基本使用"><a href="#Git的基本使用" class="headerlink" title="Git的基本使用"></a>Git的基本使用</h2><pre><code>$ git init，              //初始化本地仓库 .git
-$ git status -sb，        //显示当前所有文件的状态
-$ git diff                //查看更改，查看difference，显示的格式正是Unix通用的diff格式,
-$ git add 文件路径        //用来将变动加到暂存区
-$ git commit -m &quot;信息&quot;    //用来正式提交变动，提交至 .git 仓库如果有新的变动，我们只需要依次执行 git add xxx 和 git commit -m &apos;xxx&apos; 两个命令即可
-$ git log                 //查看变更历史
-</code></pre><h2 id="版本回退"><a href="#版本回退" class="headerlink" title="版本回退"></a>版本回退</h2><p>当我提交了几个commit，假设我们现在有3个版本(1,2,3)，现在是版本3，发现刚刚的提交错误了，想撤回回到版本2</p>
-<pre><code>$ git reset --hard               //重置暂存区与工作区，与上一次commit保持一致
-</code></pre><p>然后你由发现刚刚的提交是正确的,又想回到版本3，再输入下面这个命令，相当于你那个回退没有做</p>
-<pre><code>$ git reset --hard [commitid]     //重置当前分支的HEAD为指定commit，同时重置暂存区和工作区，与指定commit一致
-//commitid 使用git log --stat查看
-</code></pre><p>平行世界B</p>
-<p>在平时世界B的你，刚刚把版本回退到了版本2，于是睡觉去了，第二天，发现版本3才是对的，可是使用git log已经查看不到commit信息了，怎么办？</p>
-<pre><code>$ git reflog                      //用来记录你的每一次命令,显示当前分支的最近几次提交
-</code></pre><p>场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令<br>    $ git checkout – file</p>
-<p>场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令</p>
-<pre><code>$ git reset HEAD file
-</code></pre><p>，就回到了场景1，第二步按场景1操作。<br>场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，</p>
-<pre><code>git reset --hard
-</code></pre><p>不过前提是没有推送到远程仓库。</p>
-<h2 id="删除文件"><a href="#删除文件" class="headerlink" title="删除文件"></a>删除文件</h2><pre><code>$ git rm [file1] [file2] ...      //删除工作区文件，并且将这次删除放入暂存区
-</code></pre><p>另一种情况是删错了，因为版本库里还有呢，所以可以很轻松地把误删的文件恢复到最新版本：</p>
-<pre><code>$ git checkout -- test.txt
-</code></pre><h2 id="分支-branch"><a href="#分支-branch" class="headerlink" title="分支(branch)"></a>分支(branch)</h2><ul>
-<li>分支在实际中有什么用呢？假设你准备开发一个新功能，但是需要两周才能完成，第一周你写了50%的代码，如果立刻提交，由于代码还没写完，不完整的代码库会导致别人不能干活了。如果等代码全部写完再一次提交，又存在丢失每天进度的巨大风险。</li>
-</ul>
-<ul>
-<li>现在有了分支，就不用怕了。你创建了一个属于你自己的分支，别人看不到，还继续在原来的分支上正常工作，而你在自己的分支上干活，想提交就提交，直到开发完毕后，再一次性合并到原来的分支上，这样，既安全，又不影响别人工作。</li>
-</ul>
-<ul>
-<li>你已经知道，每次提交，Git都把它们串成一条时间线，这条时间线就是一个分支。截止到目前，只有一条时间线，在Git里，这个分支叫主分支，即master分支。HEAD严格来说不是指向提交，而是指向master，master才是指向提交的，所以，HEAD指向的就是当前分支。</li>
-</ul>
-<h3 id="如何使用分支"><a href="#如何使用分支" class="headerlink" title="如何使用分支"></a>如何使用分支</h3><pre><code>$ git checkout -b [branch]                //新建一个分支，并切换到该分支
-$ git branch                              //命令会列出所有分支，当前分支前面会标一个*号。
-$ git add . 
-$ git commit -m &quot;提交分支branch&quot;
-$ git checkout master                     //切换回master分支
-$ git merge [branch]                      //把branch分支合并到master分支
-$ git branch -d branch                     //合并完成后删除branch分支
-
-查看分支：git branch
-
-创建分支：git branch &lt;name&gt;
-
-切换分支：git checkout &lt;name&gt;
-
-创建+切换分支：git checkout -b &lt;name&gt;
-
-合并某分支到当前分支：git merge &lt;name&gt;
-
-删除分支：git branch -d &lt;name&gt;
-</code></pre><h3 id="分支冲突"><a href="#分支冲突" class="headerlink" title="分支冲突"></a>分支冲突</h3><p>比如现在我们的文件是这样的</p>
-<pre><code>fuck &apos;webpack&apos;                      //master分支
-</code></pre><p>我们创建并且切换到parcel分支</p>
-<pre><code>$ git checkout -b parcel     
-</code></pre><p>修改文本内容</p>
-<p>fuck ‘webpack —&gt; parcel no.1<br>提交到暂存区</p>
-<pre><code>$ git add .
-$ git commit &quot;嘻嘻&quot;                      //parcel分支
-</code></pre><p>切回master分支</p>
-<pre><code>$ git checkout master
-</code></pre><p>修改文本内容</p>
-<pre><code>fuck &apos;webpack&apos; --&gt; fuck fuck &apos;webpack&apos;
-提交到暂存区
-</code></pre><p>这样我们的两个分支内容不一样，有了冲突，我们提交试一下</p>
-<pre><code>$ git merge parcel                      //把parcel分支合并到当前master分支
-</code></pre><p>然后就冲突了</p>
-<pre><code>$ git status                        //可以告诉我们冲突的文件：
-# On branch master
-# Your branch is ahead of &apos;origin/master&apos; by 2 commits.
-#
-# Unmerged paths:
-#   (use &quot;git add/rm &lt;file&gt;...&quot; as appropriate to mark resolution)
-#
-#       both modified:     fuck.txt
-#
-</code></pre><p>我们得手动修改当前master分支的内容与parcel分支内容相同</p>
-<p>fuck fuck ‘webpack’ –&gt; parcel no.1<br>再次提交</p>
-<pre><code>$ git add .
-$ git commit &quot;扑扑&quot;                      //maser分支
-</code></pre><p>最后，删除parcel分支</p>
-<pre><code>git branch -d parcel
-</code></pre><h3 id="分支管理策略"><a href="#分支管理策略" class="headerlink" title="分支管理策略"></a>分支管理策略</h3><p>通常，合并分支时，如果可能，Git会用Fast forward模式(默认模式)，但这种模式下，删除分支后，会丢掉分支信息。</p>
-<p>如果要强制禁用Fast forward模式，Git就会在合并分支时生成一个新的commit，这样，从分支历史上就可以看出分支信息。</p>
-<p>例如</p>
-<pre><code>$ git checkout -b dev                                 //首先，仍然创建并切换dev分支：
-$ git add readme.txt                                  //修改readme.txt文件，并提交一个新的commit
-$ git checkout master                                 //现在，我们切换回master分支
-$ git merge --no-ff -m &quot;merge with no-ff&quot; dev         //准备合并dev分支，请注意--no-ff参数，表示禁用Fast forward
-$ git log --graph --pretty=oneline --abbrev-commit    //合并后，我们用git log看看分支历史：
-//合并分支时，加上--no-ff参数就可以用普通模式合并，合并后的历史有分支，能看出来曾经做过合并，而fast forward合并就看不出来曾经做过合并。
-</code></pre><h2 id="团队分支管理"><a href="#团队分支管理" class="headerlink" title="团队分支管理"></a>团队分支管理</h2><p>在实际开发中，我们应该按照几个基本原则进行分支管理：<br>首先，master分支应该是非常稳定的，也就是仅用来发布新版本，平时不能在上面干活；</p>
-<p>那在哪干活呢？干活都在dev分支上，也就是说，dev分支是不稳定的，到某个时候，比如1.0版本发布时，再把dev分支合并到master上，在master分支发布1.0版本；</p>
-<p>你和你的小伙伴们每个人都在dev分支上干活，每个人都有自己的分支，时不时地往dev分支上合并就可以了。</p>
-<p>团队分支应该是这样的</p>
-<pre><code>|- master                       //正式版
-  |- dev                        //测试版
-    |- michael                  //队员michael-adc
-    |- bob                      //队员bob-肉
-    |- bibi                     //队员bibi-大腿
-</code></pre><h3 id="Bug分支"><a href="#Bug分支" class="headerlink" title="Bug分支"></a>Bug分支</h3><p>软件开发中，bug就像家常便饭一样。有了bug就需要修复，在Git中，由于分支是如此的强大，所以，每个bug都可以通过一个新的临时分支来修复，修复后，合并分支，然后将临时分支删除。</p>
-<p>当你接到一个修复一个代号101的bug的任务时，很自然地，你想创建一个分支issue-101来修复它，但是，等等，当前正在dev上进行的工作还没有提交</p>
-<pre><code>------------                                              //我们在dev分支上，发现master分支上有代号101号bug
-$ git stash                                               //冷冻现在在dev分支上的工作状态 冻结吧！  
-$ git checkout master                                     //这个bug发生在master主分支上,我们切回master分支
-$ git checkout -b issue-101                               //创建代号101的修复bug分支
-修改你的bug
-$ git add readme.txt                                      //提交到暂存区
-$ git commit -m &quot;fix bug 101&quot;                             //注意填写信息，以免日后查证
-$ git checkout master                                     //切换回master分支
-$ git merge --no-ff -m &quot;merged bug fix 101&quot; issue-101     //合并分支，注意不使用fast forward模式
-$ git branch -d issue-101                                 //删除issue-101分支
-$ git checkout dev                                        //bug 改完了，是时候回到dev继续写bug了
-$ git stash list                                          //查看刚刚的冻结现场
-$ git stash pop                                           //git stash pop，恢复的同时把stash内容也删了：
-//一是用git stash apply恢复，但是恢复后，stash内容并不删除，你需要用git stash drop来删除
-</code></pre><h3 id="开发一个新测试功能"><a href="#开发一个新测试功能" class="headerlink" title="开发一个新测试功能"></a>开发一个新测试功能</h3><p>开发一个新feature，最好新建一个分支；</p>
-<p>如果要丢弃一个没有被合并过的分支，可以通过git branch -D <name>强行删除。</name></p>
-<h3 id="多人协作"><a href="#多人协作" class="headerlink" title="多人协作"></a>多人协作</h3><p>当你从远程仓库克隆时，实际上Git自动把本地的master分支和远程的master分支对应起来了，并且，远程仓库的默认名称是origin。 要查看远程库的信息，用git remote -v</p>
-<p>###推送分支</p>
-<p>推送分支，就是把该分支上的所有本地提交推送到远程库。推送时，要指定本地分支，这样，Git就会把该分支推送到远程库对应的远程分支上:</p>
-<pre><code>$ git push origin master
-</code></pre><p>如果是推送到其他分支</p>
-<pre><code>$ git push origin dev
-</code></pre><p>但是，并不是一定要把本地分支往远程推送，那么，哪些分支需要推送，哪些不需要呢？</p>
-<ul>
-<li>master分支是主分支，因此要时刻与远程同步；</li>
-</ul>
-<ul>
-<li>dev分支是开发分支，团队所有成员都需要在上面工作，所以也需要与远程同步；</li>
-</ul>
-<ul>
-<li>bug分支只用于在本地修复bug，就没必要推到远程了，除非老板要看看你每周到底修复了几个bug；</li>
-</ul>
-<ul>
-<li>feature分支是否推到远程，取决于你是否和你的小伙伴合作在上面开发。</li>
-</ul>
-<p>多人协作时，大家都会往master和dev分支上推送各自的修改。<br>当你的小伙伴从远程库clone时，默认情况下，你的小伙伴只能看到本地的master分支。 </p>
-<p>现在，你的小伙伴要在dev分支上开发，就必须创建远程origin的dev分支到本地，于是他用这个命令创建本地dev分支：</p>
-<pre><code>$ git checkout -b dev origin/dev
-你的小伙伴已经向origin/dev分支推送了他的提交，而碰巧你也对同样的文件作了修改，并试图推送
-推送失败，因为你的小伙伴的最新提交和你试图推送的提交有冲突，解决办法也很简单，Git已经提示我们，先用git pull把最新的提交从origin/dev抓下来，然后，在本地合并，解决冲突，再推送：
-git pull也失败了，原因是没有指定本地dev分支与远程origin/dev分支的链接，根据提示，设置dev和origin/dev的链接：
-$ git branch --set-upstream dev origin/dev
-</code></pre><p>再pull<br>这回git pull成功，但是合并有冲突，需要手动解决，解决的方法和分支管理中的解决冲突完全一样。解决后，提交，再push：</p>
-<p>因此，多人协作的工作模式通常是这样：</p>
-<p>首先，可以试图用git push origin branch-name推送自己的修改；</p>
-<p>如果推送失败，则因为远程分支比你的本地更新，需要先用git pull试图合并；</p>
-<p>如果合并有冲突，则解决冲突，并在本地提交；</p>
-<p>没有冲突或者解决掉冲突后，再用git push origin branch-name推送就能成功！</p>
-<p>如果git pull提示“no tracking information”，则说明本地分支和远程分支的链接关系没有创建，用命令<br>git branch –set-upstream branch-name origin/branch-name</p>
-<p>这就是多人协作的工作模式，一旦熟悉了，就非常简单。</p>
-<p>查看远程库信息，使用git remote -v</p>
-<p>本地新建的分支如果不推送到远程，对其他人就是不可见的；</p>
-<p>从本地推送分支，使用git push origin branch-name，如果推送失败，先用git pull抓取远程的新提交；</p>
-<p>在本地创建和远程分支对应的分支，使用git checkout -b branch-name origin/branch-name，本地和远程分支的名称最好一致；</p>
-<p>建立本地分支和远程分支的关联，使用git branch –set-upstream branch-name origin/branch-name；</p>
-<p>从远程抓取分支，使用git pull，如果有冲突，要先处理冲突。</p>
-<h2 id="标签管理"><a href="#标签管理" class="headerlink" title="标签管理"></a>标签管理</h2><p>###创建标签</p>
-<ul>
-<li>命令git tag <name>用于新建一个标签，默认为HEAD，也可以指定一个commit id；</name></li>
-</ul>
-<ul>
-<li>git tag -a <tagname> -m “blablabla…”可以指定标签信息；</tagname></li>
-</ul>
-<ul>
-<li>git tag -s <tagname> -m “blablabla…”可以用PGP签名标签；</tagname></li>
-</ul>
-<ul>
-<li>命令git tag可以查看所有标签。</li>
-</ul>
-<ul>
-<li><p>还可以创建带有说明的标签，用-a指定标签名，-m指定说明文字：</p>
-<p>  $ git tag -a v0.1 -m “version 0.1 released” 3628164</p>
-</li>
-</ul>
-<h3 id="操作标签"><a href="#操作标签" class="headerlink" title="操作标签"></a>操作标签</h3><p>如果标签打错了，还可以修改</p>
-<pre><code>$ git tag -d v0.1
-</code></pre><p>如果要推送某个标签到远程，使用命令</p>
-<pre><code>$ git push origin &lt;tagname&gt;
-</code></pre><p>或者，一次性推送全部尚未推送到远程的本地标签：</p>
-<pre><code>$ git push origin --tags
-</code></pre><p>如果标签已经推送到远程，要删除远程标签就麻烦一点，先从本地删除：</p>
-<pre><code>$ git tag -d v0.9
-</code></pre><p>然后，从远程删除。删除命令也是push，但是格式如下：</p>
-<pre><code>git push origin :refs/tags/&lt;tagname&gt;
-</code></pre><h2 id="忽略特殊文件"><a href="#忽略特殊文件" class="headerlink" title="忽略特殊文件"></a>忽略特殊文件</h2><p>在Git工作区的根目录下创建一个特殊的.gitignore文件，然后把要忽略的文件名填进去，Git就会自动忽略这些文件。<br>不需要从头写.gitignore文件，GitHub已经为我们准备了各种配置文件，只需要组合一下就可以使用了。所有配置文件可以直接在线浏览：.gitignore</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Git</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/28/从git add到branch/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-mysql基本知识点梳理和查询优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/28/mysql基本知识点梳理和查询优化/">mysql基本知识点梳理和查询优化</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/28/mysql基本知识点梳理和查询优化/" class="archive-article-date">
-  	<time datetime="2018-11-28T08:13:24.177Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-28</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>本文主要是总结了工作中一些常用的操作，以及不合理的操作，在对慢查询进行优化时收集的一些有用的资料和信息，本文适合有mysql基础的开发人员。</p>
-<h3 id="一、索引相关"><a href="#一、索引相关" class="headerlink" title="一、索引相关"></a>一、索引相关</h3><p>1.索引基数：</p>
-<p>基数是数据列所包含的不同值的数量。例如，某个数据列包含值1、3、7、4、7、3，那么它的基数就是4。索引的基数相对于数据表行数较高（也就是说，列中包含很多不同的值，重复的值很少）的时候，它的工作效果最好。如果某数据列含有很多不同的年龄，索引会很快地分辨数据行。如果某个数据列用于记录性别（只有”M”和”F”两种值），那么索引的用处就不大。如果值出现的几率几乎相等，那么无论搜索哪个值都可能得到一半的数据行。在这些情况下，最好根本不要使用索引，因为查询优化器发现某个值出现在表的数据行中的百分比很高的时候，它一般会忽略索引，进行全表扫描。惯用的百分比界线是”30%”。</p>
-<p>2.索引失败的原因</p>
-<pre><code>对索引列运算，运算包括（+、-、*、/、！、&lt;&gt;、%、like&apos;%_&apos;（%放在前面）
-类型错误，如字段类型为varchar，where条件用number。
-对索引应用内部函数，这种情况下应该建立基于函数的索引
-如select * from template t where ROUND(t.logicdb_id) = 1
-此时应该建ROUND(t.logicdb_id)为索引，mysql8.0开始支持函数索引，5.7可以通过虚拟列的方式来支持，之前只能新建一个ROUND(t.logicdb_id)列然后去维护
-如果条件有or，即使其中有条件带索引也不会使用（这也是为什么建议少使用or的原因），如果想使用or，又想索引有效，只能将or条件中的每个列加上索引
-如果列类型是字符串，那一定要在条件中数据使用引号，否则不使用索引；
-B-tree索引 is null不会走,is not null会走,位图索引 is null,is not null 都会走
-组合索引遵循最左原则
-</code></pre><h4 id="索引的建立"><a href="#索引的建立" class="headerlink" title="索引的建立"></a>索引的建立</h4><p>最重要的肯定是根据业务经常查询的语句</p>
-<p>尽量选择区分度高的列作为索引，区分度的公式是 COUNT(DISTINCT col) / COUNT(*)。表示字段不重复的比率，比率越大我们扫描的记录数就越少</p>
-<p>如果业务中唯一特性最好建立唯一键，一方面可以保证数据的正确性，另一方面索引的效率能大大提高</p>
-<h3 id="二、EXPLIAN中有用的信息"><a href="#二、EXPLIAN中有用的信息" class="headerlink" title="二、EXPLIAN中有用的信息"></a>二、EXPLIAN中有用的信息</h3><h4 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h4><p>desc 或者 explain 加上你的sql<br>extended explain加上你的sql，然后通过show warnings可以查看实际执行的语句，这一点也是非常有用的，很多时候不同的写法经过sql分析之后实际执行的代码是一样的</p>
-<h4 id="提高性能的特性"><a href="#提高性能的特性" class="headerlink" title="提高性能的特性"></a>提高性能的特性</h4><p>索引覆盖(covering index)：需要查询的数据在索引上都可以查到不需要回表 EXTRA列显示using index</p>
-<p>ICP特性(Index Condition Pushdown)：本来index仅仅是data access的一种访问模式，存数引擎通过索引回表获取的数据会传递到MySQL server层进行where条件过滤,5.6版本开始当ICP打开时，如果部分where条件能使用索引的字段，MySQL server会把这部分下推到引擎层，可以利用index过滤的where条件在存储引擎层进行数据过滤。EXTRA显示using index condition。需要了解mysql的架构图分为server和存储引擎层</p>
-<p>索引合并(index merge)：对多个索引分别进行条件扫描，然后将它们各自的结果进行合并(intersect/union)。一般用OR会用到，如果是AND条件，考虑建立复合索引。EXPLAIN显示的索引类型会显示index_merge，EXTRA会显示具体的合并算法和用到的索引</p>
-<h4 id="extra字段"><a href="#extra字段" class="headerlink" title="extra字段"></a>extra字段</h4><p>1、using filesort： 说明MySQL会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。MySQL中无法利用索引完成的排序操作称为“文件排序” ，其实不一定是文件排序，内部使用的是快排</p>
-<p>2、using temporary：  使用了临时表保存中间结果，MySQL在对查询结果排序时使用临时表。常见于排序order by和分组查询group by</p>
-<p>3、using index： 表示相应的SELECT操作中使用了覆盖索引（Covering Index），避免访问了表的数据行，效率不错。</p>
-<p>4、impossible where： WHERE子句的值总是false，不能用来获取任何元组</p>
-<p>5、select tables optimized away： 在没有GROUP BY子句的情况下基于索引优化MIN/MAX操作或者对于MyISAM存储引擎优化COUNT(*)操作， 不必等到执行阶段再进行计算，查询执行计划生成的阶段即完成优化</p>
-<p>6、distinct： 优化distinct操作，在找到第一匹配的元祖后即停止找同样值的操作</p>
-<p>using filesort,using temporary这两项出现时需要注意下，这两项是十分耗费性能的，在使用group by的时候，虽然没有使用order by，如果没有索引，是可能同时出现using filesort,using temporary的，因为group by就是先排序在分组，如果没有排序的需要，可以加上一个order by NULL来避免排序，这样using filesort就会去除，能提升一点性能。</p>
-<h4 id="type字段"><a href="#type字段" class="headerlink" title="type字段"></a>type字段</h4><p>system：表只有一行记录（等于系统表），这是const类型的特例，平时不会出现</p>
-<p>const：如果通过索引依次就找到了，const用于比较主键索引或者unique索引。 因为只能匹配一行数据，所以很快。如果将主键置于where列表中，MySQL就能将该查询转换为一个常量</p>
-<p>eq_ref：唯一性索引扫描，对于每个索引键，表中只有一条记录与之匹配。常见于主键或唯一索引扫描</p>
-<p>ref：非唯一性索引扫描，返回匹配某个单独值的所有行。本质上也是一种索引访问，它返回所有匹配 某个单独值的行，然而它可能会找到多个符合条件的行，所以它应该属于查找和扫描的混合体</p>
-<p>range：只检索给定范围的行，使用一个索引来选择行。key列显示使用了哪个索引，一般就是在你的where语句中出现between、&lt;、&gt;、in等的查询，这种范围扫描索引比全表扫描要好，因为只需要开始于缩印的某一点，而结束于另一点，不用扫描全部索引</p>
-<p>index：Full Index Scan ，index与ALL的区别为index类型只遍历索引树，这通常比ALL快，因为索引文件通常比数据文件小。 （也就是说虽然ALL和index都是读全表， 但index是从索引中读取的，而ALL是从硬盘读取的）</p>
-<p>all：Full Table Scan，遍历全表获得匹配的行</p>
-<h3 id="三、字段类型和编码"><a href="#三、字段类型和编码" class="headerlink" title="三、字段类型和编码"></a>三、字段类型和编码</h3><ul>
-<li><p>mysql返回字符串长度：CHARACTER_LENGTH方法(CHAR_LENGTH一样的)返回的是字符数，LENGTH函数返回的是字节数，一个汉字三个字节</p>
-</li>
-<li><p>varvhar等字段建立索引长度计算语句：select count(distinct left(test,5))/count(*) from table; 越趋近1越好</p>
-</li>
-<li><p>mysql的utf8最大是3个字节不支持emoji表情符号，必须只用utf8mb4。需要在mysql配置文件中配置客户端字符集为utf8mb4。jdbc的连接串不支持配置characterEncoding=utf8mb4，最好的办法是在连接池中指定初始化sql，例如：hikari连接池，其他连接池类似spring.datasource.hikari.connection-init-sql=set names utf8mb4。否则需要每次执行sql前都先执行set names utf8mb4。</p>
-</li>
-<li><p>msyql排序规则(一般使用_bin和_genera_ci)：</p>
-</li>
-</ul>
-<p>utf8_genera_ci不区分大小写，ci为case insensitive的缩写，即大小写不敏感，</p>
-<p>utf8_general_cs区分大小写，cs为case sensitive的缩写，即大小写敏感，但是目前MySQL版本中已经不支持类似于***_genera_cs的排序规则，直接使用utf8_bin替代。</p>
-<p>utf8_bin将字符串中的每一个字符用二进制数据存储，区分大小写。</p>
-<p>那么，同样是区分大小写，utf8_general_cs和utf8_bin有什么区别？</p>
-<p>cs为case sensitive的缩写，即大小写敏感；bin的意思是二进制，也就是二进制编码比较。</p>
-<p>utf8_general_cs排序规则下，即便是区分了大小写，但是某些西欧的字符和拉丁字符是不区分的，比如ä=a，但是有时并不需要ä=a，所以才有utf8_bin</p>
-<p>utf8_bin的特点在于使用字符的二进制的编码进行运算，任何不同的二进制编码都是不同的，因此在utf8_bin排序规则下：ä&lt;&gt;a</p>
-<h3 id="四、SQL语句总结"><a href="#四、SQL语句总结" class="headerlink" title="四、SQL语句总结"></a>四、SQL语句总结</h3><h4 id="常用的但容易忘的："><a href="#常用的但容易忘的：" class="headerlink" title="常用的但容易忘的："></a>常用的但容易忘的：</h4><ul>
-<li><p>如果有主键或者唯一键冲突则不插入：insert ignore into</p>
-</li>
-<li><p>如果有主键或者唯一键冲突则更新,注意这个会影响自增的增量：INSERT INTO room_remarks(room_id,room_remarks) VALUE(1,”sdf”) ON DUPLICATE KEY UPDATE room_remarks=”234”</p>
-</li>
-<li><p>如果有就用新的替代，values如果不包含自增列，自增列的值会变化： REPLACE INTO room_remarks(room_id,room_remarks) VALUE(1,”sdf”)</p>
-</li>
-<li><p>备份表：CREATE TABLE user_info SELECT * FROM user_info</p>
-</li>
-<li><p>复制表结构：CREATE TABLE user_v2 LIKE user</p>
-</li>
-<li><p>从查询语句中导入：INSERT INTO user_v2 SELECT * FROM user或者INSERT INTO user_v2(id,num) SELECT id,num FROM user</p>
-</li>
-<li><p>连表更新：UPDATE user a, room b SET a.num=a.num+1 WHERE a.room_id=b.id</p>
-</li>
-<li><p>连表删除：DELETE user FROM user,black WHERE user.id=black.id</p>
-</li>
-</ul>
-<h4 id="锁相关"><a href="#锁相关" class="headerlink" title="锁相关"></a>锁相关</h4><ul>
-<li>共享锁： select id from tb_test where id = 1 lock in share mode;</li>
-</ul>
-<ul>
-<li>排它锁： select id from tb_test where id = 1 for update</li>
-</ul>
-<h4 id="优化时用到："><a href="#优化时用到：" class="headerlink" title="优化时用到："></a>优化时用到：</h4><ul>
-<li>强制使用某个索引： select * from table force index(idx_user) limit 2;</li>
-<li>禁止使用某个索引： select * from table ignore index(idx_user) limit 2;</li>
-<li>禁用缓存(在测试时去除缓存的影响)： select SQL_NO_CACHE from table limit 2;</li>
-</ul>
-<h4 id="查看状态"><a href="#查看状态" class="headerlink" title="查看状态"></a>查看状态</h4><ul>
-<li><p>查看字符集 SHOW VARIABLES LIKE ‘character_set%’;</p>
-</li>
-<li><p>查看排序规则 SHOW VARIABLES LIKE ‘collation%’;</p>
-</li>
-</ul>
-<h4 id="SQL编写注意"><a href="#SQL编写注意" class="headerlink" title="SQL编写注意"></a>SQL编写注意</h4><ul>
-<li>where语句的解析顺序是从右到左，条件尽量放where不要放having</li>
-<li>采用延迟关联(deferred join)技术优化超多分页场景，比如limit 10000,10,延迟关联可以避免回表</li>
-<li>distinct语句非常损耗性能，可以通过group by来优化</li>
-<li>连表尽量不要超过三个表</li>
-</ul>
-<h3 id="五、踩坑"><a href="#五、踩坑" class="headerlink" title="五、踩坑"></a>五、踩坑</h3><ul>
-<li><p>如果有自增列，truncate语句会把自增列的基数重置为0，有些场景用自增列作为业务上的id需要十分重视</p>
-</li>
-<li><p>聚合函数会自动滤空，比如a列的类型是int且全部是NULL，则SUM(a)返回的是NULL而不是0</p>
-</li>
-<li><p>mysql判断null相等不能用“a=null”,这个结果永远为UnKnown，where和having中,UnKnown永远被视为false，check约束中，UnKnown就会视为true来处理。所以要用“a is null”处理</p>
-</li>
-</ul>
-<h3 id="六、千万大表在线修改"><a href="#六、千万大表在线修改" class="headerlink" title="六、千万大表在线修改"></a>六、千万大表在线修改</h3><p>mysql在表数据量很大的时候，如果修改表结构会导致锁表，业务请求被阻塞。mysql在5.6之后引入了在线更新，但是在某些情况下还是会锁表，所以一般都采用pt工具( Percona Toolkit)</p>
-<p>如对表添加索引：</p>
-<pre><code>pt-online-schema-change --user=&apos;root&apos; --host=&apos;localhost&apos; --ask-pass --alter &quot;add index idx_user_id(room_id,create_time)&quot; D=fission_show_room_v2,t=room_favorite_info --execute
-</code></pre><h3 id="七、慢查询日志"><a href="#七、慢查询日志" class="headerlink" title="七、慢查询日志"></a>七、慢查询日志</h3><p>有时候如果线上请求超时，应该去关注下慢查询日志，慢查询的分析很简单，先找到慢查询日志文件的位置，然后利用mysqldumpslow去分析。查询慢查询日志信息可以直接通过执行sql命令查看相关变量，常用的sql如下：</p>
-<pre><code>-- 查看慢查询配置
--- slow_query_log  慢查询日志是否开启
--- slow_query_log_file 的值是记录的慢查询日志到文件中
--- long_query_time 指定了慢查询的阈值
--- log_queries_not_using_indexes 是否记录所有没有利用索引的查询
-SHOW VARIABLES LIKE &apos;%quer%&apos;;
-
--- 查看慢查询是日志还是表的形式
-SHOW VARIABLES LIKE &apos;log_output&apos;
-
--- 查看慢查询的数量
-SHOW GLOBAL STATUS LIKE &apos;slow_queries&apos;;
-</code></pre><p>mysqldumpslow的工具十分简单，我主要用到的是参数如下：</p>
-<p>-t:限制输出的行数，我一般取前十条就够了</p>
-<p>-s:根据什么来排序默认是平均查询时间at，我还经常用到c查询次数，因为查询次数很频繁但是时间不高也是有必要优化的，还有t查询时间，查看那个语句特别卡。</p>
-<p>-v:输出详细信息</p>
-<h3 id="八、查看sql进程和杀死进程"><a href="#八、查看sql进程和杀死进程" class="headerlink" title="八、查看sql进程和杀死进程"></a>八、查看sql进程和杀死进程</h3><p>如果你执行了一个sql的操作，但是迟迟没有返回，你可以通过查询进程列表看看他的实际执行状况，如果该sql十分耗时，为了避免影响线上可以用kill命令杀死进程，通过查看进程列表也能直观的看下当前sql的执行状态，如果当前数据库负载很高，在进程列表可能会出现，大量的进程夯住，执行时间很长。命令如下：</p>
-<pre><code>--查看进程列表
-SHOW PROCESSLIST;
---杀死某个进程
-kill 183665
-</code></pre><h3 id="九、一些数据库性能的思考"><a href="#九、一些数据库性能的思考" class="headerlink" title="九、一些数据库性能的思考"></a>九、一些数据库性能的思考</h3><p>在对公司慢查询日志做优化的时候，很多时候可能是忘了建索引，像这种问题很容易解决，加个索引就行了。但是有两种情况就不是简单能加索引能解决了：</p>
-<ul>
-<li><p>业务代码循环读数据库： 考虑这样一个场景，获取用户粉丝列表信息 加入分页是十个 其实像这样的sql是十分简单的，通过连表查询性能也很高，但是有时候，很多开发采用了取出一串id，然后循环读每个id的信息，这样如果id很多对数据库的压力是很大的，而且性能也很低</p>
-</li>
-<li><p>统计sql：很多时候，业务上都会有排行榜这种，发现公司有很多地方直接采用数据库做计算，在对一些大表的做聚合运算的时候，经常超过五秒，这些sql一般很长而且很难优化， 像这种场景，如果业务允许（比如一致性要求不高或者是隔一段时间才统计的），可以专门在从库里面做统计。另外我建议还是采用redis缓存来处理这种业务</p>
-</li>
-<li><p>超大分页: 在慢查询日志中发现了一些超大分页的慢查询如 limit 40000,1000，因为mysql的分页是在server层做的，可以采用延迟关联在减少回表。但是看了相关的业务代码正常的业务逻辑是不会出现这样的请求的，所以很有可能是有恶意用户在刷接口，所以最好在开发的时候也对接口加上校验拦截这些恶意请求。</p>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">数据库</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/28/mysql基本知识点梳理和查询优化/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/14/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/16/">Next &raquo;</a>
@@ -2424,7 +2283,7 @@ kill 183665
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2021 wangjungang
+    		&copy; 2022 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -2543,11 +2402,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2563,11 +2422,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2575,7 +2434,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2583,7 +2442,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2600,6 +2459,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
             
             <div class="clearfix"></div>

@@ -152,6 +152,414 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS 最详细的几种定时器的使用介绍" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/28/iOS 最详细的几种定时器的使用介绍/">iOS 最详细的几种定时器的使用介绍</a>
+    </h1>
+  
+
+        
+        <a href="/2019/01/28/iOS 最详细的几种定时器的使用介绍/" class="archive-article-date">
+  	<time datetime="2019-01-28T09:35:59.542Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在软件开发过程中，我们常常需要在某个时间后执行某个方法，或者是按照某个周期一直执行某个方法。在这个时候，我们就需要用到定时器。而关于定时器，ios开发我们会用到的也就以下几种。下面介绍以下：</p>
+<h2 id="第一种：NSTimer"><a href="#第一种：NSTimer" class="headerlink" title="第一种：NSTimer"></a>第一种：NSTimer</h2><h3 id="1、创建方法一"><a href="#1、创建方法一" class="headerlink" title="1、创建方法一"></a>1、创建方法一</h3><pre><code>NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(action) userInfo:nil repeats:YES];
+TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法
+</code></pre><p>userInfo:可以写一些标识信息（一般不用）</p>
+<p>target : 需要执行方法的对象。</p>
+<p>selector : 需要执行的方法</p>
+<p>repeats : 是否需要循环</p>
+<pre><code>NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+
+}];
+</code></pre><p>TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法</p>
+<p>repeats : 是否需要循环</p>
+<p>使用block的方法就直接在block里面写延时后要执行的代码就可以了</p>
+<pre><code>SEL action = @selector(action);
+NSInvocation* invo = [NSInvocation invocationWithMethodSignature:[[self class] instanceMethodSignatureForSelector:action]];
+[invo setTarget:self];
+[invo setSelector:action];
+NSTimer *timer = [NSTimer scheduledTimerWithTimeInterval:1.0 invocation:invo repeats:YES];
+</code></pre><p>TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法</p>
+<p>action : 需要执行的方法</p>
+<p>repeats : 是否需要循环</p>
+<p>这种三种方式创建的定时器不用加入到RunLoop，是由于系统已经将其加入到了默认的RunLoop中。而且这种定时器创建就会启动。</p>
+<h3 id="2、创建方法二"><a href="#2、创建方法二" class="headerlink" title="2、创建方法二"></a>2、创建方法二</h3><pre><code>  NSTimer *timer  =  [NSTimer  timerWithTimeInterval:1.0 target:self selector:@selector(action) userInfo:nil repeats:YES];
+[[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法
+</code></pre><p>userInfo:可以写一些标识信息（一般不用）</p>
+<p>target : 需要执行方法的对象。</p>
+<p>selector : 需要执行的方法</p>
+<p>repeats : 是否需要循环</p>
+<pre><code>NSTimer *timer = [NSTimer timerWithTimeInterval:1.0 repeats:YES block:^(NSTimer * _Nonnull timer) {
+}];
+[[NSRunLoop mainRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法
+</code></pre><p>repeats : 是否需要循环</p>
+<p>使用block的方法就直接在block里面写延时后要执行的代码就可以了</p>
+<pre><code>SEL action = @selector(action);
+NSInvocation* invo = [NSInvocation invocationWithMethodSignature:[[self class] instanceMethodSignatureForSelector:action]];
+[invo setTarget:self];
+[invo setSelector:action];
+NSTimer* timer = [NSTimer timerWithTimeInterval:1.0 invocation:invo repeats:YES];//加入主循环池中
+[[NSRunLoop mainRunLoop]addTimer:timer forMode:NSDefaultRunLoopMode];
+</code></pre><p>TimerInterval : 执行之前等待的时间。比如设置成1.0，就代表1秒后执行方法</p>
+<p>action : 需要执行的方法</p>
+<p>repeats : 是否需要循环</p>
+<p>这种三种方式创建的定时器都需要我们自己去加入到RunLoop中，不然定时器无法启动。</p>
+<p>释放定时器</p>
+<pre><code>[timer invalidate];
+</code></pre><h4 id="timer的一些属性变量："><a href="#timer的一些属性变量：" class="headerlink" title="timer的一些属性变量："></a>timer的一些属性变量：</h4><p>//这是设置定时器的启动具体时间，常用来管理定时器的启动与停止</p>
+<pre><code>@property (copy) NSDate *fireDate;
+</code></pre><p>//启动定时器</p>
+<pre><code>//    timer.fireDate = [NSDate distantPast];
+</code></pre><p>//停止定时器</p>
+<pre><code>//    timer.fireDate = [NSDate distantFuture];
+</code></pre><p>这个是一个只读属性，获取定时器调用间隔时间。</p>
+<pre><code>@property (readonly) NSTimeInterval timeInterval;
+</code></pre><p>这是7.0之后新增的一个属性，因为NSTimer并不完全精准，通过这个值设置误差范围。</p>
+<pre><code>@property NSTimeInterval tolerance ;
+</code></pre><p>获取定时器是否有效</p>
+<pre><code>@property (readonly, getter=isValid) BOOL valid;
+</code></pre><p>获取参数信息</p>
+<pre><code>@property (nullable, readonly, retain) id userInfo;
+</code></pre><h2 id="第二种：CADisplayLink"><a href="#第二种：CADisplayLink" class="headerlink" title="第二种：CADisplayLink"></a>第二种：CADisplayLink</h2><p>创建方法：</p>
+<pre><code>CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(action)];
+[displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+</code></pre><p>target : 需要执行方法的对象。</p>
+<p>selector : 需要执行的方法</p>
+<p>释放方法</p>
+<pre><code>[displayLink invalidate];
+
+displayLink = nil;
+</code></pre><p>释放了displayLink也就意味着停止了定时器，或者使用下面的方法移除定时器</p>
+<pre><code>[displayLink removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+</code></pre><h3 id="CADisplayLink的一些属性变量："><a href="#CADisplayLink的一些属性变量：" class="headerlink" title="CADisplayLink的一些属性变量："></a>CADisplayLink的一些属性变量：</h3><p>每帧之间的时间</p>
+<pre><code>@property(readonly, nonatomic) CFTimeInterval duration;
+</code></pre><p>间隔多少帧调用一次selector 方法，默认1</p>
+<pre><code>@property(nonatomic) NSInteger frameInterval;
+</code></pre><p>屏幕显示的上一帧的时间戳，只读的CFTimeInterval值。</p>
+<pre><code>@property(readonly, nonatomic) CFTimeInterval timestamp;
+</code></pre><p>是否暂停，控制CADisplayLink的运行</p>
+<pre><code>@property(getter=isPaused, nonatomic) BOOL paused;
+</code></pre><p>注意：</p>
+<p>1、通常来讲：iOS设备的刷新频率事60HZ也就是每秒60次。那么每一次刷新的时间就是1/60秒 大概16.7毫秒。当我们的frameInterval 值为1的时候我们需要保证的是 CADisplayLink调用的target的函数计算时间不应该大于 16.7否则就会出现严重的丢帧现象。</p>
+<h2 id="GCD方法"><a href="#GCD方法" class="headerlink" title="GCD方法"></a>GCD方法</h2><h3 id="只执行一次"><a href="#只执行一次" class="headerlink" title="只执行一次"></a>只执行一次</h3><pre><code>double delayInSeconds = 2.0;
+dispatch_time_t poptime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+dispatch_after(poptime, dispatch_get_main_queue(), ^{
+//执行事件
+});
+</code></pre><p>delayInSeconds:执行之前等待的时间。比如设置成2.0，就代表2秒后执行方法</p>
+<h3 id="重复执行"><a href="#重复执行" class="headerlink" title="重复执行"></a>重复执行</h3><pre><code>/** timer声明成属性存储起来 */
+@property (nonatomic , strong)dispatch_source_t timer;
+NSTimeInterval period = 1.0;//设置时间间隔
+dispatch_queue_t queue =     dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+   dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, period * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
+  dispatch_source_set_event_handler(_timer, ^{
+        NSLog(@&quot;%@&quot; , [NSThread currentThread]);//打印当前线程 
+       dispatch_async(dispatch_get_main_queue(), ^{
+         //回到主线程做事情
+     });
+});
+dispatch_resume(_timer);
+</code></pre><p>注意：要将timer存储起来，不然会就只执行一次</p>
+<p>如果不定时器使用完了的话 ，取消定时器：dispatch_source_cancel(_timer);</p>
+<h2 id="最后讲一下：-NSTimer和CADisplayLink-的区别和联系"><a href="#最后讲一下：-NSTimer和CADisplayLink-的区别和联系" class="headerlink" title="最后讲一下： NSTimer和CADisplayLink 的区别和联系"></a>最后讲一下： NSTimer和CADisplayLink 的区别和联系</h2><h3 id="1、原理不同"><a href="#1、原理不同" class="headerlink" title="1、原理不同"></a>1、原理不同</h3><p>CADisplayLink是一个能让我们以和屏幕刷新率同步的频率将特定的内容画到屏幕上的定时器类。CADisplayLink以特定模式注册到runloop后，每当屏幕显示内容刷新结束的时候，runloop就会向CADisplayLink指定的target发送一次指定的selector消息， CADisplayLink类对应的selector就会被调用一次。</p>
+<p>NSTimer以指定的模式注册到runloop后，每当设定的周期时间到达后，runloop会向指定的target发送一次指定的selector消息。</p>
+<h3 id="2、周期设置方式不同"><a href="#2、周期设置方式不同" class="headerlink" title="2、周期设置方式不同"></a>2、周期设置方式不同</h3><p>iOS设备的屏幕刷新频率(FPS)是60Hz，因此CADisplayLink的selector默认调用周期是每秒60次，这个周期可以通过frameInterval属性设置，CADisplayLink的selector每秒调用次数=60/frameInterval。比如当frameInterval设为2，每秒调用就变成30次。因此，CADisplayLink周期的设置方式略显不便。</p>
+<p>NSTimer的selector调用周期可以在初始化时直接设定，相对就灵活的多。</p>
+<h3 id="3、精确度不同"><a href="#3、精确度不同" class="headerlink" title="3、精确度不同"></a>3、精确度不同</h3><p>iOS设备的屏幕刷新频率是固定的，CADisplayLink在正常情况下会在每次刷新结束都被调用，精确度相当高。</p>
+<p>NSTimer的精确度就显得低了点，比如NSTimer的触发时间到的时候，runloop如果在忙于别的调用，触发时间就会推迟到下一个runloop周期。更有甚者，在OS X v10.9以后为了尽量避免在NSTimer触发时间到了而去中断当前处理的任务，NSTimer新增了tolerance属性，让用户可以设置可以容忍的触发的时间范围。</p>
+<h3 id="4、使用场合"><a href="#4、使用场合" class="headerlink" title="4、使用场合"></a>4、使用场合</h3><p>从原理上不难看出，CADisplayLink使用场合相对专一，适合做界面的不停重绘，比如视频播放的时候需要不停地获取下一帧用于界面渲染。</p>
+<p>NSTimer的使用范围要广泛的多，各种需要单次或者循环定时处理的任务都可以使用。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/01/28/iOS 最详细的几种定时器的使用介绍/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS label代码自适应高度宽度" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/28/iOS label代码自适应高度宽度/">iOS label代码自适应高度宽度</a>
+    </h1>
+  
+
+        
+        <a href="/2019/01/28/iOS label代码自适应高度宽度/" class="archive-article-date">
+  	<time datetime="2019-01-28T09:26:50.939Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近有点闲功夫，自己总结了一下label自适应的几种方式，现在分享给大家，大概有以下几种方法：</p>
+<h2 id="第一种"><a href="#第一种" class="headerlink" title="第一种"></a>第一种</h2><pre><code>UILabel *label = [[UILabel alloc] init];  
+label.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1]; 
+label.text = @&quot;大师傅好搜啊发&quot;; 
+label.numberOfLines = 0; 
+CGSize size = CGSizeMake(100, MAXFLOAT);//设置高度宽度的最大限度 CGRect rect = [label.text boundingRectWithSize:size options:NSStringDrawingUsesFontLeading|NSStringDrawingTruncatesLastVisibleLine|NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName : [UIFont systemFontOfSize:20]} context:nil];
+label.frame = CGRectMake(100, 100, rect.size.width, rect.size.height);  self.view addSubview:label];
+</code></pre><p>其实就是使用- (CGRect)boundingRectWithSize:(CGSize)size options:(NSStringDrawingOptions)options attributes:(nullable NSDictionary<em>)attributes context:(nullable NSStringDrawingContext </em>)context 这个方法</p>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><p>size：宽高限制，用于计算文本绘制时占据的矩形块。</p>
+<p>options: 文本绘制时的附加选项</p>
+<p>NSStringDrawingUsesLineFragmentOrigin//整个文本将以每行组成的矩形为单位计算整个文本的尺寸  </p>
+<p>NSStringDrawingUsesFontLeading//以字体间的行距</p>
+<p>NSStringDrawingUsesDeviceMetrics //计算文本尺寸时将以每个字或字形为单位来计算。   </p>
+<p>NSStringDrawingTruncatesLastVisibleLine//计算文本尺寸时将以每个字或字形为单位来计算。可以组合试一下达到自己想要的效果</p>
+<p>attributes:对字体、颜色、行距、字间隔等等一些设置，使用字典来做一些属性设置</p>
+<p>context:上下文,该参数可为 nil 。</p>
+<h2 id="第二种"><a href="#第二种" class="headerlink" title="第二种"></a>第二种</h2><pre><code>UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 100, 0)];
+label.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+label.text = @&quot;我会自己去适应&quot;;
+label.numberOfLines = 0;
+[label sizeToFit];
+[self.view addSubview:label];
+</code></pre><p>其实就是使用 [label sizeToFit];</p>
+<p>让label自己去适应或者使用</p>
+<p>sizeThatFits:方法自己定义宽高</p>
+<p>CGSize size = [label sizeThatFits:CGSizeMake(100, MAXFLOAT)];</p>
+<p>label.frame = CGRectMake(100, 100, size.width, size.height);</p>
+<h2 id="第三种"><a href="#第三种" class="headerlink" title="第三种"></a>第三种</h2><pre><code>UILabel *label = [[UILabel alloc] init];
+label.backgroundColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+label.text = @&quot;我会自己去适应宽度的&quot;;
+label.font = [UIFont systemFontOfSize:50];
+CGSize size = [label.text sizeWithAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:50]}];
+//ceilf()向上取整函数, 只要大于1就取整数2. floor()向下取整函数, 只要小于2就取整数1.
+CGSize adaptionSize = CGSizeMake(ceilf(size.width), ceilf(size.height));
+label.frame = CGRectMake(100, 100, adaptionSize.width, adaptionSize.height);
+[self.view addSubview:label];
+</code></pre><p>这种方法只能适应一行的宽高，高度也是根据字体的大小来变化的</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/01/28/iOS label代码自适应高度宽度/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS拦截器" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/01/28/iOS拦截器/">iOS拦截器</a>
+    </h1>
+  
+
+        
+        <a href="/2019/01/28/iOS拦截器/" class="archive-article-date">
+  	<time datetime="2019-01-28T09:11:10.436Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目中我们可能都需要判断断网的情况，然后进行一下提示，或者我们需要在每个控制器中都需要初始一些东西，那么我们可以在项目中用一个基类去做这些事情，可是，如果我们的项目想要后面添加这些东西，我们再去用基类，改起来就比较麻烦了，或者可能改出问题来。这时候我们可能会用到拦截器来进行一些操作。下面是我用拦截器来进行一些网络的提示</p>
+<h3 id="1、导入头文件-import-“ZYInterceptorWithNetwork-h”"><a href="#1、导入头文件-import-“ZYInterceptorWithNetwork-h”" class="headerlink" title="1、导入头文件#import “ZYInterceptorWithNetwork.h”"></a>1、导入头文件#import “ZYInterceptorWithNetwork.h”</h3><h3 id="2、在需要使用的地方写入下面的代码"><a href="#2、在需要使用的地方写入下面的代码" class="headerlink" title="2、在需要使用的地方写入下面的代码"></a>2、在需要使用的地方写入下面的代码</h3><pre><code>ZYInterceptorWithNetwork *network = [ZYInterceptorWithNetwork sharedInstance];
+network.promptStr = @&quot;网络有错&quot;; //网络提示内容
+network.btnText = @&quot;确定&quot;;//网络提示按钮文字
+network.title = @&quot;提示&quot;;//标题
+[network loadInterceptorWithActionName:@&quot;viewWillAppear:&quot; optionType:AspectPositionAfter error:^(NSError *interceptorError) {
+    NSLog(@&quot;拦截错误&quot;);
+}];//拦截代码
+</code></pre><h3 id="3、假如有的地方我们不需要拦截，那么我们可以这么做"><a href="#3、假如有的地方我们不需要拦截，那么我们可以这么做" class="headerlink" title="3、假如有的地方我们不需要拦截，那么我们可以这么做"></a>3、假如有的地方我们不需要拦截，那么我们可以这么做</h3><p>1)、导入头文件#import “ZYInterceptorWithNetwork.h”</p>
+<p>2)、 跳转界面的地方写入下面的代码</p>
+<pre><code>ZYThreeViewController *three= [[ZYThreeViewController alloc] init];
+three.isDisabledInterceptor = YES;    //跳转的地方设置失去作用
+[self.navigationController pushViewController:three animated:YES];
+</code></pre><p>这就是基本的用法。当然，我们也可以去扩充这些东西，我只是做了网络的操作，我们也可以去做别的一些操作，只要在下面这个方法中修改一些东西即可：</p>
+<pre><code>// 通过这种方式可以代替原来框架中的基类，不必每个 ViewController 再去继续原框架的基类
+#pragma mark - alternative methods
+- (void)action:(BOOL)animated viewController:(UIViewController *)viewController
+ {
+if (!viewController.isInitTheme) {
+    // 去做基础业务相关的内容
+    viewController.isInitTheme = YES;
+}
+if (![ZYInterceptorWithNetwork isConnectionAvailableWithStatus:nil]) {
+    //设置提示框或者什么操作
+    UIViewController *currentVc = [self getCurrentController];
+    if (self.promptStr.length != 0 &amp;&amp; self.title.length != 0 &amp;&amp; self.btnText.length != 0 ) {
+        UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:_title message:_promptStr preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *sureBtn = [UIAlertAction actionWithTitle:_btnText style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        }];
+        [alertVc addAction:sureBtn];
+        [currentVc presentViewController:alertVc animated:YES completion:nil];
+    }else {
+        UIAlertController *alertVc = [UIAlertController alertControllerWithTitle:@&quot;提示&quot; message:@&quot;网络状况不太好，请检查网络...&quot; preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *sureBtn = [UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        }];
+        [alertVc addAction:sureBtn];
+        [currentVc presentViewController:alertVc animated:YES completion:nil];
+    }
+}
+}
+</code></pre><p><a href="https://github.com/zhangyqyx/Interceptor" target="_blank" rel="noopener">封装demo</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/01/28/iOS拦截器/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-五星好评刮刮乐" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1266,563 +1674,6 @@ if let cat = animal as? Cat{
 
 
   
-    <article id="post-tabbar和nav的黑线" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/20/tabbar和nav的黑线/">tabbar和nav的黑线</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/20/tabbar和nav的黑线/" class="archive-article-date">
-  	<time datetime="2018-12-20T08:52:58.590Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>有的时候因为项目需求，对tabbar以及navigationbar，需要去掉或者改变顶部及底部细线的颜色，对于这个问题，笔者在这里总结一下，方法不难，至于导航栏底部和tabbar顶部的黑线从何而来呢？通过层次结构会发现，是由于导航栏或者tabbar设置的默认图片导致的，要消除这种效果，就要摒弃系统自带的图片，自己生成一张图片，或者设置空的图片，下面就来上代码：</p>
-<h3 id="1-改变或者消除tabbar底部细线及其颜色"><a href="#1-改变或者消除tabbar底部细线及其颜色" class="headerlink" title="1.改变或者消除tabbar底部细线及其颜色"></a>1.改变或者消除tabbar底部细线及其颜色</h3><pre><code>[self.tabBar setBackgroundImage:[UIImage new]];
-[self.tabBar setShadowImage:[self.tabBar lineImageWithColor:[UIColor colorWithHexString:@&quot;#fb9966&quot;]]];
-</code></pre><p>第一步是设置背景图片，第二部设置阴影图片，上面的是改变细线的颜色，我们可以自己画一张图片，画图片的方法如下：</p>
-<pre><code>- (UIImage *)lineImageWithColor:(UIColor *)lineColor {
-
-    CGRect rect = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 0.5);
-    UIGraphicsBeginImageContext(rect.size);
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
-
-    CGContextSetFillColorWithColor(ctx, lineColor.CGColor);
-    CGContextFillRect(ctx, rect);
-
-    UIImage *lineImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-
-    return lineImage;
-
-}
-</code></pre><p>当然，如果想要去除黑线，只需要将shadowImage也设置未空白图片就可以了</p>
-<h3 id="2-去除或者改变navigationbar底部黑线"><a href="#2-去除或者改变navigationbar底部黑线" class="headerlink" title="2.去除或者改变navigationbar底部黑线"></a>2.去除或者改变navigationbar底部黑线</h3><p>原理类似，直接上代码吧</p>
-<pre><code>[self.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
-[self.navigationBar setShadowImage:[self.navigationBar lineImageWithColor:[UIColor colorWithHexString:@&quot;#fb9966&quot;]]];
-</code></pre><p>至于导航栏比较多变，这一点完全可以隐藏掉系统的导航栏，自己做一个就行了</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/20/tabbar和nav的黑线/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-关于内购需要注意的一些坑" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/20/关于内购需要注意的一些坑/">关于内购需要注意的一些坑</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/20/关于内购需要注意的一些坑/" class="archive-article-date">
-  	<time datetime="2018-12-20T08:41:31.157Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>网络上关于内购支付的文章大都千篇一律，讲述的是如何创建内购项目，最后再把内购发起的相关代码直接写上就完事了。但是，在实际开发中，关于内购的坑却多的让人抓狂，比如常见的掉单，重复充值等情形。有的用户反馈我明明扣过钱了，为何没有充值？有的却是用户付了一次款，却给冲了两次+的额度，无论哪种情况，对开发者而言都是灾难，一方面是用户体验，一方面是公司亏损。</p>
-<p>接下来我先讲两种常见的流程和思路，以及列举将会出现的问题，最后再来讲一下我自己开发的流程和应对策略</p>
-<h2 id="1-验证放在客户端"><a href="#1-验证放在客户端" class="headerlink" title="1. 验证放在客户端"></a>1. 验证放在客户端</h2><h3 id="1-1-流程"><a href="#1-1-流程" class="headerlink" title="1.1 流程"></a>1.1 流程</h3><p>1.判断是否允许内购</p>
-<p>2.根据商品id请求商品的具体信息</p>
-<p>3.商品信息请求成功，创建支付交易，发起支付，之后就走的是系统提供的观察者</p>
-<pre><code>- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray&lt;SKPaymentTransaction *&gt; *)transactions
-</code></pre><p>4.如果支付不成功，结束交易</p>
-<p>5.支付成功，结束交易，获取凭证，本地进行验证(具体验证方法，我这里不再贴出代码，网上有一大堆)</p>
-<p>6.等待校验结果，成功则调取充值接口，否则不充值</p>
-<h3 id="1-2-可能存在的问题"><a href="#1-2-可能存在的问题" class="headerlink" title="1.2 可能存在的问题"></a>1.2 可能存在的问题</h3><p>看了上述流程，我们会发现，前面的还好，验证的过程却完全不可控，比如，校验失败，再比如校验回来了，充值接口却没有来得及调用，或者充值接口还没回来等，用户退出了界面或者app。由于在支付成功的时候就结束了交易，这个时候若是校验结果没有返回或者校验结果回来了充值没有顺利进行，那么这个单子就丢了，对用户而言这就是损失。再有，放在客户端有个问题，凭证可以伪造，如果有人截取请求，伪造凭证，那就可以肆无忌惮地进行充值，对公司而言这是损失，所以这种方案不用想肯定错漏百出。</p>
-<h2 id="2-支付在客户端，校验和充值在服务端"><a href="#2-支付在客户端，校验和充值在服务端" class="headerlink" title="2.支付在客户端，校验和充值在服务端"></a>2.支付在客户端，校验和充值在服务端</h2><p>基于第一种方案，第二种方案是要好一些的，而且我下面提到的第三种也是在第二种的基础上改进的。</p>
-<h3 id="2-1-流程"><a href="#2-1-流程" class="headerlink" title="2.1 流程"></a>2.1 流程</h3><p>1.判断是否允许内购</p>
-<p>2.根据商品id请求商品的具体信息</p>
-<p>3.商品信息请求成功，创建支付交易，发起支付，之后就走的是系统提供的观察者</p>
-<pre><code>- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray&lt;SKPaymentTransaction *&gt; *)transactions
-</code></pre><p>4.支付失败，结束交易</p>
-<p>5.支付成功，取出凭证上传给服务端，服务端进行验证并充值，这些步骤完成后返回给客户端，客户端结束交易。</p>
-<p>这么做看似没有什么毛病，如果按照正常流程的话的确是对的。但是都是有意外的，出现意外的点：</p>
-<ul>
-<li>服务端接到的凭证还有可能是伪造的</li>
-<li>服务端验证是和苹果服务器打交道，不可能那么快，如果这个时候用户退出了app，那么交易就没有结束，下次启动依然会执行上传凭证的后续操作，由于每次获取的凭证和时间戳有关，所以服务端在判断凭证重复性上来说也是不安全的，这就可能造成重复充值的情况</li>
-</ul>
-<h2 id="3-本文要介绍的方案，基于第二种方案的改进"><a href="#3-本文要介绍的方案，基于第二种方案的改进" class="headerlink" title="3.本文要介绍的方案，基于第二种方案的改进"></a>3.本文要介绍的方案，基于第二种方案的改进</h2><p>由于要对交易进行判重，如果凭借苹果那边返回的数据进行判断，就等着被坑死吧，网上一开始以为没有问题的applicationUserName也可能抽风给你来个nil，而且在查账的时候根本查无可查，所以最好的做法是判断逻辑都用我们自己的数据，下面我列举一下我的流程，所有的操作都从点击购买按钮开始：</p>
-<h3 id="3-1-流程"><a href="#3-1-流程" class="headerlink" title="3.1 流程"></a>3.1 流程</h3><ul>
-<li><p>向服务器请求创建订单接口，这个订单是服务器那边生成的，用来确定每次请求订单的唯一性，也是用来对账的标识。</p>
-</li>
-<li><p>进入内购支付流程</p>
-</li>
-<li><p>根据商品ID请求商品信息</p>
-</li>
-<li><p>商品信息请求成功，发起交易</p>
-</li>
-<li><p>支付没有成功，结束交易</p>
-</li>
-<li><p>支付成功，先判断交易的transactionIdentifier是否存在于本地，如果存在，则此项交易已经无效，直接结束交易，如果不存在，则走验证逻辑</p>
-</li>
-<li><p>验证逻辑：取出沙盒中的凭证，将凭证上传给服务器，要带上之前生成的订单id，服务器接收失败，什么也不做。接收成功，将交易的transactionIdentifier存到本地同时结束交易，后面的验证都在服务器了。</p>
-</li>
-<li><p>服务器验证过程：服务器会维护一个订单id列表，此订单id的初始状态为未验证，当接收到客户端传的凭证后，将此订单id状态置为验证中。如果验证成功，将订单id状态设置为无效，同时前去充值，充值结果返回给客户端。</p>
-</li>
-</ul>
-<p>有人会问，客户端如果这个时候退出了呢？这个也没关系，因为从客户端上传凭证给服务端成功后，就没有客户端什么事儿了，所有的校验和验证，充值逻辑都有服务端把控。</p>
-<p>做的好一点的，为了让用户知晓充值成功，服务端在充值完成后，可以定向给用户发一条推送通知。同时客户端上传凭证成功后，给用户一个充值延迟到账的提示。</p>
-<p>下面模拟几种意外情况，由于支付工具类做的是单例，这里只模拟退出app的情况，不用再模拟退出支付页面的情况:</p>
-<p>1 用户在上传凭证中退出app，这个很好理解，什么也不会发生，交易依然存在于苹果服务器缓存中，用户下次启动界面，会从缓存中查询是否有未完成交易，如果有，会继续执行支付成功后的逻辑，不用担心掉单的情形</p>
-<p>2 上传凭证成功了，如果服务端验证失败呢？这个可不在客户端控制范围内，而且客户端已经做了结束交易和移除交易id的操作，那么有没有可能丢单呢？下面我具体说一下：<br>前面讲过，服务端有一个订单id标识每一笔支付交易，接收了凭证后也会立即根据订单id存起来，如果验证失败，服务器会用定时器做轮询验证操作，只要是有效的订单id，就会去进行验证，前面已经知道，唯有校验成功，订单id才会无效，所以这保证了凭证一定会去验证，而且最终一定会验证通过，这样就极大地减少了丢单的概率，而由于服务端存在严谨的判断逻辑，所以重复充值的情况在正常逻辑下是不会存在的(排除有用户恶意退款的情况，这个也非重复充值，而是另外一种情况，由于苹果恶心的保密机制，我们无法获取到用户退款的详情，所以也就无法应对这种恶意行为)</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>结束语：总体而言就这些，由于代码涉及到具体的业务和接口，我这里只用语言进行陈述，有描述的不到位的情况，还请在留言区指出，有更好的思路的也请在留言区交流。内购这块一直是一个巨坑，我很希望有朝一日能彻底填平，这样对大家都好。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/20/关于内购需要注意的一些坑/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-MVC架构实例" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/20/MVC架构实例/">MVC架构实例</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/20/MVC架构实例/" class="archive-article-date">
-  	<time datetime="2018-12-20T08:14:13.787Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>MVC模式的目的是实现一种动态的程序设计，使后续对程序的修改和扩展简化，并且使程序某一部分的重复利用成为可能。除此之外，此模式通过对复杂度的简化，使程序结构更加直观</p>
-<ul>
-<li>控制器（Controller）–&gt; 负责转发请求，对请求进行处理。</li>
-<li>视图（View） –&gt; 界面设计人员进行图形界面设计。</li>
-<li>模型（Model） –&gt; 程序员编写程序应有的功能（实现算法等等）、数据库专家进行数据管理和数据库设计(可以实现具体的功能)。</li>
-</ul>
-<p>以上出自维基百科资料，下面说点人为描述(简单易懂的)~</p>
-<ul>
-<li>Model层: 数据处理层，包括网络请求，数据加工</li>
-<li>View层: 所有App上看得到的界面</li>
-<li>Controller层: Model 与 View层的中介，把Model数据在View上展示出来</li>
-<li>目的: 低耦合，可复用</li>
-</ul>
-<p><img src="http://img.wangjungang.cn/WX20181220-162442@2x.png" alt=""></p>
-<p>先看这张图，这张图是iOS的MVC架构中最经常出现的图了吧，因为IOS中的Controlller 是 UIViewController，所以导致很多人会把视图写在Controller中，如下图:</p>
-<pre><code>@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //setupUI
-
-    //1.createView
-    UIView *view = [[UIView alloc]init];
-    view.frame = CGRectMake(100, 100, 100, 100);
-    view.backgroundColor = [UIColor orangeColor];
-    [self.view addSubview:view];
-
-    //2.createButton
-    UIButton *btn = [UIButton buttonWithType:UIButtonTypeInfoDark];
-    btn.center = self.view.center;
-    [self.view addSubview:btn];
-
-    //3...
-}
-</code></pre><p>这种写法在我刚蹭到iOS的时候也这样写过，先说这样写的好处，以及初学者为什么会这么写：</p>
-<ul>
-<li>比如按钮，可以在当前控制器直接add target:添加点击事件，在当前控制器内就能调用到点击方法，不需要设置代理之类的；</li>
-<li>比如要找某个界面，直接切到这个界面对应的controller就行，因为View 写在 Controller里面，不用去别的地方找，就这里有；</li>
-<li>比如一个View，里面有一张图片，图片依赖于网络资源，这样写的好处，可以直接让 View 在 Controller 中就能拿到资源，不需要传值</li>
-</ul>
-<p>缺点！！：</p>
-<ul>
-<li>导致Controller特别臃肿，里面代码特别多，视图一复杂起来，代码量可能过1000行，不好维护</li>
-<li>写在Controller里无法复用，除非你在 VC2里面 copy 当前VC中的 View的代码</li>
-<li>特别low！！会被懂架构的人瞧不起，喷你根本不是MVC,是MC架构，可能还要你来段喊麦证明一下自己(-。-)</li>
-</ul>
-<h2 id="如何告别MC模式，真正走到MVC？"><a href="#如何告别MC模式，真正走到MVC？" class="headerlink" title="如何告别MC模式，真正走到MVC？"></a>如何告别MC模式，真正走到MVC？</h2><ul>
-<li>先给自己洗脑，iOS的Controller不是UIViewController，而是普通的Controller，没有View。（很关键的一步）</li>
-<li>模块化划分，每个模块对应自己的一个View，例如Demo2模块，View层里面有个Demo2View，将界面元素写到View中</li>
-</ul>
-<h3 id="知识点1-如何传值"><a href="#知识点1-如何传值" class="headerlink" title="知识点1 如何传值"></a>知识点1 如何传值</h3><pre><code>//View
-+ (instancetype)viewWithTitleStr:(NSString *)titleStr{
-
-    //do createView
-    //...
-}
-
-//Controller
-@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    /*setupUI*/
-    //1.createView - 参数通过`View`的函数作为外部参数传进去
-    DemoView *view = [DemoView viewWithTitleStr:@&quot;我是参数&quot;];
-    [self.view addSubview:view];
-}
-</code></pre><h3 id="知识点2-控件点击事件如何回调给控制器"><a href="#知识点2-控件点击事件如何回调给控制器" class="headerlink" title="知识点2 控件点击事件如何回调给控制器"></a>知识点2 控件点击事件如何回调给控制器</h3><pre><code>//View
-@implementation DemoView
-
-- (instancetype)initWithTitleStr:(NSString *)titleStr{
-    if (self = [super init]) {
-
-        UIButton *btn = [UIButton buttonWithType:UIButtonTypeInfoDark];
-        [self addSubview:btn];
-        [btn addTarget:self action:@selector(p_clickBtn:) forControlEvents:UIControlEventTouchUpInside];
-    }
-    return self;
-}
-
-- (void)p_clickBtn:(UIButton *)sender{
-
-    //通过代理回调
-    [_delegate respondsToSelector:@selector(clickBtn:)] ?
-    [_delegate clickBtn:sender] : nil;
-}
-
-//Controller
-@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //setupUI
-
-    //1.createView
-    DemoView *view = [DemoView viewWithTitleStr:@&quot;我是参数&quot;];
-    view.delegate = self;
-    [self.view addSubview:view];
-}
-
-#pragma mark - privateDelegate
-- (void)clickBtn:(UIButton *)sender{
-    //View层按钮的点击事件回调~
-}
-</code></pre><p><img src="http://img.wangjungang.cn/WX20181220-162530@2x.png" alt=""></p>
-<p>接下来看这张iOS MVC架构图二，这张也是特别常见，在上面解决了View层之后，我们来看下这里的Model层~</p>
-<pre><code>@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //loadDatas
-    [[AFHTTPSessionManager manager]GET:url
-                            parameters:parameters
-                              progress:nil
-                               success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
-    {
-
-        //刷新tableView
-        _datas = responseObject;
-        [_tableView reloadDatas];
-
-    } failure:nil];
-}
-</code></pre><p>这种写法在我刚蹭到iOS的时候又这样写过，先说这样写的好处，以及初学者为什么会这么写：</p>
-<ul>
-<li>简单，网络请求完，直接在当前控制器刷新TableView的数据源</li>
-<li>比如要找某个界面的网络请求，直接切到这个界面对应的controller就行，因为数据请求 写在 Controller里面，不用去别的地方找，就这里有；</li>
-<li>比如当前网络请求接口，需要外部参数，比如前一个界面的uuid，这样写的好处，可以直接让当前请求在 Controller 中就能拿到资源，不需要传值</li>
-</ul>
-<p>缺点！！：</p>
-<ul>
-<li>又导致Controller特别臃肿，里面代码特别多，如果当前控制器需要多次请求，代码量可能过1000行，不好维护</li>
-<li>写在Controller里无法复用，除非你在 VC2里面 copy 当前VC中的 网络请求的代码</li>
-<li>如果某些接口有依赖要求，接口1请求完再请求接口2，嵌套起来，辣眼睛的程度差点治好我多年的近视</li>
-<li>特别low！！会被懂架构的人瞧不起，喷你根本不是MVC,如果你还用了上面的View写在Controller的操作的话，恭喜你，最终大法 - Controller架构顺利完成，并不需要什么Model &amp;&amp; View</li>
-</ul>
-<p><img src="http://img.wangjungang.cn/WX20181220-162706@2x.png" alt=""></p>
-<h2 id="如何告别VC模式，真正走到MVC？"><a href="#如何告别VC模式，真正走到MVC？" class="headerlink" title="如何告别VC模式，真正走到MVC？"></a>如何告别VC模式，真正走到MVC？</h2><ul>
-<li>不用洗脑，给自己一个大耳刮子让自己清醒清醒，这iOS的Controller就算是UIViewController，也没看到M啊，没有Model。（很关键的一步）</li>
-<li>模块化划分，每个模块对应自己的一个Model，例如Demo2模块，View层里面有个Demo2Model，将网络请求&amp;&amp;数据处理写到Model中</li>
-</ul>
-<h3 id="知识1：如何传值-参数"><a href="#知识1：如何传值-参数" class="headerlink" title="知识1：如何传值(参数)"></a>知识1：如何传值(参数)</h3><p>@implementation DemoModel</p>
-<pre><code>+ (NSArray *)fetchDatasWithUUid:(NSString *)uuid{
-
-    //Model发送网络请求
-    NSDictionary *parameters = @{@&quot;uuid&quot;:uuid}
-        [[AFHTTPSessionManager manager]GET:url
-                                parameters:parameters
-                                  progress:nil
-                                   success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
-        {
-            //这是异步请求，无法return array
-        } failure:nil];
-
-}
-</code></pre><h3 id="知识2：如何回调-网络请求是异步请求-通过Block"><a href="#知识2：如何回调-网络请求是异步请求-通过Block" class="headerlink" title="知识2：如何回调(网络请求是异步请求) - 通过Block"></a>知识2：如何回调(网络请求是异步请求) - 通过Block</h3><pre><code>//Model
-@implementation DemoModel
-
-+ (void)fetchDatasWithUUid:(NSString *)uuid success:(successBlock)block{
-
-    //Model发送网络请求
-    NSDictionary *parameters = @{@&quot;uuid&quot;:uuid}
-        [[AFHTTPSessionManager manager]GET:url
-                                parameters:parameters
-                                  progress:nil
-                                   success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
-        {
-            //通过block异步回调~
-            block(responseObject);
-
-        } failure:nil];   
-}
-
-
-//Controller
-@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //loadDatas
-    [DemoModel fetchDatasWithUUid:_uuid success:^(NSArray *array) {
-        _datas = array;
-        [_tableView reloadDatas];
-    }];
-}
-</code></pre><p>基础的MVC讲解完毕，其实本质上就是让Controller减压，不该控制器管的他别让他知道，如上基础MVC操作之后的优势：</p>
-<ul>
-<li>MVC架构分明，在同一个模块内，如果视图有问题，找到该模块的View就行，其他同理，Controller代码大大减少，负责View的代理事件就可以</li>
-<li>可以复用，比如你一个产品列表的数据，首页也要用，产品页也要用，直接分别在其对应的VC1 &amp;&amp; VC2 调用函数[ProductModel fetchDatas]即可，无需写多次，View的复用同理</li>
-<li>结构分明，便于维护，拓展也是在此基础上拓展，代码干净简洁。</li>
-</ul>
-<h2 id="进阶讲解-MVC-配合-继承，进阶提高效率"><a href="#进阶讲解-MVC-配合-继承，进阶提高效率" class="headerlink" title="进阶讲解 - MVC 配合 继承，进阶提高效率"></a>进阶讲解 - MVC 配合 继承，进阶提高效率</h2><ul>
-<li>常用的方法，抽一个基类出来，继承是子类可以拥有父类的方法，重新父类的方法即可，无需声明</li>
-</ul>
-<pre><code>//数据基类
-@interface MNBaseDatas : NSObject
-
-//请求数据成功
-typedef void (^MNsuccessBlock)(NSArray *array);
-
-+ (void)fetchDatasSuccessBlock:(MNsuccessBlock)block;
-
-+ (void)fetchDatasSuccessBlock:(MNsuccessBlock)block
-                  failureBlock:(MNfailureBlock)failure;
-</code></pre><p>如果，如果抽出一个数据模型的基类，比如这里的MNBaseDatas，如之前我们举例的DemoModel就无需声明</p>
-<pre><code>@interface DemoModel : MNBaseDatas
-
-/**继承自MNBaseDatas，父类有的就可以不用声明，这里的block 和 类方法都可以不用声明*/
-//typedef void (^successBlock)(NSArray *array);
-
-//+ (void)fetchDatasSuccessBlock:(MNsuccessBlock)block;
-
-@end
-
-//Controller
-@implementation DemoViewController
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    //loadDatas - DemoModel没有声明 -fetchDatasSuccessBlock，一样可以调用，因为父类有此方法
-    [DemoModel fetchDatasSuccessBlock:^(NSArray *array) {
-        _datas = array;
-        [_tableView reloadDatas];
-    }];
-}
-</code></pre><p>如果父类没有的方法或属性，在子类里面写就行了，不会影响到父类代码，父类一般也是放公共，常用的方法(或属性)，如果是特殊的，直接在子类里面新增即可，无需添加到父类~</p>
-<h3 id="控制器也可以使用继承，可以减少不少冗余代码"><a href="#控制器也可以使用继承，可以减少不少冗余代码" class="headerlink" title="控制器也可以使用继承，可以减少不少冗余代码"></a>控制器也可以使用继承，可以减少不少冗余代码</h3><pre><code>//基类控制器
-@interface MNBaseViewController : UIViewController
-
-@property (nonatomic, weak)UITableView *tableView;
-
-@property (nonatomic, copy)NSArray *datas;
-
-- (void)setupUI;
-
-- (void)loadDatas;
-
-@end
-
-//MNBaseViewController.m 文件
-@interface MNBaseViewController ()
-&lt;
-UITableViewDelegate,UITableViewDataSource
-&gt;
-
-#pragma mark - setupUI
-- (void)setupUI{
-     //统一创建tableView，设置当前代理=self
-    UITableView *tableView = [[UITableView alloc]init];
-    tableView.frame = Frame(0, DefaultNaviHeight, ScreenW, ScreenH - DefaultNaviHeight);
-    tableView.delegate = self;
-    tableView.dataSource = self;
-}
-</code></pre><ul>
-<li>根据我们的封装，基本上所有的控制器都需要设置界面 setupUI 获取数据  loadDatas，所以将这两个函数抽到基类MNBaseViewController 中</li>
-<li>因为iOS中，tableView应该算最常见的控件之一，基本上大多数界面都会用它展示数据，所以tableView也抽到基类中，当公告属性</li>
-<li>有tableView 就跑不了数据源了，datas 同理，也抽到基类</li>
-<li>同时，设置MNBaseViewController成为 tableView 的delegate和dataSource，所有的子类都无需再声明</li>
-<li>如果有需要用到tableView的，一个[super setUI]就能拥有这个tableView，无需创建</li>
-</ul>
-<p>这样，所有的UIViewController，只要继承自MNBaseViewController的，都可以有如上的函数和方法(可以根据需要扩充)</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/20/MVC架构实例/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/11/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/13/">Next &raquo;</a>
@@ -1837,7 +1688,7 @@ UITableViewDelegate,UITableViewDataSource
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2021 wangjungang
+    		&copy; 2022 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1956,11 +1807,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1976,11 +1827,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1988,7 +1839,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1996,7 +1847,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2013,6 +1864,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
             
             <div class="clearfix"></div>

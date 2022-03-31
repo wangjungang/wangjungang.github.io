@@ -152,6 +152,437 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-MVP模式的学习" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/23/MVP模式的学习/">MVP模式的学习</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/23/MVP模式的学习/" class="archive-article-date">
+  	<time datetime="2019-06-23T12:02:00.876Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo</p>
+<p>打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。<br>MVP似乎有好多的变种，作者所说的这种有如下特点：<br>（原文如下：）</p>
+<pre><code>the view part of the MVP consists of both UIViews and UIViewController
+the view delegates user interactions to the presenter
+the presenter contains the logic to handle user interactions
+the presenter communicates with model layer, converts the data to UI friendly format, and updates the view
+the presenter has no dependencies to UIKit
+the view is passive (dump)
+稍微翻译一下
+MVP的 V 层是由UIViewController 和UIView 共同组成
+view 将委托presenter 对它自己的操作，（简单来说就是presenter发命令来控制view的交互，要你隐藏就隐藏，叫你show 你就乖乖的show）
+presenter拥有对 view交互的逻辑（就是上面说的意思）
+presenter跟model层通信，并将数据转化成对适应UI的数据并更新view
+presenter不需要依赖UIKit
+view层是单一，因为它是被动接受命令，没有主动能力
+</code></pre><p>presenter 作为业务逻辑的处理者，首先要向model层拿数据，所以它将可以向model层通信。其次，UI的处理权移交给了它，所以它需要与view成通讯，发送命令改变UI。同时，UI的响应将触发业务逻辑的处理，所以view 层向presenter层通讯，告诉他用户做了什么操作，需要你反馈对应的数据来更新UI。这样就完成了从用户交互获得交互反馈到整个业务逻辑。</p>
+<h2 id="先看看结构"><a href="#先看看结构" class="headerlink" title="先看看结构"></a>先看看结构</h2><p>UserViewProtocol 协议定义了一下方法，这些方法其实就是presenter对view层发送的命令</p>
+<pre><code>#import &lt;Foundation/Foundation.h&gt;
+@protocol UserViewProtocol &lt;NSObject&gt;
+-(void) userViewDataSource:(NSArray*)data;
+-(void) showIndicator;
+-(void) hideIndicator;
+-(void) showEmptyView;
+@end
+</code></pre><p>UserService 类是用来请求数据给presenter的，也能算是model层吧。我就只定义了一个方法。</p>
+<pre><code>-(void)getUserInfosSuccess:(SuccessHandler )success andFail:(FailHandler) failure
+</code></pre><p>这一层，其实也可以很复杂，这就涉及网络层的架构了</p>
+<p>ViewController类则是UI层，它实现了tableview自己的协议，还实现了用户交互的协议 UserViewProtocol，也就说，presenter向UI层发送命令，其实是发给UI层的viewController，实际上是控制器来被动的更新UI。这个不管是MVC还是MVP，view的实际控制权应该都是viewController，这个理解应该没错吧。<br>协议中的几个方法实现如下。</p>
+<pre><code>-(void)userViewDataSource:(NSArray*)data{
+ self.friendlyUIData = data;
+ [self.tableview reloadData];
+}
+-(void) showIndicator{
+ self.indicator.hidden = NO;
+}
+-(void) hideIndicator{
+ self.indicator.hidden = YES;
+}
+-(void) showEmptyView{
+ UIAlertController *alertView = [UIAlertController alertControllerWithTitle:@&quot;Alert&quot; message:@&quot;show empty view&quot; preferredStyle:UIAlertControllerStyleAlert];
+ [alertView addAction:[UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:nil]];
+ [self presentViewController:alertView animated:YES completion:^{
+ }];
+}
+</code></pre><p>另外，在viewDidload中，调用了presenter的两个public 方法</p>
+<pre><code>self.presenter = [Presenter new];
+[self.presenter attachView:self];
+[self.presenter fetchData];
+</code></pre><p>那就来看看Presenter类，这个类我在demo中加了不少的注释，主要是为了理清自己的思路</p>
+<p>先说attachView 方法，这个方法是对外公开的，目的就是为了将实现了UserViewProtocol 协议的对象（其实应该就是控制器，因为view的直接操作者就是view Controller）绑定到presenter 上，说白了就是presenter 可以直接拿到实现了UserViewProtocol 协议的对象，并且向他发送命令（协议实现的方法，前面有说到），具体该方法的实现</p>
+<pre><code>@interface Presenter()
+@property (nonatomic,strong) UserService *userService;
+@property (nonatomic,weak) id&lt;UserViewProtocol&gt; attachView;
+@end
+-(void)attachView:(id &lt;UserViewProtocol&gt;)view{
+ self.attachView = view;
+ self.userService  = [UserService new];
+}
+</code></pre><p>注意这里用了weak 来修饰attachView 树形，因为presenter和 viewController相互持有，所以必须要通过weak 来打破循环引用，这跟我们平时使用委托协议（ delegate）是一样的，只是名字换成了attachView 而已。</p>
+<p>再来说fetchData方法，公开这个方法，只是为了数据请求有个统一的接口，而不需要presenter分开多次调用，presenter自己处理所有事情，不让viewController参和进来。具体实现就看demo</p>
+<p>最后说一下</p>
+<pre><code>-(NSArray *)processOriginDataToUIFriendlyData:(NSArray *) originData{
+ NSMutableArray *friendlyUIData = [NSMutableArray new];
+ for (NSDictionary *dic in originData) {
+  if ([[dic valueForKey:@&quot;gender&quot;] isEqualToString:@&quot;males&quot;]) {
+   [friendlyUIData addObject:dic];
+  }
+ }
+ return friendlyUIData;
+}
+</code></pre><p>这个私有方法是将原始数据转换成UI所需要的数据，这样UI拿到数据就可以直接使用，而不用做各种判断，逻辑依然放在了presenter中。而且，这个数据处理可以做成协议，输出不同UI需要的数据，这个也可以看casatwy大神 关于view架构的文章。</p>
+<p><a href="https://github.com/HecvStyle/MVPDemo" target="_blank" rel="noopener">Demo</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/23/MVP模式的学习/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-runtime万能跳转界面" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/23/runtime万能跳转界面/">runtime万能跳转界面</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/23/runtime万能跳转界面/" class="archive-article-date">
+  	<time datetime="2019-06-23T11:57:21.378Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在开发项目中，会有这样变态的需求：</p>
+<p>推送：根据服务端推送过来的数据规则，跳转到对应的控制器<br>feeds列表：不同类似的cell，可能跳转不同的控制器（嘘！产品经理是这样要求：我也不确定会跳转哪个界面哦，可能是这个又可能是那个，能给我做灵活吗？根据后台返回规则任意跳转？）</p>
+<p>思考：wocao！这变态的需求，要拒绝他吗？<br>switch判断呗，考虑所有跳转的因素？这不得写死我…</p>
+<pre><code>switch () {
+    case :
+        break;
+    default:
+        break;
+}
+</code></pre><p>我是这么个实现的（runtime是个好东西）</p>
+<p>利用runtime动态生成对象、属性、方法这特性，我们可以先跟服务端商量好，定义跳转规则，比如要跳转到A控制器，需要传属性id、type，那么服务端返回字典给我，里面有控制器名，两个属性名跟属性值，客户端就可以根据控制器名生成对象，再用kvc给对象赋值，这样就搞定了 —O(∩_∩)O哈哈哈</p>
+<p>比如：根据推送规则跳转对应界面HSFeedsViewController</p>
+<p>HSFeedsViewController.h：</p>
+<pre><code>进入该界面需要传的属性
+@interface HSFeedsViewController : UIViewController
+
+// 注：根据下面的两个属性，可以从服务器获取对应的频道列表数据
+
+/** 频道ID */
+@property (nonatomic, copy) NSString *ID;
+
+/** 频道type */
+@property (nonatomic, copy) NSString *type;
+
+@end
+</code></pre><p>AppDelegate.m：</p>
+<p>推送过来的消息规则</p>
+<pre><code>// 这个规则肯定事先跟服务端沟通好，跳转对应的界面需要对应的参数
+NSDictionary *userInfo = @{
+                           @&quot;class&quot;: @&quot;HSFeedsViewController&quot;,
+                           @&quot;property&quot;: @{
+                                        @&quot;ID&quot;: @&quot;123&quot;,
+                                        @&quot;type&quot;: @&quot;12&quot;
+                                   }
+                           };
+</code></pre><p>接收推送消息</p>
+<pre><code>- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
+{
+    [self push:userInfo];
+}
+</code></pre><p>跳转界面</p>
+<pre><code>- (void)push:(NSDictionary *)params
+{
+    // 类名
+    NSString *class =[NSString stringWithFormat:@&quot;%@&quot;, params[@&quot;class&quot;]];
+    const char *className = [class cStringUsingEncoding:NSASCIIStringEncoding];
+
+    // 从一个字串返回一个类
+    Class newClass = objc_getClass(className);
+    if (!newClass)
+    {
+        // 创建一个类
+        Class superClass = [NSObject class];
+        newClass = objc_allocateClassPair(superClass, className, 0);
+        // 注册你创建的这个类
+        objc_registerClassPair(newClass);
+    }
+    // 创建对象
+    id instance = [[newClass alloc] init];
+
+    // 对该对象赋值属性
+    NSDictionary * propertys = params[@&quot;property&quot;];
+    [propertys enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        // 检测这个对象是否存在该属性
+        if ([self checkIsExistPropertyWithInstance:instance verifyPropertyName:key]) {
+            // 利用kvc赋值
+            [instance setValue:obj forKey:key];
+        }
+    }];
+
+    // 获取导航控制器
+    UITabBarController *tabVC = (UITabBarController *)self.window.rootViewController;
+    UINavigationController *pushClassStance = (UINavigationController *)tabVC.viewControllers[tabVC.selectedIndex];
+    // 跳转到对应的控制器
+    [pushClassStance pushViewController:instance animated:YES];
+}
+</code></pre><p>检测对象是否存在该属性</p>
+<pre><code>- (BOOL)checkIsExistPropertyWithInstance:(id)instance verifyPropertyName:(NSString *)verifyPropertyName
+{
+    unsigned int outCount, i;
+
+    // 获取对象里的属性列表
+    objc_property_t * properties = class_copyPropertyList([instance
+                                                           class], &amp;outCount);
+
+    for (i = 0; i &lt; outCount; i++) {
+        objc_property_t property =properties[i];
+        //  属性名转成字符串
+        NSString *propertyName = [[NSString alloc] initWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
+        // 判断该属性是否存在
+        if ([propertyName isEqualToString:verifyPropertyName]) {
+            free(properties);
+            return YES;
+        }
+    }
+    free(properties);
+
+    return NO;
+}
+</code></pre><p><a href="https://github.com/wangjungang/Universal-Jump-ViewController" target="_blank" rel="noopener">demo</a></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/23/runtime万能跳转界面/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-KVO监听数组" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/06/23/KVO监听数组/">KVO监听数组</a>
+    </h1>
+  
+
+        
+        <a href="/2019/06/23/KVO监听数组/" class="archive-article-date">
+  	<time datetime="2019-06-23T11:48:48.015Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近遇到一个新的需求，要求在某个页面中添加一个collectionView，collectionView的高度随着数据源的长度来改变，从而达到改变父View的高度，如下图红框部分则为collectionView，整个视图布局在scrollview上，由collectionView的高度去撑父视图的高度。楼主试图通过监听collectionView的数据源长度来改变视图高度。</p>
+<p>但我们知道，KVO监听的是指针变化，可变数组里加了个元素，这个数组的内容变了，但是指针没有变，所以不会调用KVO</p>
+<p>首先，数组不能直接使用KVO使用监听。当我们想要使用KVO监听数组的状态时改变然后尽心操作时，我们需要进行一下几部。</p>
+<p>1.KVO不能监听UIViewController中的数组。我们需要先创建一个模型，将数组添加值模型中。</p>
+<pre><code>@interface SelectedsArr : NSObject
+
+@property (nonatomic, strong) NSMutableArray *selecteds;///&lt;选中的选项集合
+
+@end
+</code></pre><p>2.建立观察者以及观察者对象</p>
+<pre><code>[self.selectedsArr addObserver:self forKeyPath:@&quot;selecteds&quot; options:NSKeyValueObservingOptionNew context:nil];
+</code></pre><p>3.处理Key的变化</p>
+<p>这里，很重要，当向模型中的可变数组添加新成员时，不能直接用[self.selectedsArr.selecteds addObject:]方法。而使用该用下面的方法</p>
+<pre><code>[self.selectedsArr mutableArrayValueForKey:@&quot;selecteds&quot;] addObject:]];
+</code></pre><p>4.在下面的方法添加监听到变化后要执行的语句</p>
+<pre><code>- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void *)context{
+
+}
+</code></pre><p>5.移除监听</p>
+<pre><code>[self removeObserver:self forKeyPath:@&quot;selecteds&quot;];
+</code></pre><h2 id="改进一下"><a href="#改进一下" class="headerlink" title="改进一下"></a>改进一下</h2><p>我们只要每次都变更我们要监听数据的地址就好了。因此简化版操作如下，mediaUploadView是包含了collectionView的直接父视图，seleteImagesArray为collectionView的数据源</p>
+<pre><code>//1.建立观察者以及观察者对象
+[self.mediaUploadView addObserver:self forKeyPath:@&quot;seleteImagesArray&quot; options:NSKeyValueObservingOptionNew context:nil];
+
+//2.数组的增删方法（注意这里的写法，用mutableArrayValueForKey，这个不仅把元素加进去了， 而且还重新生成了一个可变数组来赋值给控制器属性的那个数组，这样就能被KVO检测到指针变化）
+[[weakself mutableArrayValueForKey:@&quot;seleteImagesArray&quot;] addObject:weakself.addImageModel];
+[[weakself mutableArrayValueForKey:@&quot;seleteImagesArray&quot;] removeLastObject];
+[[weakself mutableArrayValueForKey:@&quot;seleteImagesArray&quot;] addObjectsFromArray:tempArray];
+
+//3.处理Key的变化
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary&lt;NSString *,id&gt; *)change context:(void *)context
+{
+    NSInteger rows = ceilf(self.mediaUploadView.seleteImagesArray.count/3.0);
+    self.meadiaUploadViewHeight.constant = (ITEM_WIDTH_HEIGHT+20)*rows;
+}
+
+//4.最后一步也很重要，否则引起崩溃
+- (void)dealloc {
+    [self.mediaUploadView removeObserver:self forKeyPath:@&quot;seleteImagesArray&quot; context:nil];
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/06/23/KVO监听数组/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS中Cookie的存取" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1207,640 +1638,6 @@ wxmac (required dependencies)
 
 
   
-    <article id="post-通过优雅的方式强制旋转屏幕" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/05/12/通过优雅的方式强制旋转屏幕/">通过优雅的方式强制旋转屏幕</a>
-    </h1>
-  
-
-        
-        <a href="/2019/05/12/通过优雅的方式强制旋转屏幕/" class="archive-article-date">
-  	<time datetime="2019-05-12T07:47:18.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-12</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>方向旋转在日常App上基本都会用到，用的时候可能会因为赶工期而以实现功能为主，认真思考了为啥去这样做有没有bug或者后续的开发中是否还会用到。不只是屏幕旋转，还有其他的东西也是这样，导致之前做的时候感觉也会了，实际开发的时候，有时就会像喝断片一样。</p>
-<p>此文的目的是为了加深理解和巩固一下知识记忆，另外此文也附带了对屏幕旋转的一些理解和一些需要注意的地方，小心驶得万年船哇。</p>
-<h2 id="三个方向的枚举"><a href="#三个方向的枚举" class="headerlink" title="三个方向的枚举"></a>三个方向的枚举</h2><p>1.UIDeviceOrientation：是描述设备的方向，含有以下值：</p>
-<pre><code>UIDeviceOrientationUnknown,
-UIDeviceOrientationPortrait,            // 竖立
-UIDeviceOrientationPortraitUpsideDown,  // 倒竖
-UIDeviceOrientationLandscapeLeft,       // 横屏，home键在右边
-UIDeviceOrientationLandscapeRight,      // 横屏，home键在左边
-UIDeviceOrientationFaceUp,              // 屏幕朝上
-UIDeviceOrientationFaceDown             // 屏幕朝下
-</code></pre><p>其中UIDeviceOrientationLandscapeLeft可以这样理解：以home键或Home Indicator（下文仅用home键形容同等）为参照物，UIDeviceOrientationLandscapeRight就是设备向右旋转了，所以home键在左侧。反之亦然。</p>
-<p>2。UIInterfaceOrientation：描述的是页面的方向，含有以下值：</p>
-<pre><code>UIInterfaceOrientationUnknown            = UIDeviceOrientationUnknown,
-UIInterfaceOrientationPortrait           = UIDeviceOrientationPortrait,
-UIInterfaceOrientationPortraitUpsideDown = UIDeviceOrientationPortraitUpsideDown,
-UIInterfaceOrientationLandscapeLeft      = UIDeviceOrientationLandscapeRight,
-UIInterfaceOrientationLandscapeRight     = UIDeviceOrientationLandscapeLeft
-</code></pre><p>其中之所以UIInterfaceOrientationLandscapeLeft和UIDeviceOrientationLandscapeRight等价，就是因为设备旋转后，页面需要向反方向旋转才能符合正常使用的规范。</p>
-<p>3 UIInterfaceOrientationMask: 作用是在指定的视图控制器中支持的页面多种方向的集合，含有以下值</p>
-<pre><code>UIInterfaceOrientationMaskPortrait = (1 &lt;&lt; UIInterfaceOrientationPortrait),
-UIInterfaceOrientationMaskLandscapeLeft = (1 &lt;&lt; UIInterfaceOrientationLandscapeLeft),
-UIInterfaceOrientationMaskLandscapeRight = (1 &lt;&lt; UIInterfaceOrientationLandscapeRight),
-UIInterfaceOrientationMaskPortraitUpsideDown = (1 &lt;&lt; UIInterfaceOrientationPortraitUpsideDown),
-
-UIInterfaceOrientationMaskLandscape = (UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight),
-
-UIInterfaceOrientationMaskAll = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight | UIInterfaceOrientationMaskPortraitUpsideDown),
-
-UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight),
-</code></pre><p>第一个枚举是用来描述设备的方向；第二个枚举是用来描述页面的方向；第三个枚举则是用来描述页面可支持的方向集合。另外设备面朝上和朝下两种情况通常不做考虑。</p>
-<h2 id="获取设备的方向"><a href="#获取设备的方向" class="headerlink" title="获取设备的方向"></a>获取设备的方向</h2><p>1 可以通过获取设备的orientation属性值来判断当前设备的方向。</p>
-<p>2 有些时候需要通过监听来获取设备的方向，需要通过使用通知来监听，但是有个注意的地方就是从设备方向改变的通知中获取数据前后需要调用一对方法：<br>beginGeneratingDeviceOrientationNotifications和endGeneratingDeviceOrientationNotifications</p>
-<pre><code>// 通过通知名：UIDeviceOrientationDidChangeNotification 来获取
-// 调用生成设备方向变化的通知方法
-[[NSNotificationCenter defaultCenter] beginGeneratingDeviceOrientationNotifications];
-[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeOrientation) name:UIDeviceOrientationDidChangeNotification object:nil];
-
-// ...
-
-// 移除通知前需调用结束生成设备方向变化的通知
-[[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-[[NSNotificationCenter defaultCenter] removeObserver:self];
-</code></pre><p>3 有点需要非常注意的是：如果用户在控制栏锁定了屏幕方向，收不到方向改变的通知，包括即使你所在的试图控制器支持多个方向，也只会强转第一个方向。</p>
-<p>4 还有一点就是状态栏的问题，如果没有设置状态的样式，在强转横屏时将会隐藏状态栏。</p>
-<p>5 另外使用此种方式时可能会收到状态UIDeviceOrientationUnknown，比如第一次进入app的过程中以及只支持竖屏的情况时，但是一般跳转时会有几次的方向回调的，当出现这个状态时可以返回竖屏的状态。</p>
-<h2 id="设备旋转的设置的几种方式"><a href="#设备旋转的设置的几种方式" class="headerlink" title="设备旋转的设置的几种方式"></a>设备旋转的设置的几种方式</h2><p>1 因为设备支持的方向旋转有几种方式</p>
-<p>项目工程的设置：在工程的General和info.plist中设置都是一样的，因为数据都存储在info.plist中</p>
-<p>AppDelegate中的设置：通过在代理中- (UIInterfaceOrientationMask)application:(UIApplication <em>)application supportedInterfaceOrientationsForWindow:(UIWindow </em>)window设置支持的方向。</p>
-<p>单个视图控制控制器的设置：需要其父控制器UITabBarController或UINavigationController也支持当前控制器的方向才行。</p>
-<p>2 上述方式设置可以简单理解为：项目工程的设置为App默认设置；AppDelegate中的设置为你当前设置的，所以会覆盖项目工程的设置；而单个视图控制器的设置为当前页面设置，但是受AppDelegate中的影响。</p>
-<p>3 默认创建应用将会默认勾选除 Portrait Upside down这个选项外的方向。</p>
-<p>4 即使你一个都不勾选，应用还是会默认以 Portrait 的方式。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/05/12/通过优雅的方式强制旋转屏幕/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS响应链(Responder Chain)" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/05/09/iOS响应链(Responder Chain)/">iOS响应链(Responder Chain)</a>
-    </h1>
-  
-
-        
-        <a href="/2019/05/09/iOS响应链(Responder Chain)/" class="archive-article-date">
-  	<time datetime="2019-05-09T07:19:19.069Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-09</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS响应者链(Responder Chain)是支撑App界面交互的重要基础，点击、滑动、旋转、摇晃等都离不开其背后的响应者链，所以每个iOS开发人员都应该彻底掌握响应者链的响应逻辑</p>
-<h2 id="一次完整的触摸事件的传递响应的基本过程"><a href="#一次完整的触摸事件的传递响应的基本过程" class="headerlink" title="一次完整的触摸事件的传递响应的基本过程"></a>一次完整的触摸事件的传递响应的基本过程</h2><p> UIAppliction –&gt; UIWiondw –&gt;递归找到最适合处理事件的控件–&gt;控件调用touches方法–&gt;判断是否实现touches方法–&gt;没有实现默认会将事件传递给上一个响应者–&gt;找到上一个响应者</p>
-<p>UIResponder 是所有响应对象的基类，在UIResponder类中定义了处理上述各种事件的接口。我们熟悉的 UIApplication、 UIViewController、 UIWindow 和所有继承自UIView的UIKit类都直接或间接的继承自UIResponder，所以它们的实例都是可以构成响应者链的响应者对象。</p>
-<h2 id="事件的分发和传递。"><a href="#事件的分发和传递。" class="headerlink" title="事件的分发和传递。"></a>事件的分发和传递。</h2><p>1.当iOS程序中发生触摸事件后，系统会将事件加入到UIApplication管理的一个任务队列中</p>
-<p>2.UIApplication将处于任务队列最前端的事件向下分发。即UIWindow。</p>
-<p>3.UIWindow将事件向下分发，即UIView。</p>
-<p>4.UIView首先看自己是否能处理事件，触摸点是否在自己身上。如果能，那么继续寻找子视图。</p>
-<p>5.遍历子控件，重复以上两步。</p>
-<p>6.如果没有找到，那么自己就是事件处理者。如果</p>
-<p>7.如果自己不能处理，那么不做任何处理</p>
-<p>其中 UIView不接受事件处理的情况主要有以下三种</p>
-<p>1）alpha &lt;0.01</p>
-<p>2)userInteractionEnabled = NO</p>
-<p>3.hidden ＝ YES.</p>
-<p>这个从父控件到子控件寻找处理事件最合适的view的过程，如果父视图不接受事件处理（上面三种情况），则子视图也不能接收事件。事件只要触摸了就会产生，关键在于是否有最合适的view来处理和接收事件，如果遍历到最后都没有最合适的view来接收事件，则该事件被废弃。</p>
-<h3 id="响应者链"><a href="#响应者链" class="headerlink" title="响应者链"></a>响应者链</h3><p>响应链是从最合适的view开始传递，处理事件传递给下一个响应者，响应者链的传递方法是事件传递的反方法，如果所有响应者都不处理事件，则事件被丢弃。我们通常用响应者链来获取上几级响应者，方法是UIResponder的nextResponder方法。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/05/09/iOS响应链(Responder Chain)/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS中的Promise" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/04/24/iOS中的Promise/">iOS中的Promise</a>
-    </h1>
-  
-
-        
-        <a href="/2019/04/24/iOS中的Promise/" class="archive-article-date">
-  	<time datetime="2019-04-24T13:15:27.728Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS中我们一般使用delegate(代理)或者block(闭包)来进行异步操作，当要执行多个异步操作，必须将第二个嵌套在第一个的完成内，并且还要正常处理错误。这使得代码结构异常的混乱，不方便查看。</p>
-<p>相信码过JS的同学都清楚，在es6中新增promise的语法，从此异步操作更加的灵活，它使得回调与事件进行了组合，而且写法优美。谷歌在18年上半年开源了promises库，使iOS上的异步编程更加便捷，其使用方式与JS中的promise一致，并支持OC与Swift。</p>
-<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Promise代表异步执行的结果或者错误信息。其拥有以下三种状态</p>
-<ul>
-<li>pending 正在处理</li>
-<li>fulfilled 处理完成得到的结果</li>
-<li>rejected 发生错误的信息</li>
-</ul>
-<p>当状态发生变更后，就无法再次变更其状态。同时promise不限制其订阅者，当状态发生变化后，所有的订阅者都能接收到通知。同时订阅者可以返回另一个promise对象，从而形成管道通信。</p>
-<p>管道通信过程可以自由的使用线程</p>
-<h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>我们可以在FBLPromise文件查找Promise的实现原理</p>
-<h3 id="声明状态、闭包"><a href="#声明状态、闭包" class="headerlink" title="声明状态、闭包"></a>声明状态、闭包</h3><pre><code>//三种状态类型
-typedef NS_ENUM(NSInteger, FBLPromiseState) {
-  FBLPromiseStatePending = 0,
-  FBLPromiseStateFulfilled,
-  FBLPromiseStateRejected,
-};
-//闭包的回调类型
-typedef void (^FBLPromiseObserver)(FBLPromiseState state, id __nullable resolution);```
-</code></pre><h3 id="相关的缓存"><a href="#相关的缓存" class="headerlink" title="相关的缓存"></a>相关的缓存</h3><pre><code>@implementation FBLPromise {
-  //当前promise的状态
-  FBLPromiseState _state;
-  //存放执行相关逻辑的结果存储
-  id __nullable _value;
-  //存放执行相关逻辑的错误
-  NSError *__nullable _error;
-  //存放订阅者的信息
-  NSMutableArray&lt;FBLPromiseObserver&gt; *_observers;
-}
-</code></pre><h3 id="完成或失败的操作"><a href="#完成或失败的操作" class="headerlink" title="完成或失败的操作"></a>完成或失败的操作</h3><p>完成或失败的操作其实是遍历所有订阅者，将当前的状态和执行后的结果通知订阅者。执行完毕后改变缓存的状态值，就算后期再次调用也不会响应。达到只要状态变更就无法再次启动的效果。</p>
-<pre><code>- (void)fulfill:(nullable id)value {
-  if ([value isKindOfClass:[NSError class]]) {
-    [self reject:(NSError *)value];
-  } else {
-    @synchronized(self) {
-      if (_state == FBLPromiseStatePending) {
-        //变更状态
-        _state = FBLPromiseStateFulfilled;
-        _value = value;
-        _pendingObjects = nil;
-        //通知订阅者所订阅的信息
-        for (FBLPromiseObserver observer in _observers) {
-          observer(_state, _value);
-        }
-        _observers = nil;
-        dispatch_group_leave(FBLPromise.dispatchGroup);
-      }
-    }
-  }
-}
-</code></pre><h3 id="订阅者"><a href="#订阅者" class="headerlink" title="订阅者"></a>订阅者</h3><p>订阅相关信息时，先去判断当前的状态类型，当此时已经执行完毕后，会马上回调相关的执行结果。</p>
-<pre><code>- (void)observeOnQueue:(dispatch_queue_t)queue
-               fulfill:(FBLPromiseOnFulfillBlock)onFulfill
-                reject:(FBLPromiseOnRejectBlock)onReject {
-  @synchronized(self) {
-    //先判断当前的状态，只有正在执行的过程中才可以订阅
-    switch (_state) {
-      case FBLPromiseStatePending: {
-        if (!_observers) {
-          _observers = [[NSMutableArray alloc] init];
-        }
-        //增加一个闭包,采用闭包的方式保存外部变量环境
-        [_observers addObject:^(FBLPromiseState state, id __nullable resolution) {
-          dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
-            switch (state) {
-              case FBLPromiseStatePending:
-                break;
-              case FBLPromiseStateFulfilled:
-                onFulfill(resolution);
-                break;
-              case FBLPromiseStateRejected:
-                onReject(resolution);
-                break;
-            }
-          });
-        }];
-        break;
-      }
-      case FBLPromiseStateFulfilled: {
-        dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
-          onFulfill(self-&gt;_value);
-        });
-        break;
-      }
-      case FBLPromiseStateRejected: {
-        dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
-          onReject(self-&gt;_error);
-        });
-        break;
-      }
-    }
-  }
-}
-</code></pre><p>此处是整个promise操作的重中之重，也是我们promise中使用最多的原理所在，从FBLPromise+Then中可以看出该方法是then的原理，也是实现管道通信的原理</p>
-<pre><code>- (FBLPromise *)chainOnQueue:(dispatch_queue_t)queue
-              chainedFulfill:(FBLPromiseChainedFulfillBlock)chainedFulfill
-               chainedReject:(FBLPromiseChainedRejectBlock)chainedReject {
-
-  //创建新的promise
-  FBLPromise *promise = [[FBLPromise alloc] initPending];
-  //定义执行的闭包,该闭包是管道通信的精华，也是为什么下一个then中能收到当前then中返回promise执行结果的关键
-  __auto_type resolver = ^(id __nullable value) {
-    //判断then返回的是否是promise
-    if ([value isKindOfClass:[FBLPromise class]]) {
-      //订阅then返回的promise，主要是为了调用下一个then
-      [(FBLPromise *)value observeOnQueue:queue
-          fulfill:^(id __nullable value) {
-            [promise fulfill:value];
-          }
-          reject:^(NSError *error) {
-            [promise reject:error];
-          }];
-    } else {
-      //若返回的不是promise中，则马上传给下一个then
-      [promise fulfill:value];
-    }
-  };
-  //订阅当前的promise
-  [self observeOnQueue:queue
-      fulfill:^(id __nullable value) {
-        //执行then操作后的返回值，可能是promise也可能是其他值
-        value = chainedFulfill ? chainedFulfill(value) : value;
-        //调用上面创建的闭包
-        resolver(value);
-      }
-      reject:^(NSError *error) {
-        id value = chainedReject ? chainedReject(error) : error;
-        resolver(value);
-      }];
-  return promise;
-}
-</code></pre><h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>此处仅展示swift的语法，oc上的使用请参考FBL前缀的类，或者直接阅读官方文档</p>
-<h3 id="创建方式"><a href="#创建方式" class="headerlink" title="创建方式"></a>创建方式</h3><p>默认是在主线程中使用，如需在其他线程中使用，可以设置on: DispatchQueue，此处不作介绍</p>
-<h3 id="异步方式"><a href="#异步方式" class="headerlink" title="异步方式"></a>异步方式</h3><pre><code>let promise = Promise&lt;Int&gt; { fulfill, reject in
-    let vail = true
-    if vail {
-        fulfil(12)
-    }else {
-        reject(error)
-    }
-}
-</code></pre><h3 id="同步方式"><a href="#同步方式" class="headerlink" title="同步方式"></a>同步方式</h3><pre><code>//采用预先定义方式
-let promise = Promise&lt;Int&gt;.pending()
-...
-if success {
-  promise.fulfill(12)
-} else {
-  promise.reject(error)
-}
-
-//直接发起结果的方式
-let promise = Promise(12)
-let promise = Promise(error)
-</code></pre><h3 id="then使用"><a href="#then使用" class="headerlink" title="then使用"></a>then使用</h3><pre><code>let numberPromise = Promise { fulfill, _ in
-    fulfill(42)
-}
-let stringPromise = numberPromise.then { number in
-    return Promise { fulfill, _ in
-        fulfill(String(number))
-    }
-}
-typealias Block = (Int) -&gt; [Int]
-let blockPromise = stringPromise.then { value in
-    return Promise&lt;Block&gt; { fulfill, _ in
-        fulfill({ number in
-            return [number + (Int(value) ?? 0)]
-        })
-    }
-}
-let finalPromise = blockPromise.then { (value: @escaping Block) -&gt; Int? in
-    return value(42).first
-}
-let postFinalPromise = finalPromise.then { number in
-    return number ?? 0
-}
-</code></pre><h3 id="catch"><a href="#catch" class="headerlink" title="catch"></a>catch</h3><p>catch是处理promise中出现错误的情况，在promise管道中，当其中一个promise执行出现错误时，会忽略这个之后的管道直接将错误传输到catch中处理。</p>
-<pre><code>let promise = Promise&lt;AnyObject&gt; {
-    return error
-}.catch { error in
-    //处理错误
-}
-</code></pre><h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><h4 id="All"><a href="#All" class="headerlink" title="All"></a>All</h4><p>只有当all中所有的promise否成功执行后才回调，回调参数未all中所有执行结果的元组，当其中一个调用rejected时，都直接回调错误</p>
-<pre><code>let promise1 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
-        fulfill(42)
-    })
-}
-let promise2 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
-        fulfill(13)
-     })
-}
-let promise3 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
-        fulfill(nil)
-    })
-}
-
-let combinedPromise = all([promise1, promise2, promise3]).then { value in
-    print(value) //[Optional(42), Optional(13), nil]
-}
-</code></pre><h4 id="Always"><a href="#Always" class="headerlink" title="Always"></a>Always</h4><p>无论管道中是顺利成功执行还是出现错误，最终都会执行always的闭包</p>
-<pre><code>var count = 0
-let promise = Promise&lt;Void&gt; { _, reject in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
-        reject(DYError.promise)
-    })
-}.always {
-    count += 1
-}.catch { error in
-    count += 1
-}.always {
-    print(count)
-}
-</code></pre><h4 id="Any"><a href="#Any" class="headerlink" title="Any"></a>Any</h4><p>与all操作类型，但是Any中即便有其中的出现了错误也会返回元组数据吗，其元组类型是Maybe，包含error与value相关信息</p>
-<pre><code>let promise1 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
-        fulfill(42)
-    })
-}
-let promise2 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
-        fulfill(13)
-    })
-}
-let promise3 = Promise&lt;Int?&gt; { _, reject in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
-        reject(DYError.promise)
-    })
-}
-
-let combinedPromise = any([promise1, promise2, promise3]).then { value in
-    let item = value.first
-    print(value.first?.value)
-}
-</code></pre><h4 id="Await"><a href="#Await" class="headerlink" title="Await"></a>Await</h4><p>使用该操作，可以同步等待在不同线程上执行的promise。该语法与ES8中async/await的使用时类似的</p>
-<pre><code>Promise&lt;Int&gt; {
-  let minusFive = try await(calculator.negate(5))
-  let twentyFive = try await(calculator.multiply(minusFive, minusFive))
-  let twenty = try await(calculator.add(twentyFive, minusFive))
-  let five = try await(calculator.subtract(twentyFive, twenty))
-  let zero = try await(calculator.add(minusFive, five))
-  return try await(calculator.multiply(zero, five))
-}.then { result in
-
-}.catch { error in
-
-}
-</code></pre><h4 id="Delay"><a href="#Delay" class="headerlink" title="Delay"></a>Delay</h4><p>该操作返回一个预先定义的promise，等到给定的时间后执行，或者立即执行错误</p>
-<pre><code>let promise = Promise(42).delay(2)
-promise.catch { err in
-    print(err)
-}.then { value in
-    print(value)
-}
-
-DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
-    promise.reject(DYError.promise)
-})
-</code></pre><h4 id="Race"><a href="#Race" class="headerlink" title="Race"></a>Race</h4><p>该操作与all相似，但是返回的是先执行完成的promise结果或者错误</p>
-<pre><code>let promise1 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
-        fulfill(42)
-    })
-}
-let promise2 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
-        fulfill(&quot;hello world&quot;)
-    })
-}
-let promise3 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
-        fulfill([44])
-    })
-}
-let promise4 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-        fulfill(nil)
-    })
-}
-
-race([promise1,promise2,promise3,promise4]).then { (value) in
-    print(value)
-}
-</code></pre><h4 id="Recover"><a href="#Recover" class="headerlink" title="Recover"></a>Recover</h4><p>与Catch效果相同，但是该操作符不会隔断管道中其他promise的执行</p>
-<pre><code>let promise = Promise&lt;Int&gt; { _, reject in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-        reject(DYError.promise)
-    })
-}.recover { error -&gt; Promise&lt;Int&gt; in
-    print(error)
-    return Promise { fulfill, _ in
-            DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-                    fulfill(1)
-             })
-    }
-}.catch { err in
-    print(err)
-}.then { value in
-    print(value)
-}
-</code></pre><h4 id="Reduce"><a href="#Reduce" class="headerlink" title="Reduce"></a>Reduce</h4><p>结合其他数据进行变换</p>
-<pre><code>let numbers = [1, 2, 3]
-Promise(&quot;0&quot;).reduce(numbers) { partialString, nextNumber in
-  Promise(partialString + &quot;, &quot; + String(nextNumber))
-}.then { string in
-  // Final result = 0, 1, 2, 3
-  print(&quot;Final result = \(string)&quot;)
-}
-</code></pre><h4 id="Retry"><a href="#Retry" class="headerlink" title="Retry"></a>Retry</h4><p>promise执行失败时，尝试重新执行。在未设置时间的前提下，默认延迟1s重新执行</p>
-<pre><code>var count = 0
-retry(attempts: 3, delay: 5, condition: { (num, error) -&gt; Bool in
-    print(&quot;\(num)&quot; + error.localizedDescription)
-    if num == 2 {
-        //马上执行错误
-        return false
-    }
-    return true
-}) { () -&gt; Promise&lt;Int&gt; in
-    return count == 3 ? Promise(42) : Promise(DYError.promise)
-}.then { (value) in
-    print(value)
-}.catch { (error) in
-    print(error)
-}
-</code></pre><h4 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h4><p>在指定的时间内如果没有执行完成或者发送错误,则自发错误</p>
-<pre><code>let promise = Promise { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-        fulfill(42)
-    })
-}.timeout(1).catch { err in
-    print(err) //timedOut
-}.then { value in
-    print(value) 
-}
-</code></pre><h4 id="Validate"><a href="#Validate" class="headerlink" title="Validate"></a>Validate</h4><p>判断是否有效，如果无效则自发错误</p>
-<pre><code>let promise = Promise { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-        fulfill(42)
-    })
-}.validate { value in
-    return value == 1
-}.catch { err in
-    print(err) //validationFailure
-}.then { value in
-    print(value)
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/04/24/iOS中的Promise/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/7/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/9/">Next &raquo;</a>
@@ -1855,7 +1652,7 @@ retry(attempts: 3, delay: 5, condition: { (num, error) -&gt; Bool in
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2021 wangjungang
+    		&copy; 2022 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1974,11 +1771,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1994,11 +1791,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2006,7 +1803,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2014,7 +1811,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2031,6 +1828,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
             
             <div class="clearfix"></div>

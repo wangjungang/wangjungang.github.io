@@ -152,6 +152,428 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-小程序中页面传参" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/03/31/小程序中页面传参/">小程序中页面传参</a>
+    </h1>
+  
+
+        
+        <a href="/2022/03/31/小程序中页面传参/" class="archive-article-date">
+  	<time datetime="2022-03-31T01:56:21.502Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>主要有以下几种方式</p>
+<p>url传参</p>
+<ul>
+<li><p>事件通道 EventChannel</p>
+</li>
+<li><p>本地存储</p>
+</li>
+<li><p>应用全局变量</p>
+</li>
+<li><p>公共变量</p>
+</li>
+</ul>
+<h2 id="url传参"><a href="#url传参" class="headerlink" title="url传参"></a>url传参</h2><p>方式和web中的方式一致。</p>
+<h3 id="index1-页面"><a href="#index1-页面" class="headerlink" title="index1 页面"></a>index1 页面</h3><pre><code>&lt;navigator url=&quot;/pages/index2/index2?name=海贼王&quot;&gt;页面2&lt;/navigator&gt;
+</code></pre><p> 或者</p>
+<pre><code> wx.navigateTo({
+  url: &quot;/pages/index2/index2?name=海贼王&quot;
+})
+</code></pre><h3 id="index2-页面"><a href="#index2-页面" class="headerlink" title="index2 页面"></a>index2 页面</h3><pre><code>onLoad: function (options) {
+  console.log(options);// { name : 海贼王}
+},
+</code></pre><p>需要注意的是，如果 index2 是tabbar页面，那么无法在onLoad中获取页面参数</p>
+<h2 id="事件通道-EventChannel"><a href="#事件通道-EventChannel" class="headerlink" title="事件通道 EventChannel"></a>事件通道 EventChannel</h2><p>如果一个页面由另一个页面通过 wx.navigateTo 打开，这两个页面间将建立一条数据通道：</p>
+<ul>
+<li>被打开的页面可以通过 this.getOpenerEventChannel() 方法来获得一个 EventChannel 对象；</li>
+<li>wx.navigateTo 的 success 回调中也包含一个 EventChannel 对象。</li>
+</ul>
+<p>这两个 EventChannel 对象间可以使用 emit 和 on 方法相互发送、监听事件。</p>
+<h3 id="index1-wxml"><a href="#index1-wxml" class="headerlink" title="index1.wxml"></a>index1.wxml</h3><pre><code>&lt;view&gt;
+  来自于页面2 传递的数据: {{msg}}
+&lt;/view&gt;
+</code></pre><h3 id="index1-js"><a href="#index1-js" class="headerlink" title="index1.js"></a>index1.js</h3><pre><code>Page({
+  data: {
+    msg: &quot;&quot;
+  },
+  onLoad: function () {
+    // 1 跳转到页面2
+    wx.navigateTo({
+      url: &quot;/pages/index2/index2&quot;,
+      // 2 在成功的回调函数中获取事件通道对象
+      success: ({ eventChannel }) =&gt; {
+        // 3 监听自定义事件
+        eventChannel.on(&quot;data&quot;, (e) =&gt; {
+          // 4 获取页面2传递过来的数据 设置到 data中
+          this.setData({
+            msg: e.name
+          })
+        })
+      }
+    });
+  },
+})
+</code></pre><h3 id="index2-js"><a href="#index2-js" class="headerlink" title="index2.js"></a>index2.js</h3><pre><code>Page({
+  onLoad: function () {
+    // 被使用 wx.navigatorTo打开的页面获取获取到一个事件通道对象
+    const EventChannel = this.getOpenerEventChannel();
+    // 触发事件和传递参数到 页面1中
+    EventChannel.emit(&quot;data&quot;, { name: &apos;海贼王&apos; });
+  }
+})
+</code></pre><h2 id="本地存储"><a href="#本地存储" class="headerlink" title="本地存储"></a>本地存储</h2><p>小程序中的本地存储用法类似web中，可以实现在整个应用中获取数据和存储数据</p>
+<h3 id="index1-js-1"><a href="#index1-js-1" class="headerlink" title="index1.js"></a>index1.js</h3><pre><code>wx.setStorageSync(&apos;data&apos;, {name:&apos;海贼王&apos;});// 可以直接存任意类型的数据
+</code></pre><h3 id="index2-js-1"><a href="#index2-js-1" class="headerlink" title="index2.js"></a>index2.js</h3><pre><code>wx.getStorageSync(&apos;data&apos;);// 获取
+</code></pre><h2 id="应用全局变量"><a href="#应用全局变量" class="headerlink" title="应用全局变量"></a>应用全局变量</h2><p>不同的页面都是处于一个共同的应用当中的，这个应用可以理解为 app.js</p>
+<h3 id="app-js"><a href="#app-js" class="headerlink" title="app.js"></a>app.js</h3><p>在这里可以定义公共数据</p>
+<pre><code>App({
+  myData: {
+    name: &quot;悟空&quot;
+  }
+})
+</code></pre><h3 id="index1-js-2"><a href="#index1-js-2" class="headerlink" title="index1.js"></a>index1.js</h3><p>页面中可以通过 getApp 来获取</p>
+<pre><code>let app = getApp();
+console.log(app.myData);
+</code></pre><p>当然也可以直接修改</p>
+<pre><code>let app = getApp();
+app.myData.name=&quot;八戒&quot;;
+</code></pre><h2 id="公共变量"><a href="#公共变量" class="headerlink" title="公共变量"></a>公共变量</h2><p>单独定义一个独立的js文件，把数据存储进去，即可</p>
+<h3 id="common-js"><a href="#common-js" class="headerlink" title="common.js"></a>common.js</h3><pre><code>const data = {
+  name: &quot;海贼王&quot;
+};
+
+module.exports = data;
+</code></pre><h3 id="index1-js-3"><a href="#index1-js-3" class="headerlink" title="index1.js"></a>index1.js</h3><pre><code>const data = require(&quot;../../common&quot;);
+Page({
+  onLoad: function () {
+    console.log(data);
+  },
+})
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">小程序</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/03/31/小程序中页面传参/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-iOS15-适配要点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/03/31/iOS15-适配要点/">iOS15-适配要点</a>
+    </h1>
+  
+
+        
+        <a href="/2022/03/31/iOS15-适配要点/" class="archive-article-date">
+  	<time datetime="2022-03-31T01:51:39.354Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>增加UISheetPresentationController，通过它可以控制 Modal 出来的 UIViewController 的显示大小，且可以通过拖拽手势在不同大小之间进行切换。只需要在跳转的目标 UIViewController 做如下处理：</p>
+<pre><code>if let presentationController = presentationController as? UISheetPresentationController {
+       // 显示时支持的尺寸
+       presentationController.detents = [.medium(), .large()]
+       // 显示一个指示器表示可以拖拽调整大小
+       presentationController.prefersGrabberVisible = true
+}
+</code></pre><p>UIButton支持更多配置。UIButton.Configuration是一个新的结构体，它指定按钮及其内容的外观和行为。它有许多与按钮外观和内容相关的属性，如cornerStyle、baseForegroundColor、baseBackgroundColor、buttonSize、title、image、subtitle、titlePadding、imagePadding、contentInsets、imagePlacement等。</p>
+<pre><code>// Plain
+let plain = UIButton(configuration: .plain(), primaryAction: nil)
+plain.setTitle(&quot;Plain&quot;, for: .normal)
+// Gray
+let gray = UIButton(configuration: .gray(), primaryAction: nil)
+gray.setTitle(&quot;Gray&quot;, for: .normal)
+// Tinted
+let tinted = UIButton(configuration: .tinted(), primaryAction: nil)
+tinted.setTitle(&quot;Tinted&quot;, for: .normal)
+// Filled
+let filled = UIButton(configuration: .filled(), primaryAction: nil)
+filled.setTitle(&quot;Filled&quot;, for: .normal) 
+</code></pre><p>推出CLLocationButton用于一次性定位授权，该内容内置于CoreLocationUI模块，但如果需要获取定位的详细信息仍然需要借助于CoreLocation。</p>
+<pre><code>let locationButton = CLLocationButton()
+// 文字
+locationButton.label = .currentLocation
+locationButton.fontSize = 20
+// 图标
+locationButton.icon = .arrowFilled
+// 圆角
+locationButton.cornerRadius = 10
+// tint
+locationButton.tintColor = UIColor.systemPink
+// 背景色
+locationButton.backgroundColor = UIColor.systemGreen
+// 点击事件，应该在在其中发起定位请求
+locationButton.addTarget(self, action: #selector(getCurrentLocation), for: .touchUpInside)
+</code></pre><p>URLSession 推出支持 async/await 的 API，包括获取数据、上传与下载。</p>
+<pre><code>let session = URLSession.shared
+// 加载数据
+let (data, response) = try await session.data(from: url)
+// 下载
+let (localURL, _) = try await session.download(from: url)
+// 上传
+let (_, response) = try await session.upload(for: request, from: data)
+</code></pre><p>系统图片支持多个层，支持多种渲染模式。</p>
+<pre><code>// hierarchicalColor：多层渲染，透明度不同
+let config = UIImage.SymbolConfiguration(hierarchicalColor: .systemRed)
+let image = UIImage(systemName: &quot;square.stack.3d.down.right.fill&quot;, withConfiguration: config)
+// paletteColors：多层渲染，设置不同风格
+let config2 = UIImage.SymbolConfiguration(paletteColors: [.systemRed, .systemGreen, .systemBlue])
+let image2 = UIImage(systemName: &quot;person.3.sequence.fill&quot;, withConfiguration: config2)
+</code></pre><p>UINavigationBar、UIToolbar 和 UITabBar 设置颜色，需要使用 UIBarAppearance APIs。</p>
+<pre><code>// UINavigationBar
+let navigationBarAppearance = UINavigationBarAppearance()
+navigationBarAppearance.backgroundColor = .red
+navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
+navigationController?.navigationBar.standardAppearance = navigationBarAppearance
+// UIToolbar
+let toolBarAppearance = UIToolbarAppearance()
+toolBarAppearance.backgroundColor = .blue
+navigationController?.toolbar.scrollEdgeAppearance = toolBarAppearance
+navigationController?.toolbar.standardAppearance = toolBarAppearance
+// UITabBar
+let tabBarAppearance = UITabBarAppearance()
+toolBarAppearance.backgroundColor = .purple
+tabBarController?.tabBar.scrollEdgeAppearance = tabBarAppearance
+tabBarController?.tabBar.standardAppearance = tabBarAppearance
+</code></pre><p>UITableView 新增了属性 sectionHeaderTopPadding，会给每一个section 的 header 增加一个默认高度。</p>
+<pre><code>tableView.sectionHeaderTopPadding = 0
+</code></pre><p>UIImage 新增了几个调整尺寸的方法。</p>
+<pre><code>// preparingThumbnail
+UIImage(named: &quot;sv.png&quot;)?.preparingThumbnail(of: CGSize(width: 200, height: 100))
+// prepareThumbnail，闭包中直接获取调整后的UIImage
+UIImage(named: &quot;sv.png&quot;)?.prepareThumbnail(of: CGSize(width: 200, height: 100)) { image in
+        // 需要回到主线程更新UI
+}
+// byPreparingThumbnail
+await UIImage(named: &quot;sv.png&quot;)?.byPreparingThumbnail(ofSize: CGSize(width: 100, height: 100))
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/03/31/iOS15-适配要点/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-优雅的动态删除第三方SDK的权限" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/03/31/优雅的动态删除第三方SDK的权限/">优雅的动态删除第三方SDK的权限</a>
+    </h1>
+  
+
+        
+        <a href="/2022/03/31/优雅的动态删除第三方SDK的权限/" class="archive-article-date">
+  	<time datetime="2022-03-31T01:48:11.083Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>某一天查看 App 的权限列表发现多了很多没声明过的权限，现在开发 App 都不可避免引入各种 SDK，很显然就是他们的锅，在背后干着不可告人的事情.. 怎么删除这些权限呢？</p>
+<h2 id="方法1：利用-xml-的-“remove”-节点删除"><a href="#方法1：利用-xml-的-“remove”-节点删除" class="headerlink" title="方法1：利用 xml 的 “remove” 节点删除"></a>方法1：利用 xml 的 “remove” 节点删除</h2><pre><code>&lt;uses-permission
+   android:name=&quot;android.permission.CHANGE_NETWORK_STATE&quot;
+   tools:node=&quot;remove&quot;
+/&gt;
+</code></pre><p>这样 Android 处理 AndroidManifest.xml 文件时会自动删除这个权限。</p>
+<p>有时我们在 debug 需要这个权限，但是在 release 正式版不想有这个权限。比如我在测试包的时候写了点测试功能，需要引入一个  android:name=”android.permission.SYSTEM_ALERT_WINDOW” 权限，但是正式环境并不需要。</p>
+<p>一个做法是，将这个测试功能单独做成一个 lib 引入，正式版引用一个 lib-noop 版本，常见的第三方库如滴滴的多啦爱梦就是这么做的。</p>
+<p>如果我们自己处理可以利用 gradle 直接对 xml 文件进行操作:</p>
+<h2 id="方法2：利用-gradle-编辑-xml-文件"><a href="#方法2：利用-gradle-编辑-xml-文件" class="headerlink" title="方法2：利用 gradle 编辑 xml 文件"></a>方法2：利用 gradle 编辑 xml 文件</h2><p>gradle 处理 Manifest 任务之后会有一个回调，我们在系统处理完之后再进行二次处理，通过 XmlParser 解析 xml 来修改文件。<br>以下是一个 删除  android.permission.SYSTEM_ALERT_WINDOW 的例子:</p>
+<pre><code>// 发布正式版时 将 manifest 中不必要的权限删除
+android.applicationVariants.all { variant -&gt;
+  if (variant.buildType.name == &quot;release&quot;) {
+        def output = variant.outputs[0]
+        output.getProcessManifestProvider().get().doLast {
+          println(&quot;start process manifest&quot;)
+          def manifestFilePath = &quot;${manifestOutputDirectory.asFile.get()}/AndroidManifest.xml&quot;
+          def xmlParser = new XmlParser()
+          Node manifest = xmlParser.parse(file(manifestFilePath))
+          def android = new Namespace(&apos;http://schemas.android.com/apk/res/android&apos;, &apos;android&apos;)
+          def tools = new Namespace(&apos;http://schemas.android.com/tools&apos;, &apos;tools&apos;)
+          Node systemAlertWindow = manifest.get(&quot;uses-permission&quot;).find {
+            def name = it.attributes().get(android.name)
+            def remove = it.attributes().get(tools.remove)
+            name == &quot;android.permission.SYSTEM_ALERT_WINDOW&quot;
+          }
+          def remove = manifest.remove(systemAlertWindow)
+
+          // write xml to file
+          file(manifestFilePath).withPrintWriter { out -&gt;
+            def printer = new XmlNodePrinter(out)
+            printer.preserveWhitespace = true
+            printer.print(manifest)
+          }
+          println(&quot;end process manifest, delete systemAlertWindow permission success?  $remove&quot;)
+        }
+      }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/03/31/优雅的动态删除第三方SDK的权限/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-从ViewPager到ViewPager2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1411,322 +1833,6 @@ private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) 
 
 
   
-    <article id="post-基石库-R.swift" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/06/07/基石库-R.swift/">基石库——R.swift</a>
-    </h1>
-  
-
-        
-        <a href="/2021/06/07/基石库-R.swift/" class="archive-article-date">
-  	<time datetime="2021-06-07T05:22:28.661Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="何为基石库？"><a href="#何为基石库？" class="headerlink" title="何为基石库？"></a>何为基石库？</h2><p>做一个App无外乎两大要素：</p>
-<ul>
-<li><p>获取数据</p>
-</li>
-<li><p>通过数据驱动页面</p>
-</li>
-</ul>
-<p>也许你的App没有网络请求或者网络请求少，你可以不需要Alamofire。<br>也许你的App的UI不是特别复杂，简单的xib和storyboard就可以胜任。<br>但是在当下一个App中，图片资源、字符串资源等，作为一个App开发者，你是不得不用的。<br>举个栗子，传统的获取一个image资源我们都是这么写：</p>
-<pre><code>let image = UImage(named: &quot;saber&quot;)
-</code></pre><p>这么写的最大弊端就是saber这是一个字符串硬编码，靠的的是纯手工敲打，一旦出错，界面就会出现异常。</p>
-<p>在开发中，需要尽量避免这种硬编码，如何高效将这种硬编码的表达方式更换为高效安全的方式，就由本次的主角出场了–R.swift。</p>
-<p>统和所有的资源，以现代化的方式引用资源，项目中使用它，虽然不会让你的App上升一个层次，不过却给你的编码极度舒适。</p>
-<pre><code>let image = R.image.saber()
-</code></pre><p>同样是Ex咖喱棒，味道却完全不同，哈哈。</p>
-<p>基石库就是那些你无法避免不得不用的库，而R.swift恰恰就是。</p>
-<h2 id="R-swift"><a href="#R-swift" class="headerlink" title="R.swift"></a>R.swift</h2><p>何为R，即Resource的缩写，我们先看看官方给出的一些例子：</p>
-<p>使用R.swift函数前：</p>
-<pre><code>let icon = UIImage(named: &quot;settings-icon&quot;)
-let font = UIFont(name: &quot;San Francisco&quot;, size: 42)
-let color = UIColor(named: &quot;indicator highlight&quot;)
-let viewController = CustomViewController(nibName: &quot;CustomView&quot;, bundle: nil)
-let string = String(format: NSLocalizedString(&quot;welcome.withName&quot;, comment: &quot;&quot;), locale: NSLocale.current, &quot;Arthur Dent&quot;)
-</code></pre><p>使用R.swift函数后：</p>
-<pre><code>let icon = R.image.settingsIcon()
-let font = R.font.sanFrancisco(size: 42)
-let color = R.color.indicatorHighlight()
-let viewController = CustomViewController(nib: R.nib.customView)
-let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
-</code></pre><p>所有的资源都函数化后，编写过程想出错都难，特别需要注意的是最后一个涉及国际化的函数R.string.localizable.welcomeWithName(“Arthur Dent”)，Arthur Dent这个字符串需要自己具体制定，可以通过在做国际化时，通过info.strings进行处理。</p>
-<p>R.swift目前支持下面这些资源文件管理：</p>
-<ul>
-<li>Images</li>
-<li>Fonts</li>
-<li>Resource files</li>
-<li>Colors</li>
-<li>Localized strings</li>
-<li>Storyboards</li>
-<li>Segues</li>
-<li>Nibs</li>
-<li>Reusable cells</li>
-</ul>
-<p>基本上覆盖了绝大多数的App中的资源管理。</p>
-<h2 id="安装和使用"><a href="#安装和使用" class="headerlink" title="安装和使用"></a>安装和使用</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>R.swift使用其他特别舒服，不过它的安装确实比其他的第三方库稍微麻烦一点，正所谓工欲善其事必先利其器，这一点麻烦是值得的。</p>
-<p>1.添加’R.swift’ 在工程的Podfile文件中，并运行pod install。 2.如下图所示。添加脚本：</p>
-<p><img src="http://img.wangjungang.cn/uPic/U1H1D4.jpg" alt=""></p>
-<p>3.如下图所示，移动脚本的位置，让它在Compile Sources phase和Check Pods Manifest.lock之间：</p>
-<p><img src="http://img.wangjungang.cn/uPic/EqieCU.jpg" alt=""></p>
-<p>4.添加脚本：</p>
-<p><img src="http://img.wangjungang.cn/uPic/BIkAYB.jpg" alt=""></p>
-<p>在shell，下面这一栏添加</p>
-<pre><code>&quot;$PODS_ROOT/R.swift/rswift&quot; generate &quot;$SRCROOT/R.generated.swift&quot;
-</code></pre><p>在input Files通过+号添加</p>
-<pre><code>$TEMP_DIR/rswift-lastrun
-</code></pre><p>在Output Files通过+号添加</p>
-<pre><code>$SRCROOT/R.generated.swift
-</code></pre><p>5.运行添加R.generated.swift：</p>
-<p>完成第4步后，进行command + B编译，然后在工程的根目录下面会找到R.generated.swift文件：<br><img src="http://img.wangjungang.cn/uPic/axDe8k.jpg" alt=""></p>
-<p>将这个文件拖入到工程中，并且不要勾选Copy items if needed</p>
-<p><img src="http://img.wangjungang.cn/uPic/92gr2O.jpg" alt=""></p>
-<p>这样，R.swift就安装完成啦。</p>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>每一次添加了新的资源文件，就运行一次command + B一次，这样R.generated.swift文件就将新加入的资源文件更新，使用使用的时候只用通过R.来进行引用了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Swift</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/06/07/基石库-R.swift/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS导出ipa包的时，四个选项的作用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/16/iOS导出ipa包的时，四个选项的作用/">iOS导出ipa包的时，四个选项的作用</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/16/iOS导出ipa包的时，四个选项的作用/" class="archive-article-date">
-  	<time datetime="2021-03-16T03:13:05.390Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="https://upload-images.jianshu.io/upload_images/855108-4e72f6ef2b0a6d78.png?imageMogr2/auto-orient/strip|imageView2/2/w/585/format/webp" alt=""></p>
-<h4 id="如图-在-iOS-导出-ipa包的时候-会有四个选项，这四个选项的作用如下："><a href="#如图-在-iOS-导出-ipa包的时候-会有四个选项，这四个选项的作用如下：" class="headerlink" title="如图 在 iOS 导出 ipa包的时候 会有四个选项，这四个选项的作用如下："></a>如图 在 iOS 导出 ipa包的时候 会有四个选项，这四个选项的作用如下：</h4><ol>
-<li>Save for iOS App Store Deployment</li>
-</ol>
-<p>保存到本地 准备上传App Store 或者在越狱的iOS设备上使用</p>
-<ol start="2">
-<li>Save for Ad Hoc Deployment</li>
-</ol>
-<p>保存到本地 准备在账号添加的可使用设备上使用（具体为在开发者账户下添加可用设备的udid），该app包是发布证书编译的。</p>
-<ol start="3">
-<li>Save for Enterprise Deployment</li>
-</ol>
-<p>这种主要针对企业级账户下 准备本地服务器分发的app</p>
-<ol start="4">
-<li>Save for Development Deployment</li>
-</ol>
-<p>针对内部测试使用，主要给开发者的设备(具体也为在开发者账户下添加可用设备的udid)。该app包是开发证书编译的。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/16/iOS导出ipa包的时，四个选项的作用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-安卓防连点的一个极简操作" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/11/安卓防连点的一个极简操作/">安卓防连点的一个极简操作</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/11/安卓防连点的一个极简操作/" class="archive-article-date">
-  	<time datetime="2021-03-11T08:32:27.647Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-11</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="直接上代码"><a href="#直接上代码" class="headerlink" title="直接上代码"></a>直接上代码</h2><pre><code>import android.view.View;
-public class ClickUtils {
-    public static void fastClickChecked(View v, View.OnClickListener listener){
-        if(v==null)return;
-        v.setOnClickListener(v1 -&gt; {
-            listener.onClick(v1);
-            v1.setClickable(false);
-            v.postDelayed(() -&gt; {
-                v.setClickable(true);
-            }, 500);
-        });
-    }
-}
-</code></pre><h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>注意：此调用方式使用时并没有比原有view.setOnClickListener方式更加复杂。他甚至以更简单的方式来实现了防快速点击的效果。</p>
-<pre><code>//参数1，防连点的view  参数2，点击此view要执行的OnClickListener
-ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
-</code></pre><p>只需要传进view和监听，即可完成防连点效果。</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>此处我是通过代理原view的点击，在原来view点击时，我采用先吧此view的clickable=false，然后通过view.postDelayed方法过500秒后再把它置为可以点击，这样就可以避免在小米华为手机上的连点时跳转页面的情况下连续跳转多个页面了。</p>
-<h2 id="写此工具类的一个原因"><a href="#写此工具类的一个原因" class="headerlink" title="写此工具类的一个原因"></a>写此工具类的一个原因</h2><p>其实写此工具类一个最根本的原因是，在安卓系统的有些手机上，快速点击程序的一些view进行跳转时会造成打开两个目标view的情况。而关于程序放连点我们实践过多种方式。但是通过尝试，有些方法不是使用繁琐，就是增加其他成本。例如gradle插件的方式会增加编译成本，使我们build软件时运行缓慢。增加编译时常，又比如rxJava的方式使用起来感觉过于繁琐。需要我们写的代码量太多，或者说运用两次时间间隔的方式通过动态点击计算是否触发事件，这种方式又太过复杂。所以我自己运用clickable方式写了一个原理简单且使用方便的工具类。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/11/安卓防连点的一个极简操作/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1741,7 +1847,7 @@ ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2021 wangjungang
+    		&copy; 2022 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1860,11 +1966,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1880,11 +1986,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1892,7 +1998,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1900,7 +2006,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1917,6 +2023,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
             
             <div class="clearfix"></div>

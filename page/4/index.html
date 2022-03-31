@@ -152,6 +152,821 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS 多线程相关之performSelector、死锁" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/06/iOS 多线程相关之performSelector、死锁/">iOS 多线程相关之performSelector、死锁</a>
+    </h1>
+  
+
+        
+        <a href="/2020/03/06/iOS 多线程相关之performSelector、死锁/" class="archive-article-date">
+  	<time datetime="2020-03-06T08:17:17.327Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="performSelector"><a href="#performSelector" class="headerlink" title="performSelector"></a>performSelector</h3><pre><code>//在当前线程延迟1s执行，响应了OC语言的动态性：延迟到运行时才绑定方法
+[self performSelector:@selector(aaa) withObject:nil afterDelay:1];
+// 回到主线程，waitUntilDone:是否将该回调方法执行完再执行后面的代码
+// 如果为YES：就必须等回调方法执行完成之后才能执行后面的代码，说白了就是阻塞当前的线程
+// 如果是NO：就是不等回调方法结束，不会阻塞当前线程
+[self performSelectorOnMainThread:@selector(aaa) withObject:nil waitUntilDone:YES];
+// 开辟子线程
+[self performSelectorInBackground:@selector(aaa) withObject:nil];
+//在指定线程执行
+[self performSelector:@selector(aaa) onThread:[NSThread currentThread] withObject:nil waitUntilDone:YES];
+</code></pre><p>需要注意的是</p>
+<p>如果是带afterDelay的延时函数，会在内部创建一个NSTimer，然后添加到当前线程的Runloop中。也就是如果当前线程没有开启runloop，该方法会失效。在子线程中，需要启动runloop(注意调用顺序)</p>
+<pre><code>[self performSelector:@selector(aaa) withObject:nil afterDelay:1];
+[[NSRunLoop currentRunLoop] run];
+</code></pre><ul>
+<li>performSelector:withObject:只是一个单纯的消息发送，和时间没有一点关系。所以不需要添加到子线程的Runloop中也能执行</li>
+</ul>
+<p>下面代码片段的test方法会去执行吗？</p>
+<pre><code>dispatch_async(dispatch_get_global_queue(0, 0), ^{
+  [self performSelector:@selector(test:) withObject:nil afterDelay:0];
+});
+</code></pre><p>这里的test方法是不会去执行的，原因在于- (void)performSelector: withObject: afterDelay:这个方法要创建提交任务到runloop上的，而gcd底层创建的线程是默认没有开启对应runloop的，所有这个方法就会失效。</p>
+<p>而如果将dispatch_get_global_queue改成主队列，由于主队列所在的主线程是默认开启了runloop的，就会去执行(将dispatch_async改成同步，因为同步是在当前线程执行，那么如果当前线程是主线程，test方法也是会去执行的)</p>
+<h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><p>死锁就是队列引起的循环等待，一个比较常见的死锁例子:主队列同步</p>
+<pre><code>- (void)viewDidLoad {
+  [super viewDidLoad];
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    NSLog(@&quot;deallock&quot;);
+  });
+}
+</code></pre><p>在主线程中运用主队列同步，也就是把任务放到了主线程的队列中。同步对于任务是立刻执行的，那么当把任务放进主队列时，它就会立马执行，只有执行完这个任务，viewDidLoad才会继续向下执行。而viewDidLoad和任务都是在主队列上的，由于队列的先进先出原则，任务又需等待viewDidLoad执行完毕后才能继续执行，viewDidLoad和这个任务就形成了相互循环等待，就造成了死锁。</p>
+<p>想避免这种死锁，可以将同步改成异步dispatch_async或者将dispatch_get_main_queue换成其他串行或并行队列，都可以解决</p>
+<p>同样，下边的代码也会造成死锁：</p>
+<pre><code>dispatch_queue_t serialQueue = dispatch_queue_create(&quot;test&quot;, DISPATCH_QUEUE_SERIAL);
+dispatch_async(serialQueue, ^{
+  dispatch_sync(serialQueue, ^{
+    NSLog(@&quot;deadlock&quot;);
+  });
+});
+</code></pre><p>外面的函数无论是同步还是异步都会造成死锁。这是因为里面的任务和外面的任务都在同一个serialQueue队列内，又是同步，这就和上边主队列同步的例子一样造成了死锁。</p>
+<p>解决方法也和上边一样，将里面的同步改成异步dispatch_async或者将serialQueue换成其他串行或并行队列，都可以解决</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/03/06/iOS 多线程相关之performSelector、死锁/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-Git的各种撤销" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/06/Git的各种撤销/">Git的各种撤销</a>
+    </h1>
+  
+
+        
+        <a href="/2020/03/06/Git的各种撤销/" class="archive-article-date">
+  	<time datetime="2020-03-06T03:19:08.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="Git各种撤销操作"><a href="#Git各种撤销操作" class="headerlink" title="Git各种撤销操作"></a>Git各种撤销操作</h3><hr>
+<h4 id="1-git-checkout-–-file"><a href="#1-git-checkout-–-file" class="headerlink" title="1,  git checkout – file"></a>1,  git checkout – file</h4><p>可以撤销add和commit之后的文件</p>
+<pre><code>git checkout -- a.txt
+</code></pre><h4 id="2-git-checkout-branch-a-txt"><a href="#2-git-checkout-branch-a-txt" class="headerlink" title="2,  git checkout branch a.txt"></a>2,  git checkout branch a.txt</h4><p>用另外一个分支的文件替换当前分支的文件</p>
+<pre><code>git checkout master a.txt
+</code></pre><h4 id="3-git-rm-a-txt"><a href="#3-git-rm-a-txt" class="headerlink" title="3, git rm a.txt"></a>3, git rm a.txt</h4><p>直接删除某个文件</p>
+<pre><code>git rm a.txt
+git commit -m &quot;del a.txt&quot;
+</code></pre><h4 id="4，-git-reset-–soft-–mixed-–hard-lt-commit-id-gt"><a href="#4，-git-reset-–soft-–mixed-–hard-lt-commit-id-gt" class="headerlink" title="4， git reset –soft|–mixed|–hard &lt;commit_id&gt;"></a>4， git reset –soft|–mixed|–hard &lt;commit_id&gt;</h4><p>回退到某一个提交</p>
+<p>1.第一种情况：还没有push，只是在本地commit</p>
+<pre><code>这里的&lt;commit_id&gt;就是每次commit的SHA-1，可以在log里查看到
+--mixed    会保留源码,只是将git commit和index 信息回退到了某个版本.
+--soft   保留源码,只回退到commit信息到某个版本.不涉及index的回退,如果还需要提交,直接commit即可.
+--hard    源码也会回退到某个版本,commit和index 都会回退到某个版本.(注意,这种方式是改变本地代码仓库源码)
+</code></pre><p>简单总结一下，其实就是–soft 、–mixed以及–hard是三个恢复等级。使用–soft就仅仅将头指针恢复，已经add的缓存以及工作空间的所有东西都不变。如果使用–mixed，就将头恢复掉，已经add的缓存也会丢失掉，工作空间的代码什么的是不变的。如果使用–hard，那么一切就全都恢复了，头变，aad的缓存消失，代码什么的也恢复到以前状态。</p>
+<pre><code>git log
+// 如果没有你想要的就在冒号状态下一直回车，退出是在冒号下输入q
+git reset --hard f185d0ec
+git push -f
+// 强制提交
+
+// 如果又后悔了，想回到最新的
+git reflog
+// 重复上边的步骤
+</code></pre><p>2.commit push 代码已经更新到远程仓库</p>
+<pre><code>git revert &lt;commit_id&gt;
+git push -f
+</code></pre><p>revert 之后你的本地代码会回滚到指定的历史版本,这时你再 git push 既可以把线上的代码更新。<br>注意：git revert是用一次新的commit来回滚之前的commit，git reset是直接删除指定的commit，看似达到的效果是一样的,其实完全不同。</p>
+<p>第一:上面我们说的如果你已经push到线上代码库, reset 删除指定commit以后,你git push可能导致一大堆冲突.但是revert 并不会.</p>
+<p>第二:如果在日后现有分支和历史分支需要合并的时候,reset 恢复部分的代码依然会出现在历史分支里.但是revert 方向提交的commit 并不会出现在历史分支里.</p>
+<p>第三:reset 是在正常的commit历史中,删除了指定的commit,这时 HEAD 是向后移动了,而 revert 是在正常的commit历史中再commit一次,只不过是反向提交,他的 HEAD 是一直向前的.</p>
+<h4 id="5-git-reset-HEAD-1"><a href="#5-git-reset-HEAD-1" class="headerlink" title="5, git reset HEAD~1"></a>5, git reset HEAD~1</h4><p>按提交步骤回退,~后边的数字是回退几次命令<br>(假如merge了一个其他的分支并提交）</p>
+<pre><code>git merge branch2
+git push
+
+// 现在要撤回
+
+git reset HEAD~1
+git checkout .
+// 如果只是个别文件可以git checkout aa.txt bb.txt
+git push -f
+</code></pre><h4 id="6-git-rebase-–onto-baseBranch-from-to"><a href="#6-git-rebase-–onto-baseBranch-from-to" class="headerlink" title="6, git rebase –onto baseBranch from to"></a>6, git rebase –onto baseBranch from to</h4><p>删除中间的某次commit</p>
+<p>我们先提交几次记录</p>
+<pre><code>git log
+</code></pre><p>我们会看到如下信息</p>
+<pre><code>commit aa1f22523b7c27c692a59588a72d396a97ae04be (HEAD -&gt; branch2)
+Author:
+Date:   Tue Jul 10 21:34:55 2018 +0800
+
+    4
+
+commit cb10df56ea102a558c24625e4ebbb296e0b9d1e8
+Author:
+Date:   Tue Jul 10 21:34:38 2018 +0800
+
+    3
+
+commit 6407cefa0631920cfe8e12bfebc5f1f72c373b07
+Author
+Date:   Tue Jul 10 21:34:24 2018 +0800
+
+    2
+
+commit 3427ac34d38fb6bb06cfd222896e7e3a7a837219
+Author:
+Date:   Tue Jul 10 21:34:10 2018 +0800
+</code></pre><p>我们要删掉3的那次commit，我所在的分支是branch2，–onto后边第一个参数是base，也就是要删掉的commit的上一个commit，</p>
+<p>第二个参数是我们要拼接的commit起始位置，第三个是结束位置</p>
+<p>~表示分支的上一次或者上几次commit</p>
+<pre><code>git rebase --onto branch2~3 branch2~1 branch2
+
+执行完会发现冲突，这时候删掉第3次commit的代码，解决完冲突，然后恢复到最后一次commit
+git add .
+git rebase --continue
+</code></pre><p>再git log，会发现，第三次commit已经没有了</p>
+<pre><code>commit 20586673a513c53709f1e75f786e501c62d6537d (HEAD -&gt; branch2)
+Author: 
+Date:   Tue Jul 10 21:34:55 2018 +0800
+
+    4
+
+commit 6407cefa0631920cfe8e12bfebc5f1f72c373b07
+Author: 
+Date:   Tue Jul 10 21:34:24 2018 +0800
+
+    2
+
+commit 3427ac34d38fb6bb06cfd222896e7e3a7a837219
+Author: 
+Date:   Tue Jul 10 21:34:10 2018 +0800
+
+    1
+</code></pre><h4 id="7，git-commit-–amend"><a href="#7，git-commit-–amend" class="headerlink" title="7，git commit –amend"></a>7，git commit –amend</h4><pre><code>git commit --amend
+</code></pre><p>此时处于vim状态，按c开始编辑，修改完按esc退出编辑，连续按两次大写Z，退出</p>
+<p>修改之前几次的<br>比如要修改的commit是倒数第三条，使用下述命令：</p>
+<pre><code>git rebase -i HEAD~3
+把pick改为edit
+然后 :wq
+git commit --amend
+退出保存 :wq，然后回到正常状态
+git rebase --continue
+git push -f 推送到服务端
+</code></pre><h4 id="8-git-merge-–squash-branch"><a href="#8-git-merge-–squash-branch" class="headerlink" title="8, git merge –squash branch"></a>8, git merge –squash branch</h4><p>合并的时候不想携带分支的commit信息，合并到master的时候只会留下一条信息</p>
+<pre><code>git merge --squash branch
+git add .
+ git commit -m &quot;merge branch&quot;
+git push
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Git</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/03/06/Git的各种撤销/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-史上最强无痕埋点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/04/史上最强无痕埋点/">史上最强无痕埋点</a>
+    </h1>
+  
+
+        
+        <a href="/2020/03/04/史上最强无痕埋点/" class="archive-article-date">
+  	<time datetime="2020-03-04T03:01:34.334Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在移动互联网时代，对于每个公司、企业来说，用户的行为数据非常重要。重要到什么程度，用户在这个页面停留多久、点击了什么按钮、浏览了什么内容、什么手机、什么网络环境、App什么版本等都需要清清楚楚。一些大厂的蛮多业务成果都是基于用户操作行为进行推荐后二次转换。另一方面是以日志的作用帮助开发者分析线上问题的一种辅助手段。</p>
+<p>那么有了上述的诉求，那么技术人员如何满足这些需求？引出来了一个技术点-“埋点”</p>
+<h2 id="0x01-埋点手段"><a href="#0x01-埋点手段" class="headerlink" title="0x01. 埋点手段"></a>0x01. 埋点手段</h2><p>业界中对于代码埋点主要有3种主流的方案：代码手动埋点、可视化埋点、无痕埋点。简单说说这几种埋点方案。</p>
+<ul>
+<li><p>代码手动埋点：根据业务需求（运营、产品、开发多个角度出发）在需要埋点地方手动调用埋点接口，上传埋点数据。</p>
+</li>
+<li><p>可视化埋点：通过可视化配置工具完成采集节点，在前端自动解析配置并上报埋点数据，从而实现可视化“无痕埋点”</p>
+</li>
+<li><p>无痕埋点：通过技术手段，完成对用户行为数据无差别的统计上传的工作。后期数据分析处理的时候通过技术手段筛选出合适的数据进行统计分析。</p>
+</li>
+</ul>
+<h2 id="0x02-技术选型"><a href="#0x02-技术选型" class="headerlink" title="0x02. 技术选型"></a>0x02. 技术选型</h2><h3 id="1-代码手动埋点"><a href="#1-代码手动埋点" class="headerlink" title="1. 代码手动埋点"></a>1. 代码手动埋点</h3><p>该方案情况下，如果需要埋点，则需要在工程代码中，写埋点相关代码。因为侵入了业务代码，对业务代码产生了污染，显而易见的缺点是埋点的成本较高、且违背了单一原则。</p>
+<p>例1：假如你需要知道用户在点击“购买按钮”时的相关信息（手机型号、App版本、页面路径、停留时间、动作等等），那么就需要在按钮的点击事件里面去写埋点统计的代码。这样明显的弊端就是在之前业务逻辑的代码上面又多出了埋点的代码。由于埋点代码分散、埋点的工作量很大、代码维护成本较高、后期重构很头痛。</p>
+<p>例2：假如 App 采用了 Hybrid 架构，当 App 的第一版本发布的时候 H5 的关键业务逻辑统计是由 Native 定义好关键逻辑（比如H5调起了Native的分享功能，那么存在一个分享的埋点事件）的桥接。假如某天增加了一个扫一扫功能，未定义扫一扫的埋点桥接，那么 H5 页面变动的时候，Native 埋点代码不去更新的话，变动的 H5 的业务就未被精确统计。</p>
+<p>优点：产品、运营工作量少，对照业务映射表就可以还原出相关业务场景、数据精细无须大量的加工和处理</p>
+<p>缺点：开发工作量大、前期需要和运营、产品指定的好业务标识，以便产品和运营进行数据统计分析</p>
+<h3 id="2-可视化埋点"><a href="#2-可视化埋点" class="headerlink" title="2. 可视化埋点"></a>2. 可视化埋点</h3><p>可视化埋点的出现，是为解决代码埋点流程复杂、成本高、新开发的页面（H5、或者服务端下发的 json 去生成相应页面）不能及时拥有埋点能力</p>
+<p>前端在「埋点编辑模式」下，以“可视化”的方式去配置、绑定关键业务模块的路径到前端可以唯一确定到view的xpath过程。</p>
+<p>用户每次操作的控件，都生成一个 xpath 字符串，然后通过接口将 xpath 字符串(view在前端系统中的唯一定位。以 iOS 为例，App名称、控制器名称、一层层view、同类型view的序号：“GoodCell.21.RetailTableView.GoodsViewController.*baoApp”)到真正的业务模块（“宝App-商城控制器-分销商品列表-第21个商品被点击了”）的映射关系上传到服务端。xpath 具体是什么在下文会有介绍。</p>
+<p>之后操作 App 就生成对应的 xpath 和埋点数据（开发者通过技术手段将从服务端获取的关键数据塞到前端的 UI 控件上。 iOS 端为例， UIView 的 accessibilityIdentifier 属性可以设置我们从服务端获取的埋点数据）上传到服务端。</p>
+<p>优点：数据量相对准确、后期数据分析成本低</p>
+<p>缺点：前期控件的唯一识别、定位都需要额外开发；可视化平台的开发成本较高；对于额外需求的分析可能会比较困难</p>
+<h3 id="3-无痕埋点"><a href="#3-无痕埋点" class="headerlink" title="3. 无痕埋点"></a>3. 无痕埋点</h3><p>通过技术手段无差别地记录用户在前端页面上的行为。可以正确的获取 PV、UV、IP、Action、Time 等信息。</p>
+<p>缺点：前期开发统计基础信息的技术产品成本较高、后期数据分析数据量很大、分析成本较高（大量数据传统的关系型数据库压力大）</p>
+<p>优点：开发人员工作量小、数据全面、无遗漏、产品和运营按需分析、支持动态页面的统计分析</p>
+<h3 id="4-如何选择"><a href="#4-如何选择" class="headerlink" title="4. 如何选择"></a>4. 如何选择</h3><p>结合上述优缺点，我们选择了无痕埋点+可视化埋点结合的技术方案。</p>
+<p>怎么说呢？对于关键的业务开发结束上线后、通过可视化方案（类似于一个界面，想想看 Dreamwaver，你在界面上拖拖控件，简单编辑下就可以生成对应的 HTML 代码）点击一下绑定对应关系到服务端。</p>
+<p>那么这个对应关系是什么？我们需要唯一定位一个前端元素，那么想到的办法就是不管 Native 和 Web 前端，控件或者元素来说就是一个树形层级，DOM tree 或者 UI tree，所以我们通过技术手段定位到这个元素，以 Native  iOS 为例子，假如点击商品详情页的加入购物车按钮会根据 UI 层级结构生成一个唯一标识 “addCartButton.GoodsViewController.GoodsView.*BaoApp” 。但是用户在使用 App 的时候，上传的是这串东西的 MD5到服务端。</p>
+<p>这么做有2个原因：服务端数据库存储这串很长的东西不是很好；埋点数据被劫持的话直接看到明文不太好。所以 MD5 再上传。</p>
+<h2 id="0x03-操刀就干"><a href="#0x03-操刀就干" class="headerlink" title="0x03. 操刀就干"></a>0x03. 操刀就干</h2><h3 id="1-数据的收集"><a href="#1-数据的收集" class="headerlink" title="1 .数据的收集"></a>1 .数据的收集</h3><p>实现方案由以下几个关键指标：</p>
+<ul>
+<li>现有代码改动少、尽量不要侵入业务代码去实现拦截系统事件</li>
+<li>全量收集</li>
+<li>如何唯一标识一个控件元素</li>
+</ul>
+<h3 id="2-不侵入业务代码拦截系统事件"><a href="#2-不侵入业务代码拦截系统事件" class="headerlink" title="2. 不侵入业务代码拦截系统事件"></a>2. 不侵入业务代码拦截系统事件</h3><p>以 iOS 为例。我们会想到 <strong>AOP（Aspect Oriented Programming）</strong>面向切面编程思想。动态地在函数调用前后插入相应的代码，在 Objective-C 中我们可以利用 Runtime 特性，用 Method Swizzling 来 hook 相应的函数</p>
+<p>为了给所有类方便地 hook，我们可以给 NSObject 添加个 Category，名字叫做 NSObject+MethodSwizzling</p>
+<pre><code>#pragma mark - public Method
++ (void)lbp_swizzleMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector
+{
+    class_swizzleInstanceMethod(self, originalSelector, swizzledSelector);
+}
+
++ (void)lbp_swizzleClassMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector
+{
+    //类方法实际上是储存在类对象的类(即元类)中，即类方法相当于元类的实例方法,所以只需要把元类传入，其他逻辑和交互实例方法一样。
+    Class class2 = object_getClass(self);
+    class_swizzleInstanceMethod(class2, originalSelector, swizzledSelector);
+}
+
+#pragma mark - private method
+
+void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSEL)
+{
+    /*
+     Class class = [self class];
+     //原有方法
+     Method originalMethod = class_getInstanceMethod(class, originalSelector);
+     //替换原有方法的新方法
+     Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+     //先尝试給源SEL添加IMP，这里是为了避免源SEL没有实现IMP的情况
+     BOOL didAddMethod = class_addMethod(class,originalSelector,
+     method_getImplementation(swizzledMethod),
+     method_getTypeEncoding(swizzledMethod));
+     if (didAddMethod) {//添加成功：表明源SEL没有实现IMP，将源SEL的IMP替换到交换SEL的IMP
+     class_replaceMethod(class,swizzledSelector,
+     method_getImplementation(originalMethod),
+     method_getTypeEncoding(originalMethod));
+     } else {//添加失败：表明源SEL已经有IMP，直接将两个SEL的IMP交换即可
+     method_exchangeImplementations(originalMethod, swizzledMethod);
+     }
+     */
+
+    Method originMethod = class_getInstanceMethod(class, originalSEL);
+    Method replaceMethod = class_getInstanceMethod(class, replacementSEL);
+
+    if(class_addMethod(class, originalSEL, method_getImplementation(replaceMethod),method_getTypeEncoding(replaceMethod)))
+    {
+        class_replaceMethod(class,replacementSEL, method_getImplementation(originMethod), method_getTypeEncoding(originMethod));
+    }else {
+        method_exchangeImplementations(originMethod, replaceMethod);
+    }
+}
+</code></pre><h3 id="3-全量收集"><a href="#3-全量收集" class="headerlink" title="3. 全量收集"></a>3. 全量收集</h3><p>我们会想到 hook AppDelegate 代理方法、UIViewController 生命周期方法、按钮点击事件、手势事件、各种系统控件的点击回调方法、应用状态切换等等。</p>
+<p><img src="http://img.wangjungang.cn/sUK3kh.png" alt=""></p>
+<p>以统计页面的打开时间和统计页面的打开、关闭的需求为例，我们对 UIViewController 进行 hook</p>
+<pre><code>static char *lbp_viewController_open_time = &quot;lbp_viewController_open_time&quot;;
+static char *lbp_viewController_close_time = &quot;lbp_viewController_close_time&quot;;
+
+@implementation UIViewController (lbpka)
+
+// load 方法里面添加 dispatch_once 是为了防止手动调用 load 方法。
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&amp;onceToken, ^{
+        @autoreleasepool {
+            [[self class] lbp_swizzleMethod:@selector(viewWillAppear:) swizzledSelector:@selector(lbp_viewWillAppear:)];
+            [[self class] lbp_swizzleMethod:@selector(viewWillDisappear:) swizzledSelector:@selector(lbp_viewWillDisappear:)];
+
+
+        }
+    });
+}
+
+
+#pragma mark - add prop
+
+- (void)setOpenTime:(NSDate *)openTime {
+    objc_setAssociatedObject(self,&amp;lbp_viewController_open_time, openTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSDate *)getOpenTime{
+    return objc_getAssociatedObject(self, &amp;lbp_viewController_open_time);
+}
+
+- (void)setCloseTime:(NSDate *)closeTime {
+    objc_setAssociatedObject(self,&amp;lbp_viewController_close_time, closeTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (NSDate *)getCloseTime{
+    return objc_getAssociatedObject(self, &amp;lbp_viewController_close_time);
+}
+
+- (void)lbp_viewWillAppear:(BOOL)animated {
+
+    NSString *className = NSStringFromClass([self class]);
+    NSString *refer = [NSString string];
+    //TODO:TODO 是否只埋本地有url的page
+    if ([self getPageUrl:className]) {
+        //设置打开时间
+       [self setOpenTime:[NSDate dateWithTimeIntervalSinceNow:0]];
+        if (self.navigationController) {
+            if (self.navigationController.viewControllers.count &gt;=2) {
+                //获取当前vc 栈中 上一个VC
+                UIViewController *referVC =  self.navigationController.viewControllers[self.navigationController.viewControllers.count-2];
+                refer = [self getPageUrl:NSStringFromClass([referVC class])];
+            }
+        }
+        if (!refer || refer.length == 0) {
+            refer = @&quot;unknown&quot;;
+        }
+        [UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];
+    }
+
+    [self lbp_viewWillAppear:animated];
+}
+
+- (void)lbp_viewWillDisappear:(BOOL)animated {
+    NSString *className = NSStringFromClass([self class]);
+    if ([self getPageUrl:className]) {
+        [self setCloseTime:[NSDate dateWithTimeIntervalSinceNow:0]];
+        [UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];
+    }
+    [self lbp_viewWillDisappear:animated];
+}
+
+#pragma mark - private method
+
+- (NSString *)p_calculationTimeSpend {
+
+    if (![self getOpenTime] || ![self getCloseTime]) {
+        return @&quot;unknown&quot;;
+    }
+    NSTimeInterval aTimer = [[self getCloseTime] timeIntervalSinceDate:[self getOpenTime]];
+
+    int hour = (int)(aTimer/3600);
+
+    int minute = (int)(aTimer - hour*3600)/60;
+
+    int second = aTimer - hour*3600 - minute*60;
+
+    return [NSString stringWithFormat:@&quot;%d&quot;,second];
+}
+
+@end
+</code></pre><h3 id="4-如何唯一标识一个控件元素"><a href="#4-如何唯一标识一个控件元素" class="headerlink" title="4. 如何唯一标识一个控件元素"></a>4. 如何唯一标识一个控件元素</h3><p>xpath 是移动端定义可操作区域的唯一标识。既然想通过一个字符串标识前端系统中可操作的控件，那么 xpath 需要2个指标：</p>
+<ul>
+<li>唯一性：在同一系统中不存在不同控件有着相同的 xpath</li>
+<li>稳定性：不同版本的系统中，在页面结构没有变动的情况下，不同版本的相同页面，相同的控件的 xpath 需要保持一致。</li>
+</ul>
+<p>我们想到 Naive、H5 页面等系统渲染的时候都是以树形结构去绘制和渲染，所以我们以当前的 View 到系统的根元素之间的所有关键点（UIViewController、UIView、UIView容器（UITableView、UICollectionView等）、UIButton…）串联起来这样就唯一定位了控件元素。</p>
+<p>为了精确定位元素节点，参看下图</p>
+<p>假设一个 UIView 中有三个子 view，先后顺序是：label、button1、button2，那么深度依次为： 0、1、2。假如用户做了某些操作将 label1 从父 view 中被移除了。此时 UIView 只有 2 个子view：button1、button2，而且深度变为了：0、1。</p>
+<p><img src="http://img.wangjungang.cn/7tIkuC.png" alt=""></p>
+<p>可以看出仅仅由于其中某个子 view  的改变，却导致其它子 view 的深度都发生了变化。因此，在设计的时候需要注意，在新增/移除某一 view 时，尽量减少对已有 view 的深度的影响，调整了对节点的深度的计算方式：采用当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值。</p>
+<p>我们再看一下上面的这个例子，最初 label、button1、button2 的深度依次是：0、0、1。在 label 被移除后，button1、button2 的深度依次为：0、1。可以看出，在这个例子中，label 的移除并未对 button1、button2 的深度造成影响，这种调整后的计算方式在一定程度上增强了 xpath 的抗干扰性。</p>
+<p>另外，调整后的深度的计算方式是依赖于各节点的类型的，因此，此时必须要将各节点的名称放到viewPath中，而不再是仅仅为了增加可读性。</p>
+<p>在标识控件元素的层级时，需要知道「当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值」。参看上图，如果不是同类型的话，则唯一性得不到保证。</p>
+<h3 id="5-同类型的-view-的唯一定位问题"><a href="#5-同类型的-view-的唯一定位问题" class="headerlink" title="5. 同类型的 view 的唯一定位问题"></a>5. 同类型的 view 的唯一定位问题</h3><p>有个问题，比如我们点击的元素是 UITableViewCell，那么它虽然可以定位到类似于这个标示 xxApp.GoodsViewController.GoodsTableView.GoodsCell，同类型的 Cell 有多个，所以单凭借这个字符串是没有办法定位具体的那个 Cell 被点击了。</p>
+<p>当然有解决方案啦。</p>
+<ul>
+<li>找出当前元素在父层同类型元素中的索引。根据当前的元素遍历当前元素的父级元素的子元素，如果出现相同的元素，则需要判断当前元素是所在层级的第几个元素</li>
+</ul>
+<p>对当前的控件元素的父视图的全部子视图进行遍历，如果存在和当前的控件元素同类型的控件，那么需要判断当前控件元素在同类型控件元素中的所处的位置，那么则可以唯一定位。举例：GoodsCell-3.GoodsTableView.GoodsViewController.xxApp</p>
+<pre><code>//UIResponder分类
+- (NSString *)lbp_identifierKa
+{
+//    if (self.xq_identifier_ka == nil) {
+        if ([self isKindOfClass:[UIView class]]) {
+            UIView *view = (id)self;
+            NSString *sameViewTreeNode = [view obtainSameSuperViewSameClassViewTreeIndexPath];
+            NSMutableString *str = [NSMutableString string];
+            //特殊的 加减购 因为带有spm但是要区分加减 需要带TreeNode
+            NSString *className = [NSString stringWithUTF8String:object_getClassName(view)];
+            if (!view.accessibilityIdentifier || [className isEqualToString:@&quot;lbpButton&quot;]) {
+                [str appendString:sameViewTreeNode];
+                [str appendString:@&quot;,&quot;];
+            }
+            while (view.nextResponder) {
+                [str appendFormat:@&quot;%@,&quot;, NSStringFromClass(view.class)];
+                if ([view.class isSubclassOfClass:[UIViewController class]]) {
+                    break;
+                }
+                view = (id)view.nextResponder;
+            }
+            self.xq_identifier_ka = [self md5String:[NSString stringWithFormat:@&quot;%@&quot;,str]];
+            //            self.xq_identifier_ka = [NSString stringWithFormat:@&quot;%@&quot;,str];
+        }
+//    }
+    return self.xq_identifier_ka;
+}
+
+// UIView 分类
+- (NSString *)obtainSameSuperViewSameClassViewTreeIndexPat
+{    
+    NSString *classStr = NSStringFromClass([self class]);
+    //cell的子view
+    //UITableView 特殊的superview (UITableViewContentView)
+    //UICollectionViewCell
+    BOOL shouldUseSuperView =
+    ([classStr isEqualToString:@&quot;UITableViewCellContentView&quot;]) ||
+    ([[self.superview class] isKindOfClass:[UITableViewCell class]])||
+    ([[self.superview class] isKindOfClass:[UICollectionViewCell class]]);
+    if (shouldUseSuperView) {
+        return [self obtainIndexPathByView:self.superview];
+    }else {
+        return [self obtainIndexPathByView:self];
+    }
+}
+
+- (NSString *)obtainIndexPathByView:(UIView *)view
+{    
+    NSInteger viewTreeNodeDepth = NSIntegerMin;
+    NSInteger sameViewTreeNodeDepth = NSIntegerMin;
+
+    NSString *classStr = NSStringFromClass([view class]);
+
+    NSMutableArray *sameClassArr = [[NSMutableArray alloc]init];
+    //所处父view的全部subviews根节点深度
+    for (NSInteger index =0; index &lt; view.superview.subviews.count; index ++) {
+        //同类型
+        if  ([classStr isEqualToString:NSStringFromClass([view.superview.subviews[index] class])]){
+            [sameClassArr addObject:view.superview.subviews[index]];
+        }
+        if (view == view.superview.subviews[index]) {
+            viewTreeNodeDepth = index;
+            break;
+        }
+    }
+    //所处父view的同类型subviews根节点深度
+    for (NSInteger index =0; index &lt; sameClassArr.count; index ++) {
+        if (view == sameClassArr[index]) {
+            sameViewTreeNodeDepth = index;
+            break;
+        }
+    }
+    return [NSString stringWithFormat:@&quot;%ld&quot;,sameViewTreeNodeDepth];
+
+}
+</code></pre><p><img src="http://img.wangjungang.cn/kAHDPo.png" alt=""></p>
+<h3 id="6-同类型的view，但是点击的意义却不一样。如何唯一标识？"><a href="#6-同类型的view，但是点击的意义却不一样。如何唯一标识？" class="headerlink" title="6. 同类型的view，但是点击的意义却不一样。如何唯一标识？"></a>6. 同类型的view，但是点击的意义却不一样。如何唯一标识？</h3><p>问题5说明的是在一个界面上有多个不同的 view，他们的类型是同一种（CycleBannerView，但是数据源不一样，那么当数据源长度大于1的时候会轮播，下面会展示 UIPageControl。如果数据源是1个，那么就不会轮播和展示 UIPageControl）。情况6是同一种类型的 View，但是根据展示的内容不一样，点击的意义也不一样。也就是运营需要去知道用户到底点击的是哪一个。如下图所示，「立即抢购」和「分享赚佣金」是同一种类型的 View，但是点击意义不一样，需要我们需要唯一标识出来。之前的方法通过 “viewPath 配合同类型的 view 去加索引值“ 的方式还是没有办法唯一标识出来。所以想到一个方案，给 NSObject 添加一个分类，在分类里面添加一个协议。让需要复用但需要唯一标识的 view 去实现协议方法，因为是给 NSObject 分类添加的协议，所以 view 不需要去指定遵循。</p>
+<p><img src="http://img.wangjungang.cn/74bO8A.jpg" alt=""></p>
+<p>关键步骤：</p>
+<ul>
+<li><p>添加 NSObject 的 Category。在分类里面声明唯一标识的协议</p>
+</li>
+<li><p>在生成 viewPath 的地方去拿出当前 view 的唯一标识（view 调用协议方法）。然后拼接之前拿出的 viewPath</p>
+</li>
+</ul>
+<hr>
+<pre><code>//NSObject+UniqueIdentify.h
+#import &lt;Foundation/Foundation.h&gt;
+
+NS_ASSUME_NONNULL_BEGIN
+
+@class NSObject;
+@protocol UniqueIdentify&lt;NSObject&gt;
+
+@optional
+- (NSString *)setUniqueIdentifier;
+
+@end
+
+@interface NSObject (UniqueIdentify)&lt;UniqueIdentify&gt;
+
+@end
+
+NS_ASSUME_NONNULL_END
+
+//NSObject+UniqueIdentify.m
+#import &quot;NSObject+UniqueIdentify.h&quot;
+
+@implementation NSObject (UniqueIdentify)
+
+@end
+</code></pre><hr>
+<pre><code>//MallTGoodTagView.h
+
+extern NSString * _Nonnull const ImmediateyPurchase;
+extern NSString * _Nonnull const ShareToAward;
+
+//MallTGoodTagView.m
+NSString *const ImmediateyPurchase = @&quot;立即抢购&quot;;
+NSString *const ShareToAward = @&quot;分享赚佣金&quot;;
+
+- (NSString *)setUniqueIdentifier
+{
+    if (self.tagString) {
+        return self.tagString;
+    } else {
+        return NSStringFromClass([self class]);
+    }
+}
+</code></pre><hr>
+<p><img src="http://img.wangjungang.cn/SDd8wH.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/JbHICW.jpg" alt=""></p>
+<h3 id="7-数据如何处理"><a href="#7-数据如何处理" class="headerlink" title="7. 数据如何处理"></a>7. 数据如何处理</h3><h4 id="A-如何处理业务数据"><a href="#A-如何处理业务数据" class="headerlink" title="A. 如何处理业务数据"></a>A. 如何处理业务数据</h4><p>利用系统提供的 accessibilityIdentifier 官方给出的解释是标识用户界面元素的字符串</p>
+<pre><code>/*
+A string that identifies the user interface element.
+default == nil
+*/
+@property(nullable, nonatomic, copy) NSString *accessibilityIdentifier NS_AVAILABLE_IOS(5_0);
+</code></pre><p>服务端下发唯一标识</p>
+<p>接口获取的数据，里面有当前元素的唯一标识。比如在 UITableView 的界面去请求接口拿到数据，那么在在获取到的数据源里面会有一个字段，专门用来存储动态化的经常变动的业务数据。</p>
+<pre><code>cell.accessibilityIdentifier = [[[SDGGoodsCategoryServices sharedInstance].categories[indexPath.section] children][indexPath.row].spmContent yy_modelToJSONString];
+</code></pre><h4 id="B-基础数据"><a href="#B-基础数据" class="headerlink" title="B.基础数据"></a>B.基础数据</h4><p>设计上分为2个 pod 库，一个是 TriggerKit（专门用来 hook 机会需要的所有事件，页面停留时间、页面标识、view标识），另一个是 Appmonitor（专门用来提供基础数据、埋点数据的维护、上传机制）。所以在 Appmonitor 里面有个类叫做 UserTrackDataCenter 的类，专门提供一些基础数据（系统版本、操作系统、地理位置、网络等信息）。</p>
+<p>对外暴露出一些方法，用来将埋点数据交给 Appmonitor 去维护埋点数据，达到合适的“机制”再去上传埋点数据到服务端。</p>
+<pre><code>+ (void)clickEventUuid:(NSString *)uuid otherParam:(NSDictionary *)otherParam spmContent:(NSDictionary *)spmContent {
+    if (uuid) {
+        NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:otherParam];
+        params[SDGStatisticEventtagKey] = @&quot;clickMonitorV1&quot;;
+        NSMutableDictionary *valueDict = [[NSMutableDictionary alloc] initWithDictionary:spmContent];
+        valueDict[@&quot;xpath&quot;] = uuid?:@&quot;&quot;;
+        params[SDGStatisticEventtagValue] = valueDict?:@{};
+        [[AppMonotior shareInstance] traceEvent:[AMStatisticEvent eventWithInfo:params]];
+    }
+}
+</code></pre><p>###8. 数据的上报<br>数据通过上面的办法收集完了，那么如何及时、高效的上传到后端，给运营分析、处理呢？</p>
+<p>App 运行期间用户会点击非常多的数据，如果实时上传的话对于网络的利用率较低，所以需要考虑一个机制去控制用户产生的埋点数据的上传。</p>
+<p>思路是这样的。对外部暴露出一个接口，用来将产生的数据往数据中心存储。用户产生的数据会先保存到 AppMonitor 的内存中去，设置一个临界值（memoryEventMax = 50），如果存储的值达到设置的临界值 memoryEventMax，那么将内存中的数据写入文件系统，以 zip 的形式保存下来，然后上传到埋点系统。如果没有达到临界值但是存在一些 App 状态切换的情况，这时候需要及时保存数据到持久化。当下次打开 App 就去从本地持久化的地方读取是否有未上传的数据，如果有就上传日志信息，成功后删除本地的日志压缩包。</p>
+<p>App 应用状态的切换策略如下：</p>
+<ul>
+<li>didFinishLaunchWithOptions:内存日志信息写入硬盘</li>
+<li>didBecomeActive：上传</li>
+<li>willTerimate：内存日志信息写入硬盘</li>
+<li>didEnterBackground：内存日志信息写入硬盘</li>
+</ul>
+<p>下面的代码是 App 埋点数据的保存与上传</p>
+<pre><code>// 将App日志信息写入到内存中。当内存中的数量到达一定规模（超过设置的内存中存储的数量）的时候就将内存中的日志存储到文件信息中
+- (void)joinEvent:(NSDictionary *)dictionary
+{
+    if (dictionary) {
+        NSDictionary *tmp = [self createDicWithEvent:dictionary];
+        if (!s_memoryArray) {
+            s_memoryArray = [NSMutableArray array];
+        }
+        [s_memoryArray addObject:tmp];
+        if ([s_memoryArray count] &gt;= s_flushNum) {
+            [self writeEventLogsInFilesCompletion:^{
+                [self startUploadLogFile];
+            }];
+        }
+    }
+}
+
+// 外界调用的数据传递入口（App埋点统计）
+- (void)traceEvent:(AMStatisticEvent *)event
+{
+    // 线程锁,防止多处调用产生并发问题
+    @synchronized (self) {
+        if (event &amp;&amp; event.userInfo) {
+            [self joinEvent:event.userInfo];
+        }
+    }
+}
+
+// 将内存中的数据写入到文件中，持久化存储
+- (void)writeEventLogsInFilesCompletion:(void(^)(void))completionBlock
+{
+    NSArray *tmp = nil;
+    @synchronized (self) {
+        tmp = s_memoryArray;
+        s_memoryArray = nil;
+    }
+    if (tmp) {
+        __weak typeof(self) weakSelf = self;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            NSString *jsonFilePath = [weakSelf createTraceJsonFile];
+            if ([weakSelf writeArr:tmp toFilePath:jsonFilePath]) {
+                NSString *zipedFilePath = [weakSelf zipJsonFile:jsonFilePath];
+                if (zipedFilePath) {
+                    [AppMonotior clearCacheFile:jsonFilePath];
+                    if (completionBlock) {
+                        completionBlock();
+                    }
+                }
+            }
+        });
+    }
+}
+
+// 从App埋点统计压缩包文件夹中的每个压缩包文件上传服务端，成功后就删除本地的日志压缩包
+- (void)startUploadLogFile
+{
+    NSArray *fList = [self listFilesAtPath:[self eventJsonPath]];
+    if (!fList || [fList count] == 0) {
+        return;
+    }
+    [fList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        if (![obj hasSuffix:@&quot;.zip&quot;]) {
+            return;
+        }
+
+        NSString *zipedPath = obj;
+        unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:zipedPath error:nil] fileSize];
+        if (!fileSize || fileSize &lt; 1) {
+            return;
+        }
+        // 调用接口上传埋点数据
+        [self uploadZipFileWithPath:zipedPath completion:^(NSString *completionResult) {
+            if ([completionResult isEqual:@&quot;OK&quot;]) {
+                [AppMonotior clearCacheFile:zipedPath];
+            }
+        }];
+    }];
+}
+</code></pre><p>使用的时候就是在 hook 系统事件的时候，去调用统计页面上传数据</p>
+<pre><code>//UIViewController
+[UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];    // 页面出现
+[UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];    //页面消失
+</code></pre><p>总结下来关键步骤：</p>
+<ul>
+<li>hook 系统的各种事件（UIResponder、UITableView、UICollectionView代理事件、UIControl事件、UITapGestureRecognizers）、hook 应用程序、控制器生命周期。在做本来的逻辑之前添加额外的监控代码</li>
+<li>对于点击的元素按照视图树生成对应的唯一标识（addCartButton.GoodsView.GoodsViewController） 的 md5 值</li>
+<li>在业务开发完毕，进入埋点的编辑模式，将 md5 和关键的页面的关键事件（运营、产品想统计的关键模块：App层级、业务模块、关键页面、关键操作）给绑定起来。比如 addCartButton.GoodsView.GoodsViewController.tbApp 对应了 tbApp-商城模块-商品详情页-加入购物车功能。</li>
+<li>将所需要的数据存储下来</li>
+<li>设计机制等到合适的时机去上传数据</li>
+</ul>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/03/04/史上最强无痕埋点/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-规范化团队 git 提交信息" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1661,681 +2476,6 @@ self.timer = [NSTimer scheduledTimerWithTimeInterval:0.001 target:self selector:
 
 
   
-    <article id="post-Xcode11 新建工程中的SceneDelegate" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/">Xcode11 新建工程中的SceneDelegate</a>
-    </h1>
-  
-
-        
-        <a href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/" class="archive-article-date">
-  	<time datetime="2019-11-29T08:13:08.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Xcode 11 建新工程默认会创建通过 UIScene 管理多个 UIWindow 的应用，工程中除了 AppDelegate 外还会有一个 SceneDelegate，这是为了实现iPadOS支持多窗口的结果。AppDelegate.h不再有window属性，window属性被定义在了SceneDelegate.h中，AppDelegate中有新增的关于scene的代理方法，SceneDelegate中也有相应的代理方法。因此，当我们用Xcode11针对不同版本的iOS开发应用时，就要做一些适配。</p>
-<h2 id="样式"><a href="#样式" class="headerlink" title="样式"></a>样式</h2><p><img src="http://img.wangjungang.cn/MCTA26.jpg" alt=""></p>
-<p><img src="http://img.wangjungang.cn/eI9CO0.jpg" alt=""></p>
-<p>AppDelegate.h中多了两个默认的代理方法：</p>
-<pre><code>#pragma mark - UISceneSession lifecycle
-
-/*
-1.如果没有在APP的Info.plist文件中包含scene的配置数据，或者要动态更改场景配置数据，需要实现此方法。 UIKit会在创建新scene前调用此方法。
-2.方法会返回一个UISceneConfiguration对象，其包含其中包含场景详细信息，包括要创建的场景类型，用于管理场景的委托对象以及包含要显示的初始视图控制器的情节提要。 如果未实现此方法，则必须在应用程序的Info.plist文件中提供场景配置数据。
-
-总结下：默认在info.plist中进行了配置， 不用实现该方法也没有关系。如果没有配置就需要实现这个方法并返回一个UISceneConfiguration对象。
-配置参数中Application Session Role 是个数组，每一项有三个参数:
-Configuration Name:   当前配置的名字;
-Delegate Class Name:  与哪个Scene代理对象关联;
-StoryBoard name: 这个Scene使用的哪个storyboard。
-注意：代理方法中调用的是配置名为Default Configuration的Scene，则系统就会自动去调用SceneDelegate这个类。这样SceneDelegate和AppDelegate产生了关联。
-*/
-- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
-    // Called when a new scene session is being created.
-    // Use this method to select a configuration to create the new scene with.
-    return [[UISceneConfiguration alloc] initWithName:@&quot;Default Configuration&quot; sessionRole:connectingSceneSession.role];
-}
-
-// 在分屏中关闭其中一个或多个scene时候回调用
-- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet&lt;UISceneSession *&gt; *)sceneSessions {
-    // Called when the user discards a scene session.
-    // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-    // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-}
-</code></pre><p>SceneDelegate.m中的默认代理方法如下：</p>
-<pre><code>- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
-    // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-    // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-    // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-}
-
-- (void)sceneDidDisconnect:(UIScene *)scene {
-    // Called as the scene is being released by the system.
-    // This occurs shortly after the scene enters the background, or when its session is discarded.
-    // Release any resources associated with this scene that can be re-created the next time the scene connects.
-    // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
-}
-
-- (void)sceneDidBecomeActive:(UIScene *)scene {
-    // Called when the scene has moved from an inactive state to an active state.
-    // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-}
-
-- (void)sceneWillResignActive:(UIScene *)scene {
-    // Called when the scene will move from an active state to an inactive state.
-    // This may occur due to temporary interruptions (ex. an incoming phone call).
-}
-
-- (void)sceneWillEnterForeground:(UIScene *)scene {
-    // Called as the scene transitions from the background to the foreground.
-    // Use this method to undo the changes made on entering the background.
-}
-
-- (void)sceneDidEnterBackground:(UIScene *)scene {
-    // Called as the scene transitions from the foreground to the background.
-    // Use this method to save data, release shared resources, and store enough scene-specific state information
-    // to restore the scene back to its current state.
-}
-</code></pre><h2 id="1-不需要多窗口（multiple-windows）"><a href="#1-不需要多窗口（multiple-windows）" class="headerlink" title="1. 不需要多窗口（multiple windows）"></a>1. 不需要多窗口（multiple windows）</h2><p>如果需要支持iOS 13 及之前多个版本的iOS，且又不需要多个窗口的功能，可以<strong><em>删除项目info.plist文件中的Application Scene Manifest的配置数据</em></strong>，AppDelegate中关于Scene的代理方法、SceneDelegate的类是否删除都可以。<br>如果使用纯代码来实现显示界面，需要在AppDelegate.h中手动添加window属性，添加以下代码即可：</p>
-<pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
-    self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-    [self.window setBackgroundColor:[UIColor whiteColor]];
-
-    ViewController *con = [[ViewController alloc] init];
-    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
-    [self.window setRootViewController:nav];
-    [self.window makeKeyAndVisible];
-    return YES;
-}
-</code></pre><h2 id="2-支持多窗口"><a href="#2-支持多窗口" class="headerlink" title="2. 支持多窗口"></a>2. 支持多窗口</h2><p>iOS 13项目info.plist中的配置项Application Scene Manifest是针对iPad multiple windows功能推出的。在保留Application Scene Manifest配置项不予删除时（其中，项目是否支持多窗口功能是个可勾选项），AppDelegate的生命周期方法不再起作用，需要在SceneDelegate中使用UIScene提供的生命周期方法，并且需要针对 iOS 13 需要在Scene中配置和 iOS 13 以下在AppDelegate中做两套配置。<br>下面是纯代码实现界面显示的代码：</p>
-<pre><code>//// AppDelegate.m中
-
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
-
-    if (@available(iOS 13.0, *)) {
-
-    } else {
-        self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        [self.window setBackgroundColor:[UIColor whiteColor]];
-
-        ViewController *con = [[ViewController alloc] init];
-        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
-        [self.window setRootViewController:nav];
-        [self.window makeKeyAndVisible];
-    }
-    return YES;
-}
-
-
-//// SceneDelegate.m中
-
-- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
-
-    //在这里手动创建新的window
-    if (@available(iOS 13.0, *)) {
-        UIWindowScene *windowScene = (UIWindowScene *)scene;
-        self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-        [self.window setWindowScene:windowScene];
-        [self.window setBackgroundColor:[UIColor whiteColor]];
-
-        ViewController *con = [[ViewController alloc] init];
-        UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
-        [self.window setRootViewController:nav];
-        [self.window makeKeyAndVisible];
-    }
-}
-</code></pre><p>注意：如果不使用storyboard，需要将配置中的storyboard项删除：</p>
-<p><img src="http://img.wangjungang.cn/UbOrNC.jpg" alt=""></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-RxSwift + MJRefresh 自动管理刷新状态" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/">RxSwift + MJRefresh 自动管理刷新状态</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/" class="archive-article-date">
-  	<time datetime="2019-09-26T02:29:03.451Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><p>首先定义一个有关刷新状态的枚举类型：</p>
-<pre><code>/// 可按照自己的需求添加，由于我没有用到 mj_footer.beginRefreshing()，
-/// 所以没有定义相关的枚举。
-enum RefreshStatus {
-    case none
-    case beingHeaderRefresh
-    case endHeaderRefresh
-    case endFooterRefresh
-    // 这个枚举由于在我项目中经常用到，所以我定一个关联值的枚举。
-    // 项目中需要：
-    //  - 数据为空的时候隐藏 `mj_footer`，否则显示；
-    //  - 然后判断没有更多数据就调用 `endRefreshingWithNoMoreData()`
-    //    否则 `endRefreshing()`
-    case footerStatus(isHidden: Bool, isNoMoreData: Bool)
-}
-</code></pre><p>无需过多纠结，后面会演示枚举如何使用。</p>
-<h2 id="BehaviorSubject"><a href="#BehaviorSubject" class="headerlink" title="BehaviorSubject"></a>BehaviorSubject</h2><p> 接下来要介绍一个跟 RxSwift 有关的一个类型 BehaviorSubject，我们会在文章用到它。</p>
-<p>  BehaviorSubject 向所有订阅者发布事件，并向新的订阅者提供最近（或最初）的值。</p>
-<p>  怎么理解？来看看代码：<br>  <br>      func addObserver(_ id: String) -&gt; Disposable {<br>        return subscribe { print(“Subscription:”, id, “Event:”, $0) }<br>    }</p>
-<pre><code>let disposeBag = DisposeBag()
-let subject = BehaviorSubject(value: &quot;🔴&quot;)
-
-subject.addObserver(&quot;1&quot;).disposed(by: disposeBag)
-subject.onNext(&quot;🐶&quot;)
-subject.onNext(&quot;🐱&quot;)
-
-subject.addObserver(&quot;2&quot;).disposed(by: disposeBag)
-subject.onNext(&quot;🅰️&quot;)
-subject.onNext(&quot;🅱️&quot;)
-
-/**
-Subscription: 1 Event: next(🔴)
-Subscription: 1 Event: next(🐶)
-Subscription: 1 Event: next(🐱)
-Subscription: 2 Event: next(🐱)
-Subscription: 1 Event: next(🅰️)
-Subscription: 2 Event: next(🅰️)
-Subscription: 1 Event: next(🅱️)
-Subscription: 2 Event: next(🅱️)
-Subscription: 1 Event: next(🍐)
-Subscription: 2 Event: next(🍐)
-Subscription: 1 Event: next(🍊)
-Subscription: 2 Event: next(🍊)
-*/
-</code></pre><p>总结一下：BehaviorSubject 从上至下接收它发出的最新（原始值也属于发出的事件元素）值。并向新的订阅者提供最新值，所以这里我们 订阅2号 会接收到前面发出的最新元素，稍后才是 订阅2号 自己发出的元素事件。</p>
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p> 好了，下面我们就用上面学到的所有知识来写一个自动管理刷新状态案例。<br> 假设有这样一个需求：<br>  <br>  <br>    // ViewController.swift</p>
-<pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
-// 不传参数则不创建。自动管理刷新状态。
-viewModel.refreshStatusBind(to: tableView, {
-    // 处理头部刷新。
-}) {
-    // 处理尾部刷新。
-}.disposed(by: bag)
-</code></pre><p>如何做到这一点？看到方法是从 viewModel 里面调出来的，那我们就去 viewModel 里面看一看究竟。</p>
-<pre><code>class ViewModel: Refreshable {
-
-    lazy var list = Variable&lt;[MnlDakaCommentModel]&gt;([])
-    let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
-    let reload = PublishSubject&lt;Bool&gt;()
-    let bag = DisposeBag()
-
-    init() {
-        reload.subscribe(onNext: { [weak self] (isDown) in
-            guard let `self` = self else {
-                return
-            }
-            // 发送请求
-            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
-                let list = result.value?[&quot;list&quot;].arrayObject
-                let models = decode([MnlDakaCommentModel].self, from: list) ?? []
-            }
-        }
-    }
-}
-</code></pre><p> 这里你就知道了吧？任何实现 Refreshable 必须实现 refreshStatus 属性，如果你足够眼尖应该看到，上面的 ViewModel 同样定义一个类型一样 refreshStatus 属性，为的就是实现协议中规定的属性。</p>
-<p>  好了，有个这个属性之后，我们就可以愉快的管理刷新状态了，比如想让它结束刷新，我们可以拿到 refreshStatus 属性，比如在 ViewModel 里，我们可以这样：</p>
-<pre><code>// 发送请求
-MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
-    let list = result.value?[&quot;list&quot;].arrayObject
-    let models = decode([MnlDakaCommentModel].self, from: list) ?? []
-    // 请求完成需要结束刷新：
-    // refreshStatus.onNext(.endFooterRefresh)
-    // 或者判断没有更多数据时：
-    // refreshStatus.onNext(isHidden: false, isNoMoreData: true)
-}
-</code></pre><p> 这时你肯定问了，凭什么我这样发送消息就可以管理刷新状态了？你逗我呢？之前讲 BehaviorSubject 的时候不是有讲到订阅 (subscribe) 吗？既然这里发送消息了，肯定会在接收到发出的元素的时候做了什么处理吧？</p>
-<p>  问得好！问得非常好！问得太————好了。好吧，我老实交代，就来说下接收到元素时我都做了什么？<br>  <br>      extension Refreshable {</p>
-<pre><code>    func refreshStatusBind(to scrollView: UIScrollView, _ header: (() -&gt; Void)? = nil, _ footer: (() -&gt; Void)? = nil) -&gt; Disposable {
-
-        if header != nil {
-            scrollView.mj_header = MJRefreshNormalHeader {
-                // 处理头部方法时结束尾部刷新。
-                scrollView.mj_footer?.endRefreshing()
-                header?()
-            }
-        }
-        if footer != nil {
-            scrollView.mj_footer = MJRefreshAutoNormalFooter {
-                // 处理尾部方法时结束头部刷新。
-                scrollView.mj_header?.endRefreshing()
-                footer?()
-            }
-        }
-
-        return refreshStatus.subscribe(onNext: { (status) in
-            switch status {
-            case .none:
-                // 未发生任何状态事件时隐藏尾部。
-                scrollView.mj_footer?.isHidden = true
-            case .beginHeaderRefresh:
-                scrollView.mj_header?.beginRefreshing()
-            case .endHeaderRefresh:
-                scrollView.mj_header?.endRefreshing()
-            case .endFooterRefresh:
-                scrollView.mj_footer?.endRefreshing()
-            case .endAllRefresh:
-                // 结束全部拉刷新
-                scrollView.mj_header?.endRefreshing()
-                scrollView.mj_footer?.endRefreshing()
-            case .footerStatus(let isHidden, let isNone):
-                // 根据关联值确定 footer 的状态。
-                scrollView.mj_footer?.isHidden = isHidden
-                // 处理尾部状态时，如果之前正在刷新头部，则结束刷新，
-                // 至此，我们无需写判断结束头部刷新的代码，在这里自动处理。
-                scrollView.mj_header?.endRefreshing()
-                if isNone {
-                    scrollView.mj_footer?.endRefreshingWithNoMoreData()
-                }else {
-                    scrollView.mj_footer?.endRefreshing()
-                }
-            }
-        })
-    }
-}
-</code></pre><p>给 Refreshable 加一个扩展，我们先来看方法的第一部分：创建头部和尾部刷新控件。这段代码很容易看懂，结合前面放在 ViewController.swift 里的代码：</p>
-<pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
-// 不传参数则不创建。自动管理刷新状态。
-viewModel.refreshStatusBind(to: tableView, {
-    // 处理头部刷新。
-}) {
-    // 处理尾部刷新。
-}.disposed(by: bag)
-</code></pre><p> 无非就是传闭包参数的时候创建对应的刷新控件，并把传进去的闭包作为控件的刷新事件。因为我已经把 UIScrollView 作为参数传进来了，所以可以直接拿到它创建刷新控件。</p>
-<p>  在到第二部分，这就是一个真正监听状态改变的部分了，是根据发出的消息做出改变的反应。这样，我们在 ViewModel 里发送消息，这里就能接收到并作出对应的改变。
-  </p>
-<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><h3 id="ViewController-swift"><a href="#ViewController-swift" class="headerlink" title="ViewController.swift"></a>ViewController.swift</h3><pre><code>import UIKit
-import RxSwift
-
-class ViewController: UITableViewController {
-
-    lazy var viewModel = ViewModel()
-    let bag = DisposeBag()
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        /// 创建刷新控件。
-        viewModel.refreshStatusBind(to: tableView, { [weak self] in
-            // 处理头部刷新。
-            self?.viewModel.reload.onNext(false)
-        }) { [weak self] in
-            // 处理尾部刷新。
-            self?.viewModel.reload.onNext(true)
-        }.disposed(by: bag)
-
-        // 给 viewModel 中的 reload 发送消息，让其请求数据。
-        // 参数 Bool 表示是否上拉。
-        viewModel.reload.onNext(false)
-    }
-}
-</code></pre><h3 id="ViewModel-swift"><a href="#ViewModel-swift" class="headerlink" title="ViewModel.swift"></a>ViewModel.swift</h3><pre><code>import UIKit
-import RxSwift
-
-class ViewModel: Refreshable {
-
-    lazy var list = Variable&lt;[Model]&gt;([])
-    let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
-    let reload = PublishSubject&lt;Bool&gt;()
-    let bag = DisposeBag()
-
-    init() {
-        reload.subscribe(onNext: { [weak self] (isReload) in
-
-            guard let `self` = self else {
-                return
-            }
-
-            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in
-
-                let list = result.value?[&quot;list&quot;].arrayObject
-                let models = decode([MnlDakaCommentModel].self, from: list) ?? []
-
-                self.list.value = isReload ? models : self.list.value + models
-
-                let count = result.value?[&quot;count&quot;].int ?? 0
-                // 发送刷新状态给订阅者，让其作出改变。
-                // 如果列表个数和总数相等，则判断它为没有更多数据。
-                self.refreshStatus.onNext(.footerStatus(isHidden: self.list.value.isEmpty,
-                                                        isNoMoreData: self.list.value.count == count))
-            }
-        }).disposed(by: bag)
-    }
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-RxDataSource 使用套路与解释" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/26/RxDataSource 使用套路与解释/">RxDataSource 使用套路与解释</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/26/RxDataSource 使用套路与解释/" class="archive-article-date">
-  	<time datetime="2019-09-26T02:16:26.933Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="http://img.wangjungang.cn/JkhDIp.png" alt=""></p>
-<h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>RxSwift 非常强大，用得好，很爽</p>
-<h3 id="套路：-tableView-刷新以后，就是有了数据源，怎样来一个回调。"><a href="#套路：-tableView-刷新以后，就是有了数据源，怎样来一个回调。" class="headerlink" title="套路： tableView 刷新以后，就是有了数据源，怎样来一个回调。"></a>套路： tableView 刷新以后，就是有了数据源，怎样来一个回调。</h3><p>场景举例，就是两表关联。 RxDataSource，怎样列表刷新出来，就自动选择第一个。然后子列表根据上一个列表的选择，确认要刷新的数据。</p>
-<h3 id="问题：RxDataSource-专注于列表视图的数据处理，自动选择第一个-row-是-tableViewDelegate-干的事情。"><a href="#问题：RxDataSource-专注于列表视图的数据处理，自动选择第一个-row-是-tableViewDelegate-干的事情。" class="headerlink" title="问题：RxDataSource 专注于列表视图的数据处理，自动选择第一个 row 是 tableViewDelegate 干的事情。"></a>问题：RxDataSource 专注于列表视图的数据处理，自动选择第一个 row 是 tableViewDelegate 干的事情。</h3><p><img src="http://img.wangjungang.cn/7REpyv.jpg" alt=""></p>
-<p>左边一个列表 tableView, 右边一个列表 tableView , 两个列表之间的数据存在关联，左边列表是一级选项，右边列表是对应左边的二级选项。</p>
-<h3 id="一般可以这么做"><a href="#一般可以这么做" class="headerlink" title="一般可以这么做"></a>一般可以这么做</h3><pre><code>private var lastIndex : NSInteger = 0
-
-// ...
-
-// 看这一段代码，就够了
-let leftDataSource = RxTableViewSectionedReloadDataSource&lt;CategoryLeftSection&gt;( configureCell: { [weak self] ds, tv, ip, item in
-            guard  let strongSelf = self else { return UITableViewCell()}
-            let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
-            cell.model = item
-            // 看这一句代码，就够了
-            if ip.row == strongSelf.lastIndex {
-                   // ...
-                    tv.selectRow(at: ip, animated: false, scrollPosition: .top)
-                    tv.delegate?.tableView!(tv, didSelectRowAt: ip)
-            }
-            return cell
-        })
-
-        vmOutput!.sections.asDriver().drive(self.leftMenuTableView.rx.items(dataSource: leftDataSource)).disposed(by: rx.disposeBag)
-
-// 选择左边列表，给右边提供的数据
-let rightPieceListData = self.leftMenuTableView.rx.itemSelected.distinctUntilChanged().flatMapLatest {
-        [weak self](indexPath) -&gt;  Observable&lt;[SubItems]&gt; in
-            guard let strongSelf = self else { return Observable.just([]) }
-
-            strongSelf.currentIndex = indexPath.row
-            if indexPath.row == strongSelf.viewModel.vmDatas.value.count - 1 {
-                // ...
-                strongSelf.leftMenuTableView.selectRow(at: strongSelf.currentSelectIndexPath, animated: false, scrollPosition: .top)
-                strongSelf.leftMenuTableView.delegate?.tableView!(strongSelf.leftMenuTableView, didSelectRowAt: strongSelf.currentSelectIndexPath!)
-                return Observable.just((strongSelf.currentListData)!)
-            }
-            if let subItems = strongSelf.viewModel.vmDatas.value[indexPath.row].subnav {
-                // ...
-                var reult:[SubItems] = subItems
-                // ...
-                strongSelf.currentListData = reult
-                strongSelf.currentSelectIndexPath = indexPath
-                return Observable.just(reult)
-            }
-            return Observable.just([])
-        }.share(replay: 1)
-
-        // 右边列表的数据源，具体 cell 的配置方法
-        let rightListDataSource =  RxTableViewSectionedReloadDataSource&lt;CategoryRightSection&gt;( configureCell: { [weak self]ds, tv, ip, item in
-            guard let strongSelf = self else { return UITableViewCell() }
-            if strongSelf.lastIndex != strongSelf.currentIndex {
-                tv.scrollToRow(at: ip, at: .top, animated: false)
-                strongSelf.lastIndex = strongSelf.currentIndex
-            }
-            if ip.row == 0 {
-                let cell :CategoryListBannerCell = CategoryListBannerCell()
-                cell.model = item
-                return cell
-            } else {
-                let cell : CategoryListSectionCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell2&quot;, for: ip) as! CategoryListSectionCell
-                cell.model = item
-                return cell
-            }
-        })
-        // 设置右边列表的代理
-        rightListTableView.rx.setDelegate(self).disposed(by: rx.disposeBag)
-        // 右边列表需要取得的数据，传递给右边列表的配置方法
-        rightPieceListData.map{ [CategoryRightSection(items:$0)] }.bind(to: self.rightListTableView.rx.items(dataSource: rightListDataSource))
-            .disposed(by: rx.disposeBag)
-</code></pre><p>上面这个实现很 Low, 选择的时机是这个 if ip.row == strongSelf.lastIndex { ， 当更新数据到指定 cell 时候，操作。</p>
-<p>程序可以跑，但是不优雅。</p>
-<p>如果把上面的逻辑翻译成面向对象，就是：</p>
-<pre><code>open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {
-           let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
-            cell.model = item
-            // 看这一句代码，就够了
-            if ip.row == strongSelf.lastIndex {
-                   // ...
-                    tv.selectRow(at: ip, animated: false, scrollPosition: .top)
-                    tv.delegate?.tableView!(tv, didSelectRowAt: ip)
-                    // ...
-
-            }
-            return cell
-    }
-</code></pre><p>这样展开，清晰了一些。我们是不会这么用的，如果不用 Rx, 直接 OOP. 我们是这么用 刷新完了之后，选中一下</p>
-<pre><code>tableView.reloadData()
-tv.selectRow(at: ip, animated: false, scrollPosition: .top)
-</code></pre><p>// 其他操作</p>
-<pre><code>open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {
-            let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
-            cell.model = item
-            return cell
-    }
-</code></pre><h3 id="看一看源码"><a href="#看一看源码" class="headerlink" title="看一看源码"></a>看一看源码</h3><p>leftDataSource 通过泛型指明每个 tableView section 的数据结构，他唯一的参数是一个闭包， configureCell .</p>
-<pre><code>let rightListDataSource =  RxTableViewSectionedReloadDataSource&lt;CategoryLeftSection&gt;( configureCell: { [weak self] ds, tv, ip, item in
-// ...
-}
-</code></pre><p>configureCell 实际上就是系统提供的代理方法 open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {<br>RxDataSource 的源代码挺清晰的，首先采用前提条件 precondition, row 确保不会越界。然后调用 configureCell 匿名函数。这样的设计，借用了 Swift 中函数是一级公民，函数可以像值一样传递。</p>
-<h3 id="更好的调用时机"><a href="#更好的调用时机" class="headerlink" title="更好的调用时机:"></a>更好的调用时机:</h3><p>继承 TableViewSectionedDataSource, 创建自己想要的子类，任意根据需求改方法。</p>
-<p>做一个继承</p>
-<pre><code>final class MyDataSource&lt;S: SectionModelType&gt;: RxTableViewSectionedReloadDataSource&lt;S&gt; {
-    private let relay = PublishRelay&lt;Void&gt;()
-    var rxRealoded: Signal&lt;Void&gt; {
-        return relay.asSignal()
-    }
-
-    override func tableView(_ tableView: UITableView, observedEvent: Event&lt;[S]&gt;) {
-        super.tableView(tableView, observedEvent: observedEvent)
-        // Do diff
-        // Notify update
-        relay.accept(())
-    }
-
-}
-</code></pre><p>因为这个场景下， super.tableView(tableView, observedEvent: observedEvent), 调用之后，需要接受一下事件，以后把它发送出去。所以要用一个 PublishSubject.<br>PublishRelay 是对 PublishSubject 的封装，区别是他的功能没 PublishSubject 那么强，PublishRelay 少两个状态，完成 completed 和出错 error， 适合更加专门的场景。</p>
-<p>Signal 信号嘛，共享事件流 SharedSequence。他是对 Observable 的封装。具有在主线程调用等特性，更适用于搞 UI .</p>
-<p>简单优化下，代码语义更加明确</p>
-<pre><code>// left menu 数据源
-        let leftDataSource = MyDataSource&lt;CategoryLeftSection&gt;( configureCell: { ds, tv, ip, item in
-            let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
-            cell.model = item
-            return cell
-        })
-        // 刷新完了，做一下选择
-        leftDataSource.rxRealoded.emit(onNext: { [weak self] in
-            guard let self = self else { return }
-            let indexPath = IndexPath(row: 0, section: 0)
-            self.leftMenuTableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableView.ScrollPosition.none)
-            self.leftMenuTableView.delegate?.tableView?(self.leftMenuTableView, didSelectRowAt: indexPath)
-        }).disposed(by: rx.disposeBag)
-
-// ...
-// 其余不变
-</code></pre><h3 id="所谓代码的语义"><a href="#所谓代码的语义" class="headerlink" title="所谓代码的语义"></a>所谓代码的语义</h3><p>FRP 就是把要干嘛，直接写清楚，不会像 OOP 那样，过度的见缝插针，调用到了，就改一下状态。</p>
-<p>声明式编程是只在一处修改。就算把那一处修改，声明式编程也只在一处调用。OOP 就找的比较辛苦。</p>
-<p><a href="https://github.com/Thecompanyprojects/RXDataSourceDemo" target="_blank" rel="noopener">github</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/26/RxDataSource 使用套路与解释/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -2350,7 +2490,7 @@ tv.selectRow(at: ip, animated: false, scrollPosition: .top)
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2021 wangjungang
+    		&copy; 2022 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -2469,11 +2609,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2489,11 +2629,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2501,7 +2641,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2509,7 +2649,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2526,6 +2666,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
             
             <div class="clearfix"></div>
