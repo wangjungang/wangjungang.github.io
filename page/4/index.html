@@ -152,6 +152,346 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post- Swift面向协议编程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/03/08/ Swift面向协议编程/">Swift面向协议编程</a>
+    </h1>
+  
+
+        
+        <a href="/2020/03/08/ Swift面向协议编程/" class="archive-article-date">
+  	<time datetime="2020-03-08T08:56:29.896Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="一、OOP与POP"><a href="#一、OOP与POP" class="headerlink" title="一、OOP与POP"></a>一、OOP与POP</h2><p>面向对象程序设计(Object Oriented Programming) 其本质是以建立模型体现出来的抽象思维过程和面向对象的方法。模型是用来反映现实世界中事物特征的。任何一个模型都不可能反映客观事物的一切具体特征，只能对事物特征和变化规律的一种抽象，且在它所涉及的范围内更普遍、更集中、更深刻地描述客体的特征。通过建立模型而达到的抽象是人们对客体认识的深化</p>
+<p>正是因为化零为整的功效，方便储存数据然后传输！ 面向对象的设计，在众多语言里面被采用！OC - Swift 主流方式也是 OOP. 这个相比大家已经非常熟悉了，这里也不再啰嗦。今天的主角是 POP (Protocol Oriented Programming) 一 面向协议编程</p>
+<h3 id="面向对象的困境"><a href="#面向对象的困境" class="headerlink" title="面向对象的困境"></a>面向对象的困境</h3><ul>
+<li>横切关注点</li>
+<li>动态派发安全性</li>
+<li>菱形缺陷</li>
+</ul>
+<h2 id="二、POP-面向协议编程"><a href="#二、POP-面向协议编程" class="headerlink" title="二、POP 面向协议编程"></a>二、POP 面向协议编程</h2><p>面向协议编程的思维，在 Swift开发中非常非常重要！可以说如果你用好了 POP 那么你的项目绝对逼格不是一个level 下面我们通过解决 OOP 问题的思路展开分析</p>
+<h3 id="POP-解决横切关注点"><a href="#POP-解决横切关注点" class="headerlink" title="POP 解决横切关注点"></a>POP 解决横切关注点</h3><p>横切关注点(Cross-Cutting Concerns) 那就是我们很难在不同继承关系的类里共用代码! 现在我们通过面向协议的方式，任何遵循协议的，都可以默认添加 name属性以及sayHello()方法！</p>
+<pre><code>protocol LGProtocl {
+    /// 协议属性
+    var name: String {get}
+    /// 协议方法
+    func sayHello()
+}
+</code></pre><ul>
+<li>但是这里还有一个问题：缺乏实现！如果这样提供声明，我还需要在每一个类里面实现，有很多时候其实这些方法都是共有，不需要太多特定实现</li>
+<li>幸好在 WWDC 2015 和 Swift 2 发布时，Apple 为协议引入了一个新特性一 协议扩展 它为 Swift 语言带来了一次革命性的变化。</li>
+</ul>
+<pre><code>protocol LGProtocl {
+    /// 协议属性
+    var name: String {get}
+    /// 协议方法
+    func sayHello()
+}
+</code></pre><ul>
+<li>但是这里还有一个问题：缺乏实现！如果这样提供声明，我还需要在每一个类里面实现，有很多时候其实这些方法都是共有，不需要太多特定实现</li>
+<li>幸好在 WWDC 2015 和 Swift 2 发布时，Apple 为协议引入了一个新特性一 协议扩展 它为 Swift 语言带来了一次革命性的变化。</li>
+</ul>
+<pre><code>struct LGTeacher: LGProtocl{
+    var name: String
+    func sayHello() {
+        print(&quot;你好&quot;)
+    }
+}
+</code></pre><ul>
+<li>通过协议定义，提供实现的入口，遵循协议的类型需要对其进行实现</li>
+<li>协议扩展，为入口提供默认实现。根据入口提供额外实现</li>
+</ul>
+<p>这样的操作有什么作用了？ 一 万物皆 lg</p>
+<pre><code>// 声明协议
+extension LGCompatible {
+    /// Reactive extensions.
+    public static var lg: LGRxSwift.Reactive&lt;Self&gt;.Type
+    /// Reactive extensions.
+    public var lg: LGRxSwift.Reactive&lt;Self&gt;
+}
+// NSObject 实现
+extension NSObject : LGCompatible { }
+</code></pre><ul>
+<li>这样完美实现了万物皆lg的特性</li>
+<li>然后通过 LGCompatible 引申到Reactive 响应式类或者结构体</li>
+<li>最后通过不断拓展 Reactive 的能力，就能完美切合</li>
+</ul>
+<h3 id="POP-解决动态派发安全性"><a href="#POP-解决动态派发安全性" class="headerlink" title="POP 解决动态派发安全性"></a>POP 解决动态派发安全性</h3><p>对于没有实现 LGProtocl 的类型，编译器将返回错误，因此不存在消息误发送的情况</p>
+<pre><code>// Compiler Error: 
+// &apos;LGTeacher&apos; does not conform to protocol &apos;LGProtocl&apos;
+// protocol requires function &apos;sayHello()&apos;
+</code></pre><h3 id="POP-解决菱形缺陷"><a href="#POP-解决菱形缺陷" class="headerlink" title="POP 解决菱形缺陷"></a>POP 解决菱形缺陷</h3><p>最后我们看看多继承。多继承中存在的一个重要问题是菱形缺陷，也就是子类无法确定使用哪个父类的方法。在协议的对应方面，这个问题虽然依然存在，但却是可以唯一安全地确定的。</p>
+<p>这里很遗憾POP在 解决菱形缺陷 这一点上也存在同样的BUG , 因为多个协议存在相同的协议属性、协议方法，遵循者也是无法确定的！⚠️ 我们在平时开发中一定要尽量规避同名协议遵循问题，我们在模块划分上面一定要做做到彻底，尽管 Swift 还不能很好地处理多个协议的冲突 但是我们可以在协议层功能抽层严格机智处理上浮与下沉功能。</p>
+<p>举个例子：🌰</p>
+<ul>
+<li><p>我们刚刚是不是做了LGCompatible, 它是我们功能的入口，万物皆lg,进来，那么这层协议只需要提供入口就完毕</p>
+</li>
+<li><p>同时提供接口过度能力，把 LGReactiveCompatible 的 lg 过度到 Reactive层</p>
+<pre><code>extension LGReactiveCompatible {
+    /// Reactive extensions.
+    public static var lg: Reactive&lt;Self&gt;.Type {
+        get { return Reactive&lt;Self&gt;.self }
+        set {// this enables using Reactive to &quot;mutate&quot; base type }
+    }
+    /// Reactive extensions.
+    public var lg: Reactive&lt;Self&gt; {
+        get { return Reactive(self) }
+        set { // this enables using Reactive to &quot;mutate&quot; base object }
+    }
+}
+</code></pre></li>
+<li><p>Reactive层, 根据业务划分开来，达到逻辑代码下沉效果！</p>
+<pre><code>public struct Reactive&lt;Base&gt; {
+    public let base: Base
+    public init(_ base: Base) {
+        self.base = base
+    }
+}
+</code></pre></li>
+</ul>
+<ul>
+<li>根据 Reactive 里面关联的 Base 类型来确定不同的响应式功能</li>
+<li>比如：extension Reactive where Base: UISwitch 其中 UISwitch 可以换成 UITableView、UITextField、UIView … 不断业务下沉！</li>
+</ul>
+<p>相信到这里你已经感受到了面向协议编程的方便之处，但是还有一个非常重要的特性没有展现出来就是 一 耦合度大大降低，代码分层，逻辑更清晰</p>
+<h2 id="三、POP-网络"><a href="#三、POP-网络" class="headerlink" title="三、POP 网络"></a>三、POP 网络</h2><p>我们在实际开发中，网络请求是一个非常重要的模块</p>
+<pre><code>Alamofire.request(&quot;http://127.0.0.1:5000/pythonJson/&quot;)
+    .validate(statusCode: 200..&lt;300)
+    .validate(contentType: [&quot;application/json&quot;])
+    .responseData { response in
+        switch response.result {
+        case .success:
+            print(response)
+            let _ = LGLoginClient.lgJson(data: response.data)
+        case .failure(let error):
+            print(error)
+        }
+}
+</code></pre><p>上面这段代码，没有错！但是如果你是一个资深iOS开发，肯定会发现问题！</p>
+<p>如果你直接在 ViewController (代表应用层) 直接这么网络请求，耦合度是非常大的（应用层与网络层耦合在一起）</p>
+<p>还有到处嵌套，可复用性特别低</p>
+<p>应用层其实根本不应该关心网络请求的method、接口、参数 说白了我也不想关心</p>
+<p>如果系统模块化处理，那我就非常 happy 😄😄😄</p>
+<h3 id="网络信息能力"><a href="#网络信息能力" class="headerlink" title="网络信息能力"></a>网络信息能力</h3><pre><code>enum LGHTTPMethod: String {
+    case GET
+    case POST
+}
+
+protocol LGRequest {
+    var host: String { get }
+    var path: String { get }
+    var method: LGHTTPMethod { get }
+    var parameter: [String: Any] { get }
+
+    associatedtype Response
+    func parse(data: Data) -&gt; Response?
+}
+</code></pre><ul>
+<li>LGHTTPMethod 提供本模块LGRequest 需要的请求方法枚举</li>
+<li>LGRequest 是登录注册模块的请求能力赋予者，通过面向协议的方式给我们的模块提供能力</li>
+<li>Response 这个关联类型，方便后面 json 转模型，设置这个泛型类型是能够通用化</li>
+</ul>
+<h3 id="模块信息层"><a href="#模块信息层" class="headerlink" title="模块信息层"></a>模块信息层</h3><pre><code>struct LGLoginRequest: LGRequest {
+    typealias Response = LGPerson
+    let name: String
+
+    let host = &quot;http://127.0.0.1:5000&quot;
+    var path: String {
+        return &quot;/pythonJson/getTeacherInfo/?username=\(name)&quot;
+    }
+    let method: LGHTTPMethod = .GET
+    let parameter: [String: Any] = [:]
+
+    func parse(data: Data) -&gt; LGPerson? {
+        return LGPerson(data: data)
+    }
+}
+</code></pre><p>LGLoginRequest 遵循 LGRequest 获得host、path、method、parameter、parse 处理能力，在这里可以直接处理，就不需要到应用层再去传值！</p>
+<h3 id="网络请求能力"><a href="#网络请求能力" class="headerlink" title="网络请求能力"></a>网络请求能力</h3><pre><code>extension LGRequest {
+    func send(handler: @escaping (Response?) -&gt; Void) {
+        let url = URL(string: host.appending(path))!
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        let task = URLSession.shared.dataTask(with: request) {
+            data, response, error in
+            if let data = data, let res = self.parse(data: data) {
+                DispatchQueue.main.async { handler(res) }
+            } else {
+                DispatchQueue.main.async { handler(nil) }
+            }
+        }
+        task.resume()
+    }
+}
+</code></pre><p>因为面向协议，我们利用协议提供公用网络请求能力</p>
+<p>其中 Response 就是相应模型的具体类型</p>
+<h3 id="应用层调用"><a href="#应用层调用" class="headerlink" title="应用层调用"></a>应用层调用</h3><pre><code>override func viewDidLoad() {
+    super.viewDidLoad()
+    let request = LGPersonRequest(name: &quot;Cooci&quot;)
+    request.send { (person) in
+        self.updataUI(person: person!)
+    }
+}
+</code></pre><ul>
+<li>应用层与网络层完全分隔开来</li>
+<li>应用层只提供必要的参数信息，具体调用哪个接口，怎么处理交给下层</li>
+<li>LGPersonRequest 模块信息处理提供层</li>
+<li>LGPersonRequest 同时还具备调用网络能力</li>
+</ul>
+<h3 id="POP网络优化重构"><a href="#POP网络优化重构" class="headerlink" title="POP网络优化重构"></a>POP网络优化重构</h3><p>很显然我们的 LGRequest 这个家伙的能力太强了！能提供信息，还能发起请求，连序列化的处理能力也是由LGRequest提供！优化重构迫在眉睫。。。。</p>
+<h4 id="1：信息提供能力者"><a href="#1：信息提供能力者" class="headerlink" title="1：信息提供能力者"></a>1：信息提供能力者</h4><pre><code>protocol LGRequest {
+    var path: String { get }
+    var method: LGHTTPMethod { get }
+    var parameter: [String: Any] { get }
+
+    associatedtype Response: LGDecodable
+}
+
+struct LGPersonRequest: LGRequest {
+    typealias Response = LGPerson
+
+    let name: String
+    var path: String {
+        return &quot;/pythonJson/getTeacherInfo/?username=\(name)&quot;
+    }
+    let method: LGHTTPMethod = .GET
+    let parameter: [String: Any] = [:]
+}
+</code></pre><p>把公共提供的 host 提取出去</p>
+<p>不再提供 LGRequest 网络请求能力</p>
+<p>序列化交付给具体的模型，提供一个序列化能力 LGDecodable</p>
+<pre><code>protocol ClientProtocol {
+    var host: String { get }
+    func send&lt;T: LGRequest&gt;(_ r: T, handler: @escaping (T.Response?) -&gt; Void)
+}
+
+
+class LGClient: ClientProtocol{
+    static let manager = LGClient()
+    let host: String = &quot;http://127.0.0.1:5000&quot;
+
+    func send&lt;T&gt;(_ r: T, handler: @escaping (T.Response?) -&gt; Void) where T : LGRequest {
+
+        let url = URL(string: host.appending(r.path))!
+        var request = URLRequest(url: url)
+        request.httpMethod = r.method.rawValue
+        let task = URLSession.shared.dataTask(with: request) {
+            data, response, error in
+            if let data = data, let res = T.Response.parse(data: data) {
+                DispatchQueue.main.async { handler(res) }
+            } else {
+                DispatchQueue.main.async { handler(nil) }
+            }
+        }
+        task.resume()
+    }
+
+}
+</code></pre><p>提供一个网络管理类 LGClient</p>
+<p>管理网络请求能力和公共提供参数</p>
+<h4 id="2：网络能力提供者"><a href="#2：网络能力提供者" class="headerlink" title="2：网络能力提供者"></a>2：网络能力提供者</h4><pre><code>class LGLoginClient: LGClient {
+
+    override func send&lt;T&gt;(_ r: T, handler: @escaping (T.Response?) -&gt; Void) where T : LGRequest {
+
+        switch r.path {
+        case let string where string.contains(&quot;/pythonJson/getTeacherInfo&quot;):
+            print(&quot;123456&quot;)
+            handler(nil)
+        default:
+            let url = URL(string: host.appending(r.path))!
+            var request = URLRequest(url: url)
+            request.httpMethod = r.method.rawValue
+            let task = URLSession.shared.dataTask(with: request) {
+                data, response, error in
+                if let data = data, let res = T.Response.parse(data: data) {
+                    DispatchQueue.main.async { handler(res) }
+                } else {
+                    DispatchQueue.main.async { handler(nil) }
+                }
+            }
+            task.resume()
+        }
+
+    }
+}
+</code></pre><p>模块网路能力层LGLoginClient重写，根据不同的接口分块处理</p>
+<p>其中序列化层交给泛型模型 (T.Response) 处理</p>
+<p>当然大家这里还可以将网络能力继续下沉，就给具体网络综合请求者去处理</p>
+<h4 id="3：序列化能力提供层"><a href="#3：序列化能力提供层" class="headerlink" title="3：序列化能力提供层"></a>3：序列化能力提供层</h4><pre><code>extension LGPerson: LGDecodable {
+    static func parse(data: Data) -&gt; LGPerson? {
+        return LGPerson(data: data)
+    }
+}
+</code></pre><p>这里序列化就简单表达了，大家可以调用一些优化的三方框架</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>POP网络，让应用层与网络层完全脱离！</p>
+<p>面向协议的编程方式来提供能力，大大拓展了复用性，同时耦合度也得以处理！</p>
+<p>同时这个模型（应用层 -&gt; 信息提供层 -&gt; 网络层） 编程思维也是比较容易理解，操作更容易上手！</p>
+<p>还有这样的编程习惯也符合开发流程（一般都是由后台开发人员做出相应接口，我们才会去做网络调试）</p>
+<p>后期维护简单，后期更改，我们只需要对信息提供层处理响应配置，根本不需要去动应用层或者网络层</p>
+<p>当然这也是主流开发思维，作为一名中高级iOS开发人员不动 POP网络编程 那么我估计你需要好好学习咯</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/03/08/ Swift面向协议编程/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-CocoaPods升级版本的问题" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2068,216 +2408,6 @@ static CLActionManager *_manager = nil;
 
 
   
-    <article id="post-使用RunLoop检测卡顿" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/11/29/使用RunLoop检测卡顿/">使用RunLoop检测卡顿</a>
-    </h1>
-  
-
-        
-        <a href="/2019/11/29/使用RunLoop检测卡顿/" class="archive-article-date">
-  	<time datetime="2019-11-29T09:43:43.644Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="卡顿的原因"><a href="#卡顿的原因" class="headerlink" title="卡顿的原因"></a>卡顿的原因</h2><ul>
-<li>复杂UI、图文混排的绘制量过大；</li>
-<li>在主线程做网络同步请求；</li>
-<li>在主线程做大量的IO操作；</li>
-<li>运算量过大，CPU持续高占用；</li>
-<li>死锁和主子线程抢锁；</li>
-</ul>
-<h2 id="RunLoop："><a href="#RunLoop：" class="headerlink" title="RunLoop："></a>RunLoop：</h2><p>对于iOS开发来说，监控卡顿就是要去找到主线程上都做了那些事。我们都知道，线程的消息事件是依赖于NSRunLoop的，所以从NSRunLoop入手，就可以知道主线程上都调用了哪些方法，我们通过监听NSRunLoop的状态，就能发现调用方法是否执行时间过长，从而判断出是否会出现卡顿。</p>
-<p>所以这里推荐的监控卡顿的方案是：通过监控RunLoop的状态来判断是否会出现卡顿。</p>
-<p>RunLoop这个对象，在iOS里是由CFRunLoop实现。简单来说，RunLoop是用来监听输入源，进行调度处理的。这里的输入源可以是输入设备、网络、周期性或者延迟时间、异步回调。RunLoop会接受两种类型的输入源：一种是来自另一个线程或者来自不同应用的异步消息；另一种是来自预定时间或者重复间隔的同步事件。</p>
-<p>RunLoop的目的是，当有事件要去处理时保持线程忙，当没有事件要处理时让线程进入休眠。所以，了解RunLoop原理不光能够运用到监控卡顿上，还可以提高用户的交互体验。通过将那些繁重而不紧急会大量占用CPU的任务(比如图片加载)，放到空闲的RunLoop模式里执行，就可以避开在UITrackingRunLoopMode这个RunLoop模式时执行。UIUITrackingRunLoopMode是用户进行滚动操作时会切换的RunLoop模式。避免在这个RunLoop模式执行繁重的CPU任务，就能避免影响用户交互操作上的体验。</p>
-<h2 id="RunLoop的原理："><a href="#RunLoop的原理：" class="headerlink" title="RunLoop的原理："></a>RunLoop的原理：</h2><h3 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h3><p>通知observers:Runloop要开始进入loop了。紧接着就进入loop。代码如下</p>
-<pre><code>//通知 observers
-if (currentMode-&gt;_observerMask &amp; kCFRunLoopEntry ) 
-    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopEntry);
-//进入 loop
-result = __CFRunLoopRun(rl, currentMode, seconds, returnAfterSourceHandled, previousMode);
-</code></pre><h3 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h3><p>开启一个do while来保活线程。通知Observers:RunLoop会触发Timer回调、Source0回调，接着执行加入block。代码如下：</p>
-<pre><code>// 通知 Observers RunLoop 会触发 Timer 回调
-if (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeTimers)
-    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeTimers);
-// 通知 Observers RunLoop 会触发 Source0 回调
-if (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeSources)
-    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeSources);
-// 执行 block
-__CFRunLoopDoBlocks(runloop, currentMode);
-</code></pre><p>接下来，触发Sourece0回调，如果有Source1是ready状态的话，就会跳转到handle_msg去处理消息。代码如下：</p>
-<pre><code>if (MACH_PORT_NULL != dispatchPort ) {
-    Boolean hasMsg = __CFRunLoopServiceMachPort(dispatchPort, &amp;msg)
-    if (hasMsg) goto handle_msg;
-}
-</code></pre><h3 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h3><p>回调触发后，通知到Observers:RunLoop的线程将进入休眠(sleep)状态，代码如下：</p>
-<pre><code>Boolean poll = sourceHandledThisLoop || (0ULL == timeout_context-&gt;termTSR);
-if (!poll &amp;&amp; (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeWaiting)) {
-    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeWaiting);
-}
-</code></pre><h3 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h3><p>进入休眠后，会等待mach_port的消息，以再次唤醒。只有在下面四个事件出现才会被再次唤醒：</p>
-<ul>
-<li>基于port的Source事件；</li>
-<li>Timer时间到；</li>
-<li>RunLoop超时；</li>
-<li>被调用者唤醒。</li>
-</ul>
-<p>等待唤醒的代码如下：</p>
-<pre><code>do {
-    __CFRunLoopServiceMachPort(waitSet, &amp;msg, sizeof(msg_buffer), &amp;livePort) {
-        // 基于 port 的 Source 事件、调用者唤醒
-        if (modeQueuePort != MACH_PORT_NULL &amp;&amp; livePort == modeQueuePort) {
-            break;
-        }
-        // Timer 时间到、RunLoop 超时
-        if (currentMode-&gt;_timerFired) {
-            break;
-        }
-} while (1);
-</code></pre><h3 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h3><p>唤醒时通知Observer:RunLoop的线程刚刚被唤醒了。代码如下：</p>
-<pre><code>if (!poll &amp;&amp; (currentMode-&gt;_observerMask &amp; kCFRunLoopAfterWaiting))
-    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopAfterWaiting);
-</code></pre><h3 id="第六步"><a href="#第六步" class="headerlink" title="第六步"></a>第六步</h3><p>RunLoop被唤醒后就要进行处理消息了：</p>
-<ul>
-<li>如果是Timer时间到的话，就触发Timer的回调；</li>
-<li>如果是dispatch的话，就执行block；</li>
-<li>如果是Source1事件的话，就处理这个事件。</li>
-</ul>
-<p>消息执行完后，就执行加到loop里的block。代码如下：</p>
-<pre><code>handle_msg:
-// 如果 Timer 时间到，就触发 Timer 回调
-if (msg-is-timer) {
-    __CFRunLoopDoTimers(runloop, currentMode, mach_absolute_time())
-} 
-// 如果 dispatch 就执行 block
-else if (msg_is_dispatch) {
-    __CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE__(msg);
-} 
-
-// Source1 事件的话，就处理这个事件
-else {
-    CFRunLoopSourceRef source1 = __CFRunLoopModeFindSourceForMachPort(runloop, currentMode, livePort);
-    sourceHandledThisLoop = __CFRunLoopDoSource1(runloop, currentMode, source1, msg);
-    if (sourceHandledThisLoop) {
-        mach_msg(reply, MACH_SEND_MSG, reply);
-    }
-}
-</code></pre><h3 id="第七步"><a href="#第七步" class="headerlink" title="第七步"></a>第七步</h3><p>根据当前RunLoop的状态来判断是否需要走下一个loop。当被外部强制停止或loop超时，就不再继续下一个loop了，否则继续走下一个loop。代码如下：</p>
-<pre><code>if (sourceHandledThisLoop &amp;&amp; stopAfterHandle) {
-     // 事件已处理完
-    retVal = kCFRunLoopRunHandledSource;
-} else if (timeout) {
-    // 超时
-    retVal = kCFRunLoopRunTimedOut;
-} else if (__CFRunLoopIsStopped(runloop)) {
-    // 外部调用者强制停止
-    retVal = kCFRunLoopRunStopped;
-} else if (__CFRunLoopModeIsEmpty(runloop, currentMode)) {
-    // mode 为空，RunLoop 结束
-    retVal = kCFRunLoopRunFinished;
-}
-</code></pre><p>整个RunLoop的过程，可以总结为如下所示的一张图片。</p>
-<p><img src="http://img.wangjungang.cn/desZ5x.jpg" alt=""></p>
-<h2 id="RunLoop的六个状态"><a href="#RunLoop的六个状态" class="headerlink" title="RunLoop的六个状态"></a>RunLoop的六个状态</h2><pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
-    kCFRunLoopEntry , // 进入 loop
-    kCFRunLoopBeforeTimers , // 触发 Timer 回调
-    kCFRunLoopBeforeSources , // 触发 Source0 回调
-    kCFRunLoopBeforeWaiting , // 等待 mach_port 消息
-    kCFRunLoopAfterWaiting ), // 接收 mach_port 消息
-    kCFRunLoopExit , // 退出 loop
-    kCFRunLoopAllActivities  // loop 所有状态改变
-}
-</code></pre><p>如果RunLoop的线程，进入睡眠前方法的执行时间过长而导致无法进入睡眠，或者线程唤醒后接受消息时间过长而无法进入下一步的话，就可以认为是线程受阻了。如果这个线程是主线程的话，表现就是出现卡顿。</p>
-<p>所以，如果我们要利用RunLoop原理来监控卡顿的话，就要关注这两个阶段。RunLoop在进入睡眠之前和唤醒后的两个loop状态定义的值，分别是kCFRunLoopBeforeSource和kCFRunLoopAfterWaiting，也就是要触发Source0回调和接受mac_port消息两个状态。</p>
-<h2 id="如何检查卡顿？"><a href="#如何检查卡顿？" class="headerlink" title="如何检查卡顿？"></a>如何检查卡顿？</h2><p>首先需要创建一个CFRunLoopObserverContext观察者，代码如下:</p>
-<pre><code>CFRunLoopObserverContext context = {0,(__bridge void*)self,NULL,NULL};
-runLoopObserver = CFRunLoopObserverCreate(kCFAllocatorDefault,kCFRunLoopAllActivities,YES,0,&amp;runLoopObserverCallBack,&amp;context);
-</code></pre><p>将创建好的观察者runLoopObserver添加到主线程RunLoop的common模式下观察，然后，创建一个持续的子线程专门用来监控主线程的RunLoop状态。</p>
-<p>一旦发现进入睡眠前的kCFRunLoopBeforeSources状态，或者唤醒后的状态kCFRunLoopAfterWaiting，在设置的时间阈值内一直没有变化，即可认定为卡顿。</p>
-<p>开启子线程监控的代码如下：</p>
-<pre><code>//创建子线程监控
-dispatch_async(dispatch_get_global_queue(0, 0), ^{
-    //子线程开启一个持续的 loop 用来进行监控
-    while (YES) {
-        //semaphoreWait 信号等待的时间
-        long semaphoreWait = dispatch_semaphore_wait(dispatchSemaphore, dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC));
-        if (semaphoreWait != 0) {
-            if (!runLoopObserver) {
-                timeoutCount = 0;
-                dispatchSemaphore = 0;
-                runLoopActivity = 0;
-                return;
-            }
-            //BeforeSources 和 AfterWaiting 这两个状态能够检测到是否卡顿
-            if (runLoopActivity == kCFRunLoopBeforeSources || runLoopActivity == kCFRunLoopAfterWaiting) {
-                //将堆栈信息上报服务器的代码放到这里
-            } //end activity
-        }// end semaphore wait
-        timeoutCount = 0;
-    }// end while
-});
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/11/29/使用RunLoop检测卡顿/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
@@ -2403,11 +2533,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
