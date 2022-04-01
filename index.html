@@ -152,6 +152,87 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-小程序API封装一" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/04/01/小程序API封装一/">小程序API封装一</a>
+    </h1>
+  
+
+        
+        <a href="/2022/04/01/小程序API封装一/" class="archive-article-date">
+  	<time datetime="2022-04-01T10:09:01.384Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-04-01</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><p>研究小程序的路上越走越远….坑很多 很不习惯刚刚开始</p>
+<p>在utils文件夹下面新增api.js  http.js文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">// http.js</span><br><span class="line">module.exports = &#123;</span><br><span class="line">  http(url, method, params) &#123;     // 获取token，自行获取token和签名，token和签名表示每个接口都要发送的数据</span><br><span class="line">    let token = &apos;&apos;</span><br><span class="line">     // 获取签名 (后台怎么定义的，就传什么) 具体情况穿不穿</span><br><span class="line">    let sign = &apos;&apos;</span><br><span class="line">    let data = &#123;</span><br><span class="line">      token,</span><br><span class="line">      sign</span><br><span class="line">    &#125;    // 在这里判断一下data是否存在，params表示前端需要传递的数据，params是一个对象，有三组键值对，</span><br><span class="line">    // data：表示请求要发送的数据，success：成功的回调，fail：失败的回调，这三个字段可缺可无，其余字段会忽略</span><br><span class="line">    if (params.data) &#123;       for (let key in params.data) &#123; // 在这里判断传过来的参数值为null，就删除这个属性</span><br><span class="line">        if (params.data[key] == null || params.data[key] == &apos;null&apos;) &#123;          delete params.data[key]</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      data = &#123;</span><br><span class="line">        ...data,</span><br><span class="line">        ...params.data</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;     // 就是拼接上前缀,此接口域名是开放接口，可访问 如果开发环境可以勾选详情选项的 不校验合法域名、TLS版本及HTTPS证书</span><br><span class="line">    wx.request(&#123;</span><br><span class="line">      url: &apos;合法域名&apos; + url,      // 判断请求类型，除了值等于&apos;post&apos;外，其余值均视作get其他的请求类型也可以自己加上的</span><br><span class="line">      method: method == &apos;post&apos; ? &apos;post&apos; : &apos;get&apos;, </span><br><span class="line">      data,      // post请求 把header 该为 application/x-www-form-urlencoded 就可以了</span><br><span class="line">      header: &#123;        &apos;content-type&apos;: method == &apos;get&apos; ? &apos;application/json&apos; : &apos;application/x-www-form-urlencoded&apos;</span><br><span class="line">      &#125;,</span><br><span class="line">      success(res) &#123;</span><br><span class="line">        params.success &amp;&amp; params.success(res.data)</span><br><span class="line">      &#125;,</span><br><span class="line">      fail(err) &#123;</span><br><span class="line">        wx.showToast(&#123;</span><br><span class="line">          title: &apos;服务器内部错误&apos;,</span><br><span class="line">          icon: &apos;none&apos;,</span><br><span class="line">          duration: 1500</span><br><span class="line">        &#125;)</span><br><span class="line">        params.fail &amp;&amp; params.fail(err)</span><br><span class="line">      &#125;,</span><br><span class="line">      complete() &#123;</span><br><span class="line">        setTimeout(() =&gt; &#123;</span><br><span class="line">          wx.hideLoading();</span><br><span class="line">        &#125;,1500)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// api.js // 在这里面定义所有接口，一个文件管理所有接口，易于维护 // 引入刚刚封装好的http模块，import属于ES6的语法，微信开发者工具必须打开ES6转ES5选项 import &#123; http &#125; from &apos;./http&apos;; // 每一个接口定义一个函数，然后暴露出去，供逻辑代码调用 // 接口请求的路由地址以及请求方法在此处传递 function postLoginApi(params) &#123; </span><br><span class="line">http(&apos;/api/xxx/login&apos;, &apos;post&apos;, params)</span><br><span class="line">&#125; function getUserListApi(params) &#123; </span><br><span class="line">http(&apos;/api/xxx/list&apos;, &apos;get&apos;, params) </span><br><span class="line">&#125; // 暴露接口 export default &#123; </span><br><span class="line">postLoginApi,</span><br><span class="line"> getUserListApi</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="页面调用"><a href="#页面调用" class="headerlink" title="页面调用"></a>页面调用</h2><ul>
+<li>引入api接口管理文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">import http from &apos;../../utils/api&apos;</span><br><span class="line">getData()&#123;</span><br><span class="line"> http.postLoginApi(&#123; // 调用接口，传入参数 data: &#123;</span><br><span class="line"> token: &apos;460512FF0FE2392D6CB6D8A6560805CC&apos; &#125;,</span><br><span class="line"> success: res =&gt; &#123;</span><br><span class="line"> console.log(&apos;接口请求成功&apos;, res) this.setData(&#123; // data定义的数据 userInfo: res.data</span><br><span class="line"> &#125;)</span><br><span class="line"> &#125;,</span><br><span class="line"> fail: err =&gt; &#123;</span><br><span class="line"> console.log(err)</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;)</span><br><span class="line"> &#125;,</span><br><span class="line">onLoad: function ()&#123; this.getData()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">小程序</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/04/01/小程序API封装一/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-小程序中页面传参" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1543,296 +1624,6 @@ private:
 
 
   
-    <article id="post-使用 runtime, 让 UserDefaults 飞" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/07/07/使用 runtime, 让 UserDefaults 飞/">使用 runtime, 让 UserDefaults 飞</a>
-    </h1>
-  
-
-        
-        <a href="/2021/07/07/使用 runtime, 让 UserDefaults 飞/" class="archive-article-date">
-  	<time datetime="2021-07-07T06:13:40.954Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>封装 UserDefaults，用属性的方式存取数据</p>
-<ul>
-<li><p>告别字符串硬编码，</p>
-</li>
-<li><p>统一形式，不再有各种类型存取方法</p>
-<!--
-      double(forKey: _ )
-      integer(forKey: _)
--->
-<pre><code>double(forKey: _ )
-integer(forKey: _)
-</code></pre></li>
-</ul>
-<p>主要有参考 woshiccm/RCUserDefaults</p>
-<h2 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h2><pre><code>print(UserDefaults.std.name)
-UserDefaults.std.name = &quot;two&quot;
-print(UserDefaults.std.name)
-</code></pre><h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>添加属性</p>
-<pre><code>extension RCUserDefaults{
-    @NSManaged var name: String
-}
-</code></pre><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><ul>
-<li>一般给类添加属性，通过 objc_getAssociatedObject</li>
-</ul>
-<p>添加的属性，放在内存中</p>
-<ul>
-<li>这里添加的属性，通过持久化的方式，放在磁盘中，</li>
-</ul>
-<p>这时候直接添加存取方法，就好。</p>
-<p>类似 Core Data , 需引入 @NSManaged</p>
-<h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><ul>
-<li><p>了方便扩展，添加的属性放在扩展中</p>
-</li>
-<li><p>通过 class_copyPropertyList, 拿到添加的属性</p>
-</li>
-<li><p>给每一个属性，实现对应类型的存取方法，就好了</p>
-</li>
-</ul>
-<p>添加方法，使用 class_addMethod</p>
-<p>添加的方法，自然是 double(forKey: <em>) 与 set(</em> , forKey: _ ) …</p>
-<p>为了知道添加属性，对应的类型。使用 property_copyAttributeList</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="添加的属性-放在扩展中"><a href="#添加的属性-放在扩展中" class="headerlink" title="添加的属性,放在扩展中"></a>添加的属性,放在扩展中</h3><p>做事情的是这个类 RCUserDefaults，</p>
-<p>为了简化写法，里面有一个属性是 UserDefaults.standard</p>
-<p>UserDefaults.standard 负责，实际的存取</p>
-<pre><code>class RCUserDefaults: NSObject{
-    private let userDefaults = UserDefaults.standard
-}
-</code></pre><p>添加扩展属性</p>
-<pre><code>extension RCUserDefaults{
-    @NSManaged var name: String
-}
-</code></pre><h3 id="如果没有-NSManaged-报错"><a href="#如果没有-NSManaged-报错" class="headerlink" title="如果没有 @NSManaged, 报错"></a>如果没有 @NSManaged, 报错</h3><p>Extensions must not contain stored properties</p>
-<p>扩展，不能包含属性</p>
-<p>与 Core Data 类似，添加 @NSManaged ，就好了</p>
-<p>the @NSManaged attribute informs the Swift compiler that the storage and implementation of a property will be provided at runtime.</p>
-<p>添加 @NSManaged，编译时不再检查，运行时保证存取即可</p>
-<h3 id="拿到添加的属性"><a href="#拿到添加的属性" class="headerlink" title="拿到添加的属性"></a>拿到添加的属性</h3><p>常规的运行时套路， class_copyPropertyList</p>
-<pre><code>extension NSObject {
-
-    static var properties: [Property] {
-        var count: UInt32 = 0
-        guard let propertyList = class_copyPropertyList(self, &amp;count) else { return [] }
-
-        var properties = [Property]()
-        let cnt = Int(count)
-        for i in 0..&lt;cnt{
-            properties.append(Property(x: propertyList[i]))
-        }
-        free(propertyList)
-        return properties
-    }
-}
-</code></pre><p>###知道,添加属性对应的类型</p>
-<p>才能在运行时，添加对应的 IMP,</p>
-<p>是</p>
-<pre><code>double(forKey: _ )
-</code></pre><p>还是</p>
-<pre><code>integer(forKey: _)
-</code></pre><p>调用入口</p>
-<pre><code>properties.append(Property(x: propertyList[i]))
-</code></pre><p>代码：</p>
-<p>拿到 objc_property_t, 取各种属性 property_copyAttributeList</p>
-<pre><code>struct Property {
-
-    let name: String
-
-    private(set) var typeEncoding = ObjCTypeEncoding.unknown(&quot;?&quot;)
-
-    private(set) var type: NSObject.Type?
-
-    init(x property: objc_property_t) {
-        // 拿到，我们赋予的属性名
-        name = String(cString: property_getName(property))
-
-        var count: UInt32 = 0
-        let attributeList = property_copyAttributeList(property, &amp;count)!
-
-        for i in 0..&lt;Int(count) {
-            let attribute = attributeList[i]
-
-            let nick = String(cString: attribute.name)
-            let value = String(cString: attribute.value)
-
-            switch nick {
-            case &quot;T&quot;:
-                var value = value
-                if value.hasPrefix(&quot;@\&quot;&quot;) &amp;&amp; value.hasSuffix(&quot;\&quot;&quot;) { // id
-                    value = value
-                        .replacingOccurrences(of: &quot;@\&quot;&quot;, with: &quot;&quot;)
-                        .replacingOccurrences(of: &quot;\&quot;&quot;, with: &quot;&quot;)
-                }
-                else if value.hasPrefix(&quot;r&quot;) { // const
-                    value = value.replacingOccurrences(of: &quot;r&quot;, with: &quot;&quot;)
-                }
-                // 判断是类，还是值类型
-                if value.classExists{
-                    //  string
-                    //  stringOptional
-                    //  data
-                    typeEncoding = ObjCTypeEncoding(e: &quot;@&quot;)
-                    type = value.getClass
-                }
-                else {
-                    //  bool
-                    //  double
-                    typeEncoding = ObjCTypeEncoding(e: value)
-                }
-            // ...
-            default: break
-            }
-        }
-        // ...
-    }
-}
-</code></pre><h3 id="最后一步，给每一个属性，实现对应类型的存取方法"><a href="#最后一步，给每一个属性，实现对应类型的存取方法" class="headerlink" title="最后一步，给每一个属性，实现对应类型的存取方法"></a>最后一步，给每一个属性，实现对应类型的存取方法</h3><p>又来到了这个类 RCUserDefaults</p>
-<pre><code>class RCUserDefaults: NSObject{
-    // 单例
-    fileprivate static let standard = RCUserDefaults()
-    //  记录信息
-    //  getter 方法签名字符串:  属性
-    //  setter 方法签名字符串:  属性
-    private static var mapping = [String: Property]()
-
-    // 初始化方法，比较别致，
-    // 参数，就是走一个形式
-    // 为了这个单例， static let standard = RCUserDefaults()
-    // 调用运行时添加 getter / setter 方法，  exchangeAccessMethods()
-    public init(placeHolder nan: Bool? = nil){
-        super.init()
-
-        exchangeAccessMethods()
-    }
-}
-</code></pre><p>运行时添加 getter / setter 方法</p>
-<pre><code>private func exchangeAccessMethods(){
-        let properties = RCUserDefaults.properties
-        //  处理每一个属性
-        for property in properties{
-
-            let getterKey = property.name
-            let setterKey = objCDefaultSetterName(for: property.name)
-            //  记录信息
-            //  getter 方法签名字符串:  属性
-            RCUserDefaults.mapping[getterKey] = property
-            //  记录信息
-            //  setter 方法签名字符串:  属性
-            RCUserDefaults.mapping[setterKey] = property
-
-            let getterSel : Selector = NSSelectorFromString(getterKey)
-            let setterSel : Selector = NSSelectorFromString(setterKey)
-
-            var getterImp: IMP!
-            var setterImp: IMP!
-            switch property.typeEncoding {
-
-            case .int, .longLong, .uInt8:
-                getterImp = unsafeBitCast(RCUserDefaults.longGetter, to: IMP.self)
-                setterImp = unsafeBitCast(RCUserDefaults.longSetter, to: IMP.self)
-            // ...
-            // 处理其他类型
-            }
-
-            let setterTypes = &quot;v@:\(property.typeEncoding)&quot;
-            let getterTypes = &quot;\(property.typeEncoding)@:&quot;
-
-            setterTypes.withCString { typesCString in
-                _ = class_addMethod(classForCoder, setterSel, setterImp, typesCString)
-            }
-
-            getterTypes.withCString { typesCString in
-                _ = class_addMethod(classForCoder, getterSel, getterImp, typesCString)
-            }
-        }
-    }
-</code></pre><p>最后 IMP</p>
-<p>其中一种类型的 getter 和 setter,</p>
-<p>下面是 long ，长整型</p>
-<pre><code> private static let longGetter: @convention(c) (RCUserDefaults, Selector) -&gt; CLong = { _userDefault, _cmd in
-    // 从 getter 方法，拿到我们赋予的属性名
-    let key = defaultKey(for: _cmd)
-    // 又看到了熟悉的取方法
-    return _userDefault.userDefaults.integer(forKey: key)
-}
-
-private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) -&gt; Void = { _userDefault, _cmd, value in
-    // 从 setter 方法，拿到我们赋予的属性名
-    let key = defaultKey(for: _cmd)
-    // 又看到了熟悉的存方法
-    _userDefault.userDefaults.set(value, forKey: key)
-}
-</code></pre><p>回到开头，添加命名空间<br>给 UserDefaults 添加计算属性，</p>
-<p>返回的是 RCUserDefaults 的单例</p>
-<pre><code>extension UserDefaults{
-    static var std: RCUserDefaults{
-        return RCUserDefaults.standard
-    }
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Swift</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/07/07/使用 runtime, 让 UserDefaults 飞/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1938,11 +1729,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1954,11 +1745,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
