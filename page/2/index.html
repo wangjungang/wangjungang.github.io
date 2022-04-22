@@ -152,6 +152,225 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Android中的轻量级指针" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/08/Android中的轻量级指针/">android中的轻量级指针</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/08/Android中的轻量级指针/" class="archive-article-date">
+  	<time datetime="2021-10-08T06:45:30.204Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="智能指针来源"><a href="#智能指针来源" class="headerlink" title="智能指针来源"></a>智能指针来源</h2><p>由于android系统底层的很大的一部分是用C++实现的，C++的开发就难免会使用到指针的这个知识 点。而C++的难点和容易出问题的也在于指针。使用指针出错，常常会引发带来对项目具有毁灭性的错误，内存泄漏、逻辑错误、系统崩溃。</p>
+<p>引发指针错误情况表现常常有如下几个表现情况：</p>
+<p>1.申请了内存空间，但是忘记释放指针所指向的对象占用的内存空间。</p>
+<p>2.使用了无效的指针。</p>
+<p>因此在android的C++代码部分采用了智能指针的技术。智能指针通过一种能够自动危害对象引用计数的技术。来解决C++中指针存在的缺陷问题。</p>
+<p>在android系统中提供了三种类型的C++智能指针，分别为：轻量级智能指针、强指针、弱指针。<br>下面主要通过进行分析轻量级指针的实现原理。</p>
+<h2 id="轻量级指针"><a href="#轻量级指针" class="headerlink" title="轻量级指针"></a>轻量级指针</h2><p>轻量级指针就是通过利用简单的引用计数计数类维护对象的生命周期，如果一个类的对象支持使用轻量级指针，那么它就必须要从LightRefBase类进行继承，因为这个LightRefBase类提供了一个简单的引用计数器。</p>
+<h2 id="LightRefBase类定义"><a href="#LightRefBase类定义" class="headerlink" title="LightRefBase类定义"></a>LightRefBase类定义</h2><p>下面的源码主要依据android5.0的源码进行分析的。LightRefBase类的定义在android系统中的\frameworks\rs\cpp\util\RefBase.h 这个文件中。</p>
+<p>LightRefBase类也是一个模板类。模板参数T表示对象的实际类型，它必须进行对LightRefBase这个类继承。</p>
+<pre><code>//模板类
+template &lt;class T&gt;
+class LightRefBase
+{
+public:
+    //公共的内联函数
+    inline LightRefBase() : mCount(0) { }
+    inline void incStrong(__attribute__((unused)) const void* id) const {
+        __sync_fetch_and_add(&amp;mCount, 1);
+    }
+    inline void decStrong(__attribute__((unused)) const void* id) const {
+        if (__sync_fetch_and_sub(&amp;mCount, 1) == 1) {
+            delete static_cast&lt;const T*&gt;(this);
+        }
+    }
+    //! DEBUGGING ONLY: Get current strong ref count.
+    inline int32_t getStrongCount() const {
+        return mCount;
+    }
+
+    typedef LightRefBase&lt;T&gt; basetype;
+
+protected:
+    //内联的虚构函数
+    inline ~LightRefBase() { }
+
+private:
+    friend class ReferenceMover;
+    inline static void moveReferences(void*, void const*, size_t,
+            const ReferenceConverterBase&amp;) { }
+
+private:
+    mutable volatile int32_t mCount;
+};
+</code></pre><p>上面LightRefBase类定义涉及到几个知识点：</p>
+<p>1、C++的三个访问权限类型：public、protected、private。</p>
+<p>public:可以被任意实体访问。 protected:只允许子类及本类的成员函数访问。 private:只允许本类的成员函数访问。</p>
+<p>2、C++中的inline内联函数 在函数第一部分如果包含有inline关键字的函数，那么这个函数就表示为内联函数。内联函数主要为了解决一些频繁调用的小函数大量消耗栈空间（栈内存）的问题。</p>
+<p>inline的使用是有所限制的，inline只适合涵数体内代码简单的涵数使用，不能包含复杂的结构控制语句例如while、switch，并且不能内联函数本身不能是直接递归函数（递归函数：自己内部还调用自己的函数）。</p>
+<p>3、C++中的friend友元函数</p>
+<p>C++中的友元机制允许类的非公有成员被一个类或者函数访问，友元按类型分为三种：普通非类成员函数作为友元,类的成员函数作为友元，类作为友元。</p>
+<p>友元函数是可以直接访问类的私有成员的非成员函数。它是定义在类外的普通函数，它不属于任何类，但需要在类的定义中加以声明，声明时只需在友元的名称前加上关键字friend。</p>
+<p>4、C++中的mutable关键字<br>mutable是为了突破const的限制而设置的。被mutable修饰的变量，将永远处于可变的状态，即使在一个const函数中。</p>
+<p>5、C++中的template类模板<br>一个类模板（也称为类属类或类生成类）同意用户为类定义一种模式。使得类中的某些数据成员、默写成员函数的參数、某些成员函数的返回值，能够取随意类型（包含系统提前定义的和用户自己定义的）。<br>类模板的应用场景：多个类有着共同操作，但是数据类型不同。</p>
+<h2 id="LightRefBase的实现类"><a href="#LightRefBase的实现类" class="headerlink" title="LightRefBase的实现类"></a>LightRefBase的实现类</h2><p>轻量级LightRefBase类的实现类为wp类，它也是在\frameworks\rs\cpp\util\RefBase.h 这个文件中。wp也是一个模板类，模板参数T表示的是对象的实际类型，它必须继承LightRefBase类。由于wp类也是强指针的实现类，因此我们只需要分析下该wp类中关于轻量级指针类的实现部分就可以了。</p>
+<pre><code>//模板类
+template &lt;typename T&gt;
+class wp
+{
+public:
+    typedef typename RefBase::weakref_type weakref_type;
+    //轻量级指针需要用到的构造函数
+    inline wp() : m_ptr(0) { }
+
+    wp(T* other);
+    wp(const wp&lt;T&gt;&amp; other);
+    wp(const sp&lt;T&gt;&amp; other);
+    template&lt;typename U&gt; wp(U* other);
+    template&lt;typename U&gt; wp(const sp&lt;U&gt;&amp; other);
+    template&lt;typename U&gt; wp(const wp&lt;U&gt;&amp; other);
+    //轻量级指针需要用到的虚构函数
+    ~wp();
+
+    // Assignment
+
+    wp&amp; operator = (T* other);
+    wp&amp; operator = (const wp&lt;T&gt;&amp; other);
+    wp&amp; operator = (const sp&lt;T&gt;&amp; other);
+
+    template&lt;typename U&gt; wp&amp; operator = (U* other);
+    template&lt;typename U&gt; wp&amp; operator = (const wp&lt;U&gt;&amp; other);
+    template&lt;typename U&gt; wp&amp; operator = (const sp&lt;U&gt;&amp; other);
+
+    void set_object_and_refs(T* other, weakref_type* refs);
+
+    // promotion to sp
+
+    sp&lt;T&gt; promote() const;
+
+    // Reset
+
+    void clear();
+
+    // Accessors
+
+    inline  weakref_type* get_refs() const { return m_refs; }
+
+    inline  T* unsafe_get() const { return m_ptr; }
+
+    // Operators
+
+    COMPARE_WEAK(==)
+    COMPARE_WEAK(!=)
+    COMPARE_WEAK(&gt;)
+    COMPARE_WEAK(&lt;)
+    COMPARE_WEAK(&lt;=)
+    COMPARE_WEAK(&gt;=)
+
+    inline bool operator == (const wp&lt;T&gt;&amp; o) const {
+        return (m_ptr == o.m_ptr) &amp;&amp; (m_refs == o.m_refs);
+    }
+    template&lt;typename U&gt;
+    inline bool operator == (const wp&lt;U&gt;&amp; o) const {
+        return m_ptr == o.m_ptr;
+    }
+
+    inline bool operator &gt; (const wp&lt;T&gt;&amp; o) const {
+        return (m_ptr == o.m_ptr) ? (m_refs &gt; o.m_refs) : (m_ptr &gt; o.m_ptr);
+    }
+    template&lt;typename U&gt;
+    inline bool operator &gt; (const wp&lt;U&gt;&amp; o) const {
+        return (m_ptr == o.m_ptr) ? (m_refs &gt; o.m_refs) : (m_ptr &gt; o.m_ptr);
+    }
+
+    inline bool operator &lt; (const wp&lt;T&gt;&amp; o) const {
+        return (m_ptr == o.m_ptr) ? (m_refs &lt; o.m_refs) : (m_ptr &lt; o.m_ptr);
+    }
+    template&lt;typename U&gt;
+    inline bool operator &lt; (const wp&lt;U&gt;&amp; o) const {
+        return (m_ptr == o.m_ptr) ? (m_refs &lt; o.m_refs) : (m_ptr &lt; o.m_ptr);
+    }
+                         inline bool operator != (const wp&lt;T&gt;&amp; o) const { return m_refs != o.m_refs; }
+    template&lt;typename U&gt; inline bool operator != (const wp&lt;U&gt;&amp; o) const { return !operator == (o); }
+                         inline bool operator &lt;= (const wp&lt;T&gt;&amp; o) const { return !operator &gt; (o); }
+    template&lt;typename U&gt; inline bool operator &lt;= (const wp&lt;U&gt;&amp; o) const { return !operator &gt; (o); }
+                         inline bool operator &gt;= (const wp&lt;T&gt;&amp; o) const { return !operator &lt; (o); }
+    template&lt;typename U&gt; inline bool operator &gt;= (const wp&lt;U&gt;&amp; o) const { return !operator &lt; (o); }
+
+private:
+    template&lt;typename Y&gt; friend class sp;
+    template&lt;typename Y&gt; friend class wp;
+    //轻量级指针会用到的变量m_ptr
+    T*              m_ptr;
+    weakref_type*   m_refs;
+};
+</code></pre><p>##总结</p>
+<p>通过前面的概念和系统源码实现功能原理分析，我们如果要使用轻量级指针的话，那么要包含头文件并采用继承LightRefBase类的方式，那么就可以使用轻量级指针的功能了。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/08/Android中的轻量级指针/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-探索android的强指针实现 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2022,341 +2241,6 @@ class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
 
 
   
-    <article id="post-Flutter&amp;Android启动页(闪屏页)的加载流程和优化方案" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/01/07/Flutter&Android启动页(闪屏页)的加载流程和优化方案/">Flutter&amp;Android启动页(闪屏页)的加载流程和优化方案</a>
-    </h1>
-  
-
-        
-        <a href="/2021/01/07/Flutter&Android启动页(闪屏页)的加载流程和优化方案/" class="archive-article-date">
-  	<time datetime="2021-01-07T05:58:28.191Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>现在应用的普遍启动方式为：</p>
-<p>静态页面 -&gt; 动图 -&gt; 应用首页</p>
-<p>之所以这样设计的原因，大致如下：</p>
-<p>1、产品需求，如广告</p>
-<p>2、品牌展示</p>
-<p>3、应用规模较大时启动时间较长，相较于白屏，一张图片的过渡效果更好</p>
-<p>等等…。</p>
-<p>而Flutter由于引擎的创建和初始化需要一定时间，所以也提供了一个过渡方案（默认是白屏），位置在：</p>
-<pre><code>AndroidManifest.xml下的
-&lt;meta-data
-          android:name=&quot;io.flutter.embedding.android.SplashScreenDrawable&quot;
-          android:resource=&quot;@drawable/launch_background&quot;
- /&gt;
-</code></pre><p>即res下的drawable/launch_background.xml 文件</p>
-<pre><code>&lt;layer-list xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;
-&lt;item android:drawable=&quot;@color/red&quot; /&gt;
-
-&lt;!-- You can insert your own image assets here --&gt;
-&lt;!-- &lt;item&gt;
-    &lt;bitmap
-        android:gravity=&quot;center&quot;
-        android:src=&quot;@mipmap/launch_image&quot; /&gt;
-&lt;/item&gt; --&gt;
-&lt;/layer-list&gt;
-</code></pre><p>我们可以在这里设置引擎初始化前所显示的页面，下面我们来看一下这个过程。</p>
-<h2 id="启动页的加载过程"><a href="#启动页的加载过程" class="headerlink" title="启动页的加载过程"></a>启动页的加载过程</h2><p>整个flutter引擎的相关初始化工作在onCreate方法里开始的:</p>
-<pre><code>@Override
-protected void onCreate(@Nullable Bundle savedInstanceState) {
-  switchLaunchThemeForNormalTheme();
-
-  super.onCreate(savedInstanceState);
-
-  lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
-
-  delegate = new FlutterActivityAndFragmentDelegate(this);
-  ///创建绑定引擎等
-  delegate.onAttach(this);
-  ///用于插件、框架恢复状态
-  delegate.onActivityCreated(savedInstanceState);
-  ///设置窗口背景透明，隐藏 status bar
-  configureWindowForTransparency();
-  ///这里是咱们的入口
-  setContentView(createFlutterView());
-  configureStatusBarForFullscreenFlutterExperience();
-}
-</code></pre><p>setContentView大家很熟悉，我们直接看createFlutterView（） 这个方法：</p>
-<pre><code>@NonNull
-private View createFlutterView() {
-  return delegate.onCreateView(
-      null /* inflater */, null /* container */, null /* savedInstanceState */);
-}
-</code></pre><h3 id="FlutterActivityAndFragmentDelegate"><a href="#FlutterActivityAndFragmentDelegate" class="headerlink" title="FlutterActivityAndFragmentDelegate"></a>FlutterActivityAndFragmentDelegate</h3><p>flutter的初始化、启动等操作都是委托给它的。</p>
-<p>我们继续看onCreateView，我将说明以注释的形式写在代码里</p>
-<pre><code>@NonNull
-View onCreateView(
-    LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-  Log.v(TAG, &quot;Creating FlutterView.&quot;);
-  ensureAlive();
-
-  if (host.getRenderMode() == RenderMode.surface) {
-  /// flutter 应用在surface上显示，所以会进入到这里
-    FlutterSurfaceView flutterSurfaceView =
-        new FlutterSurfaceView(
-            host.getActivity(), host.getTransparencyMode() == TransparencyMode.transparent);
-
-    // Allow our host to customize FlutterSurfaceView, if desired.
-    host.onFlutterSurfaceViewCreated(flutterSurfaceView);
-
-    // Create the FlutterView that owns the FlutterSurfaceView.
-    ///用我们的flutterSurfaceView 初始化了一个 FlutterView
-    flutterView = new FlutterView(host.getActivity(), flutterSurfaceView);
-  } else {
-    FlutterTextureView flutterTextureView = new FlutterTextureView(host.getActivity());
-
-    // Allow our host to customize FlutterSurfaceView, if desired.
-    host.onFlutterTextureViewCreated(flutterTextureView);
-
-    // Create the FlutterView that owns the FlutterTextureView.
-    flutterView = new FlutterView(host.getActivity(), flutterTextureView);
-  }
-
-  // Add listener to be notified when Flutter renders its first frame.
-  flutterView.addOnFirstFrameRenderedListener(flutterUiDisplayListener);
-
-  /// 创建一个闪屏view - FlutterSplashView
-  flutterSplashView = new FlutterSplashView(host.getContext());
-  if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-    flutterSplashView.setId(View.generateViewId());
-  } else {
-    // TODO(mattcarroll): Find a better solution to this ID. This is a random, static ID.
-    // It might conflict with other Views, and it means that only a single FlutterSplashView
-    // can exist in a View hierarchy at one time.
-    flutterSplashView.setId(486947586);
-  }
-
-  /// 显示闪屏页
-  flutterSplashView.displayFlutterViewWithSplash(flutterView, host.provideSplashScreen());
-
-  Log.v(TAG, &quot;Attaching FlutterEngine to FlutterView.&quot;);
-  ///所创建surface 绑定到engine上
-  flutterView.attachToFlutterEngine(flutterEngine);
-
-  return flutterSplashView;
-}
-</code></pre><p>这里我们可以大致了解到，创建了一个FlutterSurfaceView 它继承自surfaceView(我们的flutter页面也是渲染在这个surface上的)。之后我们用它初始化一个FlutterView，</p>
-<pre><code>FlutterView继承自 FrameLayout
-</code></pre><p>随后我们再创建一个FlutterSplashView （继承FrameLayout）并调用displayFlutterViewWithSplash（）方法。</p>
-<pre><code>public void displayFlutterViewWithSplash(
-    @NonNull FlutterView flutterView, @Nullable SplashScreen splashScreen) {
-  // If we were displaying a previous FlutterView, remove it.
-  if (this.flutterView != null) {
-    this.flutterView.removeOnFirstFrameRenderedListener(flutterUiDisplayListener);
-    removeView(this.flutterView);
-  }
-  // If we were displaying a previous splash screen View, remove it.
-  if (splashScreenView != null) {
-    removeView(splashScreenView);
-  }
-
-  // Display the new FlutterView.
-  this.flutterView = flutterView;
-  ///添加flutterView
-  addView(flutterView);
-
-  this.splashScreen = splashScreen;
-
-  // Display the new splash screen, if needed.
-  if (splashScreen != null) {
-    if (isSplashScreenNeededNow()) {
-      Log.v(TAG, &quot;Showing splash screen UI.&quot;);
-      // This is the typical case. A FlutterEngine is attached to the FlutterView and we&apos;re
-      // waiting for the first frame to render. Show a splash UI until that happens.
-      splashScreenView = splashScreen.createSplashView(getContext(), splashScreenState);
-      ///添加 splashScreenView 
-      addView(this.splashScreenView);
-      flutterView.addOnFirstFrameRenderedListener(flutterUiDisplayListener);
-    } else if (isSplashScreenTransitionNeededNow()) {
-      Log.v(
-          TAG,
-          &quot;Showing an immediate splash transition to Flutter due to previously interrupted transition.&quot;);
-      splashScreenView = splashScreen.createSplashView(getContext(), splashScreenState);
-      addView(splashScreenView);
-      transitionToFlutter();
-    } else if (!flutterView.isAttachedToFlutterEngine()) {
-      Log.v(
-          TAG,
-          &quot;FlutterView is not yet attached to a FlutterEngine. Showing nothing until a FlutterEngine is attached.&quot;);
-      flutterView.addFlutterEngineAttachmentListener(flutterEngineAttachmentListener);
-    }
-  }
-}
-</code></pre><p>通过getSplashScreenFromManifest 初始化了一个drawable，我们看一下它内部：</p>
-<pre><code>@Nullable
-@SuppressWarnings(&quot;deprecation&quot;)
-private Drawable getSplashScreenFromManifest() {
-  try {
-    ActivityInfo activityInfo =
-        getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
-    Bundle metadata = activityInfo.metaData;
-    ///这里就是我们在 AndroidManifest.xml中设置启动页了
-    ///SPLASH_SCREEN_META_DATA_KEY 的值 见下方
-    int splashScreenId = metadata != null ? metadata.getInt(SPLASH_SCREEN_META_DATA_KEY) : 0;
-    return splashScreenId != 0
-        ? Build.VERSION.SDK_INT &gt; Build.VERSION_CODES.LOLLIPOP
-            ? getResources().getDrawable(splashScreenId, getTheme())
-            : getResources().getDrawable(splashScreenId)
-        : null;
-  } catch (PackageManager.NameNotFoundException e) {
-    // This is never expected to happen.
-    return null;
-  }
-}
-</code></pre><p>可以看到，通过上面的方法，我们以在AndroidManifest.xml设置的启动资源 初始化了一个drawable，进而初始化了DrawableSplashScreen 并返回。</p>
-<p>我们回到displayFlutterViewWithSplash 继续向下看，</p>
-<pre><code>///通过我们之前的drawable 生成一个 view
-splashScreenView = splashScreen.createSplashView(getContext(), splashScreenState);
-///添加 splashScreenView 
-addView(this.splashScreenView);
-</code></pre><p>到了这里，整个闪屏页的流程就跑完了。</p>
-<p>回头看去，可以发现在闪屏页的显示到引擎的启动及flutter 页面的显示会有一个很长的过程，而直到flutter 页面的显示，这个闪屏页才会被移除掉。</p>
-<p>那么如何优化呢？ 以下是我的方案。</p>
-<h2 id="启动页优化方案"><a href="#启动页优化方案" class="headerlink" title="启动页优化方案"></a>启动页优化方案</h2><p>因为flutter与原生处于两个不同的surface，所以我们可以考虑利用原生的surface来显示这个启动页，同时为了避免拖慢flutter的启动，我们可以在子线程来做这个事情。ww</p>
-<pre><code>案例中我们显示一个svga动画
-插件使用：&apos;com.github.yyued:SVGAPlayer-Android:2.5.12&apos;
-</code></pre><h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>直接开工，我们写个方法initSplashPage() :</p>
-<pre><code>public void initSplashPage(){
-Executors.newSingleThreadExecutor()
-            .execute(new Runnable() {
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public void run() {
-            ///涉及到view的更新，所以我们需要一个loop
-            Looper.prepare();
-
-            WindowManager wm = (WindowManager)getSystemService(WINDOW_SERVICE);
-            ///创建启动页的view
-            SVGAImageView imageView = new SVGAImageView(getApplicationContext());
-            imageView.setBackgroundColor(getResources().getColor(R.color.white));
-
-            Handler handler = new Handler(){
-                @Override
-                public void handleMessage(Message msg) {
-                    switch (msg.what){
-                        case 1111:
-                            ///在启动页中 显示 svga动画
-                            imageView.setImageDrawable((SVGADrawable)msg.obj);
-                            imageView.startAnimation();
-                            break;
-                    }
-                }
-            };
-
-            ///解析 assets的svga资源
-            SVGAParser parser = new SVGAParser(getApplicationContext());
-            parser.decodeFromAssets(&quot;angel.svga&quot;, new SVGAParser.ParseCompletion() {
-                @Override
-                public void onComplete(SVGAVideoEntity svgaVideoEntity) {
-
-                    ///由于 插件内部切换了主线程，所以我们这里需要handler再次切换
-                    SVGADrawable drawable = new SVGADrawable(svgaVideoEntity);
-                    Message msg = Message.obtain();
-                    msg.what = 1111;
-                    msg.obj = drawable;
-                    handler.sendMessage(msg);
-                }
-
-                @Override
-                public void onError() {
-
-                }
-            });
-
-            WindowManager.LayoutParams params = new WindowManager.LayoutParams();
-            params.width = wm.getDefaultDisplay().getWidth();
-            params.height = wm.getDefaultDisplay().getHeight();
-            ///显示闪屏页
-            wm.addView(imageView, params);
-
-            ///6秒后去掉闪屏页，显示flutter页面
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    wm.removeView(imageView);
-                }
-            }, 6000);
-
-
-            Looper.loop();
-
-
-        }
-    });
-
-}
-</code></pre><p>以上是整个实现过程，由于svga插件的解析回调在主线程，所以需要通过子线程的handler进行一个线程切换，最后通过wm进行上屏显示。</p>
-<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>之后我们在MainActivity的onCreate中使用它：</p>
-<pre><code>@Override
-protected void onCreate(@Nullable Bundle savedInstanceState) {
-    initSplashPage();
-    ///flutter相关的工作
-    super.onCreate(savedInstanceState);
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/01/07/Flutter&Android启动页(闪屏页)的加载流程和优化方案/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -2462,14 +2346,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
@@ -2482,19 +2358,27 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2510,19 +2394,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
