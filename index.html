@@ -155,13 +155,24 @@
     <article id="post-小程序拍照上传" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/05/04/小程序拍照上传/">小程序拍照上传</a>
+    </h1>
+  
+
+        
+        <a href="/2022/05/04/小程序拍照上传/" class="archive-article-date">
+  	<time datetime="2022-05-03T16:35:29.277Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-05-04</time>
+</a>
+        
+      </header>
+    
     <div class="article-entry" itemprop="articleBody">
       
-        <hr>
-<p>title：小程序拍照上传</p>
-<p>tags：小程序</p>
-<hr>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">wx.chooseImage(&#123;</span><br><span class="line">  count: 1,</span><br><span class="line">  sizeType: [&apos;original&apos;, &apos;compressed&apos;],</span><br><span class="line">  sourceType: [&apos;album&apos;, &apos;camera&apos;],  //使用图片还是相机</span><br><span class="line">  success (res) &#123;</span><br><span class="line">    // tempFilePath可以作为img标签的src属性显示图片</span><br><span class="line">    const tempFilePaths = res.tempFilePaths</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">wx.chooseImage(&#123;</span><br><span class="line">  count: 1,</span><br><span class="line">  sizeType: [&apos;original&apos;, &apos;compressed&apos;],</span><br><span class="line">  sourceType: [&apos;album&apos;, &apos;camera&apos;],  //使用图片还是相机</span><br><span class="line">  success (res) &#123;</span><br><span class="line">    // tempFilePath可以作为img标签的src属性显示图片</span><br><span class="line">    const tempFilePaths = res.tempFilePaths</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 <p>如果不满意官方提供的拍照界面，我们也可以自己手动实现，不过略微麻烦，<br>上代码</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">wxml</span><br><span class="line"></span><br><span class="line">使用camera 组件 定义属性</span><br><span class="line">&lt;camera class=&quot;camera&quot; mode=&quot;normal&quot; wx:if=&quot;&#123;&#123;isCamera&#125;&#125;&quot; resolution=&quot;high&quot; device-position=&quot;&#123;&#123;camPos&#125;&#125;&quot; flash=&quot;&#123;&#123;light&#125;&#125;&quot;&gt;</span><br><span class="line">&lt;cover-view class=&quot;btn-box&quot;&gt;</span><br><span class="line">&lt;cover-view class=&quot;camera-btn&quot; bindtap=&quot;changeLight&quot;&gt;灯光&lt;/cover-view&gt;</span><br><span class="line">&lt;cover-view class=&quot;camera-btn&quot; bindtap=&quot;tackPhoto&quot;&gt;拍照&lt;/cover-view&gt;</span><br><span class="line">&lt;cover-view class=&quot;camera-btn&quot; bindtap=&quot;changeCarmera&quot;&gt;切换&lt;/cover-view&gt;</span><br><span class="line">&lt;/cover-view&gt;</span><br><span class="line">&lt;/camera&gt;</span><br></pre></td></tr></table></figure>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">data: &#123;</span><br><span class="line">    isCamera:false,   //相机是否打开</span><br><span class="line">    camPos:&quot;back&quot;,   //相机后置设想</span><br><span class="line">    light:&quot;off&quot;,   //闪光灯</span><br><span class="line">    photoPath:&quot;&quot;,   //拍照和打开图片的路径</span><br><span class="line">  &#125;,</span><br><span class="line">  loadLogo()&#123;    //打开照相机函数;</span><br><span class="line">    wx.showActionSheet(&#123;</span><br><span class="line">      itemList: [&quot;相机&quot;,&quot;相册&quot;],</span><br><span class="line">      success:(res)=&gt;&#123;</span><br><span class="line">        if(res.tapIndex===0)&#123;</span><br><span class="line">          this.setData(&#123;</span><br><span class="line">              isCamera:true,</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">          wx.chooseImage(&#123;</span><br><span class="line">            count: 1,</span><br><span class="line">            sourceType:&quot;album&quot;,</span><br><span class="line">            sizeType:&quot;original&quot;,</span><br><span class="line">            success:(res)=&gt;&#123;</span><br><span class="line">              this.setData(&#123;</span><br><span class="line">                photoPath:res.tempFilePaths</span><br><span class="line">              &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  //修改前置还是后置</span><br><span class="line">  changeCarmera()&#123;</span><br><span class="line">    this.setData(&#123;</span><br><span class="line">      camPos:this.data.camPos==&apos;front&apos;?&quot;back&quot;:&quot;front&quot;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  //修改闪光灯</span><br><span class="line">  changeLight()&#123;</span><br><span class="line">    this.setData(&#123;</span><br><span class="line">      light:this.data.light==&quot;off&quot;?&quot;torch&quot;:&quot;off&quot;,</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  //拍摄图片</span><br><span class="line">  tackPhoto()&#123;</span><br><span class="line">    let carmera = wx.createCameraContext();</span><br><span class="line">    carmera.takePhoto(&#123;</span><br><span class="line">      quality:&apos;high&apos;,</span><br><span class="line">      success:(res)=&gt;&#123;</span><br><span class="line">        this.setData(&#123;</span><br><span class="line">          photoPath:res.tempImagePath,</span><br><span class="line">          isCamera:false,</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  //长按图片进行保存</span><br><span class="line">  longImage()&#123;</span><br><span class="line">  wx.vibrateLong(&#123;</span><br><span class="line">    success: (res) =&gt; &#123;</span><br><span class="line">      wx.saveImageToPhotosAlbum(&#123;</span><br><span class="line">        filePath:this.data.photoPath,</span><br><span class="line">        success:(res)=&gt;&#123;</span><br><span class="line">          this.setData(&#123;</span><br><span class="line">            photoPath:res.savedFilePath</span><br><span class="line">          &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;)</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
@@ -173,6 +184,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">小程序</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -1412,15 +1434,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1428,7 +1450,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1460,11 +1482,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
+                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
