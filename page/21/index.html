@@ -152,6 +152,95 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-类方法和实例方法的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/06/类方法和实例方法的区别/">类方法和实例方法的区别</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/06/类方法和实例方法的区别/" class="archive-article-date">
+  	<time datetime="2018-09-06T15:05:33.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Objective-C里面既有实例方法也类方法。类方法(Class Method) 有时被称为工厂方法(Factory Method)或者方便方法(Convenience method)。工厂方法的称谓明显和一般意义上的工厂方法不同，从本质上来说，类方法可以独立于对象而执行，所以在其他的语言里面类方法有的时候被称为静态方法。</p>
+<p>###注意点一：类方法<br>1，类方法可以调用类方法。</p>
+<p>2，类方法不可以调用实例方法，但是类方法可以通过创建对象来访问实例方法。</p>
+<p>3，类方法不可以使用实例变量。类方法可以使用self，因为self不是实例变量。</p>
+<p>4，类方法作为消息，可以被发送到类或者对象里面去（实际上，就是可以通过类或者对象调用类方法的意思）。</p>
+<p>####注意点二：self的规则</p>
+<p>1，实例方法里面的self，是对象的首地址。</p>
+<p>2，类方法里面的self，是Class.</p>
+<p>尽管在同一个类里面的使用self，但是self却有着不同的解读。在类方法里面的self，可以翻译成class self；在实例方法里面的self，应该被翻译成为object self。在类方法里面的self和实例方法里面的self有着本质上的不同，尽管他们的名字都叫self。</p>
+<p>类方法创造的对象要不要用release释放？</p>
+<p>答 不需要 这个对象被放到自动释放池中</p>
+<p>##区别：<br>1、类方法是属于整个类，而不属于某个对象。 </p>
+<p>2、类方法只能访问类成员变量，不能访问实例变量，而实例方法可以访问类成员变量和实例变量。 </p>
+<p>3、类方法的调用可以通过类名.类方法和对象.类方法，而实例方法只能通过对象.实例方法访问。 </p>
+<p>4、类方法只能访问类方法，而实例方法可以访问类方法和实例方法。 </p>
+<p>5、类方法不能被覆盖，实例方法可以被覆盖。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">数据结构</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/06/类方法和实例方法的区别/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-OC中的isa指针" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1210,102 +1299,9 @@ typedef void(^TestBlock)(void);
 
 
   
-    <article id="post-iOS NSset 和 NSArray的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/04/iOS NSset 和 NSArray的区别/">iOS NSset 和 NSArray的区别</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/04/iOS NSset 和 NSArray的区别/" class="archive-article-date">
-  	<time datetime="2018-09-04T09:42:55.937Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>NSSet到底什么类型?</p>
-<p>其实它和NSArray功能性质一样，用于存储对象，属于集合；</p>
-<p>NSSet  ， NSMutableSet类声明编程接口对象，无序的集合，在内存中存储方式是不连续的</p>
-<p>像NSArray，NSDictionary（都是有序的集合）类声明编程接口对象是有序集合，在内存中存储位置是连续的</p>
-<p> NSSet和我们常用NSArry区别是：在搜索一个一个元素时NSSet比NSArray效率高，主要是它用到了一个算法hash(散列，也可直译为哈希)</p>
-<p> 比如你要存储元素A，一个hash算法直接就能直接找到A应该存储的位置；同样，当你要访问A时，一个hash过程就能找到A存储的位置。而对于NSArray，若想知道A到底在不在数组中，则需要便利整个数组，显然效率较低了</p>
-<p>  NSSet，NSArray都是类，只能添加cocoa对象，如果需要加入基本数据类型（int，float，BOOL，double等），需要将数据封装成NSNumber类型。</p>
-<p>  *NSSet:</p>
-<p>1&gt;无序的、不重复的。存放到NSSet中的内容并不会排序与添加顺序也没有关系</p>
-<p>2&gt;通过anyObject来访问单个元素</p>
-<p>3&gt;遍历NSSet中的每个元素。通过forin循环来遍历</p>
-<p>4&gt;好处:效率高。</p>
-<p>5&gt;应用场景:</p>
-<p>比如重用Cell的时候,从缓存池中随便获取一个就可以了,无需按照指定顺序来获取</p>
-<p>当需要把数据存放到一个集合中,然后判断集合中是否有某个对象的时候</p>
-<p>*NSArray</p>
-<p>1&gt;有序的、可以有重复对象。对象的顺序是按照添加的顺序来保存的</p>
-<p>2&gt;好处:有序访问</p>
-<p>3&gt;应用场景:在绝大多数需要依赖顺序的情况下（比如tableView的数据源集合，在实际操作中要根据下标来获取对象）</p>
-<p>3&gt;通过下标来访问</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/04/iOS NSset 和 NSArray的区别/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/20/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/22/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/20/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/19/">19</a><a class="page-number" href="/page/20/">20</a><span class="page-number current">21</span><a class="page-number" href="/page/22/">22</a><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/22/">Next &raquo;</a>
     </nav>
   
 
@@ -1424,11 +1420,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">

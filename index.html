@@ -152,6 +152,59 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-小程序拍照上传" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">小程序拍照上传</span></span><br><span class="line"><span class="attr">tags:</span> <span class="string">小程序</span></span><br></pre></td></tr></table></figure>
+<p>我们可以使用wx为我们提供的<a href="https://so.csdn.net/so/search?q=api&amp;spm=1001.2101.3001.7020" target="_blank" rel="noopener">api</a>直接打开图片</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">wx.chooseImage(&#123;</span><br><span class="line">  count: 1,</span><br><span class="line">  sizeType: [&apos;original&apos;, &apos;compressed&apos;],</span><br><span class="line">  sourceType: [&apos;album&apos;, &apos;camera&apos;],  //使用图片还是相机</span><br><span class="line">  success (res) &#123;</span><br><span class="line">    // tempFilePath可以作为img标签的src属性显示图片</span><br><span class="line">    const tempFilePaths = res.tempFilePaths</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>如果不满意官方提供的拍照界面，我们也可以自己手动实现，不过略微麻烦，<br>上代码</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">wxml</span><br><span class="line"></span><br><span class="line">使用camera 组件 定义属性</span><br><span class="line">&lt;camera class=&quot;camera&quot; mode=&quot;normal&quot; wx:if=&quot;&#123;&#123;isCamera&#125;&#125;&quot; resolution=&quot;high&quot; device-position=&quot;&#123;&#123;camPos&#125;&#125;&quot; flash=&quot;&#123;&#123;light&#125;&#125;&quot;&gt;</span><br><span class="line">&lt;cover-view class=&quot;btn-box&quot;&gt;</span><br><span class="line">&lt;cover-view class=&quot;camera-btn&quot; bindtap=&quot;changeLight&quot;&gt;灯光&lt;/cover-view&gt;</span><br><span class="line">&lt;cover-view class=&quot;camera-btn&quot; bindtap=&quot;tackPhoto&quot;&gt;拍照&lt;/cover-view&gt;</span><br><span class="line">&lt;cover-view class=&quot;camera-btn&quot; bindtap=&quot;changeCarmera&quot;&gt;切换&lt;/cover-view&gt;</span><br><span class="line">&lt;/cover-view&gt;</span><br><span class="line">&lt;/camera&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">data: &#123;</span><br><span class="line">    isCamera:false,   //相机是否打开</span><br><span class="line">    camPos:&quot;back&quot;,   //相机后置设想</span><br><span class="line">    light:&quot;off&quot;,   //闪光灯</span><br><span class="line">    photoPath:&quot;&quot;,   //拍照和打开图片的路径</span><br><span class="line">  &#125;,</span><br><span class="line">  loadLogo()&#123;    //打开照相机函数;</span><br><span class="line">    wx.showActionSheet(&#123;</span><br><span class="line">      itemList: [&quot;相机&quot;,&quot;相册&quot;],</span><br><span class="line">      success:(res)=&gt;&#123;</span><br><span class="line">        if(res.tapIndex===0)&#123;</span><br><span class="line">          this.setData(&#123;</span><br><span class="line">              isCamera:true,</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;else&#123;</span><br><span class="line">          wx.chooseImage(&#123;</span><br><span class="line">            count: 1,</span><br><span class="line">            sourceType:&quot;album&quot;,</span><br><span class="line">            sizeType:&quot;original&quot;,</span><br><span class="line">            success:(res)=&gt;&#123;</span><br><span class="line">              this.setData(&#123;</span><br><span class="line">                photoPath:res.tempFilePaths</span><br><span class="line">              &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  //修改前置还是后置</span><br><span class="line">  changeCarmera()&#123;</span><br><span class="line">    this.setData(&#123;</span><br><span class="line">      camPos:this.data.camPos==&apos;front&apos;?&quot;back&quot;:&quot;front&quot;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  //修改闪光灯</span><br><span class="line">  changeLight()&#123;</span><br><span class="line">    this.setData(&#123;</span><br><span class="line">      light:this.data.light==&quot;off&quot;?&quot;torch&quot;:&quot;off&quot;,</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  //拍摄图片</span><br><span class="line">  tackPhoto()&#123;</span><br><span class="line">    let carmera = wx.createCameraContext();</span><br><span class="line">    carmera.takePhoto(&#123;</span><br><span class="line">      quality:&apos;high&apos;,</span><br><span class="line">      success:(res)=&gt;&#123;</span><br><span class="line">        this.setData(&#123;</span><br><span class="line">          photoPath:res.tempImagePath,</span><br><span class="line">          isCamera:false,</span><br><span class="line">        &#125;)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;,</span><br><span class="line">  //长按图片进行保存</span><br><span class="line">  longImage()&#123;</span><br><span class="line">  wx.vibrateLong(&#123;</span><br><span class="line">    success: (res) =&gt; &#123;</span><br><span class="line">      wx.saveImageToPhotosAlbum(&#123;</span><br><span class="line">        filePath:this.data.photoPath,</span><br><span class="line">        success:(res)=&gt;&#123;</span><br><span class="line">          this.setData(&#123;</span><br><span class="line">            photoPath:res.savedFilePath</span><br><span class="line">          &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;)</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/05/04/小程序拍照上传/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-小程序常用基础语法精选" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1244,153 +1297,9 @@ public typealias AnyObject
 
 
   
-    <article id="post-Swift-适配深色模式与UIColor扩展" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/08/Swift-适配深色模式与UIColor扩展/">Swift:适配深色模式与UIColor扩展</a>
-    </h1>
-  
-
-        
-        <a href="/2021/10/08/Swift-适配深色模式与UIColor扩展/" class="archive-article-date">
-  	<time datetime="2021-10-08T07:02:24.916Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="配置info-plist锁死模式"><a href="#配置info-plist锁死模式" class="headerlink" title="配置info.plist锁死模式"></a>配置info.plist锁死模式</h2><p>如果你的App在之前的iOS版本跑的挺好的，特别是那种浅色系风格的App，只是在深色模式下变得奇丑无比的话，有一种简单暴力的方法去适配深色模式。</p>
-<p>那就是将你的App锁死在浅色模式或者黑色模式。这样无论外面设置怎么修改，App的配色岿然不动。</p>
-<p>修改的方法也特别简单，在App中info.plist文件，添加如下代码就可以了。</p>
-<p>锁死浅色：</p>
-<pre><code>&lt;key&gt;UIUserInterfaceStyle&lt;/key&gt;
-&lt;string&gt;Light&lt;/string&gt;
-</code></pre><p>锁死深色：</p>
-<pre><code>&lt;key&gt;UIUserInterfaceStyle&lt;/key&gt;
-&lt;string&gt;Dark&lt;/string&gt;
-</code></pre><p>如果你要比较细化的适配浅色和深色，请接着往下看。</p>
-<h2 id="UIColor分类"><a href="#UIColor分类" class="headerlink" title="UIColor分类"></a>UIColor分类</h2><p>抽取一个构造方法，可以传入浅色与深色的方法，生成一个UIColor，我的方法如下：</p>
-<pre><code>//MARK: - LightMode与DarkMode的颜色思路
-extension UIColor {
-
-    /// 便利构造函数(配合cssHex函数使用 更好)
-    /// - Parameters:
-    ///   - lightThemeColor: 明亮主题的颜色
-    ///   - darkThemeColor: 黑暗主题的颜色
-
-    public convenience init(lightThemeColor: UIColor, darkThemeColor: UIColor? = nil) {
-        if #available(iOS 13.0, *) {
-            self.init { (traitCollection) -&gt; UIColor in
-                switch traitCollection.userInterfaceStyle {
-                    case .light:
-                        return lightThemeColor
-                    case .unspecified:
-                        return lightThemeColor
-                    case .dark:
-                        return darkThemeColor ?? lightThemeColor
-                    @unknown default:
-                        fatalError()
-                }
-            }
-        } else {
-            self.init(cgColor: lightThemeColor.cgColor)
-        }
-    }
-}
-</code></pre><p>最好对于App类常用的颜色都进行UIColor的分类扩展编写。比如下面这种：</p>
-<pre><code>extension UIColor {
-
-    /// 文字颜色 light为黑 dark为白
-    static let playAndroidTitle = UIColor(lightThemeColor: .black, darkThemeColor: .white)
-
-    /// 背景颜色 light为白 dark为黑
-    static let playAndroidBg = UIColor(lightThemeColor: .white, darkThemeColor: .black)
-
-}
-</code></pre><p>使用的时候这样就可以了：</p>
-<pre><code>let label = UILabel()
-label.textColor = .playAndroidTitle
-</code></pre><h2 id="UIColor的colorName-API使用"><a href="#UIColor的colorName-API使用" class="headerlink" title="UIColor的colorName API使用"></a>UIColor的colorName API使用</h2><p>另外我们可以通过iOS 11之后的新API与配置方法进行深色模式的适配：</p>
-<p>先在Assets新建色彩资源：<br><img src="http://img.wangjungang.cn/uPic/ZdvVYH.jpg" alt=""></p>
-<p>2.设置好颜色配置。</p>
-<p>3.调用</p>
-<p>系统api如下</p>
-<pre><code>extension UIColor {
-    @available(iOS 11.0, *)
-    public /*not inherited*/ init?(named name: String) // load from main bundle
-
-    @available(iOS 11.0, *)
-    public /*not inherited*/ init?(named name: String, in bundle: Bundle?, compatibleWith traitCollection: UITraitCollection?)
-
-}
-</code></pre><p>编写分类：</p>
-<pre><code>extension UIColor {
-
-    /// UIColor的原始调用，硬编码不够安全，而且返回的还是一个可选类型，需要注意
-    /// 可以考虑使用R函数
-    static let theme = UIColor.colorNamed(&quot;mainTheme&quot;)
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Swift</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/08/Swift-适配深色模式与UIColor扩展/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/22/">22</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 
@@ -1509,11 +1418,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
