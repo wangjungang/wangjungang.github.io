@@ -152,6 +152,161 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Swift里面怎么知道一个协议被多少类遵循" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/11/17/Swift里面怎么知道一个协议被多少类遵循/">Swift里面怎么知道一个协议被多少类遵循</a>
+    </h1>
+  
+
+        
+        <a href="/2021/11/17/Swift里面怎么知道一个协议被多少类遵循/" class="archive-article-date">
+  	<time datetime="2021-11-17T07:44:11.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>开发中想知道一个协议被多少类实现了。有没有方法知道呢。</p>
+<pre><code>protocol Animal {
+    func speak()
+}
+
+class Cat:Animal {
+    func speak() {
+        print(&quot;meow&quot;)
+    }
+}
+
+class Dog: Animal {
+    func speak() {
+        print(&quot;An An!&quot;)
+    }
+}
+
+class Horse: Animal {
+    func speak() {
+        print(&quot;Hurrrr&quot;)
+    }
+}
+</code></pre><p>在网上找能找到这几个方法</p>
+<ul>
+<li>objc_copyProtocolList // 获取运行时知道的所有协议</li>
+<li>protocol_copyProtocolList // 返回一个协议所采用的协议的数组。</li>
+</ul>
+<p>上面两个方法，一个是知道有多少协议数组，一个是知道协议采用的协议数组。他们都没法知道一个协议被多少类实现。都没有达成目的。那就需要变通了。 反过来，找到这两个方法</p>
+<ul>
+<li>objc_getClassList // 获取运行时知道的所有的类</li>
+<li>class_conformsToProtocol // 获取一个类是否实现某个协议。</li>
+</ul>
+<p>利用这两个方法，那就可以这样，先获取所有的类，然后遍历每个类是否实现了目标协议。代码如下：</p>
+<pre><code>func getClassesConformingProtocol() -&gt; {
+        let expectedClassCount = objc_getClassList(nil, 0)
+        let allClasses = UnsafeMutablePointer&lt;AnyClass&gt;.allocate(capacity: Int(expectedClassCount))
+        let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer&lt;AnyClass&gt;(allClasses)
+        let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
+
+        for i in 0 ..&lt; actualClassCount {
+            let currentClass = allClasses[Int(i)]
+            if class_conformsToProtocol(currentClass, Animal.Type) {
+                print(currentClass)
+            }
+        }
+}
+</code></pre><p>这里有个问题，在Swift中class_conformsToProtocol判断总是失败。</p>
+<p>那就再变通，因为我们知道在swift中判断一个类是否遵循某个协议可以这样(aclass as? aprotocol)。代码修改如下：</p>
+<pre><code>func getClassesConformingProtocol() -&gt; {
+        let expectedClassCount = objc_getClassList(nil, 0)
+        let allClasses = UnsafeMutablePointer&lt;AnyClass&gt;.allocate(capacity: Int(expectedClassCount))
+        let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer&lt;AnyClass&gt;(allClasses)
+        let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
+
+        for i in 0 ..&lt; actualClassCount {
+            let currentClass = allClasses[Int(i)]
+            if let cls = currentClass as? Animal.Type {
+                print(currentClass)
+            }
+        }
+}
+</code></pre><p>目标达成</p>
+<p>当这部分代码被OC调用了，会出现这个错误。</p>
+<pre><code>*** NSForwarding: warning: object 0x10bec81d0 of class &apos;Object&apos; does not implement methodSignatureForSelector: -- trouble ahead
+*** NSForwarding: warning: object 0x10bec81d0 of class &apos;Object&apos; does not implement doesNotRecognizeSelector: -- abort
+</code></pre><p>解决方法也简单</p>
+<pre><code>func getClassesConformingProtocol() -&gt; {
+        let expectedClassCount = objc_getClassList(nil, 0)
+        let allClasses = UnsafeMutablePointer&lt;AnyClass&gt;.allocate(capacity: Int(expectedClassCount))
+        let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer&lt;AnyClass&gt;(allClasses)
+        let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
+
+        for i in 0 ..&lt; actualClassCount {
+            let currentClass = allClasses[Int(i)]
+            if (class_getInstanceMethod(currentClass, NSSelectorFromString(&quot;methodSignatureForSelector:&quot;)) != nil),
+
+               (class_getInstanceMethod(currentClass, NSSelectorFromString(&quot;doesNotRecognizeSelector:&quot;)) != nil),
+               let cls = currentClass as? Animal.Type {
+                print(currentClass)
+            }
+        }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Swift</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/11/17/Swift里面怎么知道一个协议被多少类遵循/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Swift中的Any&amp;AnyObject" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1530,481 +1685,6 @@ ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
 
 
   
-    <article id="post-Java多线程常用方法分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/11/Java多线程常用方法分析/">Java多线程常用方法分析</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/11/Java多线程常用方法分析/" class="archive-article-date">
-  	<time datetime="2021-03-11T03:33:42.426Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-11</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b0b0dd37602d4f0d9e6694b98a799f3c~tplv-k3u1fbpfcp-zoom-1.image?imageslim" alt=""></p>
-<h2 id="Thread相关"><a href="#Thread相关" class="headerlink" title="Thread相关"></a>Thread相关</h2><p>###创建线程的方法：</p>
-<ol>
-<li>传Runnable方式。</li>
-<li>Thread子类</li>
-<li>传FutureTask方式。</li>
-</ol>
-<h4 id="Runnable方式："><a href="#Runnable方式：" class="headerlink" title="Runnable方式："></a>Runnable方式：</h4><p>Runnable方式没有返回值。</p>
-<pre><code>/**
- * @author jtl
- * @date 2019/10/11 17:03
- * Thread常见的3种创建方式：Runnable
- */
-public class ThreadDemo {
-    public static void main(String[] args) {
-        //Runnable
-        Thread threadA=new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println(&quot;Thread is created with runnable&quot;);
-            }
-        },&quot;ThreadA&quot;);
-        threadA.start();
-    }
-}
-</code></pre><h4 id="Thread子类的方式："><a href="#Thread子类的方式：" class="headerlink" title="Thread子类的方式："></a>Thread子类的方式：</h4><pre><code>/**
- * @author jtl
- * @date 2019/10/11 17:03
- * Thread常见的3种创建方式：Thread子类
- */
-
-public class ThreadDemo {
-    public static void main(String[] args) {
-        ThreadC threadC=new ThreadC();
-        threadC.setName(&quot;ThreadC&quot;);
-        threadC.start();
-    }
-
-    private static class ThreadC extends Thread{
-        @Override
-        public void run() {
-            super.run();
-             System.out.println(&quot;ThreadC name is: &quot;+getName());
-        }
-    }
-}
-</code></pre><h4 id="FutureTask方式："><a href="#FutureTask方式：" class="headerlink" title="FutureTask方式："></a>FutureTask方式：</h4><p>FutureTask：有返回值。在执行futureTask.get()方法时。会阻塞当前线程，直到futureTask所在子线程执行完，才会唤醒当前线程。</p>
-<pre><code>/**
- * @author jtl
- * @date 2019/10/11 17:03
- * Thread常见的3种创建方式： FutureTask
- */
-
-public class ThreadDemo {
-    public static void main(String[] args) {
-        //FutureTask  callable
-        Callable&lt;String&gt; callable=new Callable&lt;String&gt;() {
-            @Override
-            public String call() throws Exception {
-                Thread.sleep(1000);
-                return &quot;Thread is created with callable&quot;;
-            }
-        };
-        FutureTask&lt;String&gt; futureTask=new FutureTask&lt;&gt;(callable);
-        Thread threadB=new Thread(futureTask,&quot;ThreadB&quot;);
-        threadB.start();
-        try {
-            long tt=System.currentTimeMillis();
-            String msg=futureTask.get();
-            // 在执行futureTask.get() 会阻塞当先线程，直到子线程执行完毕，才会唤醒主线程
-            // 所以时间耗费为1000+ms
-            System.out.println(msg+&quot;---&quot; +(System.currentTimeMillis()-tt));
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-}
-</code></pre><h3 id="线程的生命周期："><a href="#线程的生命周期：" class="headerlink" title="线程的生命周期："></a>线程的生命周期：</h3><ol>
-<li><p>新建（New）: 调用new方法，新建一个线程时，线程处于生命周期中的New。此时主要是为线程分配内存，初始化其成员变量。</p>
-</li>
-<li><p>就绪（Runnable）:调用start方法，启动一个线程。此时JVM完成了栈和程序计数器的创建，等待该线程的调度和运行。</p>
-</li>
-<li><p>运行（Running）:当处于Runnable的线程，被分配到CPU时间片后，线程开始执行run方法，此时处于运行状态。运行状态主要是执行run方法中的代码逻辑。</p>
-</li>
-<li><p>阻塞（Blocked）:运行中的线程，主动或者被动的放弃CPU的使用权暂停运行。线程调用Object.wait()方法（等待阻塞），没有竞争到锁而阻塞（同步阻塞），线程调用Thread.sleep()，Thread<br>.join()方法（其他阻塞）</p>
-</li>
-<li><p>死亡（Dead）:线程运行结束，或者因为异常退出。</p>
-</li>
-</ol>
-<h3 id="线程的6种状态："><a href="#线程的6种状态：" class="headerlink" title="线程的6种状态："></a>线程的6种状态：</h3><ol>
-<li><p>NEW:线程被创建还没有运行（start）时的状态。</p>
-</li>
-<li><p>RUNNABLE:线程在JAVA虚拟机运行时的状态。</p>
-</li>
-<li><p>BLOCKED：线程被阻塞，因为运行synchronized的同步方法时，没有竞争到锁而被阻塞时的状态。</p>
-</li>
-<li><p>WAITING：由于调用了Object.wait(),Thread.join()，LockSupport.park()等f非超时方法，导致线程处于等待状态，需要别的线程唤醒。</p>
-</li>
-<li><p>TIMED_WAITING：由于调用了Thread.sleep，Object.wait(long),Thread.join(long),LockSupport.parkNanos(),LockSupport.parkUntil()等方法时线程处于的状态。它和WAITING状态不同之处在于。它设置了超时等待的时间，而WAITING状态没有。</p>
-</li>
-<li><p>TERMINATED：线程已经退出时的状态。</p>
-<p>/**</p>
-<ul>
-<li>A thread state.  A thread can be in one of the following states:</li>
-<li><ul></ul></li>
-<li></li><li>{@link #NEW}<br></li>
-<li>A thread that has not yet started is in this state.</li>
-<li></li></ul></li>
-<li></li><li>{@link #RUNNABLE}<br></li>
-<li>A thread executing in the Java virtual machine is in this state.</li>
-<li></li>
-<li></li><li>{@link #BLOCKED}<br></li>
-<li>A thread that is blocked waiting for a monitor lock</li>
-<li>is in this state.</li>
-<li></li>
-<li></li><li>{@link #WAITING}<br></li>
-<li>A thread that is waiting indefinitely for another thread to</li>
-<li>perform a particular action is in this state.</li>
-<li></li>
-<li></li><li>{@link #TIMED_WAITING}<br></li>
-<li>A thread that is waiting for another thread to perform an action</li>
-<li>for up to a specified waiting time is in this state.</li>
-<li></li>
-<li></li><li>{@link #TERMINATED}<br></li>
-<li>A thread that has exited is in this state.</li>
-<li></li>
-<li><br>*</li>
-<li><p></p></li>
-<li>A thread can be in only one state at a given point in time.</li>
-<li>These states are virtual machine states which do not reflect</li>
-<li>any operating system thread states.<br>*</li>
-<li>@since   1.5</li>
-<li><p>@see #getState<br>*/<br>public enum State {<br> /**</p>
-<ul>
-<li><p>Thread state for a thread which has not yet started.<br>*/<br>NEW,</p>
-<p>/**</p>
-</li>
-<li>Thread state for a runnable thread.  A thread in the runnable</li>
-<li>state is executing in the Java virtual machine but it may</li>
-<li>be waiting for other resources from the operating system</li>
-<li><p>such as processor.<br>*/<br>RUNNABLE,</p>
-<p>/**</p>
-</li>
-<li>Thread state for a thread blocked waiting for a monitor lock.</li>
-<li>A thread in the blocked state is waiting for a monitor lock</li>
-<li>to enter a synchronized block/method or</li>
-<li>reenter a synchronized block/method after calling</li>
-<li><p>{@link Object#wait() Object.wait}.<br>*/<br>BLOCKED,</p>
-<p>/**</p>
-</li>
-<li>Thread state for a waiting thread.</li>
-<li>A thread is in the waiting state due to calling one of the</li>
-<li>following methods:</li>
-<li><ul></ul></li>
-<li></li><li>{@link Object#wait() Object.wait} with no timeout</li></ul></li>
-<li></li><li>{@link #join() Thread.join} with no timeout</li>
-<li></li><li>{@link LockSupport#park() LockSupport.park}</li>
-<li><br>*</li>
-<li><p>A thread in the waiting state is waiting for another thread to</p></li>
-<li>perform a particular action.<br>*</li>
-<li>For example, a thread that has called <tt>Object.wait()</tt></li>
-<li>on an object is waiting for another thread to call</li>
-<li><tt>Object.notify()</tt> or <tt>Object.notifyAll()</tt> on</li>
-<li>that object. A thread that has called <tt>Thread.join()</tt></li>
-<li><p>is waiting for a specified thread to terminate.<br>*/<br>WAITING,</p>
-<p>/**</p>
-</li>
-<li>Thread state for a waiting thread with a specified waiting time.</li>
-<li>A thread is in the timed waiting state due to calling one of</li>
-<li>the following methods with a specified positive waiting time:</li>
-<li><ul></ul></li>
-<li></li><li>{@link #sleep Thread.sleep}</li>
-<li></li><li>{@link Object#wait(long) Object.wait} with timeout</li>
-<li></li><li>{@link #join(long) Thread.join} with timeout</li>
-<li></li><li>{@link LockSupport#parkNanos LockSupport.parkNanos}</li>
-<li></li><li>{@link LockSupport#parkUntil LockSupport.parkUntil}</li>
-<li><p><br>*/<br>TIMED_WAITING,</p>
-<p>/**</p>
-</li>
-<li>Thread state for a terminated thread.</li>
-<li>The thread has completed execution.<br>*/<br>TERMINATED;<br>}</li>
-
-
-
-
-</ol>
-<h3 id="线程的常见方法"><a href="#线程的常见方法" class="headerlink" title="线程的常见方法"></a>线程的常见方法</h3><ol>
-<li><p>Thread.sleep():当前线程休眠,此时线程让出cpu，进入TIMED-WATING状态。如果该线程竞争到了锁，在执行该方法时不会释放锁。等睡眠时间过后，重新竞争cpu。</p>
-</li>
-<li><p>Thread.yield()：让出CPU资源，和其他线程一起重新竞争CPU时间片。可能让出CPU之后，该线程会再次竞争到CPU。</p>
-</li>
-<li><p>Thread.holdLock(Object)：传入一个Object对象，返回bool值。当前线程是否持有该对象锁。</p>
-</li>
-<li><p>join()：当前执行该方法的线程进入WAITING状态。直到调用join方法的线程执行完毕或者别的线程调用interrupt方法报InterruptedException。Thread  a = new Thread(); a.join();原理是调用了线程实例a的wait方法。需强调，a.join(5000)只是让调用该方法的线程进入TIMED_WAITING状态，一旦过了5秒之后，执行改方法的线程将继续往下执行。</p>
-</li>
-<li><p>setDaemon()：设置该线程为守护线程。用户线程不全部退出，JVM不会退出。JVM退出，守护线程将死亡。</p>
-</li>
-<li><p>setPriority()：设置该线程的优先级，优先级高的线程在分配CPU资源的时候更有可能被优先分配。线程优先级在 Thread.MIN_PRIORITY(1) ~ Thread.MAX_PRIORITY(10) 之间。1最低，10最高。</p>
-</li>
-<li><p>Thread.interrupted()：返回某些线程是否已被中断。同时重置线程中断标记位。此时isInterrupted()返回为false。</p>
-</li>
-<li><p>isInterrupted()：测试某些线程是否已被中断。</p>
-</li>
-<li><p>interrupt()：当线程进入阻塞等待状态时，调用该方法会立刻报InterruptedException。退出BLOCKED或者WAITING状态。当线程为非阻塞状态，该方法会将Thread中的标志位设置为true，此时isInterrupted()返回为true。</p>
-</li>
-</ol>
-<pre><code>/**
- * Tests whether this thread has been interrupted.  The &lt;i&gt;interrupted
- * status&lt;/i&gt; of the thread is unaffected by this method.
- *
- * &lt;p&gt;A thread interruption ignored because a thread was not alive
- * at the time of the interrupt will be reflected by this method
- * returning false.
- *
- * @return  &lt;code&gt;true&lt;/code&gt; if this thread has been interrupted;
- *          &lt;code&gt;false&lt;/code&gt; otherwise.
- * @see     #interrupted()
- * @revised 6.0
- */
-public boolean isInterrupted() {
-    return isInterrupted(false);
-}
-
-
-/**
- * Tests whether the current thread has been interrupted.  The
- * &lt;i&gt;interrupted status&lt;/i&gt; of the thread is cleared by this method.  In
- * other words, if this method were to be called twice in succession, the
- * second call would return false (unless the current thread were
- * interrupted again, after the first call had cleared its interrupted
- * status and before the second call had examined it).
- *
- * &lt;p&gt;A thread interruption ignored because a thread was not alive
- * at the time of the interrupt will be reflected by this method
- * returning false.
- *
- * @return  &lt;code&gt;true&lt;/code&gt; if the current thread has been interrupted;
- *          &lt;code&gt;false&lt;/code&gt; otherwise.
- * @see #isInterrupted()
- * @revised 6.0
- */
-public static boolean interrupted() {
-    return currentThread().isInterrupted(true);
-}
-
-
-/**
- * Tests if some Thread has been interrupted.  The interrupted state
- * is reset or not based on the value of ClearInterrupted that is
- * passed.
- */
-private native boolean isInterrupted(boolean ClearInterrupted);
-
-/**
- * Interrupts this thread.
- *
- * &lt;p&gt; Unless the current thread is interrupting itself, which is
- * always permitted, the {@link #checkAccess() checkAccess} method
- * of this thread is invoked, which may cause a {@link
- * SecurityException} to be thrown.
- *
- * &lt;p&gt; If this thread is blocked in an invocation of the {@link
- * Object#wait() wait()}, {@link Object#wait(long) wait(long)}, or {@link
- * Object#wait(long, int) wait(long, int)} methods of the {@link Object}
- * class, or of the {@link #join()}, {@link #join(long)}, {@link
- * #join(long, int)}, {@link #sleep(long)}, or {@link #sleep(long, int)},
- * methods of this class, then its interrupt status will be cleared and it
- * will receive an {@link InterruptedException}.
- *
- * &lt;p&gt; If this thread is blocked in an I/O operation upon an {@link
- * java.nio.channels.InterruptibleChannel InterruptibleChannel}
- * then the channel will be closed, the thread&apos;s interrupt
- * status will be set, and the thread will receive a {@link
- * java.nio.channels.ClosedByInterruptException}.
- *
- * &lt;p&gt; If this thread is blocked in a {@link java.nio.channels.Selector}
- * then the thread&apos;s interrupt status will be set and it will return
- * immediately from the selection operation, possibly with a non-zero
- * value, just as if the selector&apos;s {@link
- * java.nio.channels.Selector#wakeup wakeup} method were invoked.
- *
- * &lt;p&gt; If none of the previous conditions hold then this thread&apos;s interrupt
- * status will be set. &lt;/p&gt;
- *
- * &lt;p&gt; Interrupting a thread that is not alive need not have any effect.
- *
- * @throws  SecurityException
- *          if the current thread cannot modify this thread
- *
- * @revised 6.0
- * @spec JSR-51
- */
-public void interrupt() {
-    if (this != Thread.currentThread())
-        checkAccess();
-
-    synchronized (blockerLock) {
-        Interruptible b = blocker;
-        if (b != null) {
-            interrupt0();           // Just to set the interrupt flag
-            b.interrupt(this);
-            return;
-        }
-    }
-    interrupt0();
-}
-</code></pre><h4 id="sleep和wait方法的区别："><a href="#sleep和wait方法的区别：" class="headerlink" title="sleep和wait方法的区别："></a>sleep和wait方法的区别：</h4><ol>
-<li>sleep()是Thread的方法，调用该方法后，当前线程休眠,此时线程让出cpu，进入TIMED-WATING状态。执行该方法时不会释放锁。</li>
-<li>wait() 是Object的方法，调用该方法后，当前线程进入WAITING状态。此方法一般和synchronized一起使用，会释放锁。需要notify()/notifyAll()方法唤醒。</li>
-</ol>
-<h4 id="线程结束的几种方法"><a href="#线程结束的几种方法" class="headerlink" title="线程结束的几种方法:"></a>线程结束的几种方法:</h4><ol>
-<li>正常执行完逻辑代码。</li>
-<li>线程阻塞时，调用thread.interrupt方法，捕获InterrutedException异常。</li>
-<li>长时间循环运行的线程，用标记位来判断是否退出，具体看下方interrupt的示例代码</li>
-<li>stop方法：此方法已被废弃，不建议使用</li>
-</ol>
-<h4 id="三个方法区别：isInterrupt-，interrupt-Thread-interrupted"><a href="#三个方法区别：isInterrupt-，interrupt-Thread-interrupted" class="headerlink" title="三个方法区别：isInterrupt()，interrupt(),Thread.interrupted()"></a>三个方法区别：isInterrupt()，interrupt(),Thread.interrupted()</h4><ol>
-<li>isInterrupt()：只返回当前线程是否中断的标记位。</li>
-<li>Thread.interrupted()：将标记位reset。此时再调用isInterrupt()返回的是false</li>
-<li>interrupt()：阻塞状态时：捕获InterruptException异常<pre><code>非阻塞状态时：将当前线程标记位，设置为true。
-</code></pre></li>
-</ol>
-<h2 id="非阻塞情况下的三种代码测试"><a href="#非阻塞情况下的三种代码测试" class="headerlink" title="非阻塞情况下的三种代码测试"></a>非阻塞情况下的三种代码测试</h2><pre><code>/**
- * @author jtl
- * @date 2020/3/24 10:49
- * 非阻塞情况下的三种代码测试
- */
-
-class ThreadTest {
-
-    public static void main(String[] args) throws InterruptedException {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int count = 0;
-                //线程中断标记位为false。执行while循环
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        if (count &lt; 100) {
-                            boolean a = Thread.currentThread().isInterrupted();
-                            System.out.println(&quot;isInterrupted:&quot; + a + &quot;  &quot; + count++);
-                            Thread.sleep(50);
-                        } else if (count&gt;=100 &amp;&amp; count&lt;200){
-                            boolean a = Thread.currentThread().isInterrupted();//标记位为：false
-                            Thread.currentThread().interrupt();//标记位设置为：true
-                            boolean b = Thread.currentThread().isInterrupted();
-                            Thread.interrupted();//标记位reset，此时标记位为：false。所以循环不会退出
-                            boolean c = Thread.currentThread().isInterrupted();
-                            System.out.println(&quot;isInterrupted:before:&quot; + a + &quot;  isInterrupted:after:&quot; + b + &quot;  isInterrupted:after:&quot; + c + &quot;  &quot; + count++);
-                        }else{
-                            boolean a = Thread.currentThread().isInterrupted();//标记位为：false
-                            Thread.currentThread().interrupt();//标记位设置为：true。因为是非阻塞线程，所以不会捕获异常
-                            boolean b = Thread.currentThread().isInterrupted();//标记位为：true
-                            System.out.println(&quot;isInterrupted:before:&quot; + a + &quot;  isInterrupted:after:&quot; + b + &quot;  &quot; + count++);
-                            count = 0;
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        System.out.println(&quot;InterruptedException:&quot;+ count + e.getMessage());
-                        break;//退出循环
-                    }
-                }
-            }
-        });
-        thread.start();
-        thread.join();//此处用join方法，wait住主线程，让主线程等待thread线程执行完毕
-
-        System.out.println(&quot;join:&quot; + &quot; interrupted:&quot; + thread.isInterrupted());
-    }
-}
-</code></pre><h2 id="阻塞情况下的执行interrupt方法测试"><a href="#阻塞情况下的执行interrupt方法测试" class="headerlink" title="阻塞情况下的执行interrupt方法测试"></a>阻塞情况下的执行interrupt方法测试</h2><pre><code>/**
- * @author jtl
- * @date 2020/3/24 10:49
- * 阻塞情况下的执行interrupt方法测试
- */
-
-class ThreadTest {
-
-
-    public static void main(String[] args) throws InterruptedException {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    System.out.println(&quot;线程执行：sleep前&quot;);
-                    //线程睡10秒
-                    Thread.sleep(10000);
-                    System.out.println(&quot;线程执行：sleep后&quot;);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    System.out.println(&quot;线程异常：&quot;+e.getMessage());
-                }
-            }
-        });
-        thread.start();
-
-        Thread.sleep(1000);
-        System.out.println(&quot;Thread标记位：&quot;+thread.isInterrupted());//thread线程阻塞。此时标记位为默认的false
-        thread.interrupt();//thread线程阻塞。执行interrupt()方法捕获异常
-        System.out.println(&quot;Thread标记位：&quot;+thread.isInterrupted());//thread线程。此时标记位为true
-    }
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/11/Java多线程常用方法分析/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -2126,11 +1806,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2146,11 +1826,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2158,11 +1838,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2174,11 +1854,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2186,11 +1866,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">

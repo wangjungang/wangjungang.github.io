@@ -152,6 +152,414 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Autorelease &amp; AutoreleasePool" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/21/Autorelease & AutoreleasePool/">Autorelease &amp; AutoreleasePool</a>
+    </h1>
+  
+
+        
+        <a href="/2019/09/21/Autorelease & AutoreleasePool/" class="archive-article-date">
+  	<time datetime="2019-09-21T02:22:27.816Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-21</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>内存管理一直是Objective-C 的重点，在MRC环境下，通过调用[obj autorelease]来延迟内存的释放，在现在ARC环境下，我们都知道编译器会在合适的地方插入release/autorelease内存释放语句，我们甚至可以不需要知道Autorelease就能很好的管理内存。虽然现在已经几乎用不到MRC,但是了解 Objective-C 的内存管理机制仍然是十分必要的，看看编译器帮助我们怎么来管理内存。本文仅仅是记录自己的学习笔记。</p>
+<h2 id="AutoreleasePool简介"><a href="#AutoreleasePool简介" class="headerlink" title="AutoreleasePool简介"></a>AutoreleasePool简介</h2><h3 id="1-什么是AutoreleasePool"><a href="#1-什么是AutoreleasePool" class="headerlink" title="1.什么是AutoreleasePool"></a>1.什么是AutoreleasePool</h3><p>AutoreleasePool：自动释放池是 Objective-C 开发中的一种自动内存回收管理的机制，为了替代开发人员手动管理内存，实质上是使用编译器在适当的位置插入release、autorelease等内存释放操作。当对象调用 autorelease方法后会被放到自动释放池中延迟释放时机，当缓存池需要清除dealloc时，会向这些 Autoreleased对象做 release 释放操作。</p>
+<h3 id="2-对象什么时候释放（ARC规则）"><a href="#2-对象什么时候释放（ARC规则）" class="headerlink" title="2.对象什么时候释放（ARC规则）"></a>2.对象什么时候释放（ARC规则）</h3><p>一般的说法是对象会在当前作用域大括号结束时释放， 有这样一个ARC环境下简单的例子🌰：首先创建一个ZHPerson类：</p>
+<pre><code>//// ZHPerson.h
+#import &lt;Foundation/Foundation.h&gt;
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface ZHPerson : NSObject
+
++(instancetype)object;
+@end
+
+////ZHPerson.m
+
+#import &quot;ZHPerson.h&quot;
+@implementation ZHPerson
+
+-(void)dealloc
+{
+    NSLog(@&quot;ZHPerson dealloc&quot;);
+}
++(instancetype)object
+{
+    return [[ZHPerson alloc] init];
+}
+@end
+</code></pre><p>然后在ViewController.m导入头文件ZHPerson.h，然后在写一段这样的代码：</p>
+<pre><code>__weak id temp = nil;
+{
+    ZHPerson *person = [[ZHPerson alloc] init];
+    temp = person;
+}
+NSLog(@&quot;temp = %@&quot;,temp);
+</code></pre><p>解释一下这个代码：先声明了一个 <strong>weak 变量temp，因为 </strong>weak 变量有一个特性就是它不会影响所指向对象的生命周期，然后让变量temp指向创建的person对象，输出如下：<br><img src="http://img.wangjungang.cn/hXsxMR.jpg" alt=""></p>
+<p>这里超出了person的作用域，它就被释放了，看来是正常的。</p>
+<p>把上面的创建对象的方法，变一变写法：</p>
+<pre><code>__weak id temp = nil;
+{
+    ZHPerson *person = [ZHPerson object];
+    temp = person;
+}
+NSLog(@&quot;temp = %@&quot;,temp);
+</code></pre><p>输出如下：</p>
+<p><img src="http://img.wangjungang.cn/zjvZwF.jpg" alt=""></p>
+<p>这里person对象超出了其作用域还是存在的，被延迟释放了，也就是说其内部调用了autorelease方法。</p>
+<h4 id="小总结："><a href="#小总结：" class="headerlink" title="小总结："></a>小总结：</h4><p>查询得知：以 alloc, copy, ,mutableCopy和new这些方法会被默认标记为 <strong>attribute((ns_returns_retained)) ，以这些方法创建的对象,编译器在会在调用方法外围要加上内存管理代码retain/release，所以其在作用域结束的时候就会释放，而不以这些关键字开头的方法，会被默认标记为</strong>attribute((ns_returns_not_retained)),编译器会在方法内部自动加上autorelease方法，这时创建的对象就会被注册到自动释放池中，同时其释放会延迟，等到自动释放池销毁的时候才释放。</p>
+<h3 id="3-AutoreleasePool的显示创建"><a href="#3-AutoreleasePool的显示创建" class="headerlink" title="3.AutoreleasePool的显示创建"></a>3.AutoreleasePool的显示创建</h3><h4 id="1-MRC下的创建"><a href="#1-MRC下的创建" class="headerlink" title="1.MRC下的创建"></a>1.MRC下的创建</h4><pre><code>//1.生成一个NSAutoreleasePool对象
+NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+//2.创建对象
+id object = [[NSObject alloc] init];
+//3.对象调用autorelease方法
+[object autorelease];
+//4.废弃NSAutoreleasePool对象，会对释放池中的object发送release消息
+[pool drain];
+</code></pre><h4 id="2-ARC下的创建"><a href="#2-ARC下的创建" class="headerlink" title="2.ARC下的创建"></a>2.ARC下的创建</h4><pre><code>@autoreleasepool {
+    //LLVM会在内部插入autorelease方法
+    id object = [[NSObject alloc] init];
+    }
+</code></pre><p>AutoreleasePool 的作用前面有提到过，每当一个对象调用 autorelease方法时，实际上是将该对象放入当前 AutoreleasePool 中，当前AutoreleasePool 释放时，会对添加进该 AutoreleasePool 中的对象逐一调用 release 方法。在ARC环境下，并不需要特别的去关注Autoreleasepool的使用，因为系统已经做了处理。</p>
+<h2 id="AutoreleasePool探索学习"><a href="#AutoreleasePool探索学习" class="headerlink" title="AutoreleasePool探索学习"></a>AutoreleasePool探索学习</h2><p>为了看一下AutoreleasePool到底做了什么，先来创建一个main.m文件（Xcode -&gt; File -&gt; New Project -&gt; macOS -&gt; Command Line Tool -&gt; main.m）;</p>
+<pre><code>#import &lt;Foundation/Foundation.h&gt;
+
+int main(int argc, const char * argv[]) {
+    @autoreleasepool {
+        // insert code here...
+        NSLog(@&quot;Hello, World!&quot;);
+    }
+    return 0;
+}
+</code></pre><p>然后，使用编译器clang编译main.m转化成main.cpp文件（在终端使用命令：clang -rewrite-objc main.m），滑到main.cpp文件的最后，有这样一段代码：</p>
+<p><img src="http://img.wangjungang.cn/mYPVAE.jpg" alt=""></p>
+<p>这个代码是把@autoreleasePool转换成一个<strong>AtAutoreleasePool类型的局部私有变量</strong>AtAutoreleasePool __autoreleasepool;</p>
+<p>接着在 main.cpp文件中查询__AtAutoreleasePool，来看一下它具体的实现：</p>
+<p><img src="http://img.wangjungang.cn/nHMDr1.jpg" alt=""></p>
+<p>可以看到<strong>AtAutoreleasePool是结构体类型，并且实现了两个函数：构造函数</strong>AtAutoreleasePool()和析构函数~__AtAutoreleasePool()。</p>
+<p>也就是说在声明 <strong>autoreleasepool 变量时，构造函数 </strong>AtAutoreleasePool() 被调用，即执行 atautoreleasepoolobj = objc_autoreleasePoolPush(); ；当出了当前作用域时，析构函数 ~__AtAutoreleasePool()被调用，即执行 objc_autoreleasePoolPop(atautoreleasepoolobj); 那么上面的main.m中的代码可以用这种形式代替：</p>
+<pre><code>#import &lt;Foundation/Foundation.h&gt;
+
+int main(int argc, const char * argv[]) {
+   // @autoreleasepool
+    {
+        void *atautoreleasepoolobj = objc_autoreleasePoolPush();
+        // insert code here...
+        NSLog(@&quot;Hello, World!&quot;);
+        objc_autoreleasePoolPop(atautoreleasepoolobj);
+    }
+    return 0;
+}
+</code></pre><p>接下来看一下析构函数和构造函数分别实现了什么内容？这里需要一份objc_runtime的源码(源码地址)，这里使用的是objc4-756.2.tar.gz:</p>
+<p><img src="http://img.wangjungang.cn/jkSxIm.jpg" alt=""></p>
+<p>这里两个函数本质上就是分别调用了AutoreleasePoolPage的push方法和pop方法(这里::是C++调用方法的形式，类似于点语法)。</p>
+<h3 id="1-AutoreleasePoolPage"><a href="#1-AutoreleasePoolPage" class="headerlink" title="1.AutoreleasePoolPage"></a>1.AutoreleasePoolPage</h3><p>AutoreleasePoolPage是一个C++实现的类，它的具体实现代码是：</p>
+<pre><code>class AutoreleasePoolPage 
+{ 
+#   define POOL_BOUNDARY nil    //哨兵对象(可以看做是一个边界)
+    static size_t const COUNT = SIZE / sizeof(id);    // 对象数量
+
+    magic_t const magic;    //用来校验 `AutoreleasePoolPage`的结构是否完整；
+    id *next;    //指向最新添加的 `autoreleased` 对象的下一个位置，初始化时指向 `begin()` ；
+    pthread_t const thread;    //指向当前线程；
+    AutoreleasePoolPage * const parent;    //指向父结点，第一个结点的 `parent` 值为 `nil` ；
+    AutoreleasePoolPage *child;    //指向子结点，最后一个结点的 `child` 值为 `nil` ；
+    uint32_t const depth;    //代表深度，从 `0` 开始，往后递增 `1`；
+    uint32_t hiwat;    //代表 `high water mark` ;
+//剩下代码省略......
+}
+</code></pre><p><img src="http://img.wangjungang.cn/2QPdJD.jpg" alt=""></p>
+<p>通过源码可以知道这是一个典型的双向列表结构，所以AutoreleasePool是由若干个AutoreleasePoolPage以双向链表的形式组合而成。</p>
+<p>AutoreleasePoolPage每个对象会开辟4096字节内存（虚拟内存一页的大小），除了上面的实例变量所占空间，剩下的空间全部用来储存autorelease对象的地址，AutoreleasepoolPage 通过压栈的方式来存储每个autorelease的对象(从低地址到高地址)。其中next指针作为游标指向栈顶最新add进来的autorelease对象的下一个位置,当 next指针指向begin时，表示 AutoreleasePoolPage为空；当 next指针指向end时，表示 AutoreleasePoolPage 已满,此时会新建一个AutoreleasePoolPage对象，连接链表，后来的autorelease对象在新的AutoreleasePoolPage插入，同样的新AutoreleasePoolPage的next指针被初始化在栈底（指向begin的位置）。</p>
+<h3 id="2-AutoreleasePoolPage-push"><a href="#2-AutoreleasePoolPage-push" class="headerlink" title="2.AutoreleasePoolPage::push()"></a>2.AutoreleasePoolPage::push()</h3><p>既然已经知道了autorelease的对象会通过压栈的方式插入到AutoreleasePoolPage当中，那么显然AutoreleasePoolPage的push方法就承包了AutoreleasePoolPage的创建和插入。</p>
+<p>接着看下push方法的源码：</p>
+<pre><code>static inline void *push() 
+{
+    id *dest;
+    //判断是否已经初始化AutoreleasePoolPage
+    if (DebugPoolAllocation) {
+        // Each autorelease pool starts on a new pool page.
+        dest = autoreleaseNewPage(POOL_BOUNDARY);
+    } else {
+        dest = autoreleaseFast(POOL_BOUNDARY);
+    }
+    assert(dest == EMPTY_POOL_PLACEHOLDER || *dest == POOL_BOUNDARY);
+    return dest;
+}
+</code></pre><p>这里的POOL_BOUNDARY可以理解为哨兵对象，或者理解为一种边界标识，而且这个POOL_BOUNDARY值为0，是个nil。</p>
+<p>接下来，先来看一下autoreleaseFast这个方法，</p>
+<pre><code>static inline id *autoreleaseFast(id obj)
+{
+    //获取到当前page,这个hotPage是从当前线程的局部私有空间取出来的
+    AutoreleasePoolPage *page = hotPage();
+
+    if (page &amp;&amp; !page-&gt;full()) {
+        return page-&gt;add(obj);
+    } else if (page) {
+        return autoreleaseFullPage(obj, page);
+    } else {
+        return autoreleaseNoPage(obj);
+    }
+}
+</code></pre><p>我们知道链表是有空间的，所以上面👆的源码可以理解为：</p>
+<p>(1). 当前page存在且没有满时，直接将对象添加到当前page中，即next指向的位置；</p>
+<p>(2). 当前page存在并且已满时，创建一个新的page，并将对象添加到新创建的page 中，然后将这两个链表节点进行链接。</p>
+<p>(3). 当前page不存在时，创建第一个page ，并将对象添加到新创建的page中。</p>
+<p>这里重点看一下page-&gt;add(obj)这个方法，</p>
+<pre><code>id *add(id obj)
+{
+    assert(!full());
+    unprotect();
+    id *ret = next;  // faster than `return next-1` because of aliasing
+    *next++ = obj;
+    protect();
+    return ret;
+}
+</code></pre><p>可以看到这里返回的ret其实next指针指向的地址，由上面的push方法的源码可知，这里page-&gt;add(obj)传入的obj其实就是POOL_BOUNDARY，也就是说每一次调用push方法，都会插入一个POOL_BOUNDARY,所以objc_autoreleasePoolPush的返回值就是这个哨兵对象的地址。</p>
+<p><img src="http://img.wangjungang.cn/Agp5My.jpg" alt=""></p>
+<h3 id="3-AutoreleasePoolPage-pop-ctxt"><a href="#3-AutoreleasePoolPage-pop-ctxt" class="headerlink" title="3.AutoreleasePoolPage::pop(ctxt)"></a>3.AutoreleasePoolPage::pop(ctxt)</h3><p>通过上面对构造函数objc_autoreleasePoolPush的学习，已经知道objc_autoreleasePoolPush返回的是哨兵对象的地址，那么在调用析构函数objc_autoreleasePoolPop的时候传入的也就是这个哨兵对象的地址。随着方法的一步步调用，紧接着来看下AutoreleasePoolPage的pop方法的实现：</p>
+<pre><code>static inline void pop(void *token)
+{
+    AutoreleasePoolPage *page;
+    id *stop;
+    if (token == (void*)EMPTY_POOL_PLACEHOLDER) {
+        if (hotPage()) {
+            pop(coldPage()-&gt;begin());
+        } else {
+            setHotPage(nil);
+        }
+        return;
+    }
+
+    page = pageForPointer(token);  //根据传入的哨兵对象的地址，获取到page中的哨兵对象之后的地址空间
+    stop = (id *)token;
+    if (*stop != POOL_BOUNDARY) {
+        if (stop == page-&gt;begin()  &amp;&amp;  !page-&gt;parent) {
+        } else {
+            return badPop(token);
+        }
+    }
+    if (PrintPoolHiwat) printHiwat();
+
+    page-&gt;releaseUntil(stop); //对当前链表当中的对象进行release操作
+    if (DebugPoolAllocation  &amp;&amp;  page-&gt;empty()) {
+    //释放 `Autoreleased` 对象后，销毁多余的 page
+        AutoreleasePoolPage *parent = page-&gt;parent;
+        page-&gt;kill();
+        setHotPage(parent);
+    } else if (DebugMissingPools  &amp;&amp;  page-&gt;empty()  &amp;&amp;  !page-&gt;parent) {
+        page-&gt;kill();
+        setHotPage(nil);
+    }
+   else if (page-&gt;child) {
+        if (page-&gt;lessThanHalfFull()) {
+            page-&gt;child-&gt;kill();
+        }
+        else if (page-&gt;child-&gt;child) {
+            page-&gt;child-&gt;child-&gt;kill();
+        }
+    }
+}
+</code></pre><p>这里重点看一下page-&gt;releaseUntil(stop)方法：</p>
+<pre><code>void releaseUntil(id *stop)
+{
+    while (this-&gt;next != stop) {
+        AutoreleasePoolPage *page = hotPage();
+        while (page-&gt;empty()) {
+            page = page-&gt;parent;
+            setHotPage(page);
+        }
+
+        page-&gt;unprotect();
+        id obj = *--page-&gt;next;
+        memset((void*)page-&gt;next, SCRIBBLE, sizeof(*page-&gt;next));
+        page-&gt;protect();
+
+        if (obj != POOL_BOUNDARY) {
+            objc_release(obj);
+        }
+    }
+    setHotPage(this);
+}
+</code></pre><p>这里的stop同样是POOL_BOUNDARY的地址，这里分析一下这个方法：</p>
+<p>(1). 外部循环挨个遍历autoreleased 对象，直到遍历到哨兵对象POOL_BOUNDARY。</p>
+<p>(2). 如果当前page没有 POOL_BOUNDARY，并且为空，则将hotPage设置为当前page的父节点。</p>
+<p>(3). 给当前autoreleased对象发送release消息。</p>
+<p>(4). 最后再次配置hotPage。</p>
+<h3 id="4-autorelease"><a href="#4-autorelease" class="headerlink" title="4.autorelease"></a>4.autorelease</h3><p>通过上面的分析已经知道了构造方法objc_autoreleasePoolPush会创建AutoreleasePoolPage，并插入哨兵对象POOL_BOUNDARY，析构方法objc_autoreleasePoolPop会对哨兵对象之后插入的对象发送release消息，那么在这两个方法之间，对象通过调用autorelease是怎么插入到AutoreleasePoolPage的呢？下面来看下autorelease的源码实现：</p>
+<pre><code>static inline id autorelease(id obj)
+{
+    assert(obj);
+    assert(!obj-&gt;isTaggedPointer());
+    id *dest __unused = autoreleaseFast(obj);
+    assert(!dest  ||  dest == EMPTY_POOL_PLACEHOLDER  ||  *dest == obj);
+    return obj;
+}
+</code></pre><p>这里的重点还是autoreleaseFast(obj);由于这里插入对象的方法和AutoreleasePoolPage调用push方法的实现是一样的，只不过push操作插入的是一个 POOL_BOUNDARY，而autorelease操作插入的是一个具体的autoreleased对象,在此处就不做多余分析。</p>
+<p>通过上面👆的这些分析，已经大概知道AutoreleasePool是怎样的一个构造，以及内如是如何实现自动释放的。</p>
+<h3 id="5-AutoreleasePool的嵌套"><a href="#5-AutoreleasePool的嵌套" class="headerlink" title="5.AutoreleasePool的嵌套"></a>5.AutoreleasePool的嵌套</h3><p>对于嵌套的AutoreleasePool也是同样的原理，在pop的时候总会释放对象到上次push的位置为止，也就是哨兵位置，多层的pool就是插入多个哨兵对象而已，然后根据哨兵对象来进行释放，就像剥洋葱一样一层一层的，互不影响。</p>
+<p>那么这里有个疑问，如果在AutoreleasePool多层嵌套中是同一个对象呢，那么会怎么释放？下面通过一个小例子🌰来看一下：</p>
+<pre><code>@autoreleasepool {
+    ZHPerson *person = [ZHPerson object];
+    NSLog(@&quot;current count %d&quot;,_objc_rootRetainCount(person));
+    @autoreleasepool {
+        ZHPerson *person1 = person;
+        NSLog(@&quot;current count %d&quot;,_objc_rootRetainCount(person));
+        @autoreleasepool {
+            ZHPerson *person2 = person;
+            NSLog(@&quot;current count %d&quot;,_objc_rootRetainCount(person));
+        }
+    }
+}
+</code></pre><p>打印结果如下：</p>
+<p><img src="http://img.wangjungang.cn/Spm9fr.jpg" alt=""></p>
+<p>这里dealloc方法只调用了一次，由上面的代码可知：当前person1和person2是对person的引用，如果系统会为每一次引用都自动插入一个autorelease，那么对象在执行第一个autorelease的时候，会调用objc_release(obj)来释放当前的对象，那么当调用rootRelease()的时候就会报错，因为当前对象已经被释放了，那么也就是说对于引用的对象只会被释放一次。(同一个对象不能够反复的autorelease)</p>
+<h2 id="NSthread、NSRunLoop、AutoReleasePool"><a href="#NSthread、NSRunLoop、AutoReleasePool" class="headerlink" title="NSthread、NSRunLoop、AutoReleasePool"></a>NSthread、NSRunLoop、AutoReleasePool</h2><h3 id="1-NSthread和AutoReleasePool"><a href="#1-NSthread和AutoReleasePool" class="headerlink" title="1.NSthread和AutoReleasePool"></a>1.NSthread和AutoReleasePool</h3><p>先来看个简单的例子：</p>
+<p><img src="http://img.wangjungang.cn/crxcsQ.jpg" alt=""></p>
+<p>在temp的位置设置一个断点，然后在控制台输入watchpoint set variable temp,</p>
+<p><img src="http://img.wangjungang.cn/S1haZL.jpg" alt=""></p>
+<p>等到这个线程执行结束之后，来看一下左侧边栏的内容：</p>
+<p><img src="http://img.wangjungang.cn/YaUoqw.jpg" alt=""></p>
+<p>当执行到NSLog(@”thread end”);这句代码，表示线程执行结束，这里，其实线程会先调用[NSthread exit],然后执行_pthread_tsd_cleanup,清除当前线程的有关资源,然后调用tls_dealloc,也就是把当前线程关联的AutoReleasePool释放掉，最后调用weak_clear_no_lock清除指针。</p>
+<p>那么这一系列过程就说明了：在NSThread退出了之后，与NSThread对应的AutoReleasePool也会被自动清空，所以当一个线程结束的时候，就会回收♻️AutoReleasePool中自动释放的对象。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>每一个线程都会维护自己的AutoReleasePool，而每一个AutoReleasePool都会对应唯一一个线程，但是线程可以对应多个AutoReleasePool。</p>
+<h3 id="2-NSRunLoop和AutoReleasePool"><a href="#2-NSRunLoop和AutoReleasePool" class="headerlink" title="2.NSRunLoop和AutoReleasePool"></a>2.NSRunLoop和AutoReleasePool</h3><p>对于NSThread只是一个简单的线程，如果把它换成一个常驻线程呢？</p>
+<p><img src="http://img.wangjungang.cn/sjc19n.jpg" alt=""></p>
+<p>这里创建一个NSTimer，并将其常驻。利用同样的方式，watchpoint set variable temp,：</p>
+<p><img src="http://img.wangjungang.cn/uWBYfo.jpg" alt=""></p>
+<p>可以看到这里NStimer是被加入到子线程当中的，但是在子线程中，我们并没有去写关于AutoReleasePool的内容，我们只知道test做了autorelease操作。下面回到源码中来看：</p>
+<pre><code>static inline id autorelease(id obj)
+{
+    assert(obj);
+    assert(!obj-&gt;isTaggedPointer());
+    id *dest __unused = autoreleaseFast(obj);
+    assert(!dest  ||  dest == EMPTY_POOL_PLACEHOLDER  ||  *dest == obj);
+    return obj;
+}
+
+static inline id *autoreleaseFast(id obj)
+{
+    AutoreleasePoolPage *page = hotPage();
+    if (page &amp;&amp; !page-&gt;full()) {
+        return page-&gt;add(obj);
+    } else if (page) {
+        return autoreleaseFullPage(obj, page);
+    } else {
+        return autoreleaseNoPage(obj);
+    }
+}
+
+id *autoreleaseNoPage(id obj)
+{
+   AutoreleasePoolPage *page = new AutoreleasePoolPage(nil);
+   setHotPage(page);
+}
+//这里省略了部分代码
+</code></pre><p>所以从上面的源码我们可以得出结论：子线程在使用autorelease对象的时候，会懒加载出来一个AutoreleasePoolPage,然后将对象插入进去。</p>
+<p>那么问题又来了，autorelease对象在什么时候释放的呢？也就说AutoreleasePoolPage在什么时候调用了pop方法？</p>
+<p>其实在上面创建一个NSThread的时候，在调用[NSthread exit]的时候，会释放当前资源，也就是把当前线程关联的autoReleasePool释放掉，而在这里当RunLoop执行完成退出的时候，也会执行pop方法，这就说明了为什么在子线程当中，我们没有显示的调用pop，它也能释放当前AutoreleasePool的资源的原因。</p>
+<h3 id="3-主线程的NSRunLoop和AutoReleasePool"><a href="#3-主线程的NSRunLoop和AutoReleasePool" class="headerlink" title="3.主线程的NSRunLoop和AutoReleasePool"></a>3.主线程的NSRunLoop和AutoReleasePool</h3><p>那么在主线程的RunLoop到底什么时候把对象进行释放回收的呢？</p>
+<p>简单粗暴点，直接在控制台通过po [NSRunloop currentRunloop]打印主线程的RunLoop:</p>
+<p><img src="http://img.wangjungang.cn/6rvyYT.jpg" alt=""></p>
+<p>这里，系统在主线程的RunLoop里注册了两个Observer，回调都是_wrapRunLoopWithAutoreleasePoolHandler,第一个Observer的状态是activities = 0x1,第二个Observer的状态是activities = 0xa0,这两种状态代表什么意思呢？</p>
+<p>先在这里插入一点RunLoop的内容(RunLoop的状态枚举)：</p>
+<pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
+    kCFRunLoopEntry = (1UL &lt;&lt; 0),              // 1
+    kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1),       // 2
+    kCFRunLoopBeforeSources = (1UL &lt;&lt; 2),      // 4
+    kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5),      // 32
+    kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6),       // 64
+    kCFRunLoopExit = (1UL &lt;&lt; 7),               // 128
+    kCFRunLoopAllActivities = 0x0FFFFFFFU
+};
+</code></pre><p>0x1代表的是kCFRunLoopEntry，也就是说第一个 Observer监视的事件是Entry(即将进入Loop时),其回调内会调用_objc_autoreleasePoolPush()创建一个自动释放池。其order优先级是-2147483647，优先级最高，保证创建自动释放池发生在其他所有回调之前。</p>
+<p>0xa0对应的是kCFRunLoopBeforeWaiting和kCFRunLoopExit,也就是说第二个Observer监视了两个事件：kCFRunLoopBeforeWaiting准备进入休眠，kCFRunLoopExit即将退出RunLoop。在kCFRunLoopBeforeWaiting事件时调用 _objc_autoreleasePoolPop()和_objc_autoreleasePoolPush() 释放旧的自动释放池并创建新的自动释放池；在kCFRunLoopExit事件时调用_objc_autoreleasePoolPop() 来释放自动释放池，同时这个Observer的order优先级是 2147483647，优先级最低，保证其释放自动释放池的操作发生在其他所有回调之后。</p>
+<p>所以在没有手动增加AutoreleasePool的情况下，Autorelease对象都是在当前的runloop迭代结束时释放的，而它能够释放的原因是系统在每个runloop迭代中都加入了自动释放池push和pop操作。</p>
+<h4 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h4><p>对于不同线程，应当创建自己的AutoReleasePool。如果应用长期存在，应该定期drain和创建新的AutoReleasePool,AutoReleasePool与RunLoop 与线程是一一对应的关系,AutoReleasePool在RunLoop在开始迭代时做push操作，在RunLoop休眠或者迭代结束时做pop操作。</p>
+<h2 id="AutoreleasePool的应用场景"><a href="#AutoreleasePool的应用场景" class="headerlink" title="AutoreleasePool的应用场景"></a>AutoreleasePool的应用场景</h2><p>通常情况下我们是不需要手动创建AutoreleasePool，但是也有一些特殊的：</p>
+<ul>
+<li>编写的程序不基于UI框架，如命令行程序。</li>
+</ul>
+<ul>
+<li>在循环中创建大量临时对象时用以降低内存占用峰值。</li>
+</ul>
+<ul>
+<li>在主线程之外创建新的线程，在新线程开始执行处，创建自己的AutoreleasePool，否则将导致内存泄漏。</li>
+</ul>
+<p>下面就来简单看下第二种情况,直接来个for循环：</p>
+<pre><code>for (int i = 0; i &lt; 100000000; i ++) {
+        NSString * str = [NSString stringWithFormat:@&quot;noAutoReleasePool&quot;];
+        NSString *tempstr = str;
+    }
+}
+</code></pre><p>来看一下Memory的使用情况:</p>
+<p><img src="http://img.wangjungang.cn/zNKTc8.jpg" alt=""></p>
+<p>这个对比伤害就很明显了。</p>
+<p>这个做个备注：在主函数main.m文件中的@autoreleasepool,如果在这里做个测试，使用for循环创建大量的临时对象，是否加上这个@autoreleasepool对Memory的使用情况没有特别大的影响。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/09/21/Autorelease & AutoreleasePool/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-swift自动归档" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -3114,137 +3522,6 @@ extension GMLoginView: WXApiDelegate {
 
 
   
-    <article id="post-AutoreleasePool 重新梳理" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/04/AutoreleasePool 重新梳理/">AutoreleasePool 重新梳理</a>
-    </h1>
-  
-
-        
-        <a href="/2019/09/04/AutoreleasePool 重新梳理/" class="archive-article-date">
-  	<time datetime="2019-09-04T11:54:29.822Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>AutoreleasePool 是一个抽象概念，并没有实际结构，真实的结构是一个双向链表『AutoreleasePoolPage』，由C++实现。</p>
-<h2 id="1-数据结构"><a href="#1-数据结构" class="headerlink" title="1.数据结构"></a>1.数据结构</h2><p>其数据结构如下</p>
-<pre><code>class AutoreleasePoolPage 
-{
-
-#define POOL_SENTINEL nil
-    static pthread_key_t const key = AUTORELEASE_POOL_KEY;
-    static uint8_t const SCRIBBLE = 0xA3;  // 0xA3A3A3A3 after releasing
-    static size_t const SIZE = 
-#if PROTECT_AUTORELEASEPOOL
-        PAGE_MAX_SIZE;  // must be multiple of vm page size
-#else
-        PAGE_MAX_SIZE;  // size and alignment, power of 2
-#endif
-    static size_t const COUNT = SIZE / sizeof(id);
-
-    magic_t const magic;
-    id *next;
-    pthread_t const thread;
-    AutoreleasePoolPage * const parent;
-    AutoreleasePoolPage *child;
-    uint32_t const depth;
-    uint32_t hiwat;
-}
-</code></pre><p>成员变量说明：</p>
-<p>next：游标，一直指向最新入栈的autorelease对象的下一个位置。</p>
-<p>key：TLS技术，既Thread Local Storage（TLS）线程局部存储。目的很简单，将一块内存作为某个线程专有的存储，以key-value的形式进行读写。AutoreleasePoolPage将这块区域用作存储最新的Page，既hotPage。</p>
-<p>SIZE：单个page的最大存储数量，AutoreleasePoolPage以双向链表的形式存在，但是单个page的存储是有限额的，(id <em>) ((uint8_t </em>)this+SIZE)。</p>
-<p>thread：当前线程pthread_self()。</p>
-<h2 id="2-push和pop"><a href="#2-push和pop" class="headerlink" title="2.push和pop"></a>2.push和pop</h2><p>当我们手动调用@autoreleasePool的时候，编译器会自动将大括号内的所有对象标记为autorelease前缀。AutoreleasePoolPage::autorelease((id)this)当前对象本身作为参数入参，不过在讨论对象的autorelease之前，编译器还插入了两个方法：</p>
-<pre><code>void *pool = objc_autoreleasePoolPush();
-……
-……
-……
-objc_autoreleasePoolPop(pool);
-</code></pre><p>前者做了和对象的autorelease相同的事情：</p>
-<pre><code>static inline id *autoreleaseFast(id obj)
-    {
-        AutoreleasePoolPage *page = hotPage();
-        if (page &amp;&amp; !page-&gt;full()) {
-            return page-&gt;add(obj);
-        } else if (page) {
-            return autoreleaseFullPage(obj, page);
-        } else {
-            return autoreleaseNoPage(obj);
-        }
-    }
-id *add(id obj)
-    {
-        assert(!full());
-        unprotect();
-        id *ret = next;  // faster than `return next-1` because of aliasing
-        *next++ = obj;
-        protect();
-        return ret;
-    }
-</code></pre><p>主要就是移动游标，并且返回当前位置，这个返回参数的意义主要体现在</p>
-<p>objc_autoreleasePoolPop(pool);的入参中，pool记录着一个pool的初始位置，根据这个位置和当前的hotPage位置，遍历中间所有的对象，进行释放。并且由于双向链表的结构，很容易跨page进行遍历。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/04/AutoreleasePool 重新梳理/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -3366,11 +3643,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3386,11 +3663,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3398,11 +3675,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3414,11 +3691,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3426,11 +3703,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
