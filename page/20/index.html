@@ -152,112 +152,6 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-关于分类的总结 " class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/13/关于分类的总结 /">关于分类的总结</a>
-    </h1>
-  
-
-        
-        <a href="/2018/09/13/关于分类的总结 /" class="archive-article-date">
-  	<time datetime="2018-09-13T13:49:46.950Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>类别(Category)主要有3个作用：</p>
-<p>将类的实现分散到多个不同文件或多个不同框架中。</p>
-<p>创建对私有方法的前向引用。</p>
-<p>向对象添加非正式协议。</p>
-<p>声明：@interface 类名(分类名称) @end</p>
-<p>实现：@implementation 类名(分类名称) @end</p>
-<p>注意:</p>
-<p>(1)在分类只能增加方法,不能增加成员变量，如果要增加成员变量的话该考虑用继承去实现</p>
-<p>(2)在分类实现方法中可以访问类中的成员变量但是不能访问类中的属性@property</p>
-<p>(3)在分类中可以重新实现原类中的方法，但会将原类中的方法覆盖而失效。</p>
-<p>因为在执行对象成员方法的时候会优先去分类中查找，然后再去原类中去查找，最后去父类中去查找</p>
-<p>(4)如果一个类有多个分类，而且分类中有同名的方法那么最后编译的分类会将前面编译的分类覆盖而执行输出</p>
-<pre><code>// 另外一份解释来自《招聘一个靠谱的 iOS》—参考答案（上）---24
-// 类方法：
-   - 类方法是属于类对象的
-   - 类方法只能通过类对象调用
-   - 类方法中的self是类对象
-   - 类方法可以调用其他的类方法
-   - 类方法中不能访问成员变量
-   - 类方法中不能直接调用对象方法
-
-//  实例方法：
-   -  实例方法是属于实例对象的
-   -  实例方法只能通过实例对象调用
-   -  实例方法中的self是实例对象
-   -  实例方法中可以访问成员变量
-   -  实例方法中直接调用实例方法
-   -  实例方法中也可以调用类方法(通过类名)
-</code></pre><p>4 运行时能增加成员变量么？能增加属性么？如果能，如何增加？如果不能，为什么？</p>
-<p>Category中不能动态添加成员变量;</p>
-<p>在Objective-C提供的runtime函数中，确实有一个class_addIvar()函数用于给类添加成员变量，但是阅读过苹果的官方文档的人应该会看到：</p>
-<p>大概的意思说，这个函数只能在“构建一个类的过程中”调用。一旦完成类定义，就不能再添加成员变量了。经过编译的类在程序启动后就被runtime加载，没有机会调用addIvar。程序在运行时动态构建的类需要在调用objc_registerClassPair之后才可以被使用，同样没有机会再添加成员变量。</p>
-<p>因为方法和属性并不“属于”类实例，而成员变量“属于”类实例。我们所说的“类实例”概念，指的是一块内存区域，包含了isa指针和所有的成员变量。所以假如允许动态修改类成员变量布局，已经创建出的类实例就不符合类定义了，变成了无效对象。但方法定义是在objc_class中管理的，不管如何增删类方法，都不影响类实例的内存布局，已经创建出的类实例仍然可正常使用。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">随笔</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/13/关于分类的总结 /">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-类方法(class method)和实例方法(instance method)有什么区别？ " class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1165,6 +1059,245 @@ struct objc_class {
 
 
   
+    <article id="post-关于tableview的优化" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/06/关于tableview的优化/">关于tableview的优化</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/06/关于tableview的优化/" class="archive-article-date">
+  	<time datetime="2018-09-06T15:14:32.494Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS应用中，UITableView应该是使用率最高的视图之一了。iPod、时钟、日历、备忘录、Mail、天气、照片、电话、短信、Safari、App Store、iTunes、Game Center⋯几乎所有自带的应用中都能看到它的身影，可见它的重要性。</p>
+<p>然而在使用第三方应用时，却经常遇到性能上的问题，普遍表现在滚动时比较卡，特别是table cell中包含图片的情况时。</p>
+<p>UITableView是UIScrollView的子类，因此它可以自动响应滚动事件（一般为上下滚动）。</p>
+<p>它内部包含0到多个UITableViewCell对象，每个table cell展示各自的内容。当新cell需要被显示时，就会调用tableView:cellForRowAtIndexPath:方法来获取或创建一个cell；而不可视时，它又会被释放。由此可见，同一时间其实只需要存在一屏幕的cell对象即可，不需要为每一行创建一个cell。</p>
+<p>此外，UITableView还可以分为多个sections，每个区段都可以有自己的head、foot和cells。而在定位一个cell时，就需要2个字段了：在哪个section，以及在这个section的第几行。这在iOS SDK中是用NSIndexPath来表述的，UIKit为其添加了indexPathForRow:inSection:这个创建方法。</p>
+<h2 id="关于视图部分的优化"><a href="#关于视图部分的优化" class="headerlink" title="关于视图部分的优化"></a>关于视图部分的优化</h2><h3 id="使用不透明视图。"><a href="#使用不透明视图。" class="headerlink" title="使用不透明视图。"></a>使用不透明视图。</h3><p>不透明的视图可以极大地提高渲染的速度。因此如非必要，可以将table cell及其子视图的opaque属性设为YES（默认值）。</p>
+<p>其中的特例包括背景色，它的alpha值应该为1（例如不要使用clearColor）；图像的alpha值也应该为1，或者在画图时设为不透明。</p>
+<p>当一个view是透明的，iOS需要渲染一个像素两次或多次，这是因为一个像素同时属于很多subviews。这是一个非常耗时的过程。</p>
+<p>通过代码或者InterfaceBuilder能够很简单的做到。开发者应该多次检查所有的subviews是不透明的。</p>
+<p>对于自定义代码，你可以通过代码来设置，如下：</p>
+<pre><code>view.opaque = YES;
+</code></pre><h3 id="不要重复创建不必要的table-cell。"><a href="#不要重复创建不必要的table-cell。" class="headerlink" title="不要重复创建不必要的table cell。"></a>不要重复创建不必要的table cell。</h3><p>前面说了，UITableView只需要一屏幕的UITableViewCell对象即可。因此在cell不可见时，可以将其缓存起来，而在需要时继续使用它即可。</p>
+<p>而UITableView也提供了这种机制，只需要简单地设置一个identifier即可：</p>
+<pre><code>static NSString *CellIdentifier = @&quot;xxx&quot;;
+
+UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+
+if (cell == nil) {
+
+cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier] autorelease];
+
+}
+</code></pre><p>值得一提的是，cell被重用时，它内部绘制的内容并不会被自动清除，因此你可能需要调用setNeedsDisplayInRect:或setNeedsDisplay方法。</p>
+<p>此外，在添加table cell的时候，如果不需要动画效果，最好不要使用insertRowsAtIndexPaths:withRowAnimation:方法，而是直接调用reloadData方法。因为前者会对所有indexPaths调用<br>tableView:cellForRowAtIndexPath:方法，即便该cell并不需要显示（不知道是不是bug），这就可能创建大量多余的cell。勘误：只是在模拟器上测试如此，真机调试时没有这种bug。</p>
+<h3 id="减少视图的数目。"><a href="#减少视图的数目。" class="headerlink" title="减少视图的数目。"></a>减少视图的数目。</h3><p>UITableViewCell包含了textLabel、detailTextLabel和imageView等view，而你还可以自定义一些视图放在它的contentView里。然而view是很大的对象，创建它会消耗较多资源，并且也影响渲染的性能。</p>
+<p>如果你的table cell包含图片，且数目较多，使用默认的UITableViewCell会非常影响性能。奇怪的是，使用自定义的view，而非预定义的view，明显会快些。</p>
+<p>当然，最佳的解决办法还是继承UITableViewCell，并在其drawRect:中自行绘制：</p>
+<pre><code>- (void)drawRect:(CGRect)rect {
+
+if (image) {
+
+[image drawAtPoint:imagePoint];
+
+self.image = nil;
+
+} else {
+
+[placeHolder drawAtPoint:imagePoint];
+
+}
+
+[text drawInRect:textRect withFont:font lineBreakMode:UILineBreakModeTailTruncation];
+
+}
+</code></pre><p>不过这样一来，你会发现选中一行后，这个cell就变蓝了，其中的内容就被挡住了。最简单的方法就是将cell的selectionStyle属性设为UITableViewCellSelectionStyleNone，这样就不会被高亮了。</p>
+<p>此外还可以创建CALayer，将内容绘制到layer上，然后对cell的contentView.layer调用addSublayer:方法。这个例子中，layer并不会显著影响性能，但如果layer透明，或者有圆角、变形等效果，就会影响到绘制速度了。解决办法可参见后面的预渲染图像。</p>
+<h3 id="不要做多余的绘制工作。"><a href="#不要做多余的绘制工作。" class="headerlink" title="不要做多余的绘制工作。"></a>不要做多余的绘制工作。</h3><p>在实现drawRect:的时候，它的rect参数就是需要绘制的区域，这个区域之外的不需要进行绘制。</p>
+<p>例如上例中，就可以用CGRectIntersectsRect、CGRectIntersection或CGRectContainsRect判断是否需要绘制image和text，然后再调用绘制方法。</p>
+<h3 id="不要阻塞主线程。"><a href="#不要阻塞主线程。" class="headerlink" title="不要阻塞主线程。"></a>不要阻塞主线程。</h3><p>做到前几点后，你的table view滚动时应该足够流畅了，不过你仍可能让用户感到不爽。常见的现象就是在更新数据时，整个界面卡住不动，完全不响应用户请求。</p>
+<p>出现这种现象的原因就是主线程执行了耗时很长的函数或方法，在其执行完毕前，无法绘制屏幕和响应用户请求。其中最常见的就是网络请求了，它通常都需要花费数秒的时间，而你不应该让用户等待那么久。</p>
+<p>解决办法就是使用多线程，让子线程去执行这些函数或方法。这里面还有一个学问，当下载线程数超过2时，会显著影响主线程的性能。因此在使用ASIHTTPRequest时，可以用一个NSOperationQueue来维护下载请求，并将其maxConcurrentOperationCount设为2。而NSURLRequest则可以配合GCD来实现，或者使用NSURLConnection的setDelegateQueue:方法。</p>
+<p>当然，在不需要响应用户请求时，也可以增加下载线程数，以加快下载速度：</p>
+<pre><code>- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+
+if (!decelerate) {
+
+queue.maxConcurrentOperationCount = 5;
+
+}
+
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+
+queue.maxConcurrentOperationCount = 5;
+
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+
+queue.maxConcurrentOperationCount = 2;
+
+}
+</code></pre><p>此外，自动载入更新数据对用户来说也很友好，这减少了用户等待下载的时间。例如每次载入50条信息，那就可以在滚动到倒数第10条以内时，加载更多信息：</p>
+<pre><code>- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+
+if (count - indexPath.row &lt; 10 &amp;&amp; !updating) {
+
+updating = YES;
+
+[self update];
+
+}
+
+}
+
+// update方法获取到结果后，设置updating为NO
+</code></pre><p>还有一点要注意的就是当图片下载完成后，如果cell是可见的，还需要更新图像：</p>
+<pre><code>NSArray *indexPaths = [self.tableView indexPathsForVisibleRows];
+
+for (NSIndexPath *visibleIndexPath in indexPaths) {
+
+if (indexPath == visibleIndexPath) {
+
+MyTableViewCell *cell = (MyTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+
+cell.image = image;
+
+[cell setNeedsDisplayInRect:imageRect];
+
+break;
+
+}
+
+}
+</code></pre><p>最后还是前面所说过的</p>
+<p>insertRowsAtIndexPaths:withRowAnimation:方法，插入新行需要在主线程执行，而一次插入很多行的话（例如50行），会长时间阻塞主线程。而换成reloadData方法的话，瞬间就处理完了。</p>
+<h3 id="减少预加载时间"><a href="#减少预加载时间" class="headerlink" title="减少预加载时间"></a>减少预加载时间</h3><p>通常，我会通过缓存来重用图片，同时减少初始化的过程。当OS需要为TableView渲染一个新的cell，会通过调用下面的方法来返回一个新的cell：</p>
+<p>view sourceprint?</p>
+<pre><code>1.
+
+- (UITableViewCell *)tableView:(UITableView *)tableViewcellForRowAtIndexPath:(NSIndexPath *)indexPath {
+
+2.
+
+// Initialize and return the Cell here
+
+3.
+
+}
+</code></pre><p>因此，如果你在这里阻塞了太长的时间，UserInterface渲染的过程就会被阻塞；它将不能做任何事情或显示任何新的东西。这就是为什么用户看到在某个地方滚动停止的原因。</p>
+<p>为了使这个过程尽可能的快，你可以去除一些逻辑，延迟计算，通过重用来缓存数据和图片。另外一个方法是通过首先使用默认的图片和数据来重用cell。当要获取图片或数据的时候，你可以使用多线程，然后稍后进行填充。从用户的角度来看，这种方法将会使得滚动更加流程，加载图片的速度更快。</p>
+<h3 id="缓存高度"><a href="#缓存高度" class="headerlink" title="缓存高度"></a>缓存高度</h3><p>无论是否需要创建一个新的cell，你需要缓存rows的高度，因为这是TableView所需要的信息。如果你的cell的高度是固定的，你不必担心。然而，如果它不是固定的，你需要确保你的cell计算足够的快。</p>
+<p>可以尝试使用如下代码：</p>
+<pre><code>view sourceprint?
+
+1.
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
+
+2.
+
+return 80;
+
+3.
+
+}
+</code></pre><p>避免使用下面的代码：</p>
+<pre><code>view sourceprint?
+
+1.
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath {
+
+2.
+
+for (int i = 0; i &lt; 100; i++) {
+
+3.
+
+// find the smallest possible height for the row
+
+4.
+
+}
+
+5.
+
+return smallestHeight;
+
+6.
+
+}
+</code></pre><p>当需要渲染cell或者在动画过程中需要编辑/重排序cell的时候，OS会多次运行第一段代码段。xiang像第二段代码中有一个循环，无论是否需要知道cell的高度，OS都会运行一个重复100次的循环。</p>
+<h3 id="避免使用图形特效"><a href="#避免使用图形特效" class="headerlink" title="避免使用图形特效"></a>避免使用图形特效</h3><p>避免在UIImage中使用复杂的图形特效(例如渐变)。</p>
+<p>当然，这个事情好像程序员说了不算！</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/06/关于tableview的优化/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/19/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><a class="page-number" href="/page/22/">22</a><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/21/">Next &raquo;</a>
@@ -1278,11 +1411,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1298,15 +1431,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1314,15 +1443,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1334,11 +1467,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1346,11 +1479,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -152,61 +152,6 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-高德地图API在web使用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h4 id="JS-API-2-0版本提供了两种方式引入JSAPI："><a href="#JS-API-2-0版本提供了两种方式引入JSAPI：" class="headerlink" title="JS API 2.0版本提供了两种方式引入JSAPI："></a>JS API 2.0版本提供了两种方式引入JSAPI：</h4><blockquote>
-<ul>
-<li>JSAPI Loader（推荐）</li>
-<li>直接引入JSAPI脚本 <code>&lt;script src = &#39;https://webapi.amap.com/maps?v=2.0&amp;key=您申请的key值&#39;&gt;&lt;/script&gt;</code></li>
-</ul>
-</blockquote>
-<p>#### </p>
-<h4 id="这里采取的是JSAPI-Loader的方式（可有效避免异步加载问题，且多次执行加载操作时不会重复请求网络资源等）。"><a href="#这里采取的是JSAPI-Loader的方式（可有效避免异步加载问题，且多次执行加载操作时不会重复请求网络资源等）。" class="headerlink" title="这里采取的是JSAPI Loader的方式（可有效避免异步加载问题，且多次执行加载操作时不会重复请求网络资源等）。"></a>这里采取的是JSAPI Loader的方式（可有效避免异步加载问题，且多次执行加载操作时不会重复请求网络资源等）。</h4>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2022/05/19/高德地图API在web使用/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
     <article id="post-page与components之间传参" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1183,6 +1128,161 @@ public class RgAdapter extends FragmentStateAdapter {
 
 
   
+    <article id="post-Swift里面怎么知道一个协议被多少类遵循" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/11/17/Swift里面怎么知道一个协议被多少类遵循/">Swift里面怎么知道一个协议被多少类遵循</a>
+    </h1>
+  
+
+        
+        <a href="/2021/11/17/Swift里面怎么知道一个协议被多少类遵循/" class="archive-article-date">
+  	<time datetime="2021-11-17T07:44:11.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-17</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>开发中想知道一个协议被多少类实现了。有没有方法知道呢。</p>
+<pre><code>protocol Animal {
+    func speak()
+}
+
+class Cat:Animal {
+    func speak() {
+        print(&quot;meow&quot;)
+    }
+}
+
+class Dog: Animal {
+    func speak() {
+        print(&quot;An An!&quot;)
+    }
+}
+
+class Horse: Animal {
+    func speak() {
+        print(&quot;Hurrrr&quot;)
+    }
+}
+</code></pre><p>在网上找能找到这几个方法</p>
+<ul>
+<li>objc_copyProtocolList // 获取运行时知道的所有协议</li>
+<li>protocol_copyProtocolList // 返回一个协议所采用的协议的数组。</li>
+</ul>
+<p>上面两个方法，一个是知道有多少协议数组，一个是知道协议采用的协议数组。他们都没法知道一个协议被多少类实现。都没有达成目的。那就需要变通了。 反过来，找到这两个方法</p>
+<ul>
+<li>objc_getClassList // 获取运行时知道的所有的类</li>
+<li>class_conformsToProtocol // 获取一个类是否实现某个协议。</li>
+</ul>
+<p>利用这两个方法，那就可以这样，先获取所有的类，然后遍历每个类是否实现了目标协议。代码如下：</p>
+<pre><code>func getClassesConformingProtocol() -&gt; {
+        let expectedClassCount = objc_getClassList(nil, 0)
+        let allClasses = UnsafeMutablePointer&lt;AnyClass&gt;.allocate(capacity: Int(expectedClassCount))
+        let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer&lt;AnyClass&gt;(allClasses)
+        let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
+
+        for i in 0 ..&lt; actualClassCount {
+            let currentClass = allClasses[Int(i)]
+            if class_conformsToProtocol(currentClass, Animal.Type) {
+                print(currentClass)
+            }
+        }
+}
+</code></pre><p>这里有个问题，在Swift中class_conformsToProtocol判断总是失败。</p>
+<p>那就再变通，因为我们知道在swift中判断一个类是否遵循某个协议可以这样(aclass as? aprotocol)。代码修改如下：</p>
+<pre><code>func getClassesConformingProtocol() -&gt; {
+        let expectedClassCount = objc_getClassList(nil, 0)
+        let allClasses = UnsafeMutablePointer&lt;AnyClass&gt;.allocate(capacity: Int(expectedClassCount))
+        let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer&lt;AnyClass&gt;(allClasses)
+        let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
+
+        for i in 0 ..&lt; actualClassCount {
+            let currentClass = allClasses[Int(i)]
+            if let cls = currentClass as? Animal.Type {
+                print(currentClass)
+            }
+        }
+}
+</code></pre><p>目标达成</p>
+<p>当这部分代码被OC调用了，会出现这个错误。</p>
+<pre><code>*** NSForwarding: warning: object 0x10bec81d0 of class &apos;Object&apos; does not implement methodSignatureForSelector: -- trouble ahead
+*** NSForwarding: warning: object 0x10bec81d0 of class &apos;Object&apos; does not implement doesNotRecognizeSelector: -- abort
+</code></pre><p>解决方法也简单</p>
+<pre><code>func getClassesConformingProtocol() -&gt; {
+        let expectedClassCount = objc_getClassList(nil, 0)
+        let allClasses = UnsafeMutablePointer&lt;AnyClass&gt;.allocate(capacity: Int(expectedClassCount))
+        let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer&lt;AnyClass&gt;(allClasses)
+        let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
+
+        for i in 0 ..&lt; actualClassCount {
+            let currentClass = allClasses[Int(i)]
+            if (class_getInstanceMethod(currentClass, NSSelectorFromString(&quot;methodSignatureForSelector:&quot;)) != nil),
+
+               (class_getInstanceMethod(currentClass, NSSelectorFromString(&quot;doesNotRecognizeSelector:&quot;)) != nil),
+               let cls = currentClass as? Animal.Type {
+                print(currentClass)
+            }
+        }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Swift</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/11/17/Swift里面怎么知道一个协议被多少类遵循/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1296,11 +1396,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1316,15 +1416,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1332,15 +1428,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Swift</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
+                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Cocoapods</a>
+                <a href="javascript:void(0)" class="js-tag color4">Vim</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1352,11 +1452,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1364,11 +1464,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
