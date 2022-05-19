@@ -152,6 +152,96 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-关于UUID和UDID的区别" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/18/关于UUID和UDID的区别/">关于UUID和UDID的区别</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/18/关于UUID和UDID的区别/" class="archive-article-date">
+  	<time datetime="2019-02-18T07:34:08.159Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="1-UDID（Unique-Device-Identifier）"><a href="#1-UDID（Unique-Device-Identifier）" class="headerlink" title="1 UDID（Unique Device Identifier）"></a>1 UDID（Unique Device Identifier）</h2><p>UDID是Unique Device Identifier的缩写,中文意思是设备唯一标识.</p>
+<p>在很多需要限制一台设备一个账号的应用中经常会用到,在Symbian时代,我们是使用IMEI作为设备的唯一标识的,可惜的是Apple官方不允许开发者获得设备的IMEI.</p>
+<p>iOS5 sdk中的获取方法:</p>
+<pre><code>[UIDevice currentDevice] uniqueIdentifier]
+</code></pre><p>uniqueIdentifier在UIDevice.h中的定义如下:@property(nonatomic,readonly,retain) NSString    *uniqueIdentifier  <strong>OSX_AVAILABLE_BUT_DEPRECATED(</strong>MAC意思是iOS2.0以上及iOS5.0以下的系统可用,但不建议使用.Apple有可能在iOS5.0之后删除该函数.</p>
+<p>iOS6之后 换成 </p>
+<pre><code>[[UIDevice currentDevice] identifierForVendor]；
+</code></pre><p>但是我们需要注意的一点是,对于已越狱了的设备,UDID并不是唯一的.使用Cydia插件UDIDFaker,可以为每一个应用分配不同的UDID.</p>
+<p>所以UDID作为标识唯一设备的用途已经不大了</p>
+<h2 id="UUID-Universally-Unique-Identifier"><a href="#UUID-Universally-Unique-Identifier" class="headerlink" title="UUID(Universally Unique Identifier)"></a>UUID(Universally Unique Identifier)</h2><p>UUID是Universally Unique Identifier的缩写,中文意思是通用唯一识别码.</p>
+<p>由网上资料显示,UUID是一个软件建构的标准,也是被开源软件基金会(Open Software Foundation,OSF)的组织在分布式计算环境(Distributed Computing Environment,DCE)领域的一部份.UUID的目的,是让分布式系统中的所有元素,都能有唯一的辨识资讯,而不需要透过中央控制端来做辨识资讯的指定.</p>
+<p>根据以上定义可知,同一设备上的不同应用的UUID是互斥的,即能在改设备上标识应用.但是并没有明确指出能标识出装有同一应用的不同设备,但是根据我推测,这个UUID应该是根据设备标识和应用标识生成唯一标识,再经过加密而来的(纯推测).</p>
+<p>UUID（Universally UniqueIDentifier）</p>
+<p>是基于iOS设备上面某个单个的应用程序，只要用户没有完全删除应用程序，则这个UUID在用户使用该应用程序的时候一直保持不变。如果用户删除了这个应用程序，然后再重新安装，那么这个UUID已经发生了改变。通过调用[[UIDevice currentDevice]identifierForVendor];方法可以获取UUID。UUID不好的地方就是用户删除了你开发的程序以后，基本上你就不可能获取之前的数据了。</p>
+<p>UDID（Unique Device</p>
+<p>Identifier）是一串由40位16进制数组成的字符串，用以标识唯一的设备，现在想通过代码获取是不可能的了，如果你想看看你设备的UDID，可以通过iTunes来查看。苹果从iOS5开始就移除了通过代码访问UDID的权限，所以码农啊，想知道用户设备的UDID，是不行的喽。</p>
+<p>那么有没有另外的办法来获取用户设备的唯一标识符呢？答案是有的，当然这样的标识符不是苹果隐藏的UDID了，使用OpenUDID开源代码，这个代码通过一些特殊的算法，创建了每一个设备的唯一标识符，你可以拿过来用来识别设备了。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/18/关于UUID和UDID的区别/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-精确还原UI稿多行文字间距" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1555,302 +1645,6 @@ return transparent;
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2019/01/28/五星好评刮刮乐/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-iOS 关于启动app播放视频功能" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/01/28/iOS 关于启动app播放视频功能/">iOS 关于启动app播放视频功能</a>
-    </h1>
-  
-
-        
-        <a href="/2019/01/28/iOS 关于启动app播放视频功能/" class="archive-article-date">
-  	<time datetime="2019-01-28T07:41:05.044Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-01-28</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>我们经常会看到我们在第一次使用app的时候，会播放一段视频，以便我们来了解app。如何实现呢</p>
-<p><img src="http://img.wangjungang.cn/WX20190128-154354@2x.png" alt=""></p>
-<h3 id="1、我们要在LaunchScreen-storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。"><a href="#1、我们要在LaunchScreen-storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。" class="headerlink" title="1、我们要在LaunchScreen.storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。"></a>1、我们要在LaunchScreen.storyboard中给app一张启动图片，防止我们在启动的时候会出现空白的情况。</h3><p><img src="http://img.wangjungang.cn/WX20190128-160237@2x.png" alt=""></p>
-<p><img src="http://img.wangjungang.cn/WX20190128-160322@2x.png" alt=""></p>
-<h3 id="2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器"><a href="#2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器" class="headerlink" title="2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器"></a>2、创建一个ZYLauchMovieViewController控制器，继承自AVPlayerViewController，设置我们的window的根控制器为我们要播放视频的控制器</h3><pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-UIWindow *window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-ZYLauchMovieViewController *vc = [[ZYLauchMovieViewController alloc] init];
-window.rootViewController = vc;
-self.window = window;
-[self.window makeKeyAndVisible];
-return YES;
-}
-</code></pre><p>注意</p>
-<p><img src="http://img.wangjungang.cn/WX20190128-160421@2x.png" alt=""></p>
-<p><img src="http://img.wangjungang.cn/WX20190128-160508@2x.png" alt=""></p>
-<h3 id="3、设置四个属性，"><a href="#3、设置四个属性，" class="headerlink" title="3、设置四个属性，"></a>3、设置四个属性，</h3><p>1、播放开始之前的图片startPlayerImageView，防止出现留黑的问题，</p>
-<p>2、播放中断的图片pausePlayerImageView，也是防止跳转的时候出现问题，</p>
-<p>3、定时器timer，为了在进入app3秒之后显示进入应用按钮，</p>
-<p>4、结束按钮也就是进入应用的按钮enterMainButton，为了让用户跳过视频。</p>
-<pre><code>/** 播放开始之前的图片 */
-@property (nonatomic , strong)UIImageView *startPlayerImageView;
-/** 播放中断时的图片 */
-@property (nonatomic , strong)UIImageView *pausePlayerImageView;
-/** 定时器 */
-@property (nonatomic , strong)NSTimer *timer;
-/** 结束按钮 */
-@property (nonatomic , strong)UIButton *enterMainButton;
-</code></pre><h3 id="4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮"><a href="#4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮" class="headerlink" title="4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮"></a>4、viewDidLoad中设置一些界面，在并且判断是不是第一次进入app，如果是第一次，设置进入主界面的按钮</h3><pre><code>// 设置界面
-- (void)setupView {
-self.startPlayerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@&quot;lauch&quot;]];
-_startPlayerImageView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
-[self.contentOverlayView addSubview:_startPlayerImageView];
-//是否是第一次进入视频
-if (![self isFirstLauchApp]) {
-//设置进入主界面的按钮
-[self setupEnterMainButton];
-}
-}
-
-//设置进入主界面的按钮
-- (void)setupEnterMainButton {
-self.enterMainButton = [UIButton buttonWithType:UIButtonTypeCustom];
-_enterMainButton.frame = CGRectMake(24, kScreenHeight - 32 - 48, kScreenWidth - 48, 48);
-_enterMainButton.layer.borderWidth =1;
-_enterMainButton.layer.cornerRadius = 24;
-_enterMainButton.layer.borderColor = [UIColor whiteColor].CGColor;
-[_enterMainButton setTitle:@&quot;进入应用&quot; forState:UIControlStateNormal];
-_enterMainButton.hidden = YES;
-[self.view addSubview:_enterMainButton];
-[_enterMainButton addTarget:self action:@selector(enterMainAction:) forControlEvents:UIControlEventTouchUpInside];
-//设置定时器当视频播放到第三秒时 展示进入应用
-self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(showEnterMainButton) userInfo:nil repeats:YES];
-}
-</code></pre><p>在这里我们开一个定时器，让按钮在3s之后再显示</p>
-<p>//显示进入按钮（定时器的方法）</p>
-<pre><code>- (void)showEnterMainButton {
-AVAssetImageGenerator *gen = [[AVAssetImageGenerator alloc] initWithAsset:self.player.currentItem.asset];
-gen.appliesPreferredTrackTransform = YES;
-NSError *error = nil;
-CMTime actualTime;
-CMTime now = self.player.currentTime;
-[gen setRequestedTimeToleranceAfter:kCMTimeZero];
-[gen setRequestedTimeToleranceBefore:kCMTimeZero];
-[gen copyCGImageAtTime:now actualTime:&amp;actualTime error:&amp;error];
-NSInteger currentPlayBackTime = (NSInteger)CMTimeGetSeconds(actualTime);
-if (currentPlayBackTime &gt;= 3) {
-self.enterMainButton.hidden = NO;
-static dispatch_once_t onceToken;
-dispatch_once(&amp;onceToken, ^{
-self.enterMainButton.alpha = 0;
-[UIView animateWithDuration:0.5 animations:^{
-self.enterMainButton.alpha = 1;
-} completion:nil];
-});
-}
-if (currentPlayBackTime &gt; 5) {
-//防止没有显现出来
-self.enterMainButton.alpha = 1;
-self.enterMainButton.hidden = NO;
-[self.timer invalidate];
-self.timer = nil;
-}
-}
-</code></pre><p>//进入应用的按钮点击事件</p>
-<pre><code>- (void)enterMainAction:(UIButton *)btn {
-//视频暂停
-[self.player pause];
-self.pausePlayerImageView = [[UIImageView alloc] init];
-_pausePlayerImageView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
-[self.contentOverlayView addSubview:_pausePlayerImageView];
-self.pausePlayerImageView.contentMode = UIViewContentModeScaleAspectFit;
-//获取当前暂停时的截图,也就是设置结束时候的图片
-[self getoverPlayerImage];
-}
-</code></pre><p>//截图的获取方法</p>
-<pre><code>- (void)getoverPlayerImage {
-AVAssetImageGenerator *gen = [[AVAssetImageGenerator alloc] initWithAsset:self.player.currentItem.asset];
-gen.appliesPreferredTrackTransform = YES;
-NSError *error = nil;
-CMTime actualTime;
-CMTime now = self.player.currentTime;
-[gen setRequestedTimeToleranceAfter:kCMTimeZero];
-[gen setRequestedTimeToleranceBefore:kCMTimeZero];
-CGImageRef image = [gen copyCGImageAtTime:now actualTime:&amp;actualTime error:&amp;error];
-if (!error) {
-UIImage *thumb = [[UIImage alloc] initWithCGImage:image];
-self.pausePlayerImageView.image = thumb;
-}
-NSLog(@&quot;%f , %f&quot;,CMTimeGetSeconds(now),CMTimeGetSeconds(actualTime));
-NSLog(@&quot;%@&quot;,error);
-//视频播放结束
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.01 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-[self moviePlaybackComplete];
-});
-}
-</code></pre><h3 id="5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次"><a href="#5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次" class="headerlink" title="5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次"></a>5、在viewDidLoad设置监听，监听视频播放的开始，结束，以及程序进入活动的状态，需要判断是不是第一次进入app，是的话就重复播放视频，不是的话就播放一次</h3><pre><code>//设置监听
-
-
-- (void)addNotification {
-[[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
-[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(viewWillEnterForeground) name:UIApplicationDidBecomeActiveNotification object:nil];//进入前台
-if ([self isFirstLauchApp]) {
-//第二次进入app视频需要直接结束
-[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackComplete) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];//视频播放结束
-}else {
-//第一次进入app视频需要轮播
-[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackAgain) name:AVPlayerItemDidPlayToEndTimeNotification object:nil];//视频播放结束
-}
-[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(moviePlaybackStart) name:AVPlayerItemTimeJumpedNotification object:nil];//播放开始
-}
-</code></pre><p>//实现监听的方法</p>
-<p>//开始播放移除我们刚开始加的图片，不然无法看到视频</p>
-<pre><code>- (void)moviePlaybackStart {
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-[self.startPlayerImageView removeFromSuperview];
-self.startPlayerImageView = nil;
-});
-}
-</code></pre><p>//视频播放完成移除图片，进入主界面</p>
-<pre><code>- (void)moviePlaybackComplete {
-//发送推送之后就删除  否则 界面显示有问题
-[[NSNotificationCenter defaultCenter] removeObserver:self
-name:AVPlayerItemDidPlayToEndTimeNotification
-object:nil];
-[self.startPlayerImageView removeFromSuperview];
-self.startPlayerImageView = nil;
-[self.pausePlayerImageView removeFromSuperview];
-self.pausePlayerImageView = nil;
-if (self.timer){
-[self.timer invalidate];
-self.timer = nil;
-}
-//进入主界面
-[self enterMain];
-}
-</code></pre><p>//app进入活动时播放视频</p>
-<pre><code>- (void)viewWillEnterForeground
-
-{
-
-NSLog(@&quot;app enter foreground&quot;);
-
-if (!self.player) {
-
-[self prepareMovie];
-
-}
-
-//播放视频
-
-[self.player play];
-
-}
-</code></pre><p>//第一次进入app的时候，再一次播放视频</p>
-<pre><code>- (void)moviePlaybackAgain {
-self.startPlayerImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@&quot;lauchAgain&quot;]];
-_startPlayerImageView.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
-[self.contentOverlayView addSubview:_startPlayerImageView];
-[self.pausePlayerImageView removeFromSuperview];
-self.pausePlayerImageView = nil;
-NSString *filePath = [[NSBundle mainBundle] pathForResource:@&quot;opening_long_1080*1920.mp4&quot; ofType:nil];
-//初始化player
-self.player = [AVPlayer playerWithURL:[NSURL fileURLWithPath:filePath]];
-self.showsPlaybackControls = NO;
-//播放视频
-[self.player play];
-}
-</code></pre><h3 id="6、在viewDidLoad中初始化视频"><a href="#6、在viewDidLoad中初始化视频" class="headerlink" title="6、在viewDidLoad中初始化视频"></a>6、在viewDidLoad中初始化视频</h3><pre><code>- (void)prepareMovie {
-//首次运行
-NSString *filePath = nil;
-if (![self isFirstLauchApp]) {
-//第一次安装
-filePath = [[NSBundle mainBundle] pathForResource:@&quot;opening_long_1080*1920.mp4&quot; ofType:nil];
-[self setIsFirstLauchApp:YES];
-}else {
-filePath = [[NSBundle mainBundle] pathForResource:@&quot;opening_short_1080*1920.mp4&quot; ofType:nil];
-}
-//初始化player
-self.player = [AVPlayer playerWithURL:[NSURL fileURLWithPath:filePath]];
-self.showsPlaybackControls = NO;
-//播放视频
-[self.player play];
-}
-</code></pre><h3 id="7、进入主界面的方法以及判断是否第一次进入app"><a href="#7、进入主界面的方法以及判断是否第一次进入app" class="headerlink" title="7、进入主界面的方法以及判断是否第一次进入app"></a>7、进入主界面的方法以及判断是否第一次进入app</h3><p>//进入主界面</p>
-<pre><code>- (void)enterMain {
-AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-UIViewController *main = [[UIStoryboard storyboardWithName:@&quot;Main&quot; bundle:[NSBundle mainBundle]] instantiateInitialViewController];
-delegate.window.rootViewController = main;
-[delegate.window makeKeyWindow];
-}
-
-#pragma mark -- 是否第一次进入app
-- (BOOL)isFirstLauchApp {
-    return [[NSUserDefaults standardUserDefaults] boolForKey:kIsFirstLauchApp];
-}
-- (void)setIsFirstLauchApp:(BOOL)isFirstLauchApp
-{
-    [[NSUserDefaults standardUserDefaults] setBool:isFirstLauchApp forKey:kIsFirstLauchApp];
-}
-</code></pre><p>第一步：先给一张初始的图片，然后判断是不是第一次进入app，第一次就设置一个进入应用的按钮，点击截图一张放在视频上方进入主界面，然后开一个定时器，当视频播放到第3s的时候显示按钮。</p>
-<p>第二步:监听视频的开始播放、结束播放，以及app是否进入活动状态；开始播放的时候移除第一张图片；结束播放的时候移除图片，移除定时器，进入主界面；进入活动状态时候播放视频。</p>
-<p>第三步：初始化player，加载本地视频，播放视频</p>
-<p><a href="https://github.com/zhangyqyx/startMovie" target="_blank" rel="noopener">Demo</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/01/28/iOS 关于启动app播放视频功能/">展开全文 >></a>
         </p>
       
 
