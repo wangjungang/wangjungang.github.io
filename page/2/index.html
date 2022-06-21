@@ -152,6 +152,162 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-从ViewPager到ViewPager2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/11/19/从ViewPager到ViewPager2/">从ViewPager到ViewPager2</a>
+    </h1>
+  
+
+        
+        <a href="/2021/11/19/从ViewPager到ViewPager2/" class="archive-article-date">
+  	<time datetime="2021-11-19T05:13:26.051Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>之前早有耳闻 Google 为我们提供新的控件来替换老旧的 ViewPager 进而解决一些不好解决的bug问题，讲了一大堆，就是前因后果啥的…相信读者已经在“张鸿洋”大神、“郭霖”大神或者是其他Android 大佬的公众号那里看见了许许多多了，或许各位感觉很无聊了，笔者菜鸟，分析不了历史背景，也不是很懂源码，但是小菜鸟，可以带给位看官尝个鲜，教你怎么用，怎么上手哈，闲话不多说，我们步入正题。</p>
+<h2 id="viewpager有2个弊端"><a href="#viewpager有2个弊端" class="headerlink" title="viewpager有2个弊端"></a>viewpager有2个弊端</h2><ul>
+<li><p>不能关闭预加载</p>
+</li>
+<li><p>更新adapter不生效</p>
+</li>
+</ul>
+<p>我们在加载数据的时候，viewpager默认会帮我们预加载前后两个页面的数据，并且这2个view是不可见的。<br>由于viewpager对offscreenPageLimit做了限制，默认设置为1，因此页面的预加载不可避免。这也容易造成资源浪费。</p>
+<p>一般使用viewpager与frament配合使用，利用fragment的setUserVisibleHint方法，来实现控制数据懒加载。而布局只能提前进入(预布局)。</p>
+<h2 id="viewPager2离屏加载与预加载"><a href="#viewPager2离屏加载与预加载" class="headerlink" title="viewPager2离屏加载与预加载"></a>viewPager2离屏加载与预加载</h2><p>ViewPager2的预加载与离屏加载在view层面有着本质的区别，离屏加载的view已经添加到parent上，而预加载只是准备了布局，并没有加载到parent上。</p>
+<ul>
+<li>ViewPager2默认是开启预加载关闭离屏加载的，可能会预加载一条数据，而离屏加载即设置offscreenPageLimit为0。</li>
+<li>ViewPager2设置offscreenPageLimit为1时，在第1页会加载2条数据，每滑动一页，都会加载下一页数据，直到第五页，会移除第一页数据</li>
+</ul>
+<h2 id="ViewPager2-和-ViewPager-的区别"><a href="#ViewPager2-和-ViewPager-的区别" class="headerlink" title="ViewPager2 和 ViewPager 的区别"></a>ViewPager2 和 ViewPager 的区别</h2><ul>
+<li>ViewPager2API最大的变化是它现在使用RecyclerView。</li>
+<li>使用ViewPager2需要迁移到Androidx，因为android.support库中不支持ViewPager2</li>
+<li>FragmentStateAdapter替换 FragmentStatePagerAdapter</li>
+<li>RecyclerView.Adapter替代PagerAdapter</li>
+<li>registerOnPageChangeCallback 替换addPageChangeListener</li>
+<li>ViewPager2支持从右到左 (RTL) 的布局支持、垂直方向支持</li>
+<li>ViewPager2支持停用用户输入的功能（setUserInputEnabled、isUserInputEnabled）</li>
+</ul>
+<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><h3 id="1、引入依赖"><a href="#1、引入依赖" class="headerlink" title="1、引入依赖"></a>1、引入依赖</h3><pre><code>implementation &apos;androidx.viewpager2:viewpager2:1.0.0&apos;
+implementation &apos;androidx.recyclerview:recyclerview:1.1.0&apos; // ViewPager 2 需要使用 RecycleView 的 adapter
+</code></pre><h3 id="2、xml布局"><a href="#2、xml布局" class="headerlink" title="2、xml布局"></a>2、xml布局</h3><pre><code>&lt;androidx.viewpager2.widget.ViewPager2
+        android:id=&quot;@+id/vp_rg&quot;
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;match_parent&quot;
+        android:layout_above=&quot;@+id/rg_vp&quot; /&gt;
+</code></pre><h3 id="3、Adapter"><a href="#3、Adapter" class="headerlink" title="3、Adapter"></a>3、Adapter</h3><pre><code>import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+​
+import java.util.ArrayList;
+import java.util.List;
+​
+/**
+ * CreateTime: 2021/10/30 21:32
+ * Author: iwen大大怪
+ */
+public class RgAdapter extends FragmentStateAdapter {
+​
+    private List&lt;Class&gt; fragments;
+​
+    public RgAdapter(@NonNull FragmentActivity fragmentActivity) {
+        super(fragmentActivity);
+        if (fragments == null) {
+            fragments = new ArrayList&lt;&gt;();
+        }
+    }
+​
+    public void addFragment(Fragment fragment) {
+        if (fragments != null) {
+            fragments.add(fragment.getClass());
+        }
+    }
+​
+    @NonNull
+    @Override
+    public Fragment createFragment(int position) {
+        try {
+            return (Fragment) fragments.get(position).newInstance();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+​
+    @Override
+    public int getItemCount() {
+        return fragments.size();
+    }
+}
+​
+</code></pre><p>这里需要说的是 registerOnPageChangeCallback 方法 ，这个方法可以可以监听到 ViewPager 2 的界面变化，进而去操作其他的控件</p>
+<h2 id="关于DiffUtil"><a href="#关于DiffUtil" class="headerlink" title="关于DiffUtil"></a>关于DiffUtil</h2><p>使用过DiffUtil都知道它的好处，没有用使用过也没有关系，听我给你说说。</p>
+<p>它可以通过计算判断两个列表之间的差异进行局部刷新，而我们平时使用的notifyDataSetChanged();是一个无脑刷新的操作，会刷新整个列表，对性能和视觉上并不是很友好。</p>
+<p>使用差分进化算法计算更新的最小系数。</p>
+<p>需要注意的是，如果你的列表数据量较大，建议在后台线程执行这个操作，DiffResult默认在主线程中执行。<br>如果启用了移动检测，则需要花费额外的o(N ^2)时间，其中N是已添加和已删除项目的总数。如果您的列表已经按相同的约束排序（例如，为帖子列表创建的时间戳)，则可以禁用移动检测以提高性能。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/11/19/从ViewPager到ViewPager2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Swift里面怎么知道一个协议被多少类遵循" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1571,120 +1727,6 @@ ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
 
 
   
-    <article id="post-Android对Java的修改-SimpleDateFormat类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/11/Android对Java的修改-SimpleDateFormat类/">Android对Java的修改-SimpleDateFormat类</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/11/Android对Java的修改-SimpleDateFormat类/" class="archive-article-date">
-  	<time datetime="2021-03-11T05:57:46.681Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-11</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Android会对部分OpenJDK中的代码进行一些修改，本篇记录一下因为这些修改而踩过的一些坑。</p>
-<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>一个在线上运行良好的Date工具类在写单元测试时一直报ParseException，代码如下</p>
-<pre><code>public static String utc2Local(String utcTime) {
-    String utcTimePatten = &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ssZZZZZ&quot;;
-    String localTimePatten = &quot;yyyy.MM.dd&quot;;
-    SimpleDateFormat utcFormater = new SimpleDateFormat(utcTimePatten);
-    utcFormater.setTimeZone(TimeZone.getTimeZone(&quot;UTC&quot;));//时区定义并进行时间获取
-    Date gpsUTCDate = null;
-    try {
-        gpsUTCDate = utcFormater.parse(formatTimeStr(utcTime));
-    } catch (Exception e) {
-        e.printStackTrace();
-        return utcTime;
-    }
-    SimpleDateFormat localFormater = new SimpleDateFormat(localTimePatten);
-    localFormater.setTimeZone(TimeZone.getDefault());
-    String localTime = localFormater.format(gpsUTCDate.getTime());
-    return localTime;
-}
-</code></pre><p>这里传入的参数utcTime为”2020-01-01 08:00:00+08:00”</p>
-<p>这段代码在Android环境下运行良好，但在单元测试下一直报错</p>
-<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>Android对OpenJDK中的SimpleDateFormat进行了修改，具体在subParseNumericZone方法中：</p>
-<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b3785ca49d04320b3f6658ad4d859fa~tplv-k3u1fbpfcp-watermark.image?imageslim" alt=""></p>
-<p>可以看到，OpenJDK原本是不支持带冒号的写法的，而在Android中修改了subParseNumericZone方法，使其可以解析带冒号的写法。</p>
-<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>解决方法也很简单，在测试时直接修改入参，去掉入参中的冒号就好了：</p>
-<pre><code>try (MockedStatic&lt;DateUtils&gt; mockedDateUtils = Mockito.mockStatic(DateUtils.class, new CallsRealMethods())) {
-    mockedDateUtils.when(() -&gt; {
-           DateUtils.utc2Local(argThat((argument) -&gt; {
-            int index = argument.length() - 3;
-            return argument.charAt(index) == &apos;:&apos;;
-        ));
-    }).then((invocation) -&gt; {
-        String utcTime = invocation.getArgument(0, String.class);
-        String fixedDate = formatDate;
-        int index = formatDate.length() - 3;
-        if (formatDate.charAt(index) == &apos;:&apos;) {
-            fixedDate = formatDate.substring(0, index) + formatDate.substring(index + 1);
-        }
-        return DateUtils.utc2Local(fixedDate);
-    });
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/11/Android对Java的修改-SimpleDateFormat类/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1798,15 +1840,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1854,11 +1896,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1866,11 +1908,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">

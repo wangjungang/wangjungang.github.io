@@ -152,6 +152,238 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-UITableView + RxDataSources" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/02/22/UITableView + RxDataSources/">UITableView + RxDataSources</a>
+    </h1>
+  
+
+        
+        <a href="/2019/02/22/UITableView + RxDataSources/" class="archive-article-date">
+  	<time datetime="2019-02-22T07:32:54.645Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>官方介绍</p>
+<pre><code>UITableView and UICollectionView Data Sources for RxSwift (sections, animated updates, editing ...)
+</code></pre><p>特点</p>
+<ul>
+<li><p>1、RxDataSource 的本质就是使用 RxSwift 对 UITableView 和 UICollectionView 的数据源做了一层包装。使用它可以大大减少我们的工作量</p>
+</li>
+<li><p>2、RxDataSources 是以 section 来做为数据结构的。所以不管我们的 tableView 是单分区还是多分区，在使用 RxDataSources 的过程中，都需要返回一个 section 的数组</p>
+</li>
+</ul>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li><p>CocoaPods</p>
+<pre><code>pod &apos;RxDataSources&apos;
+</code></pre></li>
+<li><p>Carthage</p>
+<pre><code>github &quot;RxSwiftCommunity/RxDataSources&quot;
+</code></pre></li>
+</ul>
+<h2 id="单分区-TableView"><a href="#单分区-TableView" class="headerlink" title="单分区 TableView"></a>单分区 TableView</h2><h3 id="方式一：使用自带的Section"><a href="#方式一：使用自带的Section" class="headerlink" title="方式一：使用自带的Section"></a>方式一：使用自带的Section</h3><pre><code>// 创建表格
+tableView = UITableView(frame: view.bounds, style: .plain)
+// 注册单元格
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
+view.addSubview(tableView)
+
+// 初始化数据
+let items = Observable.just([
+    SectionModel(model: &quot;&quot;,
+                 items: [&quot;UILabel的用法&quot;,
+                         &quot;UIButton的用法&quot;,
+                         &quot;UITextField的用法&quot;])
+    ])
+
+// 创建数据源
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;(configureCell: {
+    (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
+    let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
+    cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
+    return cell
+})
+
+// 数据绑定
+items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+</code></pre><h3 id="方式二：使用自定义的Section"><a href="#方式二：使用自定义的Section" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><p>自定义 SectionModel</p>
+<pre><code>struct XMSessionModel {
+    var header: String
+    var items: [Item]
+}
+
+extension XMSessionModel: AnimatableSectionModelType {
+
+    typealias Item = String
+
+    var identity: String {
+        return header
+    }
+
+    init(original: XMSessionModel, items: [Item]) {
+        self = original
+        self.items = items
+    }
+}
+
+// 创建表格
+tableView = UITableView(frame: view.bounds, style: .plain)
+// 注册单元格
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
+view.addSubview(tableView)
+
+// 初始化数据
+let sections = Observable.just([
+    XMSessionModel(header: &quot;&quot;,
+                   items: [&quot;UILabel的用法&quot;,
+                           &quot;UIButton的用法&quot;,
+                           &quot;UITextField的用法&quot;])
+    ])
+
+// 创建数据源
+let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: {
+    (dataSource, tableView, indexPath, item) -&gt; UITableViewCell in
+    let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;) ?? UITableViewCell(style: .default, reuseIdentifier: &quot;cellID&quot;)
+    cell.textLabel?.text = &quot;\(indexPath.row): \(item)&quot;
+    return cell
+})
+
+// 数据绑定
+sections.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+</code></pre><h2 id="多分区的-TableView"><a href="#多分区的-TableView" class="headerlink" title="多分区的 TableView"></a>多分区的 TableView</h2><h3 id="方式一：使用自带的Section-1"><a href="#方式一：使用自带的Section-1" class="headerlink" title="方式一：使用自带的Section"></a>方式一：使用自带的Section</h3><pre><code>// 创建表格
+tableView = UITableView(frame: view.bounds, style: .plain)
+// 注册单元格
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
+view.addSubview(tableView)
+
+// 初始化数据
+let items = Observable.just([
+    SectionModel(model: &quot;基本控件&quot;,
+                   items: [&quot;UILabel的用法&quot;,
+                           &quot;UIButton的用法&quot;,
+                           &quot;UITextField的用法&quot;]),
+    SectionModel(model: &quot;高级i控件&quot;,
+                   items: [&quot;UITableView的用法&quot;,
+                           &quot;UICollectionView的用法&quot;])
+    ])
+
+// 创建数据源
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;( configureCell: {
+    (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
+    let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
+    cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
+    return cell
+})
+
+// 设置分区头标题
+dataSource.titleForHeaderInSection = { dataSource, index in
+    return dataSource.sectionModels[index].model
+}
+
+// 设置分区尾部标题
+dataSource.titleForFooterInSection = { dataSource, index in
+    return &quot;footer&quot;
+}
+
+// 数据绑定
+items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+</code></pre><h3 id="方式二：使用自定义的Section-1"><a href="#方式二：使用自定义的Section-1" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><pre><code>// 创建表格
+tableView = UITableView(frame: view.bounds, style: .plain)
+// 注册单元格
+tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
+view.addSubview(tableView)
+
+// 初始化数据
+let items = Observable.just([
+    XMSessionModel(header: &quot;基本控件&quot;,
+                   items: [&quot;UILabel的用法&quot;,
+                           &quot;UIButton的用法&quot;,
+                           &quot;UITextField的用法&quot;]),
+    XMSessionModel(header: &quot;高级i控件&quot;,
+                   items: [&quot;UITableView的用法&quot;,
+                           &quot;UICollectionView的用法&quot;])
+    ])
+
+// 创建数据源
+let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: {
+    (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
+    let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
+    cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
+    return cell
+})
+
+// 设置分区头标题
+dataSource.titleForHeaderInSection = { dataSource, index in
+    return dataSource.sectionModels[index].header
+}
+
+// 设置分区尾部标题
+dataSource.titleForFooterInSection = { dataSource, index in
+    return &quot;footer&quot;
+}
+
+// 数据绑定
+items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2019/02/22/UITableView + RxDataSources/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-RXSwift-TableView" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1712,108 +1944,6 @@ hexo deploy
 
 
   
-    <article id="post-常用的setNeedsDisplay和setNeedsLayout" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/">常用的setNeedsDisplay和setNeedsLayout</a>
-    </h1>
-  
-
-        
-        <a href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/" class="archive-article-date">
-  	<time datetime="2019-02-18T07:43:18.890Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="1-UIView的setNeedsDisplay和setNeedsLayout方法"><a href="#1-UIView的setNeedsDisplay和setNeedsLayout方法" class="headerlink" title="1.UIView的setNeedsDisplay和setNeedsLayout方法"></a>1.UIView的setNeedsDisplay和setNeedsLayout方法</h2><p>首先两个方法都是异步执行的。而setNeedsDisplay会调用自动调用drawRect方法，这样可以拿到  UIGraphicsGetCurrentContext，就可以画画了。而setNeedsLayout会默认调用layoutSubViews，<br>就可以  处理子视图中的一些数据。</p>
-<p>综上所诉，setNeedsDisplay方便绘图，而layoutSubViews方便出来数据。</p>
-<h2 id="layoutSubviews在以下情况下会被调用："><a href="#layoutSubviews在以下情况下会被调用：" class="headerlink" title="layoutSubviews在以下情况下会被调用："></a>layoutSubviews在以下情况下会被调用：</h2><ul>
-<li>1、init初始化不会触发layoutSubviews。</li>
-<li>2、addSubview会触发layoutSubviews。</li>
-<li>3、设置view的Frame会触发layoutSubviews，当然前提是frame的值设置前后发生了变化。</li>
-<li>4、滚动一个UIScrollView会触发layoutSubviews。</li>
-<li>5、旋转Screen会触发父UIView上的layoutSubviews事件。</li>
-<li>6、改变一个UIView大小的时候也会触发父UIView上的layoutSubviews事件。</li>
-<li>7、直接调用setLayoutSubviews。</li>
-</ul>
-<h2 id="drawRect在以下情况下会被调用："><a href="#drawRect在以下情况下会被调用：" class="headerlink" title="drawRect在以下情况下会被调用："></a>drawRect在以下情况下会被调用：</h2><ul>
-<li><p>1、如果在UIView初始化时没有设置rect大小，将直接导致drawRect不被自动调用。drawRect调用是在Controller-&gt;loadView, Controller-&gt;viewDidLoad 两方法之后掉用的.所以不用担心在控制器中,这些View的drawRect就开始画了.这样可以在控制器中设置一些值给View(如果这些View draw的时候需要用到某些变量值).</p>
-</li>
-<li><p>2、该方法在调用sizeToFit后被调用，所以可以先调用sizeToFit计算出size。然后系统自动调用drawRect:方法</p>
-</li>
-<li><p>3、通过设置contentMode属性值为UIViewContentModeRedraw。那么将在每次设置或更改frame的时候自动调用drawRect:。</p>
-</li>
-<li><p>4、直接调用setNeedsDisplay，或者setNeedsDisplayInRect:触发drawRect:，但是有个前提条件是rect不能为0。<br>以上1,2推荐；而3,4不提倡</p>
-</li>
-</ul>
-<h2 id="drawRect方法使用注意点："><a href="#drawRect方法使用注意点：" class="headerlink" title="drawRect方法使用注意点："></a>drawRect方法使用注意点：</h2><ul>
-<li><p>1、若使用UIView绘图，只能在drawRect：方法中获取相应的contextRef并绘图。如果在其他方法中获取将获取到一个invalidate的ref并且不能用于画图。drawRect：方法不能手动显示调用，必须通过调用setNeedsDisplay 或者 setNeedsDisplayInRect，让系统自动调该方法。</p>
-</li>
-<li><p>2、若使用CAlayer绘图，只能在drawInContext: 中（类似于drawRect）绘制，或者在delegate中的相应方法绘制。同样也是调用setNeedDisplay等间接调用以上方法</p>
-</li>
-<li><p>3、若要实时画图，不能使用gestureRecognizer，只能使用touchbegan等方法来掉用setNeedsDisplay实时刷新屏幕</p>
-</li>
-</ul>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/10/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/12/">Next &raquo;</a>
@@ -1927,15 +2057,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1983,11 +2113,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1995,11 +2125,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -152,6 +152,120 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-Android对Java的修改-SimpleDateFormat类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/11/Android对Java的修改-SimpleDateFormat类/">Android对Java的修改-SimpleDateFormat类</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/11/Android对Java的修改-SimpleDateFormat类/" class="archive-article-date">
+  	<time datetime="2021-03-11T05:57:46.681Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Android会对部分OpenJDK中的代码进行一些修改，本篇记录一下因为这些修改而踩过的一些坑。</p>
+<h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>一个在线上运行良好的Date工具类在写单元测试时一直报ParseException，代码如下</p>
+<pre><code>public static String utc2Local(String utcTime) {
+    String utcTimePatten = &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ssZZZZZ&quot;;
+    String localTimePatten = &quot;yyyy.MM.dd&quot;;
+    SimpleDateFormat utcFormater = new SimpleDateFormat(utcTimePatten);
+    utcFormater.setTimeZone(TimeZone.getTimeZone(&quot;UTC&quot;));//时区定义并进行时间获取
+    Date gpsUTCDate = null;
+    try {
+        gpsUTCDate = utcFormater.parse(formatTimeStr(utcTime));
+    } catch (Exception e) {
+        e.printStackTrace();
+        return utcTime;
+    }
+    SimpleDateFormat localFormater = new SimpleDateFormat(localTimePatten);
+    localFormater.setTimeZone(TimeZone.getDefault());
+    String localTime = localFormater.format(gpsUTCDate.getTime());
+    return localTime;
+}
+</code></pre><p>这里传入的参数utcTime为”2020-01-01 08:00:00+08:00”</p>
+<p>这段代码在Android环境下运行良好，但在单元测试下一直报错</p>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>Android对OpenJDK中的SimpleDateFormat进行了修改，具体在subParseNumericZone方法中：</p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b3785ca49d04320b3f6658ad4d859fa~tplv-k3u1fbpfcp-watermark.image?imageslim" alt=""></p>
+<p>可以看到，OpenJDK原本是不支持带冒号的写法的，而在Android中修改了subParseNumericZone方法，使其可以解析带冒号的写法。</p>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>解决方法也很简单，在测试时直接修改入参，去掉入参中的冒号就好了：</p>
+<pre><code>try (MockedStatic&lt;DateUtils&gt; mockedDateUtils = Mockito.mockStatic(DateUtils.class, new CallsRealMethods())) {
+    mockedDateUtils.when(() -&gt; {
+           DateUtils.utc2Local(argThat((argument) -&gt; {
+            int index = argument.length() - 3;
+            return argument.charAt(index) == &apos;:&apos;;
+        ));
+    }).then((invocation) -&gt; {
+        String utcTime = invocation.getArgument(0, String.class);
+        String fixedDate = formatDate;
+        int index = formatDate.length() - 3;
+        if (formatDate.charAt(index) == &apos;:&apos;) {
+            fixedDate = formatDate.substring(0, index) + formatDate.substring(index + 1);
+        }
+        return DateUtils.utc2Local(fixedDate);
+    });
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/11/Android对Java的修改-SimpleDateFormat类/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Java多线程常用方法分析" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2422,167 +2536,6 @@ Rows matched: 1000000  Changed: 1000000  Warnings: 0
 
 
   
-    <article id="post-RxSwift：Driver与UI控件初体验" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/04/04/RxSwift：Driver与UI控件初体验/">RxSwift：Driver与UI控件初体验</a>
-    </h1>
-  
-
-        
-        <a href="/2020/04/04/RxSwift：Driver与UI控件初体验/" class="archive-article-date">
-  	<time datetime="2020-04-04T01:42:52.558Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-04-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>输入电话号码的区号和八位数主体号码，下面的Label实时更新最新的输入，如果区号为3位数，点击按钮，按钮名字变成“变！”</p>
-<p>Ps：目前还不会，同时满足上面两位，下面三位的的约束，以后会更新的</p>
-<p>文件名：ViewController.swift</p>
-<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><pre><code>//
-//  ViewController.swift
-//  RxSwiftTest
-//
-//
-
-import UIKit
-import RxSwift
-import RxCocoa
-import SnapKit
-
-class ViewController: UIViewController {
-
-    var textField1: UITextField!
-    var textField2: UITextField!
-    var label: UILabel!
-    var btn: UIButton!
-    let disposeBag = DisposeBag()
-
-    override func viewDidLoad() {
-
-        textField1 = UITextField()
-        textField2 = UITextField()
-        label = UILabel()
-        btn = UIButton()
-
-        textField1.layer.borderWidth = 1
-        textField2.layer.borderWidth = 1
-        label.textAlignment = .center
-        btn.setTitle(&quot;点我&quot;, for: .normal)
-        btn.layer.borderWidth = 1
-        btn.setTitleColor(UIColor.black, for: .normal)
-
-        view.addSubview(textField1)
-        view.addSubview(textField2)
-        view.addSubview(label)
-        view.addSubview(btn)
-
-        textField1.snp.makeConstraints { (make) in
-            make.centerX.equalToSuperview()
-            make.top.equalToSuperview().offset(200)
-            make.height.equalTo(30)
-            make.width.equalTo(200)
-        }
-
-        textField2.snp.makeConstraints { (make) in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(textField1.snp.bottom).offset(30)
-            make.height.equalTo(30)
-            make.width.equalTo(200)
-        }
-
-        label.snp.makeConstraints { (make) in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(textField2.snp.bottom).offset(30)
-            make.height.equalTo(30)
-            make.width.equalTo(500)
-        }
-
-        btn.snp.makeConstraints { (make) in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(label.snp.bottom).offset(30)
-            make.height.equalTo(30)
-            make.width.equalTo(40)
-        }
-
-        Observable.combineLatest(textField1.rx.text.orEmpty, textField2.rx.text.orEmpty){
-            &quot;你输入的电话号码是\($0)-\($1)&quot;
-        }
-        .asDriver(onErrorJustReturn: &quot;&quot;)
-        .drive(label.rx.text)
-        .disposed(by: disposeBag)
-
-        textField1.rx.text.orEmpty.asObservable().asDriver(onErrorJustReturn: &quot;&quot;)
-        .map{ $0.count == 3 }
-        .drive(btn.rx.isEnabled)
-        .disposed(by: disposeBag)
-
-        btn.rx.tap
-        .subscribe(onNext: { [weak self] in
-                self?.btn.setTitle(&quot;变！&quot;, for: .normal)
-            })
-        .disposed(by: disposeBag)
-    }
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">RxSwift</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/04/04/RxSwift：Driver与UI控件初体验/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -2696,15 +2649,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2752,11 +2705,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2764,11 +2717,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">网络</a>
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color3">网络</a>
               </li>
              
               <li class="article-tag-list-item">
