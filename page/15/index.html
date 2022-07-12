@@ -152,6 +152,201 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-日历的提醒添加" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/15/日历的提醒添加/">日历的提醒添加</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/15/日历的提醒添加/" class="archive-article-date">
+  	<time datetime="2018-12-15T13:46:46.774Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近NBA赛季的比赛日程已经公布出来，作为一个”资深的”NBA球迷、篮球迷，怎么能不赶紧把自己喜欢的球队给比赛日给记下来呢？之前看到过一个JRS()把日历做成链接的形式可以直接把自己比赛直接写入到手机的日历中去，受到这个启发，干嘛不自己亲自动手写一个App，直接把赛程写到手机日历中去呢，而且还可以锻炼自己的编码能力。有了兴趣，然后开始动手，一切就水到渠成了。下面就简单记录一下这个小App的制作过程。</p>
+<h2 id="确定需求"><a href="#确定需求" class="headerlink" title="确定需求"></a>确定需求</h2><p>球队列表，能够选择自己喜欢的NBA球队。</p>
+<p>①按照正常的NBA联盟分区，分为东部球队以及西部球队</p>
+<p>②每个球队展示的信息有名称、Logo、所在分区</p>
+<p>球队赛程列表</p>
+<p>①每场比赛展示主场、客场球队的信息以及比赛的北京日期、比赛地点等</p>
+<p>②提供导入日历按钮，点击后将当前展示球队的赛程导入到苹果手机的日历中</p>
+<h2 id="分析需求、确定数据来源（接口API）"><a href="#分析需求、确定数据来源（接口API）" class="headerlink" title="分析需求、确定数据来源（接口API）"></a>分析需求、确定数据来源（接口API）</h2><p>通过分析上面的需求，可以得出主要有两个页面，球队列表页面和球队比赛赛程列表页面。通过查找数据得出需要下面三个接口：</p>
+<p><a href="http://china.nba.com/static/data/league/conferenceteamlist.json" target="_blank" rel="noopener">获取球队列表数据</a></p>
+<p><a href="http://china.nba.com/static/data/team/schedule_celtics.json" target="_blank" rel="noopener">获取某球队的比赛赛程信息</a></p>
+<p><a href="http://mat1.gtimg.com/sports/nba/logo/1602/2.png" target="_blank" rel="noopener">获取球队logo</a></p>
+<h2 id="动手开发，写Code"><a href="#动手开发，写Code" class="headerlink" title="动手开发，写Code"></a>动手开发，写Code</h2><h3 id="开发球队列表页面"><a href="#开发球队列表页面" class="headerlink" title="开发球队列表页面"></a>开发球队列表页面</h3><p>当前页面是一个列表页面，实现方式为一个tableView的group形式。<br>①定义模型Team，包含名称、代号、城市、分区、联盟分区、联盟分区显示字段、球队logo等字段</p>
+<pre><code>class Team: Mappable {
+
+  var name:String?  //名称
+  var code:String?  //代号
+  var city:String?  //日期
+  var division:String?  //分区
+  var conference:String?  //联盟分区
+  var displayConference:String? //联盟分区显示
+  var imageUrl:String? //球队图片
+
+  required init?(map: Map) {
+
+  }
+
+  func mapping(map: Map) {
+      name &lt;- map[&quot;name&quot;]
+      code &lt;- map[&quot;code&quot;]
+      city &lt;- map[&quot;city&quot;]
+      division &lt;- map[&quot;division&quot;]
+      conference &lt;- map[&quot;conference&quot;]
+      displayConference &lt;- map[&quot;displayConference&quot;]
+  }
+
+}
+</code></pre><p>自定义Cell,展示Demo tableView</p>
+<p>通过上面的获取球队列表的接口，使用Alamofire拿到球队列表数据，使用SwiftJson、ObjectMapper将返回的结果转化为Team模型数组。注意以为获取到的球队数据中不包含球队Logo Url,可以通过自定义的Json文件team_logo.json来进行配置，然后通过获取球队Logo的接口获取到对于的球队Logo 的url。</p>
+<pre><code>Alamofire.request(&quot;http://china.nba.com/static/data/league/conferenceteamlist.json&quot;).responseJSON { (response) in
+        let result = JSON(response.result.value as Any)
+//            print(result)
+        let listGroups = result[&quot;payload&quot;][&quot;listGroups&quot;].arrayValue
+
+        for teams in listGroups{
+            var tempArray = [Team]()
+            for teamJson in teams[&quot;teams&quot;].arrayValue{
+//                    print(teamJson[&quot;profile&quot;].rawString()!)
+                let team = Team(JSONString: teamJson[&quot;profile&quot;].rawString()!)
+                tempArray.append(team!)
+            }
+            self.teamsData.append(tempArray)
+        }
+        self.tableView.reloadData()
+    }
+</code></pre><h3 id="开发球队赛程列表页面"><a href="#开发球队赛程列表页面" class="headerlink" title="开发球队赛程列表页面"></a>开发球队赛程列表页面</h3><p>当前页面是一个列表页面，实现方式为一个tableView的plain形式。实现方式类似上面的球队列表页面。</p>
+<p>①定义模型Game，包含日期、比赛地址、主场城市、主场球队、客场球队、客场城市<br>②自定义Cell,展示Demo tableView</p>
+<p>③通过上面的获取球队赛程列表的接口，使用Alamofire拿到球队列表数据，使用SwiftJson、ObjectMapper将返回的结果转化为Game模型数组。</p>
+<p>④展示球队赛程列表，完善细节。</p>
+<h3 id="导入比赛到手机日历中"><a href="#导入比赛到手机日历中" class="headerlink" title="导入比赛到手机日历中"></a>导入比赛到手机日历中</h3><p>点击导入日历按钮，确定后开始执行导入日历功能<br>这就要用到iOS提供的EventKit框架来实现将比赛写入到日历的功能了。<br>首先要去获取授权，没有被授权的话是不能使用EventKit框架的，iOS自身框架大部分都有这个限制。而且在iOS 10以上的系统还要添加访问calendar的隐私说明，否则会引起崩溃。</p>
+<pre><code>lazy var eventStore = EKEventStore()
+// 获取访问日历的权限
+self.eventStore .requestAccess(to: .event, completion: { (granted, error) in
+
+        //授权过可以访问日历
+        if granted{
+            let tempArray = self.eventStore.calendars(for: .event)
+            var inserted = false
+            for calendar in tempArray{
+                print(calendar)
+
+                //判断是否已经导入了比赛内容
+                if calendar.title == self.team.name {
+                    inserted = true
+                }
+            }
+
+            if !inserted {
+                self.saveEvent()
+            }else{
+                DispatchQueue.main.async {
+                    CDAlertView(title: &quot;&quot;, message: &quot;已经导入过该队比赛!&quot;, type: .notification).show()
+                }
+            }
+        }
+    })
+</code></pre><p>接下来就可以执行导入时间到日历的功能了。</p>
+<pre><code>self.startAnimating(CGSize(width: 30, height: 30),type:.ballBeat,color: UIColor.init(hexString: &quot;#E0486C&quot;),backgroundColor:UIColor.white)
+
+    //    因为是读写操作，比较耗时，需要放到后台去执行。
+        DispatchQueue.global().async {
+        //把比赛写入日历
+  //            print(self.eventStore)
+            for game in self.datas{
+
+                let event = EKEvent(eventStore: self.eventStore)
+
+                // 标题
+                let title = game.homeTeamName! + &quot;VS&quot; + game.awayTeamName!
+                event.title = title
+
+                //时间
+                let date = Date.init(timeIntervalSince1970: TimeInterval(Int64(game.gameDate!)!/1000))
+
+                //开始时间、结束时间
+                event.startDate = date
+                event.endDate = date.addingTimeInterval(150*60)
+                //日历
+                let calendar = self.eventStore.defaultCalendarForNewEvents
+                calendar.title = self.team.name! + &quot;赛程&quot;
+                calendar.cgColor = UIColor.purple.cgColor
+                event.calendar = calendar
+
+                do{
+                    try self.eventStore.save(event, span: EKSpan.thisEvent)
+                }catch let error as NSError{
+                    print(error)
+                }
+            }
+            //结束后，主线程刷新UI
+            DispatchQueue.main.async {
+                self.stopAnimating()
+            }
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/15/日历的提醒添加/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-swift构造过程、析构过程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -3293,156 +3488,6 @@ dispatch_sync(queue0, ^{
 
 
   
-    <article id="post-监听reloadData刷新列表完毕的时机" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/13/监听reloadData刷新列表完毕的时机/">监听reloadData刷新列表完毕的时机</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/13/监听reloadData刷新列表完毕的时机/" class="archive-article-date">
-  	<time datetime="2018-12-13T07:31:30.939Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>reloadData是一个异步方法，并不会等待UITableView或者UICollectionView（后面统称listView）真正刷新完毕后才执行后续代码，而是立即执行后续代码。我们执行reloadData的本意是刷新listView，随后会进入一系列的DataSource和Delegate回调，有些是和reloadData同步发生的，有些是异步发生的。</p>
-<ul>
-<li>同步：numberOfSectionsInCollectionView和numberOfItemsInSection</li>
-<li>异步：cellForItemAtIndexPath</li>
-<li>同步+异步：sizeForItemAtIndexPath</li>
-</ul>
-<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>由于cell复用的原因，直接在reloadData后执行代码是有可能出问题的。比如在reloadData前保留了一个cell，在reloadData后，对这个cell（已经不是原来的cell了）进行某些操作，会出现一些异常问题。</p>
-<h3 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h3><p>在reloadData前不是保留cell，二是保留当前cell对应的NSIndexPath，然后在reloadData完毕（listView真正刷新完毕）后通过方法cellForItemAtIndexPath:重新获取cell，然后进行相应的操作。</p>
-<h2 id="获取listView真正刷新完毕的时机的几种方法"><a href="#获取listView真正刷新完毕的时机的几种方法" class="headerlink" title="获取listView真正刷新完毕的时机的几种方法"></a>获取listView真正刷新完毕的时机的几种方法</h2><h3 id="方法1、通过layoutIfNeeded方法，强制重绘并等待完成。"><a href="#方法1、通过layoutIfNeeded方法，强制重绘并等待完成。" class="headerlink" title="方法1、通过layoutIfNeeded方法，强制重绘并等待完成。"></a>方法1、通过layoutIfNeeded方法，强制重绘并等待完成。</h3><pre><code>[self.collectionView reloadData];
-[self.collectionView layoutIfNeeded];
-// 刷新完成，执行后续需要执行的代码
-if ( self.didPlayIdx ) {
-    MyCell* cell = (MyCell*)[self.collectionView cellForItemAtIndexPath:self.didPlayIdx];
-    if (cell) {
-    [cell playWithPlayer:self.player];
-    }
-}
-</code></pre><h3 id="方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD-dispatch-main-queue中的任务，分别在休眠前和被唤醒后。设置listView-的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。"><a href="#方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD-dispatch-main-queue中的任务，分别在休眠前和被唤醒后。设置listView-的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。" class="headerlink" title="方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD dispatch main queue中的任务，分别在休眠前和被唤醒后。设置listView 的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。"></a>方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD dispatch main queue中的任务，分别在休眠前和被唤醒后。设置listView 的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。</h3><pre><code>[self.collectionView reloadData];  
-dispatch_async(dispatch_get_main_queue(), ^{  
-    // 刷新完成，执行后续代码
-    if ( self.didPlayIdx ) {
-        MyCell* cell = (MyCell*)[self.collectionView cellForItemAtIndexPath:self.didPlayIdx];
-        if (cell) {
-            [cell playWithPlayer:self.player];
-        }
-    }
-});
-</code></pre><p>知识点关联：GCD死锁、Runloop</p>
-<pre><code>// 发生死锁，永远不会执行任务2和3
-NSLog(@&quot;1&quot;);
-dispatch_sync(dispatch_get_main_queue(), ^{
-   NSLog(@&quot;2&quot;);
-});
-NSLog(@&quot;3&quot;);
-</code></pre><h3 id="方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成-复杂，但可以更好的理解方法一"><a href="#方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成-复杂，但可以更好的理解方法一" class="headerlink" title="方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成(复杂，但可以更好的理解方法一)"></a>方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成(复杂，但可以更好的理解方法一)</h3><pre><code>#import &quot;MyTableView.h&quot;
-
-@interface MyTableView()
-@property (nonatomic, copy) void (^reloadDataCompletionBlock)();
-@end
-
-@implementation MyTableView
-- (void)reloadDataWithCompletion:(void (^)())completionBlock {
-    self.reloadDataCompletionBlock = completionBlock;
-    [super reloadData];
-}
-- (void)layoutSubviews {
-    [super layoutSubviews];
-    if (self.reloadDataCompletionBlock) {
-        self.reloadDataCompletionBlock();
-        self.reloadDataCompletionBlock = nil;
-    }
-}
-@end
-
-// 调用的时候
-[self.tableView reloadDataWithCompletion:^{
-     NSLog(@&quot;完成刷新&quot;);
-}];
-</code></pre><h2 id="引申：更新UI放在主线程的原因"><a href="#引申：更新UI放在主线程的原因" class="headerlink" title="引申：更新UI放在主线程的原因"></a>引申：更新UI放在主线程的原因</h2><h3 id="原因一：安全-效率"><a href="#原因一：安全-效率" class="headerlink" title="原因一：安全+效率"></a>原因一：安全+效率</h3><p>因为UIKit框架不是线程安全的，当多个线程同时操作UI的时候，抢夺资源，导致崩溃，UI异常等问题。假如在两个线程中设置了同一张背景图片，很有可能就会由于背景图片被释放两次，使得程序崩溃。或者某一个线程中遍历找寻某个subView，然而在另一个线程中删除了该subView，那么就会造成错乱。apple有对大部分的绘图方法和诸如UIColor等类改写成线程安全可用，可还是建议将UI操作保证在主线程中。例如说，我们需要在子线程中读取一个image对象，使用接口[UIImage imageNamed:]，但imageNamed:实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取image，然后再切回子线程拿到这个image，这里我们必须使用sync。</p>
-<pre><code>__block UIImage *image;
-dispatch_sync_on_main_queue(^{
-    image = [UIImage imageNamed:@&quot;Resource/img&quot;];
-});
-attachment.image = image;
-
-// YYKit中提供了一个同步扔任务到主线程的安全方法：
-/**
- Submits a block for execution on a main queue and waits until the block completes.
-*/
-static inline void dispatch_sync_on_main_queue(void (^block)()) {
-    if (pthread_main_np()) {
-        block();
-    } else {
-        dispatch_sync(dispatch_get_main_queue(), block);
-    }
-}
-</code></pre><h3 id="原因二：用户体验"><a href="#原因二：用户体验" class="headerlink" title="原因二：用户体验"></a>原因二：用户体验</h3><p>iOS中只有主线程才能立即刷新UI。在子线程中是不能够更新UI，我们看到的子线程能够更新UI的原因是，等到子线程执行完毕，自动进入了主线程去执行子线程中更新UI的代码。由于子线程执行时间非常短暂，让我们误以为子线程可以更新UI。如果子线程一直在运行，则无法更新UI，因为没有办法进入主线程。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/13/监听reloadData刷新列表完毕的时机/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/14/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/16/">Next &raquo;</a>
@@ -3548,19 +3593,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3568,7 +3605,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3576,19 +3621,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">swift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3608,14 +3653,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
@@ -3624,11 +3661,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">网络</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">

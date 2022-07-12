@@ -152,6 +152,117 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-优雅的动态删除第三方SDK的权限" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/03/31/优雅的动态删除第三方SDK的权限/">优雅的动态删除第三方SDK的权限</a>
+    </h1>
+  
+
+        
+        <a href="/2022/03/31/优雅的动态删除第三方SDK的权限/" class="archive-article-date">
+  	<time datetime="2022-03-31T01:48:11.083Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>某一天查看 App 的权限列表发现多了很多没声明过的权限，现在开发 App 都不可避免引入各种 SDK，很显然就是他们的锅，在背后干着不可告人的事情.. 怎么删除这些权限呢？</p>
+<h2 id="方法1：利用-xml-的-“remove”-节点删除"><a href="#方法1：利用-xml-的-“remove”-节点删除" class="headerlink" title="方法1：利用 xml 的 “remove” 节点删除"></a>方法1：利用 xml 的 “remove” 节点删除</h2><pre><code>&lt;uses-permission
+   android:name=&quot;android.permission.CHANGE_NETWORK_STATE&quot;
+   tools:node=&quot;remove&quot;
+/&gt;
+</code></pre><p>这样 Android 处理 AndroidManifest.xml 文件时会自动删除这个权限。</p>
+<p>有时我们在 debug 需要这个权限，但是在 release 正式版不想有这个权限。比如我在测试包的时候写了点测试功能，需要引入一个  android:name=”android.permission.SYSTEM_ALERT_WINDOW” 权限，但是正式环境并不需要。</p>
+<p>一个做法是，将这个测试功能单独做成一个 lib 引入，正式版引用一个 lib-noop 版本，常见的第三方库如滴滴的多啦爱梦就是这么做的。</p>
+<p>如果我们自己处理可以利用 gradle 直接对 xml 文件进行操作:</p>
+<h2 id="方法2：利用-gradle-编辑-xml-文件"><a href="#方法2：利用-gradle-编辑-xml-文件" class="headerlink" title="方法2：利用 gradle 编辑 xml 文件"></a>方法2：利用 gradle 编辑 xml 文件</h2><p>gradle 处理 Manifest 任务之后会有一个回调，我们在系统处理完之后再进行二次处理，通过 XmlParser 解析 xml 来修改文件。<br>以下是一个 删除  android.permission.SYSTEM_ALERT_WINDOW 的例子:</p>
+<pre><code>// 发布正式版时 将 manifest 中不必要的权限删除
+android.applicationVariants.all { variant -&gt;
+  if (variant.buildType.name == &quot;release&quot;) {
+        def output = variant.outputs[0]
+        output.getProcessManifestProvider().get().doLast {
+          println(&quot;start process manifest&quot;)
+          def manifestFilePath = &quot;${manifestOutputDirectory.asFile.get()}/AndroidManifest.xml&quot;
+          def xmlParser = new XmlParser()
+          Node manifest = xmlParser.parse(file(manifestFilePath))
+          def android = new Namespace(&apos;http://schemas.android.com/apk/res/android&apos;, &apos;android&apos;)
+          def tools = new Namespace(&apos;http://schemas.android.com/tools&apos;, &apos;tools&apos;)
+          Node systemAlertWindow = manifest.get(&quot;uses-permission&quot;).find {
+            def name = it.attributes().get(android.name)
+            def remove = it.attributes().get(tools.remove)
+            name == &quot;android.permission.SYSTEM_ALERT_WINDOW&quot;
+          }
+          def remove = manifest.remove(systemAlertWindow)
+
+          // write xml to file
+          file(manifestFilePath).withPrintWriter { out -&gt;
+            def printer = new XmlNodePrinter(out)
+            printer.preserveWhitespace = true
+            printer.print(manifest)
+          }
+          println(&quot;end process manifest, delete systemAlertWindow permission success?  $remove&quot;)
+        }
+      }
+}
+</code></pre>
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/03/31/优雅的动态删除第三方SDK的权限/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-从ViewPager到ViewPager2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1635,98 +1746,6 @@ let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
 
 
   
-    <article id="post-安卓防连点的一个极简操作" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/11/安卓防连点的一个极简操作/">安卓防连点的一个极简操作</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/11/安卓防连点的一个极简操作/" class="archive-article-date">
-  	<time datetime="2021-03-11T08:32:27.647Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-11</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="直接上代码"><a href="#直接上代码" class="headerlink" title="直接上代码"></a>直接上代码</h2><pre><code>import android.view.View;
-public class ClickUtils {
-    public static void fastClickChecked(View v, View.OnClickListener listener){
-        if(v==null)return;
-        v.setOnClickListener(v1 -&gt; {
-            listener.onClick(v1);
-            v1.setClickable(false);
-            v.postDelayed(() -&gt; {
-                v.setClickable(true);
-            }, 500);
-        });
-    }
-}
-</code></pre><h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>注意：此调用方式使用时并没有比原有view.setOnClickListener方式更加复杂。他甚至以更简单的方式来实现了防快速点击的效果。</p>
-<pre><code>//参数1，防连点的view  参数2，点击此view要执行的OnClickListener
-ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
-</code></pre><p>只需要传进view和监听，即可完成防连点效果。</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>此处我是通过代理原view的点击，在原来view点击时，我采用先吧此view的clickable=false，然后通过view.postDelayed方法过500秒后再把它置为可以点击，这样就可以避免在小米华为手机上的连点时跳转页面的情况下连续跳转多个页面了。</p>
-<h2 id="写此工具类的一个原因"><a href="#写此工具类的一个原因" class="headerlink" title="写此工具类的一个原因"></a>写此工具类的一个原因</h2><p>其实写此工具类一个最根本的原因是，在安卓系统的有些手机上，快速点击程序的一些view进行跳转时会造成打开两个目标view的情况。而关于程序放连点我们实践过多种方式。但是通过尝试，有些方法不是使用繁琐，就是增加其他成本。例如gradle插件的方式会增加编译成本，使我们build软件时运行缓慢。增加编译时常，又比如rxJava的方式使用起来感觉过于繁琐。需要我们写的代码量太多，或者说运用两次时间间隔的方式通过动态点击计算是否触发事件，这种方式又太过复杂。所以我自己运用clickable方式写了一个原理简单且使用方便的工具类。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/11/安卓防连点的一个极简操作/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
@@ -1832,19 +1851,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1852,7 +1863,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1860,19 +1879,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">swift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1892,14 +1911,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
@@ -1908,11 +1919,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">网络</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">

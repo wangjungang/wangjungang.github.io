@@ -152,6 +152,98 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-安卓防连点的一个极简操作" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/03/11/安卓防连点的一个极简操作/">安卓防连点的一个极简操作</a>
+    </h1>
+  
+
+        
+        <a href="/2021/03/11/安卓防连点的一个极简操作/" class="archive-article-date">
+  	<time datetime="2021-03-11T08:32:27.647Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-11</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="直接上代码"><a href="#直接上代码" class="headerlink" title="直接上代码"></a>直接上代码</h2><pre><code>import android.view.View;
+public class ClickUtils {
+    public static void fastClickChecked(View v, View.OnClickListener listener){
+        if(v==null)return;
+        v.setOnClickListener(v1 -&gt; {
+            listener.onClick(v1);
+            v1.setClickable(false);
+            v.postDelayed(() -&gt; {
+                v.setClickable(true);
+            }, 500);
+        });
+    }
+}
+</code></pre><h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>注意：此调用方式使用时并没有比原有view.setOnClickListener方式更加复杂。他甚至以更简单的方式来实现了防快速点击的效果。</p>
+<pre><code>//参数1，防连点的view  参数2，点击此view要执行的OnClickListener
+ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
+</code></pre><p>只需要传进view和监听，即可完成防连点效果。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>此处我是通过代理原view的点击，在原来view点击时，我采用先吧此view的clickable=false，然后通过view.postDelayed方法过500秒后再把它置为可以点击，这样就可以避免在小米华为手机上的连点时跳转页面的情况下连续跳转多个页面了。</p>
+<h2 id="写此工具类的一个原因"><a href="#写此工具类的一个原因" class="headerlink" title="写此工具类的一个原因"></a>写此工具类的一个原因</h2><p>其实写此工具类一个最根本的原因是，在安卓系统的有些手机上，快速点击程序的一些view进行跳转时会造成打开两个目标view的情况。而关于程序放连点我们实践过多种方式。但是通过尝试，有些方法不是使用繁琐，就是增加其他成本。例如gradle插件的方式会增加编译成本，使我们build软件时运行缓慢。增加编译时常，又比如rxJava的方式使用起来感觉过于繁琐。需要我们写的代码量太多，或者说运用两次时间间隔的方式通过动态点击计算是否触发事件，这种方式又太过复杂。所以我自己运用clickable方式写了一个原理简单且使用方便的工具类。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/03/11/安卓防连点的一个极简操作/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Android对Java的修改-SimpleDateFormat类" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2320,222 +2412,6 @@ E：5, 10, 15, 20, 25
 
 
   
-    <article id="post-MySQL 快速创建千万级测试数据" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/20/MySQL 快速创建千万级测试数据/">MySQL快速创建千万级测试数据</a>
-    </h1>
-  
-
-        
-        <a href="/2020/05/20/MySQL 快速创建千万级测试数据/" class="archive-article-date">
-  	<time datetime="2020-05-20T10:28:47.882Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-20</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在进行查询操作的性能测试或者sql优化时，我们经常需要在线下环境构建大量的基础数据供我们测试，模拟线上的真实环境。</p>
-<p>废话，总不能直接在线上测试吧，会被DBA砍死的</p>
-<h2 id="创建测试数据的方式"><a href="#创建测试数据的方式" class="headerlink" title="创建测试数据的方式"></a>创建测试数据的方式</h2><pre><code>1. 编写代码，通过代码批量插库（本人使用过，步骤太繁琐，性能不高，不推荐）
-2. 编写存储过程和函数执行（本文实现方式1）
-3. 临时数据表方式执行 （本文实现方式2，强烈推荐该方式，非常简单，数据插入快速，100W，只需几秒）
-4. 一行一行手动插入，（WTF，去死吧）
-</code></pre><h2 id="创建基础表结构"><a href="#创建基础表结构" class="headerlink" title="创建基础表结构"></a>创建基础表结构</h2><p>不管用何种方式，我要插在那张表总要创建的吧</p>
-<pre><code>CREATE TABLE `t_user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `c_user_id` varchar(36) NOT NULL DEFAULT &apos;&apos;,
-  `c_name` varchar(22) NOT NULL DEFAULT &apos;&apos;,
-  `c_province_id` int(11) NOT NULL,
-  `c_city_id` int(11) NOT NULL,
-  `create_time` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_user_id` (`c_user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-</code></pre><h3 id="方式1：-采用存储过程和内存表"><a href="#方式1：-采用存储过程和内存表" class="headerlink" title="方式1： 采用存储过程和内存表"></a>方式1： 采用存储过程和内存表</h3><h4 id="创建内存表"><a href="#创建内存表" class="headerlink" title="创建内存表"></a>创建内存表</h4><p>利用 MySQL 内存表插入速度快的特点，我们先利用函数和存储过程在内存表中生成数据，然后再从内存表插入普通表中</p>
-<pre><code>CREATE TABLE `t_user_memory` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `c_user_id` varchar(36) NOT NULL DEFAULT &apos;&apos;,
-  `c_name` varchar(22) NOT NULL DEFAULT &apos;&apos;,
-  `c_province_id` int(11) NOT NULL,
-  `c_city_id` int(11) NOT NULL,
-  `create_time` datetime NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_user_id` (`c_user_id`)
-) ENGINE=MEMORY DEFAULT CHARSET=utf8mb4;
-</code></pre><h4 id="创建函数和存储过程"><a href="#创建函数和存储过程" class="headerlink" title="创建函数和存储过程"></a>创建函数和存储过程</h4><pre><code># 创建随机字符串和随机时间的函数
-mysql&gt; delimiter $$
-mysql&gt; CREATE DEFINER=`root`@`%` FUNCTION `randStr`(n INT) RETURNS varchar(255) CHARSET utf8mb4
-    -&gt;     DETERMINISTIC
-    -&gt; BEGIN
-    -&gt;     DECLARE chars_str varchar(100) DEFAULT &apos;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&apos;;
-    -&gt;     DECLARE return_str varchar(255) DEFAULT &apos;&apos; ;
-    -&gt;     DECLARE i INT DEFAULT 0;
-    -&gt;     WHILE i &lt; n DO
-    -&gt;         SET return_str = concat(return_str, substring(chars_str, FLOOR(1 + RAND() * 62), 1));
-    -&gt;         SET i = i + 1;
-    -&gt;     END WHILE;
-    -&gt;     RETURN return_str;
-    -&gt; END$$
-Query OK, 0 rows affected (0.00 sec)
-
-mysql&gt; CREATE DEFINER=`root`@`%` FUNCTION `randDataTime`(sd DATETIME,ed DATETIME) RETURNS datetime
-    -&gt;     DETERMINISTIC
-    -&gt; BEGIN
-    -&gt;     DECLARE sub INT DEFAULT 0;
-    -&gt;     DECLARE ret DATETIME;
-    -&gt;     SET sub = ABS(UNIX_TIMESTAMP(ed)-UNIX_TIMESTAMP(sd));
-    -&gt;     SET ret = DATE_ADD(sd,INTERVAL FLOOR(1+RAND()*(sub-1)) SECOND);
-    -&gt;     RETURN ret;
-    -&gt; END $$
-
-mysql&gt; delimiter ;
-
-# 创建插入数据存储过程
-mysql&gt; CREATE DEFINER=`root`@`%` PROCEDURE `add_t_user_memory`(IN n int)
-    -&gt; BEGIN
-    -&gt;     DECLARE i INT DEFAULT 1;
-    -&gt;     WHILE (i &lt;= n) DO
-    -&gt;         INSERT INTO t_user_memory (c_user_id, c_name, c_province_id,c_city_id, create_time) VALUES (uuid(), randStr(20), FLOOR(RAND() * 1000), FLOOR(RAND() * 100), NOW());
-    -&gt;         SET i = i + 1;
-    -&gt;     END WHILE;
-    -&gt; END
-    -&gt; $$
-Query OK, 0 rows affected (0.01 sec)
-</code></pre><h4 id="调用存储过程"><a href="#调用存储过程" class="headerlink" title="调用存储过程"></a>调用存储过程</h4><pre><code>mysql&gt; CALL add_t_user_memory(1000000);
-ERROR 1114 (HY000): The table &apos;t_user_memory&apos; is full
-出现内存已满时，修改 max_heap_table_size 参数的大小，我使用64M内存，插入了22W数据，看情况改，不过这个值不要太大，默认32M或者64M就好，生产环境不要乱尝试
-</code></pre><h4 id="从内存表插入普通表"><a href="#从内存表插入普通表" class="headerlink" title="从内存表插入普通表"></a>从内存表插入普通表</h4><pre><code>mysql&gt; INSERT INTO t_user SELECT * FROM t_user_memory;
-Query OK, 218953 rows affected (1.70 sec)
-Records: 218953  Duplicates: 0  Warnings: 0
-</code></pre><h3 id="方式2：-采用临时表"><a href="#方式2：-采用临时表" class="headerlink" title="方式2： 采用临时表"></a>方式2： 采用临时表</h3><h4 id="创建临时数据表tmp-table"><a href="#创建临时数据表tmp-table" class="headerlink" title="创建临时数据表tmp_table"></a>创建临时数据表tmp_table</h4><pre><code>CREATE TABLE tmp_table (
-    id INT,
-    PRIMARY KEY (id)
-);
-</code></pre><h4 id="用-python或者bash-生成-100w-记录的数据文件（python瞬间就会生成完）"><a href="#用-python或者bash-生成-100w-记录的数据文件（python瞬间就会生成完）" class="headerlink" title="用 python或者bash 生成 100w 记录的数据文件（python瞬间就会生成完）"></a>用 python或者bash 生成 100w 记录的数据文件（python瞬间就会生成完）</h4><pre><code>python(推荐): python -c &quot;for i in range(1, 1+1000000): print(i)&quot; &gt; base.txt
-</code></pre><h4 id="导入数据到临时表tmp-table中"><a href="#导入数据到临时表tmp-table中" class="headerlink" title="导入数据到临时表tmp_table中"></a>导入数据到临时表tmp_table中</h4><pre><code>mysql&gt; load data infile &apos;/Users/LJTjintao/temp/base.txt&apos; replace into table tmp_table;
-Query OK, 1000000 rows affected (2.55 sec)
-Records: 1000000  Deleted: 0  Skipped: 0  Warnings: 0
-
-千万级数据 20秒插入完成
-</code></pre><p>注意： 导入数据时有可能会报错，原因是mysql默认没有开secure_file_priv（ 这个参数用来限制数据导入和导出操作的效果，例如执行LOAD DATA、SELECT … INTO OUTFILE语句和LOAD_FILE()函数。这些操作需要用户具有FILE权限。 ）</p>
-<p>解决办法：在mysql的配置文件中（my.ini 或者 my.conf）中添加 secure_file_priv = /Users/LJTjintao/temp/`, 然后重启mysql 解决</p>
-<h4 id="以临时表为基础数据，插入数据到t-user中，100W数据插入需要10-37s"><a href="#以临时表为基础数据，插入数据到t-user中，100W数据插入需要10-37s" class="headerlink" title="以临时表为基础数据，插入数据到t_user中，100W数据插入需要10.37s"></a>以临时表为基础数据，插入数据到t_user中，100W数据插入需要10.37s</h4><pre><code>mysql&gt; INSERT INTO t_user
-    -&gt;   SELECT
-    -&gt;     id,
-    -&gt;     uuid(),
-    -&gt;     CONCAT(&apos;userNickName&apos;, id),
-    -&gt;     FLOOR(Rand() * 1000),
-    -&gt;     FLOOR(Rand() * 100),
-    -&gt;     NOW()
-    -&gt;   FROM
-    -&gt;     tmp_table;
-Query OK, 1000000 rows affected (10.37 sec)
-Records: 1000000  Duplicates: 0  Warnings: 0
-</code></pre><h4 id="更新创建时间字段让插入的数据的创建时间更加随机"><a href="#更新创建时间字段让插入的数据的创建时间更加随机" class="headerlink" title="更新创建时间字段让插入的数据的创建时间更加随机"></a>更新创建时间字段让插入的数据的创建时间更加随机</h4><pre><code>UPDATE t_user SET create_time=date_add(create_time, interval FLOOR(1 + (RAND() * 7)) year);
-
-Query OK, 1000000 rows affected (5.21 sec)
-Rows matched: 1000000  Changed: 1000000  Warnings: 0
-
-mysql&gt; UPDATE t_user SET create_time=date_add(create_time, interval FLOOR(1 + (RAND() * 7)) year);
-
-
-Query OK, 1000000 rows affected (4.77 sec)
-Rows matched: 1000000  Changed: 1000000  Warnings: 0
-</code></pre><p>mysql&gt; select * from t_user limit 30;</p>
-<pre><code>+----+--------------------------------------+----------------+---------------+-----------+---------------------+
-| id | c_user_id                            | c_name         | c_province_id | c_city_id | create_time         |
-+----+--------------------------------------+----------------+---------------+-----------+---------------------+
-|  1 | bf5e227a-7b84-11e9-9d6e-751d319e85c2 | userNickName1  |            84 |        64 | 2015-11-13 21:13:19 |
-|  2 | bf5e26f8-7b84-11e9-9d6e-751d319e85c2 | userNickName2  |           967 |        90 | 2019-11-13 20:19:33 |
-|  3 | bf5e2810-7b84-11e9-9d6e-751d319e85c2 | userNickName3  |           623 |        40 | 2014-11-13 20:57:46 |
-|  4 | bf5e2888-7b84-11e9-9d6e-751d319e85c2 | userNickName4  |           140 |        49 | 2016-11-13 20:50:11 |
-|  5 | bf5e28f6-7b84-11e9-9d6e-751d319e85c2 | userNickName5  |            47 |        75 | 2016-11-13 21:17:38 |
-|  6 | bf5e295a-7b84-11e9-9d6e-751d319e85c2 | userNickName6  |           642 |        94 | 2015-11-13 20:57:36 |
-|  7 | bf5e29be-7b84-11e9-9d6e-751d319e85c2 | userNickName7  |           780 |         7 | 2015-11-13 20:55:07 |
-|  8 | bf5e2a4a-7b84-11e9-9d6e-751d319e85c2 | userNickName8  |            39 |        96 | 2017-11-13 21:42:46 |
-|  9 | bf5e2b58-7b84-11e9-9d6e-751d319e85c2 | userNickName9  |           731 |        74 | 2015-11-13 22:48:30 |
-| 10 | bf5e2bb2-7b84-11e9-9d6e-751d319e85c2 | userNickName10 |           534 |        43 | 2016-11-13 22:54:10 |
-| 11 | bf5e2c16-7b84-11e9-9d6e-751d319e85c2 | userNickName11 |           572 |        55 | 2018-11-13 20:05:19 |
-| 12 | bf5e2c70-7b84-11e9-9d6e-751d319e85c2 | userNickName12 |            71 |        68 | 2014-11-13 20:44:04 |
-| 13 | bf5e2cca-7b84-11e9-9d6e-751d319e85c2 | userNickName13 |           204 |        97 | 2019-11-13 20:24:23 |
-| 14 | bf5e2d2e-7b84-11e9-9d6e-751d319e85c2 | userNickName14 |           249 |        32 | 2019-11-13 22:49:43 |
-| 15 | bf5e2d88-7b84-11e9-9d6e-751d319e85c2 | userNickName15 |           900 |        51 | 2019-11-13 20:55:26 |
-| 16 | bf5e2dec-7b84-11e9-9d6e-751d319e85c2 | userNickName16 |           854 |        74 | 2018-11-13 22:07:58 |
-| 17 | bf5e2e50-7b84-11e9-9d6e-751d319e85c2 | userNickName17 |           136 |        46 | 2013-11-13 21:53:34 |
-| 18 | bf5e2eb4-7b84-11e9-9d6e-751d319e85c2 | userNickName18 |           897 |        10 | 2018-11-13 20:03:55 |
-| 19 | bf5e2f0e-7b84-11e9-9d6e-751d319e85c2 | userNickName19 |           829 |        83 | 2013-11-13 20:38:54 |
-| 20 | bf5e2f68-7b84-11e9-9d6e-751d319e85c2 | userNickName20 |           683 |        91 | 2019-11-13 20:02:42 |
-| 21 | bf5e2fcc-7b84-11e9-9d6e-751d319e85c2 | userNickName21 |           511 |        81 | 2013-11-13 21:16:48 |
-| 22 | bf5e3026-7b84-11e9-9d6e-751d319e85c2 | userNickName22 |           562 |        35 | 2019-11-13 20:15:52 |
-| 23 | bf5e3080-7b84-11e9-9d6e-751d319e85c2 | userNickName23 |            91 |        39 | 2016-11-13 20:28:59 |
-| 24 | bf5e30da-7b84-11e9-9d6e-751d319e85c2 | userNickName24 |           677 |        21 | 2016-11-13 21:37:15 |
-| 25 | bf5e3134-7b84-11e9-9d6e-751d319e85c2 | userNickName25 |            50 |        60 | 2018-11-13 20:39:20 |
-| 26 | bf5e318e-7b84-11e9-9d6e-751d319e85c2 | userNickName26 |           856 |        47 | 2018-11-13 21:24:53 |
-| 27 | bf5e31e8-7b84-11e9-9d6e-751d319e85c2 | userNickName27 |           816 |        65 | 2014-11-13 22:06:26 |
-| 28 | bf5e324c-7b84-11e9-9d6e-751d319e85c2 | userNickName28 |           806 |         7 | 2019-11-13 20:17:30 |
-| 29 | bf5e32a6-7b84-11e9-9d6e-751d319e85c2 | userNickName29 |           973 |        63 | 2014-11-13 21:08:09 |
-| 30 | bf5e3300-7b84-11e9-9d6e-751d319e85c2 | userNickName30 |           237 |        29 | 2018-11-13 21:48:17 |
-+----+--------------------------------------+----------------+---------------+-----------+---------------------+
-30 rows in set (0.01 sec)
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">mysql</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/20/MySQL 快速创建千万级测试数据/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -2641,19 +2517,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2661,7 +2529,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2669,19 +2545,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">swift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2701,14 +2577,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
@@ -2717,11 +2585,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">网络</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">

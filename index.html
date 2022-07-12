@@ -152,6 +152,106 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-让你的Swift代码更Swift" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/07/12/让你的Swift代码更Swift/">让你的 Swift 代码更 Swift</a>
+    </h1>
+  
+
+        
+        <a href="/2022/07/12/让你的Swift代码更Swift/" class="archive-article-date">
+  	<time datetime="2022-07-12T01:43:07.692Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-07-12</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0a6b9147ea4f42f6a53e696aee24037c~tplv-k3u1fbpfcp-zoom-crop-mark:3024:3024:3024:1702.awebp?" alt=""></p>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>Swift 有很多其他语言所没有的独特的结构和方法，因此很多刚开始接触 Swift 的开发者并没有发挥它本身的优势。</p>
+<h2 id="有条件的for循环"><a href="#有条件的for循环" class="headerlink" title="有条件的for循环"></a>有条件的for循环</h2><p>现在，我们要对<code>view.subviews</code>中的<code>UIButton</code>做一些不可描述的事情，用 for 循环怎么来遍历呢？</p>
+<p>在下面的写法中，更推荐后面两种写法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">❌</span><br><span class="line">for subView in view.subviews &#123;</span><br><span class="line">    if let button = subView as? UIButton &#123;</span><br><span class="line">        //不可描述的事情</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">✅</span><br><span class="line">for case let button as UIButton in view.subviews &#123;</span><br><span class="line">    //不可描述的事情</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">✅</span><br><span class="line">for button in view.subviews where button is UIButton &#123;</span><br><span class="line">    //不可描述的事情</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="enumerated"><a href="#enumerated" class="headerlink" title="enumerated()"></a>enumerated()</h2><p>在 Swift 中进行 for 循环，要拿到下标值，一般的写法要么<code>定义局部变量记录下标值</code>，要么<code>遍历 0..&lt;view.subviews.count</code>。其实还有个更方便的写法：<code>enumerated()</code>，可以一次性拿到下标值和遍历的元素。</p>
+<ul>
+<li><p>❌ 第一种肯定是不推荐的，因为还要定义额外的局部变量，容易出错，pass</p>
+</li>
+<li><p>✅ 第二种在只需要用到下标值的时候，是可以用的，但如果还要用到下标值对应的元素，就还得再取一次，麻烦，pass</p>
+</li>
+<li><p>✅ 第三种就比较完美，虽然一次性可以拿到下标值和元素，但其中一个用不到就可以用 <code>_</code></p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">❌</span><br><span class="line">var index: Int = 0</span><br><span class="line">for subView in view.subviews &#123;</span><br><span class="line">    //不可描述的事情</span><br><span class="line">    index += 1</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">✅</span><br><span class="line">for index in 0..&lt;view.subviews.count &#123;</span><br><span class="line">    let subView = view.subviews[index]</span><br><span class="line">    //不可描述的事情</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">✅</span><br><span class="line">//index 和 subView 在循环体中都能使用到</span><br><span class="line">for (index, subView) in view.subviews.enumerated() &#123;</span><br><span class="line">    //不可描述的事情</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//只用到 index</span><br><span class="line">for (index, _) in view.subviews.enumerated() &#123;</span><br><span class="line">    //不可描述的事情</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//只用到 subView</span><br><span class="line">for (_, subView) in view.subviews.enumerated() &#123;</span><br><span class="line">    //不可描述的事情</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="first-where"><a href="#first-where" class="headerlink" title="first(where: )"></a>first(where: )</h2><p><code>filter</code> 是 Swift 中几个高级函数之一，过滤集合中的元素时非常的好用，不过在某些情况下，比如获取集合中满足条件的第一个元素时，有一个更好的选择<code>first(where: )</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">let article1 = ArticleModel(title: &quot;11&quot;, content: &quot;内容1&quot;, articleID: &quot;11111&quot;, comments: [])</span><br><span class="line"></span><br><span class="line">let article2 = ArticleModel(title: &quot;11&quot;, content: &quot;内容2&quot;, articleID: &quot;22222&quot;, comments: [])</span><br><span class="line"></span><br><span class="line">let article3 = ArticleModel(title: &quot;33&quot;, content: &quot;内容3&quot;, articleID: &quot;3333&quot;, comments: [])</span><br><span class="line"></span><br><span class="line">let articles = [article1, article2, article3]</span><br><span class="line"></span><br><span class="line">❌</span><br><span class="line">if let article = articles.filter(&#123; $0.articleID == &quot;11111&quot; &#125;).first &#123;</span><br><span class="line">    print(&quot;\(article.title)-\(article.content)-\(article.articleID)&quot;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">✅</span><br><span class="line">if let article = articles.first(where: &#123;$0.articleID == &quot;11111&quot;&#125;) &#123;</span><br><span class="line">    print(&quot;\(article.title)-\(article.content)-\(article.articleID)&quot;)    //11-内容1-11111</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="contains-where"><a href="#contains-where" class="headerlink" title="contains(where: )"></a>contains(where: )</h2><p>这个和上面的<code>first(where: )</code>几乎一样，比如这里要判断文章列表里是否包含 articleID 为 11111 的文章：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">❌</span><br><span class="line">if !articles.filter(&#123; $0.articleID == &quot;11111&quot; &#125;).isEmpty &#123;</span><br><span class="line">    //不可描述的事情</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">✅</span><br><span class="line">if articles.contains(where: &#123; $0.articleID == &quot;11111&quot;&#125;) &#123;</span><br><span class="line">    //不可描述的事情</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="forEach"><a href="#forEach" class="headerlink" title="forEach"></a>forEach</h2><p>当循环体内的逻辑比较简单时，forEach 往往比 for…in…来的更加简洁：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">func removeArticleBy(ID: String) &#123;</span><br><span class="line">    //删库跑路</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">❌</span><br><span class="line">for article in articles &#123;</span><br><span class="line">    removeArticleBy(ID: $0.articleID)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">✅</span><br><span class="line">articles.forEach &#123; removeArticleBy(ID: $0.articleID) &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="计算属性-vs-方法"><a href="#计算属性-vs-方法" class="headerlink" title="计算属性 vs 方法"></a>计算属性 vs 方法</h2><p>我们知道计算属性本身不存储数据，而是在 get 中返回计算后的值，在 set 中设置其他属性的值，所以和方法很类似，但比方法更简洁。一起来看下面的示例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">❌</span><br><span class="line">class YourManager &#123;</span><br><span class="line">    static func shared() -&gt; YourManager &#123;</span><br><span class="line">        //不可描述的事情</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let manager = YourManager.shared()</span><br><span class="line"></span><br><span class="line">❌</span><br><span class="line">extension Date &#123;</span><br><span class="line">    func formattedString() -&gt; String &#123;</span><br><span class="line">        //不可描述的事情</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let string = Date().formattedString()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">✅</span><br><span class="line">class YourManager &#123;</span><br><span class="line">    static var shared: YourManager &#123;</span><br><span class="line">        //不可描述的事情</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let manager = YourManager.shared</span><br><span class="line"></span><br><span class="line">✅</span><br><span class="line">extension Date &#123;</span><br><span class="line">    var formattedString: String &#123;</span><br><span class="line">        //不可描述的事情</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">let string = Date().formattedString</span><br></pre></td></tr></table></figure>
+<h2 id="协议-vs-子类化"><a href="#协议-vs-子类化" class="headerlink" title="协议 vs 子类化"></a>协议 vs 子类化</h2><p>尽量使用协议而不是继承。协议可以让代码更加灵活，因为类可同时遵守多个协议。</p>
+<p>此外，结构和枚举不能子类化，但是它们可以遵守协议，这就更加放大了协议的好处</p>
+<h2 id="Struct-vs-Class"><a href="#Struct-vs-Class" class="headerlink" title="Struct vs Class"></a>Struct vs Class</h2><p>尽可能使用 Struct 而不是 Class。Struct 在多线程环境中更安全，更快。</p>
+<p>它们最主要的区别， Struct 是值类型，而 Classe 是引用类型，这意味着 Struct 的每个实例都有它自己的唯一副本，而 Class 的每个实例都有对数据的单个副本的引用。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">swift</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/07/12/让你的Swift代码更Swift/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-Swift自定义UIFont字号自适应屏幕" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1024,117 +1124,6 @@ await UIImage(named: &quot;sv.png&quot;)?.byPreparingThumbnail(ofSize: CGSize(wi
 
 
   
-    <article id="post-优雅的动态删除第三方SDK的权限" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2022/03/31/优雅的动态删除第三方SDK的权限/">优雅的动态删除第三方SDK的权限</a>
-    </h1>
-  
-
-        
-        <a href="/2022/03/31/优雅的动态删除第三方SDK的权限/" class="archive-article-date">
-  	<time datetime="2022-03-31T01:48:11.083Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>某一天查看 App 的权限列表发现多了很多没声明过的权限，现在开发 App 都不可避免引入各种 SDK，很显然就是他们的锅，在背后干着不可告人的事情.. 怎么删除这些权限呢？</p>
-<h2 id="方法1：利用-xml-的-“remove”-节点删除"><a href="#方法1：利用-xml-的-“remove”-节点删除" class="headerlink" title="方法1：利用 xml 的 “remove” 节点删除"></a>方法1：利用 xml 的 “remove” 节点删除</h2><pre><code>&lt;uses-permission
-   android:name=&quot;android.permission.CHANGE_NETWORK_STATE&quot;
-   tools:node=&quot;remove&quot;
-/&gt;
-</code></pre><p>这样 Android 处理 AndroidManifest.xml 文件时会自动删除这个权限。</p>
-<p>有时我们在 debug 需要这个权限，但是在 release 正式版不想有这个权限。比如我在测试包的时候写了点测试功能，需要引入一个  android:name=”android.permission.SYSTEM_ALERT_WINDOW” 权限，但是正式环境并不需要。</p>
-<p>一个做法是，将这个测试功能单独做成一个 lib 引入，正式版引用一个 lib-noop 版本，常见的第三方库如滴滴的多啦爱梦就是这么做的。</p>
-<p>如果我们自己处理可以利用 gradle 直接对 xml 文件进行操作:</p>
-<h2 id="方法2：利用-gradle-编辑-xml-文件"><a href="#方法2：利用-gradle-编辑-xml-文件" class="headerlink" title="方法2：利用 gradle 编辑 xml 文件"></a>方法2：利用 gradle 编辑 xml 文件</h2><p>gradle 处理 Manifest 任务之后会有一个回调，我们在系统处理完之后再进行二次处理，通过 XmlParser 解析 xml 来修改文件。<br>以下是一个 删除  android.permission.SYSTEM_ALERT_WINDOW 的例子:</p>
-<pre><code>// 发布正式版时 将 manifest 中不必要的权限删除
-android.applicationVariants.all { variant -&gt;
-  if (variant.buildType.name == &quot;release&quot;) {
-        def output = variant.outputs[0]
-        output.getProcessManifestProvider().get().doLast {
-          println(&quot;start process manifest&quot;)
-          def manifestFilePath = &quot;${manifestOutputDirectory.asFile.get()}/AndroidManifest.xml&quot;
-          def xmlParser = new XmlParser()
-          Node manifest = xmlParser.parse(file(manifestFilePath))
-          def android = new Namespace(&apos;http://schemas.android.com/apk/res/android&apos;, &apos;android&apos;)
-          def tools = new Namespace(&apos;http://schemas.android.com/tools&apos;, &apos;tools&apos;)
-          Node systemAlertWindow = manifest.get(&quot;uses-permission&quot;).find {
-            def name = it.attributes().get(android.name)
-            def remove = it.attributes().get(tools.remove)
-            name == &quot;android.permission.SYSTEM_ALERT_WINDOW&quot;
-          }
-          def remove = manifest.remove(systemAlertWindow)
-
-          // write xml to file
-          file(manifestFilePath).withPrintWriter { out -&gt;
-            def printer = new XmlNodePrinter(out)
-            printer.preserveWhitespace = true
-            printer.print(manifest)
-          }
-          println(&quot;end process manifest, delete systemAlertWindow permission success?  $remove&quot;)
-        }
-      }
-}
-</code></pre>
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2022/03/31/优雅的动态删除第三方SDK的权限/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
@@ -1240,19 +1229,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Git</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1260,7 +1241,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1268,19 +1257,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+                <a href="javascript:void(0)" class="js-tag color1">mysql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">swift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1300,14 +1289,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">java</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
@@ -1316,11 +1297,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Other</a>
+                <a href="javascript:void(0)" class="js-tag color5">java</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">网络</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Other</a>
               </li>
              
               <li class="article-tag-list-item">
