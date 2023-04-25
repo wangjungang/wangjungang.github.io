@@ -9,19 +9,19 @@
   <title>Swift命名空间 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面命名空间namespace在C++、C#里面是一个常见概念，Swift中也引入了这样一个机制，下面来探索一下这个命名空间的来龙去脉。 Objective-C没有命名空间，为了避免冲突，Objective-C的类型一般都会加上两到三个字母的前缀，比如Apple保留的NS和UI前缀，各个系统框架的前缀，各个系统框架的前缀SK（StoreKit），CG（CoreGraphic）等。 Swift的">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Swift命名空间">
-<meta property="og:url" content="http://yoursite.com/2018/12/14/Swift命名空间/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/12/14/Swift%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面命名空间namespace在C++、C#里面是一个常见概念，Swift中也引入了这样一个机制，下面来探索一下这个命名空间的来龙去脉。 Objective-C没有命名空间，为了避免冲突，Objective-C的类型一般都会加上两到三个字母的前缀，比如Apple保留的NS和UI前缀，各个系统框架的前缀，各个系统框架的前缀SK（StoreKit），CG（CoreGraphic）等。 Swift的">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
 <meta property="og:image" content="http://cc.cocimg.com/api/uploads//20181213/1544688598233397.png">
 <meta property="og:image" content="http://cc.cocimg.com/api/uploads//20181213/1544688648110559.png">
-<meta property="og:updated_time" content="2018-12-14T07:05:30.378Z">
+<meta property="article:published_time" content="2018-12-14T06:17:52.561Z">
+<meta property="article:modified_time" content="2018-12-14T07:05:30.378Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift命名空间">
-<meta name="twitter:description" content="写在前面命名空间namespace在C++、C#里面是一个常见概念，Swift中也引入了这样一个机制，下面来探索一下这个命名空间的来龙去脉。 Objective-C没有命名空间，为了避免冲突，Objective-C的类型一般都会加上两到三个字母的前缀，比如Apple保留的NS和UI前缀，各个系统框架的前缀，各个系统框架的前缀SK（StoreKit），CG（CoreGraphic）等。 Swift的">
 <meta name="twitter:image" content="http://cc.cocimg.com/api/uploads//20181213/1544688598233397.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
@@ -40,7 +40,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -54,7 +54,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -63,7 +63,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -112,7 +112,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -143,7 +143,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -170,7 +170,7 @@
   
 
         
-        <a href="/2018/12/14/Swift命名空间/" class="archive-article-date">
+        <a href="/2018/12/14/Swift%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4/" class="archive-article-date">
   	<time datetime="2018-12-14T06:17:52.561Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-14</time>
 </a>
         
@@ -183,64 +183,68 @@
 <p>Swift的命名空间是基于module而不是在代码中显示地指明，每个module代表了Swift中的一个命名空间。也就是说，同一个target里的类型名称还是不能相同的。</p>
 <h2 id="为什么需要命名空间"><a href="#为什么需要命名空间" class="headerlink" title="为什么需要命名空间"></a>为什么需要命名空间</h2><p>为了防止代码冲突</p>
 <p>在开发中，尤其是在多模块开发中，很难保证模块之间的类名不会重复，为了保证不同模块下同名的类可以正常使用而不报错，引入命名空间来保证即使创建的类名一样，只要命名空间不一样，这些类也是不一样的，所以，这是一种安全机制，用命名空间来防止冲突。可以看出，Swift中的类名的完整形式其实是“命名空间+类名”。我们可以尝试在类中打印当前类来查看一下完整名字：</p>
-<pre><code>override func viewDidLoad() {
+<pre><code>override func viewDidLoad() &#123;
     super.viewDidLoad()
     print(self)
-}
+&#125;
 //打印结果是：&lt;aa.viewcontroller: 0x7fec6a00e5c0&gt;&lt;/aa.viewcontroller: 0x7fec6a00e5c0&gt;
-</code></pre><h2 id="命名空间查看与修改"><a href="#命名空间查看与修改" class="headerlink" title="命名空间查看与修改"></a>命名空间查看与修改</h2><p>从上面的打印结果来看，命名空间是我们项目的名字，那么如果查看呢？我们需要用源代码的形式打开Info.plist，可以看到里面有一个字段CFBundleExecutable，它对应的值就是命名空间。</p>
-<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688598233397.png" alt=""></p>
+</code></pre>
+<h2 id="命名空间查看与修改"><a href="#命名空间查看与修改" class="headerlink" title="命名空间查看与修改"></a>命名空间查看与修改</h2><p>从上面的打印结果来看，命名空间是我们项目的名字，那么如果查看呢？我们需要用源代码的形式打开Info.plist，可以看到里面有一个字段CFBundleExecutable，它对应的值就是命名空间。</p>
+<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688598233397.png"></p>
 <p>如果要修改命名空间，注意不要直接编辑Info.plist，可以进入Build Settings中搜索Product Name，然后进行修改。</p>
-<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688648110559.png" alt=""></p>
+<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688648110559.png"></p>
 <h2 id="命名空间如何获取"><a href="#命名空间如何获取" class="headerlink" title="命名空间如何获取"></a>命名空间如何获取</h2><p>既然知道可以通过Info.plist获取命名空间，那么如何在程序中获取呢？很显然需要解析Info.plist文件，拿到CFBundleExecutable对应的value值。</p>
 <pre><code>let namespace = Bundle.main.infoDictionary![&quot;CFBundleExecutable&quot;]
 // 返回的是一个可选型      
 print(namespace!)
-</code></pre><h2 id="命名空间在开发中的使用"><a href="#命名空间在开发中的使用" class="headerlink" title="命名空间在开发中的使用"></a>命名空间在开发中的使用</h2><ul>
+</code></pre>
+<h2 id="命名空间在开发中的使用"><a href="#命名空间在开发中的使用" class="headerlink" title="命名空间在开发中的使用"></a>命名空间在开发中的使用</h2><ul>
 <li><p>由于Objective-C中没有命名空间，所以写起来很轻松。</p>
-<pre><code>//viewDidLoad中添加一个个控制器
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self addNavigationChildVC:@&quot;ContactViewController&quot; :@&quot;联系人&quot; :@&quot;tabbar_contacts&quot; :@&quot;tabbar_contactsHL&quot;];
-}
-
-//自定的方法中根据传进来的字符串创建控制器
--(void)addNavigationChildVC: (NSString *) vcName :(NSString *)title :(NSString *)nomalImageName :(NSString *)selectedImageName {
-    //创建控制器
-    Class class = NSClassFromString(vcName);
-    UIViewController *vc = [[class alloc]init];
-    ...
-}
-</code></pre></li>
+<pre><code>  //viewDidLoad中添加一个个控制器
+  - (void)viewDidLoad &#123;
+      [super viewDidLoad];
+      [self addNavigationChildVC:@&quot;ContactViewController&quot; :@&quot;联系人&quot; :@&quot;tabbar_contacts&quot; :@&quot;tabbar_contactsHL&quot;];
+  &#125;
+   
+  //自定的方法中根据传进来的字符串创建控制器
+  -(void)addNavigationChildVC: (NSString *) vcName :(NSString *)title :(NSString *)nomalImageName :(NSString *)selectedImageName &#123;
+      //创建控制器
+      Class class = NSClassFromString(vcName);
+      UIViewController *vc = [[class alloc]init];
+      ...
+  &#125;
+</code></pre>
+</li>
 <li><p>Swift中命名空间的存在，如果按照上述做法得不到想要的结果，这时候就需要想办法进行处理</p>
-<pre><code>//viewDidLoad中添加一个个控制器
-override func viewDidLoad() {
-    super.viewDidLoad()
-    addChildViewController(vcName: &quot;ContactsViewController&quot;, title: &quot;联系人&quot;, image: &quot;tabbar_contacts&quot;, selectedImage: &quot;tabbar_contactsHL&quot;)
-}
-
-//创建一个函数来将控制器的名字转成具体的类
-func stringToVC(vcName:String) -&gt; UIViewController? {
-    //获取命名空间
-    guard let namespace = Bundle.main.infoDictionary![&quot;CFBundleExecutable&quot;] as? String else {
-        print(&quot;获取失败&quot;)
-        return nil
-    }        
-    //拼接完整的类
-    guard let vcClass = NSClassFromString(namespace + &quot;.&quot; + vcName) else {
-        print(&quot;拼接失败&quot;)
-        return nil
-    }   
-    //转换成UIViewController
-    guard let vcType = vcClass as? UIViewController.Type else {
-        print(&quot;转换失败&quot;)
-        return nil
-    }  
-    //根据类型创建对应的控制器
-    let vc = vcType.init()
-    return vc
-}
-</code></pre></li>
+<pre><code>  //viewDidLoad中添加一个个控制器
+  override func viewDidLoad() &#123;
+      super.viewDidLoad()
+      addChildViewController(vcName: &quot;ContactsViewController&quot;, title: &quot;联系人&quot;, image: &quot;tabbar_contacts&quot;, selectedImage: &quot;tabbar_contactsHL&quot;)
+  &#125;
+   
+  //创建一个函数来将控制器的名字转成具体的类
+  func stringToVC(vcName:String) -&gt; UIViewController? &#123;
+      //获取命名空间
+      guard let namespace = Bundle.main.infoDictionary![&quot;CFBundleExecutable&quot;] as? String else &#123;
+          print(&quot;获取失败&quot;)
+          return nil
+      &#125;        
+      //拼接完整的类
+      guard let vcClass = NSClassFromString(namespace + &quot;.&quot; + vcName) else &#123;
+          print(&quot;拼接失败&quot;)
+          return nil
+      &#125;   
+      //转换成UIViewController
+      guard let vcType = vcClass as? UIViewController.Type else &#123;
+          print(&quot;转换失败&quot;)
+          return nil
+      &#125;  
+      //根据类型创建对应的控制器
+      let vc = vcType.init()
+      return vc
+  &#125;
+</code></pre>
+</li>
 </ul>
 
       
@@ -332,7 +336,7 @@ func stringToVC(vcName:String) -&gt; UIViewController? {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/14/Swift命名空间/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/14/Swift%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -346,7 +350,7 @@ func stringToVC(vcName:String) -&gt; UIViewController? {
   
 <nav id="article-nav">
   
-    <a href="/2018/12/14/最简单易用的数据库工具类XWDatabase/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/12/14/%E6%9C%80%E7%AE%80%E5%8D%95%E6%98%93%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%85%B7%E7%B1%BBXWDatabase/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -356,7 +360,7 @@ func stringToVC(vcName:String) -&gt; UIViewController? {
     </a>
   
   
-    <a href="/2018/12/13/什么是RESTful API/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/12/13/%E4%BB%80%E4%B9%88%E6%98%AFRESTful%20API/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">什么是RESTful API</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -400,7 +404,7 @@ func stringToVC(vcName:String) -&gt; UIViewController? {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -507,10 +511,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -519,7 +519,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -527,11 +527,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -551,19 +555,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

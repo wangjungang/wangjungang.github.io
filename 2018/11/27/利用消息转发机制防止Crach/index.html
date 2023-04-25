@@ -9,17 +9,17 @@
   <title>利用消息转发机制与Try Catch代码块防止崩溃 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面在实际应用中我们经常遇到程序崩溃的问题：例如数组下标越界、字符串下标越界、调用了未识别的方法等等，这给我们带来的很多困扰。 然而这种情况其实我们不仅可以避免而且我们可以做到更健壮的，尤其是开发过程中对于此种情况崩溃的定位是很有帮助的。 首先说说消息转发机制：程序在崩溃前系统会给你3次机会进行补救, 可以通过重写 + (BOOL)resolveInstanceMethod:(SEL)aSEL">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="利用消息转发机制与Try Catch代码块防止崩溃">
-<meta property="og:url" content="http://yoursite.com/2018/11/27/利用消息转发机制防止Crach/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/11/27/%E5%88%A9%E7%94%A8%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E6%9C%BA%E5%88%B6%E9%98%B2%E6%AD%A2Crach/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面在实际应用中我们经常遇到程序崩溃的问题：例如数组下标越界、字符串下标越界、调用了未识别的方法等等，这给我们带来的很多困扰。 然而这种情况其实我们不仅可以避免而且我们可以做到更健壮的，尤其是开发过程中对于此种情况崩溃的定位是很有帮助的。 首先说说消息转发机制：程序在崩溃前系统会给你3次机会进行补救, 可以通过重写 + (BOOL)resolveInstanceMethod:(SEL)aSEL">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-27T05:59:23.959Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-11-27T05:56:33.952Z">
+<meta property="article:modified_time" content="2018-11-27T05:59:23.959Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="利用消息转发机制与Try Catch代码块防止崩溃">
-<meta name="twitter:description" content="写在前面在实际应用中我们经常遇到程序崩溃的问题：例如数组下标越界、字符串下标越界、调用了未识别的方法等等，这给我们带来的很多困扰。 然而这种情况其实我们不仅可以避免而且我们可以做到更健壮的，尤其是开发过程中对于此种情况崩溃的定位是很有帮助的。 首先说说消息转发机制：程序在崩溃前系统会给你3次机会进行补救, 可以通过重写 + (BOOL)resolveInstanceMethod:(SEL)aSEL">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/11/27/利用消息转发机制防止Crach/" class="archive-article-date">
+        <a href="/2018/11/27/%E5%88%A9%E7%94%A8%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E6%9C%BA%E5%88%B6%E9%98%B2%E6%AD%A2Crach/" class="archive-article-date">
   	<time datetime="2018-11-27T05:56:33.952Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -179,19 +179,23 @@
 <p>然而这种情况其实我们不仅可以避免而且我们可以做到更健壮的，尤其是开发过程中对于此种情况崩溃的定位是很有帮助的。</p>
 <p>首先说说消息转发机制：<br>程序在崩溃前系统会给你3次机会进行补救, 可以通过重写</p>
 <pre><code>+ (BOOL)resolveInstanceMethod:(SEL)aSEL
-</code></pre><p>也可以通过重写</p>
+</code></pre>
+<p>也可以通过重写</p>
 <pre><code>- (id)forwardingTargetForSelector:(SEL)aSelector
-</code></pre><p>还可以重写</p>
+</code></pre>
+<p>还可以重写</p>
 <pre><code>- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
 
 - (void)forwardInvocation:(NSInvocation *)invocation
-</code></pre><p>但是我们一般都是采用第三种模式。因为前两种方式信息量不够，它们只有一个SEL类型的参数, 也就是只能知道调用了哪个方法而不知道是谁调用的, 也就是不知道target是谁, 那么在这里去addMethod是没法做到通用的, 因为你连target都不知道.怎么能准确给出程序想要的去处呢! 而且, 实践时候发现forwardingTargetForSelector会拦截很多系统的方法, 可能是在这里进行重定向, 所以也不适合拦截这个方法.</p>
+</code></pre>
+<p>但是我们一般都是采用第三种模式。因为前两种方式信息量不够，它们只有一个SEL类型的参数, 也就是只能知道调用了哪个方法而不知道是谁调用的, 也就是不知道target是谁, 那么在这里去addMethod是没法做到通用的, 因为你连target都不知道.怎么能准确给出程序想要的去处呢! 而且, 实践时候发现forwardingTargetForSelector会拦截很多系统的方法, 可能是在这里进行重定向, 所以也不适合拦截这个方法.</p>
 <p>我们通过运行时的黑魔法来交换两个方法实现拦截系统的forwardInvocation和methodSignatureForSelector的目的。</p>
 <p>1.首先我们新建一个NSObject的Category<br>在.m文件中导入</p>
 <pre><code>#import &lt;objc/runtime.h&gt;
-</code></pre><p>然后开始你的表演</p>
+</code></pre>
+<p>然后开始你的表演</p>
 <pre><code>static NSString *errorMsg;
-void dynamicMethodIMP(id self,SEL _cmd){
+void dynamicMethodIMP(id self,SEL _cmd)&#123;
 
     NSString *error = [NSString stringWithFormat:@&quot;errorClass-&gt;:%@\n errorFuction-&gt;%@\n errorReason-&gt;UnRecognized Selector&quot;,NSStringFromClass([self class]),errorMsg];
 #ifdef DEBUG
@@ -200,61 +204,63 @@ void dynamicMethodIMP(id self,SEL _cmd){
     NSLog(@&quot;+++%@+++&quot;,error);
 #endif
 
-}
+&#125;
 #pragma mark 方法调换
-static inline void change_method(Class _originalClass ,SEL _originalSel,Class _newClass ,SEL _newSel){
+static inline void change_method(Class _originalClass ,SEL _originalSel,Class _newClass ,SEL _newSel)&#123;
     Method methodOriginal = class_getInstanceMethod(_originalClass, _originalSel);
     Method methodNew = class_getInstanceMethod(_newClass, _newSel);
     method_exchangeImplementations(methodOriginal, methodNew);
-}
+&#125;
 
 @implementation NSObject (UnRecognizedSelHandler)
-+ (void)load{
++ (void)load&#123;
 
     change_method([self class], @selector(methodSignatureForSelector:), [self class], @selector(GLL_methodSignatureForSelector:));
 
     change_method([self class], @selector(forwardInvocation:), [self class], @selector(GLL_forwardInvocation:));
-}
+&#125;
 
-- (NSMethodSignature *)GLL_methodSignatureForSelector:(SEL)aSelector{
-    if (![self respondsToSelector:aSelector]) {
+- (NSMethodSignature *)GLL_methodSignatureForSelector:(SEL)aSelector&#123;
+    if (![self respondsToSelector:aSelector]) &#123;
         errorMsg = NSStringFromSelector(aSelector);
         NSMethodSignature *methodSignature = [self GLL_methodSignatureForSelector:aSelector];
-        if (class_addMethod([self class], aSelector, (IMP)dynamicMethodIMP, &quot;v@:&quot;)) {//方法参数的获取存在问题
+        if (class_addMethod([self class], aSelector, (IMP)dynamicMethodIMP, &quot;v@:&quot;)) &#123;//方法参数的获取存在问题
             NSLog(@&quot;临时方法添加成功！&quot;);
-        }
-        if (!methodSignature) {
+        &#125;
+        if (!methodSignature) &#123;
             methodSignature = [self GLL_methodSignatureForSelector:aSelector];
-        }
+        &#125;
 
         return methodSignature;
 
-    }else{
+    &#125;else&#123;
         return [self GLL_methodSignatureForSelector:aSelector];
-    }
-}
+    &#125;
+&#125;
 
-- (void)GLL_forwardInvocation:(NSInvocation *)anInvocation{
+- (void)GLL_forwardInvocation:(NSInvocation *)anInvocation&#123;
     SEL selector = [anInvocation selector];
-    if ([self respondsToSelector:selector]) {
+    if ([self respondsToSelector:selector]) &#123;
         [anInvocation invokeWithTarget:self];
-    }else{
+    &#125;else&#123;
         [self GLL_forwardInvocation:anInvocation];
-    }
-}
-</code></pre><p>这样当你把这个文件导入到项目中之后，你再去点击一个按钮调用一个根本就不存在的方法，它会把错误日志NSLog出来。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>这样当你把这个文件导入到项目中之后，你再去点击一个按钮调用一个根本就不存在的方法，它会把错误日志NSLog出来。</p>
 <p>但是，假如你的问题依然没有解决的话那么请你接着往下看。</p>
 <p>消息转发机制虽然可以扑捉到根本就不存在或者说根本就没有声明的方法，但是当你点击按钮按钮调用一个已经声明却没有实现的方法的时候程序依然崩溃闪退了。于是你就莫名其妙不知道怎么处理了，所以你就用到了下面这个方法：Try Catch代码块。</p>
 <pre><code>语法：
 try
-{
+&#123;
     //有可能出现错误的代码写在这里
-}
+&#125;
 catch
-{
+&#123;
     //出错后的处理
-}
-</code></pre><p>如果try中的代码没有出错，则程序正常运行try中的内容后，不会执行catch中的内容，</p>
+&#125;
+</code></pre>
+<p>如果try中的代码没有出错，则程序正常运行try中的内容后，不会执行catch中的内容，</p>
 <p>如果try中的代码一但出错，程序立即跳入catch中去执行代码，那么try中出错代码后的所有代码就不再执行了.</p>
 <p>catch(…)能够捕获多种数据类型的异常对象，所以它提供给程序员一种对异常对象更好的控制手段，使开发的软件系统有很好的可靠性。因此一个比较有经验的程序员通常都会这样组织编写它的代码模块。</p>
 
@@ -347,7 +353,7 @@ catch
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/利用消息转发机制防止Crach/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/%E5%88%A9%E7%94%A8%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E6%9C%BA%E5%88%B6%E9%98%B2%E6%AD%A2Crach/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -361,7 +367,7 @@ catch
   
 <nav id="article-nav">
   
-    <a href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/11/27/iOS%E5%AD%90%E7%BA%BF%E7%A8%8B%E6%9B%B4%E6%96%B0UI%E5%88%B0%E4%B8%BB%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -371,7 +377,7 @@ catch
     </a>
   
   
-    <a href="/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/11/27/%E7%90%86%E8%A7%A3%20Swift%20%E4%B8%AD%E7%9A%84%E5%85%83%E7%B1%BB%E5%9E%8B%EF%BC%9A.Type%20%E4%B8%8E%20.self/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">理解 Swift 中的元类型：.Type 与 .self</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -415,7 +421,7 @@ catch
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -522,10 +528,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -534,7 +536,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -542,11 +544,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -566,19 +572,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

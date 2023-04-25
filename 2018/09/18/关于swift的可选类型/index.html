@@ -9,17 +9,17 @@
   <title>关于swift的可选类型 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。 关于objcet-c和swift中对于nil的处理Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNo">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于swift的可选类型">
-<meta property="og:url" content="http://yoursite.com/2018/09/18/关于swift的可选类型/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E7%9A%84%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。 关于objcet-c和swift中对于nil的处理Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNo">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-18T15:16:01.893Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-09-18T15:08:43.861Z">
+<meta property="article:modified_time" content="2018-09-18T15:16:01.893Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于swift的可选类型">
-<meta name="twitter:description" content="写在前面swift今天发布了4.2的版本了，从3.0开始，swift逐渐趋向于稳定，最近在看看一些新的机会，也发现好多都要求会swift，3.0的时代写过一个程序，之后就很少用到这个东西了，总结记录一下，提醒自己不要忘了。 关于objcet-c和swift中对于nil的处理Objective-C中的nil:表示缺少一个合法的对象，是指向不存在对象的指针，对结构体、枚举等类型不起作用(会返回NSNo">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/09/18/关于swift的可选类型/" class="archive-article-date">
+        <a href="/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E7%9A%84%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B/" class="archive-article-date">
   	<time datetime="2018-09-18T15:08:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
 </a>
         
@@ -181,107 +181,117 @@
 <h3 id="一、申明可选常量或变量"><a href="#一、申明可选常量或变量" class="headerlink" title="一、申明可选常量或变量"></a>一、申明可选常量或变量</h3><pre><code>let status: Int? = 1   // 申明可选Int类型的常量,初始值为1 
 var defaultAddress: String? = &quot;江苏南京&quot;   // 申明可选String类型的变量,初始值为&quot;江苏南京&quot;
 var student: Person? // 申明可选Person(自定义的类)的变量，初始值为nil
-</code></pre><p>注意：Int?与Int不相同，Int?表示可选的Int类型，可以赋值为nil，而Int不可以赋值为nil</p>
+</code></pre>
+<p>注意：Int?与Int不相同，Int?表示可选的Int类型，可以赋值为nil，而Int不可以赋值为nil</p>
 <h3 id="二、使用”-”强制解析获取可选类型的值-不建议直接使用"><a href="#二、使用”-”强制解析获取可选类型的值-不建议直接使用" class="headerlink" title="二、使用”!”强制解析获取可选类型的值(不建议直接使用)"></a>二、使用”!”强制解析获取可选类型的值(不建议直接使用)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
-if defaultAddress != nil { // !=或==可以用来判断是否为nil
+if defaultAddress != nil &#123; // !=或==可以用来判断是否为nil
     print(&quot;您的地址是\(defaultAddress!)&quot;) // 使用!强制解析
-} else {
+&#125; else &#123;
     print(&quot;对不起，您不存在地址信息&quot;)
-}
+&#125;
 
 var student: Person?
 print(&quot;学生为\(student!)&quot;) // XCode会提示运行错误，因为student初始值为nil，强制解析不行
-</code></pre><h3 id="三、使用可选绑定获取可选类型的值-建议的用法"><a href="#三、使用可选绑定获取可选类型的值-建议的用法" class="headerlink" title="三、使用可选绑定获取可选类型的值(建议的用法)"></a>三、使用可选绑定获取可选类型的值(建议的用法)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
-if let address = defaultAddress { // 如果defaultAddress有值或类型转换成功，则将值赋值给address直接使用
+</code></pre>
+<h3 id="三、使用可选绑定获取可选类型的值-建议的用法"><a href="#三、使用可选绑定获取可选类型的值-建议的用法" class="headerlink" title="三、使用可选绑定获取可选类型的值(建议的用法)"></a>三、使用可选绑定获取可选类型的值(建议的用法)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
+if let address = defaultAddress &#123; // 如果defaultAddress有值或类型转换成功，则将值赋值给address直接使用
     print(&quot;您的地址是\(address)&quot;)  // 使用address代替defaultAddress，且不需要加!强制解析
-} else {
+&#125; else &#123;
     print(&quot;对不起，您不存在地址信息&quot;)
-}
-</code></pre><h3 id="四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><a href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil" class="headerlink" title="四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)"></a>四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</h3><pre><code>var mobileNumber: Int64! = 13912345678 // 第一次申明有初始值
+&#125;
+</code></pre>
+<h3 id="四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><a href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil" class="headerlink" title="四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)"></a>四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</h3><pre><code>var mobileNumber: Int64! = 13912345678 // 第一次申明有初始值
 print(&quot;您的电话号码是\(mobileNumber)&quot;) // 不需要使用!强制解析
 // 打印内容:**您的电话号码是****Optional(13912345678)**
 // 还是不建议直接强制解析，因为实际项目中可能中间已经对该值做了改变，若为nil则会运行错误导致APP崩溃
-if let number = mobileNumber { // 建议的做法
+if let number = mobileNumber &#123; // 建议的做法
     print(&quot;您的电话号码是\(number)&quot;)
 // 打印内容:**您的电话号码是****13912345678**
-} else {
+&#125; else &#123;
     print(&quot;您没有记录电话号码&quot;)
-}
-</code></pre><h3 id="空合运算符-用于判断变量或常量是否为nil"><a href="#空合运算符-用于判断变量或常量是否为nil" class="headerlink" title="空合运算符(用于判断变量或常量是否为nil)"></a>空合运算符(用于判断变量或常量是否为nil)</h3><pre><code>// 空合运算符：a ?? b 判断a是否为nil，若a不为nil对a解封，否则返回b的值
+&#125;
+</code></pre>
+<h3 id="空合运算符-用于判断变量或常量是否为nil"><a href="#空合运算符-用于判断变量或常量是否为nil" class="headerlink" title="空合运算符(用于判断变量或常量是否为nil)"></a>空合运算符(用于判断变量或常量是否为nil)</h3><pre><code>// 空合运算符：a ?? b 判断a是否为nil，若a不为nil对a解封，否则返回b的值
 var status: Int? // 申明可选Int类型的变量status，初始值为nil
 status ?? 0 // 因为status为nil，则返回0
 // ?? 即为以下if else的缩写
-func testOption() -&gt; Int {
+func testOption() -&gt; Int &#123;
     let status: Int? = 1
-    if status == nil {
+    if status == nil &#123;
         return 0
-    } else {
+    &#125; else &#123;
         return status!
-    }
-}
-</code></pre><h3 id="六、函数-方法返回类型为可选类型"><a href="#六、函数-方法返回类型为可选类型" class="headerlink" title="六、函数/方法返回类型为可选类型"></a>六、函数/方法返回类型为可选类型</h3><h4 id="A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等"><a href="#A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等" class="headerlink" title="A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)"></a>A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)</h4><pre><code>func returnPossibleValue(value: Bool) -&gt; String? { // 返回类型为可选String类型
-    if value {
+    &#125;
+&#125;
+</code></pre>
+<h3 id="六、函数-x2F-方法返回类型为可选类型"><a href="#六、函数-x2F-方法返回类型为可选类型" class="headerlink" title="六、函数&#x2F;方法返回类型为可选类型"></a>六、函数&#x2F;方法返回类型为可选类型</h3><h4 id="A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等"><a href="#A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等" class="headerlink" title="A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)"></a>A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)</h4><pre><code>func returnPossibleValue(value: Bool) -&gt; String? &#123; // 返回类型为可选String类型
+    if value &#123;
         return &quot;返回类型是可选类型值&quot; // 如果为真，返回Int类型的值1
-    } else {
+    &#125; else &#123;
         return nil // 如果为假，返回nil
-    }
-}
+    &#125;
+&#125;
 
 let possibleValue = returnPossibleValue(value: true) // 要用可选绑定判断再使用，因为possibleValue为String？可选类型
-if let value = possibleValue {
+if let value = possibleValue &#123;
     print(value)
-} else {
+&#125; else &#123;
     print(&quot;none value&quot;)
-}
-</code></pre><h4 id="B-返回值为可选类型的类-如URL-、自定义Person-等"><a href="#B-返回值为可选类型的类-如URL-、自定义Person-等" class="headerlink" title="B:返回值为可选类型的类(如URL?、自定义Person?等)"></a>B:返回值为可选类型的类(如URL?、自定义Person?等)</h4><pre><code>class SomeClass {
+&#125;
+</code></pre>
+<h4 id="B-返回值为可选类型的类-如URL-、自定义Person-等"><a href="#B-返回值为可选类型的类-如URL-、自定义Person-等" class="headerlink" title="B:返回值为可选类型的类(如URL?、自定义Person?等)"></a>B:返回值为可选类型的类(如URL?、自定义Person?等)</h4><pre><code>class SomeClass &#123;
     var someValue: Int
-    init?(someValue: Int) { // 可失败构造器
-        if someValue == 1 { return nil }
+    init?(someValue: Int) &#123; // 可失败构造器
+        if someValue == 1 &#123; return nil &#125;
         self.someValue = someValue
-    }
-}
+    &#125;
+&#125;
 
-func returnPossibleClass(value: Bool) -&gt; SomeClass? { // 返回的类实例可能为nil
-    if value {
+func returnPossibleClass(value: Bool) -&gt; SomeClass? &#123; // 返回的类实例可能为nil
+    if value &#123;
         return SomeClass(someValue: 1) // 返回的为nil
-    } else {
+    &#125; else &#123;
         return SomeClass(someValue: 2) // 返回的SomeClass?实例，不为nil
-    }
-}
-</code></pre><h4 id="C-返回值为可选类型的闭包-如-gt-void"><a href="#C-返回值为可选类型的闭包-如-gt-void" class="headerlink" title="C:返回值为可选类型的闭包(如(()-&gt; (void))? )"></a>C:返回值为可选类型的闭包(如(()-&gt; (void))? )</h4><pre><code>func returnOptionalFunc(value: Bool) -&gt; (() -&gt; (Void))? { // 返回类型为可选类型的闭包
-    if value {
-        return { () in
+    &#125;
+&#125;
+</code></pre>
+<h4 id="C-返回值为可选类型的闭包-如-gt-void"><a href="#C-返回值为可选类型的闭包-如-gt-void" class="headerlink" title="C:返回值为可选类型的闭包(如(()-&gt; (void))? )"></a>C:返回值为可选类型的闭包(如(()-&gt; (void))? )</h4><pre><code>func returnOptionalFunc(value: Bool) -&gt; (() -&gt; (Void))? &#123; // 返回类型为可选类型的闭包
+    if value &#123;
+        return &#123; () in
             print(&quot;返回类型是可选类型闭包&quot;)
-        }
-    } else {
+        &#125;
+    &#125; else &#123;
         return nil
-    }
-}
+    &#125;
+&#125;
 
 let possibleFunc = returnOptionalFunc(value: true) // 要用可选绑定判断再使用，因为possibleFunc 为可选类型的闭包，类型为() -&gt; (Void)
-if let aFunc = possibleFunc {
+if let aFunc = possibleFunc &#123;
     print(aFunc())  // 注意增加()调用闭包，因为没有参数则是空括号
-} else {
+&#125; else &#123;
     print(&quot;none func&quot;)
-}
-</code></pre><h3 id="七、可选类型在类或结构体中的运用"><a href="#七、可选类型在类或结构体中的运用" class="headerlink" title="七、可选类型在类或结构体中的运用"></a>七、可选类型在类或结构体中的运用</h3><h4 id="A-可选类型在类中的运用"><a href="#A-可选类型在类中的运用" class="headerlink" title="A:可选类型在类中的运用"></a>A:可选类型在类中的运用</h4><pre><code>class PossibleClass {
+&#125;
+</code></pre>
+<h3 id="七、可选类型在类或结构体中的运用"><a href="#七、可选类型在类或结构体中的运用" class="headerlink" title="七、可选类型在类或结构体中的运用"></a>七、可选类型在类或结构体中的运用</h3><h4 id="A-可选类型在类中的运用"><a href="#A-可选类型在类中的运用" class="headerlink" title="A:可选类型在类中的运用"></a>A:可选类型在类中的运用</h4><pre><code>class PossibleClass &#123;
     var someValue: Int
     var possibleValue: String? // 可选存储属性，默认值为nil
-    init(someValue: Int) { // 构造方法中可以不对possibleValue属性初始化
+    init(someValue: Int) &#123; // 构造方法中可以不对possibleValue属性初始化
         self.someValue = someValue
-    }
-}
+    &#125;
+&#125;
 
 let someClass = PossibleClass(someValue: 4) // 实例化对象时不需要对possibleValue初始化，someClass实例中：someValue为4，possibleValue为nil
-</code></pre><p>注意：类中所有属性都需要有默认值。属性可以在申明时赋予初始值，也可以在构造方法中赋予初始值；子类继承父类时，必须先给自身属性先初始化后再继承父类构造方法初始化。一般的，出于安全的因素，子类的属性都赋予初始值或直接定义为可选类型。</p>
-<h4 id="B-可选类型在结构体中的运用"><a href="#B-可选类型在结构体中的运用" class="headerlink" title="B:可选类型在结构体中的运用"></a>B:可选类型在结构体中的运用</h4><pre><code>struct PossibleStruct {
+</code></pre>
+<p>注意：类中所有属性都需要有默认值。属性可以在申明时赋予初始值，也可以在构造方法中赋予初始值；子类继承父类时，必须先给自身属性先初始化后再继承父类构造方法初始化。一般的，出于安全的因素，子类的属性都赋予初始值或直接定义为可选类型。</p>
+<h4 id="B-可选类型在结构体中的运用"><a href="#B-可选类型在结构体中的运用" class="headerlink" title="B:可选类型在结构体中的运用"></a>B:可选类型在结构体中的运用</h4><pre><code>struct PossibleStruct &#123;
     var someValue: Int
     var possibleValue: String? // 可选存储属性，默认值为nil
     // 结构体中可以自定义一个init构造器对属性初始化，也可以不自定义
-}
+&#125;
 
 let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
 </code></pre>
+
       
 
       
@@ -371,7 +381,7 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/18/关于swift的可选类型/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E7%9A%84%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -385,7 +395,7 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
   
 <nav id="article-nav">
   
-    <a href="/2018/09/18/关于swift中的单例模式/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E4%B8%AD%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -395,7 +405,7 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
     </a>
   
   
-    <a href="/2018/09/17/iOS关于nsstring的copy和strong/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/09/17/iOS%E5%85%B3%E4%BA%8Ensstring%E7%9A%84copy%E5%92%8Cstrong/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iOS关于nsstring的copy和strong</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -439,7 +449,7 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -546,10 +556,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -558,7 +564,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -566,11 +572,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -590,19 +600,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

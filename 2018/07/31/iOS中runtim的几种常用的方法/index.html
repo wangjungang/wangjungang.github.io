@@ -9,19 +9,19 @@
   <title>iOS中runtime的几种常用的方法 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面公司项目中用了一些 runtime 相关的知识, 初看时有些蒙, 虽然用的并不多, 但还是想着系统的把 runtime 相关的常用方法整理一下, 自己以后用着方便。 ps：不知道是谁惯得毛病，面试很多都问这东西。其实实际用途吧，就–just so so。 runtime 简介runtime 简称运行时，是系统在运行的时候的一些机制，其中最主要的是消息机制。它是一套比较底层的纯 C 语言 A">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS中runtime的几种常用的方法">
-<meta property="og:url" content="http://yoursite.com/2018/07/31/iOS中runtim的几种常用的方法/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/07/31/iOS%E4%B8%ADruntim%E7%9A%84%E5%87%A0%E7%A7%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面公司项目中用了一些 runtime 相关的知识, 初看时有些蒙, 虽然用的并不多, 但还是想着系统的把 runtime 相关的常用方法整理一下, 自己以后用着方便。 ps：不知道是谁惯得毛病，面试很多都问这东西。其实实际用途吧，就–just so so。 runtime 简介runtime 简称运行时，是系统在运行的时候的一些机制，其中最主要的是消息机制。它是一套比较底层的纯 C 语言 A">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
 <meta property="og:image" content="http://cc.cocimg.com/api/uploads//20180731/1533006613832913.gif">
 <meta property="og:image" content="http://cc.cocimg.com/api/uploads//20180731/1533006692520815.gif">
-<meta property="og:updated_time" content="2018-07-31T16:00:21.460Z">
+<meta property="article:published_time" content="2018-07-31T15:45:21.369Z">
+<meta property="article:modified_time" content="2018-07-31T16:00:21.460Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS中runtime的几种常用的方法">
-<meta name="twitter:description" content="写在前面公司项目中用了一些 runtime 相关的知识, 初看时有些蒙, 虽然用的并不多, 但还是想着系统的把 runtime 相关的常用方法整理一下, 自己以后用着方便。 ps：不知道是谁惯得毛病，面试很多都问这东西。其实实际用途吧，就–just so so。 runtime 简介runtime 简称运行时，是系统在运行的时候的一些机制，其中最主要的是消息机制。它是一套比较底层的纯 C 语言 A">
 <meta name="twitter:image" content="http://cc.cocimg.com/api/uploads//20180731/1533006613832913.gif">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
@@ -40,7 +40,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -54,7 +54,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -63,7 +63,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -112,7 +112,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -143,7 +143,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -170,7 +170,7 @@
   
 
         
-        <a href="/2018/07/31/iOS中runtim的几种常用的方法/" class="archive-article-date">
+        <a href="/2018/07/31/iOS%E4%B8%ADruntim%E7%9A%84%E5%87%A0%E7%A7%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95/" class="archive-article-date">
   	<time datetime="2018-07-31T15:45:21.369Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-07-31</time>
 </a>
         
@@ -186,7 +186,8 @@
 
 //运行时 runtime 会将它转化成 C 语言的代码:
 objc_msgSend(Person, @selector(coding));
-</code></pre><h2 id="二、相关函数"><a href="#二、相关函数" class="headerlink" title="二、相关函数"></a>二、相关函数</h2><pre><code>// 遍历某个类所有的成员变量
+</code></pre>
+<h2 id="二、相关函数"><a href="#二、相关函数" class="headerlink" title="二、相关函数"></a>二、相关函数</h2><pre><code>// 遍历某个类所有的成员变量
 class_copyIvarList
 
 // 遍历某个类所有的方法
@@ -209,7 +210,8 @@ object_setIvar
 
 // 给对象发送消息
 objc_msgSend
-</code></pre><h2 id="相关应用"><a href="#相关应用" class="headerlink" title="相关应用"></a>相关应用</h2><p>更改属性值</p>
+</code></pre>
+<h2 id="相关应用"><a href="#相关应用" class="headerlink" title="相关应用"></a>相关应用</h2><p>更改属性值</p>
 <p>动态添加属性</p>
 <p>动态添加方法</p>
 <p>交换方法的实现</p>
@@ -219,33 +221,37 @@ objc_msgSend
 <p>字典转模型</p>
 <h2 id="四、代码实现"><a href="#四、代码实现" class="headerlink" title="四、代码实现"></a>四、代码实现</h2><p>要使用runtime，要先引入头文件#import</p>
 <h3 id="4-1-更改属性值"><a href="#4-1-更改属性值" class="headerlink" title="4.1 更改属性值"></a>4.1 更改属性值</h3><p>用 runtime 修改一个对象的属性值</p>
-<pre><code>unsigned int count = 0;
-  // 动态获取类中的所有属性(包括私有)
-  Ivar *ivar = class_copyIvarList(_person.class, &amp;count);
-  // 遍历属性找到对应字段
-  for (int i = 0; i &lt; count; i ++) {
-      Ivar tempIvar = ivar[i];
-      const char *varChar = ivar_getName(tempIvar);
-      NSString *varString = [NSString stringWithUTF8String:varChar];
-      if ([varString isEqualToString:@&quot;_name&quot;]) {
-          // 修改对应的字段值
-          object_setIvar(_person, tempIvar, @&quot;更改属性值成功&quot;);
-          break;
-      }
-  }
-</code></pre><h3 id="4-2-动态添加属性"><a href="#4-2-动态添加属性" class="headerlink" title="4.2 动态添加属性"></a>4.2 动态添加属性</h3><p>用 runtime 为一个类添加属性, iOS 分类里一般会这样用, 我们建立一个分类, NSObject+NNAddAttribute.h, 并添加以下代码:</p>
-<pre><code>- (void)setName:(NSString *)name {
+<pre><code>  unsigned int count = 0;
+    // 动态获取类中的所有属性(包括私有)
+    Ivar *ivar = class_copyIvarList(_person.class, &amp;count);
+    // 遍历属性找到对应字段
+    for (int i = 0; i &lt; count; i ++) &#123;
+        Ivar tempIvar = ivar[i];
+        const char *varChar = ivar_getName(tempIvar);
+        NSString *varString = [NSString stringWithUTF8String:varChar];
+        if ([varString isEqualToString:@&quot;_name&quot;]) &#123;
+            // 修改对应的字段值
+            object_setIvar(_person, tempIvar, @&quot;更改属性值成功&quot;);
+            break;
+        &#125;
+    &#125;
+    
+</code></pre>
+<h3 id="4-2-动态添加属性"><a href="#4-2-动态添加属性" class="headerlink" title="4.2 动态添加属性"></a>4.2 动态添加属性</h3><p>用 runtime 为一个类添加属性, iOS 分类里一般会这样用, 我们建立一个分类, NSObject+NNAddAttribute.h, 并添加以下代码:</p>
+<pre><code>- (void)setName:(NSString *)name &#123;
     objc_setAssociatedObject(self, @&quot;name&quot;, name, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
+&#125;
 
-- (NSString *)name {
+- (NSString *)name &#123;
     return objc_getAssociatedObject(self, @&quot;name&quot;);
-}
-</code></pre><p>这样只要引用 NSObject+NNAddAttribute.h, 用 NSObject 创建的对象就会有一个 name 属性, 我们可以直接这样写:</p>
+&#125;
+</code></pre>
+<p>这样只要引用 NSObject+NNAddAttribute.h, 用 NSObject 创建的对象就会有一个 name 属性, 我们可以直接这样写:</p>
 <pre><code>NSObject *person = [NSObject new];
 person.name = @&quot;以梦为马&quot;;
-</code></pre><h3 id="4-3-动态添加方法"><a href="#4-3-动态添加方法" class="headerlink" title="4.3 动态添加方法"></a>4.3 动态添加方法</h3><p>person 类中没有 coding 方法，我们用 runtime 给 person 类添加了一个名字叫 coding 的方法，最终再调用coding方法做出相应. 下面代码的几个参数需要注意一下:</p>
-<pre><code>- (void)buttonClick:(UIButton *)sender {
+</code></pre>
+<h3 id="4-3-动态添加方法"><a href="#4-3-动态添加方法" class="headerlink" title="4.3 动态添加方法"></a>4.3 动态添加方法</h3><p>person 类中没有 coding 方法，我们用 runtime 给 person 类添加了一个名字叫 coding 的方法，最终再调用coding方法做出相应. 下面代码的几个参数需要注意一下:</p>
+<pre><code>- (void)buttonClick:(UIButton *)sender &#123;
     /*
      动态添加 coding 方法
      (IMP)codingOC 意思是 codingOC 的地址指针;
@@ -254,55 +260,62 @@ person.name = @&quot;以梦为马&quot;;
      */
     class_addMethod([_person class], @selector(coding), (IMP)codingOC, &quot;v@:&quot;);
     // 调用 coding 方法响应事件
-    if ([_person respondsToSelector:@selector(coding)]) {
+    if ([_person respondsToSelector:@selector(coding)]) &#123;
         [_person performSelector:@selector(coding)];
         self.testLabelText = @&quot;添加方法成功&quot;;
-    } else {
+    &#125; else &#123;
         self.testLabelText = @&quot;添加方法失败&quot;;
-    }
-}
+    &#125;
+&#125;
 
 // 编写 codingOC 的实现
-void codingOC(id self,SEL _cmd) {
+void codingOC(id self,SEL _cmd) &#123;
     NSLog(@&quot;添加方法成功&quot;);
-}
-</code></pre><h3 id="4-4-交换方法的实现"><a href="#4-4-交换方法的实现" class="headerlink" title="4.4 交换方法的实现"></a>4.4 交换方法的实现</h3><p>某个类有两个方法, 比如 person 类有两个方法, coding 方法与 eating 方法, 我们用 runtime 交换一下这两个方法, 就会出现这样的情况, 当我们调用 coding 的时候, 执行的是 eating, 当我们调用 eating 的时候, 执行的是 coding, 如下面的动态效果图.</p>
-<pre><code>Method oriMethod = class_getInstanceMethod(_person.class, @selector(coding));
-   Method curMethod = class_getInstanceMethod(_person.class, @selector(eating));
-   method_exchangeImplementations(oriMethod, curMethod);
-</code></pre><p><img src="http://cc.cocimg.com/api/uploads//20180731/1533006613832913.gif" alt=""></p>
+&#125;
+</code></pre>
+<h3 id="4-4-交换方法的实现"><a href="#4-4-交换方法的实现" class="headerlink" title="4.4 交换方法的实现"></a>4.4 交换方法的实现</h3><p>某个类有两个方法, 比如 person 类有两个方法, coding 方法与 eating 方法, 我们用 runtime 交换一下这两个方法, 就会出现这样的情况, 当我们调用 coding 的时候, 执行的是 eating, 当我们调用 eating 的时候, 执行的是 coding, 如下面的动态效果图.</p>
+<pre><code> Method oriMethod = class_getInstanceMethod(_person.class, @selector(coding));
+    Method curMethod = class_getInstanceMethod(_person.class, @selector(eating));
+    method_exchangeImplementations(oriMethod, curMethod);
+    
+  
+</code></pre>
+<p><img src="http://cc.cocimg.com/api/uploads//20180731/1533006613832913.gif"></p>
 <h3 id="4-5-拦截并替换方法"><a href="#4-5-拦截并替换方法" class="headerlink" title="4.5 拦截并替换方法"></a>4.5 拦截并替换方法</h3><p>这个功能和上面的其实有些类似, 拦截并替换方法可以拦截并替换同一个类的, 也可以在两个类之间进行, 我这里用了两个不同的类, 下面是简单的代码实现.</p>
-<pre><code>_person = [NNPerson new];
-   _library = [NNLibrary new];
-   self.testLabelText = [_library libraryMethod];
-   Method oriMethod = class_getInstanceMethod(_person.class, @selector(changeMethod));
-   Method curMethod = class_getInstanceMethod(_library.class, @selector(libraryMethod));
-   method_exchangeImplementations(oriMethod, curMethod);
-</code></pre><h3 id="在方法上增加额外功能"><a href="#在方法上增加额外功能" class="headerlink" title="在方法上增加额外功能"></a>在方法上增加额外功能</h3><p>这个使用场景还是挺多的, 比如我们需要记录 APP 中某一个按钮的点击次数, 这个时候我们便可以利用 runtime 来实现这个功能. 我这里写了个 UIButton 的子类, 然后在 + (void)load 中用 runtime 给它增加了一个功能, 核心代码及实现效果图如下:</p>
-<pre><code>+ (void)load {
+<pre><code> _person = [NNPerson new];
+    _library = [NNLibrary new];
+    self.testLabelText = [_library libraryMethod];
+    Method oriMethod = class_getInstanceMethod(_person.class, @selector(changeMethod));
+    Method curMethod = class_getInstanceMethod(_library.class, @selector(libraryMethod));
+    method_exchangeImplementations(oriMethod, curMethod);
+    
+</code></pre>
+<h3 id="在方法上增加额外功能"><a href="#在方法上增加额外功能" class="headerlink" title="在方法上增加额外功能"></a>在方法上增加额外功能</h3><p>这个使用场景还是挺多的, 比如我们需要记录 APP 中某一个按钮的点击次数, 这个时候我们便可以利用 runtime 来实现这个功能. 我这里写了个 UIButton 的子类, 然后在 + (void)load 中用 runtime 给它增加了一个功能, 核心代码及实现效果图如下:</p>
+<pre><code>+ (void)load &#123;
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
+    dispatch_once(&amp;onceToken, ^&#123;
         Method oriMethod = class_getInstanceMethod(self.class, @selector(sendAction:to:forEvent:));
         Method cusMethod = class_getInstanceMethod(self.class, @selector(customSendAction:to:forEvent:));
         // 判断自定义的方法是否实现, 避免崩溃
         BOOL addSuccess = class_addMethod(self.class, @selector(sendAction:to:forEvent:), method_getImplementation(cusMethod), method_getTypeEncoding(cusMethod));
-        if (addSuccess) {
+        if (addSuccess) &#123;
             // 没有实现, 将源方法的实现替换到交换方法的实现
             class_replaceMethod(self.class, @selector(customSendAction:to:forEvent:), method_getImplementation(oriMethod), method_getTypeEncoding(oriMethod));
-        } else {
+        &#125; else &#123;
             // 已经实现, 直接交换方法
             method_exchangeImplementations(oriMethod, cusMethod);
-        }
-    });
-}
-</code></pre><p><img src="http://cc.cocimg.com/api/uploads//20180731/1533006692520815.gif" alt="">    </p>
+        &#125;
+    &#125;);
+&#125;
+</code></pre>
+<p><img src="http://cc.cocimg.com/api/uploads//20180731/1533006692520815.gif">	</p>
 <h3 id="4-7归档解档"><a href="#4-7归档解档" class="headerlink" title="4.7归档解档"></a>4.7归档解档</h3><p>当我们使用 NSCoding 进行归档及解档时, 如果不用 runtime, 那么不管模型里面有多少属性, 我们都需要对其实现一遍 encodeObject 和 decodeObjectForKey 方法, 如果模型里面有 10000 个属性, 那么我们就需要写 10000 句encodeObject 和 decodeObjectForKey 方法, 这个时候用 runtime, 便可以充分体验其好处(以下只是核心代码, 具体代码请见 demo).</p>
-<pre><code>- (void)encodeWithCoder:(NSCoder *)aCoder {
+<pre><code>- (void)encodeWithCoder:(NSCoder *)aCoder &#123;
     unsigned int count = 0;
     // 获取类中所有属性
     Ivar *ivars = class_copyIvarList(self.class, &amp;count);
     // 遍历属性
-    for (int i = 0; i &lt; count; i ++) {
+    for (int i = 0; i &lt; count; i ++) &#123;
         // 取出 i 位置对应的属性
         Ivar ivar = ivars[i];
         // 查看属性
@@ -311,17 +324,17 @@ void codingOC(id self,SEL _cmd) {
         // 利用 KVC 进行取值，根据属性名称获取对应的值
         id value = [self valueForKey:key];
         [aCoder encodeObject:value forKey:key];
-    }
+    &#125;
     free(ivars);
-}
+&#125;
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder {
-    if (self = [super init]) {
+- (instancetype)initWithCoder:(NSCoder *)aDecoder &#123;
+    if (self = [super init]) &#123;
         unsigned int count = 0;
         // 获取类中所有属性
         Ivar *ivars = class_copyIvarList(self.class, &amp;count);
         // 遍历属性
-        for (int i = 0; i &lt; count; i ++) {
+        for (int i = 0; i &lt; count; i ++) &#123;
             // 取出 i 位置对应的属性
             Ivar ivar = ivars[i];
             // 查看属性
@@ -331,19 +344,20 @@ void codingOC(id self,SEL _cmd) {
             id value = [aDecoder decodeObjectForKey:key];
             // 利用 KVC 对属性赋值
             [self setValue:value forKey:key];
-        }
-    }
+        &#125;
+    &#125;
     return self;
-}
-</code></pre><h3 id="4-8-字典转模型"><a href="#4-8-字典转模型" class="headerlink" title="4.8 字典转模型"></a>4.8 字典转模型</h3><p>字典转模型我们通常用的都是第三方, MJExtension, YYModel 等, 但也有必要了解一下其实现方式: 遍历模型中的所有属性，根据模型的属性名，去字典中查找对应的 key，取出对应的值，给模型的属性赋值。</p>
+&#125;
+</code></pre>
+<h3 id="4-8-字典转模型"><a href="#4-8-字典转模型" class="headerlink" title="4.8 字典转模型"></a>4.8 字典转模型</h3><p>字典转模型我们通常用的都是第三方, MJExtension, YYModel 等, 但也有必要了解一下其实现方式: 遍历模型中的所有属性，根据模型的属性名，去字典中查找对应的 key，取出对应的值，给模型的属性赋值。</p>
 <pre><code>/** 字典转模型 **/
-+ (instancetype)modelWithDict:(NSDictionary *)dict {
++ (instancetype)modelWithDict:(NSDictionary *)dict &#123;
     id objc = [[self alloc] init];
     unsigned int count = 0;
     // 获取成员属性数组
     Ivar *ivarList = class_copyIvarList(self, &amp;count);
     // 遍历所有的成员属性名
-    for (int i = 0; i &lt; count; i ++) {
+    for (int i = 0; i &lt; count; i ++) &#123;
         // 获取成员属性
         Ivar ivar = ivarList[i];
         // 获取成员属性名
@@ -354,19 +368,19 @@ void codingOC(id self,SEL _cmd) {
         // 获取成员属性类型
         NSString *ivarType = [NSString stringWithUTF8String:ivar_getTypeEncoding(ivar)];
         // 判断 value 是不是字典
-        if ([value isKindOfClass:[NSDictionary class]]) {
+        if ([value isKindOfClass:[NSDictionary class]]) &#123;
             ivarType = [ivarType stringByReplacingOccurrencesOfString:@&quot;@&quot; withString:@&quot;&quot;];
             ivarType = [ivarType stringByReplacingOccurrencesOfString:@&quot;\&quot;&quot; withString:@&quot;&quot;];
             Class modalClass = NSClassFromString(ivarType);
             // 字典转模型
-            if (modalClass) {
+            if (modalClass) &#123;
                 // 字典转模型
                 value = [modalClass modelWithDict:value];
-            }
-        }
-        if ([value isKindOfClass:[NSArray class]]) {
+            &#125;
+        &#125;
+        if ([value isKindOfClass:[NSArray class]]) &#123;
             // 判断对应类有没有实现字典数组转模型数组的协议
-            if ([self respondsToSelector:@selector(arrayContainModelClass)]) {
+            if ([self respondsToSelector:@selector(arrayContainModelClass)]) &#123;
                 // 转换成id类型，就能调用任何对象的方法
                 id idSelf = self;
                 // 获取数组中字典对应的模型
@@ -375,23 +389,24 @@ void codingOC(id self,SEL _cmd) {
                 Class classModel = NSClassFromString(type);
                 NSMutableArray *arrM = [NSMutableArray array];
                 // 遍历字典数组，生成模型数组
-                for (NSDictionary *dict in value) {
+                for (NSDictionary *dict in value) &#123;
                     // 字典转模型
                     id model =  [classModel modelWithDict:dict];
                     [arrM addObject:model];
-                }
+                &#125;
                 // 把模型数组赋值给value
                 value = arrM;
-            }
-        }
+            &#125;
+        &#125;
         // KVC 字典转模型
-        if (value) {
+        if (value) &#123;
             [objc setValue:value forKey:key];
-        }
-    }
+        &#125;
+    &#125;
     return objc;
-}
-</code></pre><p><a href="https://github.com/wangjungang/runtimeTest" target="_blank" rel="noopener">代码地址</a></p>
+&#125;
+</code></pre>
+<p><a target="_blank" rel="noopener" href="https://github.com/wangjungang/runtimeTest">代码地址</a></p>
 
       
 
@@ -482,7 +497,7 @@ void codingOC(id self,SEL _cmd) {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/07/31/iOS中runtim的几种常用的方法/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/07/31/iOS%E4%B8%ADruntim%E7%9A%84%E5%87%A0%E7%A7%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -496,7 +511,7 @@ void codingOC(id self,SEL _cmd) {
   
 <nav id="article-nav">
   
-    <a href="/2018/08/01/四种遍历方法你选哪个？/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/08/01/%E5%9B%9B%E7%A7%8D%E9%81%8D%E5%8E%86%E6%96%B9%E6%B3%95%E4%BD%A0%E9%80%89%E5%93%AA%E4%B8%AA%EF%BC%9F/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -506,7 +521,7 @@ void codingOC(id self,SEL _cmd) {
     </a>
   
   
-    <a href="/2018/07/31/java连接Mysql8.0.11/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/07/31/java%E8%BF%9E%E6%8E%A5Mysql8.0.11/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">java连接Mysql8.0.11</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -550,7 +565,7 @@ void codingOC(id self,SEL _cmd) {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -657,10 +672,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -669,7 +680,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -677,11 +688,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -701,19 +716,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

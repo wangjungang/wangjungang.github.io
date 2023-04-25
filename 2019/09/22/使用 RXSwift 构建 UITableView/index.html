@@ -8,20 +8,20 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>使用 RXSwift 构建 UITableView | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="使用 RXSwift 构建 UITableView 的步骤 构建 Observable 类型的数据源 将数据源与 tableView 绑定 绑定 tableView 的事件(如：cell 的点击事件) 设置 tableView Delegate/DataSource 的代理方法(根据需求，非必要)  准备工作在我们开始之前，我们需要在项目中集成 RXSwift，具体步骤可参见 RXSwift。成功">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="使用 RXSwift 构建 UITableView 的步骤 构建 Observable 类型的数据源 将数据源与 tableView 绑定 绑定 tableView 的事件(如：cell 的点击事件) 设置 tableView Delegate&#x2F;DataSource 的代理方法(根据需求，非必要)  准备工作在我们开始之前，我们需要在项目中集成 RXSwift，具体步骤可参见 RXSwi">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 RXSwift 构建 UITableView">
-<meta property="og:url" content="http://yoursite.com/2019/09/22/使用 RXSwift 构建 UITableView/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/09/22/%E4%BD%BF%E7%94%A8%20RXSwift%20%E6%9E%84%E5%BB%BA%20UITableView/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="使用 RXSwift 构建 UITableView 的步骤 构建 Observable 类型的数据源 将数据源与 tableView 绑定 绑定 tableView 的事件(如：cell 的点击事件) 设置 tableView Delegate/DataSource 的代理方法(根据需求，非必要)  准备工作在我们开始之前，我们需要在项目中集成 RXSwift，具体步骤可参见 RXSwift。成功">
-<meta property="og:locale" content="default">
+<meta property="og:description" content="使用 RXSwift 构建 UITableView 的步骤 构建 Observable 类型的数据源 将数据源与 tableView 绑定 绑定 tableView 的事件(如：cell 的点击事件) 设置 tableView Delegate&#x2F;DataSource 的代理方法(根据需求，非必要)  准备工作在我们开始之前，我们需要在项目中集成 RXSwift，具体步骤可参见 RXSwi">
+<meta property="og:locale">
 <meta property="og:image" content="http://img.wangjungang.cn/0YNHnK.jpg">
 <meta property="og:image" content="http://img.wangjungang.cn/FXP642.jpg">
-<meta property="og:updated_time" content="2019-09-22T12:14:54.581Z">
+<meta property="article:published_time" content="2019-09-22T12:09:02.833Z">
+<meta property="article:modified_time" content="2019-09-22T12:14:54.581Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用 RXSwift 构建 UITableView">
-<meta name="twitter:description" content="使用 RXSwift 构建 UITableView 的步骤 构建 Observable 类型的数据源 将数据源与 tableView 绑定 绑定 tableView 的事件(如：cell 的点击事件) 设置 tableView Delegate/DataSource 的代理方法(根据需求，非必要)  准备工作在我们开始之前，我们需要在项目中集成 RXSwift，具体步骤可参见 RXSwift。成功">
 <meta name="twitter:image" content="http://img.wangjungang.cn/0YNHnK.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
@@ -40,7 +40,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -54,7 +54,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -63,7 +63,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -112,7 +112,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -143,7 +143,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -170,7 +170,7 @@
   
 
         
-        <a href="/2019/09/22/使用 RXSwift 构建 UITableView/" class="archive-article-date">
+        <a href="/2019/09/22/%E4%BD%BF%E7%94%A8%20RXSwift%20%E6%9E%84%E5%BB%BA%20UITableView/" class="archive-article-date">
   	<time datetime="2019-09-22T12:09:02.833Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-22</time>
 </a>
         
@@ -182,94 +182,104 @@
 <li>构建 Observable 类型的数据源</li>
 <li>将数据源与 tableView 绑定</li>
 <li>绑定 tableView 的事件(如：cell 的点击事件)</li>
-<li>设置 tableView Delegate/DataSource 的代理方法(根据需求，非必要)</li>
+<li>设置 tableView Delegate&#x2F;DataSource 的代理方法(根据需求，非必要)</li>
 </ul>
 <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>在我们开始之前，我们需要在项目中集成 RXSwift，具体步骤可参见 RXSwift。成功集成之后，我们需要在要使用 RXSwift 的文件中导入它：</p>
 <pre><code>import RxSwift
-</code></pre><p>接着，我们要创建一个 DisposeBag 类型的全局变量(一定要是全局变量)：</p>
+</code></pre>
+<p>接着，我们要创建一个 DisposeBag 类型的全局变量(一定要是全局变量)：</p>
 <pre><code>let disposeBag = DisposeBag()
-</code></pre><p>关于 DisposeBag 的作用: DisposeBag 对于 RX 相当于 ARC 对于 iOS，即它是 RX 管理对象内存的一种方式。</p>
+</code></pre>
+<p>关于 DisposeBag 的作用: DisposeBag 对于 RX 相当于 ARC 对于 iOS，即它是 RX 管理对象内存的一种方式。</p>
 <p>最后，将需要使用的 cell 进行注册：</p>
 <pre><code>tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;Cell&quot;)
-</code></pre><p>OK，到现在为止，我们已经完成了所有的准备工作。接下来，我们可以根据上面的步骤来构建 tableView 了。</p>
+</code></pre>
+<p>OK，到现在为止，我们已经完成了所有的准备工作。接下来，我们可以根据上面的步骤来构建 tableView 了。</p>
 <h2 id="构建-Observable-类型的数据源"><a href="#构建-Observable-类型的数据源" class="headerlink" title="构建 Observable 类型的数据源"></a>构建 Observable 类型的数据源</h2><p>首先，我们需要构建 Observable 类型的数据源。至于为什么要构建 Observable 类型的数据，我们可以从 RXSwift 的文档上一探究竟。</p>
 <p>它的文档上是这么写的：Every Observable sequence is just a sequence. The key advantage for an Observable vs Swift’s Sequence is that it can also receive elements asynchronously。这句话的意思是说，可观察序列和 Swift 的原生序列本质上是一样的，但它们有一个最主要的不同，那就是可观察序列可以异步接受元素。</p>
 <p>通过下面的代码创建 Observable 类型的数据源：</p>
 <pre><code>let texts = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;RXSwift&quot;]
 let textsObservable = Observable.from(optional: texts)
-</code></pre><p>此时，你用 option 键查看 textsObservable 属性的类型，应该显示的是 Observable<string>。</string></p>
-<p><img src="http://img.wangjungang.cn/0YNHnK.jpg" alt=""></p>
+</code></pre>
+<p>此时，你用 option 键查看 textsObservable 属性的类型，应该显示的是 Observable<String>。</p>
+<p><img src="http://img.wangjungang.cn/0YNHnK.jpg"></p>
 <p>可供使用的数据源已经构建完成，接下来需要将数据源与 tableView 绑定。</p>
 <h2 id="将数据源与-tableView-绑定"><a href="#将数据源与-tableView-绑定" class="headerlink" title="将数据源与 tableView 绑定"></a>将数据源与 tableView 绑定</h2><p>通过下面代码进行绑定(不要忘记最后的 .disposed(by: disposeBag) )：</p>
 <pre><code>textsObservable.bind(to: tableView.rx
-    .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) { (row, text, cell) in
+    .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) &#123; (row, text, cell) in
         cell.textLabel?.text = text
-    }
+    &#125;
     .disposed(by: disposeBag)
-</code></pre><p>在绑定方法的闭包中，我们需要定义三个变量，三个变量分别有以下含义：</p>
+</code></pre>
+<p>在绑定方法的闭包中，我们需要定义三个变量，三个变量分别有以下含义：</p>
 <ul>
 <li>第一个变量为当前cell所处的行数，即：indexPath.row</li>
 <li>第二个变量为可观察序列在当前行数索引的元素，即：texts[row]</li>
 <li>第三个变量为当前cell</li>
 </ul>
-<p><img src="http://img.wangjungang.cn/FXP642.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/FXP642.jpg"></p>
 <h2 id="绑定-tableView-的事件"><a href="#绑定-tableView-的事件" class="headerlink" title="绑定 tableView 的事件"></a>绑定 tableView 的事件</h2><p>通过下面代码进行绑定(cell 的点击事件)：</p>
-<pre><code>tableView.rx.itemSelected.bind { (indexPath) in
+<pre><code>tableView.rx.itemSelected.bind &#123; (indexPath) in
         print(indexPath)
-    }
+    &#125;
     .disposed(by: disposeBag)
-</code></pre><p>同样，不要忘记最后的 disposed 。</p>
+</code></pre>
+<p>同样，不要忘记最后的 disposed 。</p>
 <p>到这里，我们就完成了通过 RX 构建一个简单的 tableView 。如果你对 tableView 还有一些自定义的需求，可通过第四步骤完成。</p>
-<h2 id="设置-tableView-Delegate-DataSource-的代理方法"><a href="#设置-tableView-Delegate-DataSource-的代理方法" class="headerlink" title="设置 tableView Delegate/DataSource 的代理方法"></a>设置 tableView Delegate/DataSource 的代理方法</h2><p>通过下面的代码设置代理：</p>
+<h2 id="设置-tableView-Delegate-x2F-DataSource-的代理方法"><a href="#设置-tableView-Delegate-x2F-DataSource-的代理方法" class="headerlink" title="设置 tableView Delegate&#x2F;DataSource 的代理方法"></a>设置 tableView Delegate&#x2F;DataSource 的代理方法</h2><p>通过下面的代码设置代理：</p>
 <pre><code>tableView.rx.setDelegate(self).disposed(by: disposeBag)
 tableView.rx.setDataSource(self).disposed(by: disposeBag)
-</code></pre><p>然后，你就可以实现相关的代理方法来进行自定义了，以设置高度举例：</p>
-<pre><code>extension ALGExploreDetailVC: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat {
+</code></pre>
+<p>然后，你就可以实现相关的代理方法来进行自定义了，以设置高度举例：</p>
+<pre><code>extension ALGExploreDetailVC: UITableViewDelegate &#123;
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat &#123;
         return 100
-    }
-}
-</code></pre><p>注意：如果你不需要使用 UITableViewDelegate/UITableViewDataSource 的委托方法的话，你是可以不写的。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>注意：如果你不需要使用 UITableViewDelegate&#x2F;UITableViewDataSource 的委托方法的话，你是可以不写的。</p>
 <pre><code>// 不使用 RX 的话，需要实现代理方法
 tableView.delegate = self
 tableView.dataSource = self
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
+extension ViewController: UITableViewDelegate, UITableViewDataSource &#123;
     ....
-}
+&#125;
 
 // 使用 RX 
 // 绑定即可，不需写上面的代码
 textsObservable.bind(to: tableView.rx
-    .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) { (row, text, cell) in
+    .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) &#123; (row, text, cell) in
         cell.textLabel?.text = &quot;\(text)&quot;
-    }
+    &#125;
     .disposed(by: disposeBag)
-</code></pre><p>如果使用 RX 绑定了 tableView ，再使用下面的代码就不对了，我们需使用 RX 设置代理的方法。</p>
+</code></pre>
+<p>如果使用 RX 绑定了 tableView ，再使用下面的代码就不对了，我们需使用 RX 设置代理的方法。</p>
 <pre><code>tableView.delegate = self
-</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+</code></pre>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
 <li>使用 RX 可以使代码简洁，易读</li>
 <li>使用 RX 语句后需调用 .disposed(by: disposeBag) ,释放内存</li>
 </ul>
 <h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><pre><code>import UIKit
 import RxSwift
 
-class TestViewController: UIViewController {
+class TestViewController: UIViewController &#123;
     var tableView = UITableView(frame: .zero)
     let kCellHeight: CGFloat = 40
     let disposeBag = DisposeBag()
-
-    override func viewDidLoad() {
+    
+    override func viewDidLoad() &#123;
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
         setupSubviews()
-    }
-}
+    &#125;
+&#125;
 
-extension TestViewController {
-    func setupSubviews() {
+extension TestViewController &#123;
+    func setupSubviews() &#123;
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;Cell&quot;)
         view.addSubview(tableView)
-
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.safeEdges(to: view)
         //1.创建可观察数据源
@@ -277,27 +287,28 @@ extension TestViewController {
         let textsObservable = Observable.from(optional: texts)
         //2. 将数据源与 tableView 绑定
         textsObservable.bind(to: tableView.rx
-            .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) { (row, text, cell) in
+            .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) &#123; (row, text, cell) in
                 cell.textLabel?.text = text
-            }
+            &#125;
             .disposed(by: disposeBag)
         //3. 绑定 tableView 的事件
-        tableView.rx.itemSelected.bind { (indexPath) in
+        tableView.rx.itemSelected.bind &#123; (indexPath) in
                 print(indexPath)
-            }
+            &#125;
             .disposed(by: disposeBag)
-
+        
         //4. 设置 tableView Delegate/DataSource 的代理方法
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
-    }
-}
+    &#125;
+&#125;
 
-extension TestViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat {
+extension TestViewController: UITableViewDelegate &#123;
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat &#123;
         return 100
-    }
-}
+    &#125;
+&#125;
 </code></pre>
+
       
 
       
@@ -387,7 +398,7 @@ extension TestViewController: UITableViewDelegate {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/22/使用 RXSwift 构建 UITableView/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/09/22/%E4%BD%BF%E7%94%A8%20RXSwift%20%E6%9E%84%E5%BB%BA%20UITableView/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -401,7 +412,7 @@ extension TestViewController: UITableViewDelegate {
   
 <nav id="article-nav">
   
-    <a href="/2019/09/26/RxDataSource 使用套路与解释/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/09/26/RxDataSource%20%E4%BD%BF%E7%94%A8%E5%A5%97%E8%B7%AF%E4%B8%8E%E8%A7%A3%E9%87%8A/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -411,7 +422,7 @@ extension TestViewController: UITableViewDelegate {
     </a>
   
   
-    <a href="/2019/09/21/Autorelease & AutoreleasePool/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/09/21/Autorelease%20&%20AutoreleasePool/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Autorelease &amp; AutoreleasePool</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -455,7 +466,7 @@ extension TestViewController: UITableViewDelegate {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -562,10 +573,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -574,7 +581,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -582,11 +589,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -606,19 +617,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

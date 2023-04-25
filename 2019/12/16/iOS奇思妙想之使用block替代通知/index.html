@@ -9,17 +9,17 @@
   <title>iOS奇思妙想之使用block替代通知 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面iOS开发中，很多情况下会使用到通知，通知的好处很多，但是也有很多坑点，一旦没有管理好，就会造成很多莫名其妙的bug。既然通知使用不当很容易出现问题，那有没有什么办法来避免？经过思考后，决定使用block回调的方式来实现通知，并且避免掉通知的弊端。 原理参考通知原理，采用单例全局管理，单例持有一个字典，字典中储存所有添加的block，在调用block的时候从字典中取出对应的block调用。">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS奇思妙想之使用block替代通知">
-<meta property="og:url" content="http://yoursite.com/2019/12/16/iOS奇思妙想之使用block替代通知/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/12/16/iOS%E5%A5%87%E6%80%9D%E5%A6%99%E6%83%B3%E4%B9%8B%E4%BD%BF%E7%94%A8block%E6%9B%BF%E4%BB%A3%E9%80%9A%E7%9F%A5/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面iOS开发中，很多情况下会使用到通知，通知的好处很多，但是也有很多坑点，一旦没有管理好，就会造成很多莫名其妙的bug。既然通知使用不当很容易出现问题，那有没有什么办法来避免？经过思考后，决定使用block回调的方式来实现通知，并且避免掉通知的弊端。 原理参考通知原理，采用单例全局管理，单例持有一个字典，字典中储存所有添加的block，在调用block的时候从字典中取出对应的block调用。">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-12-16T12:51:42.023Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-12-16T12:44:27.347Z">
+<meta property="article:modified_time" content="2019-12-16T12:51:42.023Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS奇思妙想之使用block替代通知">
-<meta name="twitter:description" content="写在前面iOS开发中，很多情况下会使用到通知，通知的好处很多，但是也有很多坑点，一旦没有管理好，就会造成很多莫名其妙的bug。既然通知使用不当很容易出现问题，那有没有什么办法来避免？经过思考后，决定使用block回调的方式来实现通知，并且避免掉通知的弊端。 原理参考通知原理，采用单例全局管理，单例持有一个字典，字典中储存所有添加的block，在调用block的时候从字典中取出对应的block调用。">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/12/16/iOS奇思妙想之使用block替代通知/" class="archive-article-date">
+        <a href="/2019/12/16/iOS%E5%A5%87%E6%80%9D%E5%A6%99%E6%83%B3%E4%B9%8B%E4%BD%BF%E7%94%A8block%E6%9B%BF%E4%BB%A3%E9%80%9A%E7%9F%A5/" class="archive-article-date">
   	<time datetime="2019-12-16T12:44:27.347Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-16</time>
 </a>
         
@@ -184,11 +184,11 @@
 <h3 id="5-多线程安全"><a href="#5-多线程安全" class="headerlink" title="5.多线程安全"></a>5.多线程安全</h3><p>这里采用GCD信号量来保证线程安全</p>
 <h3 id="6-block循环引用"><a href="#6-block循环引用" class="headerlink" title="6.block循环引用"></a>6.block循环引用</h3><p>对于block循环引用，这里采用回调观察者替代self，保证不会循环引用</p>
 <h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>CLActionManager.h实现代码</p>
-<pre><code>typedef NS_ENUM(NSUInteger, CLActionType) {
+<pre><code>typedef NS_ENUM(NSUInteger, CLActionType) &#123;
     CLActionColorChange,///&lt;颜色变化
     CLActionTextChange,///&lt;文字变化
     CLActionImageChange,///&lt;图片变化
-};
+&#125;;
 
 
 @interface CLActionManager : NSObject
@@ -199,7 +199,7 @@
 
 /**
  根据类型添加观察者
-
+ 
  @param observer 观察者
  @param actionType 响应类型
  @param block 数据回掉
@@ -208,7 +208,7 @@
 
 /**
  根据类型调用
-
+ 
  @param dictionary 数据
  @param actionType 响应类型
  */
@@ -234,7 +234,8 @@
  @param identifier 标识符
  */
 + (void)actionWithDictionary:(NSDictionary *)dictionary identifier:(NSString *)identifier;
-</code></pre><p>CLActionManager.m实现代码</p>
+</code></pre>
+<p>CLActionManager.m实现代码</p>
 <pre><code>#import &quot;CLActionManager.h&quot;
 #import &lt;objc/message.h&gt;
 
@@ -251,21 +252,21 @@
 //第1步: 存储唯一实例
 static CLActionManager *_manager = nil;
 //第2步: 分配内存空间时都会调用这个方法. 保证分配内存alloc时都相同.
-+ (id)allocWithZone:(struct _NSZone __unused*)zone {
++ (id)allocWithZone:(struct _NSZone __unused*)zone &#123;
     return [self sharedManager];
-}
+&#125;
 //第3步: 保证init初始化时都相同
-+ (instancetype)sharedManager {
++ (instancetype)sharedManager &#123;
     //调用dispatch_once保证在多线程中也只被实例化一次
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
+    dispatch_once(&amp;onceToken, ^&#123;
         _manager = [[super allocWithZone:NULL] init];
-    });
+    &#125;);
     return _manager;
-}
-- (id)init {
+&#125;
+- (id)init &#123;
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
+    dispatch_once(&amp;onceToken, ^&#123;
         _manager = [super init];
         //弱引用value，强引用key
         self.observerMapTable = [NSMapTable mapTableWithKeyOptions:NSMapTableStrongMemory valueOptions:NSMapTableWeakMemory];
@@ -274,19 +275,19 @@ static CLActionManager *_manager = nil;
         //信号
         self.semaphore = dispatch_semaphore_create(0);
         dispatch_semaphore_signal(self.semaphore);
-    });
+    &#125;);
     return _manager;
-}
+&#125;
 //第4步: 保证copy时都相同
-- (id)copyWithZone:(NSZone __unused*)zone {
+- (id)copyWithZone:(NSZone __unused*)zone &#123;
     return _manager;
-}
+&#125;
 //第五步: 保证mutableCopy时相同
-- (id)mutableCopyWithZone:(NSZone __unused*)zone {
+- (id)mutableCopyWithZone:(NSZone __unused*)zone &#123;
     return _manager;
-}
+&#125;
 
-+ (void)addObserver:(id)observer actionType:(CLActionType)actionType mainThread:(BOOL)mainThread block:(void(^)(id observer, NSDictionary *dictionary))block {
++ (void)addObserver:(id)observer actionType:(CLActionType)actionType mainThread:(BOOL)mainThread block:(void(^)(id observer, NSDictionary *dictionary))block &#123;
     //增加信号保证线程安全
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     //内存地址+key，使用内存地址保证一个对象只监听一次，key保证是同一类型
@@ -301,9 +302,9 @@ static CLActionManager *_manager = nil;
     //动态设置是否主线程
     objc_setAssociatedObject(observer, CFBridgingRetain(actionMainThread), [NSNumber numberWithBool:mainThread], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
+&#125;
 
-+ (void)actionWithDictionary:(NSDictionary *)dictionary actionType:(CLActionType)actionType {
++ (void)actionWithDictionary:(NSDictionary *)dictionary actionType:(CLActionType)actionType &#123;
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     //key数组
     NSArray&lt;NSString *&gt; *keyArray = [[[CLActionManager sharedManager].observerMapTable keyEnumerator] allObjects];
@@ -312,7 +313,7 @@ static CLActionManager *_manager = nil;
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@&quot;SELF ENDSWITH %@&quot;,identifier];
     NSArray&lt;NSString *&gt; *array = [keyArray filteredArrayUsingPredicate:predicate];
     //遍历查找所有key
-    for (NSString *key in array) {
+    for (NSString *key in array) &#123;
         NSString *actionBlock = [[CLActionManager sharedManager].blockKeyMapTable objectForKey:key];
         NSString *actionMainThread = [[CLActionManager sharedManager].mainThreadKeyMapTable objectForKey:key];
         //找出对应类型的观察者
@@ -321,26 +322,26 @@ static CLActionManager *_manager = nil;
         void(^block)(id observer, NSDictionary *dictionary) = objc_getAssociatedObject(observer, CFBridgingRetain(actionBlock));
         BOOL mainThread = [(NSNumber *)objc_getAssociatedObject(observer, CFBridgingRetain(actionMainThread)) boolValue];
         //block存在并且是对应方法添加，调用block
-        if (block) {
-            if (mainThread) {
+        if (block) &#123;
+            if (mainThread) &#123;
                 //主线程
-                dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_main_queue(), ^&#123;
                     block(observer, dictionary);
-                });
-            }else {
+                &#125;);
+            &#125;else &#123;
                 //子线程
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;
                     block(observer, dictionary);
-                });
-            }
-        }
-    }
+                &#125;);
+            &#125;
+        &#125;
+    &#125;
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
+&#125;
 
-+ (NSString *)keyWithActionType:(CLActionType)actionType {
++ (NSString *)keyWithActionType:(CLActionType)actionType &#123;
     NSString *key;
-    switch (actionType) {
+    switch (actionType) &#123;
         case CLActionTextChange:
             key = @&quot;CLActionTextChange&quot;;
             break;
@@ -350,11 +351,11 @@ static CLActionManager *_manager = nil;
         case CLActionImageChange:
             key = @&quot;CLActionImageChange&quot;;
             break;
-    }
+    &#125;
     return key;
-}
+&#125;
 
-+ (void)addObserver:(id)observer identifier:(NSString *)identifier mainThread:(BOOL)mainThread block:(void(^)(id observer, NSDictionary *dictionary))block {
++ (void)addObserver:(id)observer identifier:(NSString *)identifier mainThread:(BOOL)mainThread block:(void(^)(id observer, NSDictionary *dictionary))block &#123;
     //增加信号保证线程安全
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     //内存地址+key，使用内存地址保证一个对象只监听一次，key保证是同一类型
@@ -369,9 +370,9 @@ static CLActionManager *_manager = nil;
     //动态设置是否主线程
     objc_setAssociatedObject(observer, CFBridgingRetain(actionMainThread), [NSNumber numberWithBool:mainThread], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
+&#125;
 
-+ (void)actionWithDictionary:(NSDictionary *)dictionary identifier:(NSString *)identifier {
++ (void)actionWithDictionary:(NSDictionary *)dictionary identifier:(NSString *)identifier &#123;
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     //key数组
     NSArray&lt;NSString *&gt; *keyArray = [[[CLActionManager sharedManager].observerMapTable keyEnumerator] allObjects];
@@ -379,7 +380,7 @@ static CLActionManager *_manager = nil;
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@&quot;SELF ENDSWITH %@&quot;,[identifier stringByAppendingString:@&quot;-0&quot;]];
     NSArray&lt;NSString *&gt; *array = [keyArray filteredArrayUsingPredicate:predicate];
     //遍历查找所有key
-    for (NSString *key in array) {
+    for (NSString *key in array) &#123;
         NSString *actionBlock = [[CLActionManager sharedManager].blockKeyMapTable objectForKey:key];
         NSString *actionMainThread = [[CLActionManager sharedManager].mainThreadKeyMapTable objectForKey:key];
         //找出对应类型的观察者
@@ -388,56 +389,58 @@ static CLActionManager *_manager = nil;
         void(^block)(id observer, NSDictionary *dictionary) = objc_getAssociatedObject(observer, CFBridgingRetain(actionBlock));
         BOOL mainThread = [(NSNumber *)objc_getAssociatedObject(observer, CFBridgingRetain(actionMainThread)) boolValue];
         //block存在并且是对应方法添加，调用block
-        if (block) {
-            if (mainThread) {
+        if (block) &#123;
+            if (mainThread) &#123;
                 //主线程
-                dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_main_queue(), ^&#123;
                     block(observer, dictionary);
-                });
-            }else {
+                &#125;);
+            &#125;else &#123;
                 //子线程
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;
                     block(observer, dictionary);
-                });
-            }
-        }
-    }
+                &#125;);
+            &#125;
+        &#125;
+    &#125;
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
+&#125;
 
 @end
-</code></pre><h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><p>###1.添加监听</p>
-<pre><code>根据不同的观察者和监听类型动态生成Key，使用NSMapTable将对应Key和观察者设置的属性储存。+ (void)addObserver:(id)observer type:(CLActionType)type mainThread:(BOOL)mainThread actionBlock:(void(^)(id observer, NSDictionary *dictionary))actionBlock {
+</code></pre>
+<h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><p>###1.添加监听</p>
+<pre><code>根据不同的观察者和监听类型动态生成Key，使用NSMapTable将对应Key和观察者设置的属性储存。+ (void)addObserver:(id)observer type:(CLActionType)type mainThread:(BOOL)mainThread actionBlock:(void(^)(id observer, NSDictionary *dictionary))actionBlock &#123;
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     NSString *key = [NSString stringWithFormat:@&quot;%@-%@&quot;,[NSString stringWithFormat:@&quot;%p&quot;,observer], [[self keyWithActionType:type] stringByAppendingString:@&quot;-1&quot;]];
     NSString *actionBlockKey = [key stringByAppendingString:@&quot;-CLActionBlock-1&quot;];
     NSString *actionMainThreadKey = [key stringByAppendingString:@&quot;-CLActionMainThread-1&quot;];
 
     NSMutableDictionary *blockDictionary = [[CLActionManager sharedManager].blockDictionaryMapTable objectForKey:observer];
-    if (!blockDictionary) {
+    if (!blockDictionary) &#123;
         blockDictionary = [NSMutableDictionary dictionary];
-    }
+    &#125;
     [blockDictionary setObject:actionBlock forKey:actionBlockKey];
 
     NSMutableDictionary *mainThreadDictionary = [[CLActionManager sharedManager].mainThreadDictionaryMapTable objectForKey:observer];
-    if (!mainThreadDictionary) {
+    if (!mainThreadDictionary) &#123;
         mainThreadDictionary = [NSMutableDictionary dictionary];
-    }
+    &#125;
     [mainThreadDictionary setObject:[NSNumber numberWithBool:mainThread] forKey:actionMainThreadKey];
 
     [[CLActionManager sharedManager].observerMapTable setObject:observer forKey:key];
     [[CLActionManager sharedManager].blockDictionaryMapTable setObject:blockDictionary forKey:observer];
     [[CLActionManager sharedManager].mainThreadDictionaryMapTable setObject:mainThreadDictionary forKey:observer];
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
-</code></pre><h3 id="2-发送通知"><a href="#2-发送通知" class="headerlink" title="2.发送通知"></a>2.发送通知</h3><p>根据观察者和监听类型动态生成Key，然后找出对应观察者的属性，然后一一调用。</p>
-<pre><code>+ (void)postType:(CLActionType)type dictionary:(NSDictionary *)dictionary {
+&#125;
+</code></pre>
+<h3 id="2-发送通知"><a href="#2-发送通知" class="headerlink" title="2.发送通知"></a>2.发送通知</h3><p>根据观察者和监听类型动态生成Key，然后找出对应观察者的属性，然后一一调用。</p>
+<pre><code>+ (void)postType:(CLActionType)type dictionary:(NSDictionary *)dictionary &#123;
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     NSArray&lt;NSString *&gt; *keyArray = [[[CLActionManager sharedManager].observerMapTable keyEnumerator] allObjects];
     NSString *identifier = [[self keyWithActionType:type] stringByAppendingString:@&quot;-1&quot;];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@&quot;SELF ENDSWITH %@&quot;,identifier];
     NSArray&lt;NSString *&gt; *array = [keyArray filteredArrayUsingPredicate:predicate];
-    for (NSString *key in array) {
+    for (NSString *key in array) &#123;
         NSString *actionBlockKey = [key stringByAppendingString:@&quot;-CLActionBlock-1&quot;];
         NSString *actionMainThreadKey = [key stringByAppendingString:@&quot;-CLActionMainThread-1&quot;];
         id observer = [[CLActionManager sharedManager].observerMapTable objectForKey:key];
@@ -445,22 +448,23 @@ static CLActionManager *_manager = nil;
         NSMutableDictionary *mainThreadDictionary = [[CLActionManager sharedManager].mainThreadDictionaryMapTable objectForKey:observer];
         void(^block)(id observer, NSDictionary *dictionary) = [blockDictionary objectForKey:actionBlockKey];
         BOOL mainThread = [[mainThreadDictionary objectForKey:actionMainThreadKey] boolValue];
-        if (block) {
-            if (mainThread) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+        if (block) &#123;
+            if (mainThread) &#123;
+                dispatch_async(dispatch_get_main_queue(), ^&#123;
                     block(observer, dictionary);
-                });
-            }else {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                &#125;);
+            &#125;else &#123;
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;
                     block(observer, dictionary);
-                });
-            }
-        }
-    }
+                &#125;);
+            &#125;
+        &#125;
+    &#125;
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
-</code></pre><p>###3.使用协议的方式来分发事件<br>这里为了使用方便，采取了Block回调的方式来监听，但是我们也可以考虑协议分发的方式来实现，每个观察者遵守Action协议，发送通知的时候我们就可以找出对应观察者，调用协议中的方法来达到事件分发的目的。</p>
-<p><a href="https://github.com/wangjungang/CLActionManager" target="_blank" rel="noopener">demo</a></p>
+&#125;
+</code></pre>
+<p>###3.使用协议的方式来分发事件<br>这里为了使用方便，采取了Block回调的方式来监听，但是我们也可以考虑协议分发的方式来实现，每个观察者遵守Action协议，发送通知的时候我们就可以找出对应观察者，调用协议中的方法来达到事件分发的目的。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/wangjungang/CLActionManager">demo</a></p>
 
       
 
@@ -551,7 +555,7 @@ static CLActionManager *_manager = nil;
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/12/16/iOS奇思妙想之使用block替代通知/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/12/16/iOS%E5%A5%87%E6%80%9D%E5%A6%99%E6%83%B3%E4%B9%8B%E4%BD%BF%E7%94%A8block%E6%9B%BF%E4%BB%A3%E9%80%9A%E7%9F%A5/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -565,7 +569,7 @@ static CLActionManager *_manager = nil;
   
 <nav id="article-nav">
   
-    <a href="/2020/02/23/那些年，用swift踩过的坑/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2020/02/23/%E9%82%A3%E4%BA%9B%E5%B9%B4%EF%BC%8C%E7%94%A8swift%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -575,7 +579,7 @@ static CLActionManager *_manager = nil;
     </a>
   
   
-    <a href="/2019/12/16/iOS中NSNotification的套路/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/12/16/iOS%E4%B8%ADNSNotification%E7%9A%84%E5%A5%97%E8%B7%AF/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iOS中NSNotification的套路</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -619,7 +623,7 @@ static CLActionManager *_manager = nil;
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -726,10 +730,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -738,7 +738,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -746,11 +746,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -770,19 +774,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

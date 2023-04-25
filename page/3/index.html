@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/3/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/11/安卓防连点的一个极简操作/">安卓防连点的一个极简操作</a>
+      <a class="article-title" href="/2021/03/11/%E5%AE%89%E5%8D%93%E9%98%B2%E8%BF%9E%E7%82%B9%E7%9A%84%E4%B8%80%E4%B8%AA%E6%9E%81%E7%AE%80%E6%93%8D%E4%BD%9C/">安卓防连点的一个极简操作</a>
     </h1>
   
 
         
-        <a href="/2021/03/11/安卓防连点的一个极简操作/" class="archive-article-date">
+        <a href="/2021/03/11/%E5%AE%89%E5%8D%93%E9%98%B2%E8%BF%9E%E7%82%B9%E7%9A%84%E4%B8%80%E4%B8%AA%E6%9E%81%E7%AE%80%E6%93%8D%E4%BD%9C/" class="archive-article-date">
   	<time datetime="2021-03-11T08:32:27.647Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-11</time>
 </a>
         
@@ -173,23 +173,25 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="直接上代码"><a href="#直接上代码" class="headerlink" title="直接上代码"></a>直接上代码</h2><pre><code>import android.view.View;
-public class ClickUtils {
-    public static void fastClickChecked(View v, View.OnClickListener listener){
+public class ClickUtils &#123;
+    public static void fastClickChecked(View v, View.OnClickListener listener)&#123;
         if(v==null)return;
-        v.setOnClickListener(v1 -&gt; {
+        v.setOnClickListener(v1 -&gt; &#123;
             listener.onClick(v1);
             v1.setClickable(false);
-            v.postDelayed(() -&gt; {
+            v.postDelayed(() -&gt; &#123;
                 v.setClickable(true);
-            }, 500);
-        });
-    }
-}
-</code></pre><h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>注意：此调用方式使用时并没有比原有view.setOnClickListener方式更加复杂。他甚至以更简单的方式来实现了防快速点击的效果。</p>
+            &#125;, 500);
+        &#125;);
+    &#125;
+&#125;
+</code></pre>
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><p>注意：此调用方式使用时并没有比原有view.setOnClickListener方式更加复杂。他甚至以更简单的方式来实现了防快速点击的效果。</p>
 <pre><code>//参数1，防连点的view  参数2，点击此view要执行的OnClickListener
 ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
-</code></pre><p>只需要传进view和监听，即可完成防连点效果。</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>此处我是通过代理原view的点击，在原来view点击时，我采用先吧此view的clickable=false，然后通过view.postDelayed方法过500秒后再把它置为可以点击，这样就可以避免在小米华为手机上的连点时跳转页面的情况下连续跳转多个页面了。</p>
+</code></pre>
+<p>只需要传进view和监听，即可完成防连点效果。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>此处我是通过代理原view的点击，在原来view点击时，我采用先吧此view的clickable&#x3D;false，然后通过view.postDelayed方法过500秒后再把它置为可以点击，这样就可以避免在小米华为手机上的连点时跳转页面的情况下连续跳转多个页面了。</p>
 <h2 id="写此工具类的一个原因"><a href="#写此工具类的一个原因" class="headerlink" title="写此工具类的一个原因"></a>写此工具类的一个原因</h2><p>其实写此工具类一个最根本的原因是，在安卓系统的有些手机上，快速点击程序的一些view进行跳转时会造成打开两个目标view的情况。而关于程序放连点我们实践过多种方式。但是通过尝试，有些方法不是使用繁琐，就是增加其他成本。例如gradle插件的方式会增加编译成本，使我们build软件时运行缓慢。增加编译时常，又比如rxJava的方式使用起来感觉过于繁琐。需要我们写的代码量太多，或者说运用两次时间间隔的方式通过动态点击计算是否触发事件，这种方式又太过复杂。所以我自己运用clickable方式写了一个原理简单且使用方便的工具类。</p>
 
       
@@ -214,7 +216,7 @@ ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/11/安卓防连点的一个极简操作/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/03/11/%E5%AE%89%E5%8D%93%E9%98%B2%E8%BF%9E%E7%82%B9%E7%9A%84%E4%B8%80%E4%B8%AA%E6%9E%81%E7%AE%80%E6%93%8D%E4%BD%9C/">展开全文 >></a>
         </p>
       
 
@@ -251,12 +253,12 @@ ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/11/Android对Java的修改-SimpleDateFormat类/">Android对Java的修改-SimpleDateFormat类</a>
+      <a class="article-title" href="/2021/03/11/Android%E5%AF%B9Java%E7%9A%84%E4%BF%AE%E6%94%B9-SimpleDateFormat%E7%B1%BB/">Android对Java的修改-SimpleDateFormat类</a>
     </h1>
   
 
         
-        <a href="/2021/03/11/Android对Java的修改-SimpleDateFormat类/" class="archive-article-date">
+        <a href="/2021/03/11/Android%E5%AF%B9Java%E7%9A%84%E4%BF%AE%E6%94%B9-SimpleDateFormat%E7%B1%BB/" class="archive-article-date">
   	<time datetime="2021-03-11T05:57:46.681Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-11</time>
 </a>
         
@@ -266,46 +268,48 @@ ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
       
         <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Android会对部分OpenJDK中的代码进行一些修改，本篇记录一下因为这些修改而踩过的一些坑。</p>
 <h2 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h2><p>一个在线上运行良好的Date工具类在写单元测试时一直报ParseException，代码如下</p>
-<pre><code>public static String utc2Local(String utcTime) {
-    String utcTimePatten = &quot;yyyy-MM-dd&apos;T&apos;HH:mm:ssZZZZZ&quot;;
+<pre><code>public static String utc2Local(String utcTime) &#123;
+    String utcTimePatten = &quot;yyyy-MM-dd&#39;T&#39;HH:mm:ssZZZZZ&quot;;
     String localTimePatten = &quot;yyyy.MM.dd&quot;;
     SimpleDateFormat utcFormater = new SimpleDateFormat(utcTimePatten);
     utcFormater.setTimeZone(TimeZone.getTimeZone(&quot;UTC&quot;));//时区定义并进行时间获取
     Date gpsUTCDate = null;
-    try {
+    try &#123;
         gpsUTCDate = utcFormater.parse(formatTimeStr(utcTime));
-    } catch (Exception e) {
+    &#125; catch (Exception e) &#123;
         e.printStackTrace();
         return utcTime;
-    }
+    &#125;
     SimpleDateFormat localFormater = new SimpleDateFormat(localTimePatten);
     localFormater.setTimeZone(TimeZone.getDefault());
     String localTime = localFormater.format(gpsUTCDate.getTime());
     return localTime;
-}
-</code></pre><p>这里传入的参数utcTime为”2020-01-01 08:00:00+08:00”</p>
+&#125;
+</code></pre>
+<p>这里传入的参数utcTime为”2020-01-01 08:00:00+08:00”</p>
 <p>这段代码在Android环境下运行良好，但在单元测试下一直报错</p>
 <h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>Android对OpenJDK中的SimpleDateFormat进行了修改，具体在subParseNumericZone方法中：</p>
-<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b3785ca49d04320b3f6658ad4d859fa~tplv-k3u1fbpfcp-watermark.image?imageslim" alt=""></p>
+<p><img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8b3785ca49d04320b3f6658ad4d859fa~tplv-k3u1fbpfcp-watermark.image?imageslim"></p>
 <p>可以看到，OpenJDK原本是不支持带冒号的写法的，而在Android中修改了subParseNumericZone方法，使其可以解析带冒号的写法。</p>
 <h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><p>解决方法也很简单，在测试时直接修改入参，去掉入参中的冒号就好了：</p>
-<pre><code>try (MockedStatic&lt;DateUtils&gt; mockedDateUtils = Mockito.mockStatic(DateUtils.class, new CallsRealMethods())) {
-    mockedDateUtils.when(() -&gt; {
-           DateUtils.utc2Local(argThat((argument) -&gt; {
+<pre><code>try (MockedStatic&lt;DateUtils&gt; mockedDateUtils = Mockito.mockStatic(DateUtils.class, new CallsRealMethods())) &#123;
+    mockedDateUtils.when(() -&gt; &#123;
+       	DateUtils.utc2Local(argThat((argument) -&gt; &#123;
             int index = argument.length() - 3;
-            return argument.charAt(index) == &apos;:&apos;;
+            return argument.charAt(index) == &#39;:&#39;;
         ));
-    }).then((invocation) -&gt; {
+    &#125;).then((invocation) -&gt; &#123;
         String utcTime = invocation.getArgument(0, String.class);
         String fixedDate = formatDate;
         int index = formatDate.length() - 3;
-        if (formatDate.charAt(index) == &apos;:&apos;) {
+        if (formatDate.charAt(index) == &#39;:&#39;) &#123;
             fixedDate = formatDate.substring(0, index) + formatDate.substring(index + 1);
-        }
+        &#125;
         return DateUtils.utc2Local(fixedDate);
-    });
-}
+    &#125;);
+&#125;
 </code></pre>
+
       
 
       
@@ -328,7 +332,7 @@ ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/11/Android对Java的修改-SimpleDateFormat类/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/03/11/Android%E5%AF%B9Java%E7%9A%84%E4%BF%AE%E6%94%B9-SimpleDateFormat%E7%B1%BB/">展开全文 >></a>
         </p>
       
 
@@ -365,12 +369,12 @@ ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/11/Java多线程常用方法分析/">Java多线程常用方法分析</a>
+      <a class="article-title" href="/2021/03/11/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E5%88%86%E6%9E%90/">Java多线程常用方法分析</a>
     </h1>
   
 
         
-        <a href="/2021/03/11/Java多线程常用方法分析/" class="archive-article-date">
+        <a href="/2021/03/11/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E5%88%86%E6%9E%90/" class="archive-article-date">
   	<time datetime="2021-03-11T03:33:42.426Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-11</time>
 </a>
         
@@ -378,7 +382,7 @@ ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b0b0dd37602d4f0d9e6694b98a799f3c~tplv-k3u1fbpfcp-zoom-1.image?imageslim" alt=""></p>
+        <p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b0b0dd37602d4f0d9e6694b98a799f3c~tplv-k3u1fbpfcp-zoom-1.image?imageslim"></p>
 <h2 id="Thread相关"><a href="#Thread相关" class="headerlink" title="Thread相关"></a>Thread相关</h2><p>###创建线程的方法：</p>
 <ol>
 <li>传Runnable方式。</li>
@@ -391,71 +395,74 @@ ClickUtils.fastClickChecked(tvHeadLevel,v-&gt;goGrowGrade());
  * @date 2019/10/11 17:03
  * Thread常见的3种创建方式：Runnable
  */
-public class ThreadDemo {
-    public static void main(String[] args) {
+public class ThreadDemo &#123;
+    public static void main(String[] args) &#123;
         //Runnable
-        Thread threadA=new Thread(new Runnable() {
+        Thread threadA=new Thread(new Runnable() &#123;
             @Override
-            public void run() {
+            public void run() &#123;
                 System.out.println(&quot;Thread is created with runnable&quot;);
-            }
-        },&quot;ThreadA&quot;);
+            &#125;
+        &#125;,&quot;ThreadA&quot;);
         threadA.start();
-    }
-}
-</code></pre><h4 id="Thread子类的方式："><a href="#Thread子类的方式：" class="headerlink" title="Thread子类的方式："></a>Thread子类的方式：</h4><pre><code>/**
+    &#125;
+&#125;
+</code></pre>
+<h4 id="Thread子类的方式："><a href="#Thread子类的方式：" class="headerlink" title="Thread子类的方式："></a>Thread子类的方式：</h4><pre><code>/**
  * @author jtl
  * @date 2019/10/11 17:03
  * Thread常见的3种创建方式：Thread子类
  */
 
-public class ThreadDemo {
-    public static void main(String[] args) {
+public class ThreadDemo &#123;
+    public static void main(String[] args) &#123;
         ThreadC threadC=new ThreadC();
         threadC.setName(&quot;ThreadC&quot;);
         threadC.start();
-    }
+    &#125;
 
-    private static class ThreadC extends Thread{
+    private static class ThreadC extends Thread&#123;
         @Override
-        public void run() {
+        public void run() &#123;
             super.run();
              System.out.println(&quot;ThreadC name is: &quot;+getName());
-        }
-    }
-}
-</code></pre><h4 id="FutureTask方式："><a href="#FutureTask方式：" class="headerlink" title="FutureTask方式："></a>FutureTask方式：</h4><p>FutureTask：有返回值。在执行futureTask.get()方法时。会阻塞当前线程，直到futureTask所在子线程执行完，才会唤醒当前线程。</p>
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<h4 id="FutureTask方式："><a href="#FutureTask方式：" class="headerlink" title="FutureTask方式："></a>FutureTask方式：</h4><p>FutureTask：有返回值。在执行futureTask.get()方法时。会阻塞当前线程，直到futureTask所在子线程执行完，才会唤醒当前线程。</p>
 <pre><code>/**
  * @author jtl
  * @date 2019/10/11 17:03
  * Thread常见的3种创建方式： FutureTask
  */
 
-public class ThreadDemo {
-    public static void main(String[] args) {
+public class ThreadDemo &#123;
+    public static void main(String[] args) &#123;
         //FutureTask  callable
-        Callable&lt;String&gt; callable=new Callable&lt;String&gt;() {
+        Callable&lt;String&gt; callable=new Callable&lt;String&gt;() &#123;
             @Override
-            public String call() throws Exception {
+            public String call() throws Exception &#123;
                 Thread.sleep(1000);
                 return &quot;Thread is created with callable&quot;;
-            }
-        };
+            &#125;
+        &#125;;
         FutureTask&lt;String&gt; futureTask=new FutureTask&lt;&gt;(callable);
         Thread threadB=new Thread(futureTask,&quot;ThreadB&quot;);
         threadB.start();
-        try {
+        try &#123;
             long tt=System.currentTimeMillis();
             String msg=futureTask.get();
             // 在执行futureTask.get() 会阻塞当先线程，直到子线程执行完毕，才会唤醒主线程
             // 所以时间耗费为1000+ms
             System.out.println(msg+&quot;---&quot; +(System.currentTimeMillis()-tt));
-        } catch (InterruptedException | ExecutionException e) {
+        &#125; catch (InterruptedException | ExecutionException e) &#123;
             e.printStackTrace();
-        }
-    }
-}
-</code></pre><h3 id="线程的生命周期："><a href="#线程的生命周期：" class="headerlink" title="线程的生命周期："></a>线程的生命周期：</h3><ol>
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<h3 id="线程的生命周期："><a href="#线程的生命周期：" class="headerlink" title="线程的生命周期："></a>线程的生命周期：</h3><ol>
 <li><p>新建（New）: 调用new方法，新建一个线程时，线程处于生命周期中的New。此时主要是为线程分配内存，初始化其成员变量。</p>
 </li>
 <li><p>就绪（Runnable）:调用start方法，启动一个线程。此时JVM完成了栈和程序计数器的创建，等待该线程的调度和运行。</p>
@@ -479,90 +486,137 @@ public class ThreadDemo {
 <li><p>TIMED_WAITING：由于调用了Thread.sleep，Object.wait(long),Thread.join(long),LockSupport.parkNanos(),LockSupport.parkUntil()等方法时线程处于的状态。它和WAITING状态不同之处在于。它设置了超时等待的时间，而WAITING状态没有。</p>
 </li>
 <li><p>TERMINATED：线程已经退出时的状态。</p>
-<p>/**</p>
+<p>&#x2F;**</p>
 <ul>
-<li>A thread state.  A thread can be in one of the following states:</li>
-<li><ul></ul></li>
-<li></li><li>{@link #NEW}<br></li>
-<li>A thread that has not yet started is in this state.</li>
-<li></li></ul></li>
-<li></li><li>{@link #RUNNABLE}<br></li>
-<li>A thread executing in the Java virtual machine is in this state.</li>
-<li></li>
-<li></li><li>{@link #BLOCKED}<br></li>
-<li>A thread that is blocked waiting for a monitor lock</li>
-<li>is in this state.</li>
-<li></li>
-<li></li><li>{@link #WAITING}<br></li>
-<li>A thread that is waiting indefinitely for another thread to</li>
-<li>perform a particular action is in this state.</li>
-<li></li>
-<li></li><li>{@link #TIMED_WAITING}<br></li>
-<li>A thread that is waiting for another thread to perform an action</li>
-<li>for up to a specified waiting time is in this state.</li>
-<li></li>
-<li></li><li>{@link #TERMINATED}<br></li>
-<li>A thread that has exited is in this state.</li>
-<li></li>
-<li><br>*</li>
-<li><p></p></li>
-<li>A thread can be in only one state at a given point in time.</li>
-<li>These states are virtual machine states which do not reflect</li>
-<li>any operating system thread states.<br>*</li>
-<li>@since   1.5</li>
-<li><p>@see #getState<br>*/<br>public enum State {<br> /**</p>
-<ul>
-<li><p>Thread state for a thread which has not yet started.<br>*/<br>NEW,</p>
-<p>/**</p>
+<li><p>A thread state.  A thread can be in one of the following states:</p>
 </li>
+<li><ul></li>
+<li><li>{@link #NEW}<br></li>
+<li><pre><code>A thread that has not yet started is in this state.
+</code></pre>
+</li>
+<li><pre><code>&lt;/li&gt;
+</code></pre>
+</li>
+<li><li>{@link #RUNNABLE}<br></li>
+<li><pre><code>A thread executing in the Java virtual machine is in this state.
+</code></pre>
+</li>
+<li><pre><code>&lt;/li&gt;
+</code></pre>
+</li>
+<li><li>{@link #BLOCKED}<br></li>
+<li><pre><code>A thread that is blocked waiting for a monitor lock
+</code></pre>
+</li>
+<li><pre><code>is in this state.
+</code></pre>
+</li>
+<li><pre><code>&lt;/li&gt;
+</code></pre>
+</li>
+<li><li>{@link #WAITING}<br></li>
+<li><pre><code>A thread that is waiting indefinitely for another thread to
+</code></pre>
+</li>
+<li><pre><code>perform a particular action is in this state.
+</code></pre>
+</li>
+<li><pre><code>&lt;/li&gt;
+</code></pre>
+</li>
+<li><li>{@link #TIMED_WAITING}<br></li>
+<li><pre><code>A thread that is waiting for another thread to perform an action
+</code></pre>
+</li>
+<li><pre><code>for up to a specified waiting time is in this state.
+</code></pre>
+</li>
+<li><pre><code>&lt;/li&gt;
+</code></pre>
+</li>
+<li><li>{@link #TERMINATED}<br></li>
+<li><pre><code>A thread that has exited is in this state.
+</code></pre>
+</li>
+<li><pre><code>&lt;/li&gt;
+</code></pre>
+</li>
+<li></ul></li>
+<li></li>
+<li><p></li>
+<li><p>A thread can be in only one state at a given point in time.</p>
+</li>
+<li><p>These states are virtual machine states which do not reflect</p>
+</li>
+<li><p>any operating system thread states.</p>
+</li>
+<li></li>
+<li><p>@since   1.5</p>
+</li>
+<li><p>@see #getState<br>  <em>&#x2F;<br> public enum State {<br> &#x2F;</em>*</p>
+<ul>
+<li>Thread state for a thread which has not yet started.<br>  *&#x2F;<br> NEW,</li>
+</ul>
+<p> &#x2F;**</p>
+<ul>
 <li>Thread state for a runnable thread.  A thread in the runnable</li>
 <li>state is executing in the Java virtual machine but it may</li>
 <li>be waiting for other resources from the operating system</li>
-<li><p>such as processor.<br>*/<br>RUNNABLE,</p>
-<p>/**</p>
-</li>
+<li>such as processor.<br>  *&#x2F;<br> RUNNABLE,</li>
+</ul>
+<p> &#x2F;**</p>
+<ul>
 <li>Thread state for a thread blocked waiting for a monitor lock.</li>
 <li>A thread in the blocked state is waiting for a monitor lock</li>
-<li>to enter a synchronized block/method or</li>
-<li>reenter a synchronized block/method after calling</li>
-<li><p>{@link Object#wait() Object.wait}.<br>*/<br>BLOCKED,</p>
-<p>/**</p>
-</li>
+<li>to enter a synchronized block&#x2F;method or</li>
+<li>reenter a synchronized block&#x2F;method after calling</li>
+<li>{@link Object#wait() Object.wait}.<br>  *&#x2F;<br> BLOCKED,</li>
+</ul>
+<p> &#x2F;**</p>
+<ul>
 <li>Thread state for a waiting thread.</li>
 <li>A thread is in the waiting state due to calling one of the</li>
 <li>following methods:</li>
-<li><ul></ul></li>
-<li></li><li>{@link Object#wait() Object.wait} with no timeout</li></ul></li>
-<li></li><li>{@link #join() Thread.join} with no timeout</li>
-<li></li><li>{@link LockSupport#park() LockSupport.park}</li>
-<li><br>*</li>
-<li><p>A thread in the waiting state is waiting for another thread to</p></li>
-<li>perform a particular action.<br>*</li>
+<li><ul></li>
+<li><li>{@link Object#wait() Object.wait} with no timeout</li></li>
+<li><li>{@link #join() Thread.join} with no timeout</li></li>
+<li><li>{@link LockSupport#park() LockSupport.park}</li></li>
+<li></ul></li>
+<li></li>
+<li><p>A thread in the waiting state is waiting for another thread to</li>
+<li>perform a particular action.</li>
+<li></li>
 <li>For example, a thread that has called <tt>Object.wait()</tt></li>
 <li>on an object is waiting for another thread to call</li>
 <li><tt>Object.notify()</tt> or <tt>Object.notifyAll()</tt> on</li>
 <li>that object. A thread that has called <tt>Thread.join()</tt></li>
-<li><p>is waiting for a specified thread to terminate.<br>*/<br>WAITING,</p>
-<p>/**</p>
-</li>
+<li>is waiting for a specified thread to terminate.<br>  *&#x2F;<br> WAITING,</li>
+</ul>
+<p> &#x2F;**</p>
+<ul>
 <li>Thread state for a waiting thread with a specified waiting time.</li>
 <li>A thread is in the timed waiting state due to calling one of</li>
 <li>the following methods with a specified positive waiting time:</li>
-<li><ul></ul></li>
-<li></li><li>{@link #sleep Thread.sleep}</li>
-<li></li><li>{@link Object#wait(long) Object.wait} with timeout</li>
-<li></li><li>{@link #join(long) Thread.join} with timeout</li>
-<li></li><li>{@link LockSupport#parkNanos LockSupport.parkNanos}</li>
-<li></li><li>{@link LockSupport#parkUntil LockSupport.parkUntil}</li>
-<li><p><br>*/<br>TIMED_WAITING,</p>
-<p>/**</p>
-</li>
+<li><ul></li>
+<li><li>{@link #sleep Thread.sleep}</li></li>
+<li><li>{@link Object#wait(long) Object.wait} with timeout</li></li>
+<li><li>{@link #join(long) Thread.join} with timeout</li></li>
+<li><li>{@link LockSupport#parkNanos LockSupport.parkNanos}</li></li>
+<li><li>{@link LockSupport#parkUntil LockSupport.parkUntil}</li></li>
+<li></ul>
+  */
+ TIMED_WAITING,</li>
+</ul>
+<p> &#x2F;**</p>
+<ul>
 <li>Thread state for a terminated thread.</li>
-<li>The thread has completed execution.<br>*/<br>TERMINATED;<br>}</li>
-
-
-
-
+<li>The thread has completed execution.<br>  *&#x2F;<br> TERMINATED;</li>
+</ul>
+</li>
+</ul>
+<p> }</p>
+</li>
 </ol>
 <h3 id="线程的常见方法"><a href="#线程的常见方法" class="headerlink" title="线程的常见方法"></a>线程的常见方法</h3><ol>
 <li><p>Thread.sleep():当前线程休眠,此时线程让出cpu，进入TIMED-WATING状态。如果该线程竞争到了锁，在执行该方法时不会释放锁。等睡眠时间过后，重新竞争cpu。</p>
@@ -571,7 +625,7 @@ public class ThreadDemo {
 </li>
 <li><p>Thread.holdLock(Object)：传入一个Object对象，返回bool值。当前线程是否持有该对象锁。</p>
 </li>
-<li><p>join()：当前执行该方法的线程进入WAITING状态。直到调用join方法的线程执行完毕或者别的线程调用interrupt方法报InterruptedException。Thread  a = new Thread(); a.join();原理是调用了线程实例a的wait方法。需强调，a.join(5000)只是让调用该方法的线程进入TIMED_WAITING状态，一旦过了5秒之后，执行改方法的线程将继续往下执行。</p>
+<li><p>join()：当前执行该方法的线程进入WAITING状态。直到调用join方法的线程执行完毕或者别的线程调用interrupt方法报InterruptedException。Thread  a &#x3D; new Thread(); a.join();原理是调用了线程实例a的wait方法。需强调，a.join(5000)只是让调用该方法的线程进入TIMED_WAITING状态，一旦过了5秒之后，执行改方法的线程将继续往下执行。</p>
 </li>
 <li><p>setDaemon()：设置该线程为守护线程。用户线程不全部退出，JVM不会退出。JVM退出，守护线程将死亡。</p>
 </li>
@@ -582,111 +636,112 @@ public class ThreadDemo {
 <li><p>isInterrupted()：测试某些线程是否已被中断。</p>
 </li>
 <li><p>interrupt()：当线程进入阻塞等待状态时，调用该方法会立刻报InterruptedException。退出BLOCKED或者WAITING状态。当线程为非阻塞状态，该方法会将Thread中的标志位设置为true，此时isInterrupted()返回为true。</p>
+<pre><code> /**
+  * Tests whether this thread has been interrupted.  The &lt;i&gt;interrupted
+  * status&lt;/i&gt; of the thread is unaffected by this method.
+  *
+  * &lt;p&gt;A thread interruption ignored because a thread was not alive
+  * at the time of the interrupt will be reflected by this method
+  * returning false.
+  *
+  * @return  &lt;code&gt;true&lt;/code&gt; if this thread has been interrupted;
+  *          &lt;code&gt;false&lt;/code&gt; otherwise.
+  * @see     #interrupted()
+  * @revised 6.0
+  */
+ public boolean isInterrupted() &#123;
+     return isInterrupted(false);
+ &#125;
+ 
+ 
+ /**
+  * Tests whether the current thread has been interrupted.  The
+  * &lt;i&gt;interrupted status&lt;/i&gt; of the thread is cleared by this method.  In
+  * other words, if this method were to be called twice in succession, the
+  * second call would return false (unless the current thread were
+  * interrupted again, after the first call had cleared its interrupted
+  * status and before the second call had examined it).
+  *
+  * &lt;p&gt;A thread interruption ignored because a thread was not alive
+  * at the time of the interrupt will be reflected by this method
+  * returning false.
+  *
+  * @return  &lt;code&gt;true&lt;/code&gt; if the current thread has been interrupted;
+  *          &lt;code&gt;false&lt;/code&gt; otherwise.
+  * @see #isInterrupted()
+  * @revised 6.0
+  */
+ public static boolean interrupted() &#123;
+     return currentThread().isInterrupted(true);
+ &#125;
+ 
+ 
+ /**
+  * Tests if some Thread has been interrupted.  The interrupted state
+  * is reset or not based on the value of ClearInterrupted that is
+  * passed.
+  */
+ private native boolean isInterrupted(boolean ClearInterrupted);
+ 
+ /**
+  * Interrupts this thread.
+  *
+  * &lt;p&gt; Unless the current thread is interrupting itself, which is
+  * always permitted, the &#123;@link #checkAccess() checkAccess&#125; method
+  * of this thread is invoked, which may cause a &#123;@link
+  * SecurityException&#125; to be thrown.
+  *
+  * &lt;p&gt; If this thread is blocked in an invocation of the &#123;@link
+  * Object#wait() wait()&#125;, &#123;@link Object#wait(long) wait(long)&#125;, or &#123;@link
+  * Object#wait(long, int) wait(long, int)&#125; methods of the &#123;@link Object&#125;
+  * class, or of the &#123;@link #join()&#125;, &#123;@link #join(long)&#125;, &#123;@link
+  * #join(long, int)&#125;, &#123;@link #sleep(long)&#125;, or &#123;@link #sleep(long, int)&#125;,
+  * methods of this class, then its interrupt status will be cleared and it
+  * will receive an &#123;@link InterruptedException&#125;.
+  *
+  * &lt;p&gt; If this thread is blocked in an I/O operation upon an &#123;@link
+  * java.nio.channels.InterruptibleChannel InterruptibleChannel&#125;
+  * then the channel will be closed, the thread&#39;s interrupt
+  * status will be set, and the thread will receive a &#123;@link
+  * java.nio.channels.ClosedByInterruptException&#125;.
+  *
+  * &lt;p&gt; If this thread is blocked in a &#123;@link java.nio.channels.Selector&#125;
+  * then the thread&#39;s interrupt status will be set and it will return
+  * immediately from the selection operation, possibly with a non-zero
+  * value, just as if the selector&#39;s &#123;@link
+  * java.nio.channels.Selector#wakeup wakeup&#125; method were invoked.
+  *
+  * &lt;p&gt; If none of the previous conditions hold then this thread&#39;s interrupt
+  * status will be set. &lt;/p&gt;
+  *
+  * &lt;p&gt; Interrupting a thread that is not alive need not have any effect.
+  *
+  * @throws  SecurityException
+  *          if the current thread cannot modify this thread
+  *
+  * @revised 6.0
+  * @spec JSR-51
+  */
+ public void interrupt() &#123;
+     if (this != Thread.currentThread())
+         checkAccess();
+
+     synchronized (blockerLock) &#123;
+         Interruptible b = blocker;
+         if (b != null) &#123;
+             interrupt0();           // Just to set the interrupt flag
+             b.interrupt(this);
+             return;
+         &#125;
+     &#125;
+     interrupt0();
+ &#125;
+</code></pre>
 </li>
 </ol>
-<pre><code>/**
- * Tests whether this thread has been interrupted.  The &lt;i&gt;interrupted
- * status&lt;/i&gt; of the thread is unaffected by this method.
- *
- * &lt;p&gt;A thread interruption ignored because a thread was not alive
- * at the time of the interrupt will be reflected by this method
- * returning false.
- *
- * @return  &lt;code&gt;true&lt;/code&gt; if this thread has been interrupted;
- *          &lt;code&gt;false&lt;/code&gt; otherwise.
- * @see     #interrupted()
- * @revised 6.0
- */
-public boolean isInterrupted() {
-    return isInterrupted(false);
-}
-
-
-/**
- * Tests whether the current thread has been interrupted.  The
- * &lt;i&gt;interrupted status&lt;/i&gt; of the thread is cleared by this method.  In
- * other words, if this method were to be called twice in succession, the
- * second call would return false (unless the current thread were
- * interrupted again, after the first call had cleared its interrupted
- * status and before the second call had examined it).
- *
- * &lt;p&gt;A thread interruption ignored because a thread was not alive
- * at the time of the interrupt will be reflected by this method
- * returning false.
- *
- * @return  &lt;code&gt;true&lt;/code&gt; if the current thread has been interrupted;
- *          &lt;code&gt;false&lt;/code&gt; otherwise.
- * @see #isInterrupted()
- * @revised 6.0
- */
-public static boolean interrupted() {
-    return currentThread().isInterrupted(true);
-}
-
-
-/**
- * Tests if some Thread has been interrupted.  The interrupted state
- * is reset or not based on the value of ClearInterrupted that is
- * passed.
- */
-private native boolean isInterrupted(boolean ClearInterrupted);
-
-/**
- * Interrupts this thread.
- *
- * &lt;p&gt; Unless the current thread is interrupting itself, which is
- * always permitted, the {@link #checkAccess() checkAccess} method
- * of this thread is invoked, which may cause a {@link
- * SecurityException} to be thrown.
- *
- * &lt;p&gt; If this thread is blocked in an invocation of the {@link
- * Object#wait() wait()}, {@link Object#wait(long) wait(long)}, or {@link
- * Object#wait(long, int) wait(long, int)} methods of the {@link Object}
- * class, or of the {@link #join()}, {@link #join(long)}, {@link
- * #join(long, int)}, {@link #sleep(long)}, or {@link #sleep(long, int)},
- * methods of this class, then its interrupt status will be cleared and it
- * will receive an {@link InterruptedException}.
- *
- * &lt;p&gt; If this thread is blocked in an I/O operation upon an {@link
- * java.nio.channels.InterruptibleChannel InterruptibleChannel}
- * then the channel will be closed, the thread&apos;s interrupt
- * status will be set, and the thread will receive a {@link
- * java.nio.channels.ClosedByInterruptException}.
- *
- * &lt;p&gt; If this thread is blocked in a {@link java.nio.channels.Selector}
- * then the thread&apos;s interrupt status will be set and it will return
- * immediately from the selection operation, possibly with a non-zero
- * value, just as if the selector&apos;s {@link
- * java.nio.channels.Selector#wakeup wakeup} method were invoked.
- *
- * &lt;p&gt; If none of the previous conditions hold then this thread&apos;s interrupt
- * status will be set. &lt;/p&gt;
- *
- * &lt;p&gt; Interrupting a thread that is not alive need not have any effect.
- *
- * @throws  SecurityException
- *          if the current thread cannot modify this thread
- *
- * @revised 6.0
- * @spec JSR-51
- */
-public void interrupt() {
-    if (this != Thread.currentThread())
-        checkAccess();
-
-    synchronized (blockerLock) {
-        Interruptible b = blocker;
-        if (b != null) {
-            interrupt0();           // Just to set the interrupt flag
-            b.interrupt(this);
-            return;
-        }
-    }
-    interrupt0();
-}
-</code></pre><h4 id="sleep和wait方法的区别："><a href="#sleep和wait方法的区别：" class="headerlink" title="sleep和wait方法的区别："></a>sleep和wait方法的区别：</h4><ol>
+<h4 id="sleep和wait方法的区别："><a href="#sleep和wait方法的区别：" class="headerlink" title="sleep和wait方法的区别："></a>sleep和wait方法的区别：</h4><ol>
 <li>sleep()是Thread的方法，调用该方法后，当前线程休眠,此时线程让出cpu，进入TIMED-WATING状态。执行该方法时不会释放锁。</li>
-<li>wait() 是Object的方法，调用该方法后，当前线程进入WAITING状态。此方法一般和synchronized一起使用，会释放锁。需要notify()/notifyAll()方法唤醒。</li>
+<li>wait() 是Object的方法，调用该方法后，当前线程进入WAITING状态。此方法一般和synchronized一起使用，会释放锁。需要notify()&#x2F;notifyAll()方法唤醒。</li>
 </ol>
 <h4 id="线程结束的几种方法"><a href="#线程结束的几种方法" class="headerlink" title="线程结束的几种方法:"></a>线程结束的几种方法:</h4><ol>
 <li>正常执行完逻辑代码。</li>
@@ -697,8 +752,7 @@ public void interrupt() {
 <h4 id="三个方法区别：isInterrupt-，interrupt-Thread-interrupted"><a href="#三个方法区别：isInterrupt-，interrupt-Thread-interrupted" class="headerlink" title="三个方法区别：isInterrupt()，interrupt(),Thread.interrupted()"></a>三个方法区别：isInterrupt()，interrupt(),Thread.interrupted()</h4><ol>
 <li>isInterrupt()：只返回当前线程是否中断的标记位。</li>
 <li>Thread.interrupted()：将标记位reset。此时再调用isInterrupt()返回的是false</li>
-<li>interrupt()：阻塞状态时：捕获InterruptException异常<pre><code>非阻塞状态时：将当前线程标记位，设置为true。
-</code></pre></li>
+<li>interrupt()：阻塞状态时：捕获InterruptException异常<br>         非阻塞状态时：将当前线程标记位，设置为true。</li>
 </ol>
 <h2 id="非阻塞情况下的三种代码测试"><a href="#非阻塞情况下的三种代码测试" class="headerlink" title="非阻塞情况下的三种代码测试"></a>非阻塞情况下的三种代码测试</h2><pre><code>/**
  * @author jtl
@@ -706,81 +760,83 @@ public void interrupt() {
  * 非阻塞情况下的三种代码测试
  */
 
-class ThreadTest {
+class ThreadTest &#123;
 
-    public static void main(String[] args) throws InterruptedException {
-        Thread thread = new Thread(new Runnable() {
+    public static void main(String[] args) throws InterruptedException &#123;
+        Thread thread = new Thread(new Runnable() &#123;
             @Override
-            public void run() {
+            public void run() &#123;
                 int count = 0;
                 //线程中断标记位为false。执行while循环
-                while (!Thread.currentThread().isInterrupted()) {
-                    try {
-                        if (count &lt; 100) {
+                while (!Thread.currentThread().isInterrupted()) &#123;
+                    try &#123;
+                        if (count &lt; 100) &#123;
                             boolean a = Thread.currentThread().isInterrupted();
                             System.out.println(&quot;isInterrupted:&quot; + a + &quot;  &quot; + count++);
                             Thread.sleep(50);
-                        } else if (count&gt;=100 &amp;&amp; count&lt;200){
+                        &#125; else if (count&gt;=100 &amp;&amp; count&lt;200)&#123;
                             boolean a = Thread.currentThread().isInterrupted();//标记位为：false
                             Thread.currentThread().interrupt();//标记位设置为：true
                             boolean b = Thread.currentThread().isInterrupted();
                             Thread.interrupted();//标记位reset，此时标记位为：false。所以循环不会退出
                             boolean c = Thread.currentThread().isInterrupted();
                             System.out.println(&quot;isInterrupted:before:&quot; + a + &quot;  isInterrupted:after:&quot; + b + &quot;  isInterrupted:after:&quot; + c + &quot;  &quot; + count++);
-                        }else{
+                        &#125;else&#123;
                             boolean a = Thread.currentThread().isInterrupted();//标记位为：false
                             Thread.currentThread().interrupt();//标记位设置为：true。因为是非阻塞线程，所以不会捕获异常
                             boolean b = Thread.currentThread().isInterrupted();//标记位为：true
                             System.out.println(&quot;isInterrupted:before:&quot; + a + &quot;  isInterrupted:after:&quot; + b + &quot;  &quot; + count++);
                             count = 0;
-                        }
-                    } catch (InterruptedException e) {
+                        &#125;
+                    &#125; catch (InterruptedException e) &#123;
                         e.printStackTrace();
                         System.out.println(&quot;InterruptedException:&quot;+ count + e.getMessage());
                         break;//退出循环
-                    }
-                }
-            }
-        });
+                    &#125;
+                &#125;
+            &#125;
+        &#125;);
         thread.start();
         thread.join();//此处用join方法，wait住主线程，让主线程等待thread线程执行完毕
 
         System.out.println(&quot;join:&quot; + &quot; interrupted:&quot; + thread.isInterrupted());
-    }
-}
-</code></pre><h2 id="阻塞情况下的执行interrupt方法测试"><a href="#阻塞情况下的执行interrupt方法测试" class="headerlink" title="阻塞情况下的执行interrupt方法测试"></a>阻塞情况下的执行interrupt方法测试</h2><pre><code>/**
+    &#125;
+&#125;
+</code></pre>
+<h2 id="阻塞情况下的执行interrupt方法测试"><a href="#阻塞情况下的执行interrupt方法测试" class="headerlink" title="阻塞情况下的执行interrupt方法测试"></a>阻塞情况下的执行interrupt方法测试</h2><pre><code>/**
  * @author jtl
  * @date 2020/3/24 10:49
  * 阻塞情况下的执行interrupt方法测试
  */
 
-class ThreadTest {
+class ThreadTest &#123;
 
 
-    public static void main(String[] args) throws InterruptedException {
-        Thread thread = new Thread(new Runnable() {
+    public static void main(String[] args) throws InterruptedException &#123;
+        Thread thread = new Thread(new Runnable() &#123;
             @Override
-            public void run() {
-                try {
+            public void run() &#123;
+                try &#123;
                     System.out.println(&quot;线程执行：sleep前&quot;);
                     //线程睡10秒
                     Thread.sleep(10000);
                     System.out.println(&quot;线程执行：sleep后&quot;);
-                } catch (InterruptedException e) {
+                &#125; catch (InterruptedException e) &#123;
                     e.printStackTrace();
                     System.out.println(&quot;线程异常：&quot;+e.getMessage());
-                }
-            }
-        });
+                &#125;
+            &#125;
+        &#125;);
         thread.start();
 
         Thread.sleep(1000);
         System.out.println(&quot;Thread标记位：&quot;+thread.isInterrupted());//thread线程阻塞。此时标记位为默认的false
         thread.interrupt();//thread线程阻塞。执行interrupt()方法捕获异常
         System.out.println(&quot;Thread标记位：&quot;+thread.isInterrupted());//thread线程。此时标记位为true
-    }
-}
+    &#125;
+&#125;
 </code></pre>
+
       
 
       
@@ -803,7 +859,7 @@ class ThreadTest {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/11/Java多线程常用方法分析/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/03/11/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E5%88%86%E6%9E%90/">展开全文 >></a>
         </p>
       
 
@@ -840,12 +896,12 @@ class ThreadTest {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/01/09/Dialog圆角问题/">Dialog圆角问题</a>
+      <a class="article-title" href="/2021/01/09/Dialog%E5%9C%86%E8%A7%92%E9%97%AE%E9%A2%98/">Dialog圆角问题</a>
     </h1>
   
 
         
-        <a href="/2021/01/09/Dialog圆角问题/" class="archive-article-date">
+        <a href="/2021/01/09/Dialog%E5%9C%86%E8%A7%92%E9%97%AE%E9%A2%98/" class="archive-article-date">
   	<time datetime="2021-01-09T11:45:01.669Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-09</time>
 </a>
         
@@ -857,20 +913,24 @@ class ThreadTest {
 <p>同样是setBackgroundDrawableResource或setBackgroundDrawable无效的问题; 共分两种情形, 一是有标题的Dialog, 另一种是无标题的Dialog</p>
 <h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>Dialog设置背景实质上用的是Dialog.setContentView方法, 而Android系统提供的Dialog本身是有标题的布局空间的, 当通过Window设置把标题隐藏掉后, 无标题下做个圆角是给剩下的FrameLayout做圆角, 这样就很好理解了。</p>
 <h2 id="控制Dialog标题显示隐藏的方式"><a href="#控制Dialog标题显示隐藏的方式" class="headerlink" title="控制Dialog标题显示隐藏的方式"></a>控制Dialog标题显示隐藏的方式</h2><pre><code>requestWindowFeature(Window.FEATURE_NO_TITLE)
-</code></pre><p>or</p>
+</code></pre>
+<p>or</p>
 <pre><code>&lt;style name=&quot;AndoDialog&quot;&gt;
         &lt;item name=&quot;android:windowNoTitle&quot;&gt;false&lt;/item&gt;&lt;!--false 有标题 true无标题--&gt;
 &lt;/style&gt;
-</code></pre><h3 id="有标题"><a href="#有标题" class="headerlink" title="有标题"></a>有标题</h3><p>直接设置window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom)即可, 并不是一些博客中所说的如下配置:</p>
+</code></pre>
+<h3 id="有标题"><a href="#有标题" class="headerlink" title="有标题"></a>有标题</h3><p>直接设置window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom)即可, 并不是一些博客中所说的如下配置:</p>
 <pre><code>//没用
 window.setBackgroundDrawableResource(android.R.color.transparent)
 window.decorView.setPadding(0, 0, 0, 0)
-</code></pre><h3 id="无标题"><a href="#无标题" class="headerlink" title="无标题"></a>无标题</h3><p>无标题处理圆角问题, 就是给FrameLayout做圆角</p>
-<p>无标题时 window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom) 设置不生效, 需要对Dialog的布局文件进行调整。 如底部弹窗左上角和右上角是圆角, 设置圆角背景的同时加上paddingXXX属性,数值与<br>drawable中android:xxxRadius=”10dp”相等。</p>
+</code></pre>
+<h3 id="无标题"><a href="#无标题" class="headerlink" title="无标题"></a>无标题</h3><p>无标题处理圆角问题, 就是给FrameLayout做圆角</p>
+<p>无标题时 window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom) 设置不生效, 需要对Dialog的布局文件进行调整。 如底部弹窗左上角和右上角是圆角, 设置圆角背景的同时加上paddingXXX属性,数值与<br>drawable中android:xxxRadius&#x3D;”10dp”相等。</p>
 <pre><code>//Dialog顶层布局中
 android:paddingTop=&quot;10&quot;
 android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
-</code></pre><h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><p>rectangle_ando_dialog_bottom.xml</p>
+</code></pre>
+<h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><p>rectangle_ando_dialog_bottom.xml</p>
 <pre><code> &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
     android:shape=&quot;rectangle&quot;&gt;
@@ -881,6 +941,7 @@ android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
     &lt;solid android:color=&quot;@color/color_ando_dialog_white&quot; /&gt;
 &lt;/shape&gt;
 </code></pre>
+
       
 
       
@@ -903,7 +964,7 @@ android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/01/09/Dialog圆角问题/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/01/09/Dialog%E5%9C%86%E8%A7%92%E9%97%AE%E9%A2%98/">展开全文 >></a>
         </p>
       
 
@@ -940,12 +1001,12 @@ android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/">用100行代码构建一个多样式RecyclerView适配器</a>
+      <a class="article-title" href="/2021/01/09/%E7%94%A8100%E8%A1%8C%E4%BB%A3%E7%A0%81%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%A4%9A%E6%A0%B7%E5%BC%8FRecyclerView%E9%80%82%E9%85%8D%E5%99%A8/">用100行代码构建一个多样式RecyclerView适配器</a>
     </h1>
   
 
         
-        <a href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/" class="archive-article-date">
+        <a href="/2021/01/09/%E7%94%A8100%E8%A1%8C%E4%BB%A3%E7%A0%81%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%A4%9A%E6%A0%B7%E5%BC%8FRecyclerView%E9%80%82%E9%85%8D%E5%99%A8/" class="archive-article-date">
   	<time datetime="2021-01-09T11:39:21.155Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-09</time>
 </a>
         
@@ -956,7 +1017,7 @@ android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>RecyclerView多样式布局的框架有很多，大家熟悉已久的BaseRecyclerViewAdapterHelper，vlayout等等，包括google在新版本RecyclerView中推出的MergeAdapter(后面重命名为ConcatAdapter了)等。既然有这么多现成的框架，为什么还要去自己编写一个呢?很多时候这些框架考虑的都是常见通用性场景，在某些奇葩的产品设计需求中也许并不适用，这也是这篇文章出现的原因。</p>
 <p>目前多样式适配器框架总体的设计方案有两种，一种是BaseRecyclerViewAdapterHelper这种极度简化开发者编写的代码量，用最简洁的方式去实现多样式。另外一种就是ConcatAdapter这种，将每种样式设计为单独模块(子适配器)，视图创建，数据绑定都在该模块内部处理，再用一个主适配器将这些子适配器进行包装关联。本文采用的是第二种设计方式。</p>
 <h2 id="由于代码量极少，下面就不多说了，直接贴代码："><a href="#由于代码量极少，下面就不多说了，直接贴代码：" class="headerlink" title="由于代码量极少，下面就不多说了，直接贴代码："></a>由于代码量极少，下面就不多说了，直接贴代码：</h2><h3 id="1-视图构建器，保持原生api命名方式"><a href="#1-视图构建器，保持原生api命名方式" class="headerlink" title="1. 视图构建器，保持原生api命名方式"></a>1. 视图构建器，保持原生api命名方式</h3><pre><code>&lt;ViewTypeCreator.kt&gt;
-abstract class ViewTypeCreator&lt;T, VH : ViewHolder&gt; {
+abstract class ViewTypeCreator&lt;T, VH : ViewHolder&gt; &#123;
 
     abstract fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): VH
 
@@ -966,121 +1027,125 @@ abstract class ViewTypeCreator&lt;T, VH : ViewHolder&gt; {
 
     open fun getItemId(position: Int) = RecyclerView.NO_ID
 
-}
-</code></pre><h3 id="2-数据适配器"><a href="#2-数据适配器" class="headerlink" title="2.数据适配器"></a>2.数据适配器</h3><pre><code>&lt;MultiTypeAdapter.kt&gt;
-abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() {
+&#125;
+</code></pre>
+<h3 id="2-数据适配器"><a href="#2-数据适配器" class="headerlink" title="2.数据适配器"></a>2.数据适配器</h3><pre><code>&lt;MultiTypeAdapter.kt&gt;
+abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() &#123;
     private val dataCache: ArrayList&lt;Class&lt;*&gt;&gt; = ArrayList()
     private val creatorCache: SparseArray&lt;SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt;&gt; = SparseArray()
     private val viewTypeCache: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = SparseArray()
 
     abstract fun getData(position: Int): Any
 
-    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) {
+    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) &#123;
         registerCreatorInner(T::class.java, creator)
-    }
+    &#125;
 
-    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) {
+    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) &#123;
         var index = dataCache.indexOf(clazz)
-        if (index == -1) {
+        if (index == -1) &#123;
             dataCache.add(clazz)
             index = dataCache.size - 1
-        }
+        &#125;
         var cache = creatorCache[index]
-        if (cache == null) {
+        if (cache == null) &#123;
             cache = SparseArray()
-        }
+        &#125;
         val id = System.identityHashCode(creator)
         @Suppress(&quot;UNCHECKED_CAST&quot;)
         cache.put(id, creator as ViewTypeCreator&lt;Any, *&gt;)
         creatorCache.put(index, cache)
-    }
+    &#125;
 
-    override fun getItemViewType(position: Int): Int {
+    override fun getItemViewType(position: Int): Int &#123;
         val data = getData(position)
         val viewType = getCreatorViewType(data)
-        return if (viewType != -1) {
+        return if (viewType != -1) &#123;
             viewType
-        } else
+        &#125; else
             super.getItemViewType(position)
-    }
+    &#125;
 
-    override fun getItemId(position: Int): Long {
+    override fun getItemId(position: Int): Long &#123;
         val itemViewType = getItemViewType(position)
         val viewCreator = getViewCreatorByViewType(itemViewType)
         return viewCreator.getItemId(position)
-    }
+    &#125;
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder &#123;
         val viewCreator: ViewTypeCreator&lt;*, *&gt; = getViewCreatorByViewType(viewType)
         return viewCreator.onCreateViewHolder(LayoutInflater.from(parent.context), parent)
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) &#123;
         val data = getData(position)
         @Suppress(&quot;UNCHECKED_CAST&quot;)
         val viewCreator: ViewTypeCreator&lt;Any, ViewHolder&gt; =
             getViewCreatorByViewType(getItemViewType(position)) as ViewTypeCreator&lt;Any, ViewHolder&gt;
         viewCreator.onBindViewHolder(holder, data)
-    }
+    &#125;
 
-    private fun getCreatorViewType(data: Any): Int {
+    private fun getCreatorViewType(data: Any): Int &#123;
         val clazz: Class&lt;*&gt; = data::class.java
         var viewType: Int
         val index = dataCache.indexOf(clazz)
-        if (dataCache.size &gt; 0 &amp;&amp; index != -1) {
+        if (dataCache.size &gt; 0 &amp;&amp; index != -1) &#123;
             val creators: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = creatorCache[index]
             // The Data bind more than one viewTypeCreator.
-            if (creators.size() &gt; 1) {
-                creators.forEach { id, viewCreator -&gt;
-                    if (viewCreator.match(data)) {
+            if (creators.size() &gt; 1) &#123;
+                creators.forEach &#123; id, viewCreator -&gt;
+                    if (viewCreator.match(data)) &#123;
                         viewType = id
-                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
+                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) &#123;
                             viewTypeCache.put(viewType, viewCreator)
-                        }
+                        &#125;
                         return viewType
-                    }
-                }
-            }
+                    &#125;
+                &#125;
+            &#125;
             // The Data only bind one viewTypeCreator.
-            else if (creators.size() == 1) {
+            else if (creators.size() == 1) &#123;
                 viewType = creators.keyAt(0)
-                if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
+                if (viewTypeCache.indexOfKey(viewType) &lt; 0) &#123;
                     viewTypeCache.put(viewType, creators.valueAt(0))
-                }
+                &#125;
                 return viewType
-            }
-        }
+            &#125;
+        &#125;
         throw RuntimeException(&quot;Current dataType [$clazz] is not found in DataTypeCache:\n$dataCache \nPlease check the Type of data for your custom creator.&quot;)
-    }
+    &#125;
 
-    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; {
+    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; &#123;
         return viewTypeCache[viewType]
-    }
-}
-</code></pre><h2 id="好了，代码就这么多，下面简单介绍下原理："><a href="#好了，代码就这么多，下面简单介绍下原理：" class="headerlink" title="好了，代码就这么多，下面简单介绍下原理："></a>好了，代码就这么多，下面简单介绍下原理：</h2><h3 id="1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法"><a href="#1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法" class="headerlink" title="1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:"></a>1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:</h3><pre><code>fun match(data: T): Boolean
-</code></pre><p>这里面接收一个数据类型参数，需要返回一个Boolean值，通常的产品设计常见一种数据类型应该是对应一种视图类型，但是就是存在这么奇葩的设计，比如返回一个Person数据类型，如果sex为男需要展示一种样式(左右布局:头像在左边，右边显示简介)，如果sex为女则需要展示另一种样式(上下布局:头像在中间，下面显示简介)，这样的场景就可以这样定义两种视图:</p>
+    &#125;
+&#125;
+</code></pre>
+<h2 id="好了，代码就这么多，下面简单介绍下原理："><a href="#好了，代码就这么多，下面简单介绍下原理：" class="headerlink" title="好了，代码就这么多，下面简单介绍下原理："></a>好了，代码就这么多，下面简单介绍下原理：</h2><h3 id="1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法"><a href="#1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法" class="headerlink" title="1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:"></a>1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:</h3><pre><code>fun match(data: T): Boolean
+</code></pre>
+<p>这里面接收一个数据类型参数，需要返回一个Boolean值，通常的产品设计常见一种数据类型应该是对应一种视图类型，但是就是存在这么奇葩的设计，比如返回一个Person数据类型，如果sex为男需要展示一种样式(左右布局:头像在左边，右边显示简介)，如果sex为女则需要展示另一种样式(上下布局:头像在中间，下面显示简介)，这样的场景就可以这样定义两种视图:</p>
 <pre><code>&lt;ManCreator.kt&gt;
-class ManCreator : ViewTypeCreator&lt;Person, ManCreator.Holder&gt;() {
+class ManCreator : ViewTypeCreator&lt;Person, ManCreator.Holder&gt;() &#123;
     ...
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder &#123;
         return Holder(inflater.inflate(R.layout.view_type_man, parent, false))
-    }
+    &#125;
     // 当person为男性的时候会通过该Creator创建视图
     override fun match(data: Person) = data.sex == Sex.MAN
-}
+&#125;
 
 &lt;WomanCreator.kt&gt;
-class WomanCreator : ViewTypeCreator&lt;Person, WomanCreator.Holder&gt;() {
+class WomanCreator : ViewTypeCreator&lt;Person, WomanCreator.Holder&gt;() &#123;
     ...
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder &#123;
         return Holder(inflater.inflate(R.layout.view_type_female, parent, false))
-    }
+    &#125;
     // 当person为女性的时候会通过该Creator创建视图
     override fun match(data: Person) = data.sex == Sex.WOMAN
-}
-</code></pre><h3 id="2-适配器，当然是继承RecyclerView-Adapter"><a href="#2-适配器，当然是继承RecyclerView-Adapter" class="headerlink" title="2.适配器，当然是继承RecyclerView.Adapter"></a>2.适配器，当然是继承RecyclerView.Adapter</h3><p>先介绍一下3个缓存：</p>
+&#125;
+</code></pre>
+<h3 id="2-适配器，当然是继承RecyclerView-Adapter"><a href="#2-适配器，当然是继承RecyclerView-Adapter" class="headerlink" title="2.适配器，当然是继承RecyclerView.Adapter"></a>2.适配器，当然是继承RecyclerView.Adapter</h3><p>先介绍一下3个缓存：</p>
 <pre><code>&lt;MultiTypeAdapter.kt&gt;
-abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() {
+abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() &#123;
     // 按数据顺序，存储数据类型
     private val dataCache: ArrayList&lt;Class&lt;*&gt;&gt; = ArrayList()// [DataType]
     // 存储ViewTypeCreator，索引为该数据类型在缓存的下标，由于一个数据类型可对应多个Creator，
@@ -1088,194 +1153,202 @@ abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() {
     private val creatorCache: SparseArray&lt;SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt;&gt; = SparseArray()// DataTypeIndex - [ViewTypeCreators]
     // 存储ViewTypeCreator，索引为对应的viewType，一对一的关系，该缓存是为了快速查找
     private val viewTypeCache: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = SparseArray()// ViewType - ViewTypeCreator
-}
-</code></pre><p>接下来看下注册视图构建器的方法：</p>
+&#125;
+</code></pre>
+<p>接下来看下注册视图构建器的方法：</p>
 <pre><code>&lt;MultiTypeAdapter.kt&gt;
     // 自动读取泛型Data数据的类型进行存储
-    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) {
+    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) &#123;
         registerCreatorInner(T::class.java, creator)
-    }
+    &#125;
 
-    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) {
+    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) &#123;
         var index = dataCache.indexOf(clazz)
-        if (index == -1) {
+        if (index == -1) &#123;
             // 如果没有存储过进行缓存
             dataCache.add(clazz)
             index = dataCache.size - 1
-        }
+        &#125;
         // 初始化该Data数据类型对应的ViewTypeCreator集合
         var cache = creatorCache[index]
-        if (cache == null) {
+        if (cache == null) &#123;
             cache = SparseArray()
-        }
+        &#125;
         // 构造唯一标识作为索引
         val id = System.identityHashCode(creator)
         @Suppress(&quot;UNCHECKED_CAST&quot;)
         cache.put(id, creator as ViewTypeCreator&lt;Any, *&gt;)
         creatorCache.put(index, cache)
-    }
-</code></pre><p>最后按照RecyclerView.Adapter调用流程分析下原理：</p>
+    &#125;
+</code></pre>
+<p>最后按照RecyclerView.Adapter调用流程分析下原理：</p>
 <pre><code>&lt;MultiTypeAdapter.kt&gt;
     // 获取当前索引的数据
     abstract fun getData(position: Int): Any
 
-    override fun getItemViewType(position: Int): Int {
+    override fun getItemViewType(position: Int): Int &#123;
         val data = getData(position)// 1.获取当前索引对应的数据
         val viewType = getCreatorViewType(data)// 2.根据当前数据获取ViewType
-        return if (viewType != -1) {
+        return if (viewType != -1) &#123;
             viewType
-        } else
+        &#125; else
             super.getItemViewType(position)
-    }
+    &#125;
 
-    private fun getCreatorViewType(data: Any): Int {
+    private fun getCreatorViewType(data: Any): Int &#123;
         val clazz: Class&lt;*&gt; = data::class.java// 获取data数据的class类型
         var viewType: Int
         val index = dataCache.indexOf(clazz)// 查找出该data在缓存中的索引
-        if (dataCache.size &gt; 0 &amp;&amp; index != -1) {// 判断是否注册过该data对应的ViewTypeCreator
+        if (dataCache.size &gt; 0 &amp;&amp; index != -1) &#123;// 判断是否注册过该data对应的ViewTypeCreator
             val creators: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = creatorCache[index]// 获取该data对应的ViewTypeCreator集合
             // The Data bind more than one viewTypeCreator.
-            if (creators.size() &gt; 1) {// 一个data数据对应多种viewType
-                creators.forEach { id, viewCreator -&gt;
-                    if (viewCreator.match(data)) {// 遍历ViewTypeCreator，并且判断是否符合条件，也就是上面说的match匹配方法
+            if (creators.size() &gt; 1) &#123;// 一个data数据对应多种viewType
+                creators.forEach &#123; id, viewCreator -&gt;
+                    if (viewCreator.match(data)) &#123;// 遍历ViewTypeCreator，并且判断是否符合条件，也就是上面说的match匹配方法
                         viewType = id// viewType就是上面根据ViewTypeCreator实例获取到的唯一id：System.identityHashCode
-                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) {// 如果viewTypeCache没有缓存过，则添加入缓存
+                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) &#123;// 如果viewTypeCache没有缓存过，则添加入缓存
                             viewTypeCache.put(viewType, viewCreator)// 这一级缓存是为了能够快速根据viewType查找对应的ViewTypeCreator
-                        }
+                        &#125;
                         return viewType
-                    }
-                }
-            }
+                    &#125;
+                &#125;
+            &#125;
             // The Data only bind one viewTypeCreator.
-            else if (creators.size() == 1) {// 一个data数据对应一种viewType
+            else if (creators.size() == 1) &#123;// 一个data数据对应一种viewType
                 viewType = creators.keyAt(0)
-                if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
+                if (viewTypeCache.indexOfKey(viewType) &lt; 0) &#123;
                     viewTypeCache.put(viewType, creators.valueAt(0))
-                }
+                &#125;
                 return viewType
-            }
-        }
+            &#125;
+        &#125;
         throw RuntimeException(&quot;Current dataType [$clazz] is not found in DataTypeCache:\n$dataCache \nPlease check the Type of data for your custom creator.&quot;)
-    }
+    &#125;
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder &#123;
         // 根据viewType查找到对应的ViewTypeCreator，并且通过onCreateViewHolder构建Holer视图
         val viewCreator: ViewTypeCreator&lt;*, *&gt; = getViewCreatorByViewType(viewType)
         return viewCreator.onCreateViewHolder(LayoutInflater.from(parent.context), parent)
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) &#123;
         // 根据viewType查找到对应的ViewTypeCreator，并且通过onBindViewHolder绑定数据
         val data = getData(position)
         @Suppress(&quot;UNCHECKED_CAST&quot;)
         val viewCreator: ViewTypeCreator&lt;Any, ViewHolder&gt; =
             getViewCreatorByViewType(getItemViewType(position)) as ViewTypeCreator&lt;Any, ViewHolder&gt;
         viewCreator.onBindViewHolder(holder, data)
-    }
+    &#125;
 
     // 根据viewType查找到对应的ViewTypeCreator
-    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; {
+    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; &#123;
         return viewTypeCache[viewType]
-    }
-</code></pre><p>以上就是MultiTypeAdapter的所有代码</p>
+    &#125;
+
+        
+</code></pre>
+<p>以上就是MultiTypeAdapter的所有代码</p>
 <h3 id="3-下面举个使用案例："><a href="#3-下面举个使用案例：" class="headerlink" title="3.下面举个使用案例："></a>3.下面举个使用案例：</h3><p>先定义一个适配器，继承MultiTypeAdapter</p>
-<pre><code>class SampleAdapter : MultiTypeAdapter() {
+<pre><code>class SampleAdapter : MultiTypeAdapter() &#123;
 
     val data = mutableListOf&lt;Any&gt;()
 
     override fun getData(position: Int) = data[position]
 
     override fun getItemCount() = data.size
-}
-</code></pre><p>定义两种展示文字和一种展示图片的viewType</p>
+&#125;
+</code></pre>
+<p>定义两种展示文字和一种展示图片的viewType</p>
 <pre><code>// 文字数据类型定义：包含主标题和副标题
 data class Title(val mainTitle: String = &quot;&quot;, val subTitle: String = &quot;&quot;)
 // 文字样式1
-class MainTitleCreator : ViewTypeCreator&lt;Title, MainTitleCreator.Holder&gt;() {
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class MainTitleCreator : ViewTypeCreator&lt;Title, MainTitleCreator.Holder&gt;() &#123;
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) &#123;
         val title: TextView = itemView.findViewById(R.id.main_title)
-    }
+    &#125;
 
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder &#123;
         return Holder(inflater.inflate(R.layout.view_type_main_title, parent, false))
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: Holder, data: Title) {
+    override fun onBindViewHolder(holder: Holder, data: Title) &#123;
         holder.title.text = data.mainTitle
-    }
+    &#125;
 
-    override fun match(data: Title): Boolean {
+    override fun match(data: Title): Boolean &#123;
         return !TextUtils.isEmpty(data.mainTitle) &amp;&amp; TextUtils.isEmpty(data.subTitle)
-    }
-}
+    &#125;
+&#125;
 // 文字样式2
-class SubTitleCreator : ViewTypeCreator&lt;Title, SubTitleCreator.Holder&gt;() {
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class SubTitleCreator : ViewTypeCreator&lt;Title, SubTitleCreator.Holder&gt;() &#123;
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) &#123;
         val title: TextView = itemView.findViewById(R.id.sub_title)
-    }
+    &#125;
 
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder &#123;
         return Holder(inflater.inflate(R.layout.view_type_sub_title, parent, false))
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: Holder, data: Title) {
+    override fun onBindViewHolder(holder: Holder, data: Title) &#123;
         holder.title.text = data.subTitle
-    }
+    &#125;
 
-    override fun match(data: Title): Boolean {
+    override fun match(data: Title): Boolean &#123;
         return !TextUtils.isEmpty(data.subTitle) &amp;&amp; TextUtils.isEmpty(data.mainTitle)
-    }
-}
+    &#125;
+&#125;
 
 // 图片样式
-class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() &#123;
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) &#123;
         val image: ImageView = itemView.findViewById(R.id.image)
-    }
+    &#125;
 
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder &#123;
         return Holder(inflater.inflate(R.layout.view_type_image, parent, false))
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: Holder, data: Int) {
+    override fun onBindViewHolder(holder: Holder, data: Int) &#123;
         holder.image.setImageResource(data)
-    }
+    &#125;
 
-    override fun match(data: Int): Boolean {
+    override fun match(data: Int): Boolean &#123;
         return false
-    }
-}
-</code></pre><p>注册viewTypeCreator</p>
-<pre><code>class MainActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        recycler_view.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        val adapter = SampleAdapter().apply {
-            // image type
-            registerCreator(ImageCreator())
-            // text type
-            registerCreator(TextCreator())
-            // the same bean but different view type
-            registerCreator(MainTitleCreator())
-            registerCreator(SubTitleCreator())
-        }
-        fillData(adapter)
-        recycler_view.adapter = adapter
-    }
-
-    private fun fillData(adapter: SampleAdapter) {
-        for (i in 0..10) {
-            adapter.data.run {
-                add(R.drawable.test)
-                add(&quot;I am string&quot;)
-                add(Title(&quot;I am MainTitle&quot;))
-                add(Title(&quot;&quot;, &quot;I am SubTitle&quot;))
-            }
-        }
-    }
+    &#125;
+&#125;
 </code></pre>
+<p>注册viewTypeCreator</p>
+<pre><code>    class MainActivity : AppCompatActivity() &#123;
+    
+        override fun onCreate(savedInstanceState: Bundle?) &#123;
+            super.onCreate(savedInstanceState)
+            setContentView(R.layout.activity_main)
+            recycler_view.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+            val adapter = SampleAdapter().apply &#123;
+                // image type
+                registerCreator(ImageCreator())
+                // text type
+                registerCreator(TextCreator())
+                // the same bean but different view type
+                registerCreator(MainTitleCreator())
+                registerCreator(SubTitleCreator())
+            &#125;
+            fillData(adapter)
+            recycler_view.adapter = adapter
+        &#125;
+    
+        private fun fillData(adapter: SampleAdapter) &#123;
+            for (i in 0..10) &#123;
+                adapter.data.run &#123;
+                    add(R.drawable.test)
+                    add(&quot;I am string&quot;)
+                    add(Title(&quot;I am MainTitle&quot;))
+                    add(Title(&quot;&quot;, &quot;I am SubTitle&quot;))
+                &#125;
+            &#125;
+        &#125;
+</code></pre>
+
       
 
       
@@ -1298,7 +1371,7 @@ class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/01/09/%E7%94%A8100%E8%A1%8C%E4%BB%A3%E7%A0%81%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%A4%9A%E6%A0%B7%E5%BC%8FRecyclerView%E9%80%82%E9%85%8D%E5%99%A8/">展开全文 >></a>
         </p>
       
 
@@ -1335,12 +1408,12 @@ class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/01/07/Flutter&Android启动页(闪屏页)的加载流程和优化方案/">Flutter&amp;Android启动页(闪屏页)的加载流程和优化方案</a>
+      <a class="article-title" href="/2021/01/07/Flutter&Android%E5%90%AF%E5%8A%A8%E9%A1%B5(%E9%97%AA%E5%B1%8F%E9%A1%B5)%E7%9A%84%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B%E5%92%8C%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/">Flutter&amp;Android启动页(闪屏页)的加载流程和优化方案</a>
     </h1>
   
 
         
-        <a href="/2021/01/07/Flutter&Android启动页(闪屏页)的加载流程和优化方案/" class="archive-article-date">
+        <a href="/2021/01/07/Flutter&Android%E5%90%AF%E5%8A%A8%E9%A1%B5(%E9%97%AA%E5%B1%8F%E9%A1%B5)%E7%9A%84%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B%E5%92%8C%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/" class="archive-article-date">
   	<time datetime="2021-01-07T05:58:28.191Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-07</time>
 </a>
         
@@ -1361,7 +1434,9 @@ class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
           android:name=&quot;io.flutter.embedding.android.SplashScreenDrawable&quot;
           android:resource=&quot;@drawable/launch_background&quot;
  /&gt;
-</code></pre><p>即res下的drawable/launch_background.xml 文件</p>
+ 
+</code></pre>
+<p>即res下的drawable&#x2F;launch_background.xml 文件</p>
 <pre><code>&lt;layer-list xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;&gt;
 &lt;item android:drawable=&quot;@color/red&quot; /&gt;
 
@@ -1372,245 +1447,258 @@ class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
         android:src=&quot;@mipmap/launch_image&quot; /&gt;
 &lt;/item&gt; --&gt;
 &lt;/layer-list&gt;
-</code></pre><p>我们可以在这里设置引擎初始化前所显示的页面，下面我们来看一下这个过程。</p>
+</code></pre>
+<p>我们可以在这里设置引擎初始化前所显示的页面，下面我们来看一下这个过程。</p>
 <h2 id="启动页的加载过程"><a href="#启动页的加载过程" class="headerlink" title="启动页的加载过程"></a>启动页的加载过程</h2><p>整个flutter引擎的相关初始化工作在onCreate方法里开始的:</p>
-<pre><code>@Override
-protected void onCreate(@Nullable Bundle savedInstanceState) {
-  switchLaunchThemeForNormalTheme();
+<pre><code>  @Override
+  protected void onCreate(@Nullable Bundle savedInstanceState) &#123;
+    switchLaunchThemeForNormalTheme();
 
-  super.onCreate(savedInstanceState);
+    super.onCreate(savedInstanceState);
 
-  lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
+    lifecycle.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
 
-  delegate = new FlutterActivityAndFragmentDelegate(this);
-  ///创建绑定引擎等
-  delegate.onAttach(this);
-  ///用于插件、框架恢复状态
-  delegate.onActivityCreated(savedInstanceState);
-  ///设置窗口背景透明，隐藏 status bar
-  configureWindowForTransparency();
-  ///这里是咱们的入口
-  setContentView(createFlutterView());
-  configureStatusBarForFullscreenFlutterExperience();
-}
-</code></pre><p>setContentView大家很熟悉，我们直接看createFlutterView（） 这个方法：</p>
-<pre><code>@NonNull
-private View createFlutterView() {
-  return delegate.onCreateView(
-      null /* inflater */, null /* container */, null /* savedInstanceState */);
-}
-</code></pre><h3 id="FlutterActivityAndFragmentDelegate"><a href="#FlutterActivityAndFragmentDelegate" class="headerlink" title="FlutterActivityAndFragmentDelegate"></a>FlutterActivityAndFragmentDelegate</h3><p>flutter的初始化、启动等操作都是委托给它的。</p>
+    delegate = new FlutterActivityAndFragmentDelegate(this);
+    ///创建绑定引擎等
+    delegate.onAttach(this);
+    ///用于插件、框架恢复状态
+    delegate.onActivityCreated(savedInstanceState);
+    ///设置窗口背景透明，隐藏 status bar
+    configureWindowForTransparency();
+    ///这里是咱们的入口
+    setContentView(createFlutterView());
+    configureStatusBarForFullscreenFlutterExperience();
+  &#125;
+</code></pre>
+<p>setContentView大家很熟悉，我们直接看createFlutterView（） 这个方法：</p>
+<pre><code>  @NonNull
+  private View createFlutterView() &#123;
+    return delegate.onCreateView(
+        null /* inflater */, null /* container */, null /* savedInstanceState */);
+  &#125;
+</code></pre>
+<h3 id="FlutterActivityAndFragmentDelegate"><a href="#FlutterActivityAndFragmentDelegate" class="headerlink" title="FlutterActivityAndFragmentDelegate"></a>FlutterActivityAndFragmentDelegate</h3><p>flutter的初始化、启动等操作都是委托给它的。</p>
 <p>我们继续看onCreateView，我将说明以注释的形式写在代码里</p>
-<pre><code>@NonNull
-View onCreateView(
-    LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-  Log.v(TAG, &quot;Creating FlutterView.&quot;);
-  ensureAlive();
+<pre><code>  @NonNull
+  View onCreateView(
+      LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) &#123;
+    Log.v(TAG, &quot;Creating FlutterView.&quot;);
+    ensureAlive();
+    
+    if (host.getRenderMode() == RenderMode.surface) &#123;
+    /// flutter 应用在surface上显示，所以会进入到这里
+      FlutterSurfaceView flutterSurfaceView =
+          new FlutterSurfaceView(
+              host.getActivity(), host.getTransparencyMode() == TransparencyMode.transparent);
 
-  if (host.getRenderMode() == RenderMode.surface) {
-  /// flutter 应用在surface上显示，所以会进入到这里
-    FlutterSurfaceView flutterSurfaceView =
-        new FlutterSurfaceView(
-            host.getActivity(), host.getTransparencyMode() == TransparencyMode.transparent);
+      // Allow our host to customize FlutterSurfaceView, if desired.
+      host.onFlutterSurfaceViewCreated(flutterSurfaceView);
 
-    // Allow our host to customize FlutterSurfaceView, if desired.
-    host.onFlutterSurfaceViewCreated(flutterSurfaceView);
+      // Create the FlutterView that owns the FlutterSurfaceView.
+      ///用我们的flutterSurfaceView 初始化了一个 FlutterView
+      flutterView = new FlutterView(host.getActivity(), flutterSurfaceView);
+    &#125; else &#123;
+      FlutterTextureView flutterTextureView = new FlutterTextureView(host.getActivity());
 
-    // Create the FlutterView that owns the FlutterSurfaceView.
-    ///用我们的flutterSurfaceView 初始化了一个 FlutterView
-    flutterView = new FlutterView(host.getActivity(), flutterSurfaceView);
-  } else {
-    FlutterTextureView flutterTextureView = new FlutterTextureView(host.getActivity());
+      // Allow our host to customize FlutterSurfaceView, if desired.
+      host.onFlutterTextureViewCreated(flutterTextureView);
 
-    // Allow our host to customize FlutterSurfaceView, if desired.
-    host.onFlutterTextureViewCreated(flutterTextureView);
+      // Create the FlutterView that owns the FlutterTextureView.
+      flutterView = new FlutterView(host.getActivity(), flutterTextureView);
+    &#125;
 
-    // Create the FlutterView that owns the FlutterTextureView.
-    flutterView = new FlutterView(host.getActivity(), flutterTextureView);
-  }
+    // Add listener to be notified when Flutter renders its first frame.
+    flutterView.addOnFirstFrameRenderedListener(flutterUiDisplayListener);
+    
+    /// 创建一个闪屏view - FlutterSplashView
+    flutterSplashView = new FlutterSplashView(host.getContext());
+    if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.JELLY_BEAN_MR1) &#123;
+      flutterSplashView.setId(View.generateViewId());
+    &#125; else &#123;
+      // TODO(mattcarroll): Find a better solution to this ID. This is a random, static ID.
+      // It might conflict with other Views, and it means that only a single FlutterSplashView
+      // can exist in a View hierarchy at one time.
+      flutterSplashView.setId(486947586);
+    &#125;
+    
+    /// 显示闪屏页
+    flutterSplashView.displayFlutterViewWithSplash(flutterView, host.provideSplashScreen());
 
-  // Add listener to be notified when Flutter renders its first frame.
-  flutterView.addOnFirstFrameRenderedListener(flutterUiDisplayListener);
+    Log.v(TAG, &quot;Attaching FlutterEngine to FlutterView.&quot;);
+    ///所创建surface 绑定到engine上
+    flutterView.attachToFlutterEngine(flutterEngine);
 
-  /// 创建一个闪屏view - FlutterSplashView
-  flutterSplashView = new FlutterSplashView(host.getContext());
-  if (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-    flutterSplashView.setId(View.generateViewId());
-  } else {
-    // TODO(mattcarroll): Find a better solution to this ID. This is a random, static ID.
-    // It might conflict with other Views, and it means that only a single FlutterSplashView
-    // can exist in a View hierarchy at one time.
-    flutterSplashView.setId(486947586);
-  }
-
-  /// 显示闪屏页
-  flutterSplashView.displayFlutterViewWithSplash(flutterView, host.provideSplashScreen());
-
-  Log.v(TAG, &quot;Attaching FlutterEngine to FlutterView.&quot;);
-  ///所创建surface 绑定到engine上
-  flutterView.attachToFlutterEngine(flutterEngine);
-
-  return flutterSplashView;
-}
-</code></pre><p>这里我们可以大致了解到，创建了一个FlutterSurfaceView 它继承自surfaceView(我们的flutter页面也是渲染在这个surface上的)。之后我们用它初始化一个FlutterView，</p>
+    return flutterSplashView;
+  &#125;
+</code></pre>
+<p>这里我们可以大致了解到，创建了一个FlutterSurfaceView 它继承自surfaceView(我们的flutter页面也是渲染在这个surface上的)。之后我们用它初始化一个FlutterView，</p>
 <pre><code>FlutterView继承自 FrameLayout
-</code></pre><p>随后我们再创建一个FlutterSplashView （继承FrameLayout）并调用displayFlutterViewWithSplash（）方法。</p>
-<pre><code>public void displayFlutterViewWithSplash(
-    @NonNull FlutterView flutterView, @Nullable SplashScreen splashScreen) {
-  // If we were displaying a previous FlutterView, remove it.
-  if (this.flutterView != null) {
-    this.flutterView.removeOnFirstFrameRenderedListener(flutterUiDisplayListener);
-    removeView(this.flutterView);
-  }
-  // If we were displaying a previous splash screen View, remove it.
-  if (splashScreenView != null) {
-    removeView(splashScreenView);
-  }
+</code></pre>
+<p>随后我们再创建一个FlutterSplashView （继承FrameLayout）并调用displayFlutterViewWithSplash（）方法。</p>
+<pre><code>  public void displayFlutterViewWithSplash(
+      @NonNull FlutterView flutterView, @Nullable SplashScreen splashScreen) &#123;
+    // If we were displaying a previous FlutterView, remove it.
+    if (this.flutterView != null) &#123;
+      this.flutterView.removeOnFirstFrameRenderedListener(flutterUiDisplayListener);
+      removeView(this.flutterView);
+    &#125;
+    // If we were displaying a previous splash screen View, remove it.
+    if (splashScreenView != null) &#123;
+      removeView(splashScreenView);
+    &#125;
 
-  // Display the new FlutterView.
-  this.flutterView = flutterView;
-  ///添加flutterView
-  addView(flutterView);
+    // Display the new FlutterView.
+    this.flutterView = flutterView;
+    ///添加flutterView
+    addView(flutterView);
 
-  this.splashScreen = splashScreen;
+    this.splashScreen = splashScreen;
 
-  // Display the new splash screen, if needed.
-  if (splashScreen != null) {
-    if (isSplashScreenNeededNow()) {
-      Log.v(TAG, &quot;Showing splash screen UI.&quot;);
-      // This is the typical case. A FlutterEngine is attached to the FlutterView and we&apos;re
-      // waiting for the first frame to render. Show a splash UI until that happens.
-      splashScreenView = splashScreen.createSplashView(getContext(), splashScreenState);
-      ///添加 splashScreenView 
-      addView(this.splashScreenView);
-      flutterView.addOnFirstFrameRenderedListener(flutterUiDisplayListener);
-    } else if (isSplashScreenTransitionNeededNow()) {
-      Log.v(
-          TAG,
-          &quot;Showing an immediate splash transition to Flutter due to previously interrupted transition.&quot;);
-      splashScreenView = splashScreen.createSplashView(getContext(), splashScreenState);
-      addView(splashScreenView);
-      transitionToFlutter();
-    } else if (!flutterView.isAttachedToFlutterEngine()) {
-      Log.v(
-          TAG,
-          &quot;FlutterView is not yet attached to a FlutterEngine. Showing nothing until a FlutterEngine is attached.&quot;);
-      flutterView.addFlutterEngineAttachmentListener(flutterEngineAttachmentListener);
-    }
-  }
-}
-</code></pre><p>通过getSplashScreenFromManifest 初始化了一个drawable，我们看一下它内部：</p>
-<pre><code>@Nullable
-@SuppressWarnings(&quot;deprecation&quot;)
-private Drawable getSplashScreenFromManifest() {
-  try {
-    ActivityInfo activityInfo =
-        getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
-    Bundle metadata = activityInfo.metaData;
-    ///这里就是我们在 AndroidManifest.xml中设置启动页了
-    ///SPLASH_SCREEN_META_DATA_KEY 的值 见下方
-    int splashScreenId = metadata != null ? metadata.getInt(SPLASH_SCREEN_META_DATA_KEY) : 0;
-    return splashScreenId != 0
-        ? Build.VERSION.SDK_INT &gt; Build.VERSION_CODES.LOLLIPOP
-            ? getResources().getDrawable(splashScreenId, getTheme())
-            : getResources().getDrawable(splashScreenId)
-        : null;
-  } catch (PackageManager.NameNotFoundException e) {
-    // This is never expected to happen.
-    return null;
-  }
-}
-</code></pre><p>可以看到，通过上面的方法，我们以在AndroidManifest.xml设置的启动资源 初始化了一个drawable，进而初始化了DrawableSplashScreen 并返回。</p>
+    // Display the new splash screen, if needed.
+    if (splashScreen != null) &#123;
+      if (isSplashScreenNeededNow()) &#123;
+        Log.v(TAG, &quot;Showing splash screen UI.&quot;);
+        // This is the typical case. A FlutterEngine is attached to the FlutterView and we&#39;re
+        // waiting for the first frame to render. Show a splash UI until that happens.
+        splashScreenView = splashScreen.createSplashView(getContext(), splashScreenState);
+        ///添加 splashScreenView 
+        addView(this.splashScreenView);
+        flutterView.addOnFirstFrameRenderedListener(flutterUiDisplayListener);
+      &#125; else if (isSplashScreenTransitionNeededNow()) &#123;
+        Log.v(
+            TAG,
+            &quot;Showing an immediate splash transition to Flutter due to previously interrupted transition.&quot;);
+        splashScreenView = splashScreen.createSplashView(getContext(), splashScreenState);
+        addView(splashScreenView);
+        transitionToFlutter();
+      &#125; else if (!flutterView.isAttachedToFlutterEngine()) &#123;
+        Log.v(
+            TAG,
+            &quot;FlutterView is not yet attached to a FlutterEngine. Showing nothing until a FlutterEngine is attached.&quot;);
+        flutterView.addFlutterEngineAttachmentListener(flutterEngineAttachmentListener);
+      &#125;
+    &#125;
+  &#125;
+ 
+ 
+</code></pre>
+<p>通过getSplashScreenFromManifest 初始化了一个drawable，我们看一下它内部：</p>
+<pre><code>  @Nullable
+  @SuppressWarnings(&quot;deprecation&quot;)
+  private Drawable getSplashScreenFromManifest() &#123;
+    try &#123;
+      ActivityInfo activityInfo =
+          getPackageManager().getActivityInfo(getComponentName(), PackageManager.GET_META_DATA);
+      Bundle metadata = activityInfo.metaData;
+      ///这里就是我们在 AndroidManifest.xml中设置启动页了
+      ///SPLASH_SCREEN_META_DATA_KEY 的值 见下方
+      int splashScreenId = metadata != null ? metadata.getInt(SPLASH_SCREEN_META_DATA_KEY) : 0;
+      return splashScreenId != 0
+          ? Build.VERSION.SDK_INT &gt; Build.VERSION_CODES.LOLLIPOP
+              ? getResources().getDrawable(splashScreenId, getTheme())
+              : getResources().getDrawable(splashScreenId)
+          : null;
+    &#125; catch (PackageManager.NameNotFoundException e) &#123;
+      // This is never expected to happen.
+      return null;
+    &#125;
+  &#125;
+</code></pre>
+<p>可以看到，通过上面的方法，我们以在AndroidManifest.xml设置的启动资源 初始化了一个drawable，进而初始化了DrawableSplashScreen 并返回。</p>
 <p>我们回到displayFlutterViewWithSplash 继续向下看，</p>
-<pre><code>///通过我们之前的drawable 生成一个 view
-splashScreenView = splashScreen.createSplashView(getContext(), splashScreenState);
-///添加 splashScreenView 
-addView(this.splashScreenView);
-</code></pre><p>到了这里，整个闪屏页的流程就跑完了。</p>
+<pre><code>    ///通过我们之前的drawable 生成一个 view
+    splashScreenView = splashScreen.createSplashView(getContext(), splashScreenState);
+    ///添加 splashScreenView 
+    addView(this.splashScreenView);
+</code></pre>
+<p>到了这里，整个闪屏页的流程就跑完了。</p>
 <p>回头看去，可以发现在闪屏页的显示到引擎的启动及flutter 页面的显示会有一个很长的过程，而直到flutter 页面的显示，这个闪屏页才会被移除掉。</p>
 <p>那么如何优化呢？ 以下是我的方案。</p>
 <h2 id="启动页优化方案"><a href="#启动页优化方案" class="headerlink" title="启动页优化方案"></a>启动页优化方案</h2><p>因为flutter与原生处于两个不同的surface，所以我们可以考虑利用原生的surface来显示这个启动页，同时为了避免拖慢flutter的启动，我们可以在子线程来做这个事情。ww</p>
 <pre><code>案例中我们显示一个svga动画
-插件使用：&apos;com.github.yyued:SVGAPlayer-Android:2.5.12&apos;
-</code></pre><h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>直接开工，我们写个方法initSplashPage() :</p>
-<pre><code>public void initSplashPage(){
+插件使用：&#39;com.github.yyued:SVGAPlayer-Android:2.5.12&#39;
+</code></pre>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>直接开工，我们写个方法initSplashPage() :</p>
+<pre><code>public void initSplashPage()&#123;
 Executors.newSingleThreadExecutor()
-            .execute(new Runnable() {
+            .execute(new Runnable() &#123;
         @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
-        public void run() {
+        public void run() &#123;
             ///涉及到view的更新，所以我们需要一个loop
             Looper.prepare();
-
+      
             WindowManager wm = (WindowManager)getSystemService(WINDOW_SERVICE);
             ///创建启动页的view
             SVGAImageView imageView = new SVGAImageView(getApplicationContext());
             imageView.setBackgroundColor(getResources().getColor(R.color.white));
-
-            Handler handler = new Handler(){
+            
+            Handler handler = new Handler()&#123;
                 @Override
-                public void handleMessage(Message msg) {
-                    switch (msg.what){
+                public void handleMessage(Message msg) &#123;
+                    switch (msg.what)&#123;
                         case 1111:
                             ///在启动页中 显示 svga动画
                             imageView.setImageDrawable((SVGADrawable)msg.obj);
                             imageView.startAnimation();
                             break;
-                    }
-                }
-            };
-
+                    &#125;
+                &#125;
+            &#125;;
+            
             ///解析 assets的svga资源
             SVGAParser parser = new SVGAParser(getApplicationContext());
-            parser.decodeFromAssets(&quot;angel.svga&quot;, new SVGAParser.ParseCompletion() {
+            parser.decodeFromAssets(&quot;angel.svga&quot;, new SVGAParser.ParseCompletion() &#123;
                 @Override
-                public void onComplete(SVGAVideoEntity svgaVideoEntity) {
-
+                public void onComplete(SVGAVideoEntity svgaVideoEntity) &#123;
+                
                     ///由于 插件内部切换了主线程，所以我们这里需要handler再次切换
                     SVGADrawable drawable = new SVGADrawable(svgaVideoEntity);
                     Message msg = Message.obtain();
                     msg.what = 1111;
                     msg.obj = drawable;
                     handler.sendMessage(msg);
-                }
+                &#125;
 
                 @Override
-                public void onError() {
+                public void onError() &#123;
 
-                }
-            });
-
+                &#125;
+            &#125;);
+            
             WindowManager.LayoutParams params = new WindowManager.LayoutParams();
             params.width = wm.getDefaultDisplay().getWidth();
             params.height = wm.getDefaultDisplay().getHeight();
             ///显示闪屏页
             wm.addView(imageView, params);
-
+            
             ///6秒后去掉闪屏页，显示flutter页面
-            new Handler().postDelayed(new Runnable() {
+            new Handler().postDelayed(new Runnable() &#123;
                 @Override
-                public void run() {
+                public void run() &#123;
                     wm.removeView(imageView);
-                }
-            }, 6000);
-
+                &#125;
+            &#125;, 6000);
+            
 
             Looper.loop();
 
 
-        }
-    });
-
-}
-</code></pre><p>以上是整个实现过程，由于svga插件的解析回调在主线程，所以需要通过子线程的handler进行一个线程切换，最后通过wm进行上屏显示。</p>
+        &#125;
+    &#125;);
+    
+&#125;
+</code></pre>
+<p>以上是整个实现过程，由于svga插件的解析回调在主线程，所以需要通过子线程的handler进行一个线程切换，最后通过wm进行上屏显示。</p>
 <h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>之后我们在MainActivity的onCreate中使用它：</p>
 <pre><code>@Override
-protected void onCreate(@Nullable Bundle savedInstanceState) {
+protected void onCreate(@Nullable Bundle savedInstanceState) &#123;
     initSplashPage();
     ///flutter相关的工作
     super.onCreate(savedInstanceState);
-}
+&#125;
 </code></pre>
+
       
 
       
@@ -1633,7 +1721,7 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/01/07/Flutter&Android启动页(闪屏页)的加载流程和优化方案/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/01/07/Flutter&Android%E5%90%AF%E5%8A%A8%E9%A1%B5(%E9%97%AA%E5%B1%8F%E9%A1%B5)%E7%9A%84%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B%E5%92%8C%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/">展开全文 >></a>
         </p>
       
 
@@ -1670,12 +1758,12 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/12/10/如何决定使用HashMap还是TreeMap/">如何决定使用HashMap还是TreeMap？</a>
+      <a class="article-title" href="/2020/12/10/%E5%A6%82%E4%BD%95%E5%86%B3%E5%AE%9A%E4%BD%BF%E7%94%A8HashMap%E8%BF%98%E6%98%AFTreeMap/">如何决定使用HashMap还是TreeMap？</a>
     </h1>
   
 
         
-        <a href="/2020/12/10/如何决定使用HashMap还是TreeMap/" class="archive-article-date">
+        <a href="/2020/12/10/%E5%A6%82%E4%BD%95%E5%86%B3%E5%AE%9A%E4%BD%BF%E7%94%A8HashMap%E8%BF%98%E6%98%AFTreeMap/" class="archive-article-date">
   	<time datetime="2020-12-10T05:15:18.436Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-10</time>
 </a>
         
@@ -1688,31 +1776,24 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
 <h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>如果你需要得到一个有序的结果时就应该使用TreeMap（因为HashMap中元素的排列顺序是不固定的）。除此之外，由于HashMap有更好的性能，所以大多不需要排序的时候我们会使用HashMap。</p>
 <h2 id="拓展"><a href="#拓展" class="headerlink" title="拓展"></a>拓展</h2><h3 id="1、HashMap-和-TreeMap-的实现"><a href="#1、HashMap-和-TreeMap-的实现" class="headerlink" title="1、HashMap 和 TreeMap 的实现"></a>1、HashMap 和 TreeMap 的实现</h3><p>HashMap：基于哈希表实现。使用HashMap要求添加的键类明确定义了hashCode()和equals()[可以重写hashCode()和equals()]，为了优化HashMap空间的使用，您可以调优初始容量和负载因子。</p>
 <ul>
-<li>HashMap(): 构建一个空的哈希映像</li>
-</ul>
-<ul>
-<li>HashMap(Map m): 构建一个哈希映像，并且添加映像m的所有映射</li>
-</ul>
-<ul>
-<li>HashMap(int initialCapacity): 构建一个拥有特定容量的空的哈希映像</li>
-</ul>
-<ul>
-<li>HashMap(int initialCapacity, float loadFactor): 构建一个拥有特定容量和加载因子的空的哈希映像</li>
-</ul>
-<ul>
-<li>TreeMap：基于红黑树实现。TreeMap没有调优选项，因为该树总处于平衡状态。</li>
-</ul>
-<ul>
-<li>TreeMap()：构建一个空的映像树</li>
-</ul>
-<ul>
-<li>TreeMap(Map m): 构建一个映像树，并且添加映像m中所有元素</li>
-</ul>
-<ul>
-<li>TreeMap(Comparator c): 构建一个映像树，并且使用特定的比较器对关键字进行排序</li>
-</ul>
-<ul>
-<li>TreeMap(SortedMap s): 构建一个映像树，添加映像树s中所有映射，并且使用与有序映像s相同的比较器排序</li>
+<li><p>HashMap(): 构建一个空的哈希映像</p>
+</li>
+<li><p>HashMap(Map m): 构建一个哈希映像，并且添加映像m的所有映射</p>
+</li>
+<li><p>HashMap(int initialCapacity): 构建一个拥有特定容量的空的哈希映像</p>
+</li>
+<li><p>HashMap(int initialCapacity, float loadFactor): 构建一个拥有特定容量和加载因子的空的哈希映像</p>
+</li>
+<li><p>TreeMap：基于红黑树实现。TreeMap没有调优选项，因为该树总处于平衡状态。</p>
+</li>
+<li><p>TreeMap()：构建一个空的映像树</p>
+</li>
+<li><p>TreeMap(Map m): 构建一个映像树，并且添加映像m中所有元素</p>
+</li>
+<li><p>TreeMap(Comparator c): 构建一个映像树，并且使用特定的比较器对关键字进行排序</p>
+</li>
+<li><p>TreeMap(SortedMap s): 构建一个映像树，添加映像树s中所有映射，并且使用与有序映像s相同的比较器排序</p>
+</li>
 </ul>
 <p>###2、HashMap 和 TreeMap 都是非线程安全<br>HashMap继承AbstractMap抽象类，TreeMap继承自SortedMap接口。<br>AbstractMap抽象类：覆盖了equals()和hashCode()方法以确保两个相等映射返回相同的哈希码。如果两个映射大小相等、包含同样的键且每个键在这两个映射中对应的值都相同，则这两个映射相等。映射的哈希码是映射元素哈希码的总和，其中每个元素是Map.Entry接口的一个实现。因此，不论映射内部顺序如何，两个相等映射会报告相同的哈希码。</p>
 <p>SortedMap接口：它用来保持键的有序顺序。SortedMap接口为映像的视图(子集)，包括两个端点提供了访问方法。除了排序是作用于映射的键以外，处理SortedMap和处理SortedSet一样。添加到SortedMap实现类的元素必须实现Comparable接口，否则您必须给它的构造函数提供一个Comparator接口的实现。TreeMap类是它的唯一一个实现。</p>
@@ -1743,7 +1824,7 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/12/10/如何决定使用HashMap还是TreeMap/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/12/10/%E5%A6%82%E4%BD%95%E5%86%B3%E5%AE%9A%E4%BD%BF%E7%94%A8HashMap%E8%BF%98%E6%98%AFTreeMap/">展开全文 >></a>
         </p>
       
 
@@ -1780,12 +1861,12 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/12/05/ButterKnife被弃用，ViewBinding才是findView的未来？/">ButterKnife被弃用，ViewBinding才是findView的未来？</a>
+      <a class="article-title" href="/2020/12/05/ButterKnife%E8%A2%AB%E5%BC%83%E7%94%A8%EF%BC%8CViewBinding%E6%89%8D%E6%98%AFfindView%E7%9A%84%E6%9C%AA%E6%9D%A5%EF%BC%9F/">ButterKnife被弃用，ViewBinding才是findView的未来？</a>
     </h1>
   
 
         
-        <a href="/2020/12/05/ButterKnife被弃用，ViewBinding才是findView的未来？/" class="archive-article-date">
+        <a href="/2020/12/05/ButterKnife%E8%A2%AB%E5%BC%83%E7%94%A8%EF%BC%8CViewBinding%E6%89%8D%E6%98%AFfindView%E7%9A%84%E6%9C%AA%E6%9D%A5%EF%BC%9F/" class="archive-article-date">
   	<time datetime="2020-12-05T09:24:05.216Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-05</time>
 </a>
         
@@ -1795,74 +1876,81 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>最近Android Studio更新到了4.1版本，发现项目中使用ButterKnife注解id的代码出现了警告，警告信息如下：</p>
 <pre><code>Resource IDs will be non-final in Android Gradle Plugin version 5.0, avoid using them as annotation attributes
-</code></pre><p>从警告信息中可以看到在Gradle 5.0的插件中Resource 的Id值将不会再是final类型，因此应该避免在注解属性中使用Id。这意味着当我们把Gradle插件升级到5.0版本之后ButterKnife将无法再被使用！同时，我们在ButterKnife的官方文档上也看到了ButterKnife被标注弃用的信息：</p>
+</code></pre>
+<p>从警告信息中可以看到在Gradle 5.0的插件中Resource 的Id值将不会再是final类型，因此应该避免在注解属性中使用Id。这意味着当我们把Gradle插件升级到5.0版本之后ButterKnife将无法再被使用！同时，我们在ButterKnife的官方文档上也看到了ButterKnife被标注弃用的信息：</p>
 <p>陪伴我们多年，曾经辉煌一时，不可一世的ButterKnife也要寿终正寝，即将迎来它生命的终点。借这个机会，我们不妨来回顾一下Android开发中findView的发展史，以及展望下findView的未来。</p>
 <h2 id="一、Android绑定View的发展史"><a href="#一、Android绑定View的发展史" class="headerlink" title="一、Android绑定View的发展史"></a>一、Android绑定View的发展史</h2><p>从Android系统诞生至今，在代码中findView一直是Android开发者无法绕开的一道程序。从最初的findViewbyId到如今炙手可热的ViewBinding，期间涌现出了许多findView的方式，它们让findView变得更加简单，也让我们的代码变得更加简洁。但随着Android新技术的发展，这些findView的方法也正在被一个一个的抛弃。本节内容我们就来回顾一下Android开发中findView的发展史。</p>
 <h3 id="1-findViewById"><a href="#1-findViewById" class="headerlink" title="1.findViewById"></a>1.findViewById</h3><p>findViewById是Android开发中最原始，也是最基础的一种获取View的方法。它由Google官方提供，在Android开发生态的早期也是唯一一种能够获取View的方式。虽然它使用简单且根正苗红，贯穿古今。但由于高度重复的代码结构深受开发者诟病。在一个复杂布局的页面仅仅是findViewById的代码往往就能达到数十行。开发者无时无刻不想着弃用这一方案，因此后续衍生出了多种获取View的方式来简化代码。但万变不离其宗，归根结底，这些方式最终都还是通过findViewById来实现的。虽然它是最不被开发者认可的一种的方式，但时至今日开发者也无法摆脱它笼罩着的阴影。一脸你看不惯我你打我呀的表情！</p>
 <h3 id="2-ButterKnife"><a href="#2-ButterKnife" class="headerlink" title="2.ButterKnife"></a>2.ButterKnife</h3><p>就在大家都在唾弃findViewById的大量重复代码时，一个插件横空出世。它通过一个BindView注解，传入一个Resource Id就能轻松获取到Id对应的View。代码如下：</p>
-<pre><code>public class MainActivity extends AppCompatActivity {
+<pre><code>public class MainActivity extends AppCompatActivity &#123;
      @BindView(R.id.text_view)
      TextView mTextView;
-
+    
         @Override
-        protected void onCreate(Bundle savedInstanceState) {
+        protected void onCreate(Bundle savedInstanceState) &#123;
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_main);
             ButterKnife.bind(this);
-        }
-    }
-</code></pre><p>它就是红极一时，时至今日大家依然还在用着的ButterKnife。ButterKnife通过最前沿的Java技术（最初的版本可能是反射，未加考究）–Java编译时注解处理器，在编译时自动生成findViewById的代码。例如，上边的例子通过ButterKnife会生成一个MainActivity_ViewBinding 类，在这个类中通过findViewById为mTextView赋值，其代码如下：</p>
-<pre><code>public class MainActivity_ViewBinding implements Unbinder {
+        &#125;
+    &#125;
+    
+    
+    
+</code></pre>
+<p>它就是红极一时，时至今日大家依然还在用着的ButterKnife。ButterKnife通过最前沿的Java技术（最初的版本可能是反射，未加考究）–Java编译时注解处理器，在编译时自动生成findViewById的代码。例如，上边的例子通过ButterKnife会生成一个MainActivity_ViewBinding 类，在这个类中通过findViewById为mTextView赋值，其代码如下：</p>
+<pre><code>public class MainActivity_ViewBinding implements Unbinder &#123;
   private MainActivity target;
 
   @UiThread
-  public MainActivity_ViewBinding(MainActivity target) {
+  public MainActivity_ViewBinding(MainActivity target) &#123;
     this(target, target.getWindow().getDecorView());
-  }
+  &#125;
 
   @UiThread
-  public MainActivity_ViewBinding(MainActivity target, View source) {
+  public MainActivity_ViewBinding(MainActivity target, View source) &#123;
     this.target = target;
 
-    target.mTextView = Utils.findRequiredViewAsType(source, R.id.text_view, &quot;field &apos;mTextView&apos;&quot;, TextView.class);
-  }
+    target.mTextView = Utils.findRequiredViewAsType(source, R.id.text_view, &quot;field &#39;mTextView&#39;&quot;, TextView.class);
+  &#125;
 
   @Override
   @CallSuper
-  public void unbind() {
+  public void unbind() &#123;
     MainActivity target = this.target;
     if (target == null) throw new IllegalStateException(&quot;Bindings already cleare![在这里插入图片描述](https://img-blog.csdnimg.cn/20190825162306549.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzIwNTIxNTcz,size_16,color_FFFFFF,t_70)d.&quot;);
     this.target = null;
 
     target.mTextView = null;
-  }
-}
-</code></pre><p>这一操作省去了开发者手动编写findViewById的时间,大大简化了代码，同时提高了开发效率。在当时的开发者看来ButterKnife不得不说是一个神器，以至于到后来成了Android项目开发的标配。</p>
+  &#125;
+&#125;
+</code></pre>
+<p>这一操作省去了开发者手动编写findViewById的时间,大大简化了代码，同时提高了开发效率。在当时的开发者看来ButterKnife不得不说是一个神器，以至于到后来成了Android项目开发的标配。</p>
 <p>后来，随着Android Studio的诞生，Eclipse开发Android项目逐渐淡出历史舞台。Android studio的出现，带来了全新的技术，模块化风靡一时。大概在这个时候，Google官方似乎就已经有了改造R类的想法。在Android项目的library模块中，生成R类中的成员变量就已经改为了非final修饰。同时，Google官方也不再建议在app模块的代码中使用像：switch(view.getId())这样的代码</p>
 <p>正如Android studio官网文档《Non-constant Fields in Case Labels》上给出的原因：</p>
 <hr>
 <p>In other words, the constants are not final in a library project. The reason for this is simple: When multiple library projects are combined, the actual values of the fields (which must be unique) could collide. Before ADT 14, all fields were final, so as a result, all libraries had to have all their resources and associated Java code recompiled along with the main project whenever they were used. This was bad for performance, since it made builds very slow. It also prevented distributing library projects that didn’t include the source code, limiting the usage scope of library projects.</p>
 <hr>
 <p>这一改变直接致使ButterKnife无法在Android项目的library模块中使用。而此时，ButterKnife正是如日中天，追随的开发者不计其数。为了能够让ButterKnife运行在library模块，ButterKnife的作者Jake Wharton大佬曲线救国，通过生成R2类让ButterKnife在library模块中复活，并且得以发展壮大。但不得不说，此时的ButterKnife就已经埋下了深深的隐患，并导致了其最终的溃败。</p>
-<h3 id="3-DataBinding"><a href="#3-DataBinding" class="headerlink" title="3.DataBinding"></a>3.DataBinding</h3><p>DataBinding是Google官方在2015年谷歌I/O大会上发布的一个数据绑定框架，它并非专为findView而生，而是作为MVVM架构的双向绑定数据的工具。findView的功能仅仅是DataBinding的一个附赠品。</p>
+<h3 id="3-DataBinding"><a href="#3-DataBinding" class="headerlink" title="3.DataBinding"></a>3.DataBinding</h3><p>DataBinding是Google官方在2015年谷歌I&#x2F;O大会上发布的一个数据绑定框架，它并非专为findView而生，而是作为MVVM架构的双向绑定数据的工具。findView的功能仅仅是DataBinding的一个附赠品。</p>
 <p>开发者一般会在MVVM架构的项目中使用DataBinding来获取View。但是它也有很多诟病，比如需要修改xml的结构，在xml外部嵌套一个标签。并且很多情况下需要手动build才能生成DataBinding相关类。诸如此类问题，自然不会得到开发者的青睐。</p>
 <p>关于DataBinding的详细使用在这里不做探讨。</p>
-<p>###4.Kotlin Android Extensions<br>2017年Google I/O开发者大会中，Google宣布Kotlin成为Android开发的一级语言，自此，Kotlin “转正”与Java并驾齐驱。而JetBrain推出的Kotlin Android Extension(以下简称KAE)插件成为了有史以来最简单的获取View的方法，简单到无需任何代码，直接通过id作为View使用。这一功能足以让所有Android开发者抓狂，纷纷感叹这才是findView的未来啊，终于可以和裹挟开发者十多年的findViewById说拜拜了！<br>作为一个Android开发者，不知道你是否会好奇Kotlin是如何将Id作为View的？我们不妨写一个简单的例子:</p>
-<pre><code>class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
+<p>###4.Kotlin Android Extensions<br>2017年Google I&#x2F;O开发者大会中，Google宣布Kotlin成为Android开发的一级语言，自此，Kotlin “转正”与Java并驾齐驱。而JetBrain推出的Kotlin Android Extension(以下简称KAE)插件成为了有史以来最简单的获取View的方法，简单到无需任何代码，直接通过id作为View使用。这一功能足以让所有Android开发者抓狂，纷纷感叹这才是findView的未来啊，终于可以和裹挟开发者十多年的findViewById说拜拜了！<br>作为一个Android开发者，不知道你是否会好奇Kotlin是如何将Id作为View的？我们不妨写一个简单的例子:</p>
+<pre><code>class MainActivity : AppCompatActivity() &#123;
+    override fun onCreate(savedInstanceState: Bundle?) &#123;
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         textView.text = &quot;Test&quot;
-    }
-}
-</code></pre><p>通过Kotlin的扩展插件来find view,无疑是一种优秀的方案。但这一方案并不是无懈可击。它存在以下几个缺点：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>通过Kotlin的扩展插件来find view,无疑是一种优秀的方案。但这一方案并不是无懈可击。它存在以下几个缺点：</p>
 <ul>
 <li>类型安全：res下的任何id都可以被访问，有可能因访问了非当前Layout下的id而出错</li>
 <li>空安全：这主要体现在Configuration中的对应布局不全时，运行时可能出现NPE</li>
 <li>兼容性：只能在kotlin中使用，java不友好</li>
 <li>局限性：不能跨module使用</li>
 </ul>
-<h3 id="5-ViewBinding"><a href="#5-ViewBinding" class="headerlink" title="5.ViewBinding"></a>5.ViewBinding</h3><p>到这里，以上提到的多种findView方案都已经被废弃，唯独只剩Google官方正在大力推广的ViewBinding组件。ViewBinding是Google在2019年I/O大会上公布的一款Android视图绑定工具。它的使用方式有点类似DataBinding，但相比DataBinding，ViewBinding是一个更轻量级、更纯粹的findViewById的替代方案。它具有以下几个优点：</p>
+<h3 id="5-ViewBinding"><a href="#5-ViewBinding" class="headerlink" title="5.ViewBinding"></a>5.ViewBinding</h3><p>到这里，以上提到的多种findView方案都已经被废弃，唯独只剩Google官方正在大力推广的ViewBinding组件。ViewBinding是Google在2019年I&#x2F;O大会上公布的一款Android视图绑定工具。它的使用方式有点类似DataBinding，但相比DataBinding，ViewBinding是一个更轻量级、更纯粹的findViewById的替代方案。它具有以下几个优点：</p>
 <ul>
 <li>类型安全: ViewBinding会基于布局中的View生成类型正确的属性。比如，在布局中放入了一个 TextView ，视图绑定就会暴露出一个 TextView 类型的属性供开发中使用。</li>
 <li>空安全:ViewBinding会检测某个视图是不是只在一些配置下存在，并依据结果生成带有 @Nullable 注解的属性。所以即使在多种配置下定义的布局文件，视图绑定依然能够保证空安全。</li>
@@ -1870,12 +1958,13 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
 </ul>
 <p>总而言之，到目前为止除了ViewBinding我们已经别无选择。那么不妨接下来详细探究下ViewBinding的使用方法。</p>
 <h2 id="ViewBinding使用详解"><a href="#ViewBinding使用详解" class="headerlink" title="ViewBinding使用详解"></a>ViewBinding使用详解</h2><h3 id="1-开启ViewBinding"><a href="#1-开启ViewBinding" class="headerlink" title="1.开启ViewBinding"></a>1.开启ViewBinding</h3><p>Android Studio对于ViewBinding的支持是从3.6版本开始的，AS 3.6版本内置了Gradle插件。只需要在build.gradle中通过以下配置即可开启ViewBinding:</p>
-<pre><code>android {
-    buildFeatures {
+<pre><code>android &#123;
+    buildFeatures &#123;
         viewBinding = true
-    }
-}
-</code></pre><p>如果，你的项目存在多个模块，则需要在每个模块的gradle中添加上述配置。完成以上配置后ViewBinding会为所有布局文件自动生成对应的绑定类。且无须修改原有布局的 XML 文件，ViewBinding会根据现有的布局自动完成所有工作。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>如果，你的项目存在多个模块，则需要在每个模块的gradle中添加上述配置。完成以上配置后ViewBinding会为所有布局文件自动生成对应的绑定类。且无须修改原有布局的 XML 文件，ViewBinding会根据现有的布局自动完成所有工作。</p>
 <p>###2.在Activity中使用ViewBinding<br>首先编写activity_main.xml的布局文件，如下：</p>
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;androidx.constraintlayout.widget.ConstraintLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
@@ -1896,14 +1985,17 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
         app:layout_constraintTop_toTopOf=&quot;parent&quot; /&gt;
 
 &lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;
-</code></pre><p>完成后gradle插件会自动生成一个名为ActivityMainBinding的Java类，在Activity中通过ActivityMainBinding获取Binding实例，如下：</p>
-<pre><code>override fun onCreate(savedInstanceState: Bundle?) {
+</code></pre>
+<p>完成后gradle插件会自动生成一个名为ActivityMainBinding的Java类，在Activity中通过ActivityMainBinding获取Binding实例，如下：</p>
+<pre><code>override fun onCreate(savedInstanceState: Bundle?) &#123;
        super.onCreate(savedInstanceState)
        val binding = ActivityMainBinding.inflate(layoutInflater)
        setContentView(binding.root)
        binding.textView.text = &quot;Hello World&quot;
-   }
-</code></pre><h3 id="3-ViewBinding与include标签"><a href="#3-ViewBinding与include标签" class="headerlink" title="3.ViewBinding与include标签"></a>3.ViewBinding与include标签</h3><p>在项目开发中，通常我们会使用include标签来简化布局文件，那么在使用了include标签的布局文件中，应该如何使用ViewBinding呢？且看代码：</p>
+   &#125;
+    
+</code></pre>
+<h3 id="3-ViewBinding与include标签"><a href="#3-ViewBinding与include标签" class="headerlink" title="3.ViewBinding与include标签"></a>3.ViewBinding与include标签</h3><p>在项目开发中，通常我们会使用include标签来简化布局文件，那么在使用了include标签的布局文件中，应该如何使用ViewBinding呢？且看代码：</p>
 <pre><code>// activity_main.xml
 &lt;androidx.constraintlayout.widget.ConstraintLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
     xmlns:app=&quot;http://schemas.android.com/apk/res-auto&quot;
@@ -1936,8 +2028,10 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
         app:layout_constraintTop_toTopOf=&quot;parent&quot; /&gt;
 
 &lt;/androidx.constraintlayout.widget.ConstraintLayout&gt;
-</code></pre><p>上述两个布局文件会分别生成ActivityMainBinding与LayoutIncludeBinding两个Java类，并且ActivityMainBinding类中通过组合依赖了LayoutIncludeBinding类。因此，使用方式如下：</p>
-<pre><code>override fun onCreate(savedInstanceState: Bundle?) {
+    
+</code></pre>
+<p>上述两个布局文件会分别生成ActivityMainBinding与LayoutIncludeBinding两个Java类，并且ActivityMainBinding类中通过组合依赖了LayoutIncludeBinding类。因此，使用方式如下：</p>
+<pre><code>override fun onCreate(savedInstanceState: Bundle?) &#123;
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -1945,43 +2039,47 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
         val include = binding.include
         // 通过LayoutIncludeBinding为TextView赋值
         include.tvText.text = &quot;Hello World&quot;
-    }
-</code></pre><p>如果layout_include.xml文件位于子模块，经实践与以上代码的使用方式并无任何差异，但一定要在子模块中开启ViewBinding才行。</p>
+    &#125;
+   
+</code></pre>
+<p>如果layout_include.xml文件位于子模块，经实践与以上代码的使用方式并无任何差异，但一定要在子模块中开启ViewBinding才行。</p>
 <h3 id="4-ViewBinding在Fragment中的使用"><a href="#4-ViewBinding在Fragment中的使用" class="headerlink" title="4.ViewBinding在Fragment中的使用"></a>4.ViewBinding在Fragment中的使用</h3><p>在Fragment中使用ViewBinding与Activity中有些差异，这里为了简便，我们使用上述中的activity_main.xml作为Fragment的布局文件，则Fragment的代码如下：</p>
 <pre><code>private lateinit var binding: ActivityMainBinding
 override fun onCreateView(
     inflater: LayoutInflater,
     container: ViewGroup?,
     savedInstanceState: Bundle?
-): View? {
+): View? &#123;
     binding = ActivityMainBinding.inflate(inflater, container, false)
     return binding.root
-}
+&#125;
 
-override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+override fun onViewCreated(view: View, savedInstanceState: Bundle?) &#123;
     super.onViewCreated(view, savedInstanceState)
     binding.textView.text=&quot;Hello World&quot;
-}
-</code></pre><h3 id="5-ViewBinding在RecyclerView-Adapter中的使用"><a href="#5-ViewBinding在RecyclerView-Adapter中的使用" class="headerlink" title="5.ViewBinding在RecyclerView#Adapter中的使用"></a>5.ViewBinding在RecyclerView#Adapter中的使用</h3><p>布局文件不再贴出，直接看Adapter的代码，如下所示：</p>
-<pre><code> class TestAdapter : RecyclerView.Adapter&lt;TestViewHolder&gt;() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TestViewHolder {
+&#125;
+</code></pre>
+<h3 id="5-ViewBinding在RecyclerView-Adapter中的使用"><a href="#5-ViewBinding在RecyclerView-Adapter中的使用" class="headerlink" title="5.ViewBinding在RecyclerView#Adapter中的使用"></a>5.ViewBinding在RecyclerView#Adapter中的使用</h3><p>布局文件不再贴出，直接看Adapter的代码，如下所示：</p>
+<pre><code> class TestAdapter : RecyclerView.Adapter&lt;TestViewHolder&gt;() &#123;
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TestViewHolder &#123;
         val binding =
             ItemTestBinding.inflate(LayoutInflater.from(parent.context))
         return TestViewHolder(binding)
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: TestViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TestViewHolder, position: Int) &#123;
         holder.binding.textView.text = &quot;Hello World&quot;
-    }
+    &#125;
 
-    override fun getItemCount(): Int {
+    override fun getItemCount(): Int &#123;
         return 10
-    }
+    &#125;
 
     class TestViewHolder(var binding: ItemTestBinding) :
         RecyclerView.ViewHolder(binding.root)
-}
-</code></pre><p>通过以上几个实例可以看到ViewBinding的使用是非常简单的。而ViewBinding的实现原理也并不难，Gradle插件会根据布局文件在项目的build目录下生成相应的ViewBinding类，并且，最终也是通过findViewById来完成View的获取的。具体实现代码不再贴出，感兴趣的同学可以自行查看。</p>
+&#125;
+</code></pre>
+<p>通过以上几个实例可以看到ViewBinding的使用是非常简单的。而ViewBinding的实现原理也并不难，Gradle插件会根据布局文件在项目的build目录下生成相应的ViewBinding类，并且，最终也是通过findViewById来完成View的获取的。具体实现代码不再贴出，感兴趣的同学可以自行查看。</p>
 
       
 
@@ -2005,7 +2103,7 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/12/05/ButterKnife被弃用，ViewBinding才是findView的未来？/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/12/05/ButterKnife%E8%A2%AB%E5%BC%83%E7%94%A8%EF%BC%8CViewBinding%E6%89%8D%E6%98%AFfindView%E7%9A%84%E6%9C%AA%E6%9D%A5%EF%BC%9F/">展开全文 >></a>
         </p>
       
 
@@ -2042,12 +2140,12 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/21/如何优雅的回退Git版本/">如何优雅的回退Git版本</a>
+      <a class="article-title" href="/2020/05/21/%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E7%9A%84%E5%9B%9E%E9%80%80Git%E7%89%88%E6%9C%AC/">如何优雅的回退Git版本</a>
     </h1>
   
 
         
-        <a href="/2020/05/21/如何优雅的回退Git版本/" class="archive-article-date">
+        <a href="/2020/05/21/%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E7%9A%84%E5%9B%9E%E9%80%80Git%E7%89%88%E6%9C%AC/" class="archive-article-date">
   	<time datetime="2020-05-21T02:16:02.887Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-21</time>
 </a>
         
@@ -2071,7 +2169,8 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 <p>这个时候另一个可选项是在 master 分支上执行 reset，使用 –hard 选项完全抛弃这些旧代码，reset 后再强制推到远端。</p>
 <pre><code>master&gt; git reset --hard commit_id
 master&gt; git push --force origin master
-</code></pre><p>但是还是有问题，首先，我们的 master 分支在 gitlab 里是被保护的，不能使用 force push，毕竟风险挺大了，万一有人 reset 到最开始的提交再强制 push 的话，虽然可以使用 reflog 恢复，但也是一番折腾。</p>
+</code></pre>
+<p>但是还是有问题，首先，我们的 master 分支在 gitlab 里是被保护的，不能使用 force push，毕竟风险挺大了，万一有人 reset 到最开始的提交再强制 push 的话，虽然可以使用 reflog 恢复，但也是一番折腾。</p>
 <p>另外，reset 毕竟太野蛮，我们还是想能保留提交历史，以后排查问题也可以参考。</p>
 <h2 id="升级融合"><a href="#升级融合" class="headerlink" title="升级融合"></a>升级融合</h2><h3 id="rebase"><a href="#rebase" class="headerlink" title="rebase"></a>rebase</h3><p>只好用搜索引擎继续搜索，看到有人提出可以先使用 rebase 把多个提交合并成一个提交，再使用 revert 产生一次反提交，这种方法的思路非常清晰，把 revert 和 rebase 两个命令搭配得很好，相当于使用 revert 回退的升级版。</p>
 <p>先说一下 rebase，rebase 是”变基”的意思，这里的”基”，在我理解是指[多次] commit 形成的 git workflow，使用 rebase，我们可以改变这些历史提交，修改 commit 信息，将多个 commit 进行组合。</p>
@@ -2085,14 +2184,15 @@ master&gt; git push --force origin master
 pick 0b84ee7 commit2
 pick 986c6c8 commit3
 pick 91a0dcc commit4
-</code></pre><ol>
+</code></pre>
+<ol>
 <li>这些 commit 自旧到新由上而下排列，我们只需要在 commit_id 前添加操作命令即可。</li>
 </ol>
 <p>在合并 commit 这个需求里，我们可以选择 pick(p) 最旧的 commit1，然后在后续的 commit_id 前添加 squash(s) 命令，将这些 commits 都合并到最旧的 commit1 上。</p>
 <ol start="2">
 <li>保存 rebase 结果后，再编辑 commit 信息，使这次 rebase 失效，git 会将之前的这些 commit 都删除，并将其更改合并为一个新的 commit5</li>
 </ol>
-<p>如果出错了，也可以使用 git rebase –abort/–continue/–edit-todo 对之前的编辑进行撤销、继续编辑。</p>
+<p>如果出错了，也可以使用 git rebase –abort&#x2F;–continue&#x2F;–edit-todo 对之前的编辑进行撤销、继续编辑。</p>
 <ol start="3">
 <li>这个时候，主分支上的提交记录是 older, commit1, commit2, commit3, commit4</li>
 </ol>
@@ -2137,7 +2237,7 @@ pick 91a0dcc commit4
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/21/如何优雅的回退Git版本/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/05/21/%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E7%9A%84%E5%9B%9E%E9%80%80Git%E7%89%88%E6%9C%AC/">展开全文 >></a>
         </p>
       
 
@@ -2174,12 +2274,12 @@ pick 91a0dcc commit4
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/05/20/分布式唯一ID的生成方式/">分布式唯一ID的生成方式</a>
+      <a class="article-title" href="/2020/05/20/%E5%88%86%E5%B8%83%E5%BC%8F%E5%94%AF%E4%B8%80ID%E7%9A%84%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F/">分布式唯一ID的生成方式</a>
     </h1>
   
 
         
-        <a href="/2020/05/20/分布式唯一ID的生成方式/" class="archive-article-date">
+        <a href="/2020/05/20/%E5%88%86%E5%B8%83%E5%BC%8F%E5%94%AF%E4%B8%80ID%E7%9A%84%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F/" class="archive-article-date">
   	<time datetime="2020-05-20T11:00:49.616Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-20</time>
 </a>
         
@@ -2187,7 +2287,7 @@ pick 91a0dcc commit4
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><img src="http://img.wangjungang.cn/uPic/rIgRfg.jpg" alt=""></p>
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><img src="http://img.wangjungang.cn/uPic/rIgRfg.jpg"></p>
 <p>在互联网的业务系统中，涉及到各种各样的ID，如在支付系统中就会有支付ID、退款ID等。那一般生成ID都有哪些解决方案呢？特别是在复杂的分布式系统业务场景中，我们应该采用哪种适合自己的解决方案是十分重要的。下面我们一一来列举一下，不一定全部适合，这些解决方案仅供你参考，或许对你有用。</p>
 <h2 id="分布式ID的特性"><a href="#分布式ID的特性" class="headerlink" title="分布式ID的特性"></a>分布式ID的特性</h2><ul>
 <li>唯一性：确保生成的ID是全网唯一的。</li>
@@ -2212,10 +2312,10 @@ pick 91a0dcc commit4
 </ul>
 <h3 id="4-Redis生成ID"><a href="#4-Redis生成ID" class="headerlink" title="4. Redis生成ID"></a>4. Redis生成ID</h3><p>Redis的所有命令操作都是单线程的，本身提供像 incr 和 increby 这样的自增原子命令，所以能保证生成的 ID 肯定是唯一有序的。</p>
 <ul>
-<li>优点：不依赖于数据库，灵活方便，且性能优于数据库；数字ID天然排序，对分页或者需要排序的结果很有帮助。</li>
-</ul>
-<ul>
-<li>缺点：如果系统中没有Redis，还需要引入新的组件，增加系统复杂度；需要编码和配置的工作量比较大。</li>
+<li><p>优点：不依赖于数据库，灵活方便，且性能优于数据库；数字ID天然排序，对分页或者需要排序的结果很有帮助。</p>
+</li>
+<li><p>缺点：如果系统中没有Redis，还需要引入新的组件，增加系统复杂度；需要编码和配置的工作量比较大。</p>
+</li>
 </ul>
 <p>考虑到单节点的性能瓶颈，可以使用 Redis 集群来获取更高的吞吐量。假如一个集群中有5台 Redis。可以初始化每台 Redis 的值分别是1, 2, 3, 4, 5，然后步长都是 5。各个 Redis 生成的 ID 为：</p>
 <pre><code>A：1, 6, 11, 16, 21
@@ -2223,22 +2323,23 @@ B：2, 7, 12, 17, 22
 C：3, 8, 13, 18, 23
 D：4, 9, 14, 19, 24
 E：5, 10, 15, 20, 25
-</code></pre><p>随便负载到哪个机确定好，未来很难做修改。步长和初始值一定需要事先确定。使用 Redis 集群也可以方式单点故障的问题。</p>
-<p>另外，比较适合使用 Redis 来生成每天从0开始的流水号。比如订单号 = 日期 + 当日自增长号。可以每天在 Redis 中生成一个 Key ，使用 INCR 进行累加。</p>
+</code></pre>
+<p>随便负载到哪个机确定好，未来很难做修改。步长和初始值一定需要事先确定。使用 Redis 集群也可以方式单点故障的问题。</p>
+<p>另外，比较适合使用 Redis 来生成每天从0开始的流水号。比如订单号 &#x3D; 日期 + 当日自增长号。可以每天在 Redis 中生成一个 Key ，使用 INCR 进行累加。</p>
 <h3 id="5-Twitter的snowflake算法"><a href="#5-Twitter的snowflake算法" class="headerlink" title="5. Twitter的snowflake算法"></a>5. Twitter的snowflake算法</h3><p>Twitter 利用 zookeeper 实现了一个全局ID生成的服务 Snowflake：</p>
-<p><a href="https://github.com/twitter-archive/snowflake" target="_blank" rel="noopener">github</a></p>
-<p><img src="http://img.wangjungang.cn/uPic/UVO1uU.jpg" alt=""></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/twitter-archive/snowflake">github</a></p>
+<p><img src="http://img.wangjungang.cn/uPic/UVO1uU.jpg"></p>
 <p>如上图的所示，Twitter 的 Snowflake 算法由下面几部分组成：</p>
 <h4 id="1位符号位："><a href="#1位符号位：" class="headerlink" title="1位符号位："></a>1位符号位：</h4><p>由于 long 类型在 java 中带符号的，最高位为符号位，正数为 0，负数为 1，且实际系统中所使用的ID一般都是正数，所以最高位为 0。</p>
-<h4 id="41位时间戳（毫秒级）："><a href="#41位时间戳（毫秒级）：" class="headerlink" title="41位时间戳（毫秒级）："></a>41位时间戳（毫秒级）：</h4><p>需要注意的是此处的 41 位时间戳并非存储当前时间的时间戳，而是存储时间戳的差值（当前时间戳 - 起始时间戳），这里的起始时间戳一般是ID生成器开始使用的时间戳，由程序来指定，所以41位毫秒时间戳最多可以使用 (1 &lt;&lt; 41) / (1000x60x60x24x365) = 69年。</p>
-<h4 id="10位数据机器位："><a href="#10位数据机器位：" class="headerlink" title="10位数据机器位："></a>10位数据机器位：</h4><p>包括5位数据标识位和5位机器标识位，这10位决定了分布式系统中最多可以部署 1 &lt;&lt; 10 = 1024 s个节点。超过这个数量，生成的ID就有可能会冲突。</p>
-<h4 id="12位毫秒内的序列："><a href="#12位毫秒内的序列：" class="headerlink" title="12位毫秒内的序列："></a>12位毫秒内的序列：</h4><p>这 12 位计数支持每个节点每毫秒（同一台机器，同一时刻）最多生成 1 &lt;&lt; 12 = 4096个ID</p>
+<h4 id="41位时间戳（毫秒级）："><a href="#41位时间戳（毫秒级）：" class="headerlink" title="41位时间戳（毫秒级）："></a>41位时间戳（毫秒级）：</h4><p>需要注意的是此处的 41 位时间戳并非存储当前时间的时间戳，而是存储时间戳的差值（当前时间戳 - 起始时间戳），这里的起始时间戳一般是ID生成器开始使用的时间戳，由程序来指定，所以41位毫秒时间戳最多可以使用 (1 &lt;&lt; 41) &#x2F; (1000x60x60x24x365) &#x3D; 69年。</p>
+<h4 id="10位数据机器位："><a href="#10位数据机器位：" class="headerlink" title="10位数据机器位："></a>10位数据机器位：</h4><p>包括5位数据标识位和5位机器标识位，这10位决定了分布式系统中最多可以部署 1 &lt;&lt; 10 &#x3D; 1024 s个节点。超过这个数量，生成的ID就有可能会冲突。</p>
+<h4 id="12位毫秒内的序列："><a href="#12位毫秒内的序列：" class="headerlink" title="12位毫秒内的序列："></a>12位毫秒内的序列：</h4><p>这 12 位计数支持每个节点每毫秒（同一台机器，同一时刻）最多生成 1 &lt;&lt; 12 &#x3D; 4096个ID</p>
 <p>加起来刚好64位，为一个Long型。</p>
 <ul>
 <li>优点：高性能，低延迟，按时间有序，一般不会造成ID碰撞</li>
 <li>缺点：需要独立的开发和部署，依赖于机器的时钟</li>
 </ul>
-<h3 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h3><pre><code>public class IdWorker {
+<h3 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h3><pre><code>public class IdWorker &#123;
     /**
      * 起始时间戳 2017-04-01
      */
@@ -2296,68 +2397,69 @@ E：5, 10, 15, 20, 25
      */
     private long lastTimestamp = -1L;
 
-    public IdWorker(long dataCenterId, long workerId) {
-        if (dataCenterId &gt; maxDataCenterId || dataCenterId &lt; 0) {
-            throw new IllegalArgumentException(String.format(&quot;dataCenterId can&apos;t be greater than %d or less than 0&quot;, maxDataCenterId));
-        }
-        if (workerId &gt; maxWorkerId || workerId &lt; 0) {
-            throw new IllegalArgumentException(String.format(&quot;worker Id can&apos;t be greater than %d or less than 0&quot;, maxWorkerId));
-        }
+    public IdWorker(long dataCenterId, long workerId) &#123;
+        if (dataCenterId &gt; maxDataCenterId || dataCenterId &lt; 0) &#123;
+            throw new IllegalArgumentException(String.format(&quot;dataCenterId can&#39;t be greater than %d or less than 0&quot;, maxDataCenterId));
+        &#125;
+        if (workerId &gt; maxWorkerId || workerId &lt; 0) &#123;
+            throw new IllegalArgumentException(String.format(&quot;worker Id can&#39;t be greater than %d or less than 0&quot;, maxWorkerId));
+        &#125;
         this.dataCenterId = dataCenterId;
         this.workerId = workerId;
-    }
+    &#125;
 
     /**
      * 获得下一个ID (该方法是线程安全的)
      * @return snowflakeId
      */
-    public synchronized long nextId() {
+    public synchronized long nextId() &#123;
         long timestamp = timeGen();
         //如果当前时间小于上一次ID生成的时间戳,说明系统时钟回退过,这个时候应当抛出异常
-        if (timestamp &lt; lastTimestamp) {
+        if (timestamp &lt; lastTimestamp) &#123;
             throw new RuntimeException(String.format(&quot;Clock moved backwards.  Refusing to generate id for %d milliseconds&quot;, lastTimestamp - timestamp));
-        }
+        &#125;
         //如果是同一时间生成的，则进行毫秒内序列
-        if (timestamp == lastTimestamp) {
+        if (timestamp == lastTimestamp) &#123;
             sequence = (sequence + 1) &amp; sequenceMask;
             //毫秒内序列溢出
-            if (sequence == 0) {
+            if (sequence == 0) &#123;
                 //阻塞到下一个毫秒,获得新的时间戳
                 timestamp = nextMillis(lastTimestamp);
-            }
-        } else {//时间戳改变，毫秒内序列重置
+            &#125;
+        &#125; else &#123;//时间戳改变，毫秒内序列重置
             sequence = 0L;
-        }
+        &#125;
         lastTimestamp = timestamp;
         //移位并通过按位或运算拼到一起组成64位的ID
         return ((timestamp - epoch) &lt;&lt; timestampShift) |
                 (dataCenterId &lt;&lt; dataCenterIdShift) |
                 (workerId &lt;&lt; workerIdShift) |
                 sequence;
-    }
+    &#125;
 
     /**
      * 返回以毫秒为单位的当前时间
      * @return 当前时间(毫秒)
      */
-    protected long timeGen() {
+    protected long timeGen() &#123;
         return System.currentTimeMillis();
-    }
+    &#125;
 
     /**
      * 阻塞到下一个毫秒，直到获得新的时间戳
      * @param lastTimestamp 上次生成ID的时间截
      * @return 当前时间戳
      */
-    protected long nextMillis(long lastTimestamp) {
+    protected long nextMillis(long lastTimestamp) &#123;
         long timestamp = timeGen();
-        while (timestamp &lt;= lastTimestamp) {
+        while (timestamp &lt;= lastTimestamp) &#123;
             timestamp = lastTimestamp;
-        }
+        &#125;
         return timestamp;
-    } 
-}
-</code></pre><h3 id="6-百度UidGenerator"><a href="#6-百度UidGenerator" class="headerlink" title="6. 百度UidGenerator"></a>6. 百度UidGenerator</h3><p>UidGenerator是百度开源的分布式ID生成器，基于于snowflake算法的实现</p>
+    &#125; 
+&#125;
+</code></pre>
+<h3 id="6-百度UidGenerator"><a href="#6-百度UidGenerator" class="headerlink" title="6. 百度UidGenerator"></a>6. 百度UidGenerator</h3><p>UidGenerator是百度开源的分布式ID生成器，基于于snowflake算法的实现</p>
 <h3 id="7-美团Leaf"><a href="#7-美团Leaf" class="headerlink" title="7. 美团Leaf"></a>7. 美团Leaf</h3><p>Leaf 是美团开源的分布式ID生成器，能保证全局唯一性、趋势递增、单调递增、信息安全，里面也提到了几种分布式方案的对比，但也需要依赖关系数据库、Zookeeper等中间件。</p>
 
       
@@ -2382,7 +2484,7 @@ E：5, 10, 15, 20, 25
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/05/20/分布式唯一ID的生成方式/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/05/20/%E5%88%86%E5%B8%83%E5%BC%8F%E5%94%AF%E4%B8%80ID%E7%9A%84%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F/">展开全文 >></a>
         </p>
       
 
@@ -2414,7 +2516,7 @@ E：5, 10, 15, 20, 25
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/2/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/4/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -2426,7 +2528,7 @@ E：5, 10, 15, 20, 25
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -2533,10 +2635,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -2545,7 +2643,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2553,11 +2651,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2577,19 +2679,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

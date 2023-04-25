@@ -9,17 +9,17 @@
   <title>探索android的强指针实现 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="强指针和弱指针基础android中的智能指针包括：轻量级指针、强指针、弱指针。 强指针：它主要是通过强引用计数来进行维护对象的生命周期。 弱指针：它主要是通过弱引用计数来进行维护所指向对象的生命周期。 如果在一个类中使用了强指针或者弱指针的技术，那么这个类就必须从RefBase这个类进行做继承，因为强指针和弱指针是通过RefBase这个类来提供实现的引用计数器。 强指针和弱指针关系相对于轻量级指针">
-<meta name="keywords" content="Android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="探索android的强指针实现">
-<meta property="og:url" content="http://yoursite.com/2021/10/08/探索android的强指针实现 /index.html">
+<meta property="og:url" content="http://yoursite.com/2021/10/08/%E6%8E%A2%E7%B4%A2android%E7%9A%84%E5%BC%BA%E6%8C%87%E9%92%88%E5%AE%9E%E7%8E%B0%20/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="强指针和弱指针基础android中的智能指针包括：轻量级指针、强指针、弱指针。 强指针：它主要是通过强引用计数来进行维护对象的生命周期。 弱指针：它主要是通过弱引用计数来进行维护所指向对象的生命周期。 如果在一个类中使用了强指针或者弱指针的技术，那么这个类就必须从RefBase这个类进行做继承，因为强指针和弱指针是通过RefBase这个类来提供实现的引用计数器。 强指针和弱指针关系相对于轻量级指针">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-10-08T06:44:24.884Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-10-08T06:43:20.102Z">
+<meta property="article:modified_time" content="2021-10-08T06:44:24.884Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="探索android的强指针实现">
-<meta name="twitter:description" content="强指针和弱指针基础android中的智能指针包括：轻量级指针、强指针、弱指针。 强指针：它主要是通过强引用计数来进行维护对象的生命周期。 弱指针：它主要是通过弱引用计数来进行维护所指向对象的生命周期。 如果在一个类中使用了强指针或者弱指针的技术，那么这个类就必须从RefBase这个类进行做继承，因为强指针和弱指针是通过RefBase这个类来提供实现的引用计数器。 强指针和弱指针关系相对于轻量级指针">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2021/10/08/探索android的强指针实现 /" class="archive-article-date">
+        <a href="/2021/10/08/%E6%8E%A2%E7%B4%A2android%E7%9A%84%E5%BC%BA%E6%8C%87%E9%92%88%E5%AE%9E%E7%8E%B0%20/" class="archive-article-date">
   	<time datetime="2021-10-08T06:43:20.102Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
 </a>
         
@@ -182,20 +182,20 @@
 <p>强指针和弱指针关系相对于轻量级指针来说更加亲密，因此他们一般是相互配合使用的。</p>
 <h2 id="强指针原理分析"><a href="#强指针原理分析" class="headerlink" title="强指针原理分析"></a>强指针原理分析</h2><p>以下针对源码的分析都是来源于android5.0系统源码 强指针的定义实现主要在\frameworks\rs\cpp\util\RefBase.h文件中</p>
 <pre><code>class RefBase
-{
+&#123;
 public:
             //定义了成员变量用于维护强引用对象的引用计数
             void            incStrong(const void* id) const;
             //定义了成员变量用于维护强引用对象的引用计数
             void            decStrong(const void* id) const;
-
+          
             void            forceIncStrong(const void* id) const;
 
             //获取强指针计数的数量.
             int32_t         getStrongCount() const;
     //这个类主要实现计数器的
     class weakref_type
-    {
+    &#123;
     public:
         RefBase*            refBase() const;
 
@@ -224,20 +224,20 @@ public:
         //           outstanding ones.
 
         void                trackMe(bool enable, bool retain);
-    };
+    &#125;;
 
             weakref_type*   createWeak(const void* id) const;
 
             weakref_type*   getWeakRefs() const;
 
             //! DEBUGGING ONLY: Print references held on object.
-    inline  void            printRefs() const { getWeakRefs()-&gt;printRefs(); }
+    inline  void            printRefs() const &#123; getWeakRefs()-&gt;printRefs(); &#125;
 
             //! DEBUGGING ONLY: Enable tracking of object.
     inline  void            trackMe(bool enable, bool retain)
-    {
+    &#123;
         getWeakRefs()-&gt;trackMe(enable, retain);
-    }
+    &#125;
 
     typedef RefBase basetype;
 
@@ -246,18 +246,18 @@ protected:
     virtual                 ~RefBase();
 
     //! Flags for extendObjectLifetime()
-    enum {
+    enum &#123;
         OBJECT_LIFETIME_STRONG  = 0x0000,
         OBJECT_LIFETIME_WEAK    = 0x0001,
         OBJECT_LIFETIME_MASK    = 0x0001
-    };
+    &#125;;
 
             void            extendObjectLifetime(int32_t mode);
 
     //! Flags for onIncStrongAttempted()
-    enum {
+    enum &#123;
         FIRST_INC_STRONG = 0x0001
-    };
+    &#125;;
 
     virtual void            onFirstRef();
     virtual void            onLastStrongRef(const void* id);
@@ -278,8 +278,9 @@ private:
             RefBase&amp;        operator=(const RefBase&amp; o);
 
         weakref_impl* const mRefs;
-};
-</code></pre><p>通过以上类定义可以看到 RefBase类里面嵌套着weakref_type类，这个weakref_type类也的对象mRefs来描述对象的引用计数。也就是说每一个RefBase对象都包含一个weakref_type对象。</p>
+&#125;;
+</code></pre>
+<p>通过以上类定义可以看到 RefBase类里面嵌套着weakref_type类，这个weakref_type类也的对象mRefs来描述对象的引用计数。也就是说每一个RefBase对象都包含一个weakref_type对象。</p>
 <p>virtual表示的是虚函数。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果一个对象的生命周期控制标志值被设置为0的情况下，只要它的强引用计数值也为0，那么系统就会自动释放这个对象。</p>
 
@@ -372,7 +373,7 @@ private:
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/10/08/探索android的强指针实现 /" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/10/08/%E6%8E%A2%E7%B4%A2android%E7%9A%84%E5%BC%BA%E6%8C%87%E9%92%88%E5%AE%9E%E7%8E%B0%20/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -386,7 +387,7 @@ private:
   
 <nav id="article-nav">
   
-    <a href="/2021/10/08/Android中的轻量级指针/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2021/10/08/Android%E4%B8%AD%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%8C%87%E9%92%88/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -396,7 +397,7 @@ private:
     </a>
   
   
-    <a href="/2021/07/07/使用 runtime, 让 UserDefaults 飞/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2021/07/07/%E4%BD%BF%E7%94%A8%20runtime,%20%E8%AE%A9%20UserDefaults%20%E9%A3%9E/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">使用 runtime, 让 UserDefaults 飞</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -440,7 +441,7 @@ private:
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -547,10 +548,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -559,7 +556,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -567,11 +564,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -591,19 +592,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

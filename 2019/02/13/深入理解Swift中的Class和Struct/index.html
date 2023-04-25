@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>深入理解Swift中的Class和Struct | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面Class和Struct是Swift中很重要的两种数据结构，同时也是Swift面试题必问的一道题。所以对Class和Struct理解透彻对我们学习Swift有很大的帮助。 理解ClassClass的定义和使用class Animal {     var name: String?     var weight = 0.0 }  let cat = Animal() cat.name = &amp;">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="写在前面Class和Struct是Swift中很重要的两种数据结构，同时也是Swift面试题必问的一道题。所以对Class和Struct理解透彻对我们学习Swift有很大的帮助。 理解ClassClass的定义和使用class Animal &amp;#123;     var name: String?     var weight &#x3D; 0.0 &amp;#125;  let cat &#x3D; Animal() ca">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入理解Swift中的Class和Struct">
-<meta property="og:url" content="http://yoursite.com/2019/02/13/深入理解Swift中的Class和Struct/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/02/13/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Swift%E4%B8%AD%E7%9A%84Class%E5%92%8CStruct/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面Class和Struct是Swift中很重要的两种数据结构，同时也是Swift面试题必问的一道题。所以对Class和Struct理解透彻对我们学习Swift有很大的帮助。 理解ClassClass的定义和使用class Animal {     var name: String?     var weight = 0.0 }  let cat = Animal() cat.name = &amp;">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-02-13T08:59:00.769Z">
+<meta property="og:description" content="写在前面Class和Struct是Swift中很重要的两种数据结构，同时也是Swift面试题必问的一道题。所以对Class和Struct理解透彻对我们学习Swift有很大的帮助。 理解ClassClass的定义和使用class Animal &amp;#123;     var name: String?     var weight &#x3D; 0.0 &amp;#125;  let cat &#x3D; Animal() ca">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-02-13T08:53:47.039Z">
+<meta property="article:modified_time" content="2019-02-13T08:59:00.769Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="深入理解Swift中的Class和Struct">
-<meta name="twitter:description" content="写在前面Class和Struct是Swift中很重要的两种数据结构，同时也是Swift面试题必问的一道题。所以对Class和Struct理解透彻对我们学习Swift有很大的帮助。 理解ClassClass的定义和使用class Animal {     var name: String?     var weight = 0.0 }  let cat = Animal() cat.name = &amp;">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/02/13/深入理解Swift中的Class和Struct/" class="archive-article-date">
+        <a href="/2019/02/13/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Swift%E4%B8%AD%E7%9A%84Class%E5%92%8CStruct/" class="archive-article-date">
   	<time datetime="2019-02-13T08:53:47.039Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-13</time>
 </a>
         
@@ -176,17 +176,18 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Class和Struct是Swift中很重要的两种数据结构，同时也是Swift面试题必问的一道题。所以对Class和Struct理解透彻对我们学习Swift有很大的帮助。</p>
-<h2 id="理解Class"><a href="#理解Class" class="headerlink" title="理解Class"></a>理解Class</h2><h3 id="Class的定义和使用"><a href="#Class的定义和使用" class="headerlink" title="Class的定义和使用"></a>Class的定义和使用</h3><pre><code>class Animal {
+<h2 id="理解Class"><a href="#理解Class" class="headerlink" title="理解Class"></a>理解Class</h2><h3 id="Class的定义和使用"><a href="#Class的定义和使用" class="headerlink" title="Class的定义和使用"></a>Class的定义和使用</h3><pre><code>class Animal &#123;
     var name: String?
     var weight = 0.0
-}
+&#125;
 
 let cat = Animal()
 cat.name = &quot;cat&quot;
 cat.weight = 10
 
-print(&quot;cat&apos;s name: \(cat.name!), cat&apos;s weight: \(cat.weight)&quot;) //cat&apos;s name: cat, cat&apos;s weight: 10.0
-</code></pre><h3 id="Class是引用类型"><a href="#Class是引用类型" class="headerlink" title="Class是引用类型"></a>Class是引用类型</h3><p>当值传递的时候，它是传递对已有instance的引用。下面用代码来解释一下这句话：</p>
+print(&quot;cat&#39;s name: \(cat.name!), cat&#39;s weight: \(cat.weight)&quot;) //cat&#39;s name: cat, cat&#39;s weight: 10.0
+</code></pre>
+<h3 id="Class是引用类型"><a href="#Class是引用类型" class="headerlink" title="Class是引用类型"></a>Class是引用类型</h3><p>当值传递的时候，它是传递对已有instance的引用。下面用代码来解释一下这句话：</p>
 <pre><code>let cat = Animal()
 cat.name = &quot;cat&quot;
 cat.weight = 10
@@ -194,29 +195,31 @@ cat.weight = 10
 let blackCat = cat
 blackCat.name = &quot;blackCat&quot;
 
-print(&quot;cat&apos;s name: \(cat.name!)&quot;) // cat&apos;s name: blackCat
-</code></pre><p>通过上面的代码可以了解到，其实cat和blackCat指向的是同一个Animal的instance。它们只是这个instance的两个不同的名字而已。</p>
-<h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><p>我们看到上述代码把cat和blackCat声明为了let，但是我们依然可以修改它的属性，因为cat和blackCat引用的instance并没有改变，它们还是引用之前instance，我们只是修改的instance的属性。但是不能将cat或者blackCat指向另一个实例，如blackCat = Animal()会提示Cannot assign to value: ‘blackCat’ is a ‘let’ constant的错误。</p>
-<h3 id="Identity-Operators"><a href="#Identity-Operators" class="headerlink" title="Identity Operators"></a>Identity Operators</h3><p>Swift 提供===和!==来判断两个变量或者常量是不是引用同一个instance(只用于class，想一想为什么struct不需要).</p>
-<pre><code>if blackCat === cat {
+print(&quot;cat&#39;s name: \(cat.name!)&quot;) // cat&#39;s name: blackCat
+</code></pre>
+<p>通过上面的代码可以了解到，其实cat和blackCat指向的是同一个Animal的instance。它们只是这个instance的两个不同的名字而已。</p>
+<h3 id="Note"><a href="#Note" class="headerlink" title="Note"></a>Note</h3><p>我们看到上述代码把cat和blackCat声明为了let，但是我们依然可以修改它的属性，因为cat和blackCat引用的instance并没有改变，它们还是引用之前instance，我们只是修改的instance的属性。但是不能将cat或者blackCat指向另一个实例，如blackCat &#x3D; Animal()会提示Cannot assign to value: ‘blackCat’ is a ‘let’ constant的错误。</p>
+<h3 id="Identity-Operators"><a href="#Identity-Operators" class="headerlink" title="Identity Operators"></a>Identity Operators</h3><p>Swift 提供&#x3D;&#x3D;&#x3D;和!&#x3D;&#x3D;来判断两个变量或者常量是不是引用同一个instance(只用于class，想一想为什么struct不需要).</p>
+<pre><code>if blackCat === cat &#123;
     print(&quot;Identical&quot;) //Identical
-} else {
+&#125; else &#123;
     print(&quot;Not identical&quot;)
-}
-</code></pre><p>===和==是不一样的。</p>
-<p>===：代表两个变量或者常量引用的同一个instance</p>
-<p>==：代表两个变量或者常量的值是否相同，并不一定是引用的同一个instance</p>
-<p>如果想让自定义的class支持==操作符，可以使该类遵守Equatable</p>
-<pre><code>class Animal {
+&#125;
+</code></pre>
+<p>&#x3D;&#x3D;&#x3D;和&#x3D;&#x3D;是不一样的。</p>
+<p>&#x3D;&#x3D;&#x3D;：代表两个变量或者常量引用的同一个instance</p>
+<p>&#x3D;&#x3D;：代表两个变量或者常量的值是否相同，并不一定是引用的同一个instance</p>
+<p>如果想让自定义的class支持&#x3D;&#x3D;操作符，可以使该类遵守Equatable</p>
+<pre><code>class Animal &#123;
     var name: String?
     var weight = 0.0
-}
+&#125;
 
-extension Animal: Equatable {
-    static func == (lhs: Animal, rhs: Animal) -&gt; Bool {
+extension Animal: Equatable &#123;
+    static func == (lhs: Animal, rhs: Animal) -&gt; Bool &#123;
         return lhs.name == rhs.name &amp;&amp; lhs.weight == rhs.weight
-    }
-}
+    &#125;
+&#125;
 
 let cat = Animal()
 cat.name = &quot;cat&quot;
@@ -229,75 +232,83 @@ let whiteCat = Animal()
 whiteCat.name = &quot;catName&quot;
 whiteCat.weight = 10.0
 
-if blackCat === cat {
+if blackCat === cat &#123;
     print(&quot;Identical&quot;) //Identical
-} else {
+&#125; else &#123;
     print(&quot;Not identical&quot;)
-}
+&#125;
 
-if whiteCat === blackCat {
+if whiteCat === blackCat &#123;
     print(&quot;Identical&quot;) 
-} else {
+&#125; else &#123;
     print(&quot;Not identical&quot;) //Not identical
-}
+&#125;
 
-if whiteCat == blackCat {
+if whiteCat == blackCat &#123;
     print(&quot;Equal&quot;)
-} else {
+&#125; else &#123;
     print(&quot;Not Equal&quot;) //Equal
-}
-</code></pre><h2 id="理解Struct"><a href="#理解Struct" class="headerlink" title="理解Struct"></a>理解Struct</h2><h3 id="Struct的定义和使用"><a href="#Struct的定义和使用" class="headerlink" title="Struct的定义和使用"></a>Struct的定义和使用</h3><pre><code>struct FPoint {
+&#125;
+</code></pre>
+<h2 id="理解Struct"><a href="#理解Struct" class="headerlink" title="理解Struct"></a>理解Struct</h2><h3 id="Struct的定义和使用"><a href="#Struct的定义和使用" class="headerlink" title="Struct的定义和使用"></a>Struct的定义和使用</h3><pre><code>struct FPoint &#123;
     var x = 0.0
     var y = 0.0
     //当在struct修改属性的时候需要使用mutating
-    mutating func addX(add: Double) {
+    mutating func addX(add: Double) &#123;
         self.x = self.x + add
-    }
-}
+    &#125;
+&#125;
 
 let p1 = FPoint()
-print(&quot;p1&apos;s x : \(p1.x), p1&apos;s y: \(p1.y)&quot;) // p1&apos;s x : 0.0, p1&apos;s y: 0.0
-</code></pre><h3 id="Struct是值类型"><a href="#Struct是值类型" class="headerlink" title="Struct是值类型"></a>Struct是值类型</h3><p>当值进行传递的时候，它会copy传递的值。下面用代码来解释一下这句话:</p>
+print(&quot;p1&#39;s x : \(p1.x), p1&#39;s y: \(p1.y)&quot;) // p1&#39;s x : 0.0, p1&#39;s y: 0.0
+</code></pre>
+<h3 id="Struct是值类型"><a href="#Struct是值类型" class="headerlink" title="Struct是值类型"></a>Struct是值类型</h3><p>当值进行传递的时候，它会copy传递的值。下面用代码来解释一下这句话:</p>
 <pre><code>var p2 = p1
 p2.x = 3.0
-print(&quot;p1&apos;s x : \(p1.x), p1&apos;s y: \(p1.y); p2&apos;s x : \(p2.x), p2&apos;s y: \(p2.y)&quot;)
-//p1&apos;s x : 1.0, p1&apos;s y: 2.0; p2&apos;s x : 3.0, p2&apos;s y: 2.0
-</code></pre><p>通过上述代码我们可以看到，将p1赋值给p2之后改变p2的值并不会影响p1的值，这是因为在将p1赋值给p2的时候是拷贝一个instance值与p1相同，然后将拷贝的instance赋值给p2。</p>
+print(&quot;p1&#39;s x : \(p1.x), p1&#39;s y: \(p1.y); p2&#39;s x : \(p2.x), p2&#39;s y: \(p2.y)&quot;)
+//p1&#39;s x : 1.0, p1&#39;s y: 2.0; p2&#39;s x : 3.0, p2&#39;s y: 2.0
+</code></pre>
+<p>通过上述代码我们可以看到，将p1赋值给p2之后改变p2的值并不会影响p1的值，这是因为在将p1赋值给p2的时候是拷贝一个instance值与p1相同，然后将拷贝的instance赋值给p2。</p>
 <h3 id="Note-1"><a href="#Note-1" class="headerlink" title="Note"></a>Note</h3><p>如果struct的instance声明为let，是不能改变instance的值的。如</p>
 <pre><code>let p1 = FPoint(x: 1.0, y: 2.0)
-p1.x = 10.0 //报错:Cannot assign to property: &apos;p1&apos; is a &apos;let&apos; constant
-</code></pre><h2 id="在项目中如何选择Struct和Class"><a href="#在项目中如何选择Struct和Class" class="headerlink" title="在项目中如何选择Struct和Class"></a>在项目中如何选择Struct和Class</h2><ul>
-<li>默认使用struct</li>
-<li>当你需要继承Objective-C某些类的的时候使用class</li>
-<li>当你需要控制唯一性时使用class</li>
+p1.x = 10.0 //报错:Cannot assign to property: &#39;p1&#39; is a &#39;let&#39; constant
+</code></pre>
+<h2 id="在项目中如何选择Struct和Class"><a href="#在项目中如何选择Struct和Class" class="headerlink" title="在项目中如何选择Struct和Class"></a>在项目中如何选择Struct和Class</h2><ul>
+<li><p>默认使用struct</p>
+</li>
+<li><p>当你需要继承Objective-C某些类的的时候使用class</p>
+</li>
+<li><p>当你需要控制唯一性时使用class</p>
+</li>
 <li><p>使用struct和protocol来实现model继承和共享行为，如下代码所示:</p>
-<pre><code>protocol AnimalCommonProtocol {
-    var name: String? { get set }
-    var weight: Double { get set }
-    func run()
-}
-
-struct Cat : AnimalCommonProtocol {
-    func run() {
-        print(&quot;cat run&quot;)
-    }
-    var name: String?
-    var weight: Double
-    var gender: String?
-}
-
-struct Dog : AnimalCommonProtocol {
-    func run() {
-        print(&quot;dog run&quot;)
-    }
-
-var name: String?
-var weight: Double
-var type: String?
-}
-</code></pre><p>总结起来就是一句话：能使用struct就不要使用class</p>
+<pre><code>  protocol AnimalCommonProtocol &#123;
+      var name: String? &#123; get set &#125;
+      var weight: Double &#123; get set &#125;
+      func run()
+  &#125;
+  
+  struct Cat : AnimalCommonProtocol &#123;
+      func run() &#123;
+          print(&quot;cat run&quot;)
+      &#125;
+      var name: String?
+      var weight: Double
+      var gender: String?
+  &#125;
+  
+  struct Dog : AnimalCommonProtocol &#123;
+      func run() &#123;
+          print(&quot;dog run&quot;)
+      &#125;
+  
+  var name: String?
+  var weight: Double
+  var type: String?
+  &#125;
+</code></pre>
 </li>
 </ul>
+<p>总结起来就是一句话：能使用struct就不要使用class</p>
 <h3 id="为什么优选struct"><a href="#为什么优选struct" class="headerlink" title="为什么优选struct"></a>为什么优选struct</h3><ul>
 <li>使用struct不需要考虑内存泄漏和多线程读写的问题，因为在传递值的时候它会进行值的copy</li>
 <li>struct存储在stack中，class存储在heap中，struct更快</li>
@@ -405,7 +416,7 @@ var type: String?
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/13/深入理解Swift中的Class和Struct/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/13/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Swift%E4%B8%AD%E7%9A%84Class%E5%92%8CStruct/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -419,7 +430,7 @@ var type: String?
   
 <nav id="article-nav">
   
-    <a href="/2019/02/14/Swift中的willSet与didSet/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/02/14/Swift%E4%B8%AD%E7%9A%84willSet%E4%B8%8EdidSet/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -429,7 +440,7 @@ var type: String?
     </a>
   
   
-    <a href="/2019/01/31/Hexo博客多台电脑设备同步管理/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/01/31/Hexo%E5%8D%9A%E5%AE%A2%E5%A4%9A%E5%8F%B0%E7%94%B5%E8%84%91%E8%AE%BE%E5%A4%87%E5%90%8C%E6%AD%A5%E7%AE%A1%E7%90%86/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Hexo博客多台电脑设备同步管理</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -473,7 +484,7 @@ var type: String?
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -580,10 +591,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -592,7 +599,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -600,11 +607,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -624,19 +635,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

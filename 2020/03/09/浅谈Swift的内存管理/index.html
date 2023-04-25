@@ -9,18 +9,18 @@
   <title>浅谈Swift的内存管理 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="内存管理和OC一样, 在Swift中也是采用基于引用计数的ARC内存管理方案(针对堆空间的内存管理) 在Swift的ARC中有三种引用  强引用(strong reference)：默认情况下，代码中涉及到的引用都是强引用  弱引用(weak reference)：通过weak定义弱引用  无主引用(unowned reference)：通过unowned定义无主引用   weak弱引用(weak">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浅谈Swift的内存管理">
-<meta property="og:url" content="http://yoursite.com/2020/03/09/浅谈Swift的内存管理/index.html">
+<meta property="og:url" content="http://yoursite.com/2020/03/09/%E6%B5%85%E8%B0%88Swift%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="内存管理和OC一样, 在Swift中也是采用基于引用计数的ARC内存管理方案(针对堆空间的内存管理) 在Swift的ARC中有三种引用  强引用(strong reference)：默认情况下，代码中涉及到的引用都是强引用  弱引用(weak reference)：通过weak定义弱引用  无主引用(unowned reference)：通过unowned定义无主引用   weak弱引用(weak">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
 <meta property="og:image" content="http://img.wangjungang.cn/5fV1VJ.jpg">
-<meta property="og:updated_time" content="2020-03-09T04:04:28.226Z">
+<meta property="article:published_time" content="2020-03-09T03:32:27.365Z">
+<meta property="article:modified_time" content="2020-03-09T04:04:28.226Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="浅谈Swift的内存管理">
-<meta name="twitter:description" content="内存管理和OC一样, 在Swift中也是采用基于引用计数的ARC内存管理方案(针对堆空间的内存管理) 在Swift的ARC中有三种引用  强引用(strong reference)：默认情况下，代码中涉及到的引用都是强引用  弱引用(weak reference)：通过weak定义弱引用  无主引用(unowned reference)：通过unowned定义无主引用   weak弱引用(weak">
 <meta name="twitter:image" content="http://img.wangjungang.cn/5fV1VJ.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
@@ -39,7 +39,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -53,7 +53,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -62,7 +62,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -111,7 +111,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -142,7 +142,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -169,7 +169,7 @@
   
 
         
-        <a href="/2020/03/09/浅谈Swift的内存管理/" class="archive-article-date">
+        <a href="/2020/03/09/%E6%B5%85%E8%B0%88Swift%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="archive-article-date">
   	<time datetime="2020-03-09T03:32:27.365Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-09</time>
 </a>
         
@@ -195,29 +195,32 @@
 </li>
 </ul>
 <p>在介绍weak弱引用之前, 先看一下下面一段代码</p>
-<pre><code>class Animal {
-    deinit {
+<pre><code>class Animal &#123;
+    deinit &#123;
         print(&quot;Animal deinit&quot;)
-    }
-}
+    &#125;
+&#125;
 
-func test() {
+func test() &#123;
     let animal = Animal()
-}
+&#125;
 
 print(&quot;will deinit&quot;)
 test()
 print(&quot;did deinit&quot;)
-</code></pre><p>上面这段代码中在test函数调用结束之后, 该作用的内存就会被回收, animal对象自然就会被销毁, 毫无疑问上面的输出结果应该是</p>
+</code></pre>
+<p>上面这段代码中在test函数调用结束之后, 该作用的内存就会被回收, animal对象自然就会被销毁, 毫无疑问上面的输出结果应该是</p>
 <pre><code>will deinit
 Animal deinit
 did deinit
-</code></pre><p>同样下面这段代码, 同样也是在a1对象被置为nil的时候内存会被回收, 对象就会被销毁</p>
+</code></pre>
+<p>同样下面这段代码, 同样也是在a1对象被置为nil的时候内存会被回收, 对象就会被销毁</p>
 <pre><code>var a1: Animal? = Animal()
 print(&quot;will deinit&quot;)
 a1 = nil
 print(&quot;did deinit&quot;)
-</code></pre><p>下面是一个被weak修饰的弱引用对象,</p>
+</code></pre>
+<p>下面是一个被weak修饰的弱引用对象,</p>
 <p>我们都知道, 被weak修饰的弱引用对象, 在对象销毁的时候, 会被自动置为nil</p>
 <p>所以被weak修饰的弱引用对象必须是可选类型的var, 两个条件缺一不可</p>
 <pre><code>weak var a2: Animal? = Animal()
@@ -225,7 +228,8 @@ print(&quot;did deinit&quot;)
 // 以下两种方式都会报错的
 weak var a2: Animal = Animal()
 weak let a2: Animal? = Animal()
-</code></pre><h3 id="unowned"><a href="#unowned" class="headerlink" title="unowned"></a>unowned</h3><ul>
+</code></pre>
+<h3 id="unowned"><a href="#unowned" class="headerlink" title="unowned"></a>unowned</h3><ul>
 <li>无主引用(unowned reference)：通过unowned定义无主引用</li>
 <li>不会产生强引用，实例销毁后仍然存储着实例的内存地址(类似于OC中的unsafe_unretained）</li>
 <li>试图在实例销毁后访问无主引用，会产生运行时错误（如下野指针)</li>
@@ -233,8 +237,8 @@ weak let a2: Animal? = Animal()
 <p>需要注意的是</p>
 <p>weak、unowned只能用在类实例上面, 如下所示</p>
 <pre><code>// 该协议表示只能被类遵守, AnyObject代表所有的类实例
-protocol Liveable: AnyObject {}
-class Person {}
+protocol Liveable: AnyObject &#123;&#125;
+class Person &#123;&#125;
 
 weak var p0: Person?
 weak var p1: AnyObject?
@@ -244,115 +248,122 @@ weak var p2: Liveable?
 unowned var p10: Person?
 unowned var p11: AnyObject?
 unowned var p12: Liveable?
-</code></pre><h2 id="循环引用"><a href="#循环引用" class="headerlink" title="循环引用"></a>循环引用</h2><ul>
+</code></pre>
+<h2 id="循环引用"><a href="#循环引用" class="headerlink" title="循环引用"></a>循环引用</h2><ul>
 <li>weak、unowned都能解决循环引用的问题，unowned要比weak少一些性能消耗</li>
 <li>在生命周期中可能会变为nil的使用weak</li>
 <li>初始化赋值后再也不会变为nil的使用unowne</li>
 <li>说道循环引用就自然想到了闭包</li>
 </ul>
 <h3 id="闭包的循环引用"><a href="#闭包的循环引用" class="headerlink" title="闭包的循环引用"></a>闭包的循环引用</h3><p>闭包表达式默认会对用到的外层对象产生额外的强引用（对外层对象进行了retain操作）, 看一下下面的代码中deinit会被调用吗?</p>
-<pre><code>class Person {
+<pre><code>class Person &#123;
     var fn: (() -&gt; ())?
-    func run() { print(&quot;run&quot;) }
-    deinit { print(&quot;deinit&quot;) }
-}
+    func run() &#123; print(&quot;run&quot;) &#125;
+    deinit &#123; print(&quot;deinit&quot;) &#125;
+&#125;
 
-func test() {
+func test() &#123;
     let p = Person()
-    p.fn = { 
+    p.fn = &#123; 
         p.run()
-    }
-}
+    &#125;
+&#125;
 
 test()
-</code></pre><p>上面代码中, p对象强引用着fn闭包, fn闭包也强引用着p对象, 自然就造成了循环引用问题</p>
+</code></pre>
+<p>上面代码中, p对象强引用着fn闭包, fn闭包也强引用着p对象, 自然就造成了循环引用问题</p>
 <p>最后没有任何输出结果, 我们看一下上述代码的汇编执行过程</p>
-<p><img src="http://img.wangjungang.cn/5fV1VJ.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/5fV1VJ.jpg"></p>
 <p>下面这段代码其实是等价的</p>
-<pre><code>func test() {
+<pre><code>func test() &#123;
     let p = Person()
-    p.fn = { [unowned p] in
+    p.fn = &#123; [unowned p] in
         p.run()
-    }
-}
+    &#125;
+&#125;
 
 // 和上面等价代码
-func test() {
+func test() &#123;
     let p = Person()
-    p.fn = { [unowned ownedP = p, weak weakP = p] in
+    p.fn = &#123; [unowned ownedP = p, weak weakP = p] in
         ownedP.run()
         // weakP?.run()
-    }
-}
-</code></pre><p>特别注意点</p>
+    &#125;
+&#125;
+</code></pre>
+<p>特别注意点</p>
 <p>这里要区分捕获列表和参数列表, 下面看看fn有参数的情况下</p>
-<pre><code>class Person {
+<pre><code>class Person &#123;
     var fn: ((Int) -&gt; ())?
-    func run() { print(&quot;run&quot;) }
-    deinit { print(&quot;deinit&quot;) }
-}
+    func run() &#123; print(&quot;run&quot;) &#125;
+    deinit &#123; print(&quot;deinit&quot;) &#125;
+&#125;
 
-func test() {
+func test() &#123;
     let p = Person()
-    p.fn = {
+    p.fn = &#123;
         (num) in
         print(&quot;num = \(num)&quot;)
-    }
-}
-</code></pre><p>那么闭包的参数列表和捕获列表同时存在的情况如下代码所示</p>
-<pre><code>func test() {
+    &#125;
+&#125;
+</code></pre>
+<p>那么闭包的参数列表和捕获列表同时存在的情况如下代码所示</p>
+<pre><code>func test() &#123;
     let p = Person()
-    p.fn = {
+    p.fn = &#123;
         [weak p](num) in
         print(&quot;num = \(num)&quot;)
         p?.run()
-    }
-}
-</code></pre><h3 id="self的循环引用"><a href="#self的循环引用" class="headerlink" title="self的循环引用"></a>self的循环引用</h3><p>如果想在引用闭包的同时引用self, 这个闭包必须是lazy的</p>
+    &#125;
+&#125;
+</code></pre>
+<h3 id="self的循环引用"><a href="#self的循环引用" class="headerlink" title="self的循环引用"></a>self的循环引用</h3><p>如果想在引用闭包的同时引用self, 这个闭包必须是lazy的</p>
 <p>因为实例在初始化完毕之后才能引用self</p>
-<pre><code>class Person {
-    lazy var fn: (() -&gt; ()) = {
+<pre><code>class Person &#123;
+    lazy var fn: (() -&gt; ()) = &#123;
         self.run()
-    }
-    func run() { print(&quot;run&quot;) }
-    deinit { print(&quot;deinit&quot;) }
-}
+    &#125;
+    func run() &#123; print(&quot;run&quot;) &#125;
+    deinit &#123; print(&quot;deinit&quot;) &#125;
+&#125;
 
-func test() {
+func test() &#123;
     let p = Person()
     p.fn()
-}
+&#125;
 
 test()
-</code></pre><p>上面代码中如果fn闭包去掉lazy, 编译器会直接报错</p>
+</code></pre>
+<p>上面代码中如果fn闭包去掉lazy, 编译器会直接报错</p>
 <p>在Swift中, 为了保证初始化的安全, 设定了两段式初始化, 在所有的存储属性被初始化完成之后, 初始化器才能够使用self</p>
 <p>而且在上述fn闭包中, 如果fn内部用到了实例成员(属性和方法), 则编译器会强制要求明确写出self<br>lazy既保证只有在使用的时候才会被初始化一次</p>
 <p>但是上述代码同样存在循环引用的问题, Person对象强引用着fn闭包, fn闭包也强引用着self</p>
 <p>同样使用weak和unowned解决循环引用的问题</p>
 <pre><code>// weak解决循环引用
-lazy var fn: (() -&gt; ()) = {
+lazy var fn: (() -&gt; ()) = &#123;
     [weak self] in
     self?.run()
-}
+&#125;
 
 // unowned解决循环引用
-lazy var fn: (() -&gt; ()) = {
+lazy var fn: (() -&gt; ()) = &#123;
     [unowned self] in
     self.run()
-}
-</code></pre><p>另外再看看下面这种情况, 是都存在循环引用的问题</p>
-<pre><code>class Student {
+&#125;
+</code></pre>
+<p>另外再看看下面这种情况, 是都存在循环引用的问题</p>
+<pre><code>class Student &#123;
     var age: Int = 2
-    lazy var getAge: Int = {
+    lazy var getAge: Int = &#123;
         self.age
-    }()
-    deinit { print(&quot;deinit&quot;) }
-}
+    &#125;()
+    deinit &#123; print(&quot;deinit&quot;) &#125;
+&#125;
 
-func test() {
+func test() &#123;
     let p = Student()
     print(p.getAge)
-}
+&#125;
 
 test()
 
@@ -360,36 +371,39 @@ test()
 2
 deinit
 */
-</code></pre><p>通过输出结果看一看出调用了deinit, 说明对象最终被释放, 并未出现循环引用的问题, 下面比较一下</p>
+</code></pre>
+<p>通过输出结果看一看出调用了deinit, 说明对象最终被释放, 并未出现循环引用的问题, 下面比较一下</p>
 <pre><code>// 存在循环引用
-class Person {
-    lazy var fn: (() -&gt; ()) = {
+class Person &#123;
+    lazy var fn: (() -&gt; ()) = &#123;
         self.run()
-    }
-    func run() { print(&quot;run&quot;) }
-    deinit { print(&quot;deinit&quot;) }
-}
+    &#125;
+    func run() &#123; print(&quot;run&quot;) &#125;
+    deinit &#123; print(&quot;deinit&quot;) &#125;
+&#125;
 
 // 不存在循环引用
-class Student {
+class Student &#123;
     var age: Int = 2
-    lazy var getAge: Int = {
+    lazy var getAge: Int = &#123;
         self.age
-    }()
-    deinit { print(&quot;deinit&quot;) }
-}
-</code></pre><p>上述两种写法的区别, 本质上说</p>
+    &#125;()
+    deinit &#123; print(&quot;deinit&quot;) &#125;
+&#125;
+</code></pre>
+<p>上述两种写法的区别, 本质上说</p>
 <p>Person对象中的fn闭包属于闭包赋值</p>
 <p>Student对象那个中的getAge属于闭包调用(类似函数调用)</p>
 <p>相当于在在Student对象调用getAge结束之后, 作用域内的变量就会被释放</p>
 <pre><code>// getAge也可以写成如下形式
-lazy var getAge: Int = {
+lazy var getAge: Int = &#123;
     return self.age
-}()
+&#125;()
 
 // 也可以理解为
 lazy var getAge: Int = self.age
-</code></pre><h2 id="内存访问冲突"><a href="#内存访问冲突" class="headerlink" title="内存访问冲突"></a>内存访问冲突</h2><p>在Swift中的内存访问冲突主要在两个访问满足下列条件时发生</p>
+</code></pre>
+<h2 id="内存访问冲突"><a href="#内存访问冲突" class="headerlink" title="内存访问冲突"></a>内存访问冲突</h2><p>在Swift中的内存访问冲突主要在两个访问满足下列条件时发生</p>
 <ul>
 <li>至少一个是写入操作</li>
 <li>它们访问的是同一块内存</li>
@@ -398,37 +412,40 @@ lazy var getAge: Int = self.age
 <p>对比看看以下两个函数操作</p>
 <pre><code>// 不存在内存访问冲突
 var number = 1
-func plus(_ num: inout Int) -&gt; Int {
+func plus(_ num: inout Int) -&gt; Int &#123;
     return num + 1
-}
+&#125;
 number = plus(&amp;number)
 
 // 存在内存访问冲突
 var step = 1
-func increment(_ num: inout Int) {
+func increment(_ num: inout Int) &#123;
     num += step
-}
+&#125;
 increment(&amp;step)
-</code></pre><p>上面第二部分代码就是同时对step变量执行读写操作, 运行时会报出如下错误</p>
+</code></pre>
+<p>上面第二部分代码就是同时对step变量执行读写操作, 运行时会报出如下错误</p>
 <pre><code>Simultaneous accesses to 0x100002028, but modification requires exclusive access.
-</code></pre><p>再看下面对于结构体和元组的使用, 这里先定义一个全局函数和一个结构体</p>
+</code></pre>
+<p>再看下面对于结构体和元组的使用, 这里先定义一个全局函数和一个结构体</p>
 <pre><code>// 改变两个传入参数的值, 读取并修改传入参数的值
-func balance(_ x: inout Int, _ y: inout Int) {
+func balance(_ x: inout Int, _ y: inout Int) &#123;
     let sum = x + y
     x = sum / 2
     y = sum - x
-}
+&#125;
 
 // 定义Player结构体
-struct Player {
+struct Player &#123;
     var name: String
     var health: Int
     var energy: Int
-    mutating func shareHealth(with teammate: inout Player) {
+    mutating func shareHealth(with teammate: inout Player) &#123;
         balance(&amp;teammate.health, &amp;health)
-    }
-}
-</code></pre><p>再看下面的使用示例, 两者都会有一个内存访问冲突的错误</p>
+    &#125;
+&#125;
+</code></pre>
+<p>再看下面的使用示例, 两者都会有一个内存访问冲突的错误</p>
 <pre><code>// 这里读写的是同一个maria
 var maria = Player(name: &quot;Maria&quot;, health: 50, energy: 10)
 balance(&amp;maria.health, &amp;maria.energy)
@@ -436,7 +453,8 @@ balance(&amp;maria.health, &amp;maria.energy)
 // 这里读写的是同一个tuple
 var tuple = (health: 10, energy: 20)
 balance(&amp;tuple.health, &amp;tuple.energy)
-</code></pre><p>但是有时候的确会有上面这种访问同一块内存的需求, 如果下面的条件满足, 就说明重叠访问结构体的属性是安全的</p>
+</code></pre>
+<p>但是有时候的确会有上面这种访问同一块内存的需求, 如果下面的条件满足, 就说明重叠访问结构体的属性是安全的</p>
 <ul>
 <li>访问的是实例存储属性, 不是计算属性或者类属性</li>
 <li>结构体是局部变量而非全局变量</li>
@@ -444,41 +462,43 @@ balance(&amp;tuple.health, &amp;tuple.energy)
 </ul>
 <hr>
 <pre><code>// 这里可以在局部作用域内定义成局部变量, 就不会有问题了
-func test() {
+func test() &#123;
     var maria = Player(name: &quot;Maria&quot;, health: 50, energy: 10)
     var tuple = (health: 10, energy: 20)
     balance(&amp;tuple.health, &amp;tuple.energy)
     balance(&amp;maria.health, &amp;maria.energy)
-}
-</code></pre><h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><pre><code>class Person {}
+&#125;
+</code></pre>
+<h2 id="指针"><a href="#指针" class="headerlink" title="指针"></a>指针</h2><pre><code>class Person &#123;&#125;
 var person = Person()
-</code></pre><p>在Swift中class声明的类(Person)是引用类型, 初始化的person对象其本质上就是一个指针变量</p>
+</code></pre>
+<p>在Swift中class声明的类(Person)是引用类型, 初始化的person对象其本质上就是一个指针变量</p>
 <p>而person里面存储的就是这个指针变量的地址值, 也就可以根据这个地址值去访问被分配的内存空间</p>
 <p>指针在某种意义上被定性为不安全的, 举个例子:</p>
 <p>当前指针变量的地址值对应的空间只有32个字节, 但有可能访问的是超过32个字节的空间, 这样就可能会出问题的</p>
 <h3 id="指针分类"><a href="#指针分类" class="headerlink" title="指针分类"></a>指针分类</h3><p>在Swift中也有专门的指针类型，这些都被定性为Unsafe（不安全的），常见的有以下4种类型</p>
 <ul>
-<li>UnsafePointer<pointee>, 类似于C语言中的const Pointee *, 只能访问内存不能修改内存, 这里的Pointee是指泛型</pointee></li>
-<li>UnsafeMutablePointer<pointee>类似于C语言中的Pointee *, 可以访问和修改内存, 这里的Pointee是指泛型</pointee></li>
+<li>UnsafePointer<Pointee>, 类似于C语言中的const Pointee *, 只能访问内存不能修改内存, 这里的Pointee是指泛型</li>
+<li>UnsafeMutablePointer<Pointee>类似于C语言中的Pointee *, 可以访问和修改内存, 这里的Pointee是指泛型</li>
 <li>UnsafeRawPointer类似于const void *, 不支持泛型</li>
 <li>UnsafeMutableRawPointer类似于void, 不支持泛型</li>
 </ul>
 <p>下面看一下具体的使用示例</p>
 <pre><code>var age = 10
-func sum1(_ ptr: UnsafeMutablePointer&lt;Int&gt;) {
+func sum1(_ ptr: UnsafeMutablePointer&lt;Int&gt;) &#123;
     // 通过访问pointee属性, 获取ptr指针的内存地址所存储的值
     // UnsafeMutablePointer的pointee属性是可读可写的
     ptr.pointee += 10
-}
-func sum2(_ ptr: UnsafePointer&lt;Int&gt;) {
+&#125;
+func sum2(_ ptr: UnsafePointer&lt;Int&gt;) &#123;
     // UnsafePointer的pointee属性是只读的
     // ptr.pointee += 10
     print(ptr.pointee)
-}
-func sum3(_ num: inout Int) {
+&#125;
+func sum3(_ num: inout Int) &#123;
     // 
     num += 10
-}
+&#125;
 
 // 和inout输入输出参数一样接受变量的地址值
 sum1(&amp;age)
@@ -487,41 +507,44 @@ sum3(&amp;age)
 print(age)
 
 
-func sum4(_ ptr: UnsafeMutableRawPointer) {
+func sum4(_ ptr: UnsafeMutableRawPointer) &#123;
     // 可读可写, 取值
     print(&quot;age = &quot;, ptr.load(as: Int.self))
     // 可读可写, 赋值
     ptr.storeBytes(of: 50, as: Int.self)
-}
-func sum5(_ ptr: UnsafeRawPointer) {
+&#125;
+func sum5(_ ptr: UnsafeRawPointer) &#123;
     // 只读, 取值
     print(&quot;age = &quot;, ptr.load(as: Int.self))
-}
+&#125;
 
 sum4(&amp;age)
 sum5(&amp;age)
-</code></pre><h3 id="获得变量的指针"><a href="#获得变量的指针" class="headerlink" title="获得变量的指针"></a>获得变量的指针</h3><p>Swift中有可以直接获取变量的指针的方法</p>
+</code></pre>
+<h3 id="获得变量的指针"><a href="#获得变量的指针" class="headerlink" title="获得变量的指针"></a>获得变量的指针</h3><p>Swift中有可以直接获取变量的指针的方法</p>
 <pre><code>// 获取可变的变量指针, value参数接受变量地址
 @inlinable public func withUnsafeMutablePointer&lt;T, Result&gt;(to value: inout T, _ body: (UnsafeMutablePointer&lt;T&gt;) throws -&gt; Result) rethrows -&gt; Result
 // 获取不可变的变量指针, value参数接受变量
 @inlinable public func withUnsafePointer&lt;T, Result&gt;(to value: T, _ body: (UnsafePointer&lt;T&gt;) throws -&gt; Result) rethrows -&gt; Result
 // 获取不可变的变量指针, value参数接受变量地址
 @inlinable public func withUnsafePointer&lt;T, Result&gt;(to value: inout T, _ body: (UnsafePointer&lt;T&gt;) throws -&gt; Result) rethrows -&gt; Result
-</code></pre><p>上述方法中返回值默认是变量的指针地址, 也可以是其他的数据类型, 主要取决于body闭包的返回值, 返回值类型由闭包中的Result泛型决定</p>
+</code></pre>
+<p>上述方法中返回值默认是变量的指针地址, 也可以是其他的数据类型, 主要取决于body闭包的返回值, 返回值类型由闭包中的Result泛型决定</p>
 <pre><code>var age = 10
-var ptr1 = withUnsafeMutablePointer(to: &amp;age) { $0 }   // UnsafeMutablePointer&lt;Int&gt;
-var ptr2 = withUnsafePointer(to: &amp;age) { $0 }          // UnsafePointer&lt;Int&gt;
+var ptr1 = withUnsafeMutablePointer(to: &amp;age) &#123; $0 &#125;   // UnsafeMutablePointer&lt;Int&gt;
+var ptr2 = withUnsafePointer(to: &amp;age) &#123; $0 &#125;          // UnsafePointer&lt;Int&gt;
 ptr1.pointee = 22
 print(ptr2.pointee) // 22
 print(ptr2)         // 0x0000000100008310
 
-var ptr3 = withUnsafeMutablePointer(to: &amp;age) { UnsafeMutableRawPointer($0) }   // UnsafeMutableRawPointer
-var ptr4 = withUnsafePointer(to: &amp;age) { UnsafeRawPointer($0) }                 // UnsafeRawPointer
+var ptr3 = withUnsafeMutablePointer(to: &amp;age) &#123; UnsafeMutableRawPointer($0) &#125;   // UnsafeMutableRawPointer
+var ptr4 = withUnsafePointer(to: &amp;age) &#123; UnsafeRawPointer($0) &#125;                 // UnsafeRawPointer
 // as参数是需要存储什么类型的数据
 ptr3.storeBytes(of: 33, as: Int.self)
 print(ptr4.load(as: Int.self)) // 33
 print(ptr4)         // 0x0000000100008310
-</code></pre><h3 id="创建指针"><a href="#创建指针" class="headerlink" title="创建指针"></a>创建指针</h3><p>之前获取到的指针都是根据已经存在的内存获取的</p>
+</code></pre>
+<h3 id="创建指针"><a href="#创建指针" class="headerlink" title="创建指针"></a>创建指针</h3><p>之前获取到的指针都是根据已经存在的内存获取的</p>
 <p>这里就看看重新分配一块内存指向堆空间</p>
 <h4 id="malloc"><a href="#malloc" class="headerlink" title="malloc"></a>malloc</h4><p>Swift提供了malloc直接分配内存创建指针的方式</p>
 <pre><code>// 根据需要分配的内存大小创建一个指针
@@ -539,7 +562,8 @@ public func free(_: UnsafeMutableRawPointer!)
 // 参数一: 偏移量, 从第几个字节开始存储, 默认从第一个
 // 参数二: 需要存储的值的类型
 @inlinable public func load&lt;T&gt;(fromByteOffset offset: Int = 0, as type: T.Type) -&gt; T
-</code></pre><p>代码示例如下</p>
+</code></pre>
+<p>代码示例如下</p>
 <pre><code>// 创建指针
 var ptr = malloc(16)
 // 存储值
@@ -551,7 +575,8 @@ print(ptr?.load(as: Int.self) ?? 0)
 print(ptr?.load(fromByteOffset: 8, as: Int.self) ?? 0)
 // 销毁, 释放内存
 free(ptr)
-</code></pre><h4 id="allocate"><a href="#allocate" class="headerlink" title="allocate"></a>allocate</h4><p>使用allocate方式创建指针, 代码示例如下</p>
+</code></pre>
+<h4 id="allocate"><a href="#allocate" class="headerlink" title="allocate"></a>allocate</h4><p>使用allocate方式创建指针, 代码示例如下</p>
 <pre><code>// byteCount: 需要申请的字节数, alignment: 对其字节数
 var ptr2 = UnsafeMutableRawPointer.allocate(byteCount: 16, alignment: 1)
 // 存储
@@ -573,9 +598,10 @@ print(ptr2.load(fromByteOffset: 8, as: Int.self))
 
 // 释放内存
 ptr2.deallocate()
-</code></pre><p>这里需要注意的地方</p>
+</code></pre>
+<p>这里需要注意的地方</p>
 <p>只有UnsafeMutableRawPointer才有allocate分配方法, UnsafeRawPointer是没有这个方法的</p>
-<p>下面说到的UnsafeMutablePointer<t>类型也是, UnsafePointer<t>没有allocate分配方法</t></t></p>
+<p>下面说到的UnsafeMutablePointer<T>类型也是, UnsafePointer<T>没有allocate分配方法</p>
 <pre><code>// capacity: 容量, 即可以存储3个Int类型的数据, 也就是24个字节
 var ptr = UnsafeMutablePointer&lt;Int&gt;.allocate(capacity: 3)
 // 初始化内存, 用10初始化钱8个字节
@@ -602,10 +628,11 @@ print(ptr[2])
 // 而且count要和上面allocate(capacity: 3)的capacity一致, 否则会造成内存泄露的问题
 ptr.deinitialize(count: 3)
 ptr.deallocate()
-</code></pre><h3 id="指针之间的转换"><a href="#指针之间的转换" class="headerlink" title="指针之间的转换"></a>指针之间的转换</h3><p>前面提到过Swift中的指针类型有四种</p>
+</code></pre>
+<h3 id="指针之间的转换"><a href="#指针之间的转换" class="headerlink" title="指针之间的转换"></a>指针之间的转换</h3><p>前面提到过Swift中的指针类型有四种</p>
 <ul>
-<li>UnsafePointer<pointee>类似于const Pointee *</pointee></li>
-<li>UnsafeMutablePointer<pointee>类似于Pointee *</pointee></li>
+<li>UnsafePointer<Pointee>类似于const Pointee *</li>
+<li>UnsafeMutablePointer<Pointee>类似于Pointee *</li>
 <li>UnsafeRawPointer类似于const void *</li>
 <li>UnsafeMutableRawPointer类似于void *</li>
 </ul>
@@ -615,7 +642,8 @@ ptr.deallocate()
 
 var ptr = UnsafeMutablePointer&lt;Int&gt;.allocate(capacity: 3)
 var ptr1 = UnsafeMutableRawPointer(ptr)
-</code></pre><h4 id="assumingMemoryBound"><a href="#assumingMemoryBound" class="headerlink" title="assumingMemoryBound"></a>assumingMemoryBound</h4><p>反过来, UnsafeMutableRawPointer也提供了一个方法用于创建UnsafePointer</p>
+</code></pre>
+<h4 id="assumingMemoryBound"><a href="#assumingMemoryBound" class="headerlink" title="assumingMemoryBound"></a>assumingMemoryBound</h4><p>反过来, UnsafeMutableRawPointer也提供了一个方法用于创建UnsafePointer</p>
 <pre><code>public func assumingMemoryBound&lt;T&gt;(to: T.Type) -&gt; UnsafePointer&lt;T&gt;
 
 var ptr = UnsafeMutableRawPointer.allocate(byteCount: 16, alignment: 1)
@@ -627,7 +655,8 @@ ptr1.pointee = 11
 (ptr + 8).assumingMemoryBound(to: Int.self).pointee = 12
 
 ptr.deallocate()
-</code></pre><h4 id="unsafeBitCast"><a href="#unsafeBitCast" class="headerlink" title="unsafeBitCast"></a>unsafeBitCast</h4><p>unsafeBitCast是忽略数据类型的强制转换，不会因为数据类型的变化而改变原来的内存数</p>
+</code></pre>
+<h4 id="unsafeBitCast"><a href="#unsafeBitCast" class="headerlink" title="unsafeBitCast"></a>unsafeBitCast</h4><p>unsafeBitCast是忽略数据类型的强制转换，不会因为数据类型的变化而改变原来的内存数</p>
 <pre><code>// 把第一个参数类型转成第二个参数类型
 @inlinable public func unsafeBitCast&lt;T, U&gt;(_ x: T, to type: U.Type) -&gt; U
 
@@ -639,6 +668,7 @@ unsafeBitCast(ptr + 8, to: UnsafeMutablePointer&lt;Double&gt;.self).pointee = 14
 
 ptr.deallocate()
 </code></pre>
+
       
 
       
@@ -728,7 +758,7 @@ ptr.deallocate()
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/03/09/浅谈Swift的内存管理/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/03/09/%E6%B5%85%E8%B0%88Swift%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -742,7 +772,7 @@ ptr.deallocate()
   
 <nav id="article-nav">
   
-    <a href="/2020/03/20/Git进阶使用/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2020/03/20/Git%E8%BF%9B%E9%98%B6%E4%BD%BF%E7%94%A8/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -752,7 +782,7 @@ ptr.deallocate()
     </a>
   
   
-    <a href="/2020/03/08/OC项目转Swift项目指南/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2020/03/08/OC%E9%A1%B9%E7%9B%AE%E8%BD%ACSwift%E9%A1%B9%E7%9B%AE%E6%8C%87%E5%8D%97/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">OC项目转Swift项目指南</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -796,7 +826,7 @@ ptr.deallocate()
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -903,10 +933,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -915,7 +941,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -923,11 +949,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -947,19 +977,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -9,17 +9,17 @@
   <title>iOS中的Promise | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面在iOS中我们一般使用delegate(代理)或者block(闭包)来进行异步操作，当要执行多个异步操作，必须将第二个嵌套在第一个的完成内，并且还要正常处理错误。这使得代码结构异常的混乱，不方便查看。 相信码过JS的同学都清楚，在es6中新增promise的语法，从此异步操作更加的灵活，它使得回调与事件进行了组合，而且写法优美。谷歌在18年上半年开源了promises库，使iOS上的异步编">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS中的Promise">
-<meta property="og:url" content="http://yoursite.com/2019/04/24/iOS中的Promise/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/04/24/iOS%E4%B8%AD%E7%9A%84Promise/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面在iOS中我们一般使用delegate(代理)或者block(闭包)来进行异步操作，当要执行多个异步操作，必须将第二个嵌套在第一个的完成内，并且还要正常处理错误。这使得代码结构异常的混乱，不方便查看。 相信码过JS的同学都清楚，在es6中新增promise的语法，从此异步操作更加的灵活，它使得回调与事件进行了组合，而且写法优美。谷歌在18年上半年开源了promises库，使iOS上的异步编">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-24T13:23:52.403Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-04-24T13:15:27.728Z">
+<meta property="article:modified_time" content="2019-04-24T13:23:52.403Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS中的Promise">
-<meta name="twitter:description" content="写在前面在iOS中我们一般使用delegate(代理)或者block(闭包)来进行异步操作，当要执行多个异步操作，必须将第二个嵌套在第一个的完成内，并且还要正常处理错误。这使得代码结构异常的混乱，不方便查看。 相信码过JS的同学都清楚，在es6中新增promise的语法，从此异步操作更加的灵活，它使得回调与事件进行了组合，而且写法优美。谷歌在18年上半年开源了promises库，使iOS上的异步编">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/04/24/iOS中的Promise/" class="archive-article-date">
+        <a href="/2019/04/24/iOS%E4%B8%AD%E7%9A%84Promise/" class="archive-article-date">
   	<time datetime="2019-04-24T13:15:27.728Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-24</time>
 </a>
         
@@ -187,14 +187,15 @@
 <p>管道通信过程可以自由的使用线程</p>
 <h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>我们可以在FBLPromise文件查找Promise的实现原理</p>
 <h3 id="声明状态、闭包"><a href="#声明状态、闭包" class="headerlink" title="声明状态、闭包"></a>声明状态、闭包</h3><pre><code>//三种状态类型
-typedef NS_ENUM(NSInteger, FBLPromiseState) {
+typedef NS_ENUM(NSInteger, FBLPromiseState) &#123;
   FBLPromiseStatePending = 0,
   FBLPromiseStateFulfilled,
   FBLPromiseStateRejected,
-};
+&#125;;
 //闭包的回调类型
 typedef void (^FBLPromiseObserver)(FBLPromiseState state, id __nullable resolution);```
-</code></pre><h3 id="相关的缓存"><a href="#相关的缓存" class="headerlink" title="相关的缓存"></a>相关的缓存</h3><pre><code>@implementation FBLPromise {
+</code></pre>
+<h3 id="相关的缓存"><a href="#相关的缓存" class="headerlink" title="相关的缓存"></a>相关的缓存</h3><pre><code>@implementation FBLPromise &#123;
   //当前promise的状态
   FBLPromiseState _state;
   //存放执行相关逻辑的结果存储
@@ -203,43 +204,45 @@ typedef void (^FBLPromiseObserver)(FBLPromiseState state, id __nullable resoluti
   NSError *__nullable _error;
   //存放订阅者的信息
   NSMutableArray&lt;FBLPromiseObserver&gt; *_observers;
-}
-</code></pre><h3 id="完成或失败的操作"><a href="#完成或失败的操作" class="headerlink" title="完成或失败的操作"></a>完成或失败的操作</h3><p>完成或失败的操作其实是遍历所有订阅者，将当前的状态和执行后的结果通知订阅者。执行完毕后改变缓存的状态值，就算后期再次调用也不会响应。达到只要状态变更就无法再次启动的效果。</p>
-<pre><code>- (void)fulfill:(nullable id)value {
-  if ([value isKindOfClass:[NSError class]]) {
+&#125;
+</code></pre>
+<h3 id="完成或失败的操作"><a href="#完成或失败的操作" class="headerlink" title="完成或失败的操作"></a>完成或失败的操作</h3><p>完成或失败的操作其实是遍历所有订阅者，将当前的状态和执行后的结果通知订阅者。执行完毕后改变缓存的状态值，就算后期再次调用也不会响应。达到只要状态变更就无法再次启动的效果。</p>
+<pre><code>- (void)fulfill:(nullable id)value &#123;
+  if ([value isKindOfClass:[NSError class]]) &#123;
     [self reject:(NSError *)value];
-  } else {
-    @synchronized(self) {
-      if (_state == FBLPromiseStatePending) {
+  &#125; else &#123;
+    @synchronized(self) &#123;
+      if (_state == FBLPromiseStatePending) &#123;
         //变更状态
         _state = FBLPromiseStateFulfilled;
         _value = value;
         _pendingObjects = nil;
         //通知订阅者所订阅的信息
-        for (FBLPromiseObserver observer in _observers) {
+        for (FBLPromiseObserver observer in _observers) &#123;
           observer(_state, _value);
-        }
+        &#125;
         _observers = nil;
         dispatch_group_leave(FBLPromise.dispatchGroup);
-      }
-    }
-  }
-}
-</code></pre><h3 id="订阅者"><a href="#订阅者" class="headerlink" title="订阅者"></a>订阅者</h3><p>订阅相关信息时，先去判断当前的状态类型，当此时已经执行完毕后，会马上回调相关的执行结果。</p>
+      &#125;
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+<h3 id="订阅者"><a href="#订阅者" class="headerlink" title="订阅者"></a>订阅者</h3><p>订阅相关信息时，先去判断当前的状态类型，当此时已经执行完毕后，会马上回调相关的执行结果。</p>
 <pre><code>- (void)observeOnQueue:(dispatch_queue_t)queue
                fulfill:(FBLPromiseOnFulfillBlock)onFulfill
-                reject:(FBLPromiseOnRejectBlock)onReject {
-  @synchronized(self) {
+                reject:(FBLPromiseOnRejectBlock)onReject &#123;
+  @synchronized(self) &#123;
     //先判断当前的状态，只有正在执行的过程中才可以订阅
-    switch (_state) {
-      case FBLPromiseStatePending: {
-        if (!_observers) {
+    switch (_state) &#123;
+      case FBLPromiseStatePending: &#123;
+        if (!_observers) &#123;
           _observers = [[NSMutableArray alloc] init];
-        }
+        &#125;
         //增加一个闭包,采用闭包的方式保存外部变量环境
-        [_observers addObject:^(FBLPromiseState state, id __nullable resolution) {
-          dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
-            switch (state) {
+        [_observers addObject:^(FBLPromiseState state, id __nullable resolution) &#123;
+          dispatch_group_async(FBLPromise.dispatchGroup, queue, ^&#123;
+            switch (state) &#123;
               case FBLPromiseStatePending:
                 break;
               case FBLPromiseStateFulfilled:
@@ -248,281 +251,298 @@ typedef void (^FBLPromiseObserver)(FBLPromiseState state, id __nullable resoluti
               case FBLPromiseStateRejected:
                 onReject(resolution);
                 break;
-            }
-          });
-        }];
+            &#125;
+          &#125;);
+        &#125;];
         break;
-      }
-      case FBLPromiseStateFulfilled: {
-        dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
+      &#125;
+      case FBLPromiseStateFulfilled: &#123;
+        dispatch_group_async(FBLPromise.dispatchGroup, queue, ^&#123;
           onFulfill(self-&gt;_value);
-        });
+        &#125;);
         break;
-      }
-      case FBLPromiseStateRejected: {
-        dispatch_group_async(FBLPromise.dispatchGroup, queue, ^{
+      &#125;
+      case FBLPromiseStateRejected: &#123;
+        dispatch_group_async(FBLPromise.dispatchGroup, queue, ^&#123;
           onReject(self-&gt;_error);
-        });
+        &#125;);
         break;
-      }
-    }
-  }
-}
-</code></pre><p>此处是整个promise操作的重中之重，也是我们promise中使用最多的原理所在，从FBLPromise+Then中可以看出该方法是then的原理，也是实现管道通信的原理</p>
+      &#125;
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+<p>此处是整个promise操作的重中之重，也是我们promise中使用最多的原理所在，从FBLPromise+Then中可以看出该方法是then的原理，也是实现管道通信的原理</p>
 <pre><code>- (FBLPromise *)chainOnQueue:(dispatch_queue_t)queue
               chainedFulfill:(FBLPromiseChainedFulfillBlock)chainedFulfill
-               chainedReject:(FBLPromiseChainedRejectBlock)chainedReject {
+               chainedReject:(FBLPromiseChainedRejectBlock)chainedReject &#123;
 
   //创建新的promise
   FBLPromise *promise = [[FBLPromise alloc] initPending];
   //定义执行的闭包,该闭包是管道通信的精华，也是为什么下一个then中能收到当前then中返回promise执行结果的关键
-  __auto_type resolver = ^(id __nullable value) {
+  __auto_type resolver = ^(id __nullable value) &#123;
     //判断then返回的是否是promise
-    if ([value isKindOfClass:[FBLPromise class]]) {
+    if ([value isKindOfClass:[FBLPromise class]]) &#123;
       //订阅then返回的promise，主要是为了调用下一个then
       [(FBLPromise *)value observeOnQueue:queue
-          fulfill:^(id __nullable value) {
+          fulfill:^(id __nullable value) &#123;
             [promise fulfill:value];
-          }
-          reject:^(NSError *error) {
+          &#125;
+          reject:^(NSError *error) &#123;
             [promise reject:error];
-          }];
-    } else {
+          &#125;];
+    &#125; else &#123;
       //若返回的不是promise中，则马上传给下一个then
       [promise fulfill:value];
-    }
-  };
+    &#125;
+  &#125;;
   //订阅当前的promise
   [self observeOnQueue:queue
-      fulfill:^(id __nullable value) {
+      fulfill:^(id __nullable value) &#123;
         //执行then操作后的返回值，可能是promise也可能是其他值
         value = chainedFulfill ? chainedFulfill(value) : value;
         //调用上面创建的闭包
         resolver(value);
-      }
-      reject:^(NSError *error) {
+      &#125;
+      reject:^(NSError *error) &#123;
         id value = chainedReject ? chainedReject(error) : error;
         resolver(value);
-      }];
+      &#125;];
   return promise;
-}
-</code></pre><h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>此处仅展示swift的语法，oc上的使用请参考FBL前缀的类，或者直接阅读官方文档</p>
+&#125;
+</code></pre>
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>此处仅展示swift的语法，oc上的使用请参考FBL前缀的类，或者直接阅读官方文档</p>
 <h3 id="创建方式"><a href="#创建方式" class="headerlink" title="创建方式"></a>创建方式</h3><p>默认是在主线程中使用，如需在其他线程中使用，可以设置on: DispatchQueue，此处不作介绍</p>
-<h3 id="异步方式"><a href="#异步方式" class="headerlink" title="异步方式"></a>异步方式</h3><pre><code>let promise = Promise&lt;Int&gt; { fulfill, reject in
+<h3 id="异步方式"><a href="#异步方式" class="headerlink" title="异步方式"></a>异步方式</h3><pre><code>let promise = Promise&lt;Int&gt; &#123; fulfill, reject in
     let vail = true
-    if vail {
+    if vail &#123;
         fulfil(12)
-    }else {
+    &#125;else &#123;
         reject(error)
-    }
-}
-</code></pre><h3 id="同步方式"><a href="#同步方式" class="headerlink" title="同步方式"></a>同步方式</h3><pre><code>//采用预先定义方式
+    &#125;
+&#125;
+</code></pre>
+<h3 id="同步方式"><a href="#同步方式" class="headerlink" title="同步方式"></a>同步方式</h3><pre><code>//采用预先定义方式
 let promise = Promise&lt;Int&gt;.pending()
 ...
-if success {
+if success &#123;
   promise.fulfill(12)
-} else {
+&#125; else &#123;
   promise.reject(error)
-}
+&#125;
 
 //直接发起结果的方式
 let promise = Promise(12)
 let promise = Promise(error)
-</code></pre><h3 id="then使用"><a href="#then使用" class="headerlink" title="then使用"></a>then使用</h3><pre><code>let numberPromise = Promise { fulfill, _ in
+</code></pre>
+<h3 id="then使用"><a href="#then使用" class="headerlink" title="then使用"></a>then使用</h3><pre><code>let numberPromise = Promise &#123; fulfill, _ in
     fulfill(42)
-}
-let stringPromise = numberPromise.then { number in
-    return Promise { fulfill, _ in
+&#125;
+let stringPromise = numberPromise.then &#123; number in
+    return Promise &#123; fulfill, _ in
         fulfill(String(number))
-    }
-}
+    &#125;
+&#125;
 typealias Block = (Int) -&gt; [Int]
-let blockPromise = stringPromise.then { value in
-    return Promise&lt;Block&gt; { fulfill, _ in
-        fulfill({ number in
+let blockPromise = stringPromise.then &#123; value in
+    return Promise&lt;Block&gt; &#123; fulfill, _ in
+        fulfill(&#123; number in
             return [number + (Int(value) ?? 0)]
-        })
-    }
-}
-let finalPromise = blockPromise.then { (value: @escaping Block) -&gt; Int? in
+        &#125;)
+    &#125;
+&#125;
+let finalPromise = blockPromise.then &#123; (value: @escaping Block) -&gt; Int? in
     return value(42).first
-}
-let postFinalPromise = finalPromise.then { number in
+&#125;
+let postFinalPromise = finalPromise.then &#123; number in
     return number ?? 0
-}
-</code></pre><h3 id="catch"><a href="#catch" class="headerlink" title="catch"></a>catch</h3><p>catch是处理promise中出现错误的情况，在promise管道中，当其中一个promise执行出现错误时，会忽略这个之后的管道直接将错误传输到catch中处理。</p>
-<pre><code>let promise = Promise&lt;AnyObject&gt; {
+&#125;
+</code></pre>
+<h3 id="catch"><a href="#catch" class="headerlink" title="catch"></a>catch</h3><p>catch是处理promise中出现错误的情况，在promise管道中，当其中一个promise执行出现错误时，会忽略这个之后的管道直接将错误传输到catch中处理。</p>
+<pre><code>let promise = Promise&lt;AnyObject&gt; &#123;
     return error
-}.catch { error in
+&#125;.catch &#123; error in
     //处理错误
-}
-</code></pre><h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><h4 id="All"><a href="#All" class="headerlink" title="All"></a>All</h4><p>只有当all中所有的promise否成功执行后才回调，回调参数未all中所有执行结果的元组，当其中一个调用rejected时，都直接回调错误</p>
-<pre><code>let promise1 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
+&#125;
+</code></pre>
+<h3 id="操作符"><a href="#操作符" class="headerlink" title="操作符"></a>操作符</h3><h4 id="All"><a href="#All" class="headerlink" title="All"></a>All</h4><p>只有当all中所有的promise否成功执行后才回调，回调参数未all中所有执行结果的元组，当其中一个调用rejected时，都直接回调错误</p>
+<pre><code>let promise1 = Promise&lt;Int?&gt; &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: &#123;
         fulfill(42)
-    })
-}
-let promise2 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
+    &#125;)
+&#125;
+let promise2 = Promise&lt;Int?&gt; &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: &#123;
         fulfill(13)
-     })
-}
-let promise3 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
+     &#125;)
+&#125;
+let promise3 = Promise&lt;Int?&gt; &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: &#123;
         fulfill(nil)
-    })
-}
-
-let combinedPromise = all([promise1, promise2, promise3]).then { value in
+    &#125;)
+&#125;
+        
+let combinedPromise = all([promise1, promise2, promise3]).then &#123; value in
     print(value) //[Optional(42), Optional(13), nil]
-}
-</code></pre><h4 id="Always"><a href="#Always" class="headerlink" title="Always"></a>Always</h4><p>无论管道中是顺利成功执行还是出现错误，最终都会执行always的闭包</p>
+&#125;
+</code></pre>
+<h4 id="Always"><a href="#Always" class="headerlink" title="Always"></a>Always</h4><p>无论管道中是顺利成功执行还是出现错误，最终都会执行always的闭包</p>
 <pre><code>var count = 0
-let promise = Promise&lt;Void&gt; { _, reject in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
+let promise = Promise&lt;Void&gt; &#123; _, reject in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: &#123;
         reject(DYError.promise)
-    })
-}.always {
+    &#125;)
+&#125;.always &#123;
     count += 1
-}.catch { error in
+&#125;.catch &#123; error in
     count += 1
-}.always {
+&#125;.always &#123;
     print(count)
-}
-</code></pre><h4 id="Any"><a href="#Any" class="headerlink" title="Any"></a>Any</h4><p>与all操作类型，但是Any中即便有其中的出现了错误也会返回元组数据吗，其元组类型是Maybe，包含error与value相关信息</p>
-<pre><code>let promise1 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
+&#125;
+</code></pre>
+<h4 id="Any"><a href="#Any" class="headerlink" title="Any"></a>Any</h4><p>与all操作类型，但是Any中即便有其中的出现了错误也会返回元组数据吗，其元组类型是Maybe，包含error与value相关信息</p>
+<pre><code>let promise1 = Promise&lt;Int?&gt; &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: &#123;
         fulfill(42)
-    })
-}
-let promise2 = Promise&lt;Int?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
+    &#125;)
+&#125;
+let promise2 = Promise&lt;Int?&gt; &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: &#123;
         fulfill(13)
-    })
-}
-let promise3 = Promise&lt;Int?&gt; { _, reject in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
+    &#125;)
+&#125;
+let promise3 = Promise&lt;Int?&gt; &#123; _, reject in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: &#123;
         reject(DYError.promise)
-    })
-}
-
-let combinedPromise = any([promise1, promise2, promise3]).then { value in
+    &#125;)
+&#125;
+        
+let combinedPromise = any([promise1, promise2, promise3]).then &#123; value in
     let item = value.first
     print(value.first?.value)
-}
-</code></pre><h4 id="Await"><a href="#Await" class="headerlink" title="Await"></a>Await</h4><p>使用该操作，可以同步等待在不同线程上执行的promise。该语法与ES8中async/await的使用时类似的</p>
-<pre><code>Promise&lt;Int&gt; {
+&#125;
+</code></pre>
+<h4 id="Await"><a href="#Await" class="headerlink" title="Await"></a>Await</h4><p>使用该操作，可以同步等待在不同线程上执行的promise。该语法与ES8中async&#x2F;await的使用时类似的</p>
+<pre><code>Promise&lt;Int&gt; &#123;
   let minusFive = try await(calculator.negate(5))
   let twentyFive = try await(calculator.multiply(minusFive, minusFive))
   let twenty = try await(calculator.add(twentyFive, minusFive))
   let five = try await(calculator.subtract(twentyFive, twenty))
   let zero = try await(calculator.add(minusFive, five))
   return try await(calculator.multiply(zero, five))
-}.then { result in
-
-}.catch { error in
-
-}
-</code></pre><h4 id="Delay"><a href="#Delay" class="headerlink" title="Delay"></a>Delay</h4><p>该操作返回一个预先定义的promise，等到给定的时间后执行，或者立即执行错误</p>
+&#125;.then &#123; result in
+  
+&#125;.catch &#123; error in
+  
+&#125;
+</code></pre>
+<h4 id="Delay"><a href="#Delay" class="headerlink" title="Delay"></a>Delay</h4><p>该操作返回一个预先定义的promise，等到给定的时间后执行，或者立即执行错误</p>
 <pre><code>let promise = Promise(42).delay(2)
-promise.catch { err in
+promise.catch &#123; err in
     print(err)
-}.then { value in
+&#125;.then &#123; value in
     print(value)
-}
+&#125;
 
-DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: {
+DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 1, execute: &#123;
     promise.reject(DYError.promise)
-})
-</code></pre><h4 id="Race"><a href="#Race" class="headerlink" title="Race"></a>Race</h4><p>该操作与all相似，但是返回的是先执行完成的promise结果或者错误</p>
-<pre><code>let promise1 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
+&#125;)
+</code></pre>
+<h4 id="Race"><a href="#Race" class="headerlink" title="Race"></a>Race</h4><p>该操作与all相似，但是返回的是先执行完成的promise结果或者错误</p>
+<pre><code>let promise1 = Promise&lt;Any?&gt; &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: &#123;
         fulfill(42)
-    })
-}
-let promise2 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: {
+    &#125;)
+&#125;
+let promise2 = Promise&lt;Any?&gt; &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 3, execute: &#123;
         fulfill(&quot;hello world&quot;)
-    })
-}
-let promise3 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: {
+    &#125;)
+&#125;
+let promise3 = Promise&lt;Any?&gt; &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 2, execute: &#123;
         fulfill([44])
-    })
-}
-let promise4 = Promise&lt;Any?&gt; { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
+    &#125;)
+&#125;
+let promise4 = Promise&lt;Any?&gt; &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: &#123;
         fulfill(nil)
-    })
-}
-
-race([promise1,promise2,promise3,promise4]).then { (value) in
+    &#125;)
+&#125;
+        
+race([promise1,promise2,promise3,promise4]).then &#123; (value) in
     print(value)
-}
-</code></pre><h4 id="Recover"><a href="#Recover" class="headerlink" title="Recover"></a>Recover</h4><p>与Catch效果相同，但是该操作符不会隔断管道中其他promise的执行</p>
-<pre><code>let promise = Promise&lt;Int&gt; { _, reject in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
+&#125;
+</code></pre>
+<h4 id="Recover"><a href="#Recover" class="headerlink" title="Recover"></a>Recover</h4><p>与Catch效果相同，但是该操作符不会隔断管道中其他promise的执行</p>
+<pre><code>let promise = Promise&lt;Int&gt; &#123; _, reject in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: &#123;
         reject(DYError.promise)
-    })
-}.recover { error -&gt; Promise&lt;Int&gt; in
+    &#125;)
+&#125;.recover &#123; error -&gt; Promise&lt;Int&gt; in
     print(error)
-    return Promise { fulfill, _ in
-            DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
+    return Promise &#123; fulfill, _ in
+            DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: &#123;
                     fulfill(1)
-             })
-    }
-}.catch { err in
+             &#125;)
+    &#125;
+&#125;.catch &#123; err in
     print(err)
-}.then { value in
+&#125;.then &#123; value in
     print(value)
-}
-</code></pre><h4 id="Reduce"><a href="#Reduce" class="headerlink" title="Reduce"></a>Reduce</h4><p>结合其他数据进行变换</p>
+&#125;
+</code></pre>
+<h4 id="Reduce"><a href="#Reduce" class="headerlink" title="Reduce"></a>Reduce</h4><p>结合其他数据进行变换</p>
 <pre><code>let numbers = [1, 2, 3]
-Promise(&quot;0&quot;).reduce(numbers) { partialString, nextNumber in
+Promise(&quot;0&quot;).reduce(numbers) &#123; partialString, nextNumber in
   Promise(partialString + &quot;, &quot; + String(nextNumber))
-}.then { string in
+&#125;.then &#123; string in
   // Final result = 0, 1, 2, 3
   print(&quot;Final result = \(string)&quot;)
-}
-</code></pre><h4 id="Retry"><a href="#Retry" class="headerlink" title="Retry"></a>Retry</h4><p>promise执行失败时，尝试重新执行。在未设置时间的前提下，默认延迟1s重新执行</p>
+&#125;
+</code></pre>
+<h4 id="Retry"><a href="#Retry" class="headerlink" title="Retry"></a>Retry</h4><p>promise执行失败时，尝试重新执行。在未设置时间的前提下，默认延迟1s重新执行</p>
 <pre><code>var count = 0
-retry(attempts: 3, delay: 5, condition: { (num, error) -&gt; Bool in
+retry(attempts: 3, delay: 5, condition: &#123; (num, error) -&gt; Bool in
     print(&quot;\(num)&quot; + error.localizedDescription)
-    if num == 2 {
+    if num == 2 &#123;
         //马上执行错误
         return false
-    }
+    &#125;
     return true
-}) { () -&gt; Promise&lt;Int&gt; in
+&#125;) &#123; () -&gt; Promise&lt;Int&gt; in
     return count == 3 ? Promise(42) : Promise(DYError.promise)
-}.then { (value) in
+&#125;.then &#123; (value) in
     print(value)
-}.catch { (error) in
+&#125;.catch &#123; (error) in
     print(error)
-}
-</code></pre><h4 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h4><p>在指定的时间内如果没有执行完成或者发送错误,则自发错误</p>
-<pre><code>let promise = Promise { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-        fulfill(42)
-    })
-}.timeout(1).catch { err in
-    print(err) //timedOut
-}.then { value in
-    print(value) 
-}
-</code></pre><h4 id="Validate"><a href="#Validate" class="headerlink" title="Validate"></a>Validate</h4><p>判断是否有效，如果无效则自发错误</p>
-<pre><code>let promise = Promise { fulfill, _ in
-    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: {
-        fulfill(42)
-    })
-}.validate { value in
-    return value == 1
-}.catch { err in
-    print(err) //validationFailure
-}.then { value in
-    print(value)
-}
+&#125;
 </code></pre>
+<h4 id="Timeout"><a href="#Timeout" class="headerlink" title="Timeout"></a>Timeout</h4><p>在指定的时间内如果没有执行完成或者发送错误,则自发错误</p>
+<pre><code>let promise = Promise &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: &#123;
+        fulfill(42)
+    &#125;)
+&#125;.timeout(1).catch &#123; err in
+    print(err) //timedOut
+&#125;.then &#123; value in
+    print(value) 
+&#125;
+</code></pre>
+<h4 id="Validate"><a href="#Validate" class="headerlink" title="Validate"></a>Validate</h4><p>判断是否有效，如果无效则自发错误</p>
+<pre><code>let promise = Promise &#123; fulfill, _ in
+    DispatchQueue(label: &quot;queue&quot;).asyncAfter(deadline: .now() + 4, execute: &#123;
+        fulfill(42)
+    &#125;)
+&#125;.validate &#123; value in
+    return value == 1
+&#125;.catch &#123; err in
+    print(err) //validationFailure
+&#125;.then &#123; value in
+    print(value)
+&#125;
+</code></pre>
+
       
 
       
@@ -612,7 +632,7 @@ retry(attempts: 3, delay: 5, condition: { (num, error) -&gt; Bool in
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/24/iOS中的Promise/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/24/iOS%E4%B8%AD%E7%9A%84Promise/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -626,7 +646,7 @@ retry(attempts: 3, delay: 5, condition: { (num, error) -&gt; Bool in
   
 <nav id="article-nav">
   
-    <a href="/2019/05/09/iOS响应链(Responder Chain)/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/05/09/iOS%E5%93%8D%E5%BA%94%E9%93%BE(Responder%20Chain)/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -636,7 +656,7 @@ retry(attempts: 3, delay: 5, condition: { (num, error) -&gt; Bool in
     </a>
   
   
-    <a href="/2019/04/24/如何查找内存泄漏/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/04/24/%E5%A6%82%E4%BD%95%E6%9F%A5%E6%89%BE%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">如何查找内存泄漏</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -680,7 +700,7 @@ retry(attempts: 3, delay: 5, condition: { (num, error) -&gt; Bool in
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -787,10 +807,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -799,7 +815,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -807,11 +823,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -831,19 +851,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

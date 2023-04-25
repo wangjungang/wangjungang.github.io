@@ -9,17 +9,17 @@
   <title>iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析） | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面很少有人知道weak表其实是一个hash（哈希）表，Key是所指对象的地址，Value是weak指针的地址数组。更多人的人只是知道weak是弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候自动被设置为nil。 weak 实现原理的概括Runtime维护了一个weak表，用于存储指向某个对象的所有weak指针。weak表其实是一个hash（哈希）表，Key是所指对象的地址，Val">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）">
-<meta property="og:url" content="http://yoursite.com/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/09/06/iOS%20%E5%BA%95%E5%B1%82%E8%A7%A3%E6%9E%90weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%EF%BC%88%E5%8C%85%E5%90%ABweak%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%8C%E5%BC%95%E7%94%A8%EF%BC%8C%E9%87%8A%E6%94%BE%E7%9A%84%E5%88%86%E6%9E%90%EF%BC%89/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面很少有人知道weak表其实是一个hash（哈希）表，Key是所指对象的地址，Value是weak指针的地址数组。更多人的人只是知道weak是弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候自动被设置为nil。 weak 实现原理的概括Runtime维护了一个weak表，用于存储指向某个对象的所有weak指针。weak表其实是一个hash（哈希）表，Key是所指对象的地址，Val">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-06T14:00:44.425Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-09-06T13:53:32.378Z">
+<meta property="article:modified_time" content="2018-09-06T14:00:44.425Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）">
-<meta name="twitter:description" content="写在前面很少有人知道weak表其实是一个hash（哈希）表，Key是所指对象的地址，Value是weak指针的地址数组。更多人的人只是知道weak是弱引用，所引用对象的计数器不会加一，并在引用对象被释放的时候自动被设置为nil。 weak 实现原理的概括Runtime维护了一个weak表，用于存储指向某个对象的所有weak指针。weak表其实是一个hash（哈希）表，Key是所指对象的地址，Val">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/" class="archive-article-date">
+        <a href="/2018/09/06/iOS%20%E5%BA%95%E5%B1%82%E8%A7%A3%E6%9E%90weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%EF%BC%88%E5%8C%85%E5%90%ABweak%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%8C%E5%BC%95%E7%94%A8%EF%BC%8C%E9%87%8A%E6%94%BE%E7%9A%84%E5%88%86%E6%9E%90%EF%BC%89/" class="archive-article-date">
   	<time datetime="2018-09-06T13:53:32.378Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
 </a>
         
@@ -182,30 +182,34 @@
 <p>2、添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。</p>
 <p>3、释放时，调用clearDeallocating函数。clearDeallocating函数首先根据对象地址获取所有weak指针地址的数组，然后遍历这个数组把其中的数据设为nil，最后把这个entry从weak表中删除，最后清理对象的记录。</p>
 <h3 id="1、初始化时：runtime会调用objc-initWeak函数，objc-initWeak函数会初始化一个新的weak指针指向对象的地址。"><a href="#1、初始化时：runtime会调用objc-initWeak函数，objc-initWeak函数会初始化一个新的weak指针指向对象的地址。" class="headerlink" title="1、初始化时：runtime会调用objc_initWeak函数，objc_initWeak函数会初始化一个新的weak指针指向对象的地址。"></a>1、初始化时：runtime会调用objc_initWeak函数，objc_initWeak函数会初始化一个新的weak指针指向对象的地址。</h3><p>示例代码</p>
-<pre><code>{
+<pre><code>&#123;
     NSObject *obj = [[NSObject alloc] init];
     id __weak obj1 = obj;
-}
-</code></pre><p>当我们初始化一个weak变量时，runtime会调用 NSObject.mm 中的objc_initWeak函数。这个函数在Clang中的声明如下：</p>
+&#125;
+</code></pre>
+<p>当我们初始化一个weak变量时，runtime会调用 NSObject.mm 中的objc_initWeak函数。这个函数在Clang中的声明如下：</p>
 <pre><code>id objc_initWeak(id *object, id value);
-</code></pre><p>而对于 objc_initWeak() 方法的实现</p>
-<pre><code>id objc_initWeak(id *location, id newObj) {
+</code></pre>
+<p>而对于 objc_initWeak() 方法的实现</p>
+<pre><code>id objc_initWeak(id *location, id newObj) &#123;
 // 查看对象实例是否有效
 // 无效对象直接导致指针释放
-    if (!newObj) {
+    if (!newObj) &#123;
         *location = nil;
         return nil;
-    }
+    &#125;
     // 这里传递了三个 bool 数值
     // 使用 template 进行常量参数传递是为了优化性能
     return storeWeakfalse/*old*/, true/*new*/, true/*crash*/&gt;
     (location, (objc_object*)newObj);
-}    
-</code></pre><p>可以看出，这个函数仅仅是一个深层函数的调用入口，而一般的入口函数中，都会做一些简单的判断（例如 objc_msgSend 中的缓存判断），这里判断了其指针指向的类对象是否有效，无效直接释放，不再往深层调用函数。否则，object将被注册为一个指向value的__weak对象。而这事应该是objc_storeWeak函数干的。</p>
+&#125;	
+</code></pre>
+<p>可以看出，这个函数仅仅是一个深层函数的调用入口，而一般的入口函数中，都会做一些简单的判断（例如 objc_msgSend 中的缓存判断），这里判断了其指针指向的类对象是否有效，无效直接释放，不再往深层调用函数。否则，object将被注册为一个指向value的__weak对象。而这事应该是objc_storeWeak函数干的。</p>
 <p>注意：objc_initWeak函数有一个前提条件：就是object必须是一个没有被注册为__weak对象的有效指针。而value则可以是null，或者指向一个有效的对象。</p>
 <h3 id="添加引用时：objc-initWeak函数会调用-objc-storeWeak-函数，-objc-storeWeak-的作用是更新指针指向，创建对应的弱引用表。"><a href="#添加引用时：objc-initWeak函数会调用-objc-storeWeak-函数，-objc-storeWeak-的作用是更新指针指向，创建对应的弱引用表。" class="headerlink" title="添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。"></a>添加引用时：objc_initWeak函数会调用 objc_storeWeak() 函数， objc_storeWeak() 的作用是更新指针指向，创建对应的弱引用表。</h3><p>objc_storeWeak的函数声明如下：</p>
 <pre><code>id objc_storeWeak(id *location, id value);
-</code></pre><p>objc_storeWeak() 的具体实现如下：</p>
+</code></pre>
+<p>objc_storeWeak() 的具体实现如下：</p>
 <pre><code>// HaveOld:     true - 变量有值
 //             false - 需要被及时清理，当前值可能为 nil
 // HaveNew:     true - 需要被分配的新值，当前值可能为 nil
@@ -213,7 +217,7 @@
 // CrashIfDeallocating: true - 说明 newObj 已经释放或者 newObj 不支持弱引用，该过程需要暂停
 //             false - 用 nil 替代存储
 template bool HaveOld, bool HaveNew, bool CrashIfDeallocating&gt;
-static id storeWeak(id *location, objc_object *newObj) {
+static id storeWeak(id *location, objc_object *newObj) &#123;
     // 该过程用来更新弱引用指针的指向
     // 初始化 previouslyInitializedClass 指针
     Class previouslyInitializedClass = nil;
@@ -226,35 +230,35 @@ static id storeWeak(id *location, objc_object *newObj) {
     // 通过地址来建立索引标志，防止桶重复
     // 下面指向的操作会改变旧值
 retry:
-    if (HaveOld) {
+    if (HaveOld) &#123;
         // 更改指针，获得以 oldObj 为索引所存储的值地址
         oldObj = *location;
         oldTable = &amp;SideTables()[oldObj];
-    } else {
+    &#125; else &#123;
         oldTable = nil;
-    }
-    if (HaveNew) {
+    &#125;
+    if (HaveNew) &#123;
         // 更改新值指针，获得以 newObj 为索引所存储的值地址
         newTable = &amp;SideTables()[newObj];
-    } else {
+    &#125; else &#123;
         newTable = nil;
-    }
+    &#125;
     // 加锁操作，防止多线程中竞争冲突
     SideTable::lockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
     // 避免线程冲突重处理
     // location 应该与 oldObj 保持一致，如果不同，说明当前的 location 已经处理过 oldObj 可是又被其他线程所修改
-    if (HaveOld  &amp;&amp;  *location != oldObj) {
+    if (HaveOld  &amp;&amp;  *location != oldObj) &#123;
         SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
         goto retry;
-    }
+    &#125;
     // 防止弱引用间死锁
     // 并且通过 +initialize 初始化构造器保证所有弱引用的 isa 非空指向
-    if (HaveNew  &amp;&amp;  newObj) {
+    if (HaveNew  &amp;&amp;  newObj) &#123;
         // 获得新对象的 isa 指针
         Class cls = newObj-&gt;getIsa();
         // 判断 isa 非空且已经初始化
         if (cls != previouslyInitializedClass  &amp;&amp;
-            !((objc_class *)cls)-&gt;isInitialized()) {
+            !((objc_class *)cls)-&gt;isInitialized()) &#123;
             // 解锁
             SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
             // 对其 isa 指针进行初始化
@@ -266,46 +270,48 @@ retry:
             previouslyInitializedClass = cls;
             // 重新尝试
             goto retry;
-        }
-    }
+        &#125;
+    &#125;
     // ② 清除旧值
-    if (HaveOld) {
+    if (HaveOld) &#123;
         weak_unregister_no_lock(&amp;oldTable-&gt;weak_table, oldObj, location);
-    }
+    &#125;
     // ③ 分配新值
-    if (HaveNew) {
+    if (HaveNew) &#123;
         newObj = (objc_object *)weak_register_no_lock(&amp;newTable-&gt;weak_table,
                                                       (id)newObj, location,
                                                       CrashIfDeallocating);
         // 如果弱引用被释放 weak_register_no_lock 方法返回 nil
         // 在引用计数表中设置若引用标记位
-        if (newObj  &amp;&amp;  !newObj-&gt;isTaggedPointer()) {
+        if (newObj  &amp;&amp;  !newObj-&gt;isTaggedPointer()) &#123;
             // 弱引用位初始化操作
             // 引用计数那张散列表的weak引用对象的引用计数中标识为weak引用
             newObj-&gt;setWeaklyReferenced_nolock();
-        }
+        &#125;
         // 之前不要设置 location 对象，这里需要更改指针指向
         *location = (id)newObj;
-    }
-    else {
+    &#125;
+    else &#123;
         // 没有新值，则无需更改
-    }
+    &#125;
     SideTable::unlockTwoHaveOld, HaveNew&gt;(oldTable, newTable);
     return (id)newObj;
-}
-</code></pre><p>SideTable 这个结构体，我给他起名引用计数和弱引用依赖表，因为它主要用于管理对象的引用计数和 weak 表。在 NSObject.mm 中声明其数据结构：</p>
-<pre><code>struct SideTable {
+&#125;
+</code></pre>
+<p>SideTable 这个结构体，我给他起名引用计数和弱引用依赖表，因为它主要用于管理对象的引用计数和 weak 表。在 NSObject.mm 中声明其数据结构：</p>
+<pre><code>struct SideTable &#123;
 // 保证原子操作的自旋锁
     spinlock_t slock;
     // 引用计数的 hash 表
     RefcountMap refcnts;
     // weak 引用全局 hash 表
     weak_table_t weak_table;
-}
-</code></pre><p>对于 slock 和 refcnts 两个成员不用多说，第一个是为了防止竞争选择的自旋锁，第二个是协助对象的 isa 指针的 extra_rc 共同引用计数的变量（对于对象结果，在今后的文中提到）。这里主要看 weak 全局 hash 表的结构与作用。</p>
+&#125;
+</code></pre>
+<p>对于 slock 和 refcnts 两个成员不用多说，第一个是为了防止竞争选择的自旋锁，第二个是协助对象的 isa 指针的 extra_rc 共同引用计数的变量（对于对象结果，在今后的文中提到）。这里主要看 weak 全局 hash 表的结构与作用。</p>
 <p>weak表</p>
 <p>weak表是一个弱引用表，实现为一个weak_table_t结构体，存储了某个对象相关的的所有的弱引用信息。其定义如下(具体定义在objc-weak.h中)：</p>
-<pre><code>   struct weak_table_t {
+<pre><code>   struct weak_table_t &#123;
     // 保存了所有指向指定对象的 weak 指针
     weak_entry_t *weak_entries;
     // 存储空间
@@ -314,27 +320,29 @@ retry:
     uintptr_t mask;
     // hash key 最大偏移值
     uintptr_t max_hash_displacement;
-};
-</code></pre><p>这是一个全局弱引用hash表。使用不定类型对象的地址作为 key ，用 weak_entry_t 类型结构体对象作为 value 。其中的 weak_entries 成员，从字面意思上看，即为弱引用表入口。其实现也是这样的。</p>
+&#125;;
+</code></pre>
+<p>这是一个全局弱引用hash表。使用不定类型对象的地址作为 key ，用 weak_entry_t 类型结构体对象作为 value 。其中的 weak_entries 成员，从字面意思上看，即为弱引用表入口。其实现也是这样的。</p>
 <p>其中weak_entry_t是存储在弱引用表中的一个内部结构体，它负责维护和存储指向一个对象的所有弱引用hash表。其定义如下：</p>
 <pre><code>typedef objc_object ** weak_referrer_t;
-struct weak_entry_t {
+struct weak_entry_t &#123;
     DisguisedPtrobjc_object&gt; referent;
-    union {
-        struct {
+    union &#123;
+        struct &#123;
             weak_referrer_t *referrers;
             uintptr_t        out_of_line : 1;
             uintptr_t        num_refs : PTR_MINUS_1;
             uintptr_t        mask;
             uintptr_t        max_hash_displacement;
-        };
-        struct {
-            // out_of_line=0 is LSB of one of these (don&apos;t care which)
+        &#125;;
+        struct &#123;
+            // out_of_line=0 is LSB of one of these (don&#39;t care which)
             weak_referrer_t  inline_referrers[WEAK_INLINE_COUNT];
-        };
-    }
-}
-</code></pre><p>在 weak_entry_t 的结构中，DisguisedPtr referent 是对泛型对象的指针做了一个封装，通过这个泛型类来解决内存泄漏的问题。从注释中写 out_of_line 成员为最低有效位，当其为0的时候， weak_referrer_t 成员将扩展为多行静态 hash table。其实其中的 weak_referrer_t 是二维 objc_object 的别名，通过一个二维指针地址偏移，用下标作为 hash 的 key，做成了一个弱引用散列。</p>
+        &#125;;
+    &#125;
+&#125;
+</code></pre>
+<p>在 weak_entry_t 的结构中，DisguisedPtr referent 是对泛型对象的指针做了一个封装，通过这个泛型类来解决内存泄漏的问题。从注释中写 out_of_line 成员为最低有效位，当其为0的时候， weak_referrer_t 成员将扩展为多行静态 hash table。其实其中的 weak_referrer_t 是二维 objc_object 的别名，通过一个二维指针地址偏移，用下标作为 hash 的 key，做成了一个弱引用散列。</p>
 <p>那么在有效位未生效的时候，out_of_line 、 num_refs、 mask 、 max_hash_displacement 有什么作用？以下是笔者自身的猜测：</p>
 <p>out_of_line：最低有效位，也是标志位。当标志位 0 时，增加引用表指针纬度。</p>
 <p>num_refs：引用数值。这里记录弱引用表中引用有效数字，因为弱引用表使用的是静态 hash 结构，所以需要使用变量来记录数目。</p>
@@ -435,7 +443,7 @@ struct weak_entry_t {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/06/iOS 底层解析weak的实现原理（包含weak对象的初始化，引用，释放的分析）/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/06/iOS%20%E5%BA%95%E5%B1%82%E8%A7%A3%E6%9E%90weak%E7%9A%84%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%EF%BC%88%E5%8C%85%E5%90%ABweak%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%8C%E5%BC%95%E7%94%A8%EF%BC%8C%E9%87%8A%E6%94%BE%E7%9A%84%E5%88%86%E6%9E%90%EF%BC%89/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -449,7 +457,7 @@ struct weak_entry_t {
   
 <nav id="article-nav">
   
-    <a href="/2018/09/06/关于数组和链表/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/09/06/%E5%85%B3%E4%BA%8E%E6%95%B0%E7%BB%84%E5%92%8C%E9%93%BE%E8%A1%A8/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -459,7 +467,7 @@ struct weak_entry_t {
     </a>
   
   
-    <a href="/2018/09/06/iOS 简单而粗暴的说一说内存管理/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/09/06/iOS%20%E7%AE%80%E5%8D%95%E8%80%8C%E7%B2%97%E6%9A%B4%E7%9A%84%E8%AF%B4%E4%B8%80%E8%AF%B4%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iOS 简单而粗暴的说一说内存管理</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -503,7 +511,7 @@ struct weak_entry_t {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -610,10 +618,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -622,7 +626,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -630,11 +634,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -654,19 +662,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -9,17 +9,17 @@
   <title>flutter Widget框架概述 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面学如逆水行舟，不进则退 Google在今年推出的fultter框架，号称要解决跨平台的问题。最开始的时候，我对这个东西的态度，一如当年的RN，性能啦肯定是不如原生的，无非是网页的另一种展现而已。。。真正体验了一番之后，发现并不是如此，这个框架已经在很大程度上解决了滑动之类的性能问题。剩下的问题就是相关的第三方的适配了。 Google这次把很多的UI框架之类的东西完全重写了一遍 布局的相关特">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="flutter Widget框架概述">
-<meta property="og:url" content="http://yoursite.com/2018/12/18/flutter框架概述/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/12/18/flutter%E6%A1%86%E6%9E%B6%E6%A6%82%E8%BF%B0/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面学如逆水行舟，不进则退 Google在今年推出的fultter框架，号称要解决跨平台的问题。最开始的时候，我对这个东西的态度，一如当年的RN，性能啦肯定是不如原生的，无非是网页的另一种展现而已。。。真正体验了一番之后，发现并不是如此，这个框架已经在很大程度上解决了滑动之类的性能问题。剩下的问题就是相关的第三方的适配了。 Google这次把很多的UI框架之类的东西完全重写了一遍 布局的相关特">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-18T10:04:07.799Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-12-18T08:36:46.040Z">
+<meta property="article:modified_time" content="2018-12-18T10:04:07.799Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="flutter Widget框架概述">
-<meta name="twitter:description" content="写在前面学如逆水行舟，不进则退 Google在今年推出的fultter框架，号称要解决跨平台的问题。最开始的时候，我对这个东西的态度，一如当年的RN，性能啦肯定是不如原生的，无非是网页的另一种展现而已。。。真正体验了一番之后，发现并不是如此，这个框架已经在很大程度上解决了滑动之类的性能问题。剩下的问题就是相关的第三方的适配了。 Google这次把很多的UI框架之类的东西完全重写了一遍 布局的相关特">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/12/18/flutter框架概述/" class="archive-article-date">
+        <a href="/2018/12/18/flutter%E6%A1%86%E6%9E%B6%E6%A6%82%E8%BF%B0/" class="archive-article-date">
   	<time datetime="2018-12-18T08:36:46.040Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-18</time>
 </a>
         
@@ -208,9 +208,10 @@
 <h2 id="widget详解"><a href="#widget详解" class="headerlink" title="widget详解"></a>widget详解</h2><p>在Flutter中，我们平时自定义的widget，一般都是继承自StatefulWidget或StatelessWidget（并不是只有这两种），这两种widget也是目前最常用的两种。如果一个控件自身状态不会去改变，创建了就直接显示，不会有色值、大小或者其他属性的变化，这种widget一般都是继承自StatelessWidget，常见的有Container、ScrollView等。如果一个控件需要动态的去改变或者相应一些状态，例如点击态、色值、内容区域等，那么一般都是继承自StatefulWidget，常见的有CheckBox、AppBar、TabBar等。其实单纯的从名字也可以看出这两种widget的区别，这两种widget都是继承自Widget类。</p>
 <h3 id="Widget类"><a href="#Widget类" class="headerlink" title="Widget类"></a>Widget类</h3><p>Widget类在Flutter中是非常重要的，继承自Widget类的有PreferredSizeWidget、ProxyWidget、RenderObjectWidget、StatefulWidget、StatelessWidget。我们日常使用的绝大部分widget都是继承自Widget类，</p>
 <p>查看Widget类源码，内部实现非常简单，构造函数如下</p>
-<pre><code>const Widget({ this.key });
+<pre><code>const Widget(&#123; this.key &#125;);
 final Key key;
-</code></pre><p>这个key的作用，注视上写的很清楚，是用来控制在widget树中替换widget的时候使用的。其中Key类是Widget、Element以及SemanticsNode的唯一标识符，继承自Key的还有LocalKey以及GlobalKey。</p>
+</code></pre>
+<p>这个key的作用，注视上写的很清楚，是用来控制在widget树中替换widget的时候使用的。其中Key类是Widget、Element以及SemanticsNode的唯一标识符，继承自Key的还有LocalKey以及GlobalKey。</p>
 <h3 id="State"><a href="#State" class="headerlink" title="State"></a>State</h3><p>在说到StatefulWidget之前，先说下State。State的作用有两点：</p>
 <ul>
 <li>在widget构建的时候可以被同步读取；</li>
@@ -243,45 +244,43 @@ final Key key;
 </ul>
 <p>检查完一系列异常后，最后调用代码如下：</p>
 <pre><code>_element.markNeedsBuild();
-</code></pre><p>markNeedsBuild内部，则是通过标记element为diry，在下一帧的时候重建（rebuild）。可以看出setState并不是立即生效，它只是将widget进行了标记，真正的rebuild操作，则是等到下一帧的时候才会去进行。</p>
+</code></pre>
+<p>markNeedsBuild内部，则是通过标记element为diry，在下一帧的时候重建（rebuild）。可以看出setState并不是立即生效，它只是将widget进行了标记，真正的rebuild操作，则是等到下一帧的时候才会去进行。</p>
 <h4 id="StatefulWidget和StatelessWidget"><a href="#StatefulWidget和StatelessWidget" class="headerlink" title="StatefulWidget和StatelessWidget"></a>StatefulWidget和StatelessWidget</h4><p>一个StatelessWidget可以用多个不同的BuildContext构建，而一个StatefulWidget会为每个BuildContext创建一个State对象。</p>
 <h5 id="StatelessWidget"><a href="#StatelessWidget" class="headerlink" title="StatelessWidget"></a>StatelessWidget</h5><p>对于StatelessWidget，build方法会在如下三种情况下调用，</p>
 <ul>
-<li>widget第一次被插入到树中；</li>
-<li>widget的父节点更改了配置（configuration）；</li>
+<li><p>widget第一次被插入到树中；</p>
+</li>
+<li><p>widget的父节点更改了配置（configuration）；</p>
+</li>
 <li><p>widget依赖的InheritedWidget改变了。</p>
-<p>  class GreenFrog extends StatelessWidget {</p>
-<pre><code>const GreenFrog({ Key key }) : super(key: key);
-
-@override
-Widget build(BuildContext context) {
-  return new Container(color: const Color(0xFF2DBD3A));
-}
-</code></pre><p>  }</p>
+<p>  class GreenFrog extends StatelessWidget {<br>const GreenFrog({ Key key }) : super(key: key);<br><br>@override<br>Widget build(BuildContext context) {<br>  return new Container(color: const Color(0xFF2DBD3A));<br>}<br>  }</p>
 </li>
 </ul>
 <h5 id="StatefulWidget"><a href="#StatefulWidget" class="headerlink" title="StatefulWidget"></a>StatefulWidget</h5><p>StatefulWidget的两个主要类别：</p>
 <ul>
-<li>在initState中创建资源，在dispose中销毁，但是不依赖于InheritedWidget或者调用setState方法，这类widget基本上用在一个应用或者页面的root；</li>
+<li><p>在initState中创建资源，在dispose中销毁，但是不依赖于InheritedWidget或者调用setState方法，这类widget基本上用在一个应用或者页面的root；</p>
+</li>
 <li><p>使用setState或者依赖于InheritedWidget，这种在营业生命周期中会被重建（rebuild）很多次。</p>
-<pre><code>class YellowBird extends StatefulWidget {
-  const YellowBird({ Key key }) : super(key: key);
-
-  @override
-  _YellowBirdState createState() =&gt; new _YellowBirdState();
-}
-
-class _YellowBirdState extends State&lt;YellowBird&gt; {
-  @override
-  Widget build(BuildContext context) {
-    return new Container(color: const Color(0xFFFFE306));
-  }
-}
-</code></pre></li>
+<pre><code>  class YellowBird extends StatefulWidget &#123;
+    const YellowBird(&#123; Key key &#125;) : super(key: key);
+  
+    @override
+    _YellowBirdState createState() =&gt; new _YellowBirdState();
+  &#125;
+  
+  class _YellowBirdState extends State&lt;YellowBird&gt; &#123;
+    @override
+    Widget build(BuildContext context) &#123;
+      return new Container(color: const Color(0xFFFFE306));
+    &#125;
+  &#125;
+</code></pre>
+</li>
 </ul>
 <h2 id="如何布局"><a href="#如何布局" class="headerlink" title="如何布局"></a>如何布局</h2><p>Flutter Widget采用现代响应式框架构建，这是从 React 中获得的灵感，中心思想是用widget构建你的UI。 </p>
 <p>Widget描述了他们的视图在给定其当前配置和状态时应该看起来像什么。<br>当widget的状态发生变化时，widget会重新构建UI，Flutter会对比前后变化的不同，</p>
-<p>以确定底层渲染树从一个状态转换到下一个状态所需的最小更改（译者语：类似于React/Vue中虚拟DOM的diff算法）。</p>
+<p>以确定底层渲染树从一个状态转换到下一个状态所需的最小更改（译者语：类似于React&#x2F;Vue中虚拟DOM的diff算法）。</p>
 <p>在编写应用程序时，通常会创建新的widget，这些widget是无状态的StatelessWidget或者是有状态的StatefulWidget， </p>
 <p>具体的选择取决于您的widget是否需要管理一些状态。widget的主要工作是实现一个build函数，用以构建自身。</p>
 <p>  一个widget通常由一些较低级别widget组成。Flutter框架将依次构建这些widget，</p>
@@ -384,7 +383,7 @@ class _YellowBirdState extends State&lt;YellowBird&gt; {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/18/flutter框架概述/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/18/flutter%E6%A1%86%E6%9E%B6%E6%A6%82%E8%BF%B0/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -398,7 +397,7 @@ class _YellowBirdState extends State&lt;YellowBird&gt; {
   
 <nav id="article-nav">
   
-    <a href="/2018/12/19/关于@available/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/12/19/%E5%85%B3%E4%BA%8E@available/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -408,7 +407,7 @@ class _YellowBirdState extends State&lt;YellowBird&gt; {
     </a>
   
   
-    <a href="/2018/12/18/autorelease的理解/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/12/18/autorelease%E7%9A%84%E7%90%86%E8%A7%A3/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">autorelease的理解</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -452,7 +451,7 @@ class _YellowBirdState extends State&lt;YellowBird&gt; {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -559,10 +558,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -571,7 +566,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -579,11 +574,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -603,19 +602,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

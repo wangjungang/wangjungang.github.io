@@ -9,17 +9,17 @@
   <title>Swift中的willSet与didSet | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="简单介绍属性观察器监控和响应属性值的变化，每次属性被设置值的时候都会调用属性观察器，甚至新的值和现在的值相同的时候也不例外。 可以为除了延迟存储属性之外的其他存储属性添加属性观察器，也可以通过重载属性的方式为继承的属性（包括存储属性和计算属性）添加属性观察器。 注意： 不需要为无法重载的计算属性添加属性观察器，因为可以通过 setter 直接监控和响应值的变化。 监测方式可以为属性添加如下的一个或">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Swift中的willSet与didSet">
-<meta property="og:url" content="http://yoursite.com/2019/02/14/Swift中的willSet与didSet/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/02/14/Swift%E4%B8%AD%E7%9A%84willSet%E4%B8%8EdidSet/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="简单介绍属性观察器监控和响应属性值的变化，每次属性被设置值的时候都会调用属性观察器，甚至新的值和现在的值相同的时候也不例外。 可以为除了延迟存储属性之外的其他存储属性添加属性观察器，也可以通过重载属性的方式为继承的属性（包括存储属性和计算属性）添加属性观察器。 注意： 不需要为无法重载的计算属性添加属性观察器，因为可以通过 setter 直接监控和响应值的变化。 监测方式可以为属性添加如下的一个或">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-02-14T07:03:30.052Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-02-14T03:45:24.909Z">
+<meta property="article:modified_time" content="2019-02-14T07:03:30.052Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift中的willSet与didSet">
-<meta name="twitter:description" content="简单介绍属性观察器监控和响应属性值的变化，每次属性被设置值的时候都会调用属性观察器，甚至新的值和现在的值相同的时候也不例外。 可以为除了延迟存储属性之外的其他存储属性添加属性观察器，也可以通过重载属性的方式为继承的属性（包括存储属性和计算属性）添加属性观察器。 注意： 不需要为无法重载的计算属性添加属性观察器，因为可以通过 setter 直接监控和响应值的变化。 监测方式可以为属性添加如下的一个或">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/02/14/Swift中的willSet与didSet/" class="archive-article-date">
+        <a href="/2019/02/14/Swift%E4%B8%AD%E7%9A%84willSet%E4%B8%8EdidSet/" class="archive-article-date">
   	<time datetime="2019-02-14T03:45:24.909Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-14</time>
 </a>
         
@@ -187,29 +187,31 @@
 <h3 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h3><p>willset观察器会将新的属性值作为固定参数传入，在willSet的实现代码中可以为这个参数指定一个名称，如果不指定则参数仍然可用，这时使用默认名称</p>
 <p>newValue表示。类似地，didSet观察器会将旧的属性值作为参数传入，可以为该参数命名或者使用默认参数名oldValue。</p>
 <h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>willSet和didSet观察器在属性初始化过程中不会被调用，它们只会当属性的值在初始化之外的地方被设置时被调用。</p>
-<h2 id="实现例子"><a href="#实现例子" class="headerlink" title="实现例子"></a>实现例子</h2><pre><code>class Student{
-    var score:Int = 0{
-        willSet{
+<h2 id="实现例子"><a href="#实现例子" class="headerlink" title="实现例子"></a>实现例子</h2><pre><code>class Student&#123;
+    var score:Int = 0&#123;
+        willSet&#123;
            print(&quot;About to set score to \(newValue)&quot;)
-        }
-        didSet{
-            if score &gt; oldValue  {
+        &#125;
+        didSet&#123;
+            if score &gt; oldValue  &#123;
                 print(&quot;这次分数进步了 \(score - oldValue) scores&quot;)
-            }
-        }
-    }
-}
+            &#125;
+        &#125;
+    &#125;
+&#125;
 let student = Student()
 student.score = 80
 student.score = 90
 student.score = 100
-</code></pre><h3 id="打印结果"><a href="#打印结果" class="headerlink" title="打印结果"></a>打印结果</h3><pre><code>About to set score to 80
+</code></pre>
+<h3 id="打印结果"><a href="#打印结果" class="headerlink" title="打印结果"></a>打印结果</h3><pre><code>About to set score to 80
 进步了 80 scores
 About to set score to 90
 进步了 10 scores
 About to set score to 100
 进步了 10 scores
 </code></pre>
+
       
 
       
@@ -299,7 +301,7 @@ About to set score to 100
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/14/Swift中的willSet与didSet/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/14/Swift%E4%B8%AD%E7%9A%84willSet%E4%B8%8EdidSet/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -313,7 +315,7 @@ About to set score to 100
   
 <nav id="article-nav">
   
-    <a href="/2019/02/14/Swift通知，代理，闭包/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/02/14/Swift%E9%80%9A%E7%9F%A5%EF%BC%8C%E4%BB%A3%E7%90%86%EF%BC%8C%E9%97%AD%E5%8C%85/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -323,7 +325,7 @@ About to set score to 100
     </a>
   
   
-    <a href="/2019/02/13/深入理解Swift中的Class和Struct/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/02/13/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Swift%E4%B8%AD%E7%9A%84Class%E5%92%8CStruct/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">深入理解Swift中的Class和Struct</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -367,7 +369,7 @@ About to set score to 100
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -474,10 +476,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -486,7 +484,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -494,11 +492,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -518,19 +520,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -9,17 +9,17 @@
   <title>通过优雅的方式强制旋转屏幕 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面方向旋转在日常App上基本都会用到，用的时候可能会因为赶工期而以实现功能为主，认真思考了为啥去这样做有没有bug或者后续的开发中是否还会用到。不只是屏幕旋转，还有其他的东西也是这样，导致之前做的时候感觉也会了，实际开发的时候，有时就会像喝断片一样。 此文的目的是为了加深理解和巩固一下知识记忆，另外此文也附带了对屏幕旋转的一些理解和一些需要注意的地方，小心驶得万年船哇。 三个方向的枚举1.U">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="通过优雅的方式强制旋转屏幕">
-<meta property="og:url" content="http://yoursite.com/2019/05/12/通过优雅的方式强制旋转屏幕/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/05/12/%E9%80%9A%E8%BF%87%E4%BC%98%E9%9B%85%E7%9A%84%E6%96%B9%E5%BC%8F%E5%BC%BA%E5%88%B6%E6%97%8B%E8%BD%AC%E5%B1%8F%E5%B9%95/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面方向旋转在日常App上基本都会用到，用的时候可能会因为赶工期而以实现功能为主，认真思考了为啥去这样做有没有bug或者后续的开发中是否还会用到。不只是屏幕旋转，还有其他的东西也是这样，导致之前做的时候感觉也会了，实际开发的时候，有时就会像喝断片一样。 此文的目的是为了加深理解和巩固一下知识记忆，另外此文也附带了对屏幕旋转的一些理解和一些需要注意的地方，小心驶得万年船哇。 三个方向的枚举1.U">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-19T07:24:06.633Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-05-12T07:47:18.344Z">
+<meta property="article:modified_time" content="2019-05-19T07:24:06.633Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="通过优雅的方式强制旋转屏幕">
-<meta name="twitter:description" content="写在前面方向旋转在日常App上基本都会用到，用的时候可能会因为赶工期而以实现功能为主，认真思考了为啥去这样做有没有bug或者后续的开发中是否还会用到。不只是屏幕旋转，还有其他的东西也是这样，导致之前做的时候感觉也会了，实际开发的时候，有时就会像喝断片一样。 此文的目的是为了加深理解和巩固一下知识记忆，另外此文也附带了对屏幕旋转的一些理解和一些需要注意的地方，小心驶得万年船哇。 三个方向的枚举1.U">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/05/12/通过优雅的方式强制旋转屏幕/" class="archive-article-date">
+        <a href="/2019/05/12/%E9%80%9A%E8%BF%87%E4%BC%98%E9%9B%85%E7%9A%84%E6%96%B9%E5%BC%8F%E5%BC%BA%E5%88%B6%E6%97%8B%E8%BD%AC%E5%B1%8F%E5%B9%95/" class="archive-article-date">
   	<time datetime="2019-05-12T07:47:18.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-05-12</time>
 </a>
         
@@ -185,14 +185,17 @@ UIDeviceOrientationLandscapeLeft,       // 横屏，home键在右边
 UIDeviceOrientationLandscapeRight,      // 横屏，home键在左边
 UIDeviceOrientationFaceUp,              // 屏幕朝上
 UIDeviceOrientationFaceDown             // 屏幕朝下
-</code></pre><p>其中UIDeviceOrientationLandscapeLeft可以这样理解：以home键或Home Indicator（下文仅用home键形容同等）为参照物，UIDeviceOrientationLandscapeRight就是设备向右旋转了，所以home键在左侧。反之亦然。</p>
+  
+</code></pre>
+<p>其中UIDeviceOrientationLandscapeLeft可以这样理解：以home键或Home Indicator（下文仅用home键形容同等）为参照物，UIDeviceOrientationLandscapeRight就是设备向右旋转了，所以home键在左侧。反之亦然。</p>
 <p>2。UIInterfaceOrientation：描述的是页面的方向，含有以下值：</p>
 <pre><code>UIInterfaceOrientationUnknown            = UIDeviceOrientationUnknown,
 UIInterfaceOrientationPortrait           = UIDeviceOrientationPortrait,
 UIInterfaceOrientationPortraitUpsideDown = UIDeviceOrientationPortraitUpsideDown,
 UIInterfaceOrientationLandscapeLeft      = UIDeviceOrientationLandscapeRight,
 UIInterfaceOrientationLandscapeRight     = UIDeviceOrientationLandscapeLeft
-</code></pre><p>其中之所以UIInterfaceOrientationLandscapeLeft和UIDeviceOrientationLandscapeRight等价，就是因为设备旋转后，页面需要向反方向旋转才能符合正常使用的规范。</p>
+</code></pre>
+<p>其中之所以UIInterfaceOrientationLandscapeLeft和UIDeviceOrientationLandscapeRight等价，就是因为设备旋转后，页面需要向反方向旋转才能符合正常使用的规范。</p>
 <p>3 UIInterfaceOrientationMask: 作用是在指定的视图控制器中支持的页面多种方向的集合，含有以下值</p>
 <pre><code>UIInterfaceOrientationMaskPortrait = (1 &lt;&lt; UIInterfaceOrientationPortrait),
 UIInterfaceOrientationMaskLandscapeLeft = (1 &lt;&lt; UIInterfaceOrientationLandscapeLeft),
@@ -204,7 +207,8 @@ UIInterfaceOrientationMaskLandscape = (UIInterfaceOrientationMaskLandscapeLeft |
 UIInterfaceOrientationMaskAll = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight | UIInterfaceOrientationMaskPortraitUpsideDown),
 
 UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskLandscapeLeft | UIInterfaceOrientationMaskLandscapeRight),
-</code></pre><p>第一个枚举是用来描述设备的方向；第二个枚举是用来描述页面的方向；第三个枚举则是用来描述页面可支持的方向集合。另外设备面朝上和朝下两种情况通常不做考虑。</p>
+</code></pre>
+<p>第一个枚举是用来描述设备的方向；第二个枚举是用来描述页面的方向；第三个枚举则是用来描述页面可支持的方向集合。另外设备面朝上和朝下两种情况通常不做考虑。</p>
 <h2 id="获取设备的方向"><a href="#获取设备的方向" class="headerlink" title="获取设备的方向"></a>获取设备的方向</h2><p>1 可以通过获取设备的orientation属性值来判断当前设备的方向。</p>
 <p>2 有些时候需要通过监听来获取设备的方向，需要通过使用通知来监听，但是有个注意的地方就是从设备方向改变的通知中获取数据前后需要调用一对方法：<br>beginGeneratingDeviceOrientationNotifications和endGeneratingDeviceOrientationNotifications</p>
 <pre><code>// 通过通知名：UIDeviceOrientationDidChangeNotification 来获取
@@ -217,12 +221,13 @@ UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait
 // 移除通知前需调用结束生成设备方向变化的通知
 [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
 [[NSNotificationCenter defaultCenter] removeObserver:self];
-</code></pre><p>3 有点需要非常注意的是：如果用户在控制栏锁定了屏幕方向，收不到方向改变的通知，包括即使你所在的试图控制器支持多个方向，也只会强转第一个方向。</p>
+</code></pre>
+<p>3 有点需要非常注意的是：如果用户在控制栏锁定了屏幕方向，收不到方向改变的通知，包括即使你所在的试图控制器支持多个方向，也只会强转第一个方向。</p>
 <p>4 还有一点就是状态栏的问题，如果没有设置状态的样式，在强转横屏时将会隐藏状态栏。</p>
 <p>5 另外使用此种方式时可能会收到状态UIDeviceOrientationUnknown，比如第一次进入app的过程中以及只支持竖屏的情况时，但是一般跳转时会有几次的方向回调的，当出现这个状态时可以返回竖屏的状态。</p>
 <h2 id="设备旋转的设置的几种方式"><a href="#设备旋转的设置的几种方式" class="headerlink" title="设备旋转的设置的几种方式"></a>设备旋转的设置的几种方式</h2><p>1 因为设备支持的方向旋转有几种方式</p>
 <p>项目工程的设置：在工程的General和info.plist中设置都是一样的，因为数据都存储在info.plist中</p>
-<p>AppDelegate中的设置：通过在代理中- (UIInterfaceOrientationMask)application:(UIApplication <em>)application supportedInterfaceOrientationsForWindow:(UIWindow </em>)window设置支持的方向。</p>
+<p>AppDelegate中的设置：通过在代理中- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window设置支持的方向。</p>
 <p>单个视图控制控制器的设置：需要其父控制器UITabBarController或UINavigationController也支持当前控制器的方向才行。</p>
 <p>2 上述方式设置可以简单理解为：项目工程的设置为App默认设置；AppDelegate中的设置为你当前设置的，所以会覆盖项目工程的设置；而单个视图控制器的设置为当前页面设置，但是受AppDelegate中的影响。</p>
 <p>3 默认创建应用将会默认勾选除 Portrait Upside down这个选项外的方向。</p>
@@ -317,7 +322,7 @@ UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/05/12/通过优雅的方式强制旋转屏幕/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/05/12/%E9%80%9A%E8%BF%87%E4%BC%98%E9%9B%85%E7%9A%84%E6%96%B9%E5%BC%8F%E5%BC%BA%E5%88%B6%E6%97%8B%E8%BD%AC%E5%B1%8F%E5%B9%95/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -331,7 +336,7 @@ UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait
   
 <nav id="article-nav">
   
-    <a href="/2019/06/15/你应该定期更新Homebrew/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/06/15/%E4%BD%A0%E5%BA%94%E8%AF%A5%E5%AE%9A%E6%9C%9F%E6%9B%B4%E6%96%B0Homebrew/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -341,7 +346,7 @@ UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait
     </a>
   
   
-    <a href="/2019/05/09/iOS响应链(Responder Chain)/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/05/09/iOS%E5%93%8D%E5%BA%94%E9%93%BE(Responder%20Chain)/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iOS响应链(Responder Chain)</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -385,7 +390,7 @@ UIInterfaceOrientationMaskAllButUpsideDown = (UIInterfaceOrientationMaskPortrait
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -492,10 +497,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -504,7 +505,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -512,11 +513,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -536,19 +541,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

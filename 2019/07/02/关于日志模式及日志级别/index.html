@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>iOS关于日志模式及日志级别 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面在开发中我们经常要通过Log(日志)来调试问题, 而上线后不需要打印Log,而且平常开发每做一个模块如果可以将log按照级别打印出来,对分析问题帮助很大. 实现原理通过导入一个头文件以实现开启或关闭Log模式,实现选择Log级别.通过导入#include &amp;lt;syslog.h&amp;gt;以实现打印不同级别的Log. 为什么使用syslog ? 因为它不仅可以在Xcode控制台打印信息,还可">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="写在前面在开发中我们经常要通过Log(日志)来调试问题, 而上线后不需要打印Log,而且平常开发每做一个模块如果可以将log按照级别打印出来,对分析问题帮助很大. 实现原理通过导入一个头文件以实现开启或关闭Log模式,实现选择Log级别.通过导入#include &lt;syslog.h&gt;以实现打印不同级别的Log. 为什么使用syslog ? 因为它不仅可以在Xcode控制台打印信息,还可">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS关于日志模式及日志级别">
-<meta property="og:url" content="http://yoursite.com/2019/07/02/关于日志模式及日志级别/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/07/02/%E5%85%B3%E4%BA%8E%E6%97%A5%E5%BF%97%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面在开发中我们经常要通过Log(日志)来调试问题, 而上线后不需要打印Log,而且平常开发每做一个模块如果可以将log按照级别打印出来,对分析问题帮助很大. 实现原理通过导入一个头文件以实现开启或关闭Log模式,实现选择Log级别.通过导入#include &amp;lt;syslog.h&amp;gt;以实现打印不同级别的Log. 为什么使用syslog ? 因为它不仅可以在Xcode控制台打印信息,还可">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-07-02T08:59:23.591Z">
+<meta property="og:description" content="写在前面在开发中我们经常要通过Log(日志)来调试问题, 而上线后不需要打印Log,而且平常开发每做一个模块如果可以将log按照级别打印出来,对分析问题帮助很大. 实现原理通过导入一个头文件以实现开启或关闭Log模式,实现选择Log级别.通过导入#include &lt;syslog.h&gt;以实现打印不同级别的Log. 为什么使用syslog ? 因为它不仅可以在Xcode控制台打印信息,还可">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-07-02T08:55:06.088Z">
+<meta property="article:modified_time" content="2019-07-02T08:59:23.591Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS关于日志模式及日志级别">
-<meta name="twitter:description" content="写在前面在开发中我们经常要通过Log(日志)来调试问题, 而上线后不需要打印Log,而且平常开发每做一个模块如果可以将log按照级别打印出来,对分析问题帮助很大. 实现原理通过导入一个头文件以实现开启或关闭Log模式,实现选择Log级别.通过导入#include &amp;lt;syslog.h&amp;gt;以实现打印不同级别的Log. 为什么使用syslog ? 因为它不仅可以在Xcode控制台打印信息,还可">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/07/02/关于日志模式及日志级别/" class="archive-article-date">
+        <a href="/2019/07/02/%E5%85%B3%E4%BA%8E%E6%97%A5%E5%BF%97%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB/" class="archive-article-date">
   	<time datetime="2019-07-02T08:55:06.088Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-02</time>
 </a>
         
@@ -189,7 +189,8 @@
     log4cplus_warn(kModuleName, &quot;world3&quot;);
     log4cplus_info(kModuleName, &quot;world4&quot;);
     log4cplus_debug(kModuleName, &quot;world5&quot;);
-</code></pre><p>比如我们在开发中可能独立承担一个模块,而此模块单单做完如果出现问题就需要调试,但是如果我们的Log足够清晰是可以迅速帮助我们找到问题所在,这里将Log分为5个级别<br>以下是个人对于打印Log的一些建议,并不是说一定要按照如下.</p>
+</code></pre>
+<p>比如我们在开发中可能独立承担一个模块,而此模块单单做完如果出现问题就需要调试,但是如果我们的Log足够清晰是可以迅速帮助我们找到问题所在,这里将Log分为5个级别<br>以下是个人对于打印Log的一些建议,并不是说一定要按照如下.</p>
 <p>XDX_IOS_FLAG_FATAL : 严重级别</p>
 <p>此类错误出现时,表明程序因为某某问题已经彻底无法运行下去,我们在使用此log时可以附加说明当前碰到的重大问题及产生原因,以便调试.</p>
 <p>XDX_IOS_FLAG_ERROR : 出错级别</p>
@@ -204,17 +205,19 @@
 <pre><code>#define log4cplus_fatal(category, logFmt, ...) \
 if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_FATAL) \
 syslog(LOG_CRIT, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
-</code></pre><p>举例如下:</p>
+</code></pre>
+<p>举例如下:</p>
 <pre><code>#define kModuleName &quot;Hello&quot;
 
 ...
 
 
-- (void)test {
+- (void)test &#123;
     int i = 0;
     log4cplus_debug(kModuleName, &quot;Hello World - %d&quot;,i);
-}
-</code></pre><h3 id="4-注意"><a href="#4-注意" class="headerlink" title="4.注意"></a>4.注意</h3><p>因为我们使用的syslog,所以OC中的格式符%@是不可用的.但是任何OC中的字符串都可通过UTF8String转为C语言字符串,所以并不影响我们的使用.</p>
+&#125;
+</code></pre>
+<h3 id="4-注意"><a href="#4-注意" class="headerlink" title="4.注意"></a>4.注意</h3><p>因为我们使用的syslog,所以OC中的格式符%@是不可用的.但是任何OC中的字符串都可通过UTF8String转为C语言字符串,所以并不影响我们的使用.</p>
 <h3 id="5-使用方式"><a href="#5-使用方式" class="headerlink" title="5.使用方式"></a>5.使用方式</h3><p>每次编译前设置log级别</p>
 <p>如果不需要在项目中通过UI动态更改log级别,则可以直接使用如下方式将头文件拖入项目,然后在需要使用log的地方将其导入.这种方式简单方便,仅仅通过每次运行前更改宏定义即可转变log级别.</p>
 <p>在运行后通过UI更改</p>
@@ -230,7 +233,8 @@ static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | 
 #elif defined(XDXLogLevelDebug)
 static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN | XDX_IOS_FLAG_INFO | XDX_IOS_FLAG_DEBUG);
 #endif
-</code></pre><h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><pre><code>#include &lt;syslog.h&gt;
+</code></pre>
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><pre><code>#include &lt;syslog.h&gt;
 #ifndef XDX_IOS
 #define XDX_IOS
 #endif
@@ -301,6 +305,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
 
 #endif
 </code></pre>
+
       
 
       
@@ -390,7 +395,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/07/02/关于日志模式及日志级别/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/07/02/%E5%85%B3%E4%BA%8E%E6%97%A5%E5%BF%97%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -404,7 +409,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
   
 <nav id="article-nav">
   
-    <a href="/2019/07/04/看完就懂的无痕埋点/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/07/04/%E7%9C%8B%E5%AE%8C%E5%B0%B1%E6%87%82%E7%9A%84%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -414,7 +419,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
     </a>
   
   
-    <a href="/2019/06/30/#define和const的使用/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/06/30/#define%E5%92%8Cconst%E7%9A%84%E4%BD%BF%E7%94%A8/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title"></div>
       <i class="icon-circle-right"></i>
     </a>
@@ -458,7 +463,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -565,10 +570,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -577,7 +578,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -585,11 +586,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -609,19 +614,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

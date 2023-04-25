@@ -9,17 +9,17 @@
   <title>MySQL快速创建千万级测试数据 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面在进行查询操作的性能测试或者sql优化时，我们经常需要在线下环境构建大量的基础数据供我们测试，模拟线上的真实环境。 废话，总不能直接在线上测试吧，会被DBA砍死的 创建测试数据的方式1. 编写代码，通过代码批量插库（本人使用过，步骤太繁琐，性能不高，不推荐） 2. 编写存储过程和函数执行（本文实现方式1） 3. 临时数据表方式执行 （本文实现方式2，强烈推荐该方式，非常简单，数据插入快速，">
-<meta name="keywords" content="mysql">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL快速创建千万级测试数据">
-<meta property="og:url" content="http://yoursite.com/2020/05/20/MySQL 快速创建千万级测试数据/index.html">
+<meta property="og:url" content="http://yoursite.com/2020/05/20/MySQL%20%E5%BF%AB%E9%80%9F%E5%88%9B%E5%BB%BA%E5%8D%83%E4%B8%87%E7%BA%A7%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面在进行查询操作的性能测试或者sql优化时，我们经常需要在线下环境构建大量的基础数据供我们测试，模拟线上的真实环境。 废话，总不能直接在线上测试吧，会被DBA砍死的 创建测试数据的方式1. 编写代码，通过代码批量插库（本人使用过，步骤太繁琐，性能不高，不推荐） 2. 编写存储过程和函数执行（本文实现方式1） 3. 临时数据表方式执行 （本文实现方式2，强烈推荐该方式，非常简单，数据插入快速，">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-05-20T10:58:52.465Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2020-05-20T10:28:47.882Z">
+<meta property="article:modified_time" content="2020-05-20T10:58:52.465Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="mysql">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL快速创建千万级测试数据">
-<meta name="twitter:description" content="写在前面在进行查询操作的性能测试或者sql优化时，我们经常需要在线下环境构建大量的基础数据供我们测试，模拟线上的真实环境。 废话，总不能直接在线上测试吧，会被DBA砍死的 创建测试数据的方式1. 编写代码，通过代码批量插库（本人使用过，步骤太繁琐，性能不高，不推荐） 2. 编写存储过程和函数执行（本文实现方式1） 3. 临时数据表方式执行 （本文实现方式2，强烈推荐该方式，非常简单，数据插入快速，">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2020/05/20/MySQL 快速创建千万级测试数据/" class="archive-article-date">
+        <a href="/2020/05/20/MySQL%20%E5%BF%AB%E9%80%9F%E5%88%9B%E5%BB%BA%E5%8D%83%E4%B8%87%E7%BA%A7%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE/" class="archive-article-date">
   	<time datetime="2020-05-20T10:28:47.882Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-20</time>
 </a>
         
@@ -181,35 +181,38 @@
 2. 编写存储过程和函数执行（本文实现方式1）
 3. 临时数据表方式执行 （本文实现方式2，强烈推荐该方式，非常简单，数据插入快速，100W，只需几秒）
 4. 一行一行手动插入，（WTF，去死吧）
-</code></pre><h2 id="创建基础表结构"><a href="#创建基础表结构" class="headerlink" title="创建基础表结构"></a>创建基础表结构</h2><p>不管用何种方式，我要插在那张表总要创建的吧</p>
+</code></pre>
+<h2 id="创建基础表结构"><a href="#创建基础表结构" class="headerlink" title="创建基础表结构"></a>创建基础表结构</h2><p>不管用何种方式，我要插在那张表总要创建的吧</p>
 <pre><code>CREATE TABLE `t_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `c_user_id` varchar(36) NOT NULL DEFAULT &apos;&apos;,
-  `c_name` varchar(22) NOT NULL DEFAULT &apos;&apos;,
+  `c_user_id` varchar(36) NOT NULL DEFAULT &#39;&#39;,
+  `c_name` varchar(22) NOT NULL DEFAULT &#39;&#39;,
   `c_province_id` int(11) NOT NULL,
   `c_city_id` int(11) NOT NULL,
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_user_id` (`c_user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-</code></pre><h3 id="方式1：-采用存储过程和内存表"><a href="#方式1：-采用存储过程和内存表" class="headerlink" title="方式1： 采用存储过程和内存表"></a>方式1： 采用存储过程和内存表</h3><h4 id="创建内存表"><a href="#创建内存表" class="headerlink" title="创建内存表"></a>创建内存表</h4><p>利用 MySQL 内存表插入速度快的特点，我们先利用函数和存储过程在内存表中生成数据，然后再从内存表插入普通表中</p>
+</code></pre>
+<h3 id="方式1：-采用存储过程和内存表"><a href="#方式1：-采用存储过程和内存表" class="headerlink" title="方式1： 采用存储过程和内存表"></a>方式1： 采用存储过程和内存表</h3><h4 id="创建内存表"><a href="#创建内存表" class="headerlink" title="创建内存表"></a>创建内存表</h4><p>利用 MySQL 内存表插入速度快的特点，我们先利用函数和存储过程在内存表中生成数据，然后再从内存表插入普通表中</p>
 <pre><code>CREATE TABLE `t_user_memory` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `c_user_id` varchar(36) NOT NULL DEFAULT &apos;&apos;,
-  `c_name` varchar(22) NOT NULL DEFAULT &apos;&apos;,
+  `c_user_id` varchar(36) NOT NULL DEFAULT &#39;&#39;,
+  `c_name` varchar(22) NOT NULL DEFAULT &#39;&#39;,
   `c_province_id` int(11) NOT NULL,
   `c_city_id` int(11) NOT NULL,
   `create_time` datetime NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_user_id` (`c_user_id`)
 ) ENGINE=MEMORY DEFAULT CHARSET=utf8mb4;
-</code></pre><h4 id="创建函数和存储过程"><a href="#创建函数和存储过程" class="headerlink" title="创建函数和存储过程"></a>创建函数和存储过程</h4><pre><code># 创建随机字符串和随机时间的函数
+</code></pre>
+<h4 id="创建函数和存储过程"><a href="#创建函数和存储过程" class="headerlink" title="创建函数和存储过程"></a>创建函数和存储过程</h4><pre><code># 创建随机字符串和随机时间的函数
 mysql&gt; delimiter $$
 mysql&gt; CREATE DEFINER=`root`@`%` FUNCTION `randStr`(n INT) RETURNS varchar(255) CHARSET utf8mb4
     -&gt;     DETERMINISTIC
     -&gt; BEGIN
-    -&gt;     DECLARE chars_str varchar(100) DEFAULT &apos;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&apos;;
-    -&gt;     DECLARE return_str varchar(255) DEFAULT &apos;&apos; ;
+    -&gt;     DECLARE chars_str varchar(100) DEFAULT &#39;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&#39;;
+    -&gt;     DECLARE return_str varchar(255) DEFAULT &#39;&#39; ;
     -&gt;     DECLARE i INT DEFAULT 0;
     -&gt;     WHILE i &lt; n DO
     -&gt;         SET return_str = concat(return_str, substring(chars_str, FLOOR(1 + RAND() * 62), 1));
@@ -242,29 +245,35 @@ mysql&gt; CREATE DEFINER=`root`@`%` PROCEDURE `add_t_user_memory`(IN n int)
     -&gt; END
     -&gt; $$
 Query OK, 0 rows affected (0.01 sec)
-</code></pre><h4 id="调用存储过程"><a href="#调用存储过程" class="headerlink" title="调用存储过程"></a>调用存储过程</h4><pre><code>mysql&gt; CALL add_t_user_memory(1000000);
-ERROR 1114 (HY000): The table &apos;t_user_memory&apos; is full
+</code></pre>
+<h4 id="调用存储过程"><a href="#调用存储过程" class="headerlink" title="调用存储过程"></a>调用存储过程</h4><pre><code>mysql&gt; CALL add_t_user_memory(1000000);
+ERROR 1114 (HY000): The table &#39;t_user_memory&#39; is full
 出现内存已满时，修改 max_heap_table_size 参数的大小，我使用64M内存，插入了22W数据，看情况改，不过这个值不要太大，默认32M或者64M就好，生产环境不要乱尝试
-</code></pre><h4 id="从内存表插入普通表"><a href="#从内存表插入普通表" class="headerlink" title="从内存表插入普通表"></a>从内存表插入普通表</h4><pre><code>mysql&gt; INSERT INTO t_user SELECT * FROM t_user_memory;
+</code></pre>
+<h4 id="从内存表插入普通表"><a href="#从内存表插入普通表" class="headerlink" title="从内存表插入普通表"></a>从内存表插入普通表</h4><pre><code>mysql&gt; INSERT INTO t_user SELECT * FROM t_user_memory;
 Query OK, 218953 rows affected (1.70 sec)
 Records: 218953  Duplicates: 0  Warnings: 0
-</code></pre><h3 id="方式2：-采用临时表"><a href="#方式2：-采用临时表" class="headerlink" title="方式2： 采用临时表"></a>方式2： 采用临时表</h3><h4 id="创建临时数据表tmp-table"><a href="#创建临时数据表tmp-table" class="headerlink" title="创建临时数据表tmp_table"></a>创建临时数据表tmp_table</h4><pre><code>CREATE TABLE tmp_table (
+</code></pre>
+<h3 id="方式2：-采用临时表"><a href="#方式2：-采用临时表" class="headerlink" title="方式2： 采用临时表"></a>方式2： 采用临时表</h3><h4 id="创建临时数据表tmp-table"><a href="#创建临时数据表tmp-table" class="headerlink" title="创建临时数据表tmp_table"></a>创建临时数据表tmp_table</h4><pre><code>CREATE TABLE tmp_table (
     id INT,
     PRIMARY KEY (id)
 );
-</code></pre><h4 id="用-python或者bash-生成-100w-记录的数据文件（python瞬间就会生成完）"><a href="#用-python或者bash-生成-100w-记录的数据文件（python瞬间就会生成完）" class="headerlink" title="用 python或者bash 生成 100w 记录的数据文件（python瞬间就会生成完）"></a>用 python或者bash 生成 100w 记录的数据文件（python瞬间就会生成完）</h4><pre><code>python(推荐): python -c &quot;for i in range(1, 1+1000000): print(i)&quot; &gt; base.txt
-</code></pre><h4 id="导入数据到临时表tmp-table中"><a href="#导入数据到临时表tmp-table中" class="headerlink" title="导入数据到临时表tmp_table中"></a>导入数据到临时表tmp_table中</h4><pre><code>mysql&gt; load data infile &apos;/Users/LJTjintao/temp/base.txt&apos; replace into table tmp_table;
+</code></pre>
+<h4 id="用-python或者bash-生成-100w-记录的数据文件（python瞬间就会生成完）"><a href="#用-python或者bash-生成-100w-记录的数据文件（python瞬间就会生成完）" class="headerlink" title="用 python或者bash 生成 100w 记录的数据文件（python瞬间就会生成完）"></a>用 python或者bash 生成 100w 记录的数据文件（python瞬间就会生成完）</h4><pre><code>python(推荐): python -c &quot;for i in range(1, 1+1000000): print(i)&quot; &gt; base.txt
+</code></pre>
+<h4 id="导入数据到临时表tmp-table中"><a href="#导入数据到临时表tmp-table中" class="headerlink" title="导入数据到临时表tmp_table中"></a>导入数据到临时表tmp_table中</h4><pre><code>mysql&gt; load data infile &#39;/Users/LJTjintao/temp/base.txt&#39; replace into table tmp_table;
 Query OK, 1000000 rows affected (2.55 sec)
 Records: 1000000  Deleted: 0  Skipped: 0  Warnings: 0
 
 千万级数据 20秒插入完成
-</code></pre><p>注意： 导入数据时有可能会报错，原因是mysql默认没有开secure_file_priv（ 这个参数用来限制数据导入和导出操作的效果，例如执行LOAD DATA、SELECT … INTO OUTFILE语句和LOAD_FILE()函数。这些操作需要用户具有FILE权限。 ）</p>
-<p>解决办法：在mysql的配置文件中（my.ini 或者 my.conf）中添加 secure_file_priv = /Users/LJTjintao/temp/`, 然后重启mysql 解决</p>
+</code></pre>
+<p>注意： 导入数据时有可能会报错，原因是mysql默认没有开secure_file_priv（ 这个参数用来限制数据导入和导出操作的效果，例如执行LOAD DATA、SELECT … INTO OUTFILE语句和LOAD_FILE()函数。这些操作需要用户具有FILE权限。 ）</p>
+<p>解决办法：在mysql的配置文件中（my.ini 或者 my.conf）中添加 secure_file_priv &#x3D; &#x2F;Users&#x2F;LJTjintao&#x2F;temp&#x2F;&#96;, 然后重启mysql 解决</p>
 <h4 id="以临时表为基础数据，插入数据到t-user中，100W数据插入需要10-37s"><a href="#以临时表为基础数据，插入数据到t-user中，100W数据插入需要10-37s" class="headerlink" title="以临时表为基础数据，插入数据到t_user中，100W数据插入需要10.37s"></a>以临时表为基础数据，插入数据到t_user中，100W数据插入需要10.37s</h4><pre><code>mysql&gt; INSERT INTO t_user
     -&gt;   SELECT
     -&gt;     id,
     -&gt;     uuid(),
-    -&gt;     CONCAT(&apos;userNickName&apos;, id),
+    -&gt;     CONCAT(&#39;userNickName&#39;, id),
     -&gt;     FLOOR(Rand() * 1000),
     -&gt;     FLOOR(Rand() * 100),
     -&gt;     NOW()
@@ -272,7 +281,8 @@ Records: 1000000  Deleted: 0  Skipped: 0  Warnings: 0
     -&gt;     tmp_table;
 Query OK, 1000000 rows affected (10.37 sec)
 Records: 1000000  Duplicates: 0  Warnings: 0
-</code></pre><h4 id="更新创建时间字段让插入的数据的创建时间更加随机"><a href="#更新创建时间字段让插入的数据的创建时间更加随机" class="headerlink" title="更新创建时间字段让插入的数据的创建时间更加随机"></a>更新创建时间字段让插入的数据的创建时间更加随机</h4><pre><code>UPDATE t_user SET create_time=date_add(create_time, interval FLOOR(1 + (RAND() * 7)) year);
+</code></pre>
+<h4 id="更新创建时间字段让插入的数据的创建时间更加随机"><a href="#更新创建时间字段让插入的数据的创建时间更加随机" class="headerlink" title="更新创建时间字段让插入的数据的创建时间更加随机"></a>更新创建时间字段让插入的数据的创建时间更加随机</h4><pre><code>UPDATE t_user SET create_time=date_add(create_time, interval FLOOR(1 + (RAND() * 7)) year);
 
 Query OK, 1000000 rows affected (5.21 sec)
 Rows matched: 1000000  Changed: 1000000  Warnings: 0
@@ -282,7 +292,8 @@ mysql&gt; UPDATE t_user SET create_time=date_add(create_time, interval FLOOR(1 +
 
 Query OK, 1000000 rows affected (4.77 sec)
 Rows matched: 1000000  Changed: 1000000  Warnings: 0
-</code></pre><p>mysql&gt; select * from t_user limit 30;</p>
+</code></pre>
+<p>mysql&gt; select * from t_user limit 30;</p>
 <pre><code>+----+--------------------------------------+----------------+---------------+-----------+---------------------+
 | id | c_user_id                            | c_name         | c_province_id | c_city_id | create_time         |
 +----+--------------------------------------+----------------+---------------+-----------+---------------------+
@@ -319,6 +330,7 @@ Rows matched: 1000000  Changed: 1000000  Warnings: 0
 +----+--------------------------------------+----------------+---------------+-----------+---------------------+
 30 rows in set (0.01 sec)
 </code></pre>
+
       
 
       
@@ -408,7 +420,7 @@ Rows matched: 1000000  Changed: 1000000  Warnings: 0
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/05/20/MySQL 快速创建千万级测试数据/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/05/20/MySQL%20%E5%BF%AB%E9%80%9F%E5%88%9B%E5%BB%BA%E5%8D%83%E4%B8%87%E7%BA%A7%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -422,7 +434,7 @@ Rows matched: 1000000  Changed: 1000000  Warnings: 0
   
 <nav id="article-nav">
   
-    <a href="/2020/05/20/分布式唯一ID的生成方式/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2020/05/20/%E5%88%86%E5%B8%83%E5%BC%8F%E5%94%AF%E4%B8%80ID%E7%9A%84%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -432,7 +444,7 @@ Rows matched: 1000000  Changed: 1000000  Warnings: 0
     </a>
   
   
-    <a href="/2020/04/04/RxSwift：Driver与UI控件初体验/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2020/04/04/RxSwift%EF%BC%9ADriver%E4%B8%8EUI%E6%8E%A7%E4%BB%B6%E5%88%9D%E4%BD%93%E9%AA%8C/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">RxSwift：Driver与UI控件初体验</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -476,7 +488,7 @@ Rows matched: 1000000  Changed: 1000000  Warnings: 0
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -583,10 +595,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -595,7 +603,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -603,11 +611,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -627,19 +639,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

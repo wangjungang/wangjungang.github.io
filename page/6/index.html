@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/6/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/26/RxDataSource 使用套路与解释/">RxDataSource 使用套路与解释</a>
+      <a class="article-title" href="/2019/09/26/RxDataSource%20%E4%BD%BF%E7%94%A8%E5%A5%97%E8%B7%AF%E4%B8%8E%E8%A7%A3%E9%87%8A/">RxDataSource 使用套路与解释</a>
     </h1>
   
 
         
-        <a href="/2019/09/26/RxDataSource 使用套路与解释/" class="archive-article-date">
+        <a href="/2019/09/26/RxDataSource%20%E4%BD%BF%E7%94%A8%E5%A5%97%E8%B7%AF%E4%B8%8E%E8%A7%A3%E9%87%8A/" class="archive-article-date">
   	<time datetime="2019-09-26T02:16:26.933Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
 </a>
         
@@ -172,144 +172,151 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="http://img.wangjungang.cn/JkhDIp.png" alt=""></p>
+        <p><img src="http://img.wangjungang.cn/JkhDIp.png"></p>
 <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>RxSwift 非常强大，用得好，很爽</p>
 <h3 id="套路：-tableView-刷新以后，就是有了数据源，怎样来一个回调。"><a href="#套路：-tableView-刷新以后，就是有了数据源，怎样来一个回调。" class="headerlink" title="套路： tableView 刷新以后，就是有了数据源，怎样来一个回调。"></a>套路： tableView 刷新以后，就是有了数据源，怎样来一个回调。</h3><p>场景举例，就是两表关联。 RxDataSource，怎样列表刷新出来，就自动选择第一个。然后子列表根据上一个列表的选择，确认要刷新的数据。</p>
-<h3 id="问题：RxDataSource-专注于列表视图的数据处理，自动选择第一个-row-是-tableViewDelegate-干的事情。"><a href="#问题：RxDataSource-专注于列表视图的数据处理，自动选择第一个-row-是-tableViewDelegate-干的事情。" class="headerlink" title="问题：RxDataSource 专注于列表视图的数据处理，自动选择第一个 row 是 tableViewDelegate 干的事情。"></a>问题：RxDataSource 专注于列表视图的数据处理，自动选择第一个 row 是 tableViewDelegate 干的事情。</h3><p><img src="http://img.wangjungang.cn/7REpyv.jpg" alt=""></p>
+<h3 id="问题：RxDataSource-专注于列表视图的数据处理，自动选择第一个-row-是-tableViewDelegate-干的事情。"><a href="#问题：RxDataSource-专注于列表视图的数据处理，自动选择第一个-row-是-tableViewDelegate-干的事情。" class="headerlink" title="问题：RxDataSource 专注于列表视图的数据处理，自动选择第一个 row 是 tableViewDelegate 干的事情。"></a>问题：RxDataSource 专注于列表视图的数据处理，自动选择第一个 row 是 tableViewDelegate 干的事情。</h3><p><img src="http://img.wangjungang.cn/7REpyv.jpg"></p>
 <p>左边一个列表 tableView, 右边一个列表 tableView , 两个列表之间的数据存在关联，左边列表是一级选项，右边列表是对应左边的二级选项。</p>
 <h3 id="一般可以这么做"><a href="#一般可以这么做" class="headerlink" title="一般可以这么做"></a>一般可以这么做</h3><pre><code>private var lastIndex : NSInteger = 0
 
 // ...
 
 // 看这一段代码，就够了
-let leftDataSource = RxTableViewSectionedReloadDataSource&lt;CategoryLeftSection&gt;( configureCell: { [weak self] ds, tv, ip, item in
-            guard  let strongSelf = self else { return UITableViewCell()}
+let leftDataSource = RxTableViewSectionedReloadDataSource&lt;CategoryLeftSection&gt;( configureCell: &#123; [weak self] ds, tv, ip, item in
+            guard  let strongSelf = self else &#123; return UITableViewCell()&#125;
             let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
             cell.model = item
             // 看这一句代码，就够了
-            if ip.row == strongSelf.lastIndex {
+            if ip.row == strongSelf.lastIndex &#123;
                    // ...
                     tv.selectRow(at: ip, animated: false, scrollPosition: .top)
                     tv.delegate?.tableView!(tv, didSelectRowAt: ip)
-            }
+            &#125;
             return cell
-        })
-
+        &#125;)
+        
         vmOutput!.sections.asDriver().drive(self.leftMenuTableView.rx.items(dataSource: leftDataSource)).disposed(by: rx.disposeBag)
 
 // 选择左边列表，给右边提供的数据
-let rightPieceListData = self.leftMenuTableView.rx.itemSelected.distinctUntilChanged().flatMapLatest {
+let rightPieceListData = self.leftMenuTableView.rx.itemSelected.distinctUntilChanged().flatMapLatest &#123;
         [weak self](indexPath) -&gt;  Observable&lt;[SubItems]&gt; in
-            guard let strongSelf = self else { return Observable.just([]) }
-
+            guard let strongSelf = self else &#123; return Observable.just([]) &#125;
+           
             strongSelf.currentIndex = indexPath.row
-            if indexPath.row == strongSelf.viewModel.vmDatas.value.count - 1 {
+            if indexPath.row == strongSelf.viewModel.vmDatas.value.count - 1 &#123;
                 // ...
                 strongSelf.leftMenuTableView.selectRow(at: strongSelf.currentSelectIndexPath, animated: false, scrollPosition: .top)
                 strongSelf.leftMenuTableView.delegate?.tableView!(strongSelf.leftMenuTableView, didSelectRowAt: strongSelf.currentSelectIndexPath!)
                 return Observable.just((strongSelf.currentListData)!)
-            }
-            if let subItems = strongSelf.viewModel.vmDatas.value[indexPath.row].subnav {
+            &#125;
+            if let subItems = strongSelf.viewModel.vmDatas.value[indexPath.row].subnav &#123;
                 // ...
                 var reult:[SubItems] = subItems
                 // ...
                 strongSelf.currentListData = reult
                 strongSelf.currentSelectIndexPath = indexPath
                 return Observable.just(reult)
-            }
+            &#125;
             return Observable.just([])
-        }.share(replay: 1)
-
+        &#125;.share(replay: 1)
+        
         // 右边列表的数据源，具体 cell 的配置方法
-        let rightListDataSource =  RxTableViewSectionedReloadDataSource&lt;CategoryRightSection&gt;( configureCell: { [weak self]ds, tv, ip, item in
-            guard let strongSelf = self else { return UITableViewCell() }
-            if strongSelf.lastIndex != strongSelf.currentIndex {
+        let rightListDataSource =  RxTableViewSectionedReloadDataSource&lt;CategoryRightSection&gt;( configureCell: &#123; [weak self]ds, tv, ip, item in
+            guard let strongSelf = self else &#123; return UITableViewCell() &#125;
+            if strongSelf.lastIndex != strongSelf.currentIndex &#123;
                 tv.scrollToRow(at: ip, at: .top, animated: false)
                 strongSelf.lastIndex = strongSelf.currentIndex
-            }
-            if ip.row == 0 {
+            &#125;
+            if ip.row == 0 &#123;
                 let cell :CategoryListBannerCell = CategoryListBannerCell()
                 cell.model = item
                 return cell
-            } else {
+            &#125; else &#123;
                 let cell : CategoryListSectionCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell2&quot;, for: ip) as! CategoryListSectionCell
                 cell.model = item
                 return cell
-            }
-        })
+            &#125;
+        &#125;)
         // 设置右边列表的代理
         rightListTableView.rx.setDelegate(self).disposed(by: rx.disposeBag)
         // 右边列表需要取得的数据，传递给右边列表的配置方法
-        rightPieceListData.map{ [CategoryRightSection(items:$0)] }.bind(to: self.rightListTableView.rx.items(dataSource: rightListDataSource))
+        rightPieceListData.map&#123; [CategoryRightSection(items:$0)] &#125;.bind(to: self.rightListTableView.rx.items(dataSource: rightListDataSource))
             .disposed(by: rx.disposeBag)
-</code></pre><p>上面这个实现很 Low, 选择的时机是这个 if ip.row == strongSelf.lastIndex { ， 当更新数据到指定 cell 时候，操作。</p>
+</code></pre>
+<p>上面这个实现很 Low, 选择的时机是这个 if ip.row &#x3D;&#x3D; strongSelf.lastIndex { ， 当更新数据到指定 cell 时候，操作。</p>
 <p>程序可以跑，但是不优雅。</p>
 <p>如果把上面的逻辑翻译成面向对象，就是：</p>
-<pre><code>open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {
+<pre><code>open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell &#123;
            let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
             cell.model = item
             // 看这一句代码，就够了
-            if ip.row == strongSelf.lastIndex {
+            if ip.row == strongSelf.lastIndex &#123;
                    // ...
                     tv.selectRow(at: ip, animated: false, scrollPosition: .top)
                     tv.delegate?.tableView!(tv, didSelectRowAt: ip)
                     // ...
-
-            }
+                
+            &#125;
             return cell
-    }
-</code></pre><p>这样展开，清晰了一些。我们是不会这么用的，如果不用 Rx, 直接 OOP. 我们是这么用 刷新完了之后，选中一下</p>
+    &#125;
+</code></pre>
+<p>这样展开，清晰了一些。我们是不会这么用的，如果不用 Rx, 直接 OOP. 我们是这么用 刷新完了之后，选中一下</p>
 <pre><code>tableView.reloadData()
 tv.selectRow(at: ip, animated: false, scrollPosition: .top)
-</code></pre><p>// 其他操作</p>
-<pre><code>open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {
+</code></pre>
+<p>&#x2F;&#x2F; 其他操作</p>
+<pre><code>open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell &#123;
             let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
             cell.model = item
             return cell
-    }
-</code></pre><h3 id="看一看源码"><a href="#看一看源码" class="headerlink" title="看一看源码"></a>看一看源码</h3><p>leftDataSource 通过泛型指明每个 tableView section 的数据结构，他唯一的参数是一个闭包， configureCell .</p>
-<pre><code>let rightListDataSource =  RxTableViewSectionedReloadDataSource&lt;CategoryLeftSection&gt;( configureCell: { [weak self] ds, tv, ip, item in
+    &#125;
+</code></pre>
+<h3 id="看一看源码"><a href="#看一看源码" class="headerlink" title="看一看源码"></a>看一看源码</h3><p>leftDataSource 通过泛型指明每个 tableView section 的数据结构，他唯一的参数是一个闭包， configureCell .</p>
+<pre><code>let rightListDataSource =  RxTableViewSectionedReloadDataSource&lt;CategoryLeftSection&gt;( configureCell: &#123; [weak self] ds, tv, ip, item in
 // ...
-}
-</code></pre><p>configureCell 实际上就是系统提供的代理方法 open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {<br>RxDataSource 的源代码挺清晰的，首先采用前提条件 precondition, row 确保不会越界。然后调用 configureCell 匿名函数。这样的设计，借用了 Swift 中函数是一级公民，函数可以像值一样传递。</p>
+&#125;
+</code></pre>
+<p>configureCell 实际上就是系统提供的代理方法 open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {<br>RxDataSource 的源代码挺清晰的，首先采用前提条件 precondition, row 确保不会越界。然后调用 configureCell 匿名函数。这样的设计，借用了 Swift 中函数是一级公民，函数可以像值一样传递。</p>
 <h3 id="更好的调用时机"><a href="#更好的调用时机" class="headerlink" title="更好的调用时机:"></a>更好的调用时机:</h3><p>继承 TableViewSectionedDataSource, 创建自己想要的子类，任意根据需求改方法。</p>
 <p>做一个继承</p>
-<pre><code>final class MyDataSource&lt;S: SectionModelType&gt;: RxTableViewSectionedReloadDataSource&lt;S&gt; {
+<pre><code>final class MyDataSource&lt;S: SectionModelType&gt;: RxTableViewSectionedReloadDataSource&lt;S&gt; &#123;
     private let relay = PublishRelay&lt;Void&gt;()
-    var rxRealoded: Signal&lt;Void&gt; {
+    var rxRealoded: Signal&lt;Void&gt; &#123;
         return relay.asSignal()
-    }
-
-    override func tableView(_ tableView: UITableView, observedEvent: Event&lt;[S]&gt;) {
+    &#125;
+    
+    override func tableView(_ tableView: UITableView, observedEvent: Event&lt;[S]&gt;) &#123;
         super.tableView(tableView, observedEvent: observedEvent)
         // Do diff
         // Notify update
         relay.accept(())
-    }
-
-}
-</code></pre><p>因为这个场景下， super.tableView(tableView, observedEvent: observedEvent), 调用之后，需要接受一下事件，以后把它发送出去。所以要用一个 PublishSubject.<br>PublishRelay 是对 PublishSubject 的封装，区别是他的功能没 PublishSubject 那么强，PublishRelay 少两个状态，完成 completed 和出错 error， 适合更加专门的场景。</p>
+    &#125;
+    
+&#125;
+</code></pre>
+<p>因为这个场景下， super.tableView(tableView, observedEvent: observedEvent), 调用之后，需要接受一下事件，以后把它发送出去。所以要用一个 PublishSubject.<br>PublishRelay 是对 PublishSubject 的封装，区别是他的功能没 PublishSubject 那么强，PublishRelay 少两个状态，完成 completed 和出错 error， 适合更加专门的场景。</p>
 <p>Signal 信号嘛，共享事件流 SharedSequence。他是对 Observable 的封装。具有在主线程调用等特性，更适用于搞 UI .</p>
 <p>简单优化下，代码语义更加明确</p>
 <pre><code>// left menu 数据源
-        let leftDataSource = MyDataSource&lt;CategoryLeftSection&gt;( configureCell: { ds, tv, ip, item in
+        let leftDataSource = MyDataSource&lt;CategoryLeftSection&gt;( configureCell: &#123; ds, tv, ip, item in
             let cell : CategoryLeftCell = tv.dequeueReusableCell(withIdentifier: &quot;Cell1&quot;, for: ip) as! CategoryLeftCell
             cell.model = item
             return cell
-        })
+        &#125;)
         // 刷新完了，做一下选择
-        leftDataSource.rxRealoded.emit(onNext: { [weak self] in
-            guard let self = self else { return }
+        leftDataSource.rxRealoded.emit(onNext: &#123; [weak self] in
+            guard let self = self else &#123; return &#125;
             let indexPath = IndexPath(row: 0, section: 0)
             self.leftMenuTableView.selectRow(at: indexPath, animated: false, scrollPosition: UITableView.ScrollPosition.none)
             self.leftMenuTableView.delegate?.tableView?(self.leftMenuTableView, didSelectRowAt: indexPath)
-        }).disposed(by: rx.disposeBag)
+        &#125;).disposed(by: rx.disposeBag)
 
 // ...
 // 其余不变
-</code></pre><h3 id="所谓代码的语义"><a href="#所谓代码的语义" class="headerlink" title="所谓代码的语义"></a>所谓代码的语义</h3><p>FRP 就是把要干嘛，直接写清楚，不会像 OOP 那样，过度的见缝插针，调用到了，就改一下状态。</p>
+</code></pre>
+<h3 id="所谓代码的语义"><a href="#所谓代码的语义" class="headerlink" title="所谓代码的语义"></a>所谓代码的语义</h3><p>FRP 就是把要干嘛，直接写清楚，不会像 OOP 那样，过度的见缝插针，调用到了，就改一下状态。</p>
 <p>声明式编程是只在一处修改。就算把那一处修改，声明式编程也只在一处调用。OOP 就找的比较辛苦。</p>
-<p><a href="https://github.com/Thecompanyprojects/RXDataSourceDemo" target="_blank" rel="noopener">github</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Thecompanyprojects/RXDataSourceDemo">github</a></p>
 
       
 
@@ -333,7 +340,7 @@ tv.selectRow(at: ip, animated: false, scrollPosition: .top)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/26/RxDataSource 使用套路与解释/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/26/RxDataSource%20%E4%BD%BF%E7%94%A8%E5%A5%97%E8%B7%AF%E4%B8%8E%E8%A7%A3%E9%87%8A/">展开全文 >></a>
         </p>
       
 
@@ -370,12 +377,12 @@ tv.selectRow(at: ip, animated: false, scrollPosition: .top)
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/22/使用 RXSwift 构建 UITableView/">使用 RXSwift 构建 UITableView</a>
+      <a class="article-title" href="/2019/09/22/%E4%BD%BF%E7%94%A8%20RXSwift%20%E6%9E%84%E5%BB%BA%20UITableView/">使用 RXSwift 构建 UITableView</a>
     </h1>
   
 
         
-        <a href="/2019/09/22/使用 RXSwift 构建 UITableView/" class="archive-article-date">
+        <a href="/2019/09/22/%E4%BD%BF%E7%94%A8%20RXSwift%20%E6%9E%84%E5%BB%BA%20UITableView/" class="archive-article-date">
   	<time datetime="2019-09-22T12:09:02.833Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-22</time>
 </a>
         
@@ -387,94 +394,104 @@ tv.selectRow(at: ip, animated: false, scrollPosition: .top)
 <li>构建 Observable 类型的数据源</li>
 <li>将数据源与 tableView 绑定</li>
 <li>绑定 tableView 的事件(如：cell 的点击事件)</li>
-<li>设置 tableView Delegate/DataSource 的代理方法(根据需求，非必要)</li>
+<li>设置 tableView Delegate&#x2F;DataSource 的代理方法(根据需求，非必要)</li>
 </ul>
 <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>在我们开始之前，我们需要在项目中集成 RXSwift，具体步骤可参见 RXSwift。成功集成之后，我们需要在要使用 RXSwift 的文件中导入它：</p>
 <pre><code>import RxSwift
-</code></pre><p>接着，我们要创建一个 DisposeBag 类型的全局变量(一定要是全局变量)：</p>
+</code></pre>
+<p>接着，我们要创建一个 DisposeBag 类型的全局变量(一定要是全局变量)：</p>
 <pre><code>let disposeBag = DisposeBag()
-</code></pre><p>关于 DisposeBag 的作用: DisposeBag 对于 RX 相当于 ARC 对于 iOS，即它是 RX 管理对象内存的一种方式。</p>
+</code></pre>
+<p>关于 DisposeBag 的作用: DisposeBag 对于 RX 相当于 ARC 对于 iOS，即它是 RX 管理对象内存的一种方式。</p>
 <p>最后，将需要使用的 cell 进行注册：</p>
 <pre><code>tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;Cell&quot;)
-</code></pre><p>OK，到现在为止，我们已经完成了所有的准备工作。接下来，我们可以根据上面的步骤来构建 tableView 了。</p>
+</code></pre>
+<p>OK，到现在为止，我们已经完成了所有的准备工作。接下来，我们可以根据上面的步骤来构建 tableView 了。</p>
 <h2 id="构建-Observable-类型的数据源"><a href="#构建-Observable-类型的数据源" class="headerlink" title="构建 Observable 类型的数据源"></a>构建 Observable 类型的数据源</h2><p>首先，我们需要构建 Observable 类型的数据源。至于为什么要构建 Observable 类型的数据，我们可以从 RXSwift 的文档上一探究竟。</p>
 <p>它的文档上是这么写的：Every Observable sequence is just a sequence. The key advantage for an Observable vs Swift’s Sequence is that it can also receive elements asynchronously。这句话的意思是说，可观察序列和 Swift 的原生序列本质上是一样的，但它们有一个最主要的不同，那就是可观察序列可以异步接受元素。</p>
 <p>通过下面的代码创建 Observable 类型的数据源：</p>
 <pre><code>let texts = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;RXSwift&quot;]
 let textsObservable = Observable.from(optional: texts)
-</code></pre><p>此时，你用 option 键查看 textsObservable 属性的类型，应该显示的是 Observable<string>。</string></p>
-<p><img src="http://img.wangjungang.cn/0YNHnK.jpg" alt=""></p>
+</code></pre>
+<p>此时，你用 option 键查看 textsObservable 属性的类型，应该显示的是 Observable<String>。</p>
+<p><img src="http://img.wangjungang.cn/0YNHnK.jpg"></p>
 <p>可供使用的数据源已经构建完成，接下来需要将数据源与 tableView 绑定。</p>
 <h2 id="将数据源与-tableView-绑定"><a href="#将数据源与-tableView-绑定" class="headerlink" title="将数据源与 tableView 绑定"></a>将数据源与 tableView 绑定</h2><p>通过下面代码进行绑定(不要忘记最后的 .disposed(by: disposeBag) )：</p>
 <pre><code>textsObservable.bind(to: tableView.rx
-    .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) { (row, text, cell) in
+    .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) &#123; (row, text, cell) in
         cell.textLabel?.text = text
-    }
+    &#125;
     .disposed(by: disposeBag)
-</code></pre><p>在绑定方法的闭包中，我们需要定义三个变量，三个变量分别有以下含义：</p>
+</code></pre>
+<p>在绑定方法的闭包中，我们需要定义三个变量，三个变量分别有以下含义：</p>
 <ul>
 <li>第一个变量为当前cell所处的行数，即：indexPath.row</li>
 <li>第二个变量为可观察序列在当前行数索引的元素，即：texts[row]</li>
 <li>第三个变量为当前cell</li>
 </ul>
-<p><img src="http://img.wangjungang.cn/FXP642.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/FXP642.jpg"></p>
 <h2 id="绑定-tableView-的事件"><a href="#绑定-tableView-的事件" class="headerlink" title="绑定 tableView 的事件"></a>绑定 tableView 的事件</h2><p>通过下面代码进行绑定(cell 的点击事件)：</p>
-<pre><code>tableView.rx.itemSelected.bind { (indexPath) in
+<pre><code>tableView.rx.itemSelected.bind &#123; (indexPath) in
         print(indexPath)
-    }
+    &#125;
     .disposed(by: disposeBag)
-</code></pre><p>同样，不要忘记最后的 disposed 。</p>
+</code></pre>
+<p>同样，不要忘记最后的 disposed 。</p>
 <p>到这里，我们就完成了通过 RX 构建一个简单的 tableView 。如果你对 tableView 还有一些自定义的需求，可通过第四步骤完成。</p>
-<h2 id="设置-tableView-Delegate-DataSource-的代理方法"><a href="#设置-tableView-Delegate-DataSource-的代理方法" class="headerlink" title="设置 tableView Delegate/DataSource 的代理方法"></a>设置 tableView Delegate/DataSource 的代理方法</h2><p>通过下面的代码设置代理：</p>
+<h2 id="设置-tableView-Delegate-x2F-DataSource-的代理方法"><a href="#设置-tableView-Delegate-x2F-DataSource-的代理方法" class="headerlink" title="设置 tableView Delegate&#x2F;DataSource 的代理方法"></a>设置 tableView Delegate&#x2F;DataSource 的代理方法</h2><p>通过下面的代码设置代理：</p>
 <pre><code>tableView.rx.setDelegate(self).disposed(by: disposeBag)
 tableView.rx.setDataSource(self).disposed(by: disposeBag)
-</code></pre><p>然后，你就可以实现相关的代理方法来进行自定义了，以设置高度举例：</p>
-<pre><code>extension ALGExploreDetailVC: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat {
+</code></pre>
+<p>然后，你就可以实现相关的代理方法来进行自定义了，以设置高度举例：</p>
+<pre><code>extension ALGExploreDetailVC: UITableViewDelegate &#123;
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat &#123;
         return 100
-    }
-}
-</code></pre><p>注意：如果你不需要使用 UITableViewDelegate/UITableViewDataSource 的委托方法的话，你是可以不写的。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>注意：如果你不需要使用 UITableViewDelegate&#x2F;UITableViewDataSource 的委托方法的话，你是可以不写的。</p>
 <pre><code>// 不使用 RX 的话，需要实现代理方法
 tableView.delegate = self
 tableView.dataSource = self
-extension ViewController: UITableViewDelegate, UITableViewDataSource {
+extension ViewController: UITableViewDelegate, UITableViewDataSource &#123;
     ....
-}
+&#125;
 
 // 使用 RX 
 // 绑定即可，不需写上面的代码
 textsObservable.bind(to: tableView.rx
-    .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) { (row, text, cell) in
+    .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) &#123; (row, text, cell) in
         cell.textLabel?.text = &quot;\(text)&quot;
-    }
+    &#125;
     .disposed(by: disposeBag)
-</code></pre><p>如果使用 RX 绑定了 tableView ，再使用下面的代码就不对了，我们需使用 RX 设置代理的方法。</p>
+</code></pre>
+<p>如果使用 RX 绑定了 tableView ，再使用下面的代码就不对了，我们需使用 RX 设置代理的方法。</p>
 <pre><code>tableView.delegate = self
-</code></pre><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+</code></pre>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
 <li>使用 RX 可以使代码简洁，易读</li>
 <li>使用 RX 语句后需调用 .disposed(by: disposeBag) ,释放内存</li>
 </ul>
 <h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><pre><code>import UIKit
 import RxSwift
 
-class TestViewController: UIViewController {
+class TestViewController: UIViewController &#123;
     var tableView = UITableView(frame: .zero)
     let kCellHeight: CGFloat = 40
     let disposeBag = DisposeBag()
-
-    override func viewDidLoad() {
+    
+    override func viewDidLoad() &#123;
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
         setupSubviews()
-    }
-}
+    &#125;
+&#125;
 
-extension TestViewController {
-    func setupSubviews() {
+extension TestViewController &#123;
+    func setupSubviews() &#123;
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;Cell&quot;)
         view.addSubview(tableView)
-
+        
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.safeEdges(to: view)
         //1.创建可观察数据源
@@ -482,27 +499,28 @@ extension TestViewController {
         let textsObservable = Observable.from(optional: texts)
         //2. 将数据源与 tableView 绑定
         textsObservable.bind(to: tableView.rx
-            .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) { (row, text, cell) in
+            .items(cellIdentifier: &quot;Cell&quot;, cellType: UITableViewCell.self)) &#123; (row, text, cell) in
                 cell.textLabel?.text = text
-            }
+            &#125;
             .disposed(by: disposeBag)
         //3. 绑定 tableView 的事件
-        tableView.rx.itemSelected.bind { (indexPath) in
+        tableView.rx.itemSelected.bind &#123; (indexPath) in
                 print(indexPath)
-            }
+            &#125;
             .disposed(by: disposeBag)
-
+        
         //4. 设置 tableView Delegate/DataSource 的代理方法
         tableView.rx.setDelegate(self).disposed(by: disposeBag)
-    }
-}
+    &#125;
+&#125;
 
-extension TestViewController: UITableViewDelegate {
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat {
+extension TestViewController: UITableViewDelegate &#123;
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat &#123;
         return 100
-    }
-}
+    &#125;
+&#125;
 </code></pre>
+
       
 
       
@@ -525,7 +543,7 @@ extension TestViewController: UITableViewDelegate {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/22/使用 RXSwift 构建 UITableView/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/22/%E4%BD%BF%E7%94%A8%20RXSwift%20%E6%9E%84%E5%BB%BA%20UITableView/">展开全文 >></a>
         </p>
       
 
@@ -562,12 +580,12 @@ extension TestViewController: UITableViewDelegate {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/21/Autorelease & AutoreleasePool/">Autorelease &amp; AutoreleasePool</a>
+      <a class="article-title" href="/2019/09/21/Autorelease%20&%20AutoreleasePool/">Autorelease &amp; AutoreleasePool</a>
     </h1>
   
 
         
-        <a href="/2019/09/21/Autorelease & AutoreleasePool/" class="archive-article-date">
+        <a href="/2019/09/21/Autorelease%20&%20AutoreleasePool/" class="archive-article-date">
   	<time datetime="2019-09-21T02:22:27.816Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-21</time>
 </a>
         
@@ -575,7 +593,7 @@ extension TestViewController: UITableViewDelegate {
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>内存管理一直是Objective-C 的重点，在MRC环境下，通过调用[obj autorelease]来延迟内存的释放，在现在ARC环境下，我们都知道编译器会在合适的地方插入release/autorelease内存释放语句，我们甚至可以不需要知道Autorelease就能很好的管理内存。虽然现在已经几乎用不到MRC,但是了解 Objective-C 的内存管理机制仍然是十分必要的，看看编译器帮助我们怎么来管理内存。本文仅仅是记录自己的学习笔记。</p>
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>内存管理一直是Objective-C 的重点，在MRC环境下，通过调用[obj autorelease]来延迟内存的释放，在现在ARC环境下，我们都知道编译器会在合适的地方插入release&#x2F;autorelease内存释放语句，我们甚至可以不需要知道Autorelease就能很好的管理内存。虽然现在已经几乎用不到MRC,但是了解 Objective-C 的内存管理机制仍然是十分必要的，看看编译器帮助我们怎么来管理内存。本文仅仅是记录自己的学习笔记。</p>
 <h2 id="AutoreleasePool简介"><a href="#AutoreleasePool简介" class="headerlink" title="AutoreleasePool简介"></a>AutoreleasePool简介</h2><h3 id="1-什么是AutoreleasePool"><a href="#1-什么是AutoreleasePool" class="headerlink" title="1.什么是AutoreleasePool"></a>1.什么是AutoreleasePool</h3><p>AutoreleasePool：自动释放池是 Objective-C 开发中的一种自动内存回收管理的机制，为了替代开发人员手动管理内存，实质上是使用编译器在适当的位置插入release、autorelease等内存释放操作。当对象调用 autorelease方法后会被放到自动释放池中延迟释放时机，当缓存池需要清除dealloc时，会向这些 Autoreleased对象做 release 释放操作。</p>
 <h3 id="2-对象什么时候释放（ARC规则）"><a href="#2-对象什么时候释放（ARC规则）" class="headerlink" title="2.对象什么时候释放（ARC规则）"></a>2.对象什么时候释放（ARC规则）</h3><p>一般的说法是对象会在当前作用域大括号结束时释放， 有这样一个ARC环境下简单的例子🌰：首先创建一个ZHPerson类：</p>
 <pre><code>//// ZHPerson.h
@@ -594,34 +612,37 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation ZHPerson
 
 -(void)dealloc
-{
+&#123;
     NSLog(@&quot;ZHPerson dealloc&quot;);
-}
+&#125;
 +(instancetype)object
-{
+&#123;
     return [[ZHPerson alloc] init];
-}
+&#125;
 @end
-</code></pre><p>然后在ViewController.m导入头文件ZHPerson.h，然后在写一段这样的代码：</p>
+</code></pre>
+<p>然后在ViewController.m导入头文件ZHPerson.h，然后在写一段这样的代码：</p>
 <pre><code>__weak id temp = nil;
-{
+&#123;
     ZHPerson *person = [[ZHPerson alloc] init];
     temp = person;
-}
+&#125;
 NSLog(@&quot;temp = %@&quot;,temp);
-</code></pre><p>解释一下这个代码：先声明了一个 <strong>weak 变量temp，因为 </strong>weak 变量有一个特性就是它不会影响所指向对象的生命周期，然后让变量temp指向创建的person对象，输出如下：<br><img src="http://img.wangjungang.cn/hXsxMR.jpg" alt=""></p>
+</code></pre>
+<p>解释一下这个代码：先声明了一个 __weak 变量temp，因为 __weak 变量有一个特性就是它不会影响所指向对象的生命周期，然后让变量temp指向创建的person对象，输出如下：<br><img src="http://img.wangjungang.cn/hXsxMR.jpg"></p>
 <p>这里超出了person的作用域，它就被释放了，看来是正常的。</p>
 <p>把上面的创建对象的方法，变一变写法：</p>
 <pre><code>__weak id temp = nil;
-{
+&#123;
     ZHPerson *person = [ZHPerson object];
     temp = person;
-}
+&#125;
 NSLog(@&quot;temp = %@&quot;,temp);
-</code></pre><p>输出如下：</p>
-<p><img src="http://img.wangjungang.cn/zjvZwF.jpg" alt=""></p>
+</code></pre>
+<p>输出如下：</p>
+<p><img src="http://img.wangjungang.cn/zjvZwF.jpg"></p>
 <p>这里person对象超出了其作用域还是存在的，被延迟释放了，也就是说其内部调用了autorelease方法。</p>
-<h4 id="小总结："><a href="#小总结：" class="headerlink" title="小总结："></a>小总结：</h4><p>查询得知：以 alloc, copy, ,mutableCopy和new这些方法会被默认标记为 <strong>attribute((ns_returns_retained)) ，以这些方法创建的对象,编译器在会在调用方法外围要加上内存管理代码retain/release，所以其在作用域结束的时候就会释放，而不以这些关键字开头的方法，会被默认标记为</strong>attribute((ns_returns_not_retained)),编译器会在方法内部自动加上autorelease方法，这时创建的对象就会被注册到自动释放池中，同时其释放会延迟，等到自动释放池销毁的时候才释放。</p>
+<h4 id="小总结："><a href="#小总结：" class="headerlink" title="小总结："></a>小总结：</h4><p>查询得知：以 alloc, copy, ,mutableCopy和new这些方法会被默认标记为 __attribute((ns_returns_retained)) ，以这些方法创建的对象,编译器在会在调用方法外围要加上内存管理代码retain&#x2F;release，所以其在作用域结束的时候就会释放，而不以这些关键字开头的方法，会被默认标记为__attribute((ns_returns_not_retained)),编译器会在方法内部自动加上autorelease方法，这时创建的对象就会被注册到自动释放池中，同时其释放会延迟，等到自动释放池销毁的时候才释放。</p>
 <h3 id="3-AutoreleasePool的显示创建"><a href="#3-AutoreleasePool的显示创建" class="headerlink" title="3.AutoreleasePool的显示创建"></a>3.AutoreleasePool的显示创建</h3><h4 id="1-MRC下的创建"><a href="#1-MRC下的创建" class="headerlink" title="1.MRC下的创建"></a>1.MRC下的创建</h4><pre><code>//1.生成一个NSAutoreleasePool对象
 NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 //2.创建对象
@@ -630,46 +651,50 @@ id object = [[NSObject alloc] init];
 [object autorelease];
 //4.废弃NSAutoreleasePool对象，会对释放池中的object发送release消息
 [pool drain];
-</code></pre><h4 id="2-ARC下的创建"><a href="#2-ARC下的创建" class="headerlink" title="2.ARC下的创建"></a>2.ARC下的创建</h4><pre><code>@autoreleasepool {
+</code></pre>
+<h4 id="2-ARC下的创建"><a href="#2-ARC下的创建" class="headerlink" title="2.ARC下的创建"></a>2.ARC下的创建</h4><pre><code>@autoreleasepool &#123;
     //LLVM会在内部插入autorelease方法
     id object = [[NSObject alloc] init];
-    }
-</code></pre><p>AutoreleasePool 的作用前面有提到过，每当一个对象调用 autorelease方法时，实际上是将该对象放入当前 AutoreleasePool 中，当前AutoreleasePool 释放时，会对添加进该 AutoreleasePool 中的对象逐一调用 release 方法。在ARC环境下，并不需要特别的去关注Autoreleasepool的使用，因为系统已经做了处理。</p>
+    &#125;
+</code></pre>
+<p>AutoreleasePool 的作用前面有提到过，每当一个对象调用 autorelease方法时，实际上是将该对象放入当前 AutoreleasePool 中，当前AutoreleasePool 释放时，会对添加进该 AutoreleasePool 中的对象逐一调用 release 方法。在ARC环境下，并不需要特别的去关注Autoreleasepool的使用，因为系统已经做了处理。</p>
 <h2 id="AutoreleasePool探索学习"><a href="#AutoreleasePool探索学习" class="headerlink" title="AutoreleasePool探索学习"></a>AutoreleasePool探索学习</h2><p>为了看一下AutoreleasePool到底做了什么，先来创建一个main.m文件（Xcode -&gt; File -&gt; New Project -&gt; macOS -&gt; Command Line Tool -&gt; main.m）;</p>
 <pre><code>#import &lt;Foundation/Foundation.h&gt;
 
-int main(int argc, const char * argv[]) {
-    @autoreleasepool {
+int main(int argc, const char * argv[]) &#123;
+    @autoreleasepool &#123;
         // insert code here...
         NSLog(@&quot;Hello, World!&quot;);
-    }
+    &#125;
     return 0;
-}
-</code></pre><p>然后，使用编译器clang编译main.m转化成main.cpp文件（在终端使用命令：clang -rewrite-objc main.m），滑到main.cpp文件的最后，有这样一段代码：</p>
-<p><img src="http://img.wangjungang.cn/mYPVAE.jpg" alt=""></p>
-<p>这个代码是把@autoreleasePool转换成一个<strong>AtAutoreleasePool类型的局部私有变量</strong>AtAutoreleasePool __autoreleasepool;</p>
+&#125;
+</code></pre>
+<p>然后，使用编译器clang编译main.m转化成main.cpp文件（在终端使用命令：clang -rewrite-objc main.m），滑到main.cpp文件的最后，有这样一段代码：</p>
+<p><img src="http://img.wangjungang.cn/mYPVAE.jpg"></p>
+<p>这个代码是把@autoreleasePool转换成一个__AtAutoreleasePool类型的局部私有变量__AtAutoreleasePool __autoreleasepool;</p>
 <p>接着在 main.cpp文件中查询__AtAutoreleasePool，来看一下它具体的实现：</p>
-<p><img src="http://img.wangjungang.cn/nHMDr1.jpg" alt=""></p>
-<p>可以看到<strong>AtAutoreleasePool是结构体类型，并且实现了两个函数：构造函数</strong>AtAutoreleasePool()和析构函数~__AtAutoreleasePool()。</p>
-<p>也就是说在声明 <strong>autoreleasepool 变量时，构造函数 </strong>AtAutoreleasePool() 被调用，即执行 atautoreleasepoolobj = objc_autoreleasePoolPush(); ；当出了当前作用域时，析构函数 ~__AtAutoreleasePool()被调用，即执行 objc_autoreleasePoolPop(atautoreleasepoolobj); 那么上面的main.m中的代码可以用这种形式代替：</p>
+<p><img src="http://img.wangjungang.cn/nHMDr1.jpg"></p>
+<p>可以看到__AtAutoreleasePool是结构体类型，并且实现了两个函数：构造函数__AtAutoreleasePool()和析构函数~__AtAutoreleasePool()。</p>
+<p>也就是说在声明 __autoreleasepool 变量时，构造函数 __AtAutoreleasePool() 被调用，即执行 atautoreleasepoolobj &#x3D; objc_autoreleasePoolPush(); ；当出了当前作用域时，析构函数 ~__AtAutoreleasePool()被调用，即执行 objc_autoreleasePoolPop(atautoreleasepoolobj); 那么上面的main.m中的代码可以用这种形式代替：</p>
 <pre><code>#import &lt;Foundation/Foundation.h&gt;
 
-int main(int argc, const char * argv[]) {
+int main(int argc, const char * argv[]) &#123;
    // @autoreleasepool
-    {
+    &#123;
         void *atautoreleasepoolobj = objc_autoreleasePoolPush();
         // insert code here...
         NSLog(@&quot;Hello, World!&quot;);
         objc_autoreleasePoolPop(atautoreleasepoolobj);
-    }
+    &#125;
     return 0;
-}
-</code></pre><p>接下来看一下析构函数和构造函数分别实现了什么内容？这里需要一份objc_runtime的源码(源码地址)，这里使用的是objc4-756.2.tar.gz:</p>
-<p><img src="http://img.wangjungang.cn/jkSxIm.jpg" alt=""></p>
+&#125;
+</code></pre>
+<p>接下来看一下析构函数和构造函数分别实现了什么内容？这里需要一份objc_runtime的源码(源码地址)，这里使用的是objc4-756.2.tar.gz:</p>
+<p><img src="http://img.wangjungang.cn/jkSxIm.jpg"></p>
 <p>这里两个函数本质上就是分别调用了AutoreleasePoolPage的push方法和pop方法(这里::是C++调用方法的形式，类似于点语法)。</p>
 <h3 id="1-AutoreleasePoolPage"><a href="#1-AutoreleasePoolPage" class="headerlink" title="1.AutoreleasePoolPage"></a>1.AutoreleasePoolPage</h3><p>AutoreleasePoolPage是一个C++实现的类，它的具体实现代码是：</p>
 <pre><code>class AutoreleasePoolPage 
-{ 
+&#123; 
 #   define POOL_BOUNDARY nil    //哨兵对象(可以看做是一个边界)
     static size_t const COUNT = SIZE / sizeof(id);    // 对象数量
 
@@ -681,203 +706,212 @@ int main(int argc, const char * argv[]) {
     uint32_t const depth;    //代表深度，从 `0` 开始，往后递增 `1`；
     uint32_t hiwat;    //代表 `high water mark` ;
 //剩下代码省略......
-}
-</code></pre><p><img src="http://img.wangjungang.cn/2QPdJD.jpg" alt=""></p>
+&#125;
+</code></pre>
+<p><img src="http://img.wangjungang.cn/2QPdJD.jpg"></p>
 <p>通过源码可以知道这是一个典型的双向列表结构，所以AutoreleasePool是由若干个AutoreleasePoolPage以双向链表的形式组合而成。</p>
 <p>AutoreleasePoolPage每个对象会开辟4096字节内存（虚拟内存一页的大小），除了上面的实例变量所占空间，剩下的空间全部用来储存autorelease对象的地址，AutoreleasepoolPage 通过压栈的方式来存储每个autorelease的对象(从低地址到高地址)。其中next指针作为游标指向栈顶最新add进来的autorelease对象的下一个位置,当 next指针指向begin时，表示 AutoreleasePoolPage为空；当 next指针指向end时，表示 AutoreleasePoolPage 已满,此时会新建一个AutoreleasePoolPage对象，连接链表，后来的autorelease对象在新的AutoreleasePoolPage插入，同样的新AutoreleasePoolPage的next指针被初始化在栈底（指向begin的位置）。</p>
 <h3 id="2-AutoreleasePoolPage-push"><a href="#2-AutoreleasePoolPage-push" class="headerlink" title="2.AutoreleasePoolPage::push()"></a>2.AutoreleasePoolPage::push()</h3><p>既然已经知道了autorelease的对象会通过压栈的方式插入到AutoreleasePoolPage当中，那么显然AutoreleasePoolPage的push方法就承包了AutoreleasePoolPage的创建和插入。</p>
 <p>接着看下push方法的源码：</p>
 <pre><code>static inline void *push() 
-{
+&#123;
     id *dest;
     //判断是否已经初始化AutoreleasePoolPage
-    if (DebugPoolAllocation) {
+    if (DebugPoolAllocation) &#123;
         // Each autorelease pool starts on a new pool page.
         dest = autoreleaseNewPage(POOL_BOUNDARY);
-    } else {
+    &#125; else &#123;
         dest = autoreleaseFast(POOL_BOUNDARY);
-    }
+    &#125;
     assert(dest == EMPTY_POOL_PLACEHOLDER || *dest == POOL_BOUNDARY);
     return dest;
-}
-</code></pre><p>这里的POOL_BOUNDARY可以理解为哨兵对象，或者理解为一种边界标识，而且这个POOL_BOUNDARY值为0，是个nil。</p>
+&#125;
+</code></pre>
+<p>这里的POOL_BOUNDARY可以理解为哨兵对象，或者理解为一种边界标识，而且这个POOL_BOUNDARY值为0，是个nil。</p>
 <p>接下来，先来看一下autoreleaseFast这个方法，</p>
 <pre><code>static inline id *autoreleaseFast(id obj)
-{
+&#123;
     //获取到当前page,这个hotPage是从当前线程的局部私有空间取出来的
     AutoreleasePoolPage *page = hotPage();
-
-    if (page &amp;&amp; !page-&gt;full()) {
+    
+    if (page &amp;&amp; !page-&gt;full()) &#123;
         return page-&gt;add(obj);
-    } else if (page) {
+    &#125; else if (page) &#123;
         return autoreleaseFullPage(obj, page);
-    } else {
+    &#125; else &#123;
         return autoreleaseNoPage(obj);
-    }
-}
-</code></pre><p>我们知道链表是有空间的，所以上面👆的源码可以理解为：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>我们知道链表是有空间的，所以上面👆的源码可以理解为：</p>
 <p>(1). 当前page存在且没有满时，直接将对象添加到当前page中，即next指向的位置；</p>
 <p>(2). 当前page存在并且已满时，创建一个新的page，并将对象添加到新创建的page 中，然后将这两个链表节点进行链接。</p>
 <p>(3). 当前page不存在时，创建第一个page ，并将对象添加到新创建的page中。</p>
 <p>这里重点看一下page-&gt;add(obj)这个方法，</p>
 <pre><code>id *add(id obj)
-{
+&#123;
     assert(!full());
     unprotect();
     id *ret = next;  // faster than `return next-1` because of aliasing
     *next++ = obj;
     protect();
     return ret;
-}
-</code></pre><p>可以看到这里返回的ret其实next指针指向的地址，由上面的push方法的源码可知，这里page-&gt;add(obj)传入的obj其实就是POOL_BOUNDARY，也就是说每一次调用push方法，都会插入一个POOL_BOUNDARY,所以objc_autoreleasePoolPush的返回值就是这个哨兵对象的地址。</p>
-<p><img src="http://img.wangjungang.cn/Agp5My.jpg" alt=""></p>
+&#125;
+</code></pre>
+<p>可以看到这里返回的ret其实next指针指向的地址，由上面的push方法的源码可知，这里page-&gt;add(obj)传入的obj其实就是POOL_BOUNDARY，也就是说每一次调用push方法，都会插入一个POOL_BOUNDARY,所以objc_autoreleasePoolPush的返回值就是这个哨兵对象的地址。</p>
+<p><img src="http://img.wangjungang.cn/Agp5My.jpg"></p>
 <h3 id="3-AutoreleasePoolPage-pop-ctxt"><a href="#3-AutoreleasePoolPage-pop-ctxt" class="headerlink" title="3.AutoreleasePoolPage::pop(ctxt)"></a>3.AutoreleasePoolPage::pop(ctxt)</h3><p>通过上面对构造函数objc_autoreleasePoolPush的学习，已经知道objc_autoreleasePoolPush返回的是哨兵对象的地址，那么在调用析构函数objc_autoreleasePoolPop的时候传入的也就是这个哨兵对象的地址。随着方法的一步步调用，紧接着来看下AutoreleasePoolPage的pop方法的实现：</p>
 <pre><code>static inline void pop(void *token)
-{
+&#123;
     AutoreleasePoolPage *page;
     id *stop;
-    if (token == (void*)EMPTY_POOL_PLACEHOLDER) {
-        if (hotPage()) {
+    if (token == (void*)EMPTY_POOL_PLACEHOLDER) &#123;
+        if (hotPage()) &#123;
             pop(coldPage()-&gt;begin());
-        } else {
+        &#125; else &#123;
             setHotPage(nil);
-        }
+        &#125;
         return;
-    }
-
+    &#125;
+            
     page = pageForPointer(token);  //根据传入的哨兵对象的地址，获取到page中的哨兵对象之后的地址空间
     stop = (id *)token;
-    if (*stop != POOL_BOUNDARY) {
-        if (stop == page-&gt;begin()  &amp;&amp;  !page-&gt;parent) {
-        } else {
+    if (*stop != POOL_BOUNDARY) &#123;
+        if (stop == page-&gt;begin()  &amp;&amp;  !page-&gt;parent) &#123;
+        &#125; else &#123;
             return badPop(token);
-        }
-    }
+        &#125;
+    &#125;
     if (PrintPoolHiwat) printHiwat();
-
+            
     page-&gt;releaseUntil(stop); //对当前链表当中的对象进行release操作
-    if (DebugPoolAllocation  &amp;&amp;  page-&gt;empty()) {
+    if (DebugPoolAllocation  &amp;&amp;  page-&gt;empty()) &#123;
     //释放 `Autoreleased` 对象后，销毁多余的 page
         AutoreleasePoolPage *parent = page-&gt;parent;
         page-&gt;kill();
         setHotPage(parent);
-    } else if (DebugMissingPools  &amp;&amp;  page-&gt;empty()  &amp;&amp;  !page-&gt;parent) {
+    &#125; else if (DebugMissingPools  &amp;&amp;  page-&gt;empty()  &amp;&amp;  !page-&gt;parent) &#123;
         page-&gt;kill();
         setHotPage(nil);
-    }
-   else if (page-&gt;child) {
-        if (page-&gt;lessThanHalfFull()) {
+    &#125;
+   else if (page-&gt;child) &#123;
+        if (page-&gt;lessThanHalfFull()) &#123;
             page-&gt;child-&gt;kill();
-        }
-        else if (page-&gt;child-&gt;child) {
+        &#125;
+        else if (page-&gt;child-&gt;child) &#123;
             page-&gt;child-&gt;child-&gt;kill();
-        }
-    }
-}
-</code></pre><p>这里重点看一下page-&gt;releaseUntil(stop)方法：</p>
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>这里重点看一下page-&gt;releaseUntil(stop)方法：</p>
 <pre><code>void releaseUntil(id *stop)
-{
-    while (this-&gt;next != stop) {
+&#123;
+    while (this-&gt;next != stop) &#123;
         AutoreleasePoolPage *page = hotPage();
-        while (page-&gt;empty()) {
+        while (page-&gt;empty()) &#123;
             page = page-&gt;parent;
             setHotPage(page);
-        }
-
+        &#125;
+    
         page-&gt;unprotect();
         id obj = *--page-&gt;next;
         memset((void*)page-&gt;next, SCRIBBLE, sizeof(*page-&gt;next));
         page-&gt;protect();
-
-        if (obj != POOL_BOUNDARY) {
+        
+        if (obj != POOL_BOUNDARY) &#123;
             objc_release(obj);
-        }
-    }
+        &#125;
+    &#125;
     setHotPage(this);
-}
-</code></pre><p>这里的stop同样是POOL_BOUNDARY的地址，这里分析一下这个方法：</p>
+&#125;
+</code></pre>
+<p>这里的stop同样是POOL_BOUNDARY的地址，这里分析一下这个方法：</p>
 <p>(1). 外部循环挨个遍历autoreleased 对象，直到遍历到哨兵对象POOL_BOUNDARY。</p>
 <p>(2). 如果当前page没有 POOL_BOUNDARY，并且为空，则将hotPage设置为当前page的父节点。</p>
 <p>(3). 给当前autoreleased对象发送release消息。</p>
 <p>(4). 最后再次配置hotPage。</p>
 <h3 id="4-autorelease"><a href="#4-autorelease" class="headerlink" title="4.autorelease"></a>4.autorelease</h3><p>通过上面的分析已经知道了构造方法objc_autoreleasePoolPush会创建AutoreleasePoolPage，并插入哨兵对象POOL_BOUNDARY，析构方法objc_autoreleasePoolPop会对哨兵对象之后插入的对象发送release消息，那么在这两个方法之间，对象通过调用autorelease是怎么插入到AutoreleasePoolPage的呢？下面来看下autorelease的源码实现：</p>
 <pre><code>static inline id autorelease(id obj)
-{
+&#123;
     assert(obj);
     assert(!obj-&gt;isTaggedPointer());
     id *dest __unused = autoreleaseFast(obj);
     assert(!dest  ||  dest == EMPTY_POOL_PLACEHOLDER  ||  *dest == obj);
     return obj;
-}
-</code></pre><p>这里的重点还是autoreleaseFast(obj);由于这里插入对象的方法和AutoreleasePoolPage调用push方法的实现是一样的，只不过push操作插入的是一个 POOL_BOUNDARY，而autorelease操作插入的是一个具体的autoreleased对象,在此处就不做多余分析。</p>
+&#125;
+</code></pre>
+<p>这里的重点还是autoreleaseFast(obj);由于这里插入对象的方法和AutoreleasePoolPage调用push方法的实现是一样的，只不过push操作插入的是一个 POOL_BOUNDARY，而autorelease操作插入的是一个具体的autoreleased对象,在此处就不做多余分析。</p>
 <p>通过上面👆的这些分析，已经大概知道AutoreleasePool是怎样的一个构造，以及内如是如何实现自动释放的。</p>
 <h3 id="5-AutoreleasePool的嵌套"><a href="#5-AutoreleasePool的嵌套" class="headerlink" title="5.AutoreleasePool的嵌套"></a>5.AutoreleasePool的嵌套</h3><p>对于嵌套的AutoreleasePool也是同样的原理，在pop的时候总会释放对象到上次push的位置为止，也就是哨兵位置，多层的pool就是插入多个哨兵对象而已，然后根据哨兵对象来进行释放，就像剥洋葱一样一层一层的，互不影响。</p>
 <p>那么这里有个疑问，如果在AutoreleasePool多层嵌套中是同一个对象呢，那么会怎么释放？下面通过一个小例子🌰来看一下：</p>
-<pre><code>@autoreleasepool {
+<pre><code>@autoreleasepool &#123;
     ZHPerson *person = [ZHPerson object];
     NSLog(@&quot;current count %d&quot;,_objc_rootRetainCount(person));
-    @autoreleasepool {
+    @autoreleasepool &#123;
         ZHPerson *person1 = person;
         NSLog(@&quot;current count %d&quot;,_objc_rootRetainCount(person));
-        @autoreleasepool {
+        @autoreleasepool &#123;
             ZHPerson *person2 = person;
             NSLog(@&quot;current count %d&quot;,_objc_rootRetainCount(person));
-        }
-    }
-}
-</code></pre><p>打印结果如下：</p>
-<p><img src="http://img.wangjungang.cn/Spm9fr.jpg" alt=""></p>
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>打印结果如下：</p>
+<p><img src="http://img.wangjungang.cn/Spm9fr.jpg"></p>
 <p>这里dealloc方法只调用了一次，由上面的代码可知：当前person1和person2是对person的引用，如果系统会为每一次引用都自动插入一个autorelease，那么对象在执行第一个autorelease的时候，会调用objc_release(obj)来释放当前的对象，那么当调用rootRelease()的时候就会报错，因为当前对象已经被释放了，那么也就是说对于引用的对象只会被释放一次。(同一个对象不能够反复的autorelease)</p>
 <h2 id="NSthread、NSRunLoop、AutoReleasePool"><a href="#NSthread、NSRunLoop、AutoReleasePool" class="headerlink" title="NSthread、NSRunLoop、AutoReleasePool"></a>NSthread、NSRunLoop、AutoReleasePool</h2><h3 id="1-NSthread和AutoReleasePool"><a href="#1-NSthread和AutoReleasePool" class="headerlink" title="1.NSthread和AutoReleasePool"></a>1.NSthread和AutoReleasePool</h3><p>先来看个简单的例子：</p>
-<p><img src="http://img.wangjungang.cn/crxcsQ.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/crxcsQ.jpg"></p>
 <p>在temp的位置设置一个断点，然后在控制台输入watchpoint set variable temp,</p>
-<p><img src="http://img.wangjungang.cn/S1haZL.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/S1haZL.jpg"></p>
 <p>等到这个线程执行结束之后，来看一下左侧边栏的内容：</p>
-<p><img src="http://img.wangjungang.cn/YaUoqw.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/YaUoqw.jpg"></p>
 <p>当执行到NSLog(@”thread end”);这句代码，表示线程执行结束，这里，其实线程会先调用[NSthread exit],然后执行_pthread_tsd_cleanup,清除当前线程的有关资源,然后调用tls_dealloc,也就是把当前线程关联的AutoReleasePool释放掉，最后调用weak_clear_no_lock清除指针。</p>
 <p>那么这一系列过程就说明了：在NSThread退出了之后，与NSThread对应的AutoReleasePool也会被自动清空，所以当一个线程结束的时候，就会回收♻️AutoReleasePool中自动释放的对象。</p>
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>每一个线程都会维护自己的AutoReleasePool，而每一个AutoReleasePool都会对应唯一一个线程，但是线程可以对应多个AutoReleasePool。</p>
 <h3 id="2-NSRunLoop和AutoReleasePool"><a href="#2-NSRunLoop和AutoReleasePool" class="headerlink" title="2.NSRunLoop和AutoReleasePool"></a>2.NSRunLoop和AutoReleasePool</h3><p>对于NSThread只是一个简单的线程，如果把它换成一个常驻线程呢？</p>
-<p><img src="http://img.wangjungang.cn/sjc19n.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/sjc19n.jpg"></p>
 <p>这里创建一个NSTimer，并将其常驻。利用同样的方式，watchpoint set variable temp,：</p>
-<p><img src="http://img.wangjungang.cn/uWBYfo.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/uWBYfo.jpg"></p>
 <p>可以看到这里NStimer是被加入到子线程当中的，但是在子线程中，我们并没有去写关于AutoReleasePool的内容，我们只知道test做了autorelease操作。下面回到源码中来看：</p>
 <pre><code>static inline id autorelease(id obj)
-{
+&#123;
     assert(obj);
     assert(!obj-&gt;isTaggedPointer());
     id *dest __unused = autoreleaseFast(obj);
     assert(!dest  ||  dest == EMPTY_POOL_PLACEHOLDER  ||  *dest == obj);
     return obj;
-}
+&#125;
 
 static inline id *autoreleaseFast(id obj)
-{
+&#123;
     AutoreleasePoolPage *page = hotPage();
-    if (page &amp;&amp; !page-&gt;full()) {
+    if (page &amp;&amp; !page-&gt;full()) &#123;
         return page-&gt;add(obj);
-    } else if (page) {
+    &#125; else if (page) &#123;
         return autoreleaseFullPage(obj, page);
-    } else {
+    &#125; else &#123;
         return autoreleaseNoPage(obj);
-    }
-}
+    &#125;
+&#125;
 
 id *autoreleaseNoPage(id obj)
-{
+&#123;
    AutoreleasePoolPage *page = new AutoreleasePoolPage(nil);
    setHotPage(page);
-}
+&#125;
 //这里省略了部分代码
-</code></pre><p>所以从上面的源码我们可以得出结论：子线程在使用autorelease对象的时候，会懒加载出来一个AutoreleasePoolPage,然后将对象插入进去。</p>
+</code></pre>
+<p>所以从上面的源码我们可以得出结论：子线程在使用autorelease对象的时候，会懒加载出来一个AutoreleasePoolPage,然后将对象插入进去。</p>
 <p>那么问题又来了，autorelease对象在什么时候释放的呢？也就说AutoreleasePoolPage在什么时候调用了pop方法？</p>
 <p>其实在上面创建一个NSThread的时候，在调用[NSthread exit]的时候，会释放当前资源，也就是把当前线程关联的autoReleasePool释放掉，而在这里当RunLoop执行完成退出的时候，也会执行pop方法，这就说明了为什么在子线程当中，我们没有显示的调用pop，它也能释放当前AutoreleasePool的资源的原因。</p>
 <h3 id="3-主线程的NSRunLoop和AutoReleasePool"><a href="#3-主线程的NSRunLoop和AutoReleasePool" class="headerlink" title="3.主线程的NSRunLoop和AutoReleasePool"></a>3.主线程的NSRunLoop和AutoReleasePool</h3><p>那么在主线程的RunLoop到底什么时候把对象进行释放回收的呢？</p>
 <p>简单粗暴点，直接在控制台通过po [NSRunloop currentRunloop]打印主线程的RunLoop:</p>
-<p><img src="http://img.wangjungang.cn/6rvyYT.jpg" alt=""></p>
-<p>这里，系统在主线程的RunLoop里注册了两个Observer，回调都是_wrapRunLoopWithAutoreleasePoolHandler,第一个Observer的状态是activities = 0x1,第二个Observer的状态是activities = 0xa0,这两种状态代表什么意思呢？</p>
+<p><img src="http://img.wangjungang.cn/6rvyYT.jpg"></p>
+<p>这里，系统在主线程的RunLoop里注册了两个Observer，回调都是_wrapRunLoopWithAutoreleasePoolHandler,第一个Observer的状态是activities &#x3D; 0x1,第二个Observer的状态是activities &#x3D; 0xa0,这两种状态代表什么意思呢？</p>
 <p>先在这里插入一点RunLoop的内容(RunLoop的状态枚举)：</p>
-<pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
+<pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) &#123;
     kCFRunLoopEntry = (1UL &lt;&lt; 0),              // 1
     kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1),       // 2
     kCFRunLoopBeforeSources = (1UL &lt;&lt; 2),      // 4
@@ -885,29 +919,30 @@ id *autoreleaseNoPage(id obj)
     kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6),       // 64
     kCFRunLoopExit = (1UL &lt;&lt; 7),               // 128
     kCFRunLoopAllActivities = 0x0FFFFFFFU
-};
-</code></pre><p>0x1代表的是kCFRunLoopEntry，也就是说第一个 Observer监视的事件是Entry(即将进入Loop时),其回调内会调用_objc_autoreleasePoolPush()创建一个自动释放池。其order优先级是-2147483647，优先级最高，保证创建自动释放池发生在其他所有回调之前。</p>
+&#125;;
+</code></pre>
+<p>0x1代表的是kCFRunLoopEntry，也就是说第一个 Observer监视的事件是Entry(即将进入Loop时),其回调内会调用_objc_autoreleasePoolPush()创建一个自动释放池。其order优先级是-2147483647，优先级最高，保证创建自动释放池发生在其他所有回调之前。</p>
 <p>0xa0对应的是kCFRunLoopBeforeWaiting和kCFRunLoopExit,也就是说第二个Observer监视了两个事件：kCFRunLoopBeforeWaiting准备进入休眠，kCFRunLoopExit即将退出RunLoop。在kCFRunLoopBeforeWaiting事件时调用 _objc_autoreleasePoolPop()和_objc_autoreleasePoolPush() 释放旧的自动释放池并创建新的自动释放池；在kCFRunLoopExit事件时调用_objc_autoreleasePoolPop() 来释放自动释放池，同时这个Observer的order优先级是 2147483647，优先级最低，保证其释放自动释放池的操作发生在其他所有回调之后。</p>
 <p>所以在没有手动增加AutoreleasePool的情况下，Autorelease对象都是在当前的runloop迭代结束时释放的，而它能够释放的原因是系统在每个runloop迭代中都加入了自动释放池push和pop操作。</p>
 <h4 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h4><p>对于不同线程，应当创建自己的AutoReleasePool。如果应用长期存在，应该定期drain和创建新的AutoReleasePool,AutoReleasePool与RunLoop 与线程是一一对应的关系,AutoReleasePool在RunLoop在开始迭代时做push操作，在RunLoop休眠或者迭代结束时做pop操作。</p>
 <h2 id="AutoreleasePool的应用场景"><a href="#AutoreleasePool的应用场景" class="headerlink" title="AutoreleasePool的应用场景"></a>AutoreleasePool的应用场景</h2><p>通常情况下我们是不需要手动创建AutoreleasePool，但是也有一些特殊的：</p>
 <ul>
-<li>编写的程序不基于UI框架，如命令行程序。</li>
-</ul>
-<ul>
-<li>在循环中创建大量临时对象时用以降低内存占用峰值。</li>
-</ul>
-<ul>
-<li>在主线程之外创建新的线程，在新线程开始执行处，创建自己的AutoreleasePool，否则将导致内存泄漏。</li>
+<li><p>编写的程序不基于UI框架，如命令行程序。</p>
+</li>
+<li><p>在循环中创建大量临时对象时用以降低内存占用峰值。</p>
+</li>
+<li><p>在主线程之外创建新的线程，在新线程开始执行处，创建自己的AutoreleasePool，否则将导致内存泄漏。</p>
+</li>
 </ul>
 <p>下面就来简单看下第二种情况,直接来个for循环：</p>
-<pre><code>for (int i = 0; i &lt; 100000000; i ++) {
+<pre><code>for (int i = 0; i &lt; 100000000; i ++) &#123;
         NSString * str = [NSString stringWithFormat:@&quot;noAutoReleasePool&quot;];
         NSString *tempstr = str;
-    }
-}
-</code></pre><p>来看一下Memory的使用情况:</p>
-<p><img src="http://img.wangjungang.cn/zNKTc8.jpg" alt=""></p>
+    &#125;
+&#125;
+</code></pre>
+<p>来看一下Memory的使用情况:</p>
+<p><img src="http://img.wangjungang.cn/zNKTc8.jpg"></p>
 <p>这个对比伤害就很明显了。</p>
 <p>这个做个备注：在主函数main.m文件中的@autoreleasepool,如果在这里做个测试，使用for循环创建大量的临时对象，是否加上这个@autoreleasepool对Memory的使用情况没有特别大的影响。</p>
 
@@ -933,7 +968,7 @@ id *autoreleaseNoPage(id obj)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/21/Autorelease & AutoreleasePool/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/21/Autorelease%20&%20AutoreleasePool/">展开全文 >></a>
         </p>
       
 
@@ -970,12 +1005,12 @@ id *autoreleaseNoPage(id obj)
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/15/swift自动归档/">swift自动归档</a>
+      <a class="article-title" href="/2019/09/15/swift%E8%87%AA%E5%8A%A8%E5%BD%92%E6%A1%A3/">swift自动归档</a>
     </h1>
   
 
         
-        <a href="/2019/09/15/swift自动归档/" class="archive-article-date">
+        <a href="/2019/09/15/swift%E8%87%AA%E5%8A%A8%E5%BD%92%E6%A1%A3/" class="archive-article-date">
   	<time datetime="2019-09-15T03:48:44.561Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-15</time>
 </a>
         
@@ -986,194 +1021,202 @@ id *autoreleaseNoPage(id obj)
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>使用自动归档我们需要遵守NSCoding协议,但是通过一些Json转Model的工具来完成转Model后,比如遵守HandyJSON,再遵守NSCoding协议,会出现冲突Multiple inheritance from classes ‘BaseModel’ and ‘NSCoder’,这里暂时只用了HandyJSON来转Model,其他工具未知</p>
 <pre><code>import HandyJSON
 // -MARK: 继承此model不用重写init()函数
-class BaseModel: HandyJSON {
-    required init() {}
-}
-</code></pre><p><img src="http://img.wangjungang.cn/0fAYjd.jpg" alt=""></p>
-<h2 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h2><p><img src="http://img.wangjungang.cn/tmUuz2.jpg" alt=""></p>
-<pre><code>var dic = [String: Any]()
-       dic[&quot;id&quot;] = Int(tf_1.text!) // 因为模型指定的是Int 类型的 必须转成指定类型不然会失败 
-       dic[&quot;name&quot;] = tf_2.text
-       dic[&quot;age&quot;] = Int(tf_3.text!)
-       dic[&quot;phone&quot;] = tf_4.text
-       guard let json = dic.hw_toJSONString() else {
-           print(&quot;出错&quot;)
-           return
-       }
-       UserTool.saveUser(json) // 存
-       guard let user = UserTool.getUser() else { // 取
-           print(&quot;归档失败&quot;)
-           return
-       }
-       print(&quot;id:\(user.id)\n名字:\(user.name)\n年龄:\(user.age)\n电话:\(user.phone)&quot;)
-</code></pre><h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><p><img src="http://img.wangjungang.cn/qZuDVu.jpg" alt=""></p>
+class BaseModel: HandyJSON &#123;
+    required init() &#123;&#125;
+&#125;
+</code></pre>
+<p><img src="http://img.wangjungang.cn/0fAYjd.jpg"></p>
+<h2 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h2><p><img src="http://img.wangjungang.cn/tmUuz2.jpg"></p>
+<pre><code> var dic = [String: Any]()
+        dic[&quot;id&quot;] = Int(tf_1.text!) // 因为模型指定的是Int 类型的 必须转成指定类型不然会失败 
+        dic[&quot;name&quot;] = tf_2.text
+        dic[&quot;age&quot;] = Int(tf_3.text!)
+        dic[&quot;phone&quot;] = tf_4.text
+        guard let json = dic.hw_toJSONString() else &#123;
+            print(&quot;出错&quot;)
+            return
+        &#125;
+        UserTool.saveUser(json) // 存
+        guard let user = UserTool.getUser() else &#123; // 取
+            print(&quot;归档失败&quot;)
+            return
+        &#125;
+        print(&quot;id:\(user.id)\n名字:\(user.name)\n年龄:\(user.age)\n电话:\(user.phone)&quot;)
+</code></pre>
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><p><img src="http://img.wangjungang.cn/qZuDVu.jpg"></p>
 <h3 id="存在问题"><a href="#存在问题" class="headerlink" title="存在问题"></a>存在问题</h3><p>使用案例:在Model中id是Int类型,这里给的是String类型</p>
-<pre><code>let dict = [
-    &quot;id&quot; : &quot;2&quot;,
-    &quot;name&quot; : &quot;隔壁老王&quot;,
-    &quot;age&quot; : 31,
-    &quot;phone&quot; : &quot;110&quot;
-    ] as [String : Any]
-guard let json = dict.hw_toJSONString() else {
-    print(&quot;出错&quot;)
-    return
-}
-UserTool.saveUser(json) // 存
-</code></pre><p>报错:主要是Codable必须是指定类型的才能转换,不然会出现以下错误</p>
+<pre><code>    let dict = [
+        &quot;id&quot; : &quot;2&quot;,
+        &quot;name&quot; : &quot;隔壁老王&quot;,
+        &quot;age&quot; : 31,
+        &quot;phone&quot; : &quot;110&quot;
+        ] as [String : Any]
+    guard let json = dict.hw_toJSONString() else &#123;
+        print(&quot;出错&quot;)
+        return
+    &#125;
+    UserTool.saveUser(json) // 存
+</code></pre>
+<p>报错:主要是Codable必须是指定类型的才能转换,不然会出现以下错误</p>
 <pre><code>typeMismatch(Swift.Int, Swift.DecodingError.Context(codingPath: [CodingKeys(stringValue: &quot;id&quot;, intValue: nil)], debugDescription: &quot;Expected to decode Int but found a string/data instead.&quot;, underlyingError: nil))
-</code></pre><h2 id="以下方法主要是利用Codable来完成Json转Model"><a href="#以下方法主要是利用Codable来完成Json转Model" class="headerlink" title="以下方法主要是利用Codable来完成Json转Model"></a>以下方法主要是利用Codable来完成Json转Model</h2><h3 id="自定义Error"><a href="#自定义Error" class="headerlink" title="自定义Error"></a>自定义Error</h3><pre><code>enum HWMapError: Error {
+</code></pre>
+<h2 id="以下方法主要是利用Codable来完成Json转Model"><a href="#以下方法主要是利用Codable来完成Json转Model" class="headerlink" title="以下方法主要是利用Codable来完成Json转Model"></a>以下方法主要是利用Codable来完成Json转Model</h2><h3 id="自定义Error"><a href="#自定义Error" class="headerlink" title="自定义Error"></a>自定义Error</h3><pre><code>enum HWMapError: Error &#123;
     case jsonToModelFail    //json转model失败
     case jsonToDataFail     //json转data失败
-}
-</code></pre><h3 id="定义HWMappable协议继承Codable"><a href="#定义HWMappable协议继承Codable" class="headerlink" title="定义HWMappable协议继承Codable"></a>定义HWMappable协议继承Codable</h3><pre><code>public protocol HWMappable: Codable {
+&#125;
+</code></pre>
+<h3 id="定义HWMappable协议继承Codable"><a href="#定义HWMappable协议继承Codable" class="headerlink" title="定义HWMappable协议继承Codable"></a>定义HWMappable协议继承Codable</h3><pre><code>public protocol HWMappable: Codable &#123;
     func hw_modelMapFinished()
     mutating func hw_structMapFinished()
-}
+&#125;
 
-extension HWMappable {
-    public func hw_modelMapFinished() {
+extension HWMappable &#123;
+    public func hw_modelMapFinished() &#123;
         //外部自己实现
-    }
-    public mutating func hw_structMapFinished() {
+    &#125;
+    public mutating func hw_structMapFinished() &#123;
         //外部自己实现
-    }
+    &#125;
     ///JSON转模型
-    static func hw_mapFromJson&lt;T : HWMappable&gt;(_ JSONString : String, _ type:T.Type) throws -&gt; T {
-        guard let jsonData = JSONString.data(using: .utf8) else {
+    static func hw_mapFromJson&lt;T : HWMappable&gt;(_ JSONString : String, _ type:T.Type) throws -&gt; T &#123;
+        guard let jsonData = JSONString.data(using: .utf8) else &#123;
             throw HWMapError.jsonToDataFail
-        }
+        &#125;
         let decoder = JSONDecoder()
-        do {
+        do &#123;
             let obj = try decoder.decode(type, from: jsonData)
             var vobj = obj
             let mirro = Mirror(reflecting: vobj)
-            if mirro.displayStyle == Mirror.DisplayStyle.struct {
+            if mirro.displayStyle == Mirror.DisplayStyle.struct &#123;
                 vobj.hw_structMapFinished()
-            }
-            if mirro.displayStyle == Mirror.DisplayStyle.class {
+            &#125;
+            if mirro.displayStyle == Mirror.DisplayStyle.class &#123;
                 vobj.hw_modelMapFinished()
-            }
+            &#125;
             return vobj
-        } catch {
+        &#125; catch &#123;
             print(error)
-        }
+        &#125;
         throw HWMapError.jsonToModelFail
-    }
-}
-</code></pre><h2 id="自动归档"><a href="#自动归档" class="headerlink" title="自动归档"></a>自动归档</h2><pre><code>@objcMembers class UserInfo: NSObject, NSCoding, HWMappable {
+    &#125;
+&#125;
+</code></pre>
+<h2 id="自动归档"><a href="#自动归档" class="headerlink" title="自动归档"></a>自动归档</h2><pre><code>@objcMembers class UserInfo: NSObject, NSCoding, HWMappable &#123;
     var id: Int = 0 // 用户id
     var name: String = &quot;&quot;
     var phone: String = &quot;&quot;
     var age = 0
     /// json转模型
-    class func jsonToUser(_ json:String) -&gt; UserInfo? {
+    class func jsonToUser(_ json:String) -&gt; UserInfo? &#123;
         let user = try? UserInfo.hw_mapFromJson(json, UserInfo.self)
         return user
-    }
+    &#125;
 
     // MARK: - 归档
-    func encode(with aCoder: NSCoder) {
+    func encode(with aCoder: NSCoder) &#123;
         UserTool.removeUser() // 归档前先删除原来的 避免错误
-        for name in getAllPropertys() {
-            guard let value = self.value(forKey: name) else {
+        for name in getAllPropertys() &#123;
+            guard let value = self.value(forKey: name) else &#123;
                 return
-            }
+            &#125;
             aCoder.encode(value, forKey: name)
-        }
-    }
+        &#125;
+    &#125;
     // MARK: - 解档
-    internal required init?(coder aDecoder: NSCoder){
+    internal required init?(coder aDecoder: NSCoder)&#123;
         super.init()
-        for name in getAllPropertys() {
-            guard let value = aDecoder.decodeObject(forKey: name) else {
+        for name in getAllPropertys() &#123;
+            guard let value = aDecoder.decodeObject(forKey: name) else &#123;
                 return
-            }
+            &#125;
             setValue(value, forKeyPath: name)
-        }
-    }
+        &#125;
+    &#125;
     // MARK: - 获取属性数组
-    func getAllPropertys() -&gt; [String] {
+    func getAllPropertys() -&gt; [String] &#123;
         var count: UInt32 = 0 // 这个类型可以使用CUnsignedInt,对应Swift中的UInt32
         let properties = class_copyPropertyList(self.classForCoder, &amp;count)
         var propertyNames: [String] = []
-        for i in 0..&lt;Int(count) { // Swift中类型是严格检查的，必须转换成同一类型
-            if let property = properties?[i] { // UnsafeMutablePointer&lt;objc_property_t&gt;是可变指针，因此properties就是类似数组一样，可以通过下标获取
+        for i in 0..&lt;Int(count) &#123; // Swift中类型是严格检查的，必须转换成同一类型
+            if let property = properties?[i] &#123; // UnsafeMutablePointer&lt;objc_property_t&gt;是可变指针，因此properties就是类似数组一样，可以通过下标获取
                 let name = property_getName(property)
                 // 这里还得转换成字符串
                 let strName = String(cString: name)
                 propertyNames.append(strName)
-            }
-        }
+            &#125;
+        &#125;
         // 不要忘记释放内存，否则C语言的指针很容易成野指针的
         free(properties)
         return propertyNames
-    }
-}
-</code></pre><h2 id="使用工具"><a href="#使用工具" class="headerlink" title="使用工具"></a>使用工具</h2><pre><code>class UserTool {
+    &#125;
+&#125;
+</code></pre>
+<h2 id="使用工具"><a href="#使用工具" class="headerlink" title="使用工具"></a>使用工具</h2><pre><code>class UserTool &#123;
     // MARK: - 归档路径设置
-    static private var Path: String {
+    static private var Path: String &#123;
         let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last!
         return (path as NSString).appendingPathComponent(&quot;account.plist&quot;)
-    }
+    &#125;
 
     /// 是否登录
-    static func isLogin() -&gt; Bool {
-        guard UserTool.getUser() != nil else {
+    static func isLogin() -&gt; Bool &#123;
+        guard UserTool.getUser() != nil else &#123;
             return false  //文件不存在
-        }
+        &#125;
         return true
-    }
+    &#125;
     /// 存档
-    static func saveUser(_ json: String) {
-        guard let user = UserInfo.jsonToUser(json) else {
+    static func saveUser(_ json: String) &#123;
+        guard let user = UserInfo.jsonToUser(json) else &#123;
             return
-        }
+        &#125;
         NSKeyedArchiver.archiveRootObject(user, toFile: Path)
-    }
+    &#125;
     /// 获取用户信息
-    static func getUser()-&gt; UserInfo? {
+    static func getUser()-&gt; UserInfo? &#123;
         let user = NSKeyedUnarchiver.unarchiveObject(withFile: Path) as? UserInfo
         return user
-    }
+    &#125;
     /// 删档
-    static func removeUser() {
-        if FileManager.default.fileExists(atPath: Path) {
+    static func removeUser() &#123;
+        if FileManager.default.fileExists(atPath: Path) &#123;
             try! FileManager.default.removeItem(atPath: Path) // 删除文件
-        }else{
+        &#125;else&#123;
 
-        }
-    }
-}
+        &#125;
+    &#125;
+&#125;
 
 // MARK: - 字典转json
-extension Dictionary {
-    public func hw_toJSONString() -&gt; String? {
-        if (!JSONSerialization.isValidJSONObject(self)) {
+extension Dictionary &#123;
+    public func hw_toJSONString() -&gt; String? &#123;
+        if (!JSONSerialization.isValidJSONObject(self)) &#123;
             print(&quot;dict转json失败&quot;)
             return nil
-        }
-        if let newData : Data = try? JSONSerialization.data(withJSONObject: self, options: []) {
+        &#125;
+        if let newData : Data = try? JSONSerialization.data(withJSONObject: self, options: []) &#123;
             let JSONString = NSString(data:newData as Data,encoding: String.Encoding.utf8.rawValue)
             return JSONString as String? ?? nil
-        }
+        &#125;
         print(&quot;dict转json失败&quot;)
         return nil
-    }
-}
+    &#125;
+&#125;
 // MARK: - json转字典
-extension String {
-    func hw_toDictionary() -&gt; NSDictionary? {
-        guard let jsonData:Data = self.data(using: .utf8) else {
+extension String &#123;
+    func hw_toDictionary() -&gt; NSDictionary? &#123;
+        guard let jsonData:Data = self.data(using: .utf8) else &#123;
             return nil
-        }
+        &#125;
         let dict = try? JSONSerialization.jsonObject(with: jsonData, options: .mutableContainers)
-        if dict != nil {
+        if dict != nil &#123;
             return dict as? NSDictionary
-        }
+        &#125;
         return nil
-    }
-}
+    &#125;
+&#125;
 </code></pre>
+
       
 
       
@@ -1196,7 +1239,7 @@ extension String {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/15/swift自动归档/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/15/swift%E8%87%AA%E5%8A%A8%E5%BD%92%E6%A1%A3/">展开全文 >></a>
         </p>
       
 
@@ -1233,12 +1276,12 @@ extension String {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/15/mysql快速生成百万条测试数据的方法mysql快速生成百万条测试数据的方法/">mysql快速生成百万条测试数据的方法</a>
+      <a class="article-title" href="/2019/09/15/mysql%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E7%99%BE%E4%B8%87%E6%9D%A1%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E7%9A%84%E6%96%B9%E6%B3%95mysql%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E7%99%BE%E4%B8%87%E6%9D%A1%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E7%9A%84%E6%96%B9%E6%B3%95/">mysql快速生成百万条测试数据的方法</a>
     </h1>
   
 
         
-        <a href="/2019/09/15/mysql快速生成百万条测试数据的方法mysql快速生成百万条测试数据的方法/" class="archive-article-date">
+        <a href="/2019/09/15/mysql%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E7%99%BE%E4%B8%87%E6%9D%A1%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E7%9A%84%E6%96%B9%E6%B3%95mysql%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E7%99%BE%E4%B8%87%E6%9D%A1%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E7%9A%84%E6%96%B9%E6%B3%95/" class="archive-article-date">
   	<time datetime="2019-09-15T03:39:05.927Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-15</time>
 </a>
         
@@ -1251,33 +1294,35 @@ extension String {
 DROP TABLE IF EXISTS `vote_record_memory`;
 CREATE TABLE `vote_record_memory` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-    `user_id` varchar(20) NOT NULL DEFAULT &apos;&apos;,
-    `vote_num` int(10) unsigned NOT NULL DEFAULT &apos;0&apos;,
-    `group_id` int(10) unsigned NOT NULL DEFAULT &apos;0&apos;,
-    `status` tinyint(2) unsigned NOT NULL DEFAULT &apos;1&apos;,
-    `create_time` datetime NOT NULL DEFAULT &apos;0000-00-00 00:00:00&apos;,
+    `user_id` varchar(20) NOT NULL DEFAULT &#39;&#39;,
+    `vote_num` int(10) unsigned NOT NULL DEFAULT &#39;0&#39;,
+    `group_id` int(10) unsigned NOT NULL DEFAULT &#39;0&#39;,
+    `status` tinyint(2) unsigned NOT NULL DEFAULT &#39;1&#39;,
+    `create_time` datetime NOT NULL DEFAULT &#39;0000-00-00 00:00:00&#39;,
     PRIMARY KEY (`id`),
     KEY `index_user_id` (`user_id`) USING HASH
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-</code></pre><h2 id="创建一个普通表，用作模拟大数据的测试用例"><a href="#创建一个普通表，用作模拟大数据的测试用例" class="headerlink" title="创建一个普通表，用作模拟大数据的测试用例"></a>创建一个普通表，用作模拟大数据的测试用例</h2><pre><code>DROP TABLE IF EXISTS `vote_record`;
+</code></pre>
+<h2 id="创建一个普通表，用作模拟大数据的测试用例"><a href="#创建一个普通表，用作模拟大数据的测试用例" class="headerlink" title="创建一个普通表，用作模拟大数据的测试用例"></a>创建一个普通表，用作模拟大数据的测试用例</h2><pre><code>DROP TABLE IF EXISTS `vote_record`;
 CREATE TABLE `vote_record` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-    `user_id` varchar(20) NOT NULL DEFAULT &apos;&apos; COMMENT &apos;用户Id&apos;,
-    `vote_num` int(10) unsigned NOT NULL DEFAULT &apos;0&apos; COMMENT &apos;投票数&apos;,
-    `group_id` int(10) unsigned NOT NULL DEFAULT &apos;0&apos; COMMENT &apos;用户组id 0-未激活用户 1-普通用户 2-vip用户 3-管理员用户&apos;,
-    `status` tinyint(2) unsigned NOT NULL DEFAULT &apos;1&apos; COMMENT &apos;状态 1-正常 2-已删除&apos;,
-    `create_time` int(10) unsigned NOT NULL DEFAULT &apos;0000-00-00 00:00:00&apos; COMMENT &apos;创建时间&apos;,
+    `user_id` varchar(20) NOT NULL DEFAULT &#39;&#39; COMMENT &#39;用户Id&#39;,
+    `vote_num` int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;投票数&#39;,
+    `group_id` int(10) unsigned NOT NULL DEFAULT &#39;0&#39; COMMENT &#39;用户组id 0-未激活用户 1-普通用户 2-vip用户 3-管理员用户&#39;,
+    `status` tinyint(2) unsigned NOT NULL DEFAULT &#39;1&#39; COMMENT &#39;状态 1-正常 2-已删除&#39;,
+    `create_time` int(10) unsigned NOT NULL DEFAULT &#39;0000-00-00 00:00:00&#39; COMMENT &#39;创建时间&#39;,
     PRIMARY KEY (`id`),
-    KEY `index_user_id` (`user_id`) USING HASH COMMENT &apos;用户ID哈希索引&apos;
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT=&apos;投票记录表&apos;;
-</code></pre><h2 id="为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。"><a href="#为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。" class="headerlink" title="为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。"></a>为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。</h2><pre><code>-- 创建生成长度为n的随机字符串的函数
-DELIMITER // -- 修改MySQL delimiter：&apos;//&apos;
+    KEY `index_user_id` (`user_id`) USING HASH COMMENT &#39;用户ID哈希索引&#39;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT=&#39;投票记录表&#39;;
+</code></pre>
+<h2 id="为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。"><a href="#为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。" class="headerlink" title="为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。"></a>为了数据的随机性和真实性，我们需要创建一个可生成长度为n的随机字符串的函数。</h2><pre><code>-- 创建生成长度为n的随机字符串的函数
+DELIMITER // -- 修改MySQL delimiter：&#39;//&#39;
 DROP FUNCTION IF EXISTS `rand_string` //
 SET NAMES utf8 //
-CREATE FUNCTION `rand_string` (n INT) RETURNS VARCHAR(255) CHARSET &apos;utf8&apos;
+CREATE FUNCTION `rand_string` (n INT) RETURNS VARCHAR(255) CHARSET &#39;utf8&#39;
 BEGIN 
-    DECLARE char_str varchar(100) DEFAULT &apos;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&apos;;
-    DECLARE return_str varchar(255) DEFAULT &apos;&apos;;
+    DECLARE char_str varchar(100) DEFAULT &#39;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&#39;;
+    DECLARE return_str varchar(255) DEFAULT &#39;&#39;;
     DECLARE i INT DEFAULT 0;
     WHILE i &lt; n DO
         SET return_str = concat(return_str, substring(char_str, FLOOR(1 + RAND()*62), 1));
@@ -1285,8 +1330,9 @@ BEGIN
     END WHILE;
     RETURN return_str;
 END //
-</code></pre><h2 id="为了操作方便，我们再创建一个插入数据的存储过程"><a href="#为了操作方便，我们再创建一个插入数据的存储过程" class="headerlink" title="为了操作方便，我们再创建一个插入数据的存储过程"></a>为了操作方便，我们再创建一个插入数据的存储过程</h2><pre><code>-- 创建插入数据的存储过程
-DELIMITER //
+</code></pre>
+<h2 id="为了操作方便，我们再创建一个插入数据的存储过程"><a href="#为了操作方便，我们再创建一个插入数据的存储过程" class="headerlink" title="为了操作方便，我们再创建一个插入数据的存储过程"></a>为了操作方便，我们再创建一个插入数据的存储过程</h2><pre><code>-- 创建插入数据的存储过程
+DELIMITER //
 DROP PROCEDURE IF EXISTS `add_vote_record_memory` //
 CREATE PROCEDURE `add_vote_record_memory`(IN n INT)
 BEGIN
@@ -1302,17 +1348,22 @@ BEGIN
         SET i = i + 1;
     END WHILE;
 END //
-DELIMITER ;  -- 改回默认的 MySQL delimiter：&apos;;&apos;
-</code></pre><h2 id="开始执行存储过程，等待生成数据-10W条生成大约需要40分钟"><a href="#开始执行存储过程，等待生成数据-10W条生成大约需要40分钟" class="headerlink" title="开始执行存储过程，等待生成数据(10W条生成大约需要40分钟)"></a>开始执行存储过程，等待生成数据(10W条生成大约需要40分钟)</h2><pre><code>-- 调用存储过程 生成100W条数据
+DELIMITER ;  -- 改回默认的 MySQL delimiter：&#39;;&#39;
+</code></pre>
+<h2 id="开始执行存储过程，等待生成数据-10W条生成大约需要40分钟"><a href="#开始执行存储过程，等待生成数据-10W条生成大约需要40分钟" class="headerlink" title="开始执行存储过程，等待生成数据(10W条生成大约需要40分钟)"></a>开始执行存储过程，等待生成数据(10W条生成大约需要40分钟)</h2><pre><code>-- 调用存储过程 生成100W条数据
 CALL add_vote_record_memory(1000000);
-</code></pre><h2 id="查询内存表已生成记录-为了下步测试，目前仅生成了105645条"><a href="#查询内存表已生成记录-为了下步测试，目前仅生成了105645条" class="headerlink" title="查询内存表已生成记录(为了下步测试，目前仅生成了105645条)"></a>查询内存表已生成记录(为了下步测试，目前仅生成了105645条)</h2><pre><code>SELECT count(*) FROM `vote_record_memory`;
--- count(*)
--- 105646
-</code></pre><h2 id="把数据从内存表插入到普通表中-10w条数据13s就插入完了"><a href="#把数据从内存表插入到普通表中-10w条数据13s就插入完了" class="headerlink" title="把数据从内存表插入到普通表中(10w条数据13s就插入完了)"></a>把数据从内存表插入到普通表中(10w条数据13s就插入完了)</h2><pre><code>INSERT INTO vote_record SELECT * FROM `vote_record_memory`;
-</code></pre><h2 id="查询普通表已的生成记录"><a href="#查询普通表已的生成记录" class="headerlink" title="查询普通表已的生成记录"></a>查询普通表已的生成记录</h2><pre><code>SELECT count(*) FROM `vote_record`;
+</code></pre>
+<h2 id="查询内存表已生成记录-为了下步测试，目前仅生成了105645条"><a href="#查询内存表已生成记录-为了下步测试，目前仅生成了105645条" class="headerlink" title="查询内存表已生成记录(为了下步测试，目前仅生成了105645条)"></a>查询内存表已生成记录(为了下步测试，目前仅生成了105645条)</h2><pre><code>SELECT count(*) FROM `vote_record_memory`;
 -- count(*)
 -- 105646
 </code></pre>
+<h2 id="把数据从内存表插入到普通表中-10w条数据13s就插入完了"><a href="#把数据从内存表插入到普通表中-10w条数据13s就插入完了" class="headerlink" title="把数据从内存表插入到普通表中(10w条数据13s就插入完了)"></a>把数据从内存表插入到普通表中(10w条数据13s就插入完了)</h2><pre><code>INSERT INTO vote_record SELECT * FROM `vote_record_memory`;
+</code></pre>
+<h2 id="查询普通表已的生成记录"><a href="#查询普通表已的生成记录" class="headerlink" title="查询普通表已的生成记录"></a>查询普通表已的生成记录</h2><pre><code>SELECT count(*) FROM `vote_record`;
+-- count(*)
+-- 105646
+</code></pre>
+
       
 
       
@@ -1335,7 +1386,7 @@ CALL add_vote_record_memory(1000000);
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/15/mysql快速生成百万条测试数据的方法mysql快速生成百万条测试数据的方法/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/15/mysql%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E7%99%BE%E4%B8%87%E6%9D%A1%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E7%9A%84%E6%96%B9%E6%B3%95mysql%E5%BF%AB%E9%80%9F%E7%94%9F%E6%88%90%E7%99%BE%E4%B8%87%E6%9D%A1%E6%B5%8B%E8%AF%95%E6%95%B0%E6%8D%AE%E7%9A%84%E6%96%B9%E6%B3%95/">展开全文 >></a>
         </p>
       
 
@@ -1372,12 +1423,12 @@ CALL add_vote_record_memory(1000000);
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/06/如何使用 AutoLayout 自动计算 ScrollView 的 contentSize/">如何使用 AutoLayout 自动计算 ScrollView 的 contentSize</a>
+      <a class="article-title" href="/2019/09/06/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%20AutoLayout%20%E8%87%AA%E5%8A%A8%E8%AE%A1%E7%AE%97%20ScrollView%20%E7%9A%84%20contentSize/">如何使用 AutoLayout 自动计算 ScrollView 的 contentSize</a>
     </h1>
   
 
         
-        <a href="/2019/09/06/如何使用 AutoLayout 自动计算 ScrollView 的 contentSize/" class="archive-article-date">
+        <a href="/2019/09/06/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%20AutoLayout%20%E8%87%AA%E5%8A%A8%E8%AE%A1%E7%AE%97%20ScrollView%20%E7%9A%84%20contentSize/" class="archive-article-date">
   	<time datetime="2019-09-06T13:16:07.048Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-06</time>
 </a>
         
@@ -1386,21 +1437,21 @@ CALL add_vote_record_memory(1000000);
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在日常开发中，令人看了就想素质三连的代码，莫过于手动计算各种数字的代码。如下图，看了真的是头皮发麻。</p>
-<p><img src="http://img.wangjungang.cn/vVa4dU.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/vVa4dU.jpg"></p>
 <p>那么，我们如何避免上面的问题，从而使我们的代码变得友好、可读性更高呢(主要为了保住我们为数不多的头发😭)？答案就是使用 AutoLayout 让系统自动计算数字。</p>
 <p>下面，我们举一个实际的例子来一步一步的实现：使用 AutoLayout 自动计算 ScrollView 的 contentSize 。</p>
 <h3 id="先来说一下实现的大体步骤："><a href="#先来说一下实现的大体步骤：" class="headerlink" title="先来说一下实现的大体步骤："></a>先来说一下实现的大体步骤：</h3><ul>
 <li><p>设置 scrollView 的约束</p>
-<ul>
-<li>约束上下左右间距为 0</li>
-</ul>
+</li>
+<li><p>约束上下左右间距为 0</p>
 </li>
 <li><p>创建一个 contentView ,设置 contentView 的约束</p>
-<ul>
-<li>上下左右间距为 0</li>
-<li>宽度和 scrollView 的父视图相等</li>
-<li>高度和 scrollView 的父视图相等，且优先级要低(这一步很重要，千万不要写错)</li>
-</ul>
+</li>
+<li><p>上下左右间距为 0</p>
+</li>
+<li><p>宽度和 scrollView 的父视图相等</p>
+</li>
+<li><p>高度和 scrollView 的父视图相等，且优先级要低(这一步很重要，千万不要写错)</p>
 </li>
 <li><p>将所有子控件添加到 contentView (而不是直接添加到 scrollView 上)，并设置好子控件的内部约束</p>
 </li>
@@ -1416,16 +1467,17 @@ NSLayoutConstraint.activate([
     scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
     scrollView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor)
     ])
-</code></pre><h3 id="创建-contentView，设置-contentView-的约束"><a href="#创建-contentView，设置-contentView-的约束" class="headerlink" title="创建 contentView，设置 contentView 的约束"></a>创建 contentView，设置 contentView 的约束</h3><p>设置完 scrollView，接下来设置 contentView 的约束：</p>
+</code></pre>
+<h3 id="创建-contentView，设置-contentView-的约束"><a href="#创建-contentView，设置-contentView-的约束" class="headerlink" title="创建 contentView，设置 contentView 的约束"></a>创建 contentView，设置 contentView 的约束</h3><p>设置完 scrollView，接下来设置 contentView 的约束：</p>
 <pre><code>    // 2. 设置 contentView
     let contentView = UIView(frame: .zero)
     scrollView.addSubview(contentView)
     contentView.translatesAutoresizingMaskIntoConstraints = false
-
+    
     let contentViewHeightAnchor = contentView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor)
     // 2.1 高度和 scrollView 的父视图相等，且`优先级要低`
     contentViewHeightAnchor.priority = UILayoutPriority(rawValue: 1)
-
+    
     NSLayoutConstraint.activate([
         contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
         contentView.leftAnchor.constraint(equalTo: scrollView.leftAnchor),
@@ -1471,26 +1523,27 @@ NSLayoutConstraint.activate([
     bottomLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor),
     bottomLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
     ])
-</code></pre><p>到这里，我们就大功告成了。妈妈再也不用担心我手动计算数字了😏 (成功保住了自己的头发)。</p>
-<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><pre><code>class TestViewController: UIViewController {
+</code></pre>
+<p>到这里，我们就大功告成了。妈妈再也不用担心我手动计算数字了😏 (成功保住了自己的头发)。</p>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><pre><code>class TestViewController: UIViewController &#123;
     let scrollView = UIScrollView(frame: .zero)
     let titleLabel = UILabel(frame: .zero)
     let contentLabel = UILabel(frame: .zero)
     let bottomLabel = UILabel(frame: .zero)
-
-    override func viewDidLoad() {
+    
+    override func viewDidLoad() &#123;
         super.viewDidLoad()
         view.backgroundColor = UIColor.white
         setupSubviews()
-    }
-}
+    &#125;
+&#125;
 
-extension TestViewController {
-    func setupSubviews() {
+extension TestViewController &#123;
+    func setupSubviews() &#123;
         // 1. 设置 scrollView 的约束
         view.addSubview(scrollView)
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
@@ -1500,13 +1553,13 @@ extension TestViewController {
         // 2. 设置 contentView
         let contentView = UIView(frame: .zero)
         scrollView.addSubview(contentView)
-
+        
         contentView.translatesAutoresizingMaskIntoConstraints = false
-
+        
         let contentViewHeightAnchor = contentView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor)
         // 2.1 高度和 scrollView 的父视图相等，且`优先级要低`
         contentViewHeightAnchor.priority = UILayoutPriority(rawValue: 1)
-
+        
         NSLayoutConstraint.activate([
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leftAnchor.constraint(equalTo: scrollView.leftAnchor),
@@ -1515,32 +1568,32 @@ extension TestViewController {
             contentView.widthAnchor.constraint(equalTo: view.widthAnchor),
             contentViewHeightAnchor
             ])
-
+        
         // 3.添加子控件，设置内部约束
         titleLabel.text = &quot;titleLabel&quot;
         contentView.addSubview(titleLabel)
-
+        
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
             titleLabel.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10),
             titleLabel.rightAnchor.constraint(equalTo: contentView.rightAnchor, constant: -10)
             ])
-
+        
         contentLabel.text = &quot;将此处替换为你自己的字符串（超过一屏），即可看见滑动效果&quot;
         contentLabel.numberOfLines = 0
         contentView.addSubview(contentLabel)
-
+        
         contentLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             contentLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
             contentLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
             contentLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor)
             ])
-
+        
         bottomLabel.text = &quot;bottomLabel&quot;
         contentView.addSubview(bottomLabel)
-
+        
         bottomLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             bottomLabel.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 10),
@@ -1548,9 +1601,10 @@ extension TestViewController {
             bottomLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor),
             bottomLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
             ])
-    }
-}
+    &#125;
+&#125;
 </code></pre>
+
       
 
       
@@ -1573,7 +1627,7 @@ extension TestViewController {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/06/如何使用 AutoLayout 自动计算 ScrollView 的 contentSize/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/06/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%20AutoLayout%20%E8%87%AA%E5%8A%A8%E8%AE%A1%E7%AE%97%20ScrollView%20%E7%9A%84%20contentSize/">展开全文 >></a>
         </p>
       
 
@@ -1610,12 +1664,12 @@ extension TestViewController {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/06/Swift 5.1 (3) - 字符串/">Swift 5.1- 字符串</a>
+      <a class="article-title" href="/2019/09/06/Swift%205.1%20(3)%20-%20%E5%AD%97%E7%AC%A6%E4%B8%B2/">Swift 5.1- 字符串</a>
     </h1>
   
 
         
-        <a href="/2019/09/06/Swift 5.1 (3) - 字符串/" class="archive-article-date">
+        <a href="/2019/09/06/Swift%205.1%20(3)%20-%20%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="archive-article-date">
   	<time datetime="2019-09-06T01:51:36.379Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-06</time>
 </a>
         
@@ -1626,7 +1680,8 @@ extension TestViewController {
         <h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p>字符串是一系列字符组成的。Swift字符串由String类型表示。</p>
 <p>1.使用字符串文字作为常量或变量的初始值：</p>
 <pre><code>let str = &quot;I am zhangfei&quot;//str 系统使用类型推断为String类型
-</code></pre><p>2.多行字符串：由三个双引号”””括起来的字符序列。注意：多行字符串文字的正文开始以及结束时，分隔符”””必须独占一行。</p>
+</code></pre>
+<p>2.多行字符串：由三个双引号”””括起来的字符序列。注意：多行字符串文字的正文开始以及结束时，分隔符”””必须独占一行。</p>
 <pre><code>let quotation = &quot;&quot;&quot;
 The White Rabbit put on his spectacles.  &quot;Where shall I begin,
 please your Majesty?&quot; he asked.
@@ -1637,16 +1692,17 @@ till you come to the end; then stop.&quot;
 let multilineString = &quot;&quot;&quot;
 These are the same.
 &quot;&quot;&quot;
-</code></pre><p>多行字符串文字中包含换行符时，该换行符也会出现在字符串的值中。 如果只想使用换行符来简化代码的读取，而不希望换行符成为字符串值的一部分，请在这些行的末尾写一个反斜杠\。/*</p>
+</code></pre>
+<p>多行字符串文字中包含换行符时，该换行符也会出现在字符串的值中。 如果只想使用换行符来简化代码的读取，而不希望换行符成为字符串值的一部分，请在这些行的末尾写一个反斜杠\。&#x2F;*</p>
 <pre><code> 不加反斜杠\打印：
  The White Rabbit put on his spectacles.  &quot;Where shall I begin,
  please your Majesty?&quot; he asked.
-
+ 
  &quot;Begin at the beginning,&quot; the King said gravely, &quot;and go on
  till you come to the end; then stop.&quot;
  加反斜杠\打印：
  The White Rabbit put on his spectacles.  &quot;Where shall I begin,please your Majesty?&quot; he asked.
-
+ 
  &quot;Begin at the beginning,&quot; the King said gravely, &quot;and go ontill you come to the end; then stop.&quot;
  */
  let softWrappedQuotation = &quot;&quot;&quot;
@@ -1657,54 +1713,63 @@ please your Majesty?&quot; he asked.
 till you come to the end; then stop.&quot;
 &quot;&quot;&quot;
 print(softWrappedQuotation)
-</code></pre><h2 id="字符串中的特殊字符"><a href="#字符串中的特殊字符" class="headerlink" title="字符串中的特殊字符"></a>字符串中的特殊字符</h2><p>字符串中可以包含以下特殊字符：</p>
+</code></pre>
+<h2 id="字符串中的特殊字符"><a href="#字符串中的特殊字符" class="headerlink" title="字符串中的特殊字符"></a>字符串中的特殊字符</h2><p>字符串中可以包含以下特殊字符：</p>
 <ul>
-<li>转义的特殊字符 \ 0（空字符），\（反斜杠），\ t（水平制表符），\ n（换行符），\ r \ n（回车符），\”（双引号）和\’（单 引号）。</li>
+<li>转义的特殊字符 \ 0（空字符），\（反斜杠），\ t（水平制表符），\ n（换行符），\ r \ n（回车符），&quot;（双引号）和&#39;（单 引号）。</li>
 <li>一个任意的Unicode标量值，写为\ u {n}，其中n是1-8位十六进制数。</li>
 </ul>
 <p>特殊字符示例：</p>
 <pre><code>let name = &quot;i am \&quot;张飞\&quot;&quot;
-let dollarSign = &quot;\u{24}&quot;        // $,  Unicode标量 U+0024
-let blackHeart = &quot;\u{2665}&quot;      // ♥,  Unicode标量 U+2665
-let sparklingHeart = &quot;\u{1F496}&quot; // 💖, Unicode标量 U+1F496
+let dollarSign = &quot;\u&#123;24&#125;&quot;        // $,  Unicode标量 U+0024
+let blackHeart = &quot;\u&#123;2665&#125;&quot;      // ♥,  Unicode标量 U+2665
+let sparklingHeart = &quot;\u&#123;1F496&#125;&quot; // 💖, Unicode标量 U+1F496
 print(name+dollarSign+blackHeart+sparklingHeart)//!&lt;i am &quot;张飞&quot;$♥💖
-</code></pre><p>因为多行字符串文字使用三个双引号”””而不是一个”，故多行字符串文字中包含双引号”可以不用转义它。但是要在多行字符串中包含””” ，需要至少转义一个引号。</p>
+</code></pre>
+<p>因为多行字符串文字使用三个双引号”””而不是一个”，故多行字符串文字中包含双引号”可以不用转义它。但是要在多行字符串中包含””” ，需要至少转义一个引号。</p>
 <pre><code>let threeDoubleQuotationMarks = &quot;&quot;&quot;
 Escaping the first quotation mark \&quot;&quot;&quot;
 Escaping all three quotation marks \&quot;\&quot;\&quot;
 &quot;&quot;&quot;
-</code></pre><h2 id="扩展字符串分隔符"><a href="#扩展字符串分隔符" class="headerlink" title="扩展字符串分隔符"></a>扩展字符串分隔符</h2><p>我们可以将包含特殊字符的字符串放在扩展分隔符中，让所包含的特殊字符（如：转义符）不生效。使用时将字符串放在引号”中并用数字符号＃括起来。#的个数不限制，但是数量需要保持一致性。形式：let str = #”Line 1\nLine 2”#，str输出换行符\n而不是输出两行的字符串。</p>
-<p>如果需要字符串中特殊字符的特殊效果，则需要在转义字符\后面使用数字符号#，但要注意匹配#的个数。例如，字符串：let str = #”Line 1\nLine 2”#，我们需要让换行符\n生效，则可以使用let str = #”Line 1#nLine 2”#来代替。同样，let str = ##”Line 1##nLine 2”##或let str = ###”Line 1###nLine 2”###也能让换行符生效。</p>
+</code></pre>
+<h2 id="扩展字符串分隔符"><a href="#扩展字符串分隔符" class="headerlink" title="扩展字符串分隔符"></a>扩展字符串分隔符</h2><p>我们可以将包含特殊字符的字符串放在扩展分隔符中，让所包含的特殊字符（如：转义符）不生效。使用时将字符串放在引号”中并用数字符号＃括起来。#的个数不限制，但是数量需要保持一致性。形式：let str &#x3D; #”Line 1\nLine 2”#，str输出换行符\n而不是输出两行的字符串。</p>
+<p>如果需要字符串中特殊字符的特殊效果，则需要在转义字符\后面使用数字符号#，但要注意匹配#的个数。例如，字符串：let str &#x3D; #”Line 1\nLine 2”#，我们需要让换行符\n生效，则可以使用let str &#x3D; #”Line 1#nLine 2”#来代替。同样，let str &#x3D; ##”Line 1##nLine 2”##或let str &#x3D; ###”Line 1###nLine 2”###也能让换行符生效。</p>
 <p>多行字符串使用扩展分隔符而不需要使用转义符\，例如：</p>
 <pre><code>let threeQuotationMarks = #&quot;&quot;&quot;
 Here are three more double quotes: &quot;&quot;&quot;
 &quot;&quot;&quot;#
 print(threeQuotationMarks)//!&lt; log:Here are three more double quotes: &quot;&quot;&quot;
-</code></pre><h2 id="初始化一个空的字符串"><a href="#初始化一个空的字符串" class="headerlink" title="初始化一个空的字符串"></a>初始化一个空的字符串</h2><p>可以使用将空字符串指定给变量，或使用初始化字符串的语法初始化一个String实例：</p>
+</code></pre>
+<h2 id="初始化一个空的字符串"><a href="#初始化一个空的字符串" class="headerlink" title="初始化一个空的字符串"></a>初始化一个空的字符串</h2><p>可以使用将空字符串指定给变量，或使用初始化字符串的语法初始化一个String实例：</p>
 <pre><code>// 一下两个字符串都是空的，并且彼此都是相等的
 var emptyString = &quot;&quot;        
 var anotherEmptyString = String() 
-</code></pre><p>字符串判空</p>
-<pre><code>if emptyString.isEmpty {
+</code></pre>
+<p>字符串判空</p>
+<pre><code>if emptyString.isEmpty &#123;
     print(&quot;空字符串&quot;)
-}
-</code></pre><p><strong>可变字符串：</strong>将特定字符串赋值给变量或常量，来表示字符串是否可以被修改。 将特定字符串赋值给变量：在这种情况下可以对其进行修改。</p>
+&#125;
+</code></pre>
+<p><strong>可变字符串：</strong>将特定字符串赋值给变量或常量，来表示字符串是否可以被修改。 将特定字符串赋值给变量：在这种情况下可以对其进行修改。</p>
 <pre><code>var variableString = &quot;Horse&quot;
 variableString += &quot; and carriage&quot;
 print(variableString)
-</code></pre><p>将特定字符串赋值给常量：在这种情况下无法对其进行修改。</p>
+</code></pre>
+<p>将特定字符串赋值给常量：在这种情况下无法对其进行修改。</p>
 <pre><code>let constantString = &quot;Highlander&quot;
 constantString += &quot; and another Highlander&quot;//!&lt; 编译器报错：constantString是常量不可变
-</code></pre><p>这种方法与Objective-C和Cocoa中的字符串可变不同，您可以在两个类NSString和NSMutableString之间进行选择，区分可变字符串。</p>
+</code></pre>
+<p>这种方法与Objective-C和Cocoa中的字符串可变不同，您可以在两个类NSString和NSMutableString之间进行选择，区分可变字符串。</p>
 <h2 id="字符串是值类型"><a href="#字符串是值类型" class="headerlink" title="字符串是值类型"></a>字符串是值类型</h2><p> Swift的String类型是一种值类型。如果我们创建一个新的字符串a，在将a传递给函数或方法时，或将其赋值给常量或变量时，将复制字符串a的值。在以上每种情况下，都会创建现有字符串的新副本，并传递或分配新副本，而不是原始字符串。</p>
 <p> Swift默认复制字符串的行为，确保了在函数或方法中传递字符串时，该字符串的值不会被改变，无论它来自何处，除非我们自己修改。</p>
 <p> 同时Swift的编译器对字符串的默认复制行为做了优化：只有在绝对必要的情况下才会进行实际的复制，保证了性能。</p>
 <h2 id="字符使用"><a href="#字符使用" class="headerlink" title="字符使用"></a>字符使用</h2><p>我们可以通过使用for-in循环遍历字符串来访问字符串中各个字符</p>
 <pre><code>let str = &quot;Dog!&quot;
-for character in str {
+for character in str &#123;
     print(character)
-}
-</code></pre><p>创建一个Character类型的常量或变量</p>
+&#125;
+</code></pre>
+<p>创建一个Character类型的常量或变量</p>
 <pre><code>//创建常量
 let character : Character = &quot;&quot;
 print(character)
@@ -1712,27 +1777,32 @@ print(character)
 var character : Character = &quot;&quot;
 character = &quot;&quot;
 print(character)
-</code></pre><p>通过字符数组，生成一个字符串</p>
+</code></pre>
+<p>通过字符数组，生成一个字符串</p>
 <pre><code>let catCharacters : [Character] = [&quot;c&quot;,&quot;a&quot;,&quot;t&quot;,&quot;i&quot;,&quot;s&quot;,&quot;&quot;]
 let catString = String(catCharacters)
 print(catString)
-</code></pre><h2 id="连接字符串和字符"><a href="#连接字符串和字符" class="headerlink" title="连接字符串和字符"></a>连接字符串和字符</h2><p>字符串可以使用加法运算符+连接到一起以创建新的字符串：</p>
+</code></pre>
+<h2 id="连接字符串和字符"><a href="#连接字符串和字符" class="headerlink" title="连接字符串和字符"></a>连接字符串和字符</h2><p>字符串可以使用加法运算符+连接到一起以创建新的字符串：</p>
 <pre><code>let string1 = &quot;hello&quot;
 let string2 = &quot; there&quot;
 let welcome = string1 + string2
 print(welcome)
-</code></pre><p>使用加号赋值运算符+=：</p>
+</code></pre>
+<p>使用加号赋值运算符+&#x3D;：</p>
 <pre><code>var instruction = &quot;look over&quot;
 let string2 = &quot; there&quot;
 instruction += string2 //!&lt; log:look over there
-</code></pre><p>使用String类型的append()方法将Character类型的值添加到String类型的变量。</p>
+</code></pre>
+<p>使用String类型的append()方法将Character类型的值添加到String类型的变量。</p>
 <pre><code>var character : Character = &quot;&quot;
 character = &quot;&quot;
 var instruction = &quot;look over&quot;
 let string2 = &quot; there&quot;
 instruction += string2
 instruction.append(character) //!&lt; look over there
-</code></pre><p>使用多行字符串文字来构建更多行的字符串，则希望字符串中的每一行都以换行符结束，包括最后一行。</p>
+</code></pre>
+<p>使用多行字符串文字来构建更多行的字符串，则希望字符串中的每一行都以换行符结束，包括最后一行。</p>
 <pre><code>let badStart = &quot;&quot;&quot;
 one
 two
@@ -1757,45 +1827,56 @@ two
 three
 */
 print(goodStart + end)
-</code></pre><h2 id="字符串插值"><a href="#字符串插值" class="headerlink" title="字符串插值"></a>字符串插值</h2><p>字符串插值是一种通过在字符串中混合常量，变量，文字和表达式并可以构造出新字符串的方法。</p>
+</code></pre>
+<h2 id="字符串插值"><a href="#字符串插值" class="headerlink" title="字符串插值"></a>字符串插值</h2><p>字符串插值是一种通过在字符串中混合常量，变量，文字和表达式并可以构造出新字符串的方法。</p>
 <p>作用：将常量或变量的名称包含在较长字符串中作为占位符，并提示Swift将其替换为该常量或变量的当前值。使用形式：将名称括在括号中，并在左括号前用反斜杠转义它(变量或常量)。单行和多行字符串都可以使用字符串插值。</p>
 <pre><code>let multiplier = 3
 let message = &quot;\(multiplier) times 2.5 is \(Double(multiplier) * 2.5)&quot;
 print(message)//!&lt; 3 times 2.5 is 7.5
-</code></pre><p>上例中(multiplier)和(Double(multiplier) * 2.5)属于字符串插值。</p>
+</code></pre>
+<p>上例中(multiplier)和(Double(multiplier) * 2.5)属于字符串插值。</p>
 <pre><code>print(#&quot;Write an interpolated string in Swift using \(multiplier).&quot;#)//!&lt;Write an interpolated string in Swift using \(multiplier).
-</code></pre><p>上例中使用扩展字符串分隔符来创建包含特殊字符\的字符串，否则这些字符将被视为字符串插值。</p>
+</code></pre>
+<p>上例中使用扩展字符串分隔符来创建包含特殊字符\的字符串，否则这些字符将被视为字符串插值。</p>
 <p>若要在使用扩展分隔符的字符串中使用字符串插值，需将\后面的数字符号#的个数与字符串开头和结尾处#的个数相匹配。</p>
 <pre><code>print(#&quot;Write an interpolated string in Swift using \#(multiplier).&quot;#)//!&lt;Write an interpolated string in Swift using 3.
-</code></pre><p><strong>Unicode：</strong>又名：统一码、万国码、单一码。它是跨语言、跨平台进行文本转换、处理的国际标准。Swift中的字符串和字符类型完全符合Unicode。</p>
+</code></pre>
+<p><strong>Unicode：</strong>又名：统一码、万国码、单一码。它是跨语言、跨平台进行文本转换、处理的国际标准。Swift中的字符串和字符类型完全符合Unicode。</p>
 <p>Unicode标量：Swift的原生String类型是根据Unicode标量构建的。Unicode标量：使用21个二进制位表示的字符或修饰符，（注解：目前Unicode的编码范围达到了21位，Unicode标量范围 0x0000 - 0x10ffff 的范围，二进制位为 1 0000 1111 1111 1111 1111，总共21位）例如：U+0061表示a,U+1F425表示🐥。需要注意的是，Unicode标量值并不需要把所有21个二进制位都分配给字符或修饰符 ，某些多出来的Unicode标量会保留下来，用于将来分配或用于UTF-16编码(注解：UTF-16是Unicode的其中一个使用方式，即把Unicode字符集的抽象码位映射为16位的序列，用于数据存储或传递)。</p>
 <p>扩展字形集群：Swift的Character类型的每个实例，代表一个扩展的字形集群。扩展字形集群是一个或多个可组合的Unicode标量（组合时，产生单个人类可读字符）的序列。字母é可以表示为单个Unicode标量\u{00E9}。字母é也可以表示为一对标量 ：标准字母e:\u{0065}和尖音符\u{301}组合的形式。（音调符标量以图形方式应用于其前面的标量，当它由具有Unicode感知的文本渲染系统渲染时将e转换为é）<br>在这两种情况下，字母é表示为单个Swift中的Character值，表示可扩展的字形簇。在第一种情况下，集群中的单个标量;在第二种情况下，它是两个标量的集群：</p>
-<pre><code>let eAcute: Character = &quot;\u{E9}&quot;                         // é
-let combinedEAcute: Character = &quot;\u{65}\u{301}&quot; //é
+<pre><code>let eAcute: Character = &quot;\u&#123;E9&#125;&quot;                         // é
+let combinedEAcute: Character = &quot;\u&#123;65&#125;\u&#123;301&#125;&quot; //é
 print(String(eAcute)+String(combinedEAcute))
-</code></pre><p>可扩展的字形集群是一种将许多复杂脚本字符表示为单个字符值的灵活方式。</p>
-<pre><code>let precomposed: Character = &quot;\u{D55C}&quot;                  // 한
-let decomposed: Character = &quot;\u{1112}\u{1161}\u{11AB}&quot;   // \u{1112}:ᄒ, \u{1161}:ᅡ,\u{11AB}: ᆫ -&gt;한
+</code></pre>
+<p>可扩展的字形集群是一种将许多复杂脚本字符表示为单个字符值的灵活方式。</p>
+<pre><code>let precomposed: Character = &quot;\u&#123;D55C&#125;&quot;                  // 한
+let decomposed: Character = &quot;\u&#123;1112&#125;\u&#123;1161&#125;\u&#123;11AB&#125;&quot;   // \u&#123;1112&#125;:ᄒ, \u&#123;1161&#125;:ᅡ,\u&#123;11AB&#125;: ᆫ -&gt;한
 print(String(precomposed)+String(decomposed))
-</code></pre><p>区域指示符号的Unicode标量可以成对组合以生成单个字符值，例如区域指示符符号U（U + 1F1FA）和区域指示符符号字母S（U + 1F1F8）的组合：</p>
-<pre><code>let regionalIndicatorForUS: Character = &quot;\u{1F1FA}\u{1F1F8}&quot;
+</code></pre>
+<p>区域指示符号的Unicode标量可以成对组合以生成单个字符值，例如区域指示符符号U（U + 1F1FA）和区域指示符符号字母S（U + 1F1F8）的组合：</p>
+<pre><code>let regionalIndicatorForUS: Character = &quot;\u&#123;1F1FA&#125;\u&#123;1F1F8&#125;&quot;
 print(String(regionalIndicatorForUS))//log:🇺🇸
-</code></pre><h2 id="字符计数"><a href="#字符计数" class="headerlink" title="字符计数"></a>字符计数</h2><p>检索字符串中字符的数目，可以使用字符串的count属性：</p>
+</code></pre>
+<h2 id="字符计数"><a href="#字符计数" class="headerlink" title="字符计数"></a>字符计数</h2><p>检索字符串中字符的数目，可以使用字符串的count属性：</p>
 <pre><code>let title = &quot;Koala 🐨, Snail 🐌, Penguin 🐧, Dromedary 🐪&quot;
 print(&quot;title中有\(title.count)个字符&quot;)//!&lt; 40个字符
-</code></pre><p>需要注意的是：Swift中对字符串拼接扩展字形集群可能并不会影响字符串的字符数目。如：</p>
+</code></pre>
+<p>需要注意的是：Swift中对字符串拼接扩展字形集群可能并不会影响字符串的字符数目。如：</p>
 <pre><code>var x = &quot;thing&quot; //!&lt; x.count = 5
-x += &quot;\u{301}&quot; //!&lt; x:thinǵ
+x += &quot;\u&#123;301&#125;&quot; //!&lt; x:thinǵ
 print(x) //!&lt; x.count 依旧是5
-</code></pre><p>扩展的字形集群可以由多个Unicode标量组成。这意味着相同字符的不同表示可能需要不同的内存量来存储。因此，在Swift中，字符串的每个字符在内存中所占的大小可能不相同。需要注意的是如果字符串特别长，使用count属性获取字符串中字符数量时，是会遍历整个字符串中的Unicode标量的。count属性可能与包含相同字符的NSString的length属性返回的字符数量不相同。因为两者的计算基准不一样。NSString的长度基于字符串的UTF-16表示中的16位码元的数量，而不是基于字符串中Unicode可扩展的字形集群的数量。</p>
+</code></pre>
+<p>扩展的字形集群可以由多个Unicode标量组成。这意味着相同字符的不同表示可能需要不同的内存量来存储。因此，在Swift中，字符串的每个字符在内存中所占的大小可能不相同。需要注意的是如果字符串特别长，使用count属性获取字符串中字符数量时，是会遍历整个字符串中的Unicode标量的。count属性可能与包含相同字符的NSString的length属性返回的字符数量不相同。因为两者的计算基准不一样。NSString的长度基于字符串的UTF-16表示中的16位码元的数量，而不是基于字符串中Unicode可扩展的字形集群的数量。</p>
 <pre><code>//OC中计算的字符数。
 NSString *str = @&quot;Koala 🐨, Snail 🐌, Penguin 🐧, Dromedary 🐪&quot;;
 NSLog(@&quot;%ld&quot;,str.length);//!&lt; 44个字符
-</code></pre><p>访问和修改字符串：通过相应方法和属性或使用下标语法来访问和修改字符串。 字符串索引：每个String值都有一个关联的索引类型String.Index，它对应于字符串中每个字符的位置。</p>
+</code></pre>
+<p>访问和修改字符串：通过相应方法和属性或使用下标语法来访问和修改字符串。 字符串索引：每个String值都有一个关联的索引类型String.Index，它对应于字符串中每个字符的位置。</p>
 <p>如上所述，Swift中不同的字符可能需要不同的内存量来存储，因为Swift的字符串中字符数是基于Unicode标量的来计算的：a.集群中的单个标量，b.多个标量的可扩展集群。因此Swift字符串不能用整数值索引，为了确定某个特定的字符位于哪个位置，我们必须从该字符串的开头或结尾遍历每个Unicode标量。</p>
 <p>使用startIndex属性可以访问字符串的第一个字符的位置。endIndex属性是字符串最后一个字符之后的位置。因此，endIndex属性不是字符串下标的有效参数。如果字符串为空，则startIndex和endIndex相等。可以使用字符串的索引index(before: )和index(after:)方法访问给定索引之前和之后的索引。要访问远离给定索引的索引，可以使用索引index(_:, offsetBy: )方法，而不是多次调用其中一种方法。字符串title根据字符索引获取字符：title[String.Index(必须是索引类型)]</p>
 <pre><code>let title = &quot;Koala 🐨, Snail 🐌, Penguin 
-</code></pre><hr>
+</code></pre>
+<hr>
 <pre><code>let title = &quot;Koala 🐨, Snail 🐌, Penguin 🐧, Dromedary 🐪&quot;
 let subStr = title[title.index(after: title.startIndex)]//!&lt; startIndex之后的位置 输出o
 let subStr1 = title[title.index(before: title.endIndex)]//!&lt; 🐪
@@ -1805,34 +1886,38 @@ let subStr3 = title[title.index(title.startIndex, offsetBy: 6)]//!&lt; log: 🐨
 
 let index = title.index(title.startIndex, offsetBy: 15)
 let subStr4 = title[index] //!&lt; log:🐌
-</code></pre><p>尝试访问字符串范围之外的索引或字符时将触发运行时错误。</p>
+</code></pre>
+<p>尝试访问字符串范围之外的索引或字符时将触发运行时错误。</p>
 <pre><code>//! 所得索引超越了字符串的有效范围，触发运行时错误：Thread 1: Fatal error: String index is out of bounds
 let outsideIndex = title.index(after: title.endIndex)
 //！索引超越了有效范围，触发运行时错误：Thread 1: Fatal error: String index is out of bounds
 let subStr5 = title[title.endIndex]
-</code></pre><p>使用indices属性可以获取字符串中所有字符的索引。</p>
+</code></pre>
+<p>使用indices属性可以获取字符串中所有字符的索引。</p>
 <pre><code>let indices = title.indices;//!DefaultIndices&lt;String&gt;(_elements: &quot;Koala , Snail , Penguin , Dromedary &quot;, _startIndex: Swift.String.Index(_rawBits: 0), _endIndex: Swift.String.Index(_rawBits: 3407872))
 var tempStr:String = &quot;&quot;
-for index in indices {
+for index in indices &#123;
     print(&quot;\(title[index])&quot;,&quot;&quot;,separator: &quot;_&quot;, terminator: &quot;&quot;, to: &amp;tempStr)
-}
+&#125;
 ////!&lt; 最终合成的新字符串:K_o_a_l_a_ __,_ _S_n_a_i_l_ __,_ _P_e_n_g_u_i_n_ __,_ _D_r_o_m_e_d_a_r_y_ __
 print(&quot;最终合成的新字符串:\(tempStr)&quot;)
-</code></pre><p>重点：我们可以在符合Collection协议的任何类型上使用startIndex和endIndex属性以及索引index(before: )和index(after:)和index(<em>:, offsetBy: )方法。这包括字符串以及集合类型，如Array，Dictionary和Set。<br>字符串插入和删除：<br>插入：字符串指定索引处插入单个字符使用insert(</em>:at:)方法;在指定索引处插入另一个字符串使用insert(contentsOf:at:)方法。</p>
+</code></pre>
+<p>重点：我们可以在符合Collection协议的任何类型上使用startIndex和endIndex属性以及索引index(before: )和index(after:)和index(<em>:, offsetBy: )方法。这包括字符串以及集合类型，如Array，Dictionary和Set。<br>字符串插入和删除：<br>插入：字符串指定索引处插入单个字符使用insert(</em>:at:)方法;在指定索引处插入另一个字符串使用insert(contentsOf:at:)方法。</p>
 <pre><code>var inserStr = &quot;hello&quot;
 //! 插入单个字符：unicode标量
-inserStr.insert(&quot;\u{1F1F7}&quot;, at: inserStr.startIndex)//!&lt; log:🇷hello
+inserStr.insert(&quot;\u&#123;1F1F7&#125;&quot;, at: inserStr.startIndex)//!&lt; log:🇷hello
 //! 插入单个字符：普通字符
 inserStr.insert(&quot;!&quot;, at: inserStr.endIndex)//!&lt; log:🇷hello! 插入时可以使用endIndex
 //!&lt; 插入字符串：由字符：unicode标量组成的字符串
-let scalarStr = &quot;\u{1F1F6}\u{1F496}&quot;//!&lt; 🇶💖
+let scalarStr = &quot;\u&#123;1F1F6&#125;\u&#123;1F496&#125;&quot;//!&lt; 🇶💖
 inserStr.insert(contentsOf: scalarStr, at: inserStr.startIndex)//!&lt; 🇶💖🇷hello!
 //! 插入普通字符串：
 let normalStr = &quot;_word&quot;
 inserStr.insert(contentsOf: normalStr, at: inserStr.index(before: inserStr.endIndex))//!&lt; 🇶💖🇷hello_word!
-</code></pre><p>删除：字符串删除指定索引处的单个字符使用remove(at:)方法;删除指定范围内的子字符串使用removeSubrange(_:)方法：</p>
+</code></pre>
+<p>删除：字符串删除指定索引处的单个字符使用remove(at:)方法;删除指定范围内的子字符串使用removeSubrange(_:)方法：</p>
 <pre><code>//复杂组成的字符串
-var removeStr = &quot;\u{1F1F6}\u{1E67F}\u{1F496}\u{1F1F7}hello_word!eye\u{301}&quot;//!&lt; log:🇶💖🇷hello_word!eyé
+var removeStr = &quot;\u&#123;1F1F6&#125;\u&#123;1E67F&#125;\u&#123;1F496&#125;\u&#123;1F1F7&#125;hello_word!eye\u&#123;301&#125;&quot;//!&lt; log:🇶💖🇷hello_word!eyé
 //移除unicode标量字符：💖
 removeStr.remove(at: removeStr.index(removeStr.startIndex, offsetBy: 2))//!&lt; log:🇶🇷hello_word!eyé
 //移除普通字符：y 为啥-2因为endIndex属性表示字符串最后一个字符之后的位置
@@ -1843,9 +1928,10 @@ removeStr.remove(at: removeStr.index(removeStr.endIndex, offsetBy: -2))//!&lt; l
 //或
 let range = removeStr.startIndex...removeStr.index(removeStr.startIndex, offsetBy: 1)
 removeStr.removeSubrange(range) //!&lt; 🇷hello_word!eé
-</code></pre><p>注意：String类型实现了RangeReplaceableCollection协议，其他实现了RangeReplaceableCollection协议的任何类型都可以使用insert(<em>:at:)，insert(contentsOf:at:)，remove(at:)和removeSubrange(</em>:)方法。如：Array，Dictionary和Set。</p>
+</code></pre>
+<p>注意：String类型实现了RangeReplaceableCollection协议，其他实现了RangeReplaceableCollection协议的任何类型都可以使用insert(<em>:at:)，insert(contentsOf:at:)，remove(at:)和removeSubrange(</em>:)方法。如：Array，Dictionary和Set。</p>
 <h2 id="子字符串"><a href="#子字符串" class="headerlink" title="子字符串"></a>子字符串</h2><p>从字符串中获取子字符串时 - 例如，使用索引或类似prefix(_:)的方法 ，结果是Substring的实例，而不是另一个字符串。Swift中的子字符串与字符串具有多数相同的方法，这意味着我们可以像处理字符串一样使用子字符串。但是与字符串不同，我们在对字符串执行操作时只会使用子字符串很短的时间。当我们需要将子字符串存储更长时间时，则需要将子字符串转换为String实例。</p>
-<pre><code>var myString = &quot;\u{1F1F6}\u{1E67F}\u{1F496}\u{1F1F7}hello_word!eye\u{301}&quot;//!&lt; log:𞙿hello_word!eyé
+<pre><code>var myString = &quot;\u&#123;1F1F6&#125;\u&#123;1E67F&#125;\u&#123;1F496&#125;\u&#123;1F1F7&#125;hello_word!eye\u&#123;301&#125;&quot;//!&lt; log:𞙿hello_word!eyé
 //从字符串中取出hello子字符串
 //1.获取hello在字符中的范围
 //Returns the last index where the specified value appears in the collection.
@@ -1857,40 +1943,44 @@ let subString = myString[subStart..&lt;subEnd]//!&lt;log: 🇷hello
 print(subString)
 //3.若需要长时间使用子字符串则需要类型转换
 let longSubStr = String(subString) //!&lt; or:String.init(subString)
-</code></pre><h2 id="重点知识："><a href="#重点知识：" class="headerlink" title="重点知识："></a>重点知识：</h2><p>字符串和子字符串之间的区别：与字符串一样，每个子字符串都有一个内存区域，用于存储构成子字符串的字符。但是作为性能优化，子字符串可以重用用于存储原始字符串的部分内存，或者用于存储另一个子字符串的内存的一部分。字符串具有类似的优化，但如果两个字符串共享内存，则它们是相等的此性能优化意味着在修改字符串或子字符串之前，不会增加复制内存的性能成本。如上所述，子字符串不适合长期存储 因为它们重用原始字符串的存储，只要使用任何子字符串，整个原始字符串就必须保存在内存中。</p>
+</code></pre>
+<h2 id="重点知识："><a href="#重点知识：" class="headerlink" title="重点知识："></a>重点知识：</h2><p>字符串和子字符串之间的区别：与字符串一样，每个子字符串都有一个内存区域，用于存储构成子字符串的字符。但是作为性能优化，子字符串可以重用用于存储原始字符串的部分内存，或者用于存储另一个子字符串的内存的一部分。字符串具有类似的优化，但如果两个字符串共享内存，则它们是相等的此性能优化意味着在修改字符串或子字符串之前，不会增加复制内存的性能成本。如上所述，子字符串不适合长期存储 因为它们重用原始字符串的存储，只要使用任何子字符串，整个原始字符串就必须保存在内存中。</p>
 <p>示例描述：myString是一个字符串，这意味着它有一个内存区域，用于存储构成字符串的字符。因为subString是myString的子字符串，所以它重用了myString使用的内存。相比之下，longSubStr是一个字符串 ，从子字符串创建时，它有自己的存储空间。</p>
-<p><img src="http://img.wangjungang.cn/Pvwxq3.jpg" alt=""></p>
-<h2 id="字符串比较"><a href="#字符串比较" class="headerlink" title="字符串比较"></a>字符串比较</h2><p>字符串和字符是否相等的比较：使用“等于”运算符==和“不等于”运算符!=检查字符串和字符相等性。</p>
-<pre><code>let testStr1 = &quot;i have a cat\u{E9}?&quot;//!&lt; i have a caté?
-let testStr2 = &quot;i have a cat\u{65}\u{301}?&quot;//!&lt; i have a caté?
-if testStr1 == testStr2 {
+<p><img src="http://img.wangjungang.cn/Pvwxq3.jpg"></p>
+<h2 id="字符串比较"><a href="#字符串比较" class="headerlink" title="字符串比较"></a>字符串比较</h2><p>字符串和字符是否相等的比较：使用“等于”运算符&#x3D;&#x3D;和“不等于”运算符!&#x3D;检查字符串和字符相等性。</p>
+<pre><code>let testStr1 = &quot;i have a cat\u&#123;E9&#125;?&quot;//!&lt; i have a caté?
+let testStr2 = &quot;i have a cat\u&#123;65&#125;\u&#123;301&#125;?&quot;//!&lt; i have a caté?
+if testStr1 == testStr2 &#123;
     print(&quot;这两个字符串是相等的&quot;)
-}
-</code></pre><p>如果两个字符串值（或两个字符值）的扩展字形集群在规范上等效，则它们被认为是相等的。如果扩展的字形集群具有相同的语言含义和外观，则它们在规范上是等效的，即使它们是不同Unicode标量组成的。</p>
+&#125;
+</code></pre>
+<p>如果两个字符串值（或两个字符值）的扩展字形集群在规范上等效，则它们被认为是相等的。如果扩展的字形集群具有相同的语言含义和外观，则它们在规范上是等效的，即使它们是不同Unicode标量组成的。</p>
 <p>举个反例：英语中大写字母A:\u{0041}不等同于俄语中的A:\u{0410}。字符在视觉上相同，但却不具有相同的语言含义，因此也是不相等的。</p>
-<pre><code>let englishA = &quot;\u{0041}&quot;//!&lt; A
-let RussianA = &quot;\u{0410}&quot;//!&lt; A
-if englishA == RussianA {
+<pre><code>let englishA = &quot;\u&#123;0041&#125;&quot;//!&lt; A
+let RussianA = &quot;\u&#123;0410&#125;&quot;//!&lt; A
+if englishA == RussianA &#123;
     print(&quot;这两个字符串是相等的&quot;)
-} else {
+&#125; else &#123;
     print(&quot;这两个字符串是不相等的&quot;)//!&lt; log:这两个字符串是不相等的
-}
-</code></pre><p>字符串的前缀与后缀的比较：要检查字符串是否具有特定的字符串前缀或后缀，调用字符串的hasPrefix（_ :)和hasSuffix（_ :)方法，返回值都为布尔值。</p>
-<pre><code>let testStr1 = &quot;i have a cat\u{E9}?&quot;//!&lt; i have a caté?
-let testStr2 = &quot;i have a cat\u{65}\u{301}?&quot;//!&lt; i have a caté?
+&#125;
+</code></pre>
+<p>字符串的前缀与后缀的比较：要检查字符串是否具有特定的字符串前缀或后缀，调用字符串的hasPrefix（_ :)和hasSuffix（_ :)方法，返回值都为布尔值。</p>
+<pre><code>let testStr1 = &quot;i have a cat\u&#123;E9&#125;?&quot;//!&lt; i have a caté?
+let testStr2 = &quot;i have a cat\u&#123;65&#125;\u&#123;301&#125;?&quot;//!&lt; i have a caté?
 let array = [testStr1,testStr2]
-for item in array[...] {
-    if item.hasPrefix(&quot;i&quot;) {
+for item in array[...] &#123;
+    if item.hasPrefix(&quot;i&quot;) &#123;
         print(item + &quot;*&quot;)
-    }
-}
+    &#125;
+&#125;
 /*注意：hasPrefix（_ :)和hasSuffix（_ :)方法在每个字符串中的扩展字形集群之间执行逐个字符的规范等效比较。*/
-for item in array[...] {
-    if item.hasSuffix(&quot;\u{E9}?&quot;) {
+for item in array[...] &#123;
+    if item.hasSuffix(&quot;\u&#123;E9&#125;?&quot;) &#123;
         print(item + &quot;*&quot;)//!&lt;输出两次： i have a caté?*
-    }
-}
-</code></pre><p>注意：在每个字符串中调用hasPrefix（_ :)和hasSuffix（_ :)方法，会在字符串的扩展字形集群之间逐个字符进行规范的相等比较</p>
+    &#125;
+&#125;
+</code></pre>
+<p>注意：在每个字符串中调用hasPrefix（_ :)和hasSuffix（_ :)方法，会在字符串的扩展字形集群之间逐个字符进行规范的相等比较</p>
 
       
 
@@ -1914,7 +2004,7 @@ for item in array[...] {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/06/Swift 5.1 (3) - 字符串/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/06/Swift%205.1%20(3)%20-%20%E5%AD%97%E7%AC%A6%E4%B8%B2/">展开全文 >></a>
         </p>
       
 
@@ -1951,12 +2041,12 @@ for item in array[...] {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/05/springboot+mybatis实现数据库的读写分离/">springboot+mybatis实现数据库的读写分离</a>
+      <a class="article-title" href="/2019/09/05/springboot+mybatis%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/">springboot+mybatis实现数据库的读写分离</a>
     </h1>
   
 
         
-        <a href="/2019/09/05/springboot+mybatis实现数据库的读写分离/" class="archive-article-date">
+        <a href="/2019/09/05/springboot+mybatis%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/" class="archive-article-date">
   	<time datetime="2019-09-05T06:47:07.092Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
 </a>
         
@@ -1969,31 +2059,33 @@ for item in array[...] {
 demo中使用了mybatis-plus，实际使用mybatis也是一样的
 demo中使用的数据库是postgres，实际任一类型主从备份的数据库示例都是一样的
 demo中使用了alibaba的druid数据源，实际其他类型的数据源也是一样的
-</code></pre><h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>首先，我们需要两个数据库实例，一为master，一为slave。<br>所有的写操作，我们在master节点上操作<br>所有的读操作，我们在slave节点上操作</p>
+</code></pre>
+<h2 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h2><p>首先，我们需要两个数据库实例，一为master，一为slave。<br>所有的写操作，我们在master节点上操作<br>所有的读操作，我们在slave节点上操作</p>
 <p>需要注意的是：对于一次有读有写的事务，事务内的读操作也不应该在slave节点上，所有操作都应该在master节点上</p>
 <p>先跑起来两个pg的实例，其中15432端口对应的master节点，15433端口对应的slave节点：</p>
 <pre><code>docker run \
     --name pg-master \
     -p 15432:5432 \
-    --env &apos;PG_PASSWORD=postgres&apos; \
-    --env &apos;REPLICATION_MODE=master&apos; \
-    --env &apos;REPLICATION_USER=repluser&apos; \
-       --env &apos;REPLICATION_PASS=repluserpass&apos; \
+    --env &#39;PG_PASSWORD=postgres&#39; \
+    --env &#39;REPLICATION_MODE=master&#39; \
+    --env &#39;REPLICATION_USER=repluser&#39; \
+   	--env &#39;REPLICATION_PASS=repluserpass&#39; \
     -d sameersbn/postgresql:10-2
 
 docker run \
     --name pg-slave \
     -p 15433:5432 \
     --link pg-master:master \
-    --env &apos;PG_PASSWORD=postgres&apos; \
-    --env &apos;REPLICATION_MODE=slave&apos; \
-    --env &apos;REPLICATION_SSLMODE=prefer&apos; \
-    --env &apos;REPLICATION_HOST=master&apos; \
-    --env &apos;REPLICATION_PORT=5432&apos; \
-    --env &apos;REPLICATION_USER=repluser&apos; \
-       --env &apos;REPLICATION_PASS=repluserpass&apos; \
+    --env &#39;PG_PASSWORD=postgres&#39; \
+    --env &#39;REPLICATION_MODE=slave&#39; \
+    --env &#39;REPLICATION_SSLMODE=prefer&#39; \
+    --env &#39;REPLICATION_HOST=master&#39; \
+    --env &#39;REPLICATION_PORT=5432&#39; \
+    --env &#39;REPLICATION_USER=repluser&#39; \
+   	--env &#39;REPLICATION_PASS=repluserpass&#39; \
     -d sameersbn/postgresql:10-2
-</code></pre><h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>整个实现主要有3个部分：</p>
+</code></pre>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>整个实现主要有3个部分：</p>
 <ul>
 <li>配置两个数据源</li>
 <li>实现AbstractRoutingDataSource来动态的使用数据源</li>
@@ -2008,40 +2100,43 @@ docker run \
 datasource:
   write:
     driver-class-name: org.postgresql.Driver
-    url: &quot;${DB_URL_WRITE:jdbc:postgresql://localhost:15432/postgres}&quot;
-    username: &quot;${DB_USERNAME_WRITE:postgres}&quot;
-    password: &quot;${DB_PASSWORD_WRITE:postgres}&quot;
+    url: &quot;$&#123;DB_URL_WRITE:jdbc:postgresql://localhost:15432/postgres&#125;&quot;
+    username: &quot;$&#123;DB_USERNAME_WRITE:postgres&#125;&quot;
+    password: &quot;$&#123;DB_PASSWORD_WRITE:postgres&#125;&quot;
   read:
     driver-class-name: org.postgresql.Driver
-    url: &quot;${DB_URL_READ:jdbc:postgresql://localhost:15433/postgres}&quot;
-    username: &quot;${DB_USERNAME_READ:postgres}&quot;
-    password: &quot;${DB_PASSWORD_READ:postgres}&quot;
+    url: &quot;$&#123;DB_URL_READ:jdbc:postgresql://localhost:15433/postgres&#125;&quot;
+    username: &quot;$&#123;DB_USERNAME_READ:postgres&#125;&quot;
+    password: &quot;$&#123;DB_PASSWORD_READ:postgres&#125;&quot;
 
 
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
-</code></pre><p>write写数据源，对应到master节点的15432端口<br>read读数据源，对应到slave节点的15433端口</p>
+    
+</code></pre>
+<p>write写数据源，对应到master节点的15432端口<br>read读数据源，对应到slave节点的15433端口</p>
 <p>将两个数据源信息注入为DataSourceProperties：</p>
 <pre><code>@Configuration
-public class DataSourcePropertiesConfig {
+public class DataSourcePropertiesConfig &#123;
 
     @Primary
     @Bean(&quot;writeDataSourceProperties&quot;)
     @ConfigurationProperties(&quot;datasource.write&quot;)
-    public DataSourceProperties writeDataSourceProperties() {
+    public DataSourceProperties writeDataSourceProperties() &#123;
         return new DataSourceProperties();
-    }
+    &#125;
 
     @Bean(&quot;readDataSourceProperties&quot;)
     @ConfigurationProperties(&quot;datasource.read&quot;)
-    public DataSourceProperties readDataSourceProperties() {
+    public DataSourceProperties readDataSourceProperties() &#123;
         return new DataSourceProperties();
-    }
-}
-</code></pre><h3 id="实现AbstractRoutingDataSource"><a href="#实现AbstractRoutingDataSource" class="headerlink" title="实现AbstractRoutingDataSource"></a>实现AbstractRoutingDataSource</h3><p>spring提供了AbstractRoutingDataSource，提供了动态选择数据源的功能，替换原有的单一数据源后，即可实现读写分离:</p>
+    &#125;
+&#125;
+</code></pre>
+<h3 id="实现AbstractRoutingDataSource"><a href="#实现AbstractRoutingDataSource" class="headerlink" title="实现AbstractRoutingDataSource"></a>实现AbstractRoutingDataSource</h3><p>spring提供了AbstractRoutingDataSource，提供了动态选择数据源的功能，替换原有的单一数据源后，即可实现读写分离:</p>
 <pre><code>@Component
-public class CustomRoutingDataSource extends AbstractRoutingDataSource {
+public class CustomRoutingDataSource extends AbstractRoutingDataSource &#123;
 
     @Resource(name = &quot;writeDataSourceProperties&quot;)
     private DataSourceProperties writeProperties;
@@ -2051,12 +2146,12 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
 
 
     @Override
-    public void afterPropertiesSet() {
+    public void afterPropertiesSet() &#123;
         DataSource writeDataSource = 
             writeProperties.initializeDataSourceBuilder().type(DruidDataSource.class).build();
         DataSource readDataSource = 
             readProperties.initializeDataSourceBuilder().type(DruidDataSource.class).build();
-
+        
         setDefaultTargetDataSource(writeDataSource);
 
         Map&lt;Object, Object&gt; dataSourceMap = new HashMap&lt;&gt;();
@@ -2065,24 +2160,25 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
         setTargetDataSources(dataSourceMap);
 
         super.afterPropertiesSet();
-    }
+    &#125;
 
     @Override
-    protected Object determineCurrentLookupKey() {
+    protected Object determineCurrentLookupKey() &#123;
         String key = DataSourceHolder.getDataSource();
 
-        if (key == null) {
+        if (key == null) &#123;
              // default datasource
             return WRITE_DATASOURCE;
-        }
+        &#125;
 
         return key;
-    }
+    &#125;
 
-}
-</code></pre><p>AbstractRoutingDataSource内部维护了一个Map&lt;Object, Object&gt;的Map<br>在初始化过程中，我们将write、read两个数据源加入到这个map<br>调用数据源时：determineCurrentLookupKey()方法返回了需要使用的数据源对应的key</p>
+&#125;
+</code></pre>
+<p>AbstractRoutingDataSource内部维护了一个Map&lt;Object, Object&gt;的Map<br>在初始化过程中，我们将write、read两个数据源加入到这个map<br>调用数据源时：determineCurrentLookupKey()方法返回了需要使用的数据源对应的key</p>
 <p>当前线程需要使用的数据源对应的key，是在DataSourceHolder类中维护的：</p>
-<pre><code>public class DataSourceHolder {
+<pre><code>public class DataSourceHolder &#123;
 
     public static final String WRITE_DATASOURCE = &quot;write&quot;;
     public static final String READ_DATASOURCE = &quot;read&quot;;
@@ -2090,57 +2186,59 @@ public class CustomRoutingDataSource extends AbstractRoutingDataSource {
     private static final ThreadLocal&lt;String&gt; local = new ThreadLocal&lt;&gt;();
 
 
-    public static void putDataSource(String dataSource) {
+    public static void putDataSource(String dataSource) &#123;
         local.set(dataSource);
-    }
+    &#125;
 
-    public static String getDataSource() {
+    public static String getDataSource() &#123;
         return local.get();
-    }
+    &#125;
 
-    public static void clearDataSource() {
+    public static void clearDataSource() &#123;
         local.remove();
-    }
+    &#125;
 
-}
-</code></pre><h3 id="实现mybatis-plugin"><a href="#实现mybatis-plugin" class="headerlink" title="实现mybatis plugin"></a>实现mybatis plugin</h3><p>上面提到了当前线程使用的数据源对应的key，这个key需要在mybatis plugin根据sql类型来确定 MybatisDataSourceInterceptor类：</p>
+&#125;
+</code></pre>
+<h3 id="实现mybatis-plugin"><a href="#实现mybatis-plugin" class="headerlink" title="实现mybatis plugin"></a>实现mybatis plugin</h3><p>上面提到了当前线程使用的数据源对应的key，这个key需要在mybatis plugin根据sql类型来确定 MybatisDataSourceInterceptor类：</p>
 <pre><code>@Component
-@Intercepts({
+@Intercepts(&#123;
         @Signature(type = Executor.class, method = &quot;update&quot;,
-                args = {MappedStatement.class, Object.class}),
+                args = &#123;MappedStatement.class, Object.class&#125;),
         @Signature(type = Executor.class, method = &quot;query&quot;,
-                args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
+                args = &#123;MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class&#125;),
         @Signature(type = Executor.class, method = &quot;query&quot;,
-                args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class,
-                        CacheKey.class, BoundSql.class})})
-public class MybatisDataSourceInterceptor implements Interceptor {
+                args = &#123;MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class,
+                        CacheKey.class, BoundSql.class&#125;)&#125;)
+public class MybatisDataSourceInterceptor implements Interceptor &#123;
 
     @Override
-    public Object intercept(Invocation invocation) throws Throwable {
+    public Object intercept(Invocation invocation) throws Throwable &#123;
 
         boolean synchronizationActive = TransactionSynchronizationManager.isSynchronizationActive();
-        if(!synchronizationActive) {
+        if(!synchronizationActive) &#123;
             Object[] objects = invocation.getArgs();
             MappedStatement ms = (MappedStatement) objects[0];
 
-            if (ms.getSqlCommandType().equals(SqlCommandType.SELECT)) {
+            if (ms.getSqlCommandType().equals(SqlCommandType.SELECT)) &#123;
                 DataSourceHolder.putDataSource(DataSourceHolder.READ_DATASOURCE);
-            }
-        }
+            &#125;
+        &#125;
 
         return invocation.proceed();
-    }
+    &#125;
 
     @Override
-    public Object plugin(Object target) {
+    public Object plugin(Object target) &#123;
         return Plugin.wrap(target, this);
-    }
+    &#125;
 
     @Override
-    public void setProperties(Properties properties) {
-    }
-}
-</code></pre><p>仅当未在事务中，并且调用的sql是select类型时，在DataSourceHolder中将数据源设为read<br>其他情况下，AbstractRoutingDataSource会使用默认的write数据源</p>
+    public void setProperties(Properties properties) &#123;
+    &#125;
+&#125;
+</code></pre>
+<p>仅当未在事务中，并且调用的sql是select类型时，在DataSourceHolder中将数据源设为read<br>其他情况下，AbstractRoutingDataSource会使用默认的write数据源</p>
 <p>至此，项目已经可以自动的在读、写数据源间切换，无需修改原有的业务代码<br>最后，提供demo使用依赖版本</p>
 <pre><code>&lt;parent&gt;
     &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
@@ -2202,6 +2300,7 @@ public class MybatisDataSourceInterceptor implements Interceptor {
     &lt;/dependency&gt;
 &lt;/dependencies&gt;
 </code></pre>
+
       
 
       
@@ -2224,7 +2323,7 @@ public class MybatisDataSourceInterceptor implements Interceptor {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/05/springboot+mybatis实现数据库的读写分离/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/05/springboot+mybatis%E5%AE%9E%E7%8E%B0%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB/">展开全文 >></a>
         </p>
       
 
@@ -2261,12 +2360,12 @@ public class MybatisDataSourceInterceptor implements Interceptor {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/05/迁至WKWebView跨过的那些坑/">迁至WKWebView跨过的那些坑</a>
+      <a class="article-title" href="/2019/09/05/%E8%BF%81%E8%87%B3WKWebView%E8%B7%A8%E8%BF%87%E7%9A%84%E9%82%A3%E4%BA%9B%E5%9D%91/">迁至WKWebView跨过的那些坑</a>
     </h1>
   
 
         
-        <a href="/2019/09/05/迁至WKWebView跨过的那些坑/" class="archive-article-date">
+        <a href="/2019/09/05/%E8%BF%81%E8%87%B3WKWebView%E8%B7%A8%E8%BF%87%E7%9A%84%E9%82%A3%E4%BA%9B%E5%9D%91/" class="archive-article-date">
   	<time datetime="2019-09-05T06:38:49.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
 </a>
         
@@ -2277,38 +2376,39 @@ public class MybatisDataSourceInterceptor implements Interceptor {
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在iOS中有两种网页视图可以加载网页除了系统的那个控制器。一种是UIWebView，另一种是WKWebView，其实WKWebView就是想替代UIWebView的，因为我们都知道UIWebView非常占内存等一些问题，但是现在很多人还在使用UIWebView这是为啥呢？而且官方也宣布在iOS12中废弃了UIWebView让我们尽快使用WKWebView。其实也就是这些东西：<strong>页面尺寸问题、JS交互、请求拦截、cookie带不上的问题。</strong>所以有时想要迁移还得解决这些问题，所以还是很烦的，所以一一解决喽。</p>
 <h2 id="页面尺寸的问题"><a href="#页面尺寸的问题" class="headerlink" title="页面尺寸的问题"></a>页面尺寸的问题</h2><p>我们知道有些网页在UIWebView上显示好好地，使用WKWebView就会出现尺寸的问题，这时很纳闷，安卓也不会，你总不说是前端的问题吧？但其实是WKWebView中网页是需要适配一下，所以自己添加JS吧，当然和前端关系好就可以叫他加的。下面通过设置配置中的userContentController来添加JS。</p>
 <pre><code>WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-NSString *jScript = @&quot;var meta = document.createElement(&apos;meta&apos;); meta.setAttribute(&apos;name&apos;, &apos;viewport&apos;); meta.setAttribute(&apos;content&apos;, &apos;width=device-width&apos;); document.getElementsByTagName(&apos;head&apos;)[0].appendChild(meta);&quot;;
+NSString *jScript = @&quot;var meta = document.createElement(&#39;meta&#39;); meta.setAttribute(&#39;name&#39;, &#39;viewport&#39;); meta.setAttribute(&#39;content&#39;, &#39;width=device-width&#39;); document.getElementsByTagName(&#39;head&#39;)[0].appendChild(meta);&quot;;
 WKUserScript *wkUScript = [[WKUserScript alloc] initWithSource:jScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
 WKUserContentController *wkUController = [[WKUserContentController alloc] init];
 [wkUController addUserScript:wkUScript];
 configuration.userContentController = wkUController;
-</code></pre><h2 id="JS交互"><a href="#JS交互" class="headerlink" title="JS交互"></a>JS交互</h2><p>我们都知道在UIWebView中可以使用自家的JavaScriptCore来进行交互非常的方便。在JavaScriptCore中有三者比较常用那就是JSContext(上下文)、JSValue（类型转换）、JSExport(js调OC模型方法)。</p>
+</code></pre>
+<h2 id="JS交互"><a href="#JS交互" class="headerlink" title="JS交互"></a>JS交互</h2><p>我们都知道在UIWebView中可以使用自家的JavaScriptCore来进行交互非常的方便。在JavaScriptCore中有三者比较常用那就是JSContext(上下文)、JSValue（类型转换）、JSExport(js调OC模型方法)。</p>
 <h3 id="在UIWebView中的便利交互方法"><a href="#在UIWebView中的便利交互方法" class="headerlink" title="在UIWebView中的便利交互方法"></a>在UIWebView中的便利交互方法</h3><pre><code>//JSContext就为其提供着运行环境 H5上下文
-- (void)webViewDidFinishLoad:(UIWebView *)webView{
+- (void)webViewDidFinishLoad:(UIWebView *)webView&#123;
     JSContext *jsContext = [self.webView valueForKeyPath:@&quot;documentView.webView.mainFrame.javaScriptContext&quot;];
     self.jsContext = jsContext;
-}
+&#125;
 // 执行脚本增加js全局变量
-[self.jsContext evaluateScript:@&quot;var arr = [3, &apos;3&apos;, &apos;abc&apos;];&quot;];
+[self.jsContext evaluateScript:@&quot;var arr = [3, &#39;3&#39;, &#39;abc&#39;];&quot;];
 // ⚠️添加JS方法，需要注意的是添加的方法会覆盖原有的JS方法，因为我们是在网页加载成功后获取上下文来操作的。
 // 无参数的
-self.jsContext[@&quot;alertMessage&quot;] = ^() {
+self.jsContext[@&quot;alertMessage&quot;] = ^() &#123;
    NSLog(@&quot;JS端调用alertMessage时就会跑到这里来！&quot;);
-};
+&#125;;
 // 带参数的，值必须进行转换
- self.jsContext[@&quot;showDict&quot;] = ^(JSValue *value) {
+ self.jsContext[@&quot;showDict&quot;] = ^(JSValue *value) &#123;
     NSArray *args = [JSContext currentArguments];
     JSValue *dictValue = args[0];
     NSDictionary *dict = dictValue.toDictionary;
     NSLog(@&quot;%@&quot;,dict);
- };
+ &#125;;
 // 获取JS中的arr数据
 JSValue *arrValue = self.jsContext[@&quot;arr&quot;];
 // 异常捕获
-self.jsContext.exceptionHandler = ^(JSContext *context, JSValue *exception) {
+self.jsContext.exceptionHandler = ^(JSContext *context, JSValue *exception) &#123;
     weakSelf.jsContext.exception = exception;
     NSLog(@&quot;exception == %@&quot;,exception);
-};
+&#125;;
 // 给JS中的对象重新赋值
 OMJSObject *omObject = [[OMJSObject alloc] init];
 self.jsContext[@&quot;omObject&quot;] = omObject;
@@ -2319,78 +2419,82 @@ NSLog(@&quot;omObject == %d&quot;,[omObject getSum:20 num2:40]);
 // 协议 - 协议方法 
 JSExportAs(getS, -(int)getSum:(int)num1 num2:(int)num2);
 @end
-</code></pre><h3 id="在WKWebView中如何做呢？"><a href="#在WKWebView中如何做呢？" class="headerlink" title="在WKWebView中如何做呢？"></a>在WKWebView中如何做呢？</h3><p>不能像上面那样，系统提供的是通过以下两种方法，所以是比较难受，而且还得前端使用messageHandler来调用，即安卓和iOS分开处理。</p>
+</code></pre>
+<h3 id="在WKWebView中如何做呢？"><a href="#在WKWebView中如何做呢？" class="headerlink" title="在WKWebView中如何做呢？"></a>在WKWebView中如何做呢？</h3><p>不能像上面那样，系统提供的是通过以下两种方法，所以是比较难受，而且还得前端使用messageHandler来调用，即安卓和iOS分开处理。</p>
 <pre><code>// 直接调用js
-NSString *jsStr = @&quot;var arr = [3, &apos;3&apos;, &apos;abc&apos;]; &quot;;
-[self.webView evaluateJavaScript:jsStr completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+NSString *jsStr = @&quot;var arr = [3, &#39;3&#39;, &#39;abc&#39;]; &quot;;
+[self.webView evaluateJavaScript:jsStr completionHandler:^(id _Nullable result, NSError * _Nullable error) &#123;
    NSLog(@&quot;%@----%@&quot;,result, error);
-}];
+&#125;];
 // 下面是注册名称后，js使用messageHandlers调用了指定名称就会进入到代理中
 
 // OC我们添加了js名称后
-- (void)viewDidLoad{
+- (void)viewDidLoad&#123;
   //...
   [wkUController addScriptMessageHandler:self name:@&quot;showtime&quot;];
   configuration.userContentController = wkUController;
-}
+&#125;
 
 // JS中messageHandlers调用我们在OC中的名称一致时就会进入后面的到OC的代理
-window.webkit.messageHandlers.showtime.postMessage(&apos;&apos;);
+window.webkit.messageHandlers.showtime.postMessage(&#39;&#39;);
 
 // 代理，判断逻辑
-- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message{
-    if ([message.name isEqualToString:@&quot;showtime&quot;]) {
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message&#123;
+    if ([message.name isEqualToString:@&quot;showtime&quot;]) &#123;
         NSLog(@&quot;来了！&quot;);
-    }
+    &#125;
     NSLog(@&quot;message == %@ --- %@&quot;,message.name,message.body); 
-}
+&#125;
 
 // 最后在dealloc必须移除
 [self.userContentController removeScriptMessageHandlerForName:@&quot;showtime&quot;];
-</code></pre><h3 id="一直用一直爽的交互"><a href="#一直用一直爽的交互" class="headerlink" title="一直用一直爽的交互"></a>一直用一直爽的交互</h3><p>我们上面写了两者的一些交互，虽然可以用呢，但是没有带一种很简单很轻松的境界，所以有一个开源库：WebViewJavaScriptBridge。这个开源库可以同时兼容两者，而且交互很简单，但是你必须得前端一起，否则就哦豁了。</p>
+</code></pre>
+<h3 id="一直用一直爽的交互"><a href="#一直用一直爽的交互" class="headerlink" title="一直用一直爽的交互"></a>一直用一直爽的交互</h3><p>我们上面写了两者的一些交互，虽然可以用呢，但是没有带一种很简单很轻松的境界，所以有一个开源库：WebViewJavaScriptBridge。这个开源库可以同时兼容两者，而且交互很简单，但是你必须得前端一起，否则就哦豁了。</p>
 <pre><code>// 使用
 self.wjb = [WebViewJavascriptBridge bridgeForWebView:self.webView];
 // 如果你要在VC中实现 UIWebView的代理方法 就实现下面的代码(否则省略)
 [self.wjb setWebViewDelegate:self];
 
 // 注册js方法名称
-[self.wjb registerHandler:@&quot;jsCallsOC&quot; handler:^(id data, WVJBResponseCallback responseCallback) {
+[self.wjb registerHandler:@&quot;jsCallsOC&quot; handler:^(id data, WVJBResponseCallback responseCallback) &#123;
    NSLog(@&quot;currentThread == %@&quot;,[NSThread currentThread]);
    NSLog(@&quot;data == %@ -- %@&quot;,data,responseCallback);
-}];
+&#125;];
 
 // 调用JS
-dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        [self.wjb callHandler:@&quot;OCCallJSFunction&quot; data:@&quot;OC调用JS&quot; responseCallback:^(id responseData) {
+dispatch_async(dispatch_get_global_queue(0, 0), ^&#123;
+        [self.wjb callHandler:@&quot;OCCallJSFunction&quot; data:@&quot;OC调用JS&quot; responseCallback:^(id responseData) &#123;
            NSLog(@&quot;currentThread == %@&quot;,[NSThread currentThread]);
            NSLog(@&quot;调用完JS后的回调：%@&quot;,responseData);
-        }];
-});
-</code></pre><p>前端使用实例如下，具体使用方法可以查看WebViewJavaScriptBridge。</p>
-<pre><code>function setupWebViewJavascriptBridge(callback) {
-    if (window.WebViewJavascriptBridge) { return callback(WebViewJavascriptBridge); }
-    if (window.WVJBCallbacks) { return window.WVJBCallbacks.push(callback); }
+        &#125;];
+&#125;);
+</code></pre>
+<p>前端使用实例如下，具体使用方法可以查看WebViewJavaScriptBridge。</p>
+<pre><code>function setupWebViewJavascriptBridge(callback) &#123;
+    if (window.WebViewJavascriptBridge) &#123; return callback(WebViewJavascriptBridge); &#125;
+    if (window.WVJBCallbacks) &#123; return window.WVJBCallbacks.push(callback); &#125;
     window.WVJBCallbacks = [callback];
-    var WVJBIframe = document.createElement(&apos;iframe&apos;);
-    WVJBIframe.style.display = &apos;none&apos;;
-    WVJBIframe.src = &apos;https://__bridge_loaded__&apos;;
+    var WVJBIframe = document.createElement(&#39;iframe&#39;);
+    WVJBIframe.style.display = &#39;none&#39;;
+    WVJBIframe.src = &#39;https://__bridge_loaded__&#39;;
     document.documentElement.appendChild(WVJBIframe);
-    setTimeout(function() { document.documentElement.removeChild(WVJBIframe) }, 0)
-}
+    setTimeout(function() &#123; document.documentElement.removeChild(WVJBIframe) &#125;, 0)
+&#125;
 
-setupWebViewJavascriptBridge(function(bridge) {
-
+setupWebViewJavascriptBridge(function(bridge) &#123;
+    
     /* Initialize your app here */
 
-    bridge.registerHandler(&apos;JS Echo&apos;, function(data, responseCallback) {
+    bridge.registerHandler(&#39;JS Echo&#39;, function(data, responseCallback) &#123;
         console.log(&quot;JS Echo called with:&quot;, data)
         responseCallback(data)
-    })
-    bridge.callHandler(&apos;ObjC Echo&apos;, {&apos;key&apos;:&apos;value&apos;}, function responseCallback(responseData) {
+    &#125;)
+    bridge.callHandler(&#39;ObjC Echo&#39;, &#123;&#39;key&#39;:&#39;value&#39;&#125;, function responseCallback(responseData) &#123;
         console.log(&quot;JS received response:&quot;, responseData)
-    })
-})
-</code></pre><h2 id="请求拦截"><a href="#请求拦截" class="headerlink" title="请求拦截"></a>请求拦截</h2><p>我们UIWebView在早期是使用- (BOOL)webView:(UIWebView <em>)webView shouldStartLoadWithRequest:(NSURLRequest </em>)request navigationType:(UIWebViewNavigationType)navigationType来根据scheme、host、pathComponents进行拦截做自定义逻辑处理。但是这种方法不是很灵活，于是就使用NSURLProtocol来进行拦截，例如微信拦截淘宝一样，直接显示一个提示。又或者是拦截请求调用本地的接口，打开相机、录音、相册等功能。还能直接拦截后改变原有的request，直接返回数据或者其他的url，在一些去除广告时可以的用得上。</p>
+    &#125;)
+&#125;)
+</code></pre>
+<h2 id="请求拦截"><a href="#请求拦截" class="headerlink" title="请求拦截"></a>请求拦截</h2><p>我们UIWebView在早期是使用- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType来根据scheme、host、pathComponents进行拦截做自定义逻辑处理。但是这种方法不是很灵活，于是就使用NSURLProtocol来进行拦截，例如微信拦截淘宝一样，直接显示一个提示。又或者是拦截请求调用本地的接口，打开相机、录音、相册等功能。还能直接拦截后改变原有的request，直接返回数据或者其他的url，在一些去除广告时可以的用得上。</p>
 <p>我们使用的时候必须要使用NSURLProtocol的子类来进行一些操作。并在使用前需要注册自定义的Class。拦截后记得进行标记一下，防止自循环多执行。可惜的是在WKWebView中不能进行拦截后处理的操作，只能监听却改变不了。源于WKWebView采用的是webkit加载，和系统的浏览器一样的机制。</p>
 <pre><code>// 子类
 @interface OMURLProtocol : NSURLProtocol&lt;NSURLSessionDataDelegate&gt;
@@ -2415,7 +2519,8 @@ setupWebViewJavascriptBridge(function(bridge) {
 + (void)setProperty:(id)value forKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
 // 移除标记
 + (void)removePropertyForKey:(NSString *)key inRequest:(NSMutableURLRequest *)request;
-</code></pre><h3 id="请求头或数据混乱问题"><a href="#请求头或数据混乱问题" class="headerlink" title="请求头或数据混乱问题"></a>请求头或数据混乱问题</h3><p>还需要注意的一点是，如果实现线了拦截处理的话，我们在使用AFN和URLSession进行访问的时候拦截会发现数据或请求头可能和你拦截处理后的数据或请求不符合预期，这是因为我们在拦截的时候只是先请求了A后请求了B，这是不符合预期的，虽然URLConnection不会但是已被废弃不值得提倡使用。我们通过在拦截的时候通过LLDB打印session中配置的协议时，发现是这样的没有包含我们自定义的协议，我们通过Runtime交换方法交换protocolClasses方法，我们实现我们自己的protocolClasses方法。但是为了保证系统原有的属性，我们应该在系统原有的协议表上加上我们的协议类。在当前我们虽然可以通过[NSURLSession sharedSession].configuration.protocolClasses;获取系统默认的协议类，但是如果我们在当前自定义的类里protocolClasses写的话会造成死循环，因为我们交换了该属性的getter方法。我们使用保存类名然后存储至NSUserDefaults，取值时在还原class。</p>
+</code></pre>
+<h3 id="请求头或数据混乱问题"><a href="#请求头或数据混乱问题" class="headerlink" title="请求头或数据混乱问题"></a>请求头或数据混乱问题</h3><p>还需要注意的一点是，如果实现线了拦截处理的话，我们在使用AFN和URLSession进行访问的时候拦截会发现数据或请求头可能和你拦截处理后的数据或请求不符合预期，这是因为我们在拦截的时候只是先请求了A后请求了B，这是不符合预期的，虽然URLConnection不会但是已被废弃不值得提倡使用。我们通过在拦截的时候通过LLDB打印session中配置的协议时，发现是这样的没有包含我们自定义的协议，我们通过Runtime交换方法交换protocolClasses方法，我们实现我们自己的protocolClasses方法。但是为了保证系统原有的属性，我们应该在系统原有的协议表上加上我们的协议类。在当前我们虽然可以通过[NSURLSession sharedSession].configuration.protocolClasses;获取系统默认的协议类，但是如果我们在当前自定义的类里protocolClasses写的话会造成死循环，因为我们交换了该属性的getter方法。我们使用保存类名然后存储至NSUserDefaults，取值时在还原class。</p>
 <pre><code>po session.configuration.protocolClasses
 &lt;__NSArrayI 0x600001442d00&gt;(
 _NSURLHTTPProtocol,
@@ -2427,12 +2532,12 @@ NSAboutURLProtocol
 
 
 --- // 自定义返回我们的协议类
-- (NSArray *)protocolClasses {
+- (NSArray *)protocolClasses &#123;
     NSArray *originalProtocols = [OMURLProtocol readOriginalProtocols];
     NSMutableArray *newProtocols = [NSMutableArray arrayWithArray:originalProtocols];
     [newProtocols addObject:[OMURLProtocol class]];
     return newProtocols;
-}
+&#125;
 
 // 我们再次打印时发现已经加上我们自定义的协议类了
 po session.configuration.protocolClasses
@@ -2444,61 +2549,65 @@ _NSURLFileProtocol,
 NSAboutURLProtocol,
 OMURLProtocol
 )
-</code></pre><hr>
+</code></pre>
+<hr>
 <pre><code>// 存储系统原有的协议类
-+ (void)saveOriginalProtocols: (NSArray&lt;Class&gt; *)protocols{
++ (void)saveOriginalProtocols: (NSArray&lt;Class&gt; *)protocols&#123;
     NSMutableArray *protocolNameArray = [NSMutableArray array];
-    for (Class protocol in protocols){
+    for (Class protocol in protocols)&#123;
         [protocolNameArray addObject:NSStringFromClass(protocol)];
-    }
+    &#125;
     NSLog(@&quot;协议数组为： %@&quot;, protocolNameArray);
     [[NSUserDefaults standardUserDefaults] setObject:protocolNameArray forKey:originalProtocolsKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
-}
+&#125;
 
 // 获取系统原有的协议类
-+ (NSArray&lt;Class&gt; *)readOriginalProtocols{
++ (NSArray&lt;Class&gt; *)readOriginalProtocols&#123;
     NSArray *classNames = [[NSUserDefaults standardUserDefaults] valueForKey:originalProtocolsKey];
     NSMutableArray *origianlProtocols = [NSMutableArray array];
-    for (NSString *name in classNames){
+    for (NSString *name in classNames)&#123;
         Class class = NSClassFromString(name);
         [origianlProtocols addObject: class];
-    }
+    &#125;
     return origianlProtocols;
-}
-</code></pre><hr>
-<pre><code>+ (void)hookNSURLSessionConfiguration{
+&#125;
+</code></pre>
+<hr>
+<pre><code>+ (void)hookNSURLSessionConfiguration&#123;
     NSArray *originalProtocols = [NSURLSession sharedSession].configuration.protocolClasses;
     [self saveOriginalProtocols:originalProtocols];
     Class cls = NSClassFromString(@&quot;__NSCFURLSessionConfiguration&quot;) ?: NSClassFromString(@&quot;NSURLSessionConfiguration&quot;);
     Method originalMethod = class_getInstanceMethod(cls, @selector(protocolClasses));
     Method stubMethod = class_getInstanceMethod([self class], @selector(protocolClasses));
-    if (!originalMethod || !stubMethod) {
+    if (!originalMethod || !stubMethod) &#123;
         [NSException raise:NSInternalInconsistencyException format:@&quot;没有这个方法 无法交换&quot;];
-    }
+    &#125;
     method_exchangeImplementations(originalMethod, stubMethod);
-}
-</code></pre><h3 id="Cookie的携带问题"><a href="#Cookie的携带问题" class="headerlink" title="Cookie的携带问题"></a>Cookie的携带问题</h3><p>很多应用场景中需要使用session来进行处理，在UIWebView中很容易做到携带这些Cookie，但是由于WKWebView的机制不一样，跨域会出现丢失cookie的情况是很糟糕的。目前有两种用法：脚本和手动添加cookie。脚本不太靠谱，建议使用手动添加更为保险。</p>
-<p>// 使用脚本来添加cookie</p>
+&#125;
+</code></pre>
+<h3 id="Cookie的携带问题"><a href="#Cookie的携带问题" class="headerlink" title="Cookie的携带问题"></a>Cookie的携带问题</h3><p>很多应用场景中需要使用session来进行处理，在UIWebView中很容易做到携带这些Cookie，但是由于WKWebView的机制不一样，跨域会出现丢失cookie的情况是很糟糕的。目前有两种用法：脚本和手动添加cookie。脚本不太靠谱，建议使用手动添加更为保险。</p>
+<p>&#x2F;&#x2F; 使用脚本来添加cookie</p>
 <pre><code>// 获取去cookie数据
 - (NSString *)cookieString
-{
+&#123;
     NSMutableString *script = [NSMutableString string];
-    [script appendString:@&quot;var cookieNames = document.cookie.split(&apos;; &apos;).map(function(cookie) { return cookie.split(&apos;=&apos;)[0] } );\n&quot;];
-    for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]) {
+    [script appendString:@&quot;var cookieNames = document.cookie.split(&#39;; &#39;).map(function(cookie) &#123; return cookie.split(&#39;=&#39;)[0] &#125; );\n&quot;];
+    for (NSHTTPCookie *cookie in [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies]) &#123;
 
-        if ([cookie.value rangeOfString:@&quot;&apos;&quot;].location != NSNotFound) {
+        if ([cookie.value rangeOfString:@&quot;&#39;&quot;].location != NSNotFound) &#123;
             continue;
-        }
-        [script appendFormat:@&quot;if (cookieNames.indexOf(&apos;%@&apos;) == -1) { document.cookie=&apos;%@&apos;; };\n&quot;, cookie.name, cookie.kc_formatCookieString];
-    }
+        &#125;
+        [script appendFormat:@&quot;if (cookieNames.indexOf(&#39;%@&#39;) == -1) &#123; document.cookie=&#39;%@&#39;; &#125;;\n&quot;, cookie.name, cookie.kc_formatCookieString];
+    &#125;
     return script;
-}
+&#125;
 
 // 添加cookie
 WKUserScript * cookieScript = [[WKUserScript alloc] initWithSource:[self cookieString] injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
 [[[WKUserContentController alloc] init] addUserScript: cookieScript];
-</code></pre><p>// 添加一个分类来修复cookie丢失的问题</p>
+</code></pre>
+<p>&#x2F;&#x2F; 添加一个分类来修复cookie丢失的问题</p>
 <pre><code>@interface NSURLRequest (Cookie)
 
 - (NSURLRequest *)fixCookie;
@@ -2507,32 +2616,33 @@ WKUserScript * cookieScript = [[WKUserScript alloc] initWithSource:[self cookieS
 
 @implementation NSURLRequest (Cookie)
 
-- (NSURLRequest *)fixCookie{
+- (NSURLRequest *)fixCookie&#123;
     NSMutableURLRequest *fixedRequest;
-    if ([self isKindOfClass:[NSMutableURLRequest class]]) {
+    if ([self isKindOfClass:[NSMutableURLRequest class]]) &#123;
         fixedRequest = (NSMutableURLRequest *)self;
-    } else {
+    &#125; else &#123;
         fixedRequest = self.mutableCopy;
-    }
+    &#125;
     //防止Cookie丢失
     NSDictionary *dict = [NSHTTPCookie requestHeaderFieldsWithCookies:[NSHTTPCookieStorage sharedHTTPCookieStorage].cookies];
-    if (dict.count) {
+    if (dict.count) &#123;
         NSMutableDictionary *mDict = self.allHTTPHeaderFields.mutableCopy;
         [mDict setValuesForKeysWithDictionary:dict];
         fixedRequest.allHTTPHeaderFields = mDict;
-    }
+    &#125;
     return fixedRequest;
-}
+&#125;
 
 @end
-
-
+  
+  
   // 使用场景
-- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler &#123;
     [navigationAction.request fixCookie];
     decisionHandler(WKNavigationActionPolicyAllow);
-}
+&#125;
 </code></pre>
+
       
 
       
@@ -2555,7 +2665,7 @@ WKUserScript * cookieScript = [[WKUserScript alloc] initWithSource:[self cookieS
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/05/迁至WKWebView跨过的那些坑/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/05/%E8%BF%81%E8%87%B3WKWebView%E8%B7%A8%E8%BF%87%E7%9A%84%E9%82%A3%E4%BA%9B%E5%9D%91/">展开全文 >></a>
         </p>
       
 
@@ -2592,12 +2702,12 @@ WKUserScript * cookieScript = [[WKUserScript alloc] initWithSource:[self cookieS
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/05/大型互联网公司分布式ID方案总结/">大型互联网公司分布式ID方案总结</a>
+      <a class="article-title" href="/2019/09/05/%E5%A4%A7%E5%9E%8B%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%88%86%E5%B8%83%E5%BC%8FID%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/">大型互联网公司分布式ID方案总结</a>
     </h1>
   
 
         
-        <a href="/2019/09/05/大型互联网公司分布式ID方案总结/" class="archive-article-date">
+        <a href="/2019/09/05/%E5%A4%A7%E5%9E%8B%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%88%86%E5%B8%83%E5%BC%8FID%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/" class="archive-article-date">
   	<time datetime="2019-09-05T06:26:24.083Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-05</time>
 </a>
         
@@ -2606,33 +2716,37 @@ WKUserScript * cookieScript = [[WKUserScript alloc] initWithSource:[self cookieS
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>ID是数据的唯一标识，传统的做法是利用UUID和数据库的自增ID，在互联网企业中，大部分公司使用的都是Mysql，并且因为需要事务支持，所以通常会使用Innodb存储引擎，UUID太长以及无序，所以并不适合在Innodb中来作为主键，自增ID比较合适，但是随着公司的业务发展，数据量将越来越大，需要对数据进行分表，而分表后，每个表中的数据都会按自己的节奏进行自增，很有可能出现ID冲突。这时就需要一个单独的机制来负责生成唯一ID，生成出来的ID也可以叫做分布式ID，或全局ID。下面来分析各个生成分布式ID的机制。</p>
-<p><img src="http://img.wangjungang.cn/ALQ2nU.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/ALQ2nU.jpg"></p>
 <h2 id="数据库自增ID"><a href="#数据库自增ID" class="headerlink" title="数据库自增ID"></a>数据库自增ID</h2><p>第一种方案仍然还是基于数据库的自增ID，需要单独使用一个数据库实例，在这个实例中新建一个单独的表：</p>
 <p>表结构如下</p>
 <pre><code>CREATE DATABASE `SEQID`;
 
 CREATE TABLE SEQID.SEQUENCE_ID (
     id bigint(20) unsigned NOT NULL auto_increment, 
-    stub char(10) NOT NULL default &apos;&apos;,
+    stub char(10) NOT NULL default &#39;&#39;,
     PRIMARY KEY (id),
     UNIQUE KEY stub (stub)
 ) ENGINE=MyISAM;
-</code></pre><p>可以使用下面的语句生成并获取到一个自增ID</p>
+</code></pre>
+<p>可以使用下面的语句生成并获取到一个自增ID</p>
 <pre><code>begin;
-replace into SEQUENCE_ID (stub) VALUES (&apos;anyword&apos;);
+replace into SEQUENCE_ID (stub) VALUES (&#39;anyword&#39;);
 select last_insert_id();
 commit;
-</code></pre><p>stub字段在这里并没有什么特殊的意义，只是为了方便的去插入数据，只有能插入数据才能产生自增id。而对于插入我们用的是replace，replace会先看是否存在stub指定值一样的数据，如果存在则先delete再insert，如果不存在则直接insert。</p>
+</code></pre>
+<p>stub字段在这里并没有什么特殊的意义，只是为了方便的去插入数据，只有能插入数据才能产生自增id。而对于插入我们用的是replace，replace会先看是否存在stub指定值一样的数据，如果存在则先delete再insert，如果不存在则直接insert。</p>
 <p>这种生成分布式ID的机制，需要一个单独的Mysql实例，虽然可行，但是基于性能与可靠性来考虑的话都不够，业务系统每次需要一个ID时，都需要请求数据库获取，性能低，并且如果此数据库实例下线了，那么将影响所有的业务系统。</p>
 <p>为了解决数据库可靠性问题，我们可以使用第二种分布式ID生成方案。</p>
 <h2 id="数据库多主模式"><a href="#数据库多主模式" class="headerlink" title="数据库多主模式"></a>数据库多主模式</h2><p>如果我们两个数据库组成一个主从模式集群，正常情况下可以解决数据库可靠性问题，但是如果主库挂掉后，数据没有及时同步到从库，这个时候会出现ID重复的现象。我们可以使用双主模式集群，也就是两个Mysql实例都能单独的生产自增ID，这样能够提高效率，但是如果不经过其他改造的话，这两个Mysql实例很可能会生成同样的ID。需要单独给每个Mysql实例配置不同的起始值和自增步长。</p>
 <p>第一台Mysql实例配置：</p>
 <pre><code>set @@auto_increment_offset = 1;     -- 起始值
 set @@auto_increment_increment = 2;  -- 步长
-</code></pre><p>第二台Mysql实例配置</p>
+</code></pre>
+<p>第二台Mysql实例配置</p>
 <pre><code>set @@auto_increment_offset = 2;     -- 起始值
 set @@auto_increment_increment = 2;  -- 步长
-</code></pre><p>经过上面的配置后，这两个Mysql实例生成的id序列如下：<br>mysql1,起始值为1,步长为2,ID生成的序列为：1,3,5,7,9,…<br>mysql2,起始值为2,步长为2,ID生成的序列为：2,4,6,8,10,…</p>
+</code></pre>
+<p>经过上面的配置后，这两个Mysql实例生成的id序列如下：<br>mysql1,起始值为1,步长为2,ID生成的序列为：1,3,5,7,9,…<br>mysql2,起始值为2,步长为2,ID生成的序列为：2,4,6,8,10,…</p>
 <p>对于这种生成分布式ID的方案，需要单独新增一个生成分布式ID应用，比如<br>DistributIdService，该应用提供一个接口供业务应用获取ID，业务应用需要一个ID时，通过rpc的方式请求DistributIdService，DistributIdService随机去上面的两个Mysql实例中去获取ID。</p>
 <p>实行这种方案后，就算其中某一台Mysql实例下线了，也不会影响DistributIdService，DistributIdService仍然可以利用另外一台Mysql来生成ID。</p>
 <p>但是这种方案的扩展性不太好，如果两台Mysql实例不够用，需要新增Mysql实例来提高性能时，这时就会比较麻烦。</p>
@@ -2645,41 +2759,44 @@ set @@auto_increment_increment = 2;  -- 步长
 <p>所以，我们需要对数据库表进行改动，如下：</p>
 <pre><code>CREATE TABLE id_generator (
   id int(10) NOT NULL,
-  current_max_id bigint(20) NOT NULL COMMENT &apos;当前最大id&apos;,
-  increment_step int(10) NOT NULL COMMENT &apos;号段的长度&apos;,
+  current_max_id bigint(20) NOT NULL COMMENT &#39;当前最大id&#39;,
+  increment_step int(10) NOT NULL COMMENT &#39;号段的长度&#39;,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-</code></pre><p>这个数据库表用来记录自增步长以及当前自增ID的最大值（也就是当前已经被申请的号段的最后一个值），因为自增逻辑被移到DistributIdService中去了，所以数据库不需要这部分逻辑了。</p>
+</code></pre>
+<p>这个数据库表用来记录自增步长以及当前自增ID的最大值（也就是当前已经被申请的号段的最后一个值），因为自增逻辑被移到DistributIdService中去了，所以数据库不需要这部分逻辑了。</p>
 <p>这种方案不再强依赖数据库，就算数据库不可用，那么DistributIdService也能继续支撑一段时间。但是如果DistributIdService重启，会丢失一段ID，导致ID空洞。</p>
 <p>为了提高DistributIdService的高可用，需要做一个集群，业务在请求DistributIdService集群获取ID时，会随机的选择某一个DistributIdService节点进行获取，对每一个DistributIdService节点来说，数据库连接的是同一个数据库，那么可能会产生多个DistributIdService节点同时请求数据库获取号段，那么这个时候需要利用乐观锁来进行控制，比如在数据库表中增加一个version字段，在获取号段时使用如下SQL：</p>
-<pre><code>update id_generator set current_max_id=#{newMaxId}, version=version+1 where version = #{version}
-</code></pre><p>因为newMaxId是DistributIdService中根据oldMaxId+步长算出来的，只要上面的update更新成功了就表示号段获取成功了。</p>
+<pre><code>update id_generator set current_max_id=#&#123;newMaxId&#125;, version=version+1 where version = #&#123;version&#125;
+</code></pre>
+<p>因为newMaxId是DistributIdService中根据oldMaxId+步长算出来的，只要上面的update更新成功了就表示号段获取成功了。</p>
 <p>为了提供数据库层的高可用，需要对数据库使用多主模式进行部署，对于每个数据库来说要保证生成的号段不重复，这就需要利用最开始的思路，再在刚刚的数据库表中增加起始值和步长，比如如果现在是两台Mysql，那么<br>mysql1将生成号段（1,1001]，自增的时候序列为1，3，4，5，7….<br>mysql1将生成号段（2,1002]，自增的时候序列为2，4，6，8，10…</p>
 <p>在TinyId中还增加了一步来提高效率，在上面的实现中，ID自增的逻辑是在DistributIdService中实现的，而实际上可以把自增的逻辑转移到业务应用本地，这样对于业务应用来说只需要获取号段，每次自增时不再需要请求调用DistributIdService了。</p>
-<p>作者：1点25<br>链接：<a href="https://juejin.im/post/5d6fc8eff265da03ef7a324b" target="_blank" rel="noopener">https://juejin.im/post/5d6fc8eff265da03ef7a324b</a><br>来源：掘金<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
+<p>作者：1点25<br>链接：<a target="_blank" rel="noopener" href="https://juejin.im/post/5d6fc8eff265da03ef7a324b">https://juejin.im/post/5d6fc8eff265da03ef7a324b</a><br>来源：掘金<br>著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。</p>
 <h2 id="雪花算法"><a href="#雪花算法" class="headerlink" title="雪花算法"></a>雪花算法</h2><p>上面的三种方法总的来说是基于自增思想的，而接下来就介绍比较著名的雪花算法-snowflake。</p>
 <p>我们可以换个角度来对分布式ID进行思考，只要能让负责生成分布式ID的每台机器在每毫秒内生成不一样的ID就行了。</p>
 <p>snowflake是twitter开源的分布式ID生成算法，是一种算法，所以它和上面的三种生成分布式ID机制不太一样，它不依赖数据库。</p>
 <p>核心思想是：分布式ID固定是一个long型的数字，一个long型占8个字节，也就是64个bit，原始snowflake算法中对于bit的分配如下图：</p>
-<p><img src="http://img.wangjungang.cn/3EhNZe.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/3EhNZe.jpg"></p>
 <ul>
 <li><p>第一个bit位是标识部分，在java中由于long的最高位是符号位，正数是0，负数是1，一般生成的ID为正数，所以固定为0。</p>
 </li>
-<li><p>时间戳部分占41bit，这个是毫秒级的时间，一般实现上不会存储当前的时间戳，而是时间戳的差值（当前时间-固定的开始时间），这样可以使产生的ID从更小值开始；41位的时间戳可以使用69年，(1L &lt;&lt; 41) / (1000L <em> 60 </em> 60 <em> 24 </em> 365) = 69年</p>
+<li><p>时间戳部分占41bit，这个是毫秒级的时间，一般实现上不会存储当前的时间戳，而是时间戳的差值（当前时间-固定的开始时间），这样可以使产生的ID从更小值开始；41位的时间戳可以使用69年，(1L &lt;&lt; 41) &#x2F; (1000L * 60 * 60 * 24 * 365) &#x3D; 69年</p>
 </li>
 <li><p>工作机器id占10bit，这里比较灵活，比如，可以使用前5位作为数据中心机房标识，后5位作为单机房机器标识，可以部署1024个节点。</p>
 </li>
-<li>序列号部分占12bit，支持同一毫秒内同一个节点可以生成4096个ID</li>
+<li><p>序列号部分占12bit，支持同一毫秒内同一个节点可以生成4096个ID</p>
+</li>
 </ul>
 <p>根据这个算法的逻辑，只需要将这个算法用Java语言实现出来，封装为一个工具方法，那么各个业务应用可以直接使用该工具方法来获取分布式ID，只需保证每个业务应用有自己的工作机器id即可，而不需要单独去搭建一个获取分布式ID的应用。</p>
 <p>在大厂里，其实并没有直接使用snowflake，而是进行了改造，因为snowflake算法中最难实践的就是工作机器id，原始的snowflake算法需要人工去为每台机器去指定一个机器id，并配置在某个地方从而让snowflake从此处获取机器id。</p>
 <p>但是在大厂里，机器是很多的，人力成本太大且容易出错，所以大厂对snowflake进行了改造。</p>
 <h3 id="百度（uid-generator）"><a href="#百度（uid-generator）" class="headerlink" title="百度（uid-generator）"></a>百度（uid-generator）</h3><p>uid-generator使用的就是snowflake，只是在生产机器id，也叫做workId时有所不同。<br>uid-generator中的workId是由uid-generator自动生成的，并且考虑到了应用部署在docker上的情况，在uid-generator中用户可以自己去定义workId的生成策略，默认提供的策略是：应用启动时由数据库分配。说的简单一点就是：应用在启动时会往数据库表(uid-generator需要新增一个WORKER_NODE表)中去插入一条数据，数据插入成功后返回的该数据对应的自增唯一id就是该机器的workId，而数据由host，port组成。</p>
 <p>对于uid-generator中的workId，占用了22个bit位，时间占用了28个bit位，序列化占用了13个bit位，需要注意的是，和原始的snowflake不太一样，时间的单位是秒，而不是毫秒，workId也不一样，同一个应用每重启一次就会消费一个workId。</p>
-<p><a href="https://github.com/baidu/uid-generator" target="_blank" rel="noopener">github</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/baidu/uid-generator">github</a></p>
 <h3 id="美团（Leaf）"><a href="#美团（Leaf）" class="headerlink" title="美团（Leaf）"></a>美团（Leaf）</h3><p>美团的Leaf也是一个分布式ID生成框架。它非常全面，即支持号段模式，也支持snowflake模式。号段模式这里就不介绍了，和上面的分析类似。</p>
 <p>Leaf中的snowflake模式和原始snowflake算法的不同点，也主要在workId的生成，Leaf中workId是基于ZooKeeper的顺序Id来生成的，每个应用在使用Leaf-snowflake时，在启动时都会都在Zookeeper中生成一个顺序Id，相当于一台机器对应一个顺序节点，也就是一个workId。</p>
-<p><a href="https://github.com/Meituan-Dianping/Leaf" target="_blank" rel="noopener">github</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Meituan-Dianping/Leaf">github</a></p>
 <h2 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h2><p>这里额外再介绍一下使用Redis来生成分布式ID，其实和利用Mysql自增ID类似，可以利用Redis中的incr命令来实现原子性的自增与返回，比如：</p>
 <pre><code>127.0.0.1:6379&gt; set seq_id 1     // 初始化自增ID为1
 OK
@@ -2687,7 +2804,8 @@ OK
 (integer) 2
 127.0.0.1:6379&gt; incr seq_id      // 增加1，并返回
 (integer) 3
-</code></pre><p>使用redis的效率是非常高的，但是要考虑持久化的问题。Redis支持RDB和AOF两种持久化的方式。</p>
+</code></pre>
+<p>使用redis的效率是非常高的，但是要考虑持久化的问题。Redis支持RDB和AOF两种持久化的方式。</p>
 <p>RDB持久化相当于定时打一个快照进行持久化，如果打完快照后，连续自增了几次，还没来得及做下一次快照持久化，这个时候Redis挂掉了，重启Redis后会出现ID重复。</p>
 <p>AOF持久化相当于对每条写命令进行持久化，如果Redis挂掉了，不会出现ID重复的现象，但是会由于incr命令过得，导致重启恢复数据时间过长。</p>
 
@@ -2713,7 +2831,7 @@ OK
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/05/大型互联网公司分布式ID方案总结/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/05/%E5%A4%A7%E5%9E%8B%E4%BA%92%E8%81%94%E7%BD%91%E5%85%AC%E5%8F%B8%E5%88%86%E5%B8%83%E5%BC%8FID%E6%96%B9%E6%A1%88%E6%80%BB%E7%BB%93/">展开全文 >></a>
         </p>
       
 
@@ -2745,7 +2863,7 @@ OK
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/5/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/7/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -2757,7 +2875,7 @@ OK
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -2864,10 +2982,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -2876,7 +2990,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2884,11 +2998,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2908,19 +3026,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

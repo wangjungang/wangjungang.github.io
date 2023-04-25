@@ -8,20 +8,20 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>iOS 利用运行时将对象序列化与反序列化 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在iOS中想要把一些对象数据存储到本地需要那个对象实现NSCoding协议下的两个方法 -(void) encodeWithCoder:(NSCoder *)encoder;  -(id) initWithCoder:(NSCoder *)decoder; 然后在这两个方法中实现对象序列化与反序列化的操作. 例如:  Person类有两个属性 @property (nonatomic, copy)">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="在iOS中想要把一些对象数据存储到本地需要那个对象实现NSCoding协议下的两个方法 -(void) encodeWithCoder:(NSCoder *)encoder;  -(id) initWithCoder:(NSCoder *)decoder;  然后在这两个方法中实现对象序列化与反序列化的操作. 例如:  Person类有两个属性 @property (nonatomic, copy">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS 利用运行时将对象序列化与反序列化">
-<meta property="og:url" content="http://yoursite.com/2018/11/27/iOS 利用运行时将对象序列化与反序列化/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/11/27/iOS%20%E5%88%A9%E7%94%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B0%86%E5%AF%B9%E8%B1%A1%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="在iOS中想要把一些对象数据存储到本地需要那个对象实现NSCoding协议下的两个方法 -(void) encodeWithCoder:(NSCoder *)encoder;  -(id) initWithCoder:(NSCoder *)decoder; 然后在这两个方法中实现对象序列化与反序列化的操作. 例如:  Person类有两个属性 @property (nonatomic, copy)">
-<meta property="og:locale" content="default">
+<meta property="og:description" content="在iOS中想要把一些对象数据存储到本地需要那个对象实现NSCoding协议下的两个方法 -(void) encodeWithCoder:(NSCoder *)encoder;  -(id) initWithCoder:(NSCoder *)decoder;  然后在这两个方法中实现对象序列化与反序列化的操作. 例如:  Person类有两个属性 @property (nonatomic, copy">
+<meta property="og:locale">
 <meta property="og:image" content="https://img-blog.csdn.net/20180716095810557?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
 <meta property="og:image" content="https://img-blog.csdn.net/2018071610055818?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
-<meta property="og:updated_time" content="2018-11-27T04:26:36.922Z">
+<meta property="article:published_time" content="2018-11-27T04:17:03.170Z">
+<meta property="article:modified_time" content="2018-11-27T04:26:36.922Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS 利用运行时将对象序列化与反序列化">
-<meta name="twitter:description" content="在iOS中想要把一些对象数据存储到本地需要那个对象实现NSCoding协议下的两个方法 -(void) encodeWithCoder:(NSCoder *)encoder;  -(id) initWithCoder:(NSCoder *)decoder; 然后在这两个方法中实现对象序列化与反序列化的操作. 例如:  Person类有两个属性 @property (nonatomic, copy)">
 <meta name="twitter:image" content="https://img-blog.csdn.net/20180716095810557?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
@@ -40,7 +40,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -54,7 +54,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -63,7 +63,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -112,7 +112,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -143,7 +143,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -170,7 +170,7 @@
   
 
         
-        <a href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/" class="archive-article-date">
+        <a href="/2018/11/27/iOS%20%E5%88%A9%E7%94%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B0%86%E5%AF%B9%E8%B1%A1%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="archive-article-date">
   	<time datetime="2018-11-27T04:17:03.170Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -182,63 +182,69 @@
 <pre><code>-(void) encodeWithCoder:(NSCoder *)encoder;
 
 -(id) initWithCoder:(NSCoder *)decoder;
-</code></pre><p>然后在这两个方法中实现对象序列化与反序列化的操作.</p>
+</code></pre>
+<p>然后在这两个方法中实现对象序列化与反序列化的操作.</p>
 <p>例如: </p>
 <p>Person类有两个属性</p>
 <pre><code>@property (nonatomic, copy) NSString *userName;
 @property (nonatomic, copy) NSString *passWord;
-</code></pre><p>那么如果需要实现Person类的序列化与反序列化就需要在上述两个方法中分别实现</p>
-<pre><code>-(void) encodeWithCoder:(NSCoder *)encoder {
+</code></pre>
+<p>那么如果需要实现Person类的序列化与反序列化就需要在上述两个方法中分别实现</p>
+<pre><code>-(void) encodeWithCoder:(NSCoder *)encoder &#123;
     [encoder encodeObject:_userName forKey:@&quot;userName&quot;];
     [encoder encodeObject:_passWord forKey:@&quot;passWord&quot;];
-}
+&#125;
 
--(id) initWithCoder:(NSCoder *)decoder {
+-(id) initWithCoder:(NSCoder *)decoder &#123;
     _userName = [decoder decodeObjectForKey:@&quot;userName&quot;];
     _passWord = [decoder decodeObjectForKey:@&quot;passWord&quot;];
-}
-</code></pre><p>最后在需要对象序列化的地方调用</p>
+&#125;
+</code></pre>
+<p>最后在需要对象序列化的地方调用</p>
 <pre><code>BOOL isSuccess = [NSKeyedArchiver archiveRootObject:person toFile:@&quot;archiver.dat&quot;];
-</code></pre><p>返回布尔类型可以检查序列化操作是否成功.<br>然后在需要对象反序列化的地方调用</p>
+</code></pre>
+<p>返回布尔类型可以检查序列化操作是否成功.<br>然后在需要对象反序列化的地方调用</p>
 <pre><code>Person *person = [NSKeyedUnarchiver unarchiveObjectWithFile: @&quot;archiver.dat&quot;];
-</code></pre><p>获得已序列化的对象.<br>当然,序列化的对象可以是实现了Coding协议的对象数组或者其他.</p>
+</code></pre>
+<p>获得已序列化的对象.<br>当然,序列化的对象可以是实现了Coding协议的对象数组或者其他.</p>
 <h3 id="那么重点儿来了……"><a href="#那么重点儿来了……" class="headerlink" title="那么重点儿来了……"></a>那么重点儿来了……</h3><p>在我的项目中我写了N个需要序列化的对象,然后在N个需要序列化的对象中又有N个属性,然后可能还要不定期的增加、修改、删除某些属性,那我不就需要每天辗转这些序列化对象中做一些很无聊的工作吗?<br>一想到这个我都能烦死,那该怎么办呢?</p>
 <p>我想到了运行时中是有可以动态获取类属性的方法实现的.于是我在某个类中做了以下工作:</p>
 <pre><code>//解码
  - (id)initWithCoder:(NSCoder *)coder
- {
+ &#123;
     unsigned int iVarCount = 0;
     Ivar *iVarList = class_copyIvarList([self class], &amp;iVarCount);//取得变量列表,[self class]表示对自身类进行操作
-    for (int i = 0; i &lt; iVarCount; i++) {
+    for (int i = 0; i &lt; iVarCount; i++) &#123;
         Ivar var = *(iVarList + i);
         const char * varName = ivar_getName(var);//取得变量名字，将作为key
         NSString *key = [NSString stringWithUTF8String:varName];
         //decode
         id  value = [coder decodeObjectForKey:key];//解码
-        if (value) {
+        if (value) &#123;
             [self setValue:value forKey:key];//使用KVC强制写入到对象中
-        }
-    }
+        &#125;
+    &#125;
     free(iVarList);//记得释放内存
     return self;
-}
+&#125;
 //编码
 - (void)encodeWithCoder:(NSCoder *)coder
-{
+&#123;
     unsigned int varCount = 0;
     Ivar *ivarList = class_copyIvarList([self class], &amp;varCount);
-    for (int i = 0; i &lt; varCount; i++) {
+    for (int i = 0; i &lt; varCount; i++) &#123;
         Ivar var = *(ivarList + i);
         const char *varName = ivar_getName(var);
         NSString *key = [NSString stringWithUTF8String:varName];
         id varValue = [self valueForKey:key];//使用KVC获取key对应的变量值
-        if (varValue) {
+        if (varValue) &#123;
             [coder encodeObject:varValue forKey:key];
-        }
-    }
+        &#125;
+    &#125;
     free(ivarList);
-}
-</code></pre><p>照以上写法儿一般情况下都是可以满足需求的,因为该实现中获取变量时都是指定当前类，也就是[self class].当序列化对象不是直接继承NSObject时会遗漏掉父类的属性. </p>
+&#125;
+</code></pre>
+<p>照以上写法儿一般情况下都是可以满足需求的,因为该实现中获取变量时都是指定当前类，也就是[self class].当序列化对象不是直接继承NSObject时会遗漏掉父类的属性. </p>
 <p>所以我们需要对NSObject的上层所有序列对象的类属性进行编解码.但是在用class_copyIvarList获取父类属性的时候程序在[self valueForKey:key]崩掉了.后来了解到获取父类属性用class_copyPropertyList是正常的,如果这样的话在方法中只能做判断是否是当前类了.所以只要把以下代码复制粘贴到 你的序列化对象中就可以不再关注对象的.m文件动态添加、删除、修改类属性了. </p>
 <p>另外在其他地方了解到一个问题,那就是</p>
 <pre><code>iOS中打印propertyList会发现有 superClass、
@@ -248,9 +254,9 @@ description、debugDescription、hash等四个属性。对这几个
 属性进行encode操作会导致crash。因此在encode前需要屏蔽掉这些key
 
     - (id)initWithCoder:(NSCoder *)coder    
-{    
+&#123;    
     Class cls = [self class];   
-    while (cls != [NSObject class]) {   
+    while (cls != [NSObject class]) &#123;   
         /*判断是自身类还是父类*/    
         BOOL bIsSelfClass = (cls == [self class]);  
         unsigned int iVarCount = 0; 
@@ -260,26 +266,26 @@ description、debugDescription、hash等四个属性。对这几个
         objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/   
         sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   
 
-        for (int i = 0; i &lt; sharedVarCount; i++) {  
+        for (int i = 0; i &lt; sharedVarCount; i++) &#123;  
             const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); 
             NSString *key = [NSString stringWithUTF8String:varName];   
             id varValue = [coder decodeObjectForKey:key]; 
             NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;];   
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { 
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) &#123; 
                 [self setValue:varValue forKey:key];    
-            }   
-        }   
+            &#125;   
+        &#125;   
         free(ivarList); 
         free(propList); 
         cls = class_getSuperclass(cls); 
-    }   
+    &#125;   
     return self;    
-}   
+&#125;   
 
 - (void)encodeWithCoder:(NSCoder *)coder    
-{   
+&#123;   
     Class cls = [self class];   
-    while (cls != [NSObject class]) {   
+    while (cls != [NSObject class]) &#123;   
         /*判断是自身类还是父类*/    
         BOOL bIsSelfClass = (cls == [self class]);  
         unsigned int iVarCount = 0; 
@@ -289,35 +295,36 @@ description、debugDescription、hash等四个属性。对这几个
         objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/ 
         sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   
 
-        for (int i = 0; i &lt; sharedVarCount; i++) {  
+        for (int i = 0; i &lt; sharedVarCount; i++) &#123;  
             const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); 
             NSString *key = [NSString stringWithUTF8String:varName];    
             /*valueForKey只能获取本类所有变量以及所有层级父类的属性，不包含任何父类的私有变量(会崩溃)*/  
             id varValue = [self valueForKey:key];
             NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;];    
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { 
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) &#123; 
                 [coder encodeObject:varValue forKey:key];   
-            }   
-        }   
+            &#125;   
+        &#125;   
         free(ivarList); 
         free(propList); 
         cls = class_getSuperclass(cls); 
-    }   
-}
-</code></pre><p>但是这样的话我那么多序列化对象难道要一个一个粘贴过去么? </p>
+    &#125;   
+&#125;
+</code></pre>
+<p>但是这样的话我那么多序列化对象难道要一个一个粘贴过去么? </p>
 <p>能不能再做一层封装? </p>
 <p>答案是肯定的 </p>
 <p>在项目中新建一个.h文件 </p>
-<p><img src="https://img-blog.csdn.net/20180716095810557?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+<p><img src="https://img-blog.csdn.net/20180716095810557?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
 <p>然后复制下面的代码到.h文件中</p>
 <pre><code>#import &lt;objc/runtime.h&gt;
 
 #define SERIALIZER_CODER_DECODER()     \
 \
 - (id)initWithCoder:(NSCoder *)coder    \
-{   \
+&#123;   \
     Class cls = [self class];   \
-    while (cls != [NSObject class]) {   \
+    while (cls != [NSObject class]) &#123;   \
         /*判断是自身类还是父类*/    \
         BOOL bIsSelfClass = (cls == [self class]);  \
         unsigned int iVarCount = 0; \
@@ -327,26 +334,26 @@ description、debugDescription、hash等四个属性。对这几个
         objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/   \
         sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   \
 \
-        for (int i = 0; i &lt; sharedVarCount; i++) {  \
+        for (int i = 0; i &lt; sharedVarCount; i++) &#123;  \
             const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); \
             NSString *key = [NSString stringWithUTF8String:varName];   \
             id varValue = [coder decodeObjectForKey:key];   \
             NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;]; \
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { \
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) &#123; \
                 [self setValue:varValue forKey:key];    \
-            }   \
-        }   \
+            &#125;   \
+        &#125;   \
         free(ivarList); \
         free(propList); \
         cls = class_getSuperclass(cls); \
-    }   \
+    &#125;   \
     return self;    \
-}   \
+&#125;   \
 \
 - (void)encodeWithCoder:(NSCoder *)coder    \
-{   \
+&#123;   \
     Class cls = [self class];   \
-    while (cls != [NSObject class]) {   \
+    while (cls != [NSObject class]) &#123;   \
         /*判断是自身类还是父类*/    \
         BOOL bIsSelfClass = (cls == [self class]);  \
         unsigned int iVarCount = 0; \
@@ -356,24 +363,26 @@ description、debugDescription、hash等四个属性。对这几个
         objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/ \
         sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   \
         \
-        for (int i = 0; i &lt; sharedVarCount; i++) {  \
+        for (int i = 0; i &lt; sharedVarCount; i++) &#123;  \
             const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); \
             NSString *key = [NSString stringWithUTF8String:varName];    \
             /*valueForKey只能获取本类所有变量以及所有层级父类的属性，不包含任何父类的私有变量(会崩溃)*/  \
             id varValue = [self valueForKey:key];   \
             NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;]; \
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { \
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) &#123; \
                 [coder encodeObject:varValue forKey:key];   \
-            }   \
-        }   \
+            &#125;   \
+        &#125;   \
         free(ivarList); \
         free(propList); \
         cls = class_getSuperclass(cls); \
-    }   \
-}
-</code></pre><p>只需要在你需要序列化的对象中import你的.h文件然后直接调用</p>
+    &#125;   \
+&#125;
+</code></pre>
+<p>只需要在你需要序列化的对象中import你的.h文件然后直接调用</p>
 <pre><code>SERIALIZER_CODER_DECODER()
-</code></pre><p><img src="https://img-blog.csdn.net/2018071610055818?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+</code></pre>
+<p><img src="https://img-blog.csdn.net/2018071610055818?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
 
       
 
@@ -464,7 +473,7 @@ description、debugDescription、hash等四个属性。对这几个
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/iOS 利用运行时将对象序列化与反序列化/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/iOS%20%E5%88%A9%E7%94%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B0%86%E5%AF%B9%E8%B1%A1%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -478,7 +487,7 @@ description、debugDescription、hash等四个属性。对这几个
   
 <nav id="article-nav">
   
-    <a href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/11/27/Runloop%E7%AD%89%E5%BE%85%E6%9D%A1%E4%BB%B6%E6%BB%A1%E8%B6%B3%E5%86%8D%E5%90%91%E4%B8%8B%E6%89%A7%E8%A1%8C%E4%BD%86%E4%B8%8D%E4%B8%BB%E5%8D%A1%E7%BA%BF%E7%A8%8B/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -488,7 +497,7 @@ description、debugDescription、hash等四个属性。对这几个
     </a>
   
   
-    <a href="/2018/11/26/详解AFNetworking的HTTPS模块/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/11/26/%E8%AF%A6%E8%A7%A3AFNetworking%E7%9A%84HTTPS%E6%A8%A1%E5%9D%97/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">详解AFNetworking的HTTPS模块</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -532,7 +541,7 @@ description、debugDescription、hash等四个属性。对这几个
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -639,10 +648,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -651,7 +656,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -659,11 +664,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -683,19 +692,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

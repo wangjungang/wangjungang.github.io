@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>iOS开发之APP内部切换语言 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面iOS开发中，随着APP越来越完善，很多APP都做了国际化，也实现了APP内部切换语言。 国际化都会走到NSBundle的- (NSString )localizedStringForKey:(NSString )key value:(nullable NSString )value table:(nullable NSString )tableName方法，使用自定义Bundle替换NS">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="写在前面iOS开发中，随着APP越来越完善，很多APP都做了国际化，也实现了APP内部切换语言。 国际化都会走到NSBundle的- (NSString *)localizedStringForKey:(NSString *)key value:(nullable NSString *)value table:(nullable NSString *)tableName方法，使用自定义Bundle">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS开发之APP内部切换语言">
-<meta property="og:url" content="http://yoursite.com/2018/12/24/iOS开发之APP内部切换语言/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/12/24/iOS%E5%BC%80%E5%8F%91%E4%B9%8BAPP%E5%86%85%E9%83%A8%E5%88%87%E6%8D%A2%E8%AF%AD%E8%A8%80/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面iOS开发中，随着APP越来越完善，很多APP都做了国际化，也实现了APP内部切换语言。 国际化都会走到NSBundle的- (NSString )localizedStringForKey:(NSString )key value:(nullable NSString )value table:(nullable NSString )tableName方法，使用自定义Bundle替换NS">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-24T03:15:54.511Z">
+<meta property="og:description" content="写在前面iOS开发中，随着APP越来越完善，很多APP都做了国际化，也实现了APP内部切换语言。 国际化都会走到NSBundle的- (NSString *)localizedStringForKey:(NSString *)key value:(nullable NSString *)value table:(nullable NSString *)tableName方法，使用自定义Bundle">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-12-24T03:14:10.130Z">
+<meta property="article:modified_time" content="2018-12-24T03:15:54.511Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS开发之APP内部切换语言">
-<meta name="twitter:description" content="写在前面iOS开发中，随着APP越来越完善，很多APP都做了国际化，也实现了APP内部切换语言。 国际化都会走到NSBundle的- (NSString )localizedStringForKey:(NSString )key value:(nullable NSString )value table:(nullable NSString )tableName方法，使用自定义Bundle替换NS">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/12/24/iOS开发之APP内部切换语言/" class="archive-article-date">
+        <a href="/2018/12/24/iOS%E5%BC%80%E5%8F%91%E4%B9%8BAPP%E5%86%85%E9%83%A8%E5%88%87%E6%8D%A2%E8%AF%AD%E8%A8%80/" class="archive-article-date">
   	<time datetime="2018-12-24T03:14:10.130Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-24</time>
 </a>
         
@@ -176,63 +176,66 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS开发中，随着APP越来越完善，很多APP都做了国际化，也实现了APP内部切换语言。</p>
-<p>国际化都会走到NSBundle的- (NSString <em>)localizedStringForKey:(NSString </em>)key value:(nullable NSString <em>)value table:(nullable NSString </em>)tableName方法，使用自定义Bundle替换NSBundle，通过切换根控制器来完成APP内部切换语言。</p>
+<p>国际化都会走到NSBundle的- (NSString *)localizedStringForKey:(NSString *)key value:(nullable NSString *)value table:(nullable NSString *)tableName方法，使用自定义Bundle替换NSBundle，通过切换根控制器来完成APP内部切换语言。</p>
 <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="1-拦截国际化方法"><a href="#1-拦截国际化方法" class="headerlink" title="1.拦截国际化方法"></a>1.拦截国际化方法</h3><p>通过分类和runtime来实现拦截，将Bundle替换为自定义CLBundle。</p>
-<pre><code>+ (void)load {
+<pre><code>+ (void)load &#123;
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
+    dispatch_once(&amp;onceToken, ^&#123;
         //动态继承、交换，方法类似KVO，通过修改[NSBundle mainBundle]对象的isa指针，使其指向它的子类CLBundle，这样便可以调用子类的方法；其实这里也可以使用method_swizzling来交换mainBundle的实现，来动态判断，可以同样实现。
         object_setClass([NSBundle mainBundle], [CLBundle class]);
-    });
-}
-</code></pre><h3 id="2-重写方法判断加载哪一种语言"><a href="#2-重写方法判断加载哪一种语言" class="headerlink" title="2.重写方法判断加载哪一种语言"></a>2.重写方法判断加载哪一种语言</h3><p>重写mainBundle方法，通过语言管理类获取当前应该加载哪一种语言。</p>
-<pre><code>- (NSString *)localizedStringForKey:(NSString *)key value:(NSString *)value table:(NSString *)tableName {
-    if ([CLBundle cl_mainBundle]) {
+    &#125;);
+&#125;
+</code></pre>
+<h3 id="2-重写方法判断加载哪一种语言"><a href="#2-重写方法判断加载哪一种语言" class="headerlink" title="2.重写方法判断加载哪一种语言"></a>2.重写方法判断加载哪一种语言</h3><p>重写mainBundle方法，通过语言管理类获取当前应该加载哪一种语言。</p>
+<pre><code>- (NSString *)localizedStringForKey:(NSString *)key value:(NSString *)value table:(NSString *)tableName &#123;
+    if ([CLBundle cl_mainBundle]) &#123;
         return [[CLBundle cl_mainBundle] localizedStringForKey:key value:value table:tableName];
-    } else {
+    &#125; else &#123;
         return [super localizedStringForKey:key value:value table:tableName];
-    }
-}
+    &#125;
+&#125;
 
-+ (NSBundle *)cl_mainBundle {
-    if ([NSBundle currentLanguage].length) {
++ (NSBundle *)cl_mainBundle &#123;
+    if ([NSBundle currentLanguage].length) &#123;
         NSString *path = [[NSBundle mainBundle] pathForResource:[NSBundle currentLanguage] ofType:@&quot;lproj&quot;];
-        if (path.length) {
+        if (path.length) &#123;
             return [NSBundle bundleWithPath:path];
-        }
-    }
+        &#125;
+    &#125;
     return nil;
-}
+&#125;
 
-+ (NSString *)currentLanguage {
++ (NSString *)currentLanguage &#123;
     return [CLLanguageManager userLanguage] ? : [NSLocale preferredLanguages].firstObject;
-}
-</code></pre><h3 id="3-语言管理类"><a href="#3-语言管理类" class="headerlink" title="3.语言管理类"></a>3.语言管理类</h3><p>将语言切换调用设置简单封装，方便调用。</p>
-<pre><code>+ (void)setUserLanguage:(NSString *)userLanguage {
+&#125;
+</code></pre>
+<h3 id="3-语言管理类"><a href="#3-语言管理类" class="headerlink" title="3.语言管理类"></a>3.语言管理类</h3><p>将语言切换调用设置简单封装，方便调用。</p>
+<pre><code>+ (void)setUserLanguage:(NSString *)userLanguage &#123;
     //跟随手机系统
-    if (!userLanguage.length) {
+    if (!userLanguage.length) &#123;
         [self resetSystemLanguage];
         return;
-    }
+    &#125;
     //用户自定义
     [[NSUserDefaults standardUserDefaults] setValue:userLanguage forKey:CLUserLanguageKey];
     [[NSUserDefaults standardUserDefaults] setValue:@[userLanguage] forKey:@&quot;AppleLanguages&quot;];
     [[NSUserDefaults standardUserDefaults] synchronize];
-}
+&#125;
 
-+ (NSString *)userLanguage {
++ (NSString *)userLanguage &#123;
     return [[NSUserDefaults standardUserDefaults] valueForKey:CLUserLanguageKey];
-}
+&#125;
 
 /**
  重置系统语言
  */
-+ (void)resetSystemLanguage {
++ (void)resetSystemLanguage &#123;
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:CLUserLanguageKey];
     [[NSUserDefaults standardUserDefaults] setValue:nil forKey:@&quot;AppleLanguages&quot;];
     [[NSUserDefaults standardUserDefaults] synchronize];
-}
-</code></pre><h3 id="4-切换根控制器来切换语言"><a href="#4-切换根控制器来切换语言" class="headerlink" title="4.切换根控制器来切换语言"></a>4.切换根控制器来切换语言</h3><p>为了减少工作量，直接切换根控制器来达到语言切换。</p>
+&#125;
+</code></pre>
+<h3 id="4-切换根控制器来切换语言"><a href="#4-切换根控制器来切换语言" class="headerlink" title="4.切换根控制器来切换语言"></a>4.切换根控制器来切换语言</h3><p>为了减少工作量，直接切换根控制器来达到语言切换。</p>
 <pre><code>[CLLanguageManager setUserLanguage:@&quot;en&quot;];
  CLTabbarController *tabbarController = [[CLTabbarController alloc] init];
 tabbarController.selectedIndex = 3;
@@ -246,12 +249,13 @@ CLChangeLanguageController *languageController = [[CLChangeLanguageController al
 languageController.hidesBottomBarWhenPushed = YES;
 [viewControllers addObject:languageController];
     //解决奇怪的动画bug。
-dispatch_async(dispatch_get_main_queue(), ^{
+dispatch_async(dispatch_get_main_queue(), ^&#123;
     [UIApplication sharedApplication].keyWindow.rootViewController = tabbarController;
     navigationController.viewControllers = viewControllers;
     CLLog(@&quot;已切换到语言 %@&quot;, [NSBundle currentLanguage]);
-});
+&#125;);
 </code></pre>
+
       
 
       
@@ -341,7 +345,7 @@ dispatch_async(dispatch_get_main_queue(), ^{
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/24/iOS开发之APP内部切换语言/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/24/iOS%E5%BC%80%E5%8F%91%E4%B9%8BAPP%E5%86%85%E9%83%A8%E5%88%87%E6%8D%A2%E8%AF%AD%E8%A8%80/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -355,7 +359,7 @@ dispatch_async(dispatch_get_main_queue(), ^{
   
 <nav id="article-nav">
   
-    <a href="/2019/01/25/textView的字数输入限制/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/01/25/textView%E7%9A%84%E5%AD%97%E6%95%B0%E8%BE%93%E5%85%A5%E9%99%90%E5%88%B6/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -365,7 +369,7 @@ dispatch_async(dispatch_get_main_queue(), ^{
     </a>
   
   
-    <a href="/2018/12/21/iOS10 跳转系统设置/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/12/21/iOS10%20%E8%B7%B3%E8%BD%AC%E7%B3%BB%E7%BB%9F%E8%AE%BE%E7%BD%AE/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iOS10 跳转系统设置</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -409,7 +413,7 @@ dispatch_async(dispatch_get_main_queue(), ^{
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -516,10 +520,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -528,7 +528,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -536,11 +536,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -560,19 +564,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

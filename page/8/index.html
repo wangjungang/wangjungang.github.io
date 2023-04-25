@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/8/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/29/iOS 中处理定时任务的常用方法/">iOS 中处理定时任务的常用方法</a>
+      <a class="article-title" href="/2019/08/29/iOS%20%E4%B8%AD%E5%A4%84%E7%90%86%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95/">iOS 中处理定时任务的常用方法</a>
     </h1>
   
 
         
-        <a href="/2019/08/29/iOS 中处理定时任务的常用方法/" class="archive-article-date">
+        <a href="/2019/08/29/iOS%20%E4%B8%AD%E5%A4%84%E7%90%86%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95/" class="archive-article-date">
   	<time datetime="2019-08-29T03:03:58.790Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
 </a>
         
@@ -183,7 +183,8 @@
 + (void)cancelPreviousPerformRequestsWithTarget:(id)aTarget;
 
 @end
-</code></pre><h2 id="2-NSTimer"><a href="#2-NSTimer" class="headerlink" title="2. NSTimer"></a>2. NSTimer</h2><p>NSTimer 是最常使用的定时器，使用方式简单，NSTimer 是也通过添加到RunLoop中被触发并进行工作的，桥接 CFRunLoopTimerRef。NSTimer中定义的常用方法如下：</p>
+</code></pre>
+<h2 id="2-NSTimer"><a href="#2-NSTimer" class="headerlink" title="2. NSTimer"></a>2. NSTimer</h2><p>NSTimer 是最常使用的定时器，使用方式简单，NSTimer 是也通过添加到RunLoop中被触发并进行工作的，桥接 CFRunLoopTimerRef。NSTimer中定义的常用方法如下：</p>
 <pre><code>+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti invocation:(NSInvocation *)invocation repeats:(BOOL)yesOrNo;
 + (NSTimer *)scheduledTimerWithTimeInterval:(NSTimeInterval)ti invocation:(NSInvocation *)invocation repeats:(BOOL)yesOrNo;
 
@@ -195,10 +196,11 @@
 
 - (instancetype)initWithFireDate:(NSDate *)date interval:(NSTimeInterval)interval repeats:(BOOL)repeats block:(void (^)(NSTimer *timer))block API_AVAILABLE(macosx(10.12), ios(10.0), watchos(3.0), tvos(10.0));
 - (instancetype)initWithFireDate:(NSDate *)date interval:(NSTimeInterval)ti target:(id)t selector:(SEL)s userInfo:(nullable id)ui repeats:(BOOL)rep NS_DESIGNATED_INITIALIZER;
-</code></pre><p>以下是初始化NSTimer的不同方式：</p>
+</code></pre>
+<p>以下是初始化NSTimer的不同方式：</p>
 <pre><code>// 自动加入currentRunLoop
 self.timer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
-//self.timer = [NSTimer scheduledTimerWithTimeInterval:5.0 repeats:YES block:^(NSTimer * _Nonnull timer) { }];
+//self.timer = [NSTimer scheduledTimerWithTimeInterval:5.0 repeats:YES block:^(NSTimer * _Nonnull timer) &#123; &#125;];
 
 // 手动加入RunLoop
 self.timer = [NSTimer timerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
@@ -209,10 +211,12 @@ NSTimeInterval timeInterval = [self timeIntervalSinceReferenceDate] + 30;
 NSDate *newDate = [NSDate dateWithTimeIntervalSinceReferenceDate:timeInterval];
 self.timer = [[NSTimer alloc] initWithFireDate:newDate interval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
 [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
-</code></pre><p>如果当前界面中有UITableView，则在 UITableView 在滚动过程中，上述代码中的定时器到了时间并没有触发。根据RunLoop的相关知识，同一时刻 RunLoop 只运行在一种 Mode 上，并且只有这个 Mode 相关联的源或定时器会被传递消息，mainRunLoop 一般处于  NSDefaultRunLoopMode，但是在滚动或者点击事件等触发时，mainRunLoop 切换至  NSEventTrackingRunLoopMode ，而上面  timer 被加入的正是 NSDefaultRunLoopMode （未指明也默认加入默认模式），所以滑动时未触发定时操作。<br>解决方法：添加timer到mainRunLoop的NSRunLoopCommonMode中或者子线程中，需要注意的是加入子线程时要手动开启并运行子线程的RunLoop。</p>
+</code></pre>
+<p>如果当前界面中有UITableView，则在 UITableView 在滚动过程中，上述代码中的定时器到了时间并没有触发。根据RunLoop的相关知识，同一时刻 RunLoop 只运行在一种 Mode 上，并且只有这个 Mode 相关联的源或定时器会被传递消息，mainRunLoop 一般处于  NSDefaultRunLoopMode，但是在滚动或者点击事件等触发时，mainRunLoop 切换至  NSEventTrackingRunLoopMode ，而上面  timer 被加入的正是 NSDefaultRunLoopMode （未指明也默认加入默认模式），所以滑动时未触发定时操作。<br>解决方法：添加timer到mainRunLoop的NSRunLoopCommonMode中或者子线程中，需要注意的是加入子线程时要手动开启并运行子线程的RunLoop。</p>
 <pre><code>self.timer = [NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(timerRuning) userInfo:nil repeats:YES];
 [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
-</code></pre><p>NSRunLoopCommonMode这是一组可配置的常用模式。将输入源与此模式相关联也会将其与组中的每个模式相关联。对于Cocoa应用程序，此集合默认包括NSDefaultRunLoopMode，NSPanelRunLoopMode和NSEventTrackingRunLoopMode。</p>
+</code></pre>
+<p>NSRunLoopCommonMode这是一组可配置的常用模式。将输入源与此模式相关联也会将其与组中的每个模式相关联。对于Cocoa应用程序，此集合默认包括NSDefaultRunLoopMode，NSPanelRunLoopMode和NSEventTrackingRunLoopMode。</p>
 <p>注意：</p>
 <ul>
 <li>iOS10以前初始化的timer在运行期间会对target进行持有，因此，在释放时需要手动调用invalidate方法，并置nil；</li>
@@ -227,12 +231,12 @@ dispatch_source_t timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 
 // 2. 设置定时器启动时间、间隔
 dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 0.5 * NSEC_PER_SEC,  0 * NSEC_PER_SEC); 
 // 3. 设置callback
-dispatch_source_set_event_handler(timer, ^{
+dispatch_source_set_event_handler(timer, ^&#123;
         NSLog(@&quot;timer fired&quot;);
-    });
-dispatch_source_set_event_handler(timer, ^{
+    &#125;);
+dispatch_source_set_event_handler(timer, ^&#123;
        //取消定时器时一些操作
-    });
+    &#125;);
 // 4. 启动定时器（刚创建的source处于被挂起状态）
 dispatch_resume(timer);
 // 5. 暂停定时器
@@ -240,12 +244,14 @@ dispatch_suspend(timer);
 // 6. 取消定时器
 dispatch_source_cancel(timer);
 timer = nil;
-</code></pre><p>当我们想要timer只是延时执行一次时，只调用以下方法即可：</p>
+</code></pre>
+<p>当我们想要timer只是延时执行一次时，只调用以下方法即可：</p>
 <pre><code>// 在主线程中延时5s中执行
-dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
-    });
-</code></pre><p>注意：</p>
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^&#123;
+        
+    &#125;);
+</code></pre>
+<p>注意：</p>
 <ul>
 <li>正在执行的 block，在调用dispatch_suspend(timer)时，当前block并不会立即停止而是继续执行至完成；</li>
 <li>dispatch source在挂起时，直接设置为 nil 或者重新赋值都会造成crash，需要在activate的状态下调用dispatch_source_cancel(timer)后置为 nil 或者重新赋值；</li>
@@ -276,7 +282,7 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), 
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/29/iOS 中处理定时任务的常用方法/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/08/29/iOS%20%E4%B8%AD%E5%A4%84%E7%90%86%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95/">展开全文 >></a>
         </p>
       
 
@@ -313,12 +319,12 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), 
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/29/Sign in with Apple/">Sign in with Apple</a>
+      <a class="article-title" href="/2019/08/29/Sign%20in%20with%20Apple/">Sign in with Apple</a>
     </h1>
   
 
         
-        <a href="/2019/08/29/Sign in with Apple/" class="archive-article-date">
+        <a href="/2019/08/29/Sign%20in%20with%20Apple/" class="archive-article-date">
   	<time datetime="2019-08-29T02:43:48.661Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
 </a>
         
@@ -340,17 +346,18 @@ dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), 
 <p>接着上边的描述，为了直观的表示相关信息，大家可以看下边的一组图，应该就能够理解笔者要表达的意思了。</p>
 <p>在B设备上登录QiShare帐号，截图省略。</p>
 <p>此时，已经登录过QiShare帐号的设备A的提示如下：</p>
-<p><img src="http://img.wangjungang.cn/WX20190829-104637.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/WX20190829-104637.png"></p>
 <p>3 要登录QiShare帐号的设备B的提示</p>
-<p><img src="http://img.wangjungang.cn/OhFm5m.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/OhFm5m.png"></p>
 <p>4.已登录过QiShare帐号的设备A提示的验证码</p>
-<p><img src="http://img.wangjungang.cn/wClcpk.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/wClcpk.png"></p>
 <p>5.设备B的提示是否信任浏览器，如果信任了浏览器，以后就不再需要每次登录帐号，都需要A设备上同意</p>
-<p><img src="http://img.wangjungang.cn/M6nb1x.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/M6nb1x.png"></p>
 <h3 id="2-开发Sign-In-With-Apple的注意事项："><a href="#2-开发Sign-In-With-Apple的注意事项：" class="headerlink" title="2. 开发Sign In With Apple的注意事项："></a>2. 开发Sign In With Apple的注意事项：</h3><p>Sign In With Apple 是iOS13 新增的功能，需要使用： MacOS 10.14.4或之后的Mac上的Xcode 11开发。</p>
 <pre><code>Xcode 11 includes SDKs for iOS 13, macOS Catalina 10.15, watchOS 6, and tvOS 13. Xcode 11 supports on-device debugging for iOS 8 and later, tvOS 9 and later, and watchOS 2 and later. Xcode 11 requires a Mac running macOS Mojave 10.14.4 or later.
 Xcode 11 包含支持iOS13、macOS Catalina 10.15, watchOS 6, and tvOS 13的SDK，Xcode11 支持iOS8、tvOS2 或之后的设备，Xcode11 需要运行在MacOS 10.14.4或之后的Mac上。
-</code></pre><p>Sign In With Apple 是跨平台的，可以支持iOS、macOS、watchOS、tvOS、JS。</p>
+</code></pre>
+<p>Sign In With Apple 是跨平台的，可以支持iOS、macOS、watchOS、tvOS、JS。</p>
 <h2 id="二、-iOS-Sign-In-With-Apple-流程"><a href="#二、-iOS-Sign-In-With-Apple-流程" class="headerlink" title="二、 iOS Sign In With Apple 流程"></a>二、 iOS Sign In With Apple 流程</h2><p>使用Sign In With Apple 的流程为：</p>
 <ul>
 <li>设置ASAuthorizationAppleIDButton相关布局，添加相应地授权处理；</li>
@@ -365,16 +372,16 @@ Xcode 11 包含支持iOS13、macOS Catalina 10.15, watchOS 6, and tvOS 13的SDK�
 <p>2.2 停止App 使用Sign In With Apple 的方式：</p>
 <p>停止App 使用Sign In With Apple：设置 -&gt; 密码与安全性 -&gt; 使用您AppleID的App -&gt; 找到对应的App - &gt; “停止以Apple ID使用 Bundle ID…”；</p>
 <h3 id="3-iOS使用Sign-In-With-Apple-的开发流程："><a href="#3-iOS使用Sign-In-With-Apple-的开发流程：" class="headerlink" title="3. iOS使用Sign In With Apple 的开发流程："></a>3. iOS使用Sign In With Apple 的开发流程：</h3><p>在介绍布局之前先看下，笔者先给大家看下界面效果：</p>
-<p><img src="http://img.wangjungang.cn/dTCNP1.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/dTCNP1.png"></p>
 <p>界面比较简单，界面上方为UITextView用于展示授权状态授权信息，”Sign In With Apple Button” 是用的官方的ASAuthorizationAppleIDButton。中间的“移除键盘”按钮用于移除键盘。</p>
 <p>3.1设置ASAuthorizationAppleIDButton相关布局，添加相应地授权处理；</p>
-<pre><code>- (void)setupUI {
-
+<pre><code>- (void)setupUI &#123;
+    
     // 用于展示Sign In With Apple 登录过程的信息
     _appleIDInfoTextView = [[UITextView alloc] initWithFrame:CGRectMake(.0, 40.0, CGRectGetWidth(self.view.frame), CGRectGetHeight(self.view.frame) * 0.4) textContainer:nil];
     _appleIDInfoTextView.font = [UIFont systemFontOfSize:32.0];
     [self.view addSubview:_appleIDInfoTextView];
-
+    
     // 移除键盘Button
     UIButton *removeKeyboardBtn = [[UIButton alloc] init];
     removeKeyboardBtn.backgroundColor = [UIColor grayColor];
@@ -383,10 +390,10 @@ Xcode 11 包含支持iOS13、macOS Catalina 10.15, watchOS 6, and tvOS 13的SDK�
     [removeKeyboardBtn addTarget:self action:@selector(removeFirstResponder:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:removeKeyboardBtn];
 
-    if (@available(iOS 13.0, *)) {
+    if (@available(iOS 13.0, *)) &#123;
     // Sign In With Apple Button
     ASAuthorizationAppleIDButton *appleIDButton = [ASAuthorizationAppleIDButton new];
-
+        
     appleIDButton.frame =  CGRectMake(.0, .0, CGRectGetWidth(self.view.frame) - 40.0, 100.0);
     CGPoint origin = CGPointMake(20.0, CGRectGetMidY(self.view.frame));
     CGRect frame = appleIDButton.frame;
@@ -395,18 +402,18 @@ Xcode 11 包含支持iOS13、macOS Catalina 10.15, watchOS 6, and tvOS 13的SDK�
     appleIDButton.cornerRadius = CGRectGetHeight(appleIDButton.frame) * 0.25;
     [self.view addSubview:appleIDButton];
     [appleIDButton addTarget:self action:@selector(handleAuthrization:) forControlEvents:UIControlEventTouchUpInside];
-    }
-
+    &#125;
+    
     NSMutableString *mStr = [NSMutableString string];
     [mStr appendString:@&quot;显示Sign In With Apple 登录信息\n&quot;];
     _appleIDInfoTextView.text = [mStr copy];
-}
+&#125;
 
 #pragma mark - Actions
 
 //! 处理授权
-- (void)handleAuthrization:(UIButton *)sender {
-    if (@available(iOS 13.0, *)) {
+- (void)handleAuthrization:(UIButton *)sender &#123;
+    if (@available(iOS 13.0, *)) &#123;
         // A mechanism for generating requests to authenticate users based on their Apple ID.
         // 基于用户的Apple ID授权用户，生成用户授权请求的一种机制
         ASAuthorizationAppleIDProvider *appleIDProvider = [ASAuthorizationAppleIDProvider new];
@@ -428,17 +435,18 @@ Xcode 11 包含支持iOS13、macOS Catalina 10.15, watchOS 6, and tvOS 13的SDK�
         // starts the authorization flows named during controller initialization.
         // 在控制器初始化期间启动授权流
         [controller performRequests];
-    }
-}
-</code></pre><p>3.2 获取授权码</p>
+    &#125;
+&#125;
+</code></pre>
+<p>3.2 获取授权码</p>
 <p>获取授权码这部分主要看2个代理ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding，及相应的代理方法中的实现。<br>ASAuthorizationControllerDelegate<br>An interface for providing information about the outcome of an authorization request.</p>
 <p>提供关于授权请求结果信息的接口<br>ASAuthorizationControllerPresentationContextProviding：<br>An interface the controller uses to ask a delegate for a presentation context.<br>控制器的代理找一个展示授权控制器的上下文的接口</p>
 <p>下边为实现代理方法的代码：</p>
 <pre><code>#pragma mark - Delegate
 
 //! 授权成功地回调
-- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization  API_AVAILABLE(ios(13.0)){
-
+- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithAuthorization:(ASAuthorization *)authorization  API_AVAILABLE(ios(13.0))&#123;
+    
 NSLog(@&quot;%s&quot;, __FUNCTION__);
 NSLog(@&quot;%@&quot;, controller);
 NSLog(@&quot;%@&quot;, authorization);
@@ -448,7 +456,7 @@ NSLog(@&quot;authorization.credential：%@&quot;, authorization.credential);
 NSMutableString *mStr = [NSMutableString string];
 mStr = [_appleIDInfoTextView.text mutableCopy];
 
-if ([authorization.credential isKindOfClass:[ASAuthorizationAppleIDCredential class]]) {
+if ([authorization.credential isKindOfClass:[ASAuthorizationAppleIDCredential class]]) &#123;
     // 用户登录使用ASAuthorizationAppleIDCredential
     ASAuthorizationAppleIDCredential *appleIDCredential = authorization.credential;
     NSString *user = appleIDCredential.user;
@@ -464,8 +472,8 @@ if ([authorization.credential isKindOfClass:[ASAuthorizationAppleIDCredential cl
     NSLog(@&quot;mStr：%@&quot;, mStr);
     [mStr appendString:@&quot;\n&quot;];
     _appleIDInfoTextView.text = mStr;
-
-} else if ([authorization.credential isKindOfClass:[ASPasswordCredential class]]) {
+    
+&#125; else if ([authorization.credential isKindOfClass:[ASPasswordCredential class]]) &#123;
     // 用户登录使用现有的密码凭证
     ASPasswordCredential *passwordCredential = authorization.credential;
     // 密码凭证对象的用户标识 用户的唯一标识
@@ -477,19 +485,20 @@ if ([authorization.credential isKindOfClass:[ASAuthorizationAppleIDCredential cl
     [mStr appendString:@&quot;\n&quot;];
     NSLog(@&quot;mStr：%@&quot;, mStr);
     _appleIDInfoTextView.text = mStr;
-} else {
+&#125; else &#123;
     NSLog(@&quot;授权信息均不符&quot;);
     mStr = [@&quot;授权信息均不符&quot; mutableCopy];
     _appleIDInfoTextView.text = mStr;
-}
-</code></pre><p>}</p>
+&#125;
+</code></pre>
+<p>}</p>
 <pre><code>//! 授权失败的回调
-- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error  API_AVAILABLE(ios(13.0)){
-
+- (void)authorizationController:(ASAuthorizationController *)controller didCompleteWithError:(NSError *)error  API_AVAILABLE(ios(13.0))&#123;
+    
 NSLog(@&quot;%s&quot;, __FUNCTION__);
 NSLog(@&quot;错误信息：%@&quot;, error);
 NSString *errorMsg = nil;
-switch (error.code) {
+switch (error.code) &#123;
     case ASAuthorizationErrorCanceled:
         errorMsg = @&quot;用户取消了授权请求&quot;;
         break;
@@ -505,23 +514,23 @@ switch (error.code) {
     case ASAuthorizationErrorUnknown:
         errorMsg = @&quot;授权请求失败未知原因&quot;;
         break;
-}
+&#125;
 
 NSMutableString *mStr = [_appleIDInfoTextView.text mutableCopy];
 [mStr appendString:errorMsg];
 [mStr appendString:@&quot;\n&quot;];
 _appleIDInfoTextView.text = [mStr copy];
 
-if (errorMsg) {
+if (errorMsg) &#123;
     return;
-}
+&#125;
 
-if (error.localizedDescription) {
+if (error.localizedDescription) &#123;
     NSMutableString *mStr = [_appleIDInfoTextView.text mutableCopy];
     [mStr appendString:error.localizedDescription];
     [mStr appendString:@&quot;\n&quot;];
     _appleIDInfoTextView.text = [mStr copy];
-}
+&#125;
 NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
 /* // 取消授权的时候也会调用这里
  ((ASAuthorizationAppleIDRequest *)(controller.authorizationRequests[0])).requestedScopes
@@ -530,18 +539,19 @@ NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
  email
  )
  */
-}
+&#125;
 
 
 //! Tells the delegate from which window it should present content to the user.
 //! 告诉代理应该在哪个window 展示内容给用户
-- (ASPresentationAnchor)presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller  API_AVAILABLE(ios(13.0)){
-
+- (ASPresentationAnchor)presentationAnchorForAuthorizationController:(ASAuthorizationController *)controller  API_AVAILABLE(ios(13.0))&#123;
+    
     NSLog(@&quot;调用展示window方法：%s&quot;, __FUNCTION__);
     // 返回window
     return self.view.window;
-}
-</code></pre><p>授权登录成功后调试的时候查看到的用户信息相关内容：</p>
+&#125;
+</code></pre>
+<p>授权登录成功后调试的时候查看到的用户信息相关内容：</p>
 <pre><code> po appleIDCredential.authorizationCode
 &lt;63636435 32316262 32666464 30346130 62616366 65336439 32636564 34383666 622e302e 6d727371 7a2e5853 47686543 5f354f6e 48786838 32766670 50484377&gt;
 
@@ -549,22 +559,23 @@ NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
 0012xx.d81c1988bb054e91beec303a4xxxxxxx.0xx6
 
 (lldb) po appleIDCredential.fullName
-&lt;NSPersonNameComponents: 0x281bf2070&gt; {givenName = YW, familyName = W, middleName = (null), namePrefix = (null), nameSuffix = (null), nickname = (null) phoneticRepresentation = (null) }
+&lt;NSPersonNameComponents: 0x281bf2070&gt; &#123;givenName = YW, familyName = W, middleName = (null), namePrefix = (null), nameSuffix = (null), nickname = (null) phoneticRepresentation = (null) &#125;
 
 (lldb) po appleIDCredential.email
 26xxxxx168@qq.com
-</code></pre><p>已经使用Sign In With Apple登录过app的用户</p>
+</code></pre>
+<p>已经使用Sign In With Apple登录过app的用户</p>
 <p>执行已经登录过的场景。如果设备中存在iCloud Keychain 凭证或者AppleID 凭证提示用户直接使用TouchID或FaceID登录即可。</p>
-<pre><code>- (void)viewDidAppear:(BOOL)animated {
+<pre><code>- (void)viewDidAppear:(BOOL)animated &#123;
     [super viewDidAppear:animated];
-
+    
     [self perfomExistingAccountSetupFlows];
-}
+&#125;
 
 //! Prompts the user if an existing iCloud Keychain credential or Apple ID credential is found.
 //! 如果存在iCloud Keychain 凭证或者AppleID 凭证提示用户
-- (void)perfomExistingAccountSetupFlows {
-    if (@available(iOS 13.0, *)) {
+- (void)perfomExistingAccountSetupFlows &#123;
+    if (@available(iOS 13.0, *)) &#123;
         // A mechanism for generating requests to authenticate users based on their Apple ID.
         // 基于用户的Apple ID授权用户，生成用户授权请求的一种机制
         ASAuthorizationAppleIDProvider *appleIDProvider = [ASAuthorizationAppleIDProvider new];
@@ -574,18 +585,18 @@ NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
         // A mechanism for generating requests to perform keychain credential sharing.
         // 为了执行钥匙串凭证分享生成请求的一种机制
         ASAuthorizationPasswordRequest *passwordRequest = [[ASAuthorizationPasswordProvider new] createRequest];
-
+        
         NSMutableArray &lt;ASAuthorizationRequest *&gt;* mArr = [NSMutableArray arrayWithCapacity:2];
-        if (authAppleIDRequest) {
+        if (authAppleIDRequest) &#123;
             [mArr addObject:authAppleIDRequest];
-        }
-        if (passwordRequest) {
+        &#125;
+        if (passwordRequest) &#123;
             [mArr addObject:passwordRequest];
-        }
+        &#125;
         // ASAuthorizationRequest：A base class for different kinds of authorization requests.
         // ASAuthorizationRequest：对于不同种类授权请求的基类
         NSArray &lt;ASAuthorizationRequest *&gt;* requests = [mArr copy];
-
+        
         // A controller that manages authorization requests created by a provider.
         // 由ASAuthorizationAppleIDProvider创建的授权请求 管理授权请求的控制器
         // Creates a controller from a collection of authorization requests.
@@ -600,37 +611,39 @@ NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
         // starts the authorization flows named during controller initialization.
         // 在控制器初始化期间启动授权流
         [authorizationController performRequests];
-    }
-}
-</code></pre><p>3.3 Verification</p>
+    &#125;
+&#125;
+</code></pre>
+<p>3.3 Verification</p>
 <p>关于验证的这一步，服务端同学LY和笔者都认为是需要传递授权码给自己的服务端，自己的服务端调用苹果APIGenerate and validate tokens去校验授权码。但是相关的API 调用不通。总是提示grant_type 有问题。不过我们服务端同学LY在PC端使用Sign In With Apple做过相应地测试，发现苹果提供的授权码校验的API是通的。当然相关内容也可能是笔者理解有误，大家如果有不同的理解，敬请讨论。</p>
-<pre><code>{
+<pre><code>&#123;
     &quot;error&quot;: &quot;unsupported_grant_type&quot;
-}
-</code></pre><p>3.4监听授权状态变化</p>
+&#125;
+</code></pre>
+<p>3.4监听授权状态变化</p>
 <p>监听授权状态改变，并且做出相应处理。授权状态有：</p>
 <p>ASAuthorizationAppleIDProviderCredentialRevoked：授权状态失效（用户停止使用AppID 登录App）、</p>
 <p>ASAuthorizationAppleIDProviderCredentialAuthorized：已授权(已使用AppleID 登录过App）、</p>
 <p>ASAuthorizationAppleIDProviderCredentialNotFound：授权凭证缺失（可能是使用AppleID 登录过App）</p>
 <p>处理改变有2种处理方式，一种是通过通知的方式，另一种是监听当前的appleIDCredential.user 的授权状态。</p>
-<p>3.4.1 监听appleIDCredential.user 的授权状态，这部分代码可以放到AppDelegate的- (BOOL)application:(UIApplication <em>)application didFinishLaunchingWithOptions:(NSDictionary </em>)launchOptions中，判断是否需要展示出登录控制器。</p>
+<p>3.4.1 监听appleIDCredential.user 的授权状态，这部分代码可以放到AppDelegate的- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions中，判断是否需要展示出登录控制器。</p>
 <pre><code>#pragma mark - Private functions
 //! 观察授权状态
-- (void)observeAuthticationState {
-
-    if (@available(iOS 13.0, *)) {
+- (void)observeAuthticationState &#123;
+    
+    if (@available(iOS 13.0, *)) &#123;
         // A mechanism for generating requests to authenticate users based on their Apple ID.
         // 基于用户的Apple ID 生成授权用户请求的机制
         ASAuthorizationAppleIDProvider *appleIDProvider = [ASAuthorizationAppleIDProvider new];
         // 注意 存储用户标识信息需要使用钥匙串来存储 这里笔者简单期间 使用NSUserDefaults 做的简单示例
         NSString *userIdentifier = [[NSUserDefaults standardUserDefaults] valueForKey:QiShareCurrentIdentifier];
-
-        if (userIdentifier) {
+        
+        if (userIdentifier) &#123;
             NSString* __block errorMsg = nil;
             //Returns the credential state for the given user in a completion handler.
             // 在回调中返回用户的授权状态
-            [appleIDProvider getCredentialStateForUserID:userIdentifier completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) {
-                switch (credentialState) {
+            [appleIDProvider getCredentialStateForUserID:userIdentifier completion:^(ASAuthorizationAppleIDProviderCredentialState credentialState, NSError * _Nullable error) &#123;
+                switch (credentialState) &#123;
                         // 苹果证书的授权状态
                     case ASAuthorizationAppleIDProviderCredentialRevoked:
                         // 苹果授权凭证失效
@@ -645,47 +658,49 @@ NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
                         errorMsg = @&quot;未发现苹果授权凭证&quot;;
                         // 可以引导用户重新登录
                         break;
-                }
-                dispatch_async(dispatch_get_main_queue(), ^{
+                &#125;
+                dispatch_async(dispatch_get_main_queue(), ^&#123;
                     NSLog(@&quot;SignInWithApple授权状态变化情况&quot;);
                     NSLog(@&quot;%@&quot;, errorMsg);
-                });
-            }];
-
-        }
-    }
-}
-</code></pre><p>3.4.2使用通知的方式检测是否授权应用支持Sign In With Apple变化情况。如下的代码可以根据自己的业务场景去考虑放置的位置。</p>
+                &#125;);
+            &#125;];
+            
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>3.4.2使用通知的方式检测是否授权应用支持Sign In With Apple变化情况。如下的代码可以根据自己的业务场景去考虑放置的位置。</p>
 <pre><code>//! 添加苹果登录的状态通知
-- (void)observeAppleSignInState {
-    if (@available(iOS 13.0, *)) {
+- (void)observeAppleSignInState &#123;
+    if (@available(iOS 13.0, *)) &#123;
         NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
         [center addObserver:self selector:@selector(handleSignInWithAppleStateChanged:) name:ASAuthorizationAppleIDProviderCredentialRevokedNotification object:nil];
-    }
-}
+    &#125;
+&#125;
 
 //! 观察SignInWithApple状态改变
-- (void)handleSignInWithAppleStateChanged:(id)noti {
-
+- (void)handleSignInWithAppleStateChanged:(id)noti &#123;
+    
     NSLog(@&quot;%s&quot;, __FUNCTION__);
     NSLog(@&quot;%@&quot;, noti);
-}
+&#125;
 
-- (void)dealloc {
-
-    if (@available(iOS 13.0, *)) {
+- (void)dealloc &#123;
+    
+    if (@available(iOS 13.0, *)) &#123;
         [[NSNotificationCenter defaultCenter] removeObserver:self name:ASAuthorizationAppleIDProviderCredentialRevokedNotification object:nil];
-    }
-}
-</code></pre><p>相关示意图如下：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>相关示意图如下：</p>
 <p>1.首次使用AppleID登录或者停止使用AppleID登录后，再次使用Sign In With Apple的提示如下：</p>
-<p><img src="http://img.wangjungang.cn/V7TIos.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/V7TIos.png"></p>
 <p>2.使用Sign In With Apple登录成功的截图如下：</p>
-<p><img src="http://img.wangjungang.cn/xV846A.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/xV846A.png"></p>
 <p>3.使用过AppleID登录过App，进入应用的时候会提示使用TouchID登录的场景如下：</p>
-<p><img src="http://img.wangjungang.cn/W0Io7M.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/W0Io7M.png"></p>
 <p>4.使用Sign In With Apple登录成功的截图如下：</p>
-<p><img src="http://img.wangjungang.cn/yJ9kZT.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/yJ9kZT.png"></p>
 
       
 
@@ -709,7 +724,7 @@ NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/29/Sign in with Apple/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/08/29/Sign%20in%20with%20Apple/">展开全文 >></a>
         </p>
       
 
@@ -746,12 +761,12 @@ NSLog(@&quot;controller requests：%@&quot;, controller.authorizationRequests);
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/08/27/多个网络请求的处理/">多个网络请求的处理</a>
+      <a class="article-title" href="/2019/08/27/%E5%A4%9A%E4%B8%AA%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E7%9A%84%E5%A4%84%E7%90%86/">多个网络请求的处理</a>
     </h1>
   
 
         
-        <a href="/2019/08/27/多个网络请求的处理/" class="archive-article-date">
+        <a href="/2019/08/27/%E5%A4%9A%E4%B8%AA%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E7%9A%84%E5%A4%84%E7%90%86/" class="archive-article-date">
   	<time datetime="2019-08-27T08:31:20.113Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-27</time>
 </a>
         
@@ -768,7 +783,8 @@ dispatch_semaphore_signal 发送通知
 dispatch_semaphore_wait 信号量等待
 
 dispatch_semaphore_create创建一个信号量
-</code></pre><ul>
+</code></pre>
+<ul>
 <li>dispatch_semaphore_create创建一个信号量</li>
 </ul>
 <p>传入的参数为long，输出一个dispatch_semaphore_t类型且值为value的信号量。<br>值得注意的是，这里的传入的参数value必须大于或等于0，否则dispatch_semaphore_create会返回NULL</p>
@@ -788,46 +804,48 @@ dispatch_semaphore_create创建一个信号量
 dispatch_semaphore_t sem = dispatch_semaphore_create(0);
 // 创建队列
 dispatch_queue_t testQueue = dispatch_queue_create(&quot;test&quot;, NULL);
-    dispatch_async(testQueue, ^{
-
-        for (int i = 0; i &lt; 10; i ++) {
+    dispatch_async(testQueue, ^&#123;
+    
+        for (int i = 0; i &lt; 10; i ++) &#123;
             NSLog(@&quot;i的值是-----&gt;%d&quot;,i);
-        }
+        &#125;
         // 发送一个信号
         dispatch_semaphore_signal(sem);
-    });
-
+    &#125;);
+    
     // 信号量等待
     dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
-    for (int j = 0; j &lt; 10; j ++) {
+    for (int j = 0; j &lt; 10; j ++) &#123;
         NSLog(@&quot;j 的值是-----&gt;%d&quot;,j);
-}
-</code></pre><h2 id="2-dispatch-group"><a href="#2-dispatch-group" class="headerlink" title="2. dispatch group"></a>2. dispatch group</h2><pre><code>dispatch_group_t group = dispatch_group_create();
+&#125;
+</code></pre>
+<h2 id="2-dispatch-group"><a href="#2-dispatch-group" class="headerlink" title="2. dispatch group"></a>2. dispatch group</h2><pre><code>dispatch_group_t group = dispatch_group_create();
 dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
 // 进入组（进入组和离开组必须成对出现,否则会造成死锁）
 dispatch_group_enter(group);
-dispatch_group_async(group, queue, ^{
+dispatch_group_async(group, queue, ^&#123;
     // 执行异步任务1
-    for (int i = 0; i&lt;10; i++) {
+    for (int i = 0; i&lt;10; i++) &#123;
         NSLog(@&quot;i的值是:%d&quot;,i);
-    }
+    &#125;
     dispatch_group_leave(group);
 
-});
+&#125;);
 dispatch_group_enter(group);
-dispatch_group_async(group, queue, ^{
-
+dispatch_group_async(group, queue, ^&#123;
+    
     // 执行异步任务2
-    for (int j = 0; j&lt;20; j++) {
+    for (int j = 0; j&lt;20; j++) &#123;
         NSLog(@&quot;j的值是:%d&quot;,j);
-    }
+    &#125;
     dispatch_group_leave(group);
-});
+&#125;);
 
-dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+dispatch_group_notify(group, dispatch_get_main_queue(), ^&#123;
     NSLog(@&quot;完成...&quot;);
-});
+&#125;);
 </code></pre>
+
       
 
       
@@ -850,7 +868,7 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/08/27/多个网络请求的处理/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/08/27/%E5%A4%9A%E4%B8%AA%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E7%9A%84%E5%A4%84%E7%90%86/">展开全文 >></a>
         </p>
       
 
@@ -887,12 +905,12 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/04/看完就懂的无痕埋点/">看完就懂的无痕埋点</a>
+      <a class="article-title" href="/2019/07/04/%E7%9C%8B%E5%AE%8C%E5%B0%B1%E6%87%82%E7%9A%84%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/">看完就懂的无痕埋点</a>
     </h1>
   
 
         
-        <a href="/2019/07/04/看完就懂的无痕埋点/" class="archive-article-date">
+        <a href="/2019/07/04/%E7%9C%8B%E5%AE%8C%E5%B0%B1%E6%87%82%E7%9A%84%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/" class="archive-article-date">
   	<time datetime="2019-07-04T10:10:32.010Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-04</time>
 </a>
         
@@ -934,138 +952,140 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
 <ul>
 <li><p>(void)lbp_swizzleMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector<br>{<br>  class_swizzleInstanceMethod(self, originalSelector, swizzledSelector);<br>}</p>
 </li>
-<li><p>(void)lbp_swizzleClassMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector<br>{<br>  //类方法实际上是储存在类对象的类(即元类)中，即类方法相当于元类的实例方法,所以只需要把元类传入，其他逻辑和交互实例方法一样。<br>  Class class2 = object_getClass(self);<br>  class_swizzleInstanceMethod(class2, originalSelector, swizzledSelector);<br>}</p>
-<pre><code>#pragma mark - private method
-
-void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSEL)
-{
-    /*
-     Class class = [self class];
-     //原有方法
-     Method originalMethod = class_getInstanceMethod(class, originalSelector);
-     //替换原有方法的新方法
-     Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
-     //先尝试給源SEL添加IMP，这里是为了避免源SEL没有实现IMP的情况
-     BOOL didAddMethod = class_addMethod(class,originalSelector,
-     method_getImplementation(swizzledMethod),
-     method_getTypeEncoding(swizzledMethod));
-     if (didAddMethod) {//添加成功：表明源SEL没有实现IMP，将源SEL的IMP替换到交换SEL的IMP
-     class_replaceMethod(class,swizzledSelector,
-     method_getImplementation(originalMethod),
-     method_getTypeEncoding(originalMethod));
-     } else {//添加失败：表明源SEL已经有IMP，直接将两个SEL的IMP交换即可
-     method_exchangeImplementations(originalMethod, swizzledMethod);
-     }
-     */
-
-    Method originMethod = class_getInstanceMethod(class, originalSEL);
-    Method replaceMethod = class_getInstanceMethod(class, replacementSEL);
-
-    if(class_addMethod(class, originalSEL, method_getImplementation(replaceMethod),method_getTypeEncoding(replaceMethod)))
-    {
-        class_replaceMethod(class,replacementSEL, method_getImplementation(originMethod), method_getTypeEncoding(originMethod));
-    }else {
-        method_exchangeImplementations(originMethod, replaceMethod);
-    }
-}
-</code></pre></li>
+<li><p>(void)lbp_swizzleClassMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector<br>{<br>  &#x2F;&#x2F;类方法实际上是储存在类对象的类(即元类)中，即类方法相当于元类的实例方法,所以只需要把元类传入，其他逻辑和交互实例方法一样。<br>  Class class2 &#x3D; object_getClass(self);<br>  class_swizzleInstanceMethod(class2, originalSelector, swizzledSelector);<br>}</p>
+<pre><code>  #pragma mark - private method
+  
+  void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSEL)
+  &#123;
+      /*
+       Class class = [self class];
+       //原有方法
+       Method originalMethod = class_getInstanceMethod(class, originalSelector);
+       //替换原有方法的新方法
+       Method swizzledMethod = class_getInstanceMethod(class, swizzledSelector);
+       //先尝试給源SEL添加IMP，这里是为了避免源SEL没有实现IMP的情况
+       BOOL didAddMethod = class_addMethod(class,originalSelector,
+       method_getImplementation(swizzledMethod),
+       method_getTypeEncoding(swizzledMethod));
+       if (didAddMethod) &#123;//添加成功：表明源SEL没有实现IMP，将源SEL的IMP替换到交换SEL的IMP
+       class_replaceMethod(class,swizzledSelector,
+       method_getImplementation(originalMethod),
+       method_getTypeEncoding(originalMethod));
+       &#125; else &#123;//添加失败：表明源SEL已经有IMP，直接将两个SEL的IMP交换即可
+       method_exchangeImplementations(originalMethod, swizzledMethod);
+       &#125;
+       */
+      
+      Method originMethod = class_getInstanceMethod(class, originalSEL);
+      Method replaceMethod = class_getInstanceMethod(class, replacementSEL);
+      
+      if(class_addMethod(class, originalSEL, method_getImplementation(replaceMethod),method_getTypeEncoding(replaceMethod)))
+      &#123;
+          class_replaceMethod(class,replacementSEL, method_getImplementation(originMethod), method_getTypeEncoding(originMethod));
+      &#125;else &#123;
+          method_exchangeImplementations(originMethod, replaceMethod);
+      &#125;
+  &#125;
+</code></pre>
+</li>
 </ul>
 <h3 id="全量收集"><a href="#全量收集" class="headerlink" title="全量收集"></a>全量收集</h3><p>我们会想到 hook AppDelegate 代理方法、UIViewController 生命周期方法、按钮点击事件、手势事件、各种系统控件的点击回调方法、应用状态切换等等。</p>
 <p>以统计页面的打开时间和统计页面的打开、关闭的需求为例，我们对 UIViewController 进行 hook</p>
 <pre><code>    static char *lbp_viewController_open_time = &quot;lbp_viewController_open_time&quot;;
     static char *lbp_viewController_close_time = &quot;lbp_viewController_close_time&quot;;
-
+    
     @implementation UIViewController (lbpka)
-
+    
     // load 方法里面添加 dispatch_once 是为了防止手动调用 load 方法。
-    + (void)load {
+    + (void)load &#123;
         static dispatch_once_t onceToken;
-        dispatch_once(&amp;onceToken, ^{
-            @autoreleasepool {
+        dispatch_once(&amp;onceToken, ^&#123;
+            @autoreleasepool &#123;
                 [[self class] lbp_swizzleMethod:@selector(viewWillAppear:) swizzledSelector:@selector(lbp_viewWillAppear:)];
                 [[self class] lbp_swizzleMethod:@selector(viewWillDisappear:) swizzledSelector:@selector(lbp_viewWillDisappear:)];
-
-
-            }
-        });
-    }
-
-
+    
+    
+            &#125;
+        &#125;);
+    &#125;
+    
+    
     #pragma mark - add prop
-
-    - (void)setOpenTime:(NSDate *)openTime {
+    
+    - (void)setOpenTime:(NSDate *)openTime &#123;
         objc_setAssociatedObject(self,&amp;lbp_viewController_open_time, openTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
-
-    - (NSDate *)getOpenTime{
+    &#125;
+    
+    - (NSDate *)getOpenTime&#123;
         return objc_getAssociatedObject(self, &amp;lbp_viewController_open_time);
-    }
-
-    - (void)setCloseTime:(NSDate *)closeTime {
+    &#125;
+    
+    - (void)setCloseTime:(NSDate *)closeTime &#123;
         objc_setAssociatedObject(self,&amp;lbp_viewController_close_time, closeTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-    }
-
-    - (NSDate *)getCloseTime{
+    &#125;
+    
+    - (NSDate *)getCloseTime&#123;
         return objc_getAssociatedObject(self, &amp;lbp_viewController_close_time);
-    }
-
-    - (void)lbp_viewWillAppear:(BOOL)animated {
-
+    &#125;
+    
+    - (void)lbp_viewWillAppear:(BOOL)animated &#123;
+    
         NSString *className = NSStringFromClass([self class]);
         NSString *refer = [NSString string];
         //TODO:TODO 是否只埋本地有url的page
-        if ([self getPageUrl:className]) {
+        if ([self getPageUrl:className]) &#123;
             //设置打开时间
            [self setOpenTime:[NSDate dateWithTimeIntervalSinceNow:0]];
-            if (self.navigationController) {
-                if (self.navigationController.viewControllers.count &gt;=2) {
+            if (self.navigationController) &#123;
+                if (self.navigationController.viewControllers.count &gt;=2) &#123;
                     //获取当前vc 栈中 上一个VC
                     UIViewController *referVC =  self.navigationController.viewControllers[self.navigationController.viewControllers.count-2];
                     refer = [self getPageUrl:NSStringFromClass([referVC class])];
-                }
-            }
-            if (!refer || refer.length == 0) {
+                &#125;
+            &#125;
+            if (!refer || refer.length == 0) &#123;
                 refer = @&quot;unknown&quot;;
-            }
+            &#125;
             [UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];
-        }
-
+        &#125;
+       
         [self lbp_viewWillAppear:animated];
-    }
-
-    - (void)lbp_viewWillDisappear:(BOOL)animated {
+    &#125;
+    
+    - (void)lbp_viewWillDisappear:(BOOL)animated &#123;
         NSString *className = NSStringFromClass([self class]);
-        if ([self getPageUrl:className]) {
+        if ([self getPageUrl:className]) &#123;
             [self setCloseTime:[NSDate dateWithTimeIntervalSinceNow:0]];
             [UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];
-        }
+        &#125;
         [self lbp_viewWillDisappear:animated];
-    }
-
+    &#125;
+    
     #pragma mark - private method
-
-    - (NSString *)p_calculationTimeSpend {
-
-        if (![self getOpenTime] || ![self getCloseTime]) {
+    
+    - (NSString *)p_calculationTimeSpend &#123;
+        
+        if (![self getOpenTime] || ![self getCloseTime]) &#123;
             return @&quot;unknown&quot;;
-        }
+        &#125;
         NSTimeInterval aTimer = [[self getCloseTime] timeIntervalSinceDate:[self getOpenTime]];
-
+        
         int hour = (int)(aTimer/3600);
-
+        
         int minute = (int)(aTimer - hour*3600)/60;
-
+        
         int second = aTimer - hour*3600 - minute*60;
-
+        
         return [NSString stringWithFormat:@&quot;%d&quot;,second];
-}
-</code></pre><h3 id="如何标识一个唯一的元素"><a href="#如何标识一个唯一的元素" class="headerlink" title="如何标识一个唯一的元素"></a>如何标识一个唯一的元素</h3><p>xpath 是移动端定义可操作区域的唯一标识。既然想通过一个字符串标识前端系统中可操作的控件，那么 xpath 需要2个指标：</p>
+&#125;
+</code></pre>
+<h3 id="如何标识一个唯一的元素"><a href="#如何标识一个唯一的元素" class="headerlink" title="如何标识一个唯一的元素"></a>如何标识一个唯一的元素</h3><p>xpath 是移动端定义可操作区域的唯一标识。既然想通过一个字符串标识前端系统中可操作的控件，那么 xpath 需要2个指标：</p>
 <p>唯一性：在同一系统中不存在不同控件有着相同的 xpath</p>
 <p>稳定性：不同版本的系统中，在页面结构没有变动的情况下，不同版本的相同页面，相同的控件的 xpath 需要保持一致。</p>
 <p>我们想到 Naive、H5 页面等系统渲染的时候都是以树形结构去绘制和渲染，所以我们以当前的 View 到系统的根元素之间的所有关键点（UIViewController、UIView、UIView容器（UITableView、UICollectionView等）、UIButton…）串联起来这样就唯一定位了控件元素。</p>
 <p>为了精确定位元素节点，参看下图</p>
 <p>假设一个 UIView 中有三个子 view，先后顺序是：label、button1、button2，那么深度依次为： 0、1、2。假如用户做了某些操作将 label1 从父 view 中被移除了。此时 UIView 只有 2 个子view：button1、button2，而且深度变为了：0、1。</p>
-<p>view层级<br>可以看出仅仅由于其中某个子 view  的改变，却导致其它子 view 的深度都发生了变化。因此，在设计的时候需要注意，在新增/移除某一 view 时，尽量减少对已有 view 的深度的影响，调整了对节点的深度的计算方式：采用当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值。</p>
+<p>view层级<br>可以看出仅仅由于其中某个子 view  的改变，却导致其它子 view 的深度都发生了变化。因此，在设计的时候需要注意，在新增&#x2F;移除某一 view 时，尽量减少对已有 view 的深度的影响，调整了对节点的深度的计算方式：采用当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值。</p>
 <p>我们再看一下上面的这个例子，最初 label、button1、button2 的深度依次是：0、0、1。在 label 被移除后，button1、button2 的深度依次为：0、1。可以看出，在这个例子中，label 的移除并未对 button1、button2 的深度造成影响，这种调整后的计算方式在一定程度上增强了 xpath 的抗干扰性。</p>
 <p>另外，调整后的深度的计算方式是依赖于各节点的类型的，因此，此时必须要将各节点的名称放到viewPath中，而不再是仅仅为了增加可读性。</p>
 <p>在标识控件元素的层级时，需要知道「当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值」。参看上图，如果不是同类型的话，则唯一性得不到保证。</p>
@@ -1075,35 +1095,35 @@ void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSE
 <p>对当前的控件元素的父视图的全部子视图进行遍历，如果存在和当前的控件元素同类型的控件，那么需要判断当前控件元素在同类型控件元素中的所处的位置，那么则可以唯一定位。举例：GoodsCell-3.GoodsTableView.GoodsViewController.xxApp</p>
 <pre><code>//UIResponder分类
 - (NSString *)lbp_identifierKa
-{
-//    if (self.xq_identifier_ka == nil) {
-        if ([self isKindOfClass:[UIView class]]) {
+&#123;
+//    if (self.xq_identifier_ka == nil) &#123;
+        if ([self isKindOfClass:[UIView class]]) &#123;
             UIView *view = (id)self;
             NSString *sameViewTreeNode = [view obtainSameSuperViewSameClassViewTreeIndexPath];
             NSMutableString *str = [NSMutableString string];
             //特殊的 加减购 因为带有spm但是要区分加减 需要带TreeNode
             NSString *className = [NSString stringWithUTF8String:object_getClassName(view)];
-            if (!view.accessibilityIdentifier || [className isEqualToString:@&quot;lbpButton&quot;]) {
+            if (!view.accessibilityIdentifier || [className isEqualToString:@&quot;lbpButton&quot;]) &#123;
                 [str appendString:sameViewTreeNode];
                 [str appendString:@&quot;,&quot;];
-            }
-            while (view.nextResponder) {
+            &#125;
+            while (view.nextResponder) &#123;
                 [str appendFormat:@&quot;%@,&quot;, NSStringFromClass(view.class)];
-                if ([view.class isSubclassOfClass:[UIViewController class]]) {
+                if ([view.class isSubclassOfClass:[UIViewController class]]) &#123;
                     break;
-                }
+                &#125;
                 view = (id)view.nextResponder;
-            }
+            &#125;
             self.xq_identifier_ka = [self md5String:[NSString stringWithFormat:@&quot;%@&quot;,str]];
             //            self.xq_identifier_ka = [NSString stringWithFormat:@&quot;%@&quot;,str];
-        }
-//    }
+        &#125;
+//    &#125;
     return self.xq_identifier_ka;
-}
+&#125;
 
 // UIView 分类
 - (NSString *)obtainSameSuperViewSameClassViewTreeIndexPat
-{    
+&#123;    
     NSString *classStr = NSStringFromClass([self class]);
     //cell的子view
     //UITableView 特殊的superview (UITableViewContentView)
@@ -1112,43 +1132,44 @@ void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSE
     ([classStr isEqualToString:@&quot;UITableViewCellContentView&quot;]) ||
     ([[self.superview class] isKindOfClass:[UITableViewCell class]])||
     ([[self.superview class] isKindOfClass:[UICollectionViewCell class]]);
-    if (shouldUseSuperView) {
+    if (shouldUseSuperView) &#123;
         return [self obtainIndexPathByView:self.superview];
-    }else {
+    &#125;else &#123;
         return [self obtainIndexPathByView:self];
-    }
-}
+    &#125;
+&#125;
 
 - (NSString *)obtainIndexPathByView:(UIView *)view
-{    
+&#123;    
     NSInteger viewTreeNodeDepth = NSIntegerMin;
     NSInteger sameViewTreeNodeDepth = NSIntegerMin;
-
+    
     NSString *classStr = NSStringFromClass([view class]);
-
+   
     NSMutableArray *sameClassArr = [[NSMutableArray alloc]init];
     //所处父view的全部subviews根节点深度
-    for (NSInteger index =0; index &lt; view.superview.subviews.count; index ++) {
+    for (NSInteger index =0; index &lt; view.superview.subviews.count; index ++) &#123;
         //同类型
-        if  ([classStr isEqualToString:NSStringFromClass([view.superview.subviews[index] class])]){
+        if  ([classStr isEqualToString:NSStringFromClass([view.superview.subviews[index] class])])&#123;
             [sameClassArr addObject:view.superview.subviews[index]];
-        }
-        if (view == view.superview.subviews[index]) {
+        &#125;
+        if (view == view.superview.subviews[index]) &#123;
             viewTreeNodeDepth = index;
             break;
-        }
-    }
+        &#125;
+    &#125;
     //所处父view的同类型subviews根节点深度
-    for (NSInteger index =0; index &lt; sameClassArr.count; index ++) {
-        if (view == sameClassArr[index]) {
+    for (NSInteger index =0; index &lt; sameClassArr.count; index ++) &#123;
+        if (view == sameClassArr[index]) &#123;
             sameViewTreeNodeDepth = index;
             break;
-        }
-    }
+        &#125;
+    &#125;
     return [NSString stringWithFormat:@&quot;%ld&quot;,sameViewTreeNodeDepth];
-
-}
-</code></pre><h3 id="同类型的view，但是点击的意义却不一样。如何唯一标识？"><a href="#同类型的view，但是点击的意义却不一样。如何唯一标识？" class="headerlink" title="同类型的view，但是点击的意义却不一样。如何唯一标识？"></a>同类型的view，但是点击的意义却不一样。如何唯一标识？</h3><p>问题5说明的是在一个界面上有多个不同的 view，他们的类型是同一种（CycleBannerView，但是数据源不一样，那么当数据源长度大于1的时候会轮播，下面会展示 UIPageControl。如果数据源是1个，那么就不会轮播和展示 UIPageControl）。情况6是同一种类型的 View，但是根据展示的内容不一样，点击的意义也不一样。也就是运营需要去知道用户到底点击的是哪一个。如下图所示，「立即抢购」和「分享赚佣金」是同一种类型的 View，但是点击意义不一样，需要我们需要唯一标识出来。之前的方法通过 “viewPath 配合同类型的 view 去加索引值“ 的方式还是没有办法唯一标识出来。所以想到一个方案，给 NSObject 添加一个分类，在分类里面添加一个协议。让需要复用但需要唯一标识的 view 去实现协议方法，因为是给 NSObject 分类添加的协议，所以 view 不需要去指定遵循。</p>
+    
+&#125;
+</code></pre>
+<h3 id="同类型的view，但是点击的意义却不一样。如何唯一标识？"><a href="#同类型的view，但是点击的意义却不一样。如何唯一标识？" class="headerlink" title="同类型的view，但是点击的意义却不一样。如何唯一标识？"></a>同类型的view，但是点击的意义却不一样。如何唯一标识？</h3><p>问题5说明的是在一个界面上有多个不同的 view，他们的类型是同一种（CycleBannerView，但是数据源不一样，那么当数据源长度大于1的时候会轮播，下面会展示 UIPageControl。如果数据源是1个，那么就不会轮播和展示 UIPageControl）。情况6是同一种类型的 View，但是根据展示的内容不一样，点击的意义也不一样。也就是运营需要去知道用户到底点击的是哪一个。如下图所示，「立即抢购」和「分享赚佣金」是同一种类型的 View，但是点击意义不一样，需要我们需要唯一标识出来。之前的方法通过 “viewPath 配合同类型的 view 去加索引值“ 的方式还是没有办法唯一标识出来。所以想到一个方案，给 NSObject 添加一个分类，在分类里面添加一个协议。让需要复用但需要唯一标识的 view 去实现协议方法，因为是给 NSObject 分类添加的协议，所以 view 不需要去指定遵循。</p>
 <p>关键步骤：</p>
 <p>添加 NSObject 的 Category。在分类里面声明唯一标识的协议</p>
 <p>在生成 viewPath 的地方去拿出当前 view 的唯一标识（view 调用协议方法）。然后拼接之前拿出的 viewPath</p>
@@ -1164,7 +1185,7 @@ void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSE
 @interface NSObject (UniqueIdentify)@end
 
 NS_ASSUME_NONNULL_END
-
+    
 //NSObject+UniqueIdentify.m
 #import &quot;NSObject+UniqueIdentify.h&quot;
 
@@ -1182,48 +1203,49 @@ NSString *const ImmediateyPurchase = @&quot;立即抢购&quot;;
 NSString *const ShareToAward = @&quot;分享赚佣金&quot;;
 
 - (NSString *)setUniqueIdentifier
-{
-    if (self.tagString) {
+&#123;
+    if (self.tagString) &#123;
         return self.tagString;
-    } else {
+    &#125; else &#123;
         return NSStringFromClass([self class]);
-    }
-}
+    &#125;
+&#125;
 
 //UIResponder Category 生成 viewPath
 - (NSString *)lbp_identifierKa
-{
-//    if (self.xq_identifier_ka == nil) {
-        if ([self isKindOfClass:[UIView class]]) {
+&#123;
+//    if (self.xq_identifier_ka == nil) &#123;
+        if ([self isKindOfClass:[UIView class]]) &#123;
             UIView *view = (id)self;
             NSString *sameViewTreeNode = [view obtainSameSuperViewSameClassViewTreeIndexPath];
             NSMutableString *str = [NSMutableString string];
             //特殊的 加减购 因为带有spm但是要区分加减 需要带TreeNode
             NSString *className = [NSString stringWithUTF8String:object_getClassName(view)];
-            if (!view.accessibilityIdentifier || [className isEqualToString:@&quot;lbpButton&quot;]) {
+            if (!view.accessibilityIdentifier || [className isEqualToString:@&quot;lbpButton&quot;]) &#123;
                 [str appendString:sameViewTreeNode];
                 [str appendString:@&quot;,&quot;];
-            }
-            while (view.nextResponder) {
-                 if ([view respondsToSelector:@selector(setUniqueIdentifier)]) {
+            &#125;
+            while (view.nextResponder) &#123;
+                 if ([view respondsToSelector:@selector(setUniqueIdentifier)]) &#123;
                     NSString *unqiueIdentifier = [view setUniqueIdentifier];
-                    if (unqiueIdentifier) {
+                    if (unqiueIdentifier) &#123;
                         [str appendFormat:@&quot;%@,&quot;, unqiueIdentifier];
-                    }
-                }00
+                    &#125;
+                &#125;00
                 [str appendFormat:@&quot;%@,&quot;, NSStringFromClass(view.class)];
-                if ([view.class isSubclassOfClass:[UIViewController class]]) {
+                if ([view.class isSubclassOfClass:[UIViewController class]]) &#123;
                     break;
-                }
+                &#125;
                 view = (id)view.nextResponder;
-            }
+            &#125;
             self.xq_identifier_ka = [self md5String:[NSString stringWithFormat:@&quot;%@&quot;,str]];
             //            self.xq_identifier_ka = [NSString stringWithFormat:@&quot;%@&quot;,str];
-        }
-//    }
+        &#125;
+//    &#125;
     return self.xq_identifier_ka;
-}
-</code></pre><h2 id="数据如何处理"><a href="#数据如何处理" class="headerlink" title="数据如何处理"></a>数据如何处理</h2><p>利用系统提供的 accessibilityIdentifier 官方给出的解释是标识用户界面元素的字符串</p>
+&#125;
+</code></pre>
+<h2 id="数据如何处理"><a href="#数据如何处理" class="headerlink" title="数据如何处理"></a>数据如何处理</h2><p>利用系统提供的 accessibilityIdentifier 官方给出的解释是标识用户界面元素的字符串</p>
 <pre><code>/*
 
 A string that identifies the user interface element.
@@ -1233,24 +1255,27 @@ default == nil
 */
 
 @property(nullable, nonatomic, copy) NSString *accessibilityIdentifier NS_AVAILABLE_IOS(5_0);
-</code></pre><p>服务端下发唯一标识</p>
+</code></pre>
+<p>服务端下发唯一标识</p>
 <p>接口获取的数据，里面有当前元素的唯一标识。比如在 UITableView 的界面去请求接口拿到数据，那么在在获取到的数据源里面会有一个字段，专门用来存储动态化的经常变动的业务数据。</p>
 <pre><code>cell.accessibilityIdentifier = [[[SDGGoodsCategoryServices sharedInstance].categories[indexPath.section] children][indexPath.row].spmContent yy_modelToJSONString];
-</code></pre><h3 id="基础数据"><a href="#基础数据" class="headerlink" title="基础数据"></a>基础数据</h3><p>设计上分为2个 pod 库，一个是 TriggerKit（专门用来 hook 机会需要的所有事件，页面停留时间、页面标识、view标识），另一个是 Appmonitor（专门用来提供基础数据、埋点数据的维护、上传机制）。所以在 Appmonitor 里面有个类叫做 UserTrackDataCenter 的类，专门提供一些基础数据（系统版本、操作系统、地理位置、网络等信息）。</p>
+</code></pre>
+<h3 id="基础数据"><a href="#基础数据" class="headerlink" title="基础数据"></a>基础数据</h3><p>设计上分为2个 pod 库，一个是 TriggerKit（专门用来 hook 机会需要的所有事件，页面停留时间、页面标识、view标识），另一个是 Appmonitor（专门用来提供基础数据、埋点数据的维护、上传机制）。所以在 Appmonitor 里面有个类叫做 UserTrackDataCenter 的类，专门提供一些基础数据（系统版本、操作系统、地理位置、网络等信息）。</p>
 <p>对外暴露出一些方法，用来将埋点数据交给 Appmonitor 去维护埋点数据，达到合适的“机制”再去上传埋点数据到服务端。</p>
-<pre><code>+ (void)clickEventUuid:(NSString *)uuid otherParam:(NSDictionary *)otherParam spmContent:(NSDictionary *)spmContent {
-    if (uuid) {
+<pre><code>+ (void)clickEventUuid:(NSString *)uuid otherParam:(NSDictionary *)otherParam spmContent:(NSDictionary *)spmContent &#123;
+    if (uuid) &#123;
         NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:otherParam];
         params[SDGStatisticEventtagKey] = @&quot;clickMonitorV1&quot;;
         NSMutableDictionary *valueDict = [[NSMutableDictionary alloc] initWithDictionary:spmContent];
         valueDict[@&quot;xpath&quot;] = uuid?:@&quot;&quot;;
-        params[SDGStatisticEventtagValue] = valueDict?:@{};
+        params[SDGStatisticEventtagValue] = valueDict?:@&#123;&#125;;
         [[AppMonotior shareInstance] traceEvent:[AMStatisticEvent eventWithInfo:params]];
-    }
-}
-</code></pre><h3 id="数据上报"><a href="#数据上报" class="headerlink" title="数据上报"></a>数据上报</h3><p>数据通过上面的办法收集完了，那么如何及时、高效的上传到后端，给运营分析、处理呢？</p>
+    &#125;
+&#125;
+</code></pre>
+<h3 id="数据上报"><a href="#数据上报" class="headerlink" title="数据上报"></a>数据上报</h3><p>数据通过上面的办法收集完了，那么如何及时、高效的上传到后端，给运营分析、处理呢？</p>
 <p>App 运行期间用户会点击非常多的数据，如果实时上传的话对于网络的利用率较低，所以需要考虑一个机制去控制用户产生的埋点数据的上传。</p>
-<p>思路是这样的。对外部暴露出一个接口，用来将产生的数据往数据中心存储。用户产生的数据会先保存到 AppMonitor 的内存中去，设置一个临界值（memoryEventMax = 50），如果存储的值达到设置的临界值 memoryEventMax，那么将内存中的数据写入文件系统，以 zip 的形式保存下来，然后上传到埋点系统。如果没有达到临界值但是存在一些 App 状态切换的情况，这时候需要及时保存数据到持久化。当下次打开 App 就去从本地持久化的地方读取是否有未上传的数据，如果有就上传日志信息，成功后删除本地的日志压缩包。</p>
+<p>思路是这样的。对外部暴露出一个接口，用来将产生的数据往数据中心存储。用户产生的数据会先保存到 AppMonitor 的内存中去，设置一个临界值（memoryEventMax &#x3D; 50），如果存储的值达到设置的临界值 memoryEventMax，那么将内存中的数据写入文件系统，以 zip 的形式保存下来，然后上传到埋点系统。如果没有达到临界值但是存在一些 App 状态切换的情况，这时候需要及时保存数据到持久化。当下次打开 App 就去从本地持久化的地方读取是否有未上传的数据，如果有就上传日志信息，成功后删除本地的日志压缩包。</p>
 <p>App 应用状态的切换策略如下：</p>
 <p>didFinishLaunchWithOptions:内存日志信息写入硬盘</p>
 <p>didBecomeActive：上传</p>
@@ -1259,87 +1284,89 @@ default == nil
 <p>下面的代码是 App 埋点数据的保存与上传</p>
 <pre><code>// 将App日志信息写入到内存中。当内存中的数量到达一定规模（超过设置的内存中存储的数量）的时候就将内存中的日志存储到文件信息中
 - (void)joinEvent:(NSDictionary *)dictionary
-{
-    if (dictionary) {
+&#123;
+    if (dictionary) &#123;
         NSDictionary *tmp = [self createDicWithEvent:dictionary];
-        if (!s_memoryArray) {
+        if (!s_memoryArray) &#123;
             s_memoryArray = [NSMutableArray array];
-        }
+        &#125;
         [s_memoryArray addObject:tmp];
-        if ([s_memoryArray count] &gt;= s_flushNum) {
-            [self writeEventLogsInFilesCompletion:^{
+        if ([s_memoryArray count] &gt;= s_flushNum) &#123;
+            [self writeEventLogsInFilesCompletion:^&#123;
                 [self startUploadLogFile];
-            }];
-        }
-    }
-}
+            &#125;];
+        &#125;
+    &#125;
+&#125;
 
 // 外界调用的数据传递入口（App埋点统计）
 - (void)traceEvent:(AMStatisticEvent *)event
-{
+&#123;
     // 线程锁,防止多处调用产生并发问题
-    @synchronized (self) {
-        if (event &amp;&amp; event.userInfo) {
+    @synchronized (self) &#123;
+        if (event &amp;&amp; event.userInfo) &#123;
             [self joinEvent:event.userInfo];
-        }
-    }
-}
+        &#125;
+    &#125;
+&#125;
 
 // 将内存中的数据写入到文件中，持久化存储
 - (void)writeEventLogsInFilesCompletion:(void(^)(void))completionBlock
-{
+&#123;
     NSArray *tmp = nil;
-    @synchronized (self) {
+    @synchronized (self) &#123;
         tmp = s_memoryArray;
         s_memoryArray = nil;
-    }
-    if (tmp) {
+    &#125;
+    if (tmp) &#123;
         __weak typeof(self) weakSelf = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;
             NSString *jsonFilePath = [weakSelf createTraceJsonFile];
-            if ([weakSelf writeArr:tmp toFilePath:jsonFilePath]) {
+            if ([weakSelf writeArr:tmp toFilePath:jsonFilePath]) &#123;
                 NSString *zipedFilePath = [weakSelf zipJsonFile:jsonFilePath];
-                if (zipedFilePath) {
+                if (zipedFilePath) &#123;
                     [AppMonotior clearCacheFile:jsonFilePath];
-                    if (completionBlock) {
+                    if (completionBlock) &#123;
                         completionBlock();
-                    }
-                }
-            }
-        });
-    }
-}
+                    &#125;
+                &#125;
+            &#125;
+        &#125;);
+    &#125;
+&#125;
 
 // 从App埋点统计压缩包文件夹中的每个压缩包文件上传服务端，成功后就删除本地的日志压缩包
 - (void)startUploadLogFile
-{
+&#123;
     NSArray *fList = [self listFilesAtPath:[self eventJsonPath]];
-    if (!fList || [fList count] == 0) {
+    if (!fList || [fList count] == 0) &#123;
         return;
-    }
-    [fList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if (![obj hasSuffix:@&quot;.zip&quot;]) {
+    &#125;
+    [fList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) &#123;
+        if (![obj hasSuffix:@&quot;.zip&quot;]) &#123;
             return;
-        }
-
+        &#125;
+        
         NSString *zipedPath = obj;
         unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:zipedPath error:nil] fileSize];
-        if (!fileSize || fileSize &lt; 1) {
+        if (!fileSize || fileSize &lt; 1) &#123;
             return;
-        }
+        &#125;
         // 调用接口上传埋点数据
-        [self uploadZipFileWithPath:zipedPath completion:^(NSString *completionResult) {
-            if ([completionResult isEqual:@&quot;OK&quot;]) {
+        [self uploadZipFileWithPath:zipedPath completion:^(NSString *completionResult) &#123;
+            if ([completionResult isEqual:@&quot;OK&quot;]) &#123;
                 [AppMonotior clearCacheFile:zipedPath];
-            }
-        }];
-    }];
-}
-</code></pre><p>使用的时候就是在 hook 系统事件的时候，去调用统计页面上传数据</p>
+            &#125;
+        &#125;];
+    &#125;];
+&#125;
+</code></pre>
+<p>使用的时候就是在 hook 系统事件的时候，去调用统计页面上传数据</p>
 <pre><code>/UIViewController
-[UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];    // 页面出现
-[UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];    //页面消失
-</code></pre><h2 id="总结下来关键步骤："><a href="#总结下来关键步骤：" class="headerlink" title="总结下来关键步骤："></a>总结下来关键步骤：</h2><p>hook 系统的各种事件（UIResponder、UITableView、UICollectionView代理事件、UIControl事件、UITapGestureRecognizers）、hook 应用程序、控制器生命周期。在做本来的逻辑之前添加额外的监控代码</p>
+[UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];	// 页面出现
+[UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];	//页面消失
+</code></pre>
+<h2 id="总结下来关键步骤："><a href="#总结下来关键步骤：" class="headerlink" title="总结下来关键步骤："></a>总结下来关键步骤：</h2><p>hook 系统的各种事件（UIResponder、UITableView、UICollectionView代理事件、UIControl事件、UITapGestureRecognizers）、hook 应用程序、控制器生命周期。在做本来的逻辑之前添加额外的监控代码</p>
 <p>对于点击的元素按照视图树生成对应的唯一标识（addCartButton.GoodsView.GoodsViewController） 的 md5 值</p>
 <p>在业务开发完毕，进入埋点的编辑模式，将 md5 和关键的页面的关键事件（运营、产品想统计的关键模块：App层级、业务模块、关键页面、关键操作）给绑定起来。比如 addCartButton.GoodsView.GoodsViewController.tbApp 对应了 tbApp-商城模块-商品详情页-加入购物车功能。</p>
 <p>将所需要的数据存储下来</p>
@@ -1367,7 +1394,7 @@ default == nil
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/04/看完就懂的无痕埋点/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/07/04/%E7%9C%8B%E5%AE%8C%E5%B0%B1%E6%87%82%E7%9A%84%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/">展开全文 >></a>
         </p>
       
 
@@ -1404,12 +1431,12 @@ default == nil
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/07/02/关于日志模式及日志级别/">iOS关于日志模式及日志级别</a>
+      <a class="article-title" href="/2019/07/02/%E5%85%B3%E4%BA%8E%E6%97%A5%E5%BF%97%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB/">iOS关于日志模式及日志级别</a>
     </h1>
   
 
         
-        <a href="/2019/07/02/关于日志模式及日志级别/" class="archive-article-date">
+        <a href="/2019/07/02/%E5%85%B3%E4%BA%8E%E6%97%A5%E5%BF%97%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB/" class="archive-article-date">
   	<time datetime="2019-07-02T08:55:06.088Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-07-02</time>
 </a>
         
@@ -1431,7 +1458,8 @@ default == nil
     log4cplus_warn(kModuleName, &quot;world3&quot;);
     log4cplus_info(kModuleName, &quot;world4&quot;);
     log4cplus_debug(kModuleName, &quot;world5&quot;);
-</code></pre><p>比如我们在开发中可能独立承担一个模块,而此模块单单做完如果出现问题就需要调试,但是如果我们的Log足够清晰是可以迅速帮助我们找到问题所在,这里将Log分为5个级别<br>以下是个人对于打印Log的一些建议,并不是说一定要按照如下.</p>
+</code></pre>
+<p>比如我们在开发中可能独立承担一个模块,而此模块单单做完如果出现问题就需要调试,但是如果我们的Log足够清晰是可以迅速帮助我们找到问题所在,这里将Log分为5个级别<br>以下是个人对于打印Log的一些建议,并不是说一定要按照如下.</p>
 <p>XDX_IOS_FLAG_FATAL : 严重级别</p>
 <p>此类错误出现时,表明程序因为某某问题已经彻底无法运行下去,我们在使用此log时可以附加说明当前碰到的重大问题及产生原因,以便调试.</p>
 <p>XDX_IOS_FLAG_ERROR : 出错级别</p>
@@ -1446,17 +1474,19 @@ default == nil
 <pre><code>#define log4cplus_fatal(category, logFmt, ...) \
 if(XDX_IOS_LOG_LEVEL &amp; XDX_IOS_FLAG_FATAL) \
 syslog(LOG_CRIT, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
-</code></pre><p>举例如下:</p>
+</code></pre>
+<p>举例如下:</p>
 <pre><code>#define kModuleName &quot;Hello&quot;
 
 ...
 
 
-- (void)test {
+- (void)test &#123;
     int i = 0;
     log4cplus_debug(kModuleName, &quot;Hello World - %d&quot;,i);
-}
-</code></pre><h3 id="4-注意"><a href="#4-注意" class="headerlink" title="4.注意"></a>4.注意</h3><p>因为我们使用的syslog,所以OC中的格式符%@是不可用的.但是任何OC中的字符串都可通过UTF8String转为C语言字符串,所以并不影响我们的使用.</p>
+&#125;
+</code></pre>
+<h3 id="4-注意"><a href="#4-注意" class="headerlink" title="4.注意"></a>4.注意</h3><p>因为我们使用的syslog,所以OC中的格式符%@是不可用的.但是任何OC中的字符串都可通过UTF8String转为C语言字符串,所以并不影响我们的使用.</p>
 <h3 id="5-使用方式"><a href="#5-使用方式" class="headerlink" title="5.使用方式"></a>5.使用方式</h3><p>每次编译前设置log级别</p>
 <p>如果不需要在项目中通过UI动态更改log级别,则可以直接使用如下方式将头文件拖入项目,然后在需要使用log的地方将其导入.这种方式简单方便,仅仅通过每次运行前更改宏定义即可转变log级别.</p>
 <p>在运行后通过UI更改</p>
@@ -1472,7 +1502,8 @@ static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | 
 #elif defined(XDXLogLevelDebug)
 static const int XDX_IOS_LOG_LEVEL = (XDX_IOS_FLAG_FATAL | XDX_IOS_FLAG_ERROR | XDX_IOS_FLAG_WARN | XDX_IOS_FLAG_INFO | XDX_IOS_FLAG_DEBUG);
 #endif
-</code></pre><h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><pre><code>#include &lt;syslog.h&gt;
+</code></pre>
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><pre><code>#include &lt;syslog.h&gt;
 #ifndef XDX_IOS
 #define XDX_IOS
 #endif
@@ -1543,6 +1574,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
 
 #endif
 </code></pre>
+
       
 
       
@@ -1565,7 +1597,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/07/02/关于日志模式及日志级别/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/07/02/%E5%85%B3%E4%BA%8E%E6%97%A5%E5%BF%97%E6%A8%A1%E5%BC%8F%E5%8F%8A%E6%97%A5%E5%BF%97%E7%BA%A7%E5%88%AB/">展开全文 >></a>
         </p>
       
 
@@ -1609,7 +1641,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
 <p>修饰全局变量</p>
 <p>全局变量的作用域仅限于当前文件</p>
 <h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><p>没有const修饰的指针</p>
-<p>指针p和*p都能被修改// </p>
+<p>指针p和*p都能被修改&#x2F;&#x2F; </p>
 <h2 id="static和const联合使用"><a href="#static和const联合使用" class="headerlink" title="static和const联合使用"></a>static和const联合使用</h2><p>static将一个全局变量变成局部变量</p>
 <p>const将一个局部变量变成局部常量</p>
 <h2 id="使用static-const-与-define"><a href="#使用static-const-与-define" class="headerlink" title="使用static const 与 #define"></a>使用static const 与 #define</h2><p>相同点</p>
@@ -1620,7 +1652,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
 <p>宏定义，只是简单的替换，每次使用都需要创建一份内存</p>
 <p>结论</p>
 <p>使用static const修饰更加高效，在同一个文件内可以使用static const取代#define</p>
-<h2 id="const实际开发的应用"><a href="#const实际开发的应用" class="headerlink" title="const实际开发的应用"></a>const实际开发的应用</h2><p>一般会先新建ZMJConst.h文件专门存放常量的引用// </p>
+<h2 id="const实际开发的应用"><a href="#const实际开发的应用" class="headerlink" title="const实际开发的应用"></a>const实际开发的应用</h2><p>一般会先新建ZMJConst.h文件专门存放常量的引用&#x2F;&#x2F; </p>
 <p>引用某变量，如果没有使用const修饰，就不能直接在编译的时候就能检测是否修改了</p>
 <p>ZMJRedexternconstCGFloatZMJRed;externNSString*constZMJName;</p>
 <p>可以模仿系统UIKIT_EXTERN来代替extern，逼格更高！</p>
@@ -1647,7 +1679,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/30/#define和const的使用/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/06/30/#define%E5%92%8Cconst%E7%9A%84%E4%BD%BF%E7%94%A8/">展开全文 >></a>
         </p>
       
 
@@ -1684,12 +1716,12 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/圆角头像的几种裁剪/">圆角头像的几种裁剪</a>
+      <a class="article-title" href="/2019/06/23/%E5%9C%86%E8%A7%92%E5%A4%B4%E5%83%8F%E7%9A%84%E5%87%A0%E7%A7%8D%E8%A3%81%E5%89%AA/">圆角头像的几种裁剪</a>
     </h1>
   
 
         
-        <a href="/2019/06/23/圆角头像的几种裁剪/" class="archive-article-date">
+        <a href="/2019/06/23/%E5%9C%86%E8%A7%92%E5%A4%B4%E5%83%8F%E7%9A%84%E5%87%A0%E7%A7%8D%E8%A3%81%E5%89%AA/" class="archive-article-date">
   	<time datetime="2019-06-23T13:52:36.054Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
 </a>
         
@@ -1703,7 +1735,7 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
 
 @implementation UIImage (Extension)
 + (instancetype)sw_icon:(UIImage *)image
-{
+&#123;
     UIGraphicsBeginImageContext(image.size);
     CGContextRef ctx = UIGraphicsGetCurrentContext();
     CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
@@ -1713,14 +1745,15 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
     UIImage *icon = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return icon;
-}
+&#125;
 @end
-</code></pre><p>以下方法 是我在控制器里写的, 如需写在分类, 需稍加改动</p>
+</code></pre>
+<p>以下方法 是我在控制器里写的, 如需写在分类, 需稍加改动</p>
 <pre><code>// CGContext 裁剪
-- (UIImage *)CGContextClip:(UIImage *)img cornerRadius:(CGFloat)c {
+- (UIImage *)CGContextClip:(UIImage *)img cornerRadius:(CGFloat)c &#123;
     int w = img.size.width * img.scale;
     int h = img.size.height * img.scale;
-
+    
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(w, h), false, 1.0);
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGContextMoveToPoint(context, 0, c);
@@ -1733,63 +1766,65 @@ syslog(LOG_WARNING, &quot;%s:&quot; logFmt, category,##__VA_ARGS__); \
     CGContextAddArcToPoint(context, 0, h, 0, h-c, c);
     CGContextAddLineToPoint(context, 0, c);
     CGContextClosePath(context);
-
+    
     CGContextClip(context);     // 先裁剪 context，再画图，就会在裁剪后的 path 中画
     [img drawInRect:CGRectMake(0, 0, w, h)];       // 画图
     CGContextDrawPath(context, kCGPathFill);
-
+    
     UIImage *ret = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-
+    
     return ret;
-}
-</code></pre><p>方法二</p>
+&#125;
+</code></pre>
+<p>方法二</p>
 <pre><code>// UIBezierPath 裁剪
-- (UIImage *)UIBezierPathClip:(UIImage *)img cornerRadius:(CGFloat)c {
+- (UIImage *)UIBezierPathClip:(UIImage *)img cornerRadius:(CGFloat)c &#123;
     int w = img.size.width * img.scale;
     int h = img.size.height * img.scale;
     CGRect rect = CGRectMake(0, 0, w, h);
-
+    
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(w, h), false, 1.0);
     [[UIBezierPath bezierPathWithRoundedRect:rect cornerRadius:c] addClip];
     [img drawInRect:rect];
     UIImage *ret = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-
+    
     return ret;
-}
-</code></pre><p>方法三</p>
+&#125;
+</code></pre>
+<p>方法三</p>
 <pre><code>// 自定义裁剪算法
-- (UIImage *)dealImage:(UIImage *)img cornerRadius:(CGFloat)c {
+- (UIImage *)dealImage:(UIImage *)img cornerRadius:(CGFloat)c &#123;
     // 1.CGDataProviderRef 把 CGImage 转 二进制流
     CGDataProviderRef provider = CGImageGetDataProvider(img.CGImage);
     void *imgData = (void *)CFDataGetBytePtr(CGDataProviderCopyData(provider));
     int width = img.size.width * img.scale;
     int height = img.size.height * img.scale;
-
+    
     // 2.处理 imgData
 //    dealImage(imgData, width, height);
     cornerImage(imgData, width, height, c);
-
+    
     // 3.CGDataProviderRef 把 二进制流 转 CGImage
     CGDataProviderRef pv = CGDataProviderCreateWithData(NULL, imgData, width * height * 4, releaseData);
     CGImageRef content = CGImageCreate(width , height, 8, 32, 4 * width, CGColorSpaceCreateDeviceRGB(), kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast, pv, NULL, true, kCGRenderingIntentDefault);
     UIImage *result = [UIImage imageWithCGImage:content];
     CGDataProviderRelease(pv);      // 释放空间
     CGImageRelease(content);
-
+    
     return result;
-}
+&#125;
 
-void releaseData(void *info, const void *data, size_t size) {
+void releaseData(void *info, const void *data, size_t size) &#123;
     free((void *)data);
-}
+&#125;
 
 // 在 img 上处理图片, 测试用
-void dealImage(UInt32 *img, int w, int h) {
+void dealImage(UInt32 *img, int w, int h) &#123;
     int num = w * h;
     UInt32 *cur = img;
-    for (int i=0; i&lt;num; i++, cur++) {
+    for (int i=0; i&lt;num; i++, cur++) &#123;
         UInt8 *p = (UInt8 *)cur;
         // RGBA 排列
         // f(x) = 255 - g(x) 求负片
@@ -1797,66 +1832,67 @@ void dealImage(UInt32 *img, int w, int h) {
         p[1] = 255 - p[1];
         p[2] = 255 - p[2];
         p[3] = 255;
-    }
-}
+    &#125;
+&#125;
 
 // 裁剪圆角
-void cornerImage(UInt32 *const img, int w, int h, CGFloat cornerRadius) {
+void cornerImage(UInt32 *const img, int w, int h, CGFloat cornerRadius) &#123;
     CGFloat c = cornerRadius;
     CGFloat min = w &gt; h ? h : w;
-
-    if (c &lt; 0) { c = 0; }
-    if (c &gt; min * 0.5) { c = min * 0.5; }
-
+    
+    if (c &lt; 0) &#123; c = 0; &#125;
+    if (c &gt; min * 0.5) &#123; c = min * 0.5; &#125;
+    
     // 左上 y:[0, c), x:[x, c-y)
-    for (int y=0; y&lt;c; y++) {
-        for (int x=0; x&lt;c-y; x++) {
+    for (int y=0; y&lt;c; y++) &#123;
+        for (int x=0; x&lt;c-y; x++) &#123;
             UInt32 *p = img + y * w + x;    // p 32位指针，RGBA排列，各8位
-            if (isCircle(c, c, c, x, y) == false) {
+            if (isCircle(c, c, c, x, y) == false) &#123;
                 *p = 0;
-            }
-        }
-    }
+            &#125;
+        &#125;
+    &#125;
     // 右上 y:[0, c), x:[w-c+y, w)
     int tmp = w-c;
-    for (int y=0; y&lt;c; y++) {
-        for (int x=tmp+y; x&lt;w; x++) {
+    for (int y=0; y&lt;c; y++) &#123;
+        for (int x=tmp+y; x&lt;w; x++) &#123;
             UInt32 *p = img + y * w + x;
-            if (isCircle(w-c, c, c, x, y) == false) {
+            if (isCircle(w-c, c, c, x, y) == false) &#123;
                 *p = 0;
-            }
-        }
-    }
+            &#125;
+        &#125;
+    &#125;
     // 左下 y:[h-c, h), x:[0, y-h+c)
     tmp = h-c;
-    for (int y=h-c; y&lt;h; y++) {
-        for (int x=0; x&lt;y-tmp; x++) {
+    for (int y=h-c; y&lt;h; y++) &#123;
+        for (int x=0; x&lt;y-tmp; x++) &#123;
             UInt32 *p = img + y * w + x;
-            if (isCircle(c, h-c, c, x, y) == false) {
+            if (isCircle(c, h-c, c, x, y) == false) &#123;
                 *p = 0;
-            }
-        }
-    }
+            &#125;
+        &#125;
+    &#125;
     // 右下 y~[h-c, h), x~[w-c+h-y, w)
     tmp = w-c+h;
-    for (int y=h-c; y&lt;h; y++) {
-        for (int x=tmp-y; x&lt;w; x++) {
+    for (int y=h-c; y&lt;h; y++) &#123;
+        for (int x=tmp-y; x&lt;w; x++) &#123;
             UInt32 *p = img + y * w + x;
-            if (isCircle(w-c, h-c, c, x, y) == false) {
+            if (isCircle(w-c, h-c, c, x, y) == false) &#123;
                 *p = 0;
-            }
-        }
-    }
-}
+            &#125;
+        &#125;
+    &#125;
+&#125;
 
 // 判断点 (px, py) 在不在圆心 (cx, cy) 半径 r 的圆内
-static inline bool isCircle(float cx, float cy, float r, float px, float py) {
-    if ((px-cx) * (px-cx) + (py-cy) * (py-cy) &gt; r * r) {
+static inline bool isCircle(float cx, float cy, float r, float px, float py) &#123;
+    if ((px-cx) * (px-cx) + (py-cy) * (py-cy) &gt; r * r) &#123;
         return false;
-    }
+    &#125;
     return true;
-}
-</code></pre><p>自定义裁剪 裁剪10000张图片 用时平均 11.3</p>
+&#125;
+</code></pre>
+<p>自定义裁剪 裁剪10000张图片 用时平均 11.3</p>
 <p>GContext裁剪 裁剪10000张图片 用时平均 12.7</p>
 <p>贝塞尔裁剪 裁剪10000张图片 用时平均 13.0</p>
 
@@ -1882,7 +1918,7 @@ static inline bool isCircle(float cx, float cy, float r, float px, float py) {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/圆角头像的几种裁剪/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/06/23/%E5%9C%86%E8%A7%92%E5%A4%B4%E5%83%8F%E7%9A%84%E5%87%A0%E7%A7%8D%E8%A3%81%E5%89%AA/">展开全文 >></a>
         </p>
       
 
@@ -1919,12 +1955,12 @@ static inline bool isCircle(float cx, float cy, float r, float px, float py) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/使用贝塞尔曲线绘制水波纹/">使用贝塞尔曲线绘制水波纹</a>
+      <a class="article-title" href="/2019/06/23/%E4%BD%BF%E7%94%A8%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E7%BB%98%E5%88%B6%E6%B0%B4%E6%B3%A2%E7%BA%B9/">使用贝塞尔曲线绘制水波纹</a>
     </h1>
   
 
         
-        <a href="/2019/06/23/使用贝塞尔曲线绘制水波纹/" class="archive-article-date">
+        <a href="/2019/06/23/%E4%BD%BF%E7%94%A8%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E7%BB%98%E5%88%B6%E6%B0%B4%E6%B3%A2%E7%BA%B9/" class="archive-article-date">
   	<time datetime="2019-06-23T13:48:06.223Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
 </a>
         
@@ -1933,7 +1969,7 @@ static inline bool isCircle(float cx, float cy, float r, float px, float py) {
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="思路："><a href="#思路：" class="headerlink" title="思路："></a>思路：</h2><p>使用贝塞尔曲线绘制正弦曲线；使用CAShapeLayer绘制形状；使用CADisplayLink做刷屏；</p>
-<p>CADisplayLink是一个能让我们以和屏幕刷新率相同的频率将内容画到屏幕上的定时器。一但 CADisplayLink以特定的模式注册到runloop之后，每当屏幕需要刷新的时候，runloop就会调用CADisplayLink绑定的target上的selector；iOS设备的刷新频率事60HZ也就是每秒60次。那么每一次刷新的时间就是1/60秒 大概16.7毫秒；下面直接上代码：</p>
+<p>CADisplayLink是一个能让我们以和屏幕刷新率相同的频率将内容画到屏幕上的定时器。一但 CADisplayLink以特定的模式注册到runloop之后，每当屏幕需要刷新的时候，runloop就会调用CADisplayLink绑定的target上的selector；iOS设备的刷新频率事60HZ也就是每秒60次。那么每一次刷新的时间就是1&#x2F;60秒 大概16.7毫秒；下面直接上代码：</p>
 <h2 id="一-创建THWave类，继承于UIView"><a href="#一-创建THWave类，继承于UIView" class="headerlink" title="一. 创建THWave类，继承于UIView"></a>一. 创建THWave类，继承于UIView</h2><pre><code>/** 浪宽： 一个完整的浪的宽度 */
 @property (nonatomic, assign) CGFloat waveWidth;
 
@@ -1954,105 +1990,110 @@ static inline bool isCircle(float cx, float cy, float r, float px, float py) {
 - (void)startWaveAnimation;
 /** 结束波动 */
 - (void)endWaveAnimation;
-</code></pre><h2 id="二-创建CAShapeLayer"><a href="#二-创建CAShapeLayer" class="headerlink" title="二. 创建CAShapeLayer"></a>二. 创建CAShapeLayer</h2><pre><code>#pragma mark - initUI
-- (void)initUI{
+</code></pre>
+<h2 id="二-创建CAShapeLayer"><a href="#二-创建CAShapeLayer" class="headerlink" title="二. 创建CAShapeLayer"></a>二. 创建CAShapeLayer</h2><pre><code>#pragma mark - initUI
+- (void)initUI&#123;
     // 设置底色
     self.backgroundColor = [UIColor whiteColor];
-
+    
     // 创建layer
     _waveLayer = [CAShapeLayer layer];
     [self.layer addSublayer:_waveLayer];
-}
+&#125;
 
 #pragma mark - 设置浪高
-- (void)setWaveHeight:(CGFloat)waveHeight{
+- (void)setWaveHeight:(CGFloat)waveHeight&#123;
     _waveHeight = waveHeight;
-
+    
     CGRect frame = self.bounds;
     frame.origin.y = frame.size.height - self.waveHeight;
     frame.size.height = self.waveHeight;
     _waveLayer.frame = frame;
-
-}
+    
+&#125;
 #pragma mark - 设置浪色
-- (void)setWaveColor:(UIColor *)waveColor{
+- (void)setWaveColor:(UIColor *)waveColor&#123;
     _waveColor = waveColor;
     _waveLayer.fillColor = waveColor.CGColor;
-}
-</code></pre><h2 id="三-创建刷屏器"><a href="#三-创建刷屏器" class="headerlink" title="三. 创建刷屏器"></a>三. 创建刷屏器</h2><pre><code>#pragma mark - 开始和结束动画
-- (void)startWaveAnimation{
+&#125;
+</code></pre>
+<h2 id="三-创建刷屏器"><a href="#三-创建刷屏器" class="headerlink" title="三. 创建刷屏器"></a>三. 创建刷屏器</h2><pre><code>#pragma mark - 开始和结束动画
+- (void)startWaveAnimation&#123;
     self.timer = [CADisplayLink displayLinkWithTarget:self selector:@selector(wave)];
     [self.timer addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-}
-- (void)endWaveAnimation{
+&#125;
+- (void)endWaveAnimation&#123;
     [self.timer invalidate];
     self.timer = nil;
-}
-</code></pre><h2 id="四-绘制"><a href="#四-绘制" class="headerlink" title="四. 绘制"></a>四. 绘制</h2><pre><code>// 动画实现
-- (void)wave{
-
+&#125;
+</code></pre>
+<h2 id="四-绘制"><a href="#四-绘制" class="headerlink" title="四. 绘制"></a>四. 绘制</h2><pre><code>// 动画实现
+- (void)wave&#123;
+    
     // 1. 随机
     int speed = [@(self.waveSpeed) intValue];
     int num = arc4random() % speed;
     self.offset += num;
-
+    
     CGFloat width = self.bounds.size.width;
     CGFloat height = self.waveHeight;
     CGFloat y = 0.f;
     // 2. 绘线
     UIBezierPath *path = [UIBezierPath bezierPath];
     [path moveToPoint:CGPointMake(0, height)];
-    for (CGFloat x = 0.f; x &lt;= width; x++) {
+    for (CGFloat x = 0.f; x &lt;= width; x++) &#123;
         y = height * sinf(2*M_PI/self.waveWidth *x - self.offset * 0.0045);
         [path addLineToPoint:CGPointMake(x, y)];
-    }
-
+    &#125;
+    
     // 3. 返回x等于中心点时的Y值
     CGFloat centerX = self.bounds.size.width / 2.0;
     CGFloat centerY = height * sinf(2*M_PI/self.waveWidth * centerX - self.offset * 0.0045);
-    if (self.waveY) {
+    if (self.waveY) &#123;
         self.waveY(centerY);
-    }
-
+    &#125;
+    
     // 4. 闭合曲线
     [path addLineToPoint:CGPointMake(width, height)];
     [path addLineToPoint:CGPointMake(0, height)];
     [path closePath];
     self.waveLayer.path = path.CGPath;
-}
-</code></pre><h2 id="五-外部引用-顺便加条小船"><a href="#五-外部引用-顺便加条小船" class="headerlink" title="五. 外部引用,顺便加条小船"></a>五. 外部引用,顺便加条小船</h2><pre><code>#pragma mark - creatWave
--(void)creatWave{
+&#125;
+</code></pre>
+<h2 id="五-外部引用-顺便加条小船"><a href="#五-外部引用-顺便加条小船" class="headerlink" title="五. 外部引用,顺便加条小船"></a>五. 外部引用,顺便加条小船</h2><pre><code>#pragma mark - creatWave
+-(void)creatWave&#123;
     // 1. view 增加浪
-    [self.view addSubview: ({
+    [self.view addSubview: (&#123;
         THWave *wave = [[THWave alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 300)];
         wave.waveHeight = 18;
         wave.waveSpeed = 15;
         wave.waveWidth = 300;
         wave.waveColor = [UIColor colorWithRed:48/255.0 green:204/255.0 blue:249/255.0 alpha:1];
-
+        
         // 2. 浪增加船
         UIImageView *boat;
-        [wave addSubview:({
+        [wave addSubview:(&#123;
             boat = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@&quot;boat&quot;]];
             boat.bounds = CGRectMake(0, 0, 123.3, 106.6);
             boat.contentMode = UIViewContentModeScaleToFill;
             boat;
-        })];
-
+        &#125;)];
+       
         // 3. 弱化，调整船的位置
         __weak typeof(self)weakSelf = self;
         __weak typeof(wave)weakWave = wave;
-        wave.waveY = ^(CGFloat waveY){
+        wave.waveY = ^(CGFloat waveY)&#123;
             CGRect frame = boat.bounds;
             frame.origin.x = CGRectGetWidth(weakSelf.view.frame)/2.0 - CGRectGetWidth(frame)/2.0;
             frame.origin.y = weakWave.bounds.size.height - boat.bounds.size.height - weakWave.waveHeight + waveY;
             boat.frame = frame;
-        };
+        &#125;;
         [wave startWaveAnimation];
         wave;
-    })];
-}
+    &#125;)];
+&#125;
 </code></pre>
+
       
 
       
@@ -2075,7 +2116,7 @@ static inline bool isCircle(float cx, float cy, float r, float px, float py) {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/使用贝塞尔曲线绘制水波纹/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/06/23/%E4%BD%BF%E7%94%A8%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E7%BB%98%E5%88%B6%E6%B0%B4%E6%B3%A2%E7%BA%B9/">展开全文 >></a>
         </p>
       
 
@@ -2112,12 +2153,12 @@ static inline bool isCircle(float cx, float cy, float r, float px, float py) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/MVP模式的学习/">MVP模式的学习</a>
+      <a class="article-title" href="/2019/06/23/MVP%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/">MVP模式的学习</a>
     </h1>
   
 
         
-        <a href="/2019/06/23/MVP模式的学习/" class="archive-article-date">
+        <a href="/2019/06/23/MVP%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/" class="archive-article-date">
   	<time datetime="2019-06-23T12:02:00.876Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
 </a>
         
@@ -2140,7 +2181,8 @@ presenter拥有对 view交互的逻辑（就是上面说的意思）
 presenter跟model层通信，并将数据转化成对适应UI的数据并更新view
 presenter不需要依赖UIKit
 view层是单一，因为它是被动接受命令，没有主动能力
-</code></pre><p>presenter 作为业务逻辑的处理者，首先要向model层拿数据，所以它将可以向model层通信。其次，UI的处理权移交给了它，所以它需要与view成通讯，发送命令改变UI。同时，UI的响应将触发业务逻辑的处理，所以view 层向presenter层通讯，告诉他用户做了什么操作，需要你反馈对应的数据来更新UI。这样就完成了从用户交互获得交互反馈到整个业务逻辑。</p>
+</code></pre>
+<p>presenter 作为业务逻辑的处理者，首先要向model层拿数据，所以它将可以向model层通信。其次，UI的处理权移交给了它，所以它需要与view成通讯，发送命令改变UI。同时，UI的响应将触发业务逻辑的处理，所以view 层向presenter层通讯，告诉他用户做了什么操作，需要你反馈对应的数据来更新UI。这样就完成了从用户交互获得交互反馈到整个业务逻辑。</p>
 <h2 id="先看看结构"><a href="#先看看结构" class="headerlink" title="先看看结构"></a>先看看结构</h2><p>UserViewProtocol 协议定义了一下方法，这些方法其实就是presenter对view层发送的命令</p>
 <pre><code>#import &lt;Foundation/Foundation.h&gt;
 @protocol UserViewProtocol &lt;NSObject&gt;
@@ -2149,54 +2191,60 @@ view层是单一，因为它是被动接受命令，没有主动能力
 -(void) hideIndicator;
 -(void) showEmptyView;
 @end
-</code></pre><p>UserService 类是用来请求数据给presenter的，也能算是model层吧。我就只定义了一个方法。</p>
+</code></pre>
+<p>UserService 类是用来请求数据给presenter的，也能算是model层吧。我就只定义了一个方法。</p>
 <pre><code>-(void)getUserInfosSuccess:(SuccessHandler )success andFail:(FailHandler) failure
-</code></pre><p>这一层，其实也可以很复杂，这就涉及网络层的架构了</p>
+</code></pre>
+<p>这一层，其实也可以很复杂，这就涉及网络层的架构了</p>
 <p>ViewController类则是UI层，它实现了tableview自己的协议，还实现了用户交互的协议 UserViewProtocol，也就说，presenter向UI层发送命令，其实是发给UI层的viewController，实际上是控制器来被动的更新UI。这个不管是MVC还是MVP，view的实际控制权应该都是viewController，这个理解应该没错吧。<br>协议中的几个方法实现如下。</p>
-<pre><code>-(void)userViewDataSource:(NSArray*)data{
+<pre><code>-(void)userViewDataSource:(NSArray*)data&#123;
  self.friendlyUIData = data;
  [self.tableview reloadData];
-}
--(void) showIndicator{
+&#125;
+-(void) showIndicator&#123;
  self.indicator.hidden = NO;
-}
--(void) hideIndicator{
+&#125;
+-(void) hideIndicator&#123;
  self.indicator.hidden = YES;
-}
--(void) showEmptyView{
+&#125;
+-(void) showEmptyView&#123;
  UIAlertController *alertView = [UIAlertController alertControllerWithTitle:@&quot;Alert&quot; message:@&quot;show empty view&quot; preferredStyle:UIAlertControllerStyleAlert];
  [alertView addAction:[UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:nil]];
- [self presentViewController:alertView animated:YES completion:^{
- }];
-}
-</code></pre><p>另外，在viewDidload中，调用了presenter的两个public 方法</p>
-<pre><code>self.presenter = [Presenter new];
-[self.presenter attachView:self];
-[self.presenter fetchData];
-</code></pre><p>那就来看看Presenter类，这个类我在demo中加了不少的注释，主要是为了理清自己的思路</p>
+ [self presentViewController:alertView animated:YES completion:^&#123;
+ &#125;];
+&#125;
+</code></pre>
+<p>另外，在viewDidload中，调用了presenter的两个public 方法</p>
+<pre><code> self.presenter = [Presenter new];
+ [self.presenter attachView:self];
+ [self.presenter fetchData];
+</code></pre>
+<p>那就来看看Presenter类，这个类我在demo中加了不少的注释，主要是为了理清自己的思路</p>
 <p>先说attachView 方法，这个方法是对外公开的，目的就是为了将实现了UserViewProtocol 协议的对象（其实应该就是控制器，因为view的直接操作者就是view Controller）绑定到presenter 上，说白了就是presenter 可以直接拿到实现了UserViewProtocol 协议的对象，并且向他发送命令（协议实现的方法，前面有说到），具体该方法的实现</p>
 <pre><code>@interface Presenter()
 @property (nonatomic,strong) UserService *userService;
 @property (nonatomic,weak) id&lt;UserViewProtocol&gt; attachView;
 @end
--(void)attachView:(id &lt;UserViewProtocol&gt;)view{
+-(void)attachView:(id &lt;UserViewProtocol&gt;)view&#123;
  self.attachView = view;
  self.userService  = [UserService new];
-}
-</code></pre><p>注意这里用了weak 来修饰attachView 树形，因为presenter和 viewController相互持有，所以必须要通过weak 来打破循环引用，这跟我们平时使用委托协议（ delegate）是一样的，只是名字换成了attachView 而已。</p>
+&#125;
+</code></pre>
+<p>注意这里用了weak 来修饰attachView 树形，因为presenter和 viewController相互持有，所以必须要通过weak 来打破循环引用，这跟我们平时使用委托协议（ delegate）是一样的，只是名字换成了attachView 而已。</p>
 <p>再来说fetchData方法，公开这个方法，只是为了数据请求有个统一的接口，而不需要presenter分开多次调用，presenter自己处理所有事情，不让viewController参和进来。具体实现就看demo</p>
 <p>最后说一下</p>
-<pre><code>-(NSArray *)processOriginDataToUIFriendlyData:(NSArray *) originData{
+<pre><code>-(NSArray *)processOriginDataToUIFriendlyData:(NSArray *) originData&#123;
  NSMutableArray *friendlyUIData = [NSMutableArray new];
- for (NSDictionary *dic in originData) {
-  if ([[dic valueForKey:@&quot;gender&quot;] isEqualToString:@&quot;males&quot;]) {
+ for (NSDictionary *dic in originData) &#123;
+  if ([[dic valueForKey:@&quot;gender&quot;] isEqualToString:@&quot;males&quot;]) &#123;
    [friendlyUIData addObject:dic];
-  }
- }
+  &#125;
+ &#125;
  return friendlyUIData;
-}
-</code></pre><p>这个私有方法是将原始数据转换成UI所需要的数据，这样UI拿到数据就可以直接使用，而不用做各种判断，逻辑依然放在了presenter中。而且，这个数据处理可以做成协议，输出不同UI需要的数据，这个也可以看casatwy大神 关于view架构的文章。</p>
-<p><a href="https://github.com/HecvStyle/MVPDemo" target="_blank" rel="noopener">Demo</a></p>
+&#125;
+</code></pre>
+<p>这个私有方法是将原始数据转换成UI所需要的数据，这样UI拿到数据就可以直接使用，而不用做各种判断，逻辑依然放在了presenter中。而且，这个数据处理可以做成协议，输出不同UI需要的数据，这个也可以看casatwy大神 关于view架构的文章。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/HecvStyle/MVPDemo">Demo</a></p>
 
       
 
@@ -2220,7 +2268,7 @@ view层是单一，因为它是被动接受命令，没有主动能力
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/MVP模式的学习/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/06/23/MVP%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/">展开全文 >></a>
         </p>
       
 
@@ -2257,12 +2305,12 @@ view层是单一，因为它是被动接受命令，没有主动能力
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/23/runtime万能跳转界面/">runtime万能跳转界面</a>
+      <a class="article-title" href="/2019/06/23/runtime%E4%B8%87%E8%83%BD%E8%B7%B3%E8%BD%AC%E7%95%8C%E9%9D%A2/">runtime万能跳转界面</a>
     </h1>
   
 
         
-        <a href="/2019/06/23/runtime万能跳转界面/" class="archive-article-date">
+        <a href="/2019/06/23/runtime%E4%B8%87%E8%83%BD%E8%B7%B3%E8%BD%AC%E7%95%8C%E9%9D%A2/" class="archive-article-date">
   	<time datetime="2019-06-23T11:57:21.378Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
 </a>
         
@@ -2273,13 +2321,14 @@ view层是单一，因为它是被动接受命令，没有主动能力
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在开发项目中，会有这样变态的需求：</p>
 <p>推送：根据服务端推送过来的数据规则，跳转到对应的控制器<br>feeds列表：不同类似的cell，可能跳转不同的控制器（嘘！产品经理是这样要求：我也不确定会跳转哪个界面哦，可能是这个又可能是那个，能给我做灵活吗？根据后台返回规则任意跳转？）</p>
 <p>思考：wocao！这变态的需求，要拒绝他吗？<br>switch判断呗，考虑所有跳转的因素？这不得写死我…</p>
-<pre><code>switch () {
+<pre><code>switch () &#123;
     case :
         break;
     default:
         break;
-}
-</code></pre><p>我是这么个实现的（runtime是个好东西）</p>
+&#125;
+</code></pre>
+<p>我是这么个实现的（runtime是个好东西）</p>
 <p>利用runtime动态生成对象、属性、方法这特性，我们可以先跟服务端商量好，定义跳转规则，比如要跳转到A控制器，需要传属性id、type，那么服务端返回字典给我，里面有控制器名，两个属性名跟属性值，客户端就可以根据控制器名生成对象，再用kvc给对象赋值，这样就搞定了 —O(∩_∩)O哈哈哈</p>
 <p>比如：根据推送规则跳转对应界面HSFeedsViewController</p>
 <p>HSFeedsViewController.h：</p>
@@ -2295,81 +2344,87 @@ view层是单一，因为它是被动接受命令，没有主动能力
 @property (nonatomic, copy) NSString *type;
 
 @end
-</code></pre><p>AppDelegate.m：</p>
+</code></pre>
+<p>AppDelegate.m：</p>
 <p>推送过来的消息规则</p>
 <pre><code>// 这个规则肯定事先跟服务端沟通好，跳转对应的界面需要对应的参数
-NSDictionary *userInfo = @{
+NSDictionary *userInfo = @&#123;
                            @&quot;class&quot;: @&quot;HSFeedsViewController&quot;,
-                           @&quot;property&quot;: @{
+                           @&quot;property&quot;: @&#123;
                                         @&quot;ID&quot;: @&quot;123&quot;,
                                         @&quot;type&quot;: @&quot;12&quot;
-                                   }
-                           };
-</code></pre><p>接收推送消息</p>
+                                   &#125;
+                           &#125;;
+    
+</code></pre>
+<p>接收推送消息</p>
 <pre><code>- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
-{
+&#123;
     [self push:userInfo];
-}
-</code></pre><p>跳转界面</p>
+&#125;
+</code></pre>
+<p>跳转界面</p>
 <pre><code>- (void)push:(NSDictionary *)params
-{
+&#123;
     // 类名
     NSString *class =[NSString stringWithFormat:@&quot;%@&quot;, params[@&quot;class&quot;]];
     const char *className = [class cStringUsingEncoding:NSASCIIStringEncoding];
-
+    
     // 从一个字串返回一个类
     Class newClass = objc_getClass(className);
     if (!newClass)
-    {
+    &#123;
         // 创建一个类
         Class superClass = [NSObject class];
         newClass = objc_allocateClassPair(superClass, className, 0);
         // 注册你创建的这个类
         objc_registerClassPair(newClass);
-    }
+    &#125;
     // 创建对象
     id instance = [[newClass alloc] init];
-
+    
     // 对该对象赋值属性
     NSDictionary * propertys = params[@&quot;property&quot;];
-    [propertys enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+    [propertys enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) &#123;
         // 检测这个对象是否存在该属性
-        if ([self checkIsExistPropertyWithInstance:instance verifyPropertyName:key]) {
+        if ([self checkIsExistPropertyWithInstance:instance verifyPropertyName:key]) &#123;
             // 利用kvc赋值
             [instance setValue:obj forKey:key];
-        }
-    }];
-
+        &#125;
+    &#125;];
+    
     // 获取导航控制器
     UITabBarController *tabVC = (UITabBarController *)self.window.rootViewController;
     UINavigationController *pushClassStance = (UINavigationController *)tabVC.viewControllers[tabVC.selectedIndex];
     // 跳转到对应的控制器
     [pushClassStance pushViewController:instance animated:YES];
-}
-</code></pre><p>检测对象是否存在该属性</p>
+&#125;
+</code></pre>
+<p>检测对象是否存在该属性</p>
 <pre><code>- (BOOL)checkIsExistPropertyWithInstance:(id)instance verifyPropertyName:(NSString *)verifyPropertyName
-{
+&#123;
     unsigned int outCount, i;
-
+    
     // 获取对象里的属性列表
     objc_property_t * properties = class_copyPropertyList([instance
                                                            class], &amp;outCount);
-
-    for (i = 0; i &lt; outCount; i++) {
+    
+    for (i = 0; i &lt; outCount; i++) &#123;
         objc_property_t property =properties[i];
         //  属性名转成字符串
         NSString *propertyName = [[NSString alloc] initWithCString:property_getName(property) encoding:NSUTF8StringEncoding];
         // 判断该属性是否存在
-        if ([propertyName isEqualToString:verifyPropertyName]) {
+        if ([propertyName isEqualToString:verifyPropertyName]) &#123;
             free(properties);
             return YES;
-        }
-    }
+        &#125;
+    &#125;
     free(properties);
-
+    
     return NO;
-}
-</code></pre><p><a href="https://github.com/wangjungang/Universal-Jump-ViewController" target="_blank" rel="noopener">demo</a></p>
+&#125;
+</code></pre>
+<p><a target="_blank" rel="noopener" href="https://github.com/wangjungang/Universal-Jump-ViewController">demo</a></p>
 
       
 
@@ -2393,7 +2448,7 @@ NSDictionary *userInfo = @{
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/06/23/runtime万能跳转界面/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/06/23/runtime%E4%B8%87%E8%83%BD%E8%B7%B3%E8%BD%AC%E7%95%8C%E9%9D%A2/">展开全文 >></a>
         </p>
       
 
@@ -2425,7 +2480,7 @@ NSDictionary *userInfo = @{
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/7/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/9/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/7/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/9/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -2437,7 +2492,7 @@ NSDictionary *userInfo = @{
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -2544,10 +2599,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -2556,7 +2607,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2564,11 +2615,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2588,19 +2643,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/19/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/15/iOS导航栏的正确隐藏方式 /">iOS导航栏的正确隐藏方式</a>
+      <a class="article-title" href="/2018/10/15/iOS%E5%AF%BC%E8%88%AA%E6%A0%8F%E7%9A%84%E6%AD%A3%E7%A1%AE%E9%9A%90%E8%97%8F%E6%96%B9%E5%BC%8F%20/">iOS导航栏的正确隐藏方式</a>
     </h1>
   
 
         
-        <a href="/2018/10/15/iOS导航栏的正确隐藏方式 /" class="archive-article-date">
+        <a href="/2018/10/15/iOS%E5%AF%BC%E8%88%AA%E6%A0%8F%E7%9A%84%E6%AD%A3%E7%A1%AE%E9%9A%90%E8%97%8F%E6%96%B9%E5%BC%8F%20/" class="archive-article-date">
   	<time datetime="2018-10-15T06:51:01.655Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
 </a>
         
@@ -174,18 +174,19 @@
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在项目中经常碰到首页顶部是无限轮播,需要靠最上面显示.有的设置导航栏为透明等一系列的方法,这个可以借助第三方.或者干脆简单粗暴的直接隐藏掉导航栏.可是push到下一个页面的时候是需要导航栏的,如何做了,这里给出两种方法.</p>
 <h2 id="第一种做法"><a href="#第一种做法" class="headerlink" title="第一种做法"></a>第一种做法</h2><p>注意这里一定要用动画的方式隐藏导航栏,这样在使用滑动返回手势的时候效果最好,和上面动图一致.这样做有一个缺点就是在切换tabBar的时候有一个导航栏向上消失的动画.</p>
-<pre><code>- (void)viewWillAppear:(BOOL)animated {
+<pre><code>- (void)viewWillAppear:(BOOL)animated &#123;
     [super viewWillAppear:animated];
 
     [self.navigationController setNavigationBarHidden:YES animated:animated];
-}
+&#125;
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)viewWillDisappear:(BOOL)animated &#123;
     [super viewWillDisappear:animated];
 
     [self.navigationController setNavigationBarHidden:NO animated:animated];
-}
-</code></pre><h2 id="第二种做法"><a href="#第二种做法" class="headerlink" title="第二种做法"></a>第二种做法</h2><p>设置self为导航控制器的代理,实现代理方法,在将要显示控制器中设置导航栏隐藏和显示,使用这种方式不仅完美切合滑动返回手势,同时也解决了切换tabBar的时候,导航栏动态隐藏的问题。最后要记得在控制器销毁的时候把导航栏的代理设置为nil。</p>
+&#125;
+</code></pre>
+<h2 id="第二种做法"><a href="#第二种做法" class="headerlink" title="第二种做法"></a>第二种做法</h2><p>设置self为导航控制器的代理,实现代理方法,在将要显示控制器中设置导航栏隐藏和显示,使用这种方式不仅完美切合滑动返回手势,同时也解决了切换tabBar的时候,导航栏动态隐藏的问题。最后要记得在控制器销毁的时候把导航栏的代理设置为nil。</p>
 <pre><code>@interface WLHomePageController () &lt;UINavigationControllerDelegate&gt;
 
 @end
@@ -193,26 +194,27 @@
 @implementation WLHomePageController 
 
 #pragma mark - lifeCycle
-- (void)viewDidLoad {
+- (void)viewDidLoad &#123;
     [super viewDidLoad];
 
     // 设置导航控制器的代理为self
     self.navigationController.delegate = self;
-}
+&#125;
 
 #pragma mark - UINavigationControllerDelegate
 // 将要显示控制器
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated &#123;
     // 判断要显示的控制器是否是自己
     BOOL isShowHomePage = [viewController isKindOfClass:[self class]];
 
     [self.navigationController setNavigationBarHidden:isShowHomePage animated:YES];
-}
+&#125;
 
-- (void)dealloc {
+- (void)dealloc &#123;
     self.navigationController.delegate = nil;
-}
-</code></pre><h2 id="第三种做法"><a href="#第三种做法" class="headerlink" title="第三种做法"></a>第三种做法</h2><p>主要是针对A隐藏Nav, A push 到B，B也需要隐藏Nav的这种情况</p>
+&#125;
+</code></pre>
+<h2 id="第三种做法"><a href="#第三种做法" class="headerlink" title="第三种做法"></a>第三种做法</h2><p>主要是针对A隐藏Nav, A push 到B，B也需要隐藏Nav的这种情况</p>
 <p>1、自定义UINavigationController</p>
 <pre><code>#import &quot;WYNavigationController.h&quot;
 #import &quot;ViewController.h&quot;
@@ -225,7 +227,7 @@
 
 @implementation WYNavigationController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad &#123;
     [super viewDidLoad];
 
     self.delegate = self;
@@ -234,26 +236,27 @@
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:target action:@selector(handleNavigationTransition:)];
     [self.view addGestureRecognizer:pan];
     self.interactivePopGestureRecognizer.enabled = NO;
-}
+&#125;
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated
-{
-    if (self.viewControllers.count &gt; 0) {
+&#123;
+    if (self.viewControllers.count &gt; 0) &#123;
         viewController.hidesBottomBarWhenPushed = YES;
-    }
+    &#125;
     [super pushViewController:viewController animated:animated];
-}
+&#125;
 
 
 #pragma mark - UINavigationControllerDelegate
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated &#123;
     // 判断如果是需要隐藏导航控制器的类，则隐藏
     BOOL isHideNav = ([viewController isKindOfClass:[ViewController class]] || 
                       [viewController isKindOfClass:[WYTargetVC class]]);
 
     [self setNavigationBarHidden:isHideNav animated:YES];
-}
-</code></pre><p>但是注意setNavigationBarHidden:YES设置这行代码后会导致Nav的滑动返回手势失效，这也就是为什么前面我们在自定义导航的时候需要设置全屏滑动返回了。</p>
+&#125;
+</code></pre>
+<p>但是注意setNavigationBarHidden:YES设置这行代码后会导致Nav的滑动返回手势失效，这也就是为什么前面我们在自定义导航的时候需要设置全屏滑动返回了。</p>
 
       
 
@@ -277,7 +280,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/15/iOS导航栏的正确隐藏方式 /">展开全文 >></a>
+          <a class="article-more-a" href="/2018/10/15/iOS%E5%AF%BC%E8%88%AA%E6%A0%8F%E7%9A%84%E6%AD%A3%E7%A1%AE%E9%9A%90%E8%97%8F%E6%96%B9%E5%BC%8F%20/">展开全文 >></a>
         </p>
       
 
@@ -314,12 +317,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/15/轻松实现Label的全方位对齐/">轻松实现Label的全方位对齐</a>
+      <a class="article-title" href="/2018/10/15/%E8%BD%BB%E6%9D%BE%E5%AE%9E%E7%8E%B0Label%E7%9A%84%E5%85%A8%E6%96%B9%E4%BD%8D%E5%AF%B9%E9%BD%90/">轻松实现Label的全方位对齐</a>
     </h1>
   
 
         
-        <a href="/2018/10/15/轻松实现Label的全方位对齐/" class="archive-article-date">
+        <a href="/2018/10/15/%E8%BD%BB%E6%9D%BE%E5%AE%9E%E7%8E%B0Label%E7%9A%84%E5%85%A8%E6%96%B9%E4%BD%8D%E5%AF%B9%E9%BD%90/" class="archive-article-date">
   	<time datetime="2018-10-15T06:16:13.019Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-15</time>
 </a>
         
@@ -329,22 +332,22 @@
       
         <h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p>ARUILabelTextAlign</p>
 <ol>
-<li>实现 UILabel文本在 左(上 中 下)、中(上 中 下）、右(上 中 下) 9个方位显示；</li>
-</ol>
-<ol start="2">
-<li>提供富文本底部不对齐的解决方案；</li>
+<li><p>实现 UILabel文本在 左(上 中 下)、中(上 中 下）、右(上 中 下) 9个方位显示；</p>
+</li>
+<li><p>提供富文本底部不对齐的解决方案；</p>
+</li>
 </ol>
 <h2 id="核心代码："><a href="#核心代码：" class="headerlink" title="核心代码："></a>核心代码：</h2><h3 id="ARAlignLabel-h"><a href="#ARAlignLabel-h" class="headerlink" title="ARAlignLabel.h"></a>ARAlignLabel.h</h3><pre><code>#import 
 @class ARMaker;
 
 typedef NS_ENUM(NSUInteger, textAlignType)
-{
+&#123;
     textAlignType_top = 10,   // 顶部对齐
     textAlignType_left,       // 左边对齐
     textAlignType_bottom,     // 底部对齐
     textAlignType_right,      // 右边对齐
     textAlignType_center      // 水平/垂直对齐（默认中心对齐）
-};
+&#125;;
 
 @interface ARAlignLabel : UILabel
 
@@ -370,7 +373,8 @@ typedef NS_ENUM(NSUInteger, textAlignType)
 - (ARMaker *(^)(textAlignType type))addAlignType;
 
 @end
-</code></pre><h3 id="ARAlignLabel-m"><a href="#ARAlignLabel-m" class="headerlink" title="ARAlignLabel.m"></a>ARAlignLabel.m</h3><pre><code>#import &quot;ARAlignLabel.h&quot;
+</code></pre>
+<h3 id="ARAlignLabel-m"><a href="#ARAlignLabel-m" class="headerlink" title="ARAlignLabel.m"></a>ARAlignLabel.m</h3><pre><code>#import &quot;ARAlignLabel.h&quot;
 
 @interface ARAlignLabel ()
 
@@ -389,12 +393,12 @@ typedef NS_ENUM(NSUInteger, textAlignType)
 
 @implementation ARAlignLabel
 
-- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines {
+- (CGRect)textRectForBounds:(CGRect)bounds limitedToNumberOfLines:(NSInteger)numberOfLines &#123;
     CGRect textRect = [super textRectForBounds:bounds limitedToNumberOfLines:numberOfLines];
-    if (self.typeArray){
-        for (int i=0; i&lt;self.typeArray.count; i++) {
+    if (self.typeArray)&#123;
+        for (int i=0; i&lt;self.typeArray.count; i++) &#123;
             textAlignType type = [self.typeArray[i] integerValue];
-            switch (type) {
+            switch (type) &#123;
                 case textAlignType_top:  //顶部对齐
                     self.hasTop = YES;
                     textRect.origin.y = bounds.origin.y;
@@ -412,75 +416,76 @@ typedef NS_ENUM(NSUInteger, textAlignType)
                     textRect.origin.x = bounds.size.width - textRect.size.width;
                     break;
                 case textAlignType_center:
-                    if (self.hasTop) {  //上中
+                    if (self.hasTop) &#123;  //上中
                         textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
-                    }
-                    else if (self.hasLeft) { //左中
+                    &#125;
+                    else if (self.hasLeft) &#123; //左中
                         textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
-                    }
-                    else if (self.hasBottom) { //下中
+                    &#125;
+                    else if (self.hasBottom) &#123; //下中
                         textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
-                    }
-                    else if (self.hasRight) { //右中
+                    &#125;
+                    else if (self.hasRight) &#123; //右中
                         textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
-                    }
-                    else{   //上下左右居中
+                    &#125;
+                    else&#123;   //上下左右居中
                         textRect.origin.x = (bounds.size.width - textRect.size.width)*0.5;
                         textRect.origin.y = (bounds.size.height - textRect.size.height)*0.5;
-                    }
+                    &#125;
                     break;
                 default:
                     break;
-            }
-        }
-    }
+            &#125;
+        &#125;
+    &#125;
     return textRect;
-}
+&#125;
 
-- (void)drawTextInRect:(CGRect)requestedRect {
+- (void)drawTextInRect:(CGRect)requestedRect &#123;
     CGRect actualRect = requestedRect;
-    if (self.typeArray) {
+    if (self.typeArray) &#123;
         actualRect = [self textRectForBounds:requestedRect limitedToNumberOfLines:self.numberOfLines];
-    }
+    &#125;
     [super drawTextInRect:actualRect];
-}
+&#125;
 
-- (void)textAlign:(void(^)(ARMaker *make))alignType {
+- (void)textAlign:(void(^)(ARMaker *make))alignType &#123;
     ARMaker *make = [[ARMaker alloc]init];
     alignType(make);
     self.typeArray = make.typeArray;
-}
+&#125;
 
 @end
 
 //工具类
 @implementation ARMaker
 
-- (instancetype)init {
+- (instancetype)init &#123;
     self = [super init];
-    if (self) {
+    if (self) &#123;
         self.typeArray = [NSMutableArray array];
-    }
+    &#125;
     return self;
-}
+&#125;
 
-- (ARMaker *(^)(enum textAlignType type))addAlignType {
+- (ARMaker *(^)(enum textAlignType type))addAlignType &#123;
     __weak typeof (self) weakSelf = self;
-    return ^(enum textAlignType type) {
+    return ^(enum textAlignType type) &#123;
         [weakSelf.typeArray addObject:@(type)];
         return weakSelf;
-    };
-}
+    &#125;;
+&#125;
 
 @end
-</code></pre><h3 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h3><pre><code>- (void)viewDidLoad {
+</code></pre>
+<h3 id="工具使用"><a href="#工具使用" class="headerlink" title="工具使用"></a>工具使用</h3><pre><code>- (void)viewDidLoad &#123;
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
 
-    if (_index == 9) {
+    if (_index == 9) &#123;
         //富文本底部对齐
         [self attributedTextAgainOfBottom];
-    }else {
+    &#125;else &#123;
         ARAlignLabel *label = [[ARAlignLabel alloc] initWithFrame:CGRectMake(kScreenWidth/2.0 - 150, 300, 300, 80)];
         label.backgroundColor = [UIColor orangeColor];
         label.textColor = [UIColor blackColor];
@@ -489,59 +494,60 @@ typedef NS_ENUM(NSUInteger, textAlignType)
         label.numberOfLines = 1;
         [self.view addSubview:label];
 
-        switch (_index) {
+        switch (_index) &#123;
             case 0:
-                [label textAlign:^(ARMaker *make) {
+                [label textAlign:^(ARMaker *make) &#123;
                     make.addAlignType(textAlignType_left).addAlignType(textAlignType_top);
-                }];
+                &#125;];
                 break;
             case 1:
-                [label textAlign:^(ARMaker *make) {
+                [label textAlign:^(ARMaker *make) &#123;
                     make.addAlignType(textAlignType_left).addAlignType(textAlignType_center);
-                }];
+                &#125;];
                 break;
             case 2:
-                [label textAlign:^(ARMaker *make) {
+                [label textAlign:^(ARMaker *make) &#123;
                     make.addAlignType(textAlignType_left).addAlignType(textAlignType_bottom);
-                }];
+                &#125;];
                 break;
             case 3:
-                [label textAlign:^(ARMaker *make) {
+                [label textAlign:^(ARMaker *make) &#123;
                     make.addAlignType(textAlignType_center).addAlignType(textAlignType_top);
-                }];
+                &#125;];
                 break;
             case 4:
-                [label textAlign:^(ARMaker *make) {
+                [label textAlign:^(ARMaker *make) &#123;
                     make.addAlignType(textAlignType_center);
-                }];
+                &#125;];
                 break;
             case 5:
-                [label textAlign:^(ARMaker *make) {
+                [label textAlign:^(ARMaker *make) &#123;
                     make.addAlignType(textAlignType_center).addAlignType(textAlignType_bottom);
-                }];
+                &#125;];
                 break;
             case 6:
-                [label textAlign:^(ARMaker *make) {
+                [label textAlign:^(ARMaker *make) &#123;
                     make.addAlignType(textAlignType_right).addAlignType(textAlignType_top);
-                }];
+                &#125;];
                 break;
             case 7:
-                [label textAlign:^(ARMaker *make) {
+                [label textAlign:^(ARMaker *make) &#123;
                     make.addAlignType(textAlignType_right).addAlignType(textAlignType_center);
-                }];
+                &#125;];
                 break;
             case 8:
-                [label textAlign:^(ARMaker *make) {
+                [label textAlign:^(ARMaker *make) &#123;
                     make.addAlignType(textAlignType_right).addAlignType(textAlignType_bottom);
-                }];
+                &#125;];
                 break;
             default:
                 break;
-        }
-    }
-}
-</code></pre><h3 id="富文本底部对齐"><a href="#富文本底部对齐" class="headerlink" title="富文本底部对齐"></a>富文本底部对齐</h3><pre><code>//富文本底部对齐
-- (void)attributedTextAgainOfBottom {
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<h3 id="富文本底部对齐"><a href="#富文本底部对齐" class="headerlink" title="富文本底部对齐"></a>富文本底部对齐</h3><pre><code>//富文本底部对齐
+- (void)attributedTextAgainOfBottom &#123;
 
     CGFloat space = 10.0;
 
@@ -551,15 +557,15 @@ typedef NS_ENUM(NSUInteger, textAlignType)
     leftLB.numberOfLines = 1;
     [self.view addSubview:leftLB];
     //右下
-    [leftLB textAlign:^(ARMaker *make) {
+    [leftLB textAlign:^(ARMaker *make) &#123;
         make.addAlignType(textAlignType_center);
-    }];
+    &#125;];
 
     NSMutableAttributedString  *attributedArr = [[NSMutableAttributedString alloc] initWithString:@&quot;单价 $123&quot;];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:40], NSForegroundColorAttributeName:[UIColor blackColor]} range:NSMakeRange(0, 1)];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:25], NSForegroundColorAttributeName:[UIColor blackColor]} range:NSMakeRange(1, 1)];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:20], NSForegroundColorAttributeName:[UIColor blueColor]} range:NSMakeRange(3, 1)];
-    [attributedArr setAttributes:@{NSFontAttributeName:[UIFont systemFontOfSize:35], NSForegroundColorAttributeName:[UIColor redColor]} range:NSMakeRange(4, attributedArr.length - 4)];
+    [attributedArr setAttributes:@&#123;NSFontAttributeName:[UIFont systemFontOfSize:40], NSForegroundColorAttributeName:[UIColor blackColor]&#125; range:NSMakeRange(0, 1)];
+    [attributedArr setAttributes:@&#123;NSFontAttributeName:[UIFont systemFontOfSize:25], NSForegroundColorAttributeName:[UIColor blackColor]&#125; range:NSMakeRange(1, 1)];
+    [attributedArr setAttributes:@&#123;NSFontAttributeName:[UIFont systemFontOfSize:20], NSForegroundColorAttributeName:[UIColor blueColor]&#125; range:NSMakeRange(3, 1)];
+    [attributedArr setAttributes:@&#123;NSFontAttributeName:[UIFont systemFontOfSize:35], NSForegroundColorAttributeName:[UIColor redColor]&#125; range:NSMakeRange(4, attributedArr.length - 4)];
 
     leftLB.attributedText = attributedArr;
 
@@ -571,9 +577,9 @@ typedef NS_ENUM(NSUInteger, textAlignType)
     rightLB.numberOfLines = 1;
     [self.view addSubview:rightLB];
     //左下
-    [rightLB textAlign:^(ARMaker *make) {
+    [rightLB textAlign:^(ARMaker *make) &#123;
         make.addAlignType(textAlignType_center);
-    }];
+    &#125;];
 
     //设置部分文字的偏移量 (0是让文字保持原来的位置, 负值是让文字下移，正值是让文字上移)
     [attributedArr addAttribute:NSBaselineOffsetAttributeName value:@(1) range:NSMakeRange(0, 1)];
@@ -583,8 +589,9 @@ typedef NS_ENUM(NSUInteger, textAlignType)
 
     rightLB.attributedText = attributedArr;
 
-}
+&#125;
 </code></pre>
+
       
 
       
@@ -607,7 +614,7 @@ typedef NS_ENUM(NSUInteger, textAlignType)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/15/轻松实现Label的全方位对齐/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/10/15/%E8%BD%BB%E6%9D%BE%E5%AE%9E%E7%8E%B0Label%E7%9A%84%E5%85%A8%E6%96%B9%E4%BD%8D%E5%AF%B9%E9%BD%90/">展开全文 >></a>
         </p>
       
 
@@ -644,12 +651,12 @@ typedef NS_ENUM(NSUInteger, textAlignType)
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/">iOS 和常见的离屏渲染Say Goodbye！</a>
+      <a class="article-title" href="/2018/10/13/iOS%20%E5%92%8C%E5%B8%B8%E8%A7%81%E7%9A%84%E7%A6%BB%E5%B1%8F%E6%B8%B2%E6%9F%93Say%20Goodbye%EF%BC%81/">iOS 和常见的离屏渲染Say Goodbye！</a>
     </h1>
   
 
         
-        <a href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/" class="archive-article-date">
+        <a href="/2018/10/13/iOS%20%E5%92%8C%E5%B8%B8%E8%A7%81%E7%9A%84%E7%A6%BB%E5%B1%8F%E6%B8%B2%E6%9F%93Say%20Goodbye%EF%BC%81/" class="archive-article-date">
   	<time datetime="2018-10-12T17:07:25.380Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-13</time>
 </a>
         
@@ -662,15 +669,17 @@ typedef NS_ENUM(NSUInteger, textAlignType)
 <p>OpenGL中，GPU屏幕渲染有两种方式: On-Screen Rendering (当前屏幕渲染) 和 Off-Screen Rendering (离屏渲染) ，当前屏幕渲染不需要额外创建新的缓存，也不需要开启新的上下文，相对于离屏渲染性能更好。但是受当前屏幕渲染的局限因素限制(只有自身上下文、屏幕缓存有限等)，当前屏幕渲染有些情况下的渲染解决不了的，就使用到离屏渲染。离屏渲染的整个过程需要切换上下文环境,先从 当前屏幕切换到离屏,等结束后,又要将上下文环境切换回来.这也是为什么会消耗性能的原因了。</p>
 <p>离屏渲染引发因素有 cornerRadius（设置圆角）、shadows（阴影）、masks（遮罩）、edge antialiasing（抗锯齿）、group opacity（不透明）、shouldRasterize（光栅化） 等，至于检测离屏渲染的工具 Instruments的Core Animation 就不多说了。本文主要介绍 设置圆角 和 阴影 的方案。</p>
 <h2 id="设置圆角"><a href="#设置圆角" class="headerlink" title="设置圆角"></a>设置圆角</h2><p>常规做法：</p>
-<pre><code>//只需要设置layer层的两个属性
-//设置圆角
-imageView.layer.cornerRadius = imageView.frame.size.width / 2;
-//将多余的部分切掉
-imageView.layer.masksToBounds = YES;
-</code></pre><p>这里提供两种避免离屏渲染的方案</p>
+<pre><code>   //只需要设置layer层的两个属性
+   //设置圆角
+   imageView.layer.cornerRadius = imageView.frame.size.width / 2;
+   //将多余的部分切掉
+   imageView.layer.masksToBounds = YES;
+   
+</code></pre>
+<p>这里提供两种避免离屏渲染的方案</p>
 <p>1.视图上添加一个子layer到最上层，用于遮盖该视图及其子视图，设置layer的图片为刚好能够遮盖成所需圆角样子，并且图片颜色刚好是该视图父视图的背景颜色就达到想要的效果。</p>
 <p>封装了一个UIView的分类，3个API，分别是 设置一个四角圆角，设置一个指定位置的圆角，设置一个带边框的圆角 。</p>
-<p> <a href="https://github.com/wazrx/XWCornerRadius" target="_blank" rel="noopener">github</a></p>
+<p> <a target="_blank" rel="noopener" href="https://github.com/wazrx/XWCornerRadius">github</a></p>
 <pre><code> /**
  设置一个四角圆角
 
@@ -698,20 +707,23 @@ imageView.layer.masksToBounds = YES;
  @param borderWidth 边框线宽
  */
 - (void)xw_roundedCornerWithCornerRadii:(CGSize)cornerRadii cornerColor:(UIColor *)color corners:(UIRectCorner)corners borderColor:(UIColor *)borderColor borderWidth:(CGFloat)borderWidth;
-</code></pre><p>下载下来这个分类直接拖入工程就可以使用了，调用很方便，不过使用的时候会发现，这三个API都需要传一个参数 cornerColor （父视图的背景色），所以也造成了这个功能的局限，即 如果该父视图的颜色不是纯色，此时该方式就不适用了，同样 如果父视图的颜色会变化，那实现起来的代码也不那么优雅，如下图，有点尴尬，这里引出了第二种方案。</p>
+</code></pre>
+<p>下载下来这个分类直接拖入工程就可以使用了，调用很方便，不过使用的时候会发现，这三个API都需要传一个参数 cornerColor （父视图的背景色），所以也造成了这个功能的局限，即 如果该父视图的颜色不是纯色，此时该方式就不适用了，同样 如果父视图的颜色会变化，那实现起来的代码也不那么优雅，如下图，有点尴尬，这里引出了第二种方案。</p>
 <p>2 通过修改layer.mask，首先通过贝塞尔曲线创建基于矢量的路径，传递给CAShapeLayer进行渲染。路径闭环，再把绘制出的Shape赋值给layer.mask，在Mask范围之外的Layer将不被显示从而达到圆角效果。代码实现很简单，如下：</p>
-<pre><code>UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake(130, 330, 100, 100)];
- [btn setBackgroundColor:[UIColor colorWithRed:(226.0 / 255.0) green:(113.0 / 255.0) blue:(19.0 / 255.0) alpha:1]];
- [backgroundImageView addSubview:btn];
- //绘制曲线路径
- UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:btn.bounds byRoundingCorners:UIRectCornerAllCorners cornerRadii:btn.bounds.size];
- CAShapeLayer *maskLayer = [[CAShapeLayer alloc]init];
- //设置大小
- maskLayer.frame = btn.bounds;
- //设置图形样子
- maskLayer.path = maskPath.CGPath;
- btn.layer.mask = maskLayer;
-</code></pre><h2 id="设置阴影"><a href="#设置阴影" class="headerlink" title="设置阴影"></a>设置阴影</h2><p>常规做法：</p>
+<pre><code>   UIButton *btn = [[UIButton alloc]initWithFrame:CGRectMake(130, 330, 100, 100)];
+    [btn setBackgroundColor:[UIColor colorWithRed:(226.0 / 255.0) green:(113.0 / 255.0) blue:(19.0 / 255.0) alpha:1]];
+    [backgroundImageView addSubview:btn];
+    //绘制曲线路径
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:btn.bounds byRoundingCorners:UIRectCornerAllCorners cornerRadii:btn.bounds.size];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc]init];
+    //设置大小
+    maskLayer.frame = btn.bounds;
+    //设置图形样子
+    maskLayer.path = maskPath.CGPath;
+    btn.layer.mask = maskLayer;
+    
+</code></pre>
+<h2 id="设置阴影"><a href="#设置阴影" class="headerlink" title="设置阴影"></a>设置阴影</h2><p>常规做法：</p>
 <pre><code>//阴影的颜色
 self.imageView.layer.shadowColor= [UIColorblackColor].CGColor;
 //阴影的透明度
@@ -720,11 +732,13 @@ self.imageView.layer.shadowOpacity=0.8f;
 self.imageView.layer.shadowRadius=4;
 //阴影偏移量
 self.imageView.layer.shadowOffset=CGSizeMake(0,0);
-</code></pre><p>优化方案：</p>
+</code></pre>
+<p>优化方案：</p>
 <p>避免对shadowOffset直接修改，通过调用setShadowPath来提供一个CGPath给视图的Layer，向Core Animation提供渲染的View的形状Shape,就会减少离屏渲染计算</p>
 <pre><code>[self.imageView.layer setShadowPath:[[UIBezierPath 
 bezierPathWithRect:myView.bounds] CGPath]];
-</code></pre><p> 补充：当使用阴影的视图形状发生变化时，即shadowPath并不会跟随CALayer的bounds属性进行变化，所以在layer的bounds产生变化以后需要手动更新shadowPath才能让其适配新的bounds.</p>
+</code></pre>
+<p> 补充：当使用阴影的视图形状发生变化时，即shadowPath并不会跟随CALayer的bounds属性进行变化，所以在layer的bounds产生变化以后需要手动更新shadowPath才能让其适配新的bounds.</p>
 
       
 
@@ -748,7 +762,7 @@ bezierPathWithRect:myView.bounds] CGPath]];
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/10/13/iOS%20%E5%92%8C%E5%B8%B8%E8%A7%81%E7%9A%84%E7%A6%BB%E5%B1%8F%E6%B8%B2%E6%9F%93Say%20Goodbye%EF%BC%81/">展开全文 >></a>
         </p>
       
 
@@ -785,12 +799,12 @@ bezierPathWithRect:myView.bounds] CGPath]];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/02/无限循环滚动的TableView/">无限循环滚动的TableView</a>
+      <a class="article-title" href="/2018/10/02/%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%9A%E5%8A%A8%E7%9A%84TableView/">无限循环滚动的TableView</a>
     </h1>
   
 
         
-        <a href="/2018/10/02/无限循环滚动的TableView/" class="archive-article-date">
+        <a href="/2018/10/02/%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%9A%E5%8A%A8%E7%9A%84TableView/" class="archive-article-date">
   	<time datetime="2018-10-02T14:37:33.938Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
 </a>
         
@@ -806,98 +820,104 @@ bezierPathWithRect:myView.bounds] CGPath]];
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="我们通过创建TableView的子类，在子类中对dataSource进行处理。"><a href="#我们通过创建TableView的子类，在子类中对dataSource进行处理。" class="headerlink" title="我们通过创建TableView的子类，在子类中对dataSource进行处理。"></a>我们通过创建TableView的子类，在子类中对dataSource进行处理。</h3><p>如果直接将子类自身设为子类的dataSource，创建另外一个dataSource作为对外的delegate，将自身不处理的代理消息转发给对外的delegate，这样要求自身实现所有的代理方法，非常蛋疼。</p>
 <p>因此，我们创建一个拦截器，通过拦截器决定将消息发送到TableView子类内部或者是其dataSource，这样简洁又比较优雅（装逼）。</p>
 <p>注：使用此方法实现无限循环的TableView，需要对ObjC的消息转发有一定理解。</p>
-<h3 id="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"><a href="#1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置" class="headerlink" title="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"></a>1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置</h3><pre><code>- (void)layoutSubviews {
+<h3 id="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"><a href="#1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置" class="headerlink" title="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"></a>1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置</h3><pre><code>- (void)layoutSubviews &#123;
     [self resetContentOffsetIfNeeded];
     [super layoutSubviews];
-}
+&#125;
 
-- (void)resetContentOffsetIfNeeded {
+- (void)resetContentOffsetIfNeeded &#123;
     CGPoint contentOffset  = self.contentOffset;
     //头部
-    if (contentOffset.y &lt; 0.0) {
+    if (contentOffset.y &lt; 0.0) &#123;
         contentOffset.y = self.contentSize.height / 3.0;
-    }
+    &#125;
     //尾部
-    else if (contentOffset.y &gt;= (self.contentSize.height - self.bounds.size.height)) {
+    else if (contentOffset.y &gt;= (self.contentSize.height - self.bounds.size.height)) &#123;
         contentOffset.y = self.contentSize.height / 3.0 - self.bounds.size.height;
-    }
+    &#125;
     [self setContentOffset: contentOffset];
-}
-</code></pre><h3 id="2、创建一个拦截器"><a href="#2、创建一个拦截器" class="headerlink" title="2、创建一个拦截器"></a>2、创建一个拦截器</h3><pre><code>@interface SUTableViewInterceptor : NSObject
+&#125;
+</code></pre>
+<h3 id="2、创建一个拦截器"><a href="#2、创建一个拦截器" class="headerlink" title="2、创建一个拦截器"></a>2、创建一个拦截器</h3><pre><code>@interface SUTableViewInterceptor : NSObject
 
 @property (nonatomic, weak) id receiver;
 @property (nonatomic, weak) id middleMan;
 
 @end
-</code></pre><h3 id="3、将拦截器设置为TableView子类的dataSource"><a href="#3、将拦截器设置为TableView子类的dataSource" class="headerlink" title="3、将拦截器设置为TableView子类的dataSource"></a>3、将拦截器设置为TableView子类的dataSource</h3><pre><code>- (void)setDataSource:(id&lt;UITableViewDataSource&gt;)dataSource {
+</code></pre>
+<h3 id="3、将拦截器设置为TableView子类的dataSource"><a href="#3、将拦截器设置为TableView子类的dataSource" class="headerlink" title="3、将拦截器设置为TableView子类的dataSource"></a>3、将拦截器设置为TableView子类的dataSource</h3><pre><code>- (void)setDataSource:(id&lt;UITableViewDataSource&gt;)dataSource &#123;
     self.dataSourceInterceptor.receiver = dataSource;
     [super setDataSource:(id&lt;UITableViewDataSource&gt;)self.dataSourceInterceptor];
-}
+&#125;
 
-- (SUTableViewInterceptor *)dataSourceInterceptor {
-    if (!_dataSourceInterceptor) {
+- (SUTableViewInterceptor *)dataSourceInterceptor &#123;
+    if (!_dataSourceInterceptor) &#123;
         _dataSourceInterceptor = [[SUTableViewInterceptor alloc]init];
         _dataSourceInterceptor.middleMan = self;
-    }
+    &#125;
     return _dataSourceInterceptor;
-}
-</code></pre><h3 id="4、在子类中实现需要加工处理的代理方法"><a href="#4、在子类中实现需要加工处理的代理方法" class="headerlink" title="4、在子类中实现需要加工处理的代理方法"></a>4、在子类中实现需要加工处理的代理方法</h3><pre><code>- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
+&#125;
+</code></pre>
+<h3 id="4、在子类中实现需要加工处理的代理方法"><a href="#4、在子类中实现需要加工处理的代理方法" class="headerlink" title="4、在子类中实现需要加工处理的代理方法"></a>4、在子类中实现需要加工处理的代理方法</h3><pre><code>- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section &#123;
     self.actualRows = [self.dataSourceInterceptor.receiver tableView:tableView numberOfRowsInSection:section];
     return self.actualRows * 3;
-}
+&#125;
 
-- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath &#123;
     NSIndexPath * actualIndexPath = [NSIndexPath indexPathForRow:indexPath.row % self.actualRows inSection:indexPath.section];
     return [self.dataSourceInterceptor.receiver tableView:tableView cellForRowAtIndexPath:actualIndexPath];
-}
-</code></pre><h3 id="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理"><a href="#5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理" class="headerlink" title="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)"></a>5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)</h3><pre><code>@implementation SUTableViewInterceptor
+&#125;
+</code></pre>
+<h3 id="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理"><a href="#5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理" class="headerlink" title="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)"></a>5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)</h3><pre><code>@implementation SUTableViewInterceptor
 
 #pragma mark - forward &amp; response override
-- (id)forwardingTargetForSelector:(SEL)aSelector {
+- (id)forwardingTargetForSelector:(SEL)aSelector &#123;
     if ([self.middleMan respondsToSelector:aSelector]) return self.middleMan;
     if ([self.receiver respondsToSelector:aSelector]) return self.receiver;
     return [super forwardingTargetForSelector:aSelector];
-}
+&#125;
 
-- (BOOL)respondsToSelector:(SEL)aSelector {
+- (BOOL)respondsToSelector:(SEL)aSelector &#123;
     if ([self.middleMan respondsToSelector:aSelector]) return YES;
     if ([self.receiver respondsToSelector:aSelector]) return YES;
     return [super respondsToSelector:aSelector];
-}
+&#125;
 
 @end
-</code></pre><p>到此，自定义的TableView基本完成，整理一下思路，不难理解我们是通过拦截器将代理消息转发到子类内部，子类内部则通过外部代理提供的dataSource来拷贝成3份，来组成一个3倍于普通长度的TableView，并在其滑动时进行处理，形成可以无限循环滚动的效果。</p>
+</code></pre>
+<p>到此，自定义的TableView基本完成，整理一下思路，不难理解我们是通过拦截器将代理消息转发到子类内部，子类内部则通过外部代理提供的dataSource来拷贝成3份，来组成一个3倍于普通长度的TableView，并在其滑动时进行处理，形成可以无限循环滚动的效果。</p>
 <p>这样，在外部看起来，使用这个TableView和普通TableView没有什么不同，但是多了一个可以循环滚动的“属性”，当然，你也可以将其封装成可设置的属性，方便切换普通模式和循环滚动模式。</p>
 <p>下面，用这个TableView的子类来试着创建一个可以循环滚动的列表看看：</p>
-<pre><code>- (void)viewDidLoad {
+<pre><code>- (void)viewDidLoad &#123;
     [super viewDidLoad];
     [self.view addSubview:self.tableView];
-}
+&#125;
 
-- (UITableView *)tableView {
-    if(!_tableView) {
+- (UITableView *)tableView &#123;
+    if(!_tableView) &#123;
         _tableView = [[SUTableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.showsVerticalScrollIndicator = NO;
         _tableView.rowHeight = 150.0;
         [_tableView registerNib:[UINib nibWithNibName:@&quot;LiveCell&quot; bundle:nil] forCellReuseIdentifier:liveCellID];
-    }
+    &#125;
     return _tableView;
-}
+&#125;
 
 #pragma mark - UITableViewDataSource
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section &#123;
     return 5;
-}
+&#125;
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath &#123;
     LiveCell * cell = [self.tableView dequeueReusableCellWithIdentifier:liveCellID];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.descLabel.text = [NSString stringWithFormat:@&quot;第 %ld 个主播频道&quot;, indexPath.row + 1];
     return cell;
-}
-</code></pre><p>怎么样，强迫症是不是舒缓了，是不是轻松多了~~~</p>
+&#125;
+</code></pre>
+<p>怎么样，强迫症是不是舒缓了，是不是轻松多了~~~</p>
 
       
 
@@ -921,7 +941,7 @@ bezierPathWithRect:myView.bounds] CGPath]];
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/02/无限循环滚动的TableView/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/10/02/%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%9A%E5%8A%A8%E7%9A%84TableView/">展开全文 >></a>
         </p>
       
 
@@ -958,12 +978,12 @@ bezierPathWithRect:myView.bounds] CGPath]];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/27/iOS高并发优化/">iOS高并发优化</a>
+      <a class="article-title" href="/2018/09/27/iOS%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/">iOS高并发优化</a>
     </h1>
   
 
         
-        <a href="/2018/09/27/iOS高并发优化/" class="archive-article-date">
+        <a href="/2018/09/27/iOS%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/" class="archive-article-date">
   	<time datetime="2018-09-27T14:31:57.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-27</time>
 </a>
         
@@ -977,7 +997,7 @@ bezierPathWithRect:myView.bounds] CGPath]];
 <p>3.如果消息已经显示，并且是第一位，则只需要cell的内容变化。</p>
 <p>4.只修改cell里的内容，不进行刷新cell整体，这里要注意的是，一定要最小化刷新。刷新点越小，性能损耗越小。我们项目架构是MVVM,采用了ReactiveCocoa框架,针对每个cell上的可变化的控件数据进行了监听，每一个cell上对应一个vm，这样当vm上的数据变化时候，cell上的数据也就跟着变了。做到了最小化刷新。</p>
 <p>5.避免使用autolayout计算位置，这个很重要，在性能要求高的情况下，autolayout计算会很耗时间，尤其在算tableview高度的时候可见一斑。可喜的是消息列表的高度是固定的，所以在计算高度时候我们并未花费时间。</p>
-<p>6.使用(<strong>kindof UITableViewCell <em>)dequeueReusableCellWithIdentifier:(NSString </em>)identifier forIndexPath:(NSIndexPath *)indexPath而不使用-(nullable </strong>kindof UITableViewCell <em>)dequeueReusableCellWithIdentifier:(NSString </em>)identifier来查找cell,因为下边的方法会多查一次，耗时更长一点。</p>
+<p>6.使用(__kindof UITableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath而不使用-(nullable __kindof UITableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier来查找cell,因为下边的方法会多查一次，耗时更长一点。</p>
 <p>7.cellForRowAtIndexPath方法只负责创建cell,willDisplayCell方法才给cell进行赋值操作。从方法名字就可以看出来原因</p>
 <p>8.当来消息轰炸时候，必然会是不同的人发来的消息，会导致tableview不可避免的刷新，如果不加处理必然会卡顿，要知道，机器也是有瓶颈的。这里我们做的优化是根据cpu的使用率选择性的刷新tableview。后来我们发现微信也是有这个现象，并不是实时的刷新，我们猜测也是类似处理。</p>
 <p>9.重绘制系统控件，相信你也发现了消息列表里，主要有两个控件，一个是头像，一个是label。而系统的UIImageView用来显示头像，未免有点重。我们的处理是使用UIView，设置View得layer.content来处理。针对layer层做的setImageWithUrl的第三方库也不少，大家可以自行查询。另一个就是label，如果你能集成UIView自己绘制一个label,我想也许会有一点效果。</p>
@@ -1027,7 +1047,7 @@ bezierPathWithRect:myView.bounds] CGPath]];
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/27/iOS高并发优化/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/27/iOS%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/">展开全文 >></a>
         </p>
       
 
@@ -1064,12 +1084,12 @@ bezierPathWithRect:myView.bounds] CGPath]];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/22/每个程序员对着电梯都想过调度算法/">每个程序员对着电梯都想过调度算法吧！</a>
+      <a class="article-title" href="/2018/09/22/%E6%AF%8F%E4%B8%AA%E7%A8%8B%E5%BA%8F%E5%91%98%E5%AF%B9%E7%9D%80%E7%94%B5%E6%A2%AF%E9%83%BD%E6%83%B3%E8%BF%87%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95/">每个程序员对着电梯都想过调度算法吧！</a>
     </h1>
   
 
         
-        <a href="/2018/09/22/每个程序员对着电梯都想过调度算法/" class="archive-article-date">
+        <a href="/2018/09/22/%E6%AF%8F%E4%B8%AA%E7%A8%8B%E5%BA%8F%E5%91%98%E5%AF%B9%E7%9D%80%E7%94%B5%E6%A2%AF%E9%83%BD%E6%83%B3%E8%BF%87%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95/" class="archive-article-date">
   	<time datetime="2018-09-22T14:13:11.373Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-22</time>
 </a>
         
@@ -1170,7 +1190,7 @@ bezierPathWithRect:myView.bounds] CGPath]];
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/22/每个程序员对着电梯都想过调度算法/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/22/%E6%AF%8F%E4%B8%AA%E7%A8%8B%E5%BA%8F%E5%91%98%E5%AF%B9%E7%9D%80%E7%94%B5%E6%A2%AF%E9%83%BD%E6%83%B3%E8%BF%87%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95/">展开全文 >></a>
         </p>
       
 
@@ -1207,12 +1227,12 @@ bezierPathWithRect:myView.bounds] CGPath]];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/18/关于swift中的单例模式/">关于swift中的单例模式</a>
+      <a class="article-title" href="/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E4%B8%AD%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">关于swift中的单例模式</a>
     </h1>
   
 
         
-        <a href="/2018/09/18/关于swift中的单例模式/" class="archive-article-date">
+        <a href="/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E4%B8%AD%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" class="archive-article-date">
   	<time datetime="2018-09-18T15:52:12.784Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
 </a>
         
@@ -1225,59 +1245,62 @@ bezierPathWithRect:myView.bounds] CGPath]];
 <p>下面看看swift中的几种实现方式：</p>
 <pre><code>import Foundation
 
-class SingleOne {
-
+class SingleOne &#123;
+    
     //单例
     static let shareSingleOne = SingleOne()
-
-}
-</code></pre><p>一句话搞定，静态常理。所有地方用到的都是同一个</p>
+    
+&#125;
+</code></pre>
+<p>一句话搞定，静态常理。所有地方用到的都是同一个</p>
 <pre><code>import Foundation
 
-class SingleTwo {
-
+class SingleTwo &#123;
+    
     //单例
-    class func shareSingleTwo()-&gt;SingleTwo{
-        struct Singleton{
+    class func shareSingleTwo()-&gt;SingleTwo&#123;
+        struct Singleton&#123;
             static var onceToken : dispatch_once_t = 0
             static var single:SingleTwo?
-        }
-        dispatch_once(&amp;Singleton.onceToken,{
+        &#125;
+        dispatch_once(&amp;Singleton.onceToken,&#123;
             Singleton.single=shareSingleTwo()
-        }
+        &#125;
         )
         return Singleton.single!
-    }
-
-}
-</code></pre><p>使用dispatch_once可以保证其中的代码只执行一次</p>
+    &#125;
+    
+&#125;
+</code></pre>
+<p>使用dispatch_once可以保证其中的代码只执行一次</p>
 <pre><code>import Foundation
 
 //全局的常量
 let single = SingleThree()
 
-class SingleThree {
+class SingleThree &#123;
 
-    class var sharedInstance : SingleThree {
+    class var sharedInstance : SingleThree &#123;
         return single
-    }
-}
+    &#125;
+&#125;
 
 
 import Foundation
 
-class SingleFour {
-
-    static var sharedInstance : SingleFour {
-        struct Static {
+class SingleFour &#123;
+    
+    static var sharedInstance : SingleFour &#123;
+        struct Static &#123;
             static let instance : SingleFour = SingleFour()
-        }
+        &#125;
         return Static.instance
-    }
-}
+    &#125;
+&#125;
 
 在方法内定义静态常量
 </code></pre>
+
       
 
       
@@ -1300,7 +1323,7 @@ class SingleFour {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/18/关于swift中的单例模式/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E4%B8%AD%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">展开全文 >></a>
         </p>
       
 
@@ -1337,12 +1360,12 @@ class SingleFour {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/18/关于swift的可选类型/">关于swift的可选类型</a>
+      <a class="article-title" href="/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E7%9A%84%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B/">关于swift的可选类型</a>
     </h1>
   
 
         
-        <a href="/2018/09/18/关于swift的可选类型/" class="archive-article-date">
+        <a href="/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E7%9A%84%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B/" class="archive-article-date">
   	<time datetime="2018-09-18T15:08:43.861Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
 </a>
         
@@ -1356,107 +1379,117 @@ class SingleFour {
 <h3 id="一、申明可选常量或变量"><a href="#一、申明可选常量或变量" class="headerlink" title="一、申明可选常量或变量"></a>一、申明可选常量或变量</h3><pre><code>let status: Int? = 1   // 申明可选Int类型的常量,初始值为1 
 var defaultAddress: String? = &quot;江苏南京&quot;   // 申明可选String类型的变量,初始值为&quot;江苏南京&quot;
 var student: Person? // 申明可选Person(自定义的类)的变量，初始值为nil
-</code></pre><p>注意：Int?与Int不相同，Int?表示可选的Int类型，可以赋值为nil，而Int不可以赋值为nil</p>
+</code></pre>
+<p>注意：Int?与Int不相同，Int?表示可选的Int类型，可以赋值为nil，而Int不可以赋值为nil</p>
 <h3 id="二、使用”-”强制解析获取可选类型的值-不建议直接使用"><a href="#二、使用”-”强制解析获取可选类型的值-不建议直接使用" class="headerlink" title="二、使用”!”强制解析获取可选类型的值(不建议直接使用)"></a>二、使用”!”强制解析获取可选类型的值(不建议直接使用)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
-if defaultAddress != nil { // !=或==可以用来判断是否为nil
+if defaultAddress != nil &#123; // !=或==可以用来判断是否为nil
     print(&quot;您的地址是\(defaultAddress!)&quot;) // 使用!强制解析
-} else {
+&#125; else &#123;
     print(&quot;对不起，您不存在地址信息&quot;)
-}
+&#125;
 
 var student: Person?
 print(&quot;学生为\(student!)&quot;) // XCode会提示运行错误，因为student初始值为nil，强制解析不行
-</code></pre><h3 id="三、使用可选绑定获取可选类型的值-建议的用法"><a href="#三、使用可选绑定获取可选类型的值-建议的用法" class="headerlink" title="三、使用可选绑定获取可选类型的值(建议的用法)"></a>三、使用可选绑定获取可选类型的值(建议的用法)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
-if let address = defaultAddress { // 如果defaultAddress有值或类型转换成功，则将值赋值给address直接使用
+</code></pre>
+<h3 id="三、使用可选绑定获取可选类型的值-建议的用法"><a href="#三、使用可选绑定获取可选类型的值-建议的用法" class="headerlink" title="三、使用可选绑定获取可选类型的值(建议的用法)"></a>三、使用可选绑定获取可选类型的值(建议的用法)</h3><pre><code>var defaultAddress: String? = &quot;江苏南京&quot;
+if let address = defaultAddress &#123; // 如果defaultAddress有值或类型转换成功，则将值赋值给address直接使用
     print(&quot;您的地址是\(address)&quot;)  // 使用address代替defaultAddress，且不需要加!强制解析
-} else {
+&#125; else &#123;
     print(&quot;对不起，您不存在地址信息&quot;)
-}
-</code></pre><h3 id="四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><a href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil" class="headerlink" title="四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)"></a>四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</h3><pre><code>var mobileNumber: Int64! = 13912345678 // 第一次申明有初始值
+&#125;
+</code></pre>
+<h3 id="四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil"><a href="#四、隐式解析可选类型-用于申明时肯定有初始值，但后面可能为nil" class="headerlink" title="四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)"></a>四、隐式解析可选类型(用于申明时肯定有初始值，但后面可能为nil)</h3><pre><code>var mobileNumber: Int64! = 13912345678 // 第一次申明有初始值
 print(&quot;您的电话号码是\(mobileNumber)&quot;) // 不需要使用!强制解析
 // 打印内容:**您的电话号码是****Optional(13912345678)**
 // 还是不建议直接强制解析，因为实际项目中可能中间已经对该值做了改变，若为nil则会运行错误导致APP崩溃
-if let number = mobileNumber { // 建议的做法
+if let number = mobileNumber &#123; // 建议的做法
     print(&quot;您的电话号码是\(number)&quot;)
 // 打印内容:**您的电话号码是****13912345678**
-} else {
+&#125; else &#123;
     print(&quot;您没有记录电话号码&quot;)
-}
-</code></pre><h3 id="空合运算符-用于判断变量或常量是否为nil"><a href="#空合运算符-用于判断变量或常量是否为nil" class="headerlink" title="空合运算符(用于判断变量或常量是否为nil)"></a>空合运算符(用于判断变量或常量是否为nil)</h3><pre><code>// 空合运算符：a ?? b 判断a是否为nil，若a不为nil对a解封，否则返回b的值
+&#125;
+</code></pre>
+<h3 id="空合运算符-用于判断变量或常量是否为nil"><a href="#空合运算符-用于判断变量或常量是否为nil" class="headerlink" title="空合运算符(用于判断变量或常量是否为nil)"></a>空合运算符(用于判断变量或常量是否为nil)</h3><pre><code>// 空合运算符：a ?? b 判断a是否为nil，若a不为nil对a解封，否则返回b的值
 var status: Int? // 申明可选Int类型的变量status，初始值为nil
 status ?? 0 // 因为status为nil，则返回0
 // ?? 即为以下if else的缩写
-func testOption() -&gt; Int {
+func testOption() -&gt; Int &#123;
     let status: Int? = 1
-    if status == nil {
+    if status == nil &#123;
         return 0
-    } else {
+    &#125; else &#123;
         return status!
-    }
-}
-</code></pre><h3 id="六、函数-方法返回类型为可选类型"><a href="#六、函数-方法返回类型为可选类型" class="headerlink" title="六、函数/方法返回类型为可选类型"></a>六、函数/方法返回类型为可选类型</h3><h4 id="A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等"><a href="#A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等" class="headerlink" title="A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)"></a>A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)</h4><pre><code>func returnPossibleValue(value: Bool) -&gt; String? { // 返回类型为可选String类型
-    if value {
+    &#125;
+&#125;
+</code></pre>
+<h3 id="六、函数-x2F-方法返回类型为可选类型"><a href="#六、函数-x2F-方法返回类型为可选类型" class="headerlink" title="六、函数&#x2F;方法返回类型为可选类型"></a>六、函数&#x2F;方法返回类型为可选类型</h3><h4 id="A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等"><a href="#A-返回值为可选类型的值-如Int-、String-、-Int-String-、-Int-、-Int-String-等" class="headerlink" title="A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)"></a>A:返回值为可选类型的值(如Int?、String?、(Int, String)?、[Int]?、[Int: String]?等)</h4><pre><code>func returnPossibleValue(value: Bool) -&gt; String? &#123; // 返回类型为可选String类型
+    if value &#123;
         return &quot;返回类型是可选类型值&quot; // 如果为真，返回Int类型的值1
-    } else {
+    &#125; else &#123;
         return nil // 如果为假，返回nil
-    }
-}
+    &#125;
+&#125;
 
 let possibleValue = returnPossibleValue(value: true) // 要用可选绑定判断再使用，因为possibleValue为String？可选类型
-if let value = possibleValue {
+if let value = possibleValue &#123;
     print(value)
-} else {
+&#125; else &#123;
     print(&quot;none value&quot;)
-}
-</code></pre><h4 id="B-返回值为可选类型的类-如URL-、自定义Person-等"><a href="#B-返回值为可选类型的类-如URL-、自定义Person-等" class="headerlink" title="B:返回值为可选类型的类(如URL?、自定义Person?等)"></a>B:返回值为可选类型的类(如URL?、自定义Person?等)</h4><pre><code>class SomeClass {
+&#125;
+</code></pre>
+<h4 id="B-返回值为可选类型的类-如URL-、自定义Person-等"><a href="#B-返回值为可选类型的类-如URL-、自定义Person-等" class="headerlink" title="B:返回值为可选类型的类(如URL?、自定义Person?等)"></a>B:返回值为可选类型的类(如URL?、自定义Person?等)</h4><pre><code>class SomeClass &#123;
     var someValue: Int
-    init?(someValue: Int) { // 可失败构造器
-        if someValue == 1 { return nil }
+    init?(someValue: Int) &#123; // 可失败构造器
+        if someValue == 1 &#123; return nil &#125;
         self.someValue = someValue
-    }
-}
+    &#125;
+&#125;
 
-func returnPossibleClass(value: Bool) -&gt; SomeClass? { // 返回的类实例可能为nil
-    if value {
+func returnPossibleClass(value: Bool) -&gt; SomeClass? &#123; // 返回的类实例可能为nil
+    if value &#123;
         return SomeClass(someValue: 1) // 返回的为nil
-    } else {
+    &#125; else &#123;
         return SomeClass(someValue: 2) // 返回的SomeClass?实例，不为nil
-    }
-}
-</code></pre><h4 id="C-返回值为可选类型的闭包-如-gt-void"><a href="#C-返回值为可选类型的闭包-如-gt-void" class="headerlink" title="C:返回值为可选类型的闭包(如(()-&gt; (void))? )"></a>C:返回值为可选类型的闭包(如(()-&gt; (void))? )</h4><pre><code>func returnOptionalFunc(value: Bool) -&gt; (() -&gt; (Void))? { // 返回类型为可选类型的闭包
-    if value {
-        return { () in
+    &#125;
+&#125;
+</code></pre>
+<h4 id="C-返回值为可选类型的闭包-如-gt-void"><a href="#C-返回值为可选类型的闭包-如-gt-void" class="headerlink" title="C:返回值为可选类型的闭包(如(()-&gt; (void))? )"></a>C:返回值为可选类型的闭包(如(()-&gt; (void))? )</h4><pre><code>func returnOptionalFunc(value: Bool) -&gt; (() -&gt; (Void))? &#123; // 返回类型为可选类型的闭包
+    if value &#123;
+        return &#123; () in
             print(&quot;返回类型是可选类型闭包&quot;)
-        }
-    } else {
+        &#125;
+    &#125; else &#123;
         return nil
-    }
-}
+    &#125;
+&#125;
 
 let possibleFunc = returnOptionalFunc(value: true) // 要用可选绑定判断再使用，因为possibleFunc 为可选类型的闭包，类型为() -&gt; (Void)
-if let aFunc = possibleFunc {
+if let aFunc = possibleFunc &#123;
     print(aFunc())  // 注意增加()调用闭包，因为没有参数则是空括号
-} else {
+&#125; else &#123;
     print(&quot;none func&quot;)
-}
-</code></pre><h3 id="七、可选类型在类或结构体中的运用"><a href="#七、可选类型在类或结构体中的运用" class="headerlink" title="七、可选类型在类或结构体中的运用"></a>七、可选类型在类或结构体中的运用</h3><h4 id="A-可选类型在类中的运用"><a href="#A-可选类型在类中的运用" class="headerlink" title="A:可选类型在类中的运用"></a>A:可选类型在类中的运用</h4><pre><code>class PossibleClass {
+&#125;
+</code></pre>
+<h3 id="七、可选类型在类或结构体中的运用"><a href="#七、可选类型在类或结构体中的运用" class="headerlink" title="七、可选类型在类或结构体中的运用"></a>七、可选类型在类或结构体中的运用</h3><h4 id="A-可选类型在类中的运用"><a href="#A-可选类型在类中的运用" class="headerlink" title="A:可选类型在类中的运用"></a>A:可选类型在类中的运用</h4><pre><code>class PossibleClass &#123;
     var someValue: Int
     var possibleValue: String? // 可选存储属性，默认值为nil
-    init(someValue: Int) { // 构造方法中可以不对possibleValue属性初始化
+    init(someValue: Int) &#123; // 构造方法中可以不对possibleValue属性初始化
         self.someValue = someValue
-    }
-}
+    &#125;
+&#125;
 
 let someClass = PossibleClass(someValue: 4) // 实例化对象时不需要对possibleValue初始化，someClass实例中：someValue为4，possibleValue为nil
-</code></pre><p>注意：类中所有属性都需要有默认值。属性可以在申明时赋予初始值，也可以在构造方法中赋予初始值；子类继承父类时，必须先给自身属性先初始化后再继承父类构造方法初始化。一般的，出于安全的因素，子类的属性都赋予初始值或直接定义为可选类型。</p>
-<h4 id="B-可选类型在结构体中的运用"><a href="#B-可选类型在结构体中的运用" class="headerlink" title="B:可选类型在结构体中的运用"></a>B:可选类型在结构体中的运用</h4><pre><code>struct PossibleStruct {
+</code></pre>
+<p>注意：类中所有属性都需要有默认值。属性可以在申明时赋予初始值，也可以在构造方法中赋予初始值；子类继承父类时，必须先给自身属性先初始化后再继承父类构造方法初始化。一般的，出于安全的因素，子类的属性都赋予初始值或直接定义为可选类型。</p>
+<h4 id="B-可选类型在结构体中的运用"><a href="#B-可选类型在结构体中的运用" class="headerlink" title="B:可选类型在结构体中的运用"></a>B:可选类型在结构体中的运用</h4><pre><code>struct PossibleStruct &#123;
     var someValue: Int
     var possibleValue: String? // 可选存储属性，默认值为nil
     // 结构体中可以自定义一个init构造器对属性初始化，也可以不自定义
-}
+&#125;
 
 let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
 </code></pre>
+
       
 
       
@@ -1479,7 +1512,7 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/18/关于swift的可选类型/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E7%9A%84%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B/">展开全文 >></a>
         </p>
       
 
@@ -1516,12 +1549,12 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/17/iOS关于nsstring的copy和strong/">iOS关于nsstring的copy和strong</a>
+      <a class="article-title" href="/2018/09/17/iOS%E5%85%B3%E4%BA%8Ensstring%E7%9A%84copy%E5%92%8Cstrong/">iOS关于nsstring的copy和strong</a>
     </h1>
   
 
         
-        <a href="/2018/09/17/iOS关于nsstring的copy和strong/" class="archive-article-date">
+        <a href="/2018/09/17/iOS%E5%85%B3%E4%BA%8Ensstring%E7%9A%84copy%E5%92%8Cstrong/" class="archive-article-date">
   	<time datetime="2018-09-17T15:38:53.431Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-17</time>
 </a>
         
@@ -1558,7 +1591,7 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/17/iOS关于nsstring的copy和strong/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/17/iOS%E5%85%B3%E4%BA%8Ensstring%E7%9A%84copy%E5%92%8Cstrong/">展开全文 >></a>
         </p>
       
 
@@ -1595,12 +1628,12 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/16/iOS中的静态库与动态库/">iOS中的静态库与动态库</a>
+      <a class="article-title" href="/2018/09/16/iOS%E4%B8%AD%E7%9A%84%E9%9D%99%E6%80%81%E5%BA%93%E4%B8%8E%E5%8A%A8%E6%80%81%E5%BA%93/">iOS中的静态库与动态库</a>
     </h1>
   
 
         
-        <a href="/2018/09/16/iOS中的静态库与动态库/" class="archive-article-date">
+        <a href="/2018/09/16/iOS%E4%B8%AD%E7%9A%84%E9%9D%99%E6%80%81%E5%BA%93%E4%B8%8E%E5%8A%A8%E6%80%81%E5%BA%93/" class="archive-article-date">
   	<time datetime="2018-09-16T14:44:12.089Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
 </a>
         
@@ -1649,7 +1682,7 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/16/iOS中的静态库与动态库/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/16/iOS%E4%B8%AD%E7%9A%84%E9%9D%99%E6%80%81%E5%BA%93%E4%B8%8E%E5%8A%A8%E6%80%81%E5%BA%93/">展开全文 >></a>
         </p>
       
 
@@ -1681,7 +1714,7 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/18/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="page-number" href="/page/18/">18</a><span class="page-number current">19</span><a class="page-number" href="/page/20/">20</a><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/20/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/18/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="page-number" href="/page/18/">18</a><span class="page-number current">19</span><a class="page-number" href="/page/20/">20</a><a class="page-number" href="/page/21/">21</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/20/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -1693,7 +1726,7 @@ let someStruct = PossibleStruct(someValue: 4, possibleValue: nil)
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1800,10 +1833,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -1812,7 +1841,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1820,11 +1849,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1844,19 +1877,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

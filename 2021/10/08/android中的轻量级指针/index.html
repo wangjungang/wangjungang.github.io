@@ -9,17 +9,17 @@
   <title>android中的轻量级指针 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="智能指针来源由于android系统底层的很大的一部分是用C++实现的，C++的开发就难免会使用到指针的这个知识 点。而C++的难点和容易出问题的也在于指针。使用指针出错，常常会引发带来对项目具有毁灭性的错误，内存泄漏、逻辑错误、系统崩溃。 引发指针错误情况表现常常有如下几个表现情况： 1.申请了内存空间，但是忘记释放指针所指向的对象占用的内存空间。 2.使用了无效的指针。 因此在android的C">
-<meta name="keywords" content="Android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="android中的轻量级指针">
-<meta property="og:url" content="http://yoursite.com/2021/10/08/Android中的轻量级指针/index.html">
+<meta property="og:url" content="http://yoursite.com/2021/10/08/Android%E4%B8%AD%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%8C%87%E9%92%88/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="智能指针来源由于android系统底层的很大的一部分是用C++实现的，C++的开发就难免会使用到指针的这个知识 点。而C++的难点和容易出问题的也在于指针。使用指针出错，常常会引发带来对项目具有毁灭性的错误，内存泄漏、逻辑错误、系统崩溃。 引发指针错误情况表现常常有如下几个表现情况： 1.申请了内存空间，但是忘记释放指针所指向的对象占用的内存空间。 2.使用了无效的指针。 因此在android的C">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-10-08T06:53:48.964Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-10-08T06:45:30.204Z">
+<meta property="article:modified_time" content="2021-10-08T06:53:48.964Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="android中的轻量级指针">
-<meta name="twitter:description" content="智能指针来源由于android系统底层的很大的一部分是用C++实现的，C++的开发就难免会使用到指针的这个知识 点。而C++的难点和容易出问题的也在于指针。使用指针出错，常常会引发带来对项目具有毁灭性的错误，内存泄漏、逻辑错误、系统崩溃。 引发指针错误情况表现常常有如下几个表现情况： 1.申请了内存空间，但是忘记释放指针所指向的对象占用的内存空间。 2.使用了无效的指针。 因此在android的C">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2021/10/08/Android中的轻量级指针/" class="archive-article-date">
+        <a href="/2021/10/08/Android%E4%B8%AD%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%8C%87%E9%92%88/" class="archive-article-date">
   	<time datetime="2021-10-08T06:45:30.204Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
 </a>
         
@@ -187,38 +187,39 @@
 <pre><code>//模板类
 template &lt;class T&gt;
 class LightRefBase
-{
+&#123;
 public:
     //公共的内联函数
-    inline LightRefBase() : mCount(0) { }
-    inline void incStrong(__attribute__((unused)) const void* id) const {
+    inline LightRefBase() : mCount(0) &#123; &#125;
+    inline void incStrong(__attribute__((unused)) const void* id) const &#123;
         __sync_fetch_and_add(&amp;mCount, 1);
-    }
-    inline void decStrong(__attribute__((unused)) const void* id) const {
-        if (__sync_fetch_and_sub(&amp;mCount, 1) == 1) {
+    &#125;
+    inline void decStrong(__attribute__((unused)) const void* id) const &#123;
+        if (__sync_fetch_and_sub(&amp;mCount, 1) == 1) &#123;
             delete static_cast&lt;const T*&gt;(this);
-        }
-    }
+        &#125;
+    &#125;
     //! DEBUGGING ONLY: Get current strong ref count.
-    inline int32_t getStrongCount() const {
+    inline int32_t getStrongCount() const &#123;
         return mCount;
-    }
+    &#125;
 
     typedef LightRefBase&lt;T&gt; basetype;
 
 protected:
     //内联的虚构函数
-    inline ~LightRefBase() { }
+    inline ~LightRefBase() &#123; &#125;
 
 private:
     friend class ReferenceMover;
     inline static void moveReferences(void*, void const*, size_t,
-            const ReferenceConverterBase&amp;) { }
+            const ReferenceConverterBase&amp;) &#123; &#125;
 
 private:
     mutable volatile int32_t mCount;
-};
-</code></pre><p>上面LightRefBase类定义涉及到几个知识点：</p>
+&#125;;
+</code></pre>
+<p>上面LightRefBase类定义涉及到几个知识点：</p>
 <p>1、C++的三个访问权限类型：public、protected、private。</p>
 <p>public:可以被任意实体访问。 protected:只允许子类及本类的成员函数访问。 private:只允许本类的成员函数访问。</p>
 <p>2、C++中的inline内联函数 在函数第一部分如果包含有inline关键字的函数，那么这个函数就表示为内联函数。内联函数主要为了解决一些频繁调用的小函数大量消耗栈空间（栈内存）的问题。</p>
@@ -232,11 +233,11 @@ private:
 <pre><code>//模板类
 template &lt;typename T&gt;
 class wp
-{
+&#123;
 public:
     typedef typename RefBase::weakref_type weakref_type;
     //轻量级指针需要用到的构造函数
-    inline wp() : m_ptr(0) { }
+    inline wp() : m_ptr(0) &#123; &#125;
 
     wp(T* other);
     wp(const wp&lt;T&gt;&amp; other);
@@ -269,9 +270,9 @@ public:
 
     // Accessors
 
-    inline  weakref_type* get_refs() const { return m_refs; }
+    inline  weakref_type* get_refs() const &#123; return m_refs; &#125;
 
-    inline  T* unsafe_get() const { return m_ptr; }
+    inline  T* unsafe_get() const &#123; return m_ptr; &#125;
 
     // Operators
 
@@ -282,35 +283,35 @@ public:
     COMPARE_WEAK(&lt;=)
     COMPARE_WEAK(&gt;=)
 
-    inline bool operator == (const wp&lt;T&gt;&amp; o) const {
+    inline bool operator == (const wp&lt;T&gt;&amp; o) const &#123;
         return (m_ptr == o.m_ptr) &amp;&amp; (m_refs == o.m_refs);
-    }
+    &#125;
     template&lt;typename U&gt;
-    inline bool operator == (const wp&lt;U&gt;&amp; o) const {
+    inline bool operator == (const wp&lt;U&gt;&amp; o) const &#123;
         return m_ptr == o.m_ptr;
-    }
+    &#125;
 
-    inline bool operator &gt; (const wp&lt;T&gt;&amp; o) const {
+    inline bool operator &gt; (const wp&lt;T&gt;&amp; o) const &#123;
         return (m_ptr == o.m_ptr) ? (m_refs &gt; o.m_refs) : (m_ptr &gt; o.m_ptr);
-    }
+    &#125;
     template&lt;typename U&gt;
-    inline bool operator &gt; (const wp&lt;U&gt;&amp; o) const {
+    inline bool operator &gt; (const wp&lt;U&gt;&amp; o) const &#123;
         return (m_ptr == o.m_ptr) ? (m_refs &gt; o.m_refs) : (m_ptr &gt; o.m_ptr);
-    }
+    &#125;
 
-    inline bool operator &lt; (const wp&lt;T&gt;&amp; o) const {
+    inline bool operator &lt; (const wp&lt;T&gt;&amp; o) const &#123;
         return (m_ptr == o.m_ptr) ? (m_refs &lt; o.m_refs) : (m_ptr &lt; o.m_ptr);
-    }
+    &#125;
     template&lt;typename U&gt;
-    inline bool operator &lt; (const wp&lt;U&gt;&amp; o) const {
+    inline bool operator &lt; (const wp&lt;U&gt;&amp; o) const &#123;
         return (m_ptr == o.m_ptr) ? (m_refs &lt; o.m_refs) : (m_ptr &lt; o.m_ptr);
-    }
-                         inline bool operator != (const wp&lt;T&gt;&amp; o) const { return m_refs != o.m_refs; }
-    template&lt;typename U&gt; inline bool operator != (const wp&lt;U&gt;&amp; o) const { return !operator == (o); }
-                         inline bool operator &lt;= (const wp&lt;T&gt;&amp; o) const { return !operator &gt; (o); }
-    template&lt;typename U&gt; inline bool operator &lt;= (const wp&lt;U&gt;&amp; o) const { return !operator &gt; (o); }
-                         inline bool operator &gt;= (const wp&lt;T&gt;&amp; o) const { return !operator &lt; (o); }
-    template&lt;typename U&gt; inline bool operator &gt;= (const wp&lt;U&gt;&amp; o) const { return !operator &lt; (o); }
+    &#125;
+                         inline bool operator != (const wp&lt;T&gt;&amp; o) const &#123; return m_refs != o.m_refs; &#125;
+    template&lt;typename U&gt; inline bool operator != (const wp&lt;U&gt;&amp; o) const &#123; return !operator == (o); &#125;
+                         inline bool operator &lt;= (const wp&lt;T&gt;&amp; o) const &#123; return !operator &gt; (o); &#125;
+    template&lt;typename U&gt; inline bool operator &lt;= (const wp&lt;U&gt;&amp; o) const &#123; return !operator &gt; (o); &#125;
+                         inline bool operator &gt;= (const wp&lt;T&gt;&amp; o) const &#123; return !operator &lt; (o); &#125;
+    template&lt;typename U&gt; inline bool operator &gt;= (const wp&lt;U&gt;&amp; o) const &#123; return !operator &lt; (o); &#125;
 
 private:
     template&lt;typename Y&gt; friend class sp;
@@ -318,8 +319,9 @@ private:
     //轻量级指针会用到的变量m_ptr
     T*              m_ptr;
     weakref_type*   m_refs;
-};
-</code></pre><p>##总结</p>
+&#125;;
+</code></pre>
+<p>##总结</p>
 <p>通过前面的概念和系统源码实现功能原理分析，我们如果要使用轻量级指针的话，那么要包含头文件并采用继承LightRefBase类的方式，那么就可以使用轻量级指针的功能了。</p>
 
       
@@ -411,7 +413,7 @@ private:
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/10/08/Android中的轻量级指针/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/10/08/Android%E4%B8%AD%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%8C%87%E9%92%88/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -425,7 +427,7 @@ private:
   
 <nav id="article-nav">
   
-    <a href="/2021/10/08/Swift-适配深色模式与UIColor扩展/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2021/10/08/Swift-%E9%80%82%E9%85%8D%E6%B7%B1%E8%89%B2%E6%A8%A1%E5%BC%8F%E4%B8%8EUIColor%E6%89%A9%E5%B1%95/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -435,7 +437,7 @@ private:
     </a>
   
   
-    <a href="/2021/10/08/探索android的强指针实现 /" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2021/10/08/%E6%8E%A2%E7%B4%A2android%E7%9A%84%E5%BC%BA%E6%8C%87%E9%92%88%E5%AE%9E%E7%8E%B0%20/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">探索android的强指针实现</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -479,7 +481,7 @@ private:
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -586,10 +588,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -598,7 +596,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -606,11 +604,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -630,19 +632,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

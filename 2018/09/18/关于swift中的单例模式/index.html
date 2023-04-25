@@ -9,17 +9,17 @@
   <title>关于swift中的单例模式 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="单例模式是设计模式中最简单的一种，甚至有些模式大师都不称其为模式，称其为一种实现技巧，因为设计模式讲究对象之间的关系的抽象，而单例模式只有自己一个对象。 当你只需要一个实例的时候需要使用单例，如UIApplication.sharedApplication() 等 ，windows的任务管理器，回收站 都是只能同时存在一个。 下面看看swift中的几种实现方式： import Foundation">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于swift中的单例模式">
-<meta property="og:url" content="http://yoursite.com/2018/09/18/关于swift中的单例模式/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E4%B8%AD%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="单例模式是设计模式中最简单的一种，甚至有些模式大师都不称其为模式，称其为一种实现技巧，因为设计模式讲究对象之间的关系的抽象，而单例模式只有自己一个对象。 当你只需要一个实例的时候需要使用单例，如UIApplication.sharedApplication() 等 ，windows的任务管理器，回收站 都是只能同时存在一个。 下面看看swift中的几种实现方式： import Foundation">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-19T13:59:15.690Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-09-18T15:52:12.784Z">
+<meta property="article:modified_time" content="2018-09-19T13:59:15.690Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于swift中的单例模式">
-<meta name="twitter:description" content="单例模式是设计模式中最简单的一种，甚至有些模式大师都不称其为模式，称其为一种实现技巧，因为设计模式讲究对象之间的关系的抽象，而单例模式只有自己一个对象。 当你只需要一个实例的时候需要使用单例，如UIApplication.sharedApplication() 等 ，windows的任务管理器，回收站 都是只能同时存在一个。 下面看看swift中的几种实现方式： import Foundation">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/09/18/关于swift中的单例模式/" class="archive-article-date">
+        <a href="/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E4%B8%AD%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" class="archive-article-date">
   	<time datetime="2018-09-18T15:52:12.784Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-18</time>
 </a>
         
@@ -180,59 +180,62 @@
 <p>下面看看swift中的几种实现方式：</p>
 <pre><code>import Foundation
 
-class SingleOne {
-
+class SingleOne &#123;
+    
     //单例
     static let shareSingleOne = SingleOne()
-
-}
-</code></pre><p>一句话搞定，静态常理。所有地方用到的都是同一个</p>
+    
+&#125;
+</code></pre>
+<p>一句话搞定，静态常理。所有地方用到的都是同一个</p>
 <pre><code>import Foundation
 
-class SingleTwo {
-
+class SingleTwo &#123;
+    
     //单例
-    class func shareSingleTwo()-&gt;SingleTwo{
-        struct Singleton{
+    class func shareSingleTwo()-&gt;SingleTwo&#123;
+        struct Singleton&#123;
             static var onceToken : dispatch_once_t = 0
             static var single:SingleTwo?
-        }
-        dispatch_once(&amp;Singleton.onceToken,{
+        &#125;
+        dispatch_once(&amp;Singleton.onceToken,&#123;
             Singleton.single=shareSingleTwo()
-        }
+        &#125;
         )
         return Singleton.single!
-    }
-
-}
-</code></pre><p>使用dispatch_once可以保证其中的代码只执行一次</p>
+    &#125;
+    
+&#125;
+</code></pre>
+<p>使用dispatch_once可以保证其中的代码只执行一次</p>
 <pre><code>import Foundation
 
 //全局的常量
 let single = SingleThree()
 
-class SingleThree {
+class SingleThree &#123;
 
-    class var sharedInstance : SingleThree {
+    class var sharedInstance : SingleThree &#123;
         return single
-    }
-}
+    &#125;
+&#125;
 
 
 import Foundation
 
-class SingleFour {
-
-    static var sharedInstance : SingleFour {
-        struct Static {
+class SingleFour &#123;
+    
+    static var sharedInstance : SingleFour &#123;
+        struct Static &#123;
             static let instance : SingleFour = SingleFour()
-        }
+        &#125;
         return Static.instance
-    }
-}
+    &#125;
+&#125;
 
 在方法内定义静态常量
 </code></pre>
+
       
 
       
@@ -322,7 +325,7 @@ class SingleFour {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/18/关于swift中的单例模式/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E4%B8%AD%E7%9A%84%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -336,7 +339,7 @@ class SingleFour {
   
 <nav id="article-nav">
   
-    <a href="/2018/09/22/每个程序员对着电梯都想过调度算法/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/09/22/%E6%AF%8F%E4%B8%AA%E7%A8%8B%E5%BA%8F%E5%91%98%E5%AF%B9%E7%9D%80%E7%94%B5%E6%A2%AF%E9%83%BD%E6%83%B3%E8%BF%87%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -346,7 +349,7 @@ class SingleFour {
     </a>
   
   
-    <a href="/2018/09/18/关于swift的可选类型/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/09/18/%E5%85%B3%E4%BA%8Eswift%E7%9A%84%E5%8F%AF%E9%80%89%E7%B1%BB%E5%9E%8B/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">关于swift的可选类型</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -390,7 +393,7 @@ class SingleFour {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -497,10 +500,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -509,7 +508,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -517,11 +516,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -541,19 +544,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

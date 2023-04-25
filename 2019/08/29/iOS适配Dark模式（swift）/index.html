@@ -9,22 +9,22 @@
   <title>iOS适配Dark模式（swift） | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面今天的 WWDC 19 上发布了 iOS 13，我们来看下如何适配 DarkMode DarkMode 主要从两个方面来适配，一是颜色，二是图片，适配的代码不是很多，接下来让我们一起来看看具体是怎么操作的吧。 颜色iOS 13 之前 UIColor 只能表示一种颜色，从 iOS 13 开始 UIColor 是一个动态的颜色，它可以在 LightMode 和 DarkMode 拥有不同的颜色">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS适配Dark模式（swift）">
-<meta property="og:url" content="http://yoursite.com/2019/08/29/iOS适配Dark模式（swift）/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/08/29/iOS%E9%80%82%E9%85%8DDark%E6%A8%A1%E5%BC%8F%EF%BC%88swift%EF%BC%89/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面今天的 WWDC 19 上发布了 iOS 13，我们来看下如何适配 DarkMode DarkMode 主要从两个方面来适配，一是颜色，二是图片，适配的代码不是很多，接下来让我们一起来看看具体是怎么操作的吧。 颜色iOS 13 之前 UIColor 只能表示一种颜色，从 iOS 13 开始 UIColor 是一个动态的颜色，它可以在 LightMode 和 DarkMode 拥有不同的颜色">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
 <meta property="og:image" content="http://img.wangjungang.cn/4k9GcY.png">
 <meta property="og:image" content="http://img.wangjungang.cn/TfjhVe.png">
 <meta property="og:image" content="http://img.wangjungang.cn/odW7Fi.png">
 <meta property="og:image" content="http://img.wangjungang.cn/rUnCyF.png">
 <meta property="og:image" content="http://img.wangjungang.cn/FtsSoE.png">
-<meta property="og:updated_time" content="2019-08-29T04:25:31.673Z">
+<meta property="article:published_time" content="2019-08-29T04:04:01.216Z">
+<meta property="article:modified_time" content="2019-08-29T04:25:31.673Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS适配Dark模式（swift）">
-<meta name="twitter:description" content="写在前面今天的 WWDC 19 上发布了 iOS 13，我们来看下如何适配 DarkMode DarkMode 主要从两个方面来适配，一是颜色，二是图片，适配的代码不是很多，接下来让我们一起来看看具体是怎么操作的吧。 颜色iOS 13 之前 UIColor 只能表示一种颜色，从 iOS 13 开始 UIColor 是一个动态的颜色，它可以在 LightMode 和 DarkMode 拥有不同的颜色">
 <meta name="twitter:image" content="http://img.wangjungang.cn/4k9GcY.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
@@ -43,7 +43,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -57,7 +57,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -66,7 +66,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -115,7 +115,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -146,7 +146,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -173,7 +173,7 @@
   
 
         
-        <a href="/2019/08/29/iOS适配Dark模式（swift）/" class="archive-article-date">
+        <a href="/2019/08/29/iOS%E9%80%82%E9%85%8DDark%E6%A8%A1%E5%BC%8F%EF%BC%88swift%EF%BC%89/" class="archive-article-date">
   	<time datetime="2019-08-29T04:04:01.216Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-29</time>
 </a>
         
@@ -187,71 +187,80 @@
 <p>iOS 13 下 UIColor 增加了很多动态颜色，我们来看下用系统提供的颜色能实现怎么样的效果。</p>
 <pre><code>// UIColor 增加的颜色
 @available(iOS 13.0, *)
-open class var systemBackground: UIColor { get }
+open class var systemBackground: UIColor &#123; get &#125;
 @available(iOS 13.0, *)
-open class var label: UIColor { get }
+open class var label: UIColor &#123; get &#125;
 @available(iOS 13.0, *)
-open class var placeholderText: UIColor { get }
+open class var placeholderText: UIColor &#123; get &#125;
 ...
 
 view.backgroundColor = UIColor.systemBackground
 label.textColor = UIColor.label
 placeholderLabel.textColor = UIColor.placeholderText
-</code></pre><p><img src="http://img.wangjungang.cn/4k9GcY.png" alt=""></p>
+</code></pre>
+<p><img src="http://img.wangjungang.cn/4k9GcY.png"></p>
 <p>怎么样，看起来和 iOS 13 之前设置一个颜色的方法一样吧，用这种动态颜色，系统直接替我们完成了适配的工作，是不是很方便呢。</p>
 <h3 id="如何自己创建一个动态的-UIColor"><a href="#如何自己创建一个动态的-UIColor" class="headerlink" title="如何自己创建一个动态的 UIColor"></a>如何自己创建一个动态的 UIColor</h3><p>上面我们说到系统提供了一些动态的颜色供我们使用，但是在正常开发中，系统提供的颜色肯定是不够用的，所以我们要自己创建动态颜色。</p>
 <p>iOS 13 下 UIColor 增加了一个初始化方法，我们可以用这个初始化方法来创建动态颜色。</p>
 <pre><code>@available(iOS 13.0, *)
 public init(dynamicProvider: @escaping (UITraitCollection) -&gt; UIColor)
-</code></pre><p>这个方法要求传一个闭包进去，当系统从 LightMode 和 DarkMode 之间切换的时候就会触发这个回调。</p>
+</code></pre>
+<p>这个方法要求传一个闭包进去，当系统从 LightMode 和 DarkMode 之间切换的时候就会触发这个回调。</p>
 <p>这个闭包返回一个 UITraitCollection 类，我们要用这个类的 userInterfaceStyle 属性。<br>userInterfaceStyle 是一个枚举，声明如下</p>
 <pre><code>@available(iOS 12.0, *)
-public enum UIUserInterfaceStyle : Int {
+public enum UIUserInterfaceStyle : Int &#123;
     case unspecified
     case light
     case dark
-}
-</code></pre><p>这个枚举会告诉我们当前是 LightMode or DarkMode</p>
+&#125;
+</code></pre>
+<p>这个枚举会告诉我们当前是 LightMode or DarkMode</p>
 <p>现在我们创建两个 UIColor 并赋值给 view.backgroundColor 和 label，代码如下</p>
 <h2 id="图片适配"><a href="#图片适配" class="headerlink" title="图片适配"></a>图片适配</h2><p>打开 Assets.xcassets 把图片拖拽进去，我们可以看到这样的页面</p>
-<p><img src="http://img.wangjungang.cn/TfjhVe.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/TfjhVe.png"></p>
 <p>然后我们在右侧工具栏中点击最后一栏，点击 Appearances 选择 Any, Dark，如图所示</p>
-<p><img src="http://img.wangjungang.cn/odW7Fi.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/odW7Fi.png"></p>
 <p>我们把 DarkMode 的图片拖进去，如图所示</p>
-<p><img src="http://img.wangjungang.cn/rUnCyF.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/rUnCyF.png"></p>
 <p>最后我们加上 ImageView 的代码</p>
 <pre><code>imageView.image = UIImage(named: &quot;icon&quot;)
-</code></pre><p>现在我们就已经完成颜色和图片的 DarkMode 适配，是不是很简单呢 (手动滑稽)</p>
+</code></pre>
+<p>现在我们就已经完成颜色和图片的 DarkMode 适配，是不是很简单呢 (手动滑稽)</p>
 <h2 id="如何获取当前模式-Light-or-Dark"><a href="#如何获取当前模式-Light-or-Dark" class="headerlink" title="如何获取当前模式 (Light or Dark)"></a>如何获取当前模式 (Light or Dark)</h2><p>我们可以看到，不管是颜色还是图片，适配都是系统完成的，我们不用关心现在是什么样的样式。</p>
 <p>但是在某些场景下，我们可能会有根据当前样式来做一些其他适配的需求，这时我们就需要知道现在什么样式。</p>
 <p>我们可以在 UIViewController 或 UIView 中调用 traitCollection.userInterfaceStyle 来获取当前视图的样式，代码如下</p>
-<pre><code>if trainCollection.userInterfaceStyle == .dark {
+<pre><code>if trainCollection.userInterfaceStyle == .dark &#123;
     // Dark
-} else {
+&#125; else &#123;
     // Light
-}
-</code></pre><p>那么我们什么时候需要用这样的方法做适配呢，比如说当我们使用 CGColor 的时候，上面说到 UIColor 在 iOS 13 下变成了一个动态颜色，但是 CGColor 仍然只能表示单一的颜色，所以当我们使用到 CGColor 的时候，我们就可以用上面的方法做适配。</p>
+&#125;
+</code></pre>
+<p>那么我们什么时候需要用这样的方法做适配呢，比如说当我们使用 CGColor 的时候，上面说到 UIColor 在 iOS 13 下变成了一个动态颜色，但是 CGColor 仍然只能表示单一的颜色，所以当我们使用到 CGColor 的时候，我们就可以用上面的方法做适配。</p>
 <h3 id="颜色-1"><a href="#颜色-1" class="headerlink" title="颜色"></a>颜色</h3><p>对于 CGColor 我们还有还有另一种适配方法，代码如下</p>
 <pre><code>let resolvedColor = labelColor.resolvedColor(with: traitCollection)
 layer.borderColor = resolvedColor.cgColor
-</code></pre><p>resolvedColor 方法会根据传递进去的 traitCollection 返回对应的颜色。</p>
+</code></pre>
+<p>resolvedColor 方法会根据传递进去的 traitCollection 返回对应的颜色。</p>
 <h3 id="对于-UIImage-我们也有类似的方法，代码如下"><a href="#对于-UIImage-我们也有类似的方法，代码如下" class="headerlink" title="对于 UIImage 我们也有类似的方法，代码如下"></a>对于 UIImage 我们也有类似的方法，代码如下</h3><pre><code>let image = UIImage(named: &quot;icon&quot;)
 let resovledImage = image?.imageAsset?.image(with: traitCollection)
-</code></pre><h2 id="如何监听模式变化"><a href="#如何监听模式变化" class="headerlink" title="如何监听模式变化"></a>如何监听模式变化</h2><p>上面我们说了如何获取当前模式，但是我们要搭配监听方法一起使用，当 light dark 模式切换的时候，要把上面的代码再执行一遍。系统为我们提供了一个回调方法，当 light dark 切换时就会触发这个方法。</p>
-<pre><code>override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+</code></pre>
+<h2 id="如何监听模式变化"><a href="#如何监听模式变化" class="headerlink" title="如何监听模式变化"></a>如何监听模式变化</h2><p>上面我们说了如何获取当前模式，但是我们要搭配监听方法一起使用，当 light dark 模式切换的时候，要把上面的代码再执行一遍。系统为我们提供了一个回调方法，当 light dark 切换时就会触发这个方法。</p>
+<pre><code>override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) &#123;
     super.traitCollectionDidChange(previousTraitCollection)
-    if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+    if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) &#123;
         // 适配代码
-    }
-}
-</code></pre><p>题外话<br>如果你觉得这样为 CGColor 做适配很麻烦，那么不妨试试 XYColor 这个框架。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>题外话<br>如果你觉得这样为 CGColor 做适配很麻烦，那么不妨试试 XYColor 这个框架。</p>
 <h2 id="如何改变当前模式"><a href="#如何改变当前模式" class="headerlink" title="如何改变当前模式"></a>如何改变当前模式</h2><p>我们可以看到在动图中是直接改系统的模式，从而让 App 的模式修改，但是对于某些有夜间模式功能的 App 来说，如果用户打开了夜间模式，那么即使现在系统是 light 模式，也要强制用 dark 模式。</p>
 <p>我们可以用以下代码将当前 UIViewController 或 UIView 的模式。</p>
 <pre><code>overrideUserInterfaceStyle = .dark
 print(traitCollection.userInterfaceStyle)  // dark
-</code></pre><p>我们可以看到设置了 overrideUserInterfaceStyle 之后，traitCollection.userInterfaceStyle 就是我们设置后的模式了。</p>
+</code></pre>
+<p>我们可以看到设置了 overrideUserInterfaceStyle 之后，traitCollection.userInterfaceStyle 就是我们设置后的模式了。</p>
 <h4 id="需要给每一个-Controller-和-View-都设置一遍吗"><a href="#需要给每一个-Controller-和-View-都设置一遍吗" class="headerlink" title="需要给每一个 Controller 和 View 都设置一遍吗"></a>需要给每一个 Controller 和 View 都设置一遍吗</h4><p>答案是不需要，我们先来看一张图。</p>
-<p><img src="http://img.wangjungang.cn/FtsSoE.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/FtsSoE.png"></p>
 <p>当我们设置一个 controller 为 dark 之后，这个 controller 下的 view，都会是 dark mode，但是后续推出的 controller 仍然是跟随系统的样式。</p>
 <p>因为苹果对 overrideUserInterfaceStyle 属性的解释是这样的。</p>
 <p>当我们在一个普通的 controlle, view 上重写这个属性，只会影响当前的视图，不会影响前面的 controller 和后续推出的  controller。</p>
@@ -261,7 +270,8 @@ print(traitCollection.userInterfaceStyle)  // dark
 <pre><code>// 这里就简单介绍一下，实际项目中，如果是iOS应用这么写没问题，但是对于iPadOS应用还需要判断scene的状态是否激活
 let scene = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate
 scene?.window?.overrideUserInterfaceStyle = .dark
-</code></pre><h2 id="其他内容"><a href="#其他内容" class="headerlink" title="其他内容"></a>其他内容</h2><h3 id="Status-Bar"><a href="#Status-Bar" class="headerlink" title="Status Bar"></a>Status Bar</h3><p>之前 Status Bar 有两种状态，default 和 lightContent</p>
+</code></pre>
+<h2 id="其他内容"><a href="#其他内容" class="headerlink" title="其他内容"></a>其他内容</h2><h3 id="Status-Bar"><a href="#Status-Bar" class="headerlink" title="Status Bar"></a>Status Bar</h3><p>之前 Status Bar 有两种状态，default 和 lightContent</p>
 <p>现在 Status Bar 有三种状态，default,  darkContent 和 lightContent</p>
 <p>现在的 darkContent 对应之前的 default，现在的 default 会根据情况自动选择 darkContent 和 lightContent</p>
 <h3 id="UIActivityIndicatorView"><a href="#UIActivityIndicatorView" class="headerlink" title="UIActivityIndicatorView"></a>UIActivityIndicatorView</h3><p>之前的 UIActivityIndicatorView 有三种 style 分别为 whiteLarge, white 和 gray，现在全部废弃。</p>
@@ -356,7 +366,7 @@ scene?.window?.overrideUserInterfaceStyle = .dark
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/08/29/iOS适配Dark模式（swift）/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/08/29/iOS%E9%80%82%E9%85%8DDark%E6%A8%A1%E5%BC%8F%EF%BC%88swift%EF%BC%89/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -370,7 +380,7 @@ scene?.window?.overrideUserInterfaceStyle = .dark
   
 <nav id="article-nav">
   
-    <a href="/2019/08/29/iOS适配Dark模式（OC/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/08/29/iOS%E9%80%82%E9%85%8DDark%E6%A8%A1%E5%BC%8F%EF%BC%88OC/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -380,7 +390,7 @@ scene?.window?.overrideUserInterfaceStyle = .dark
     </a>
   
   
-    <a href="/2019/08/29/iOS获取内存使用请尽快/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/08/29/iOS%E8%8E%B7%E5%8F%96%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8%E8%AF%B7%E5%B0%BD%E5%BF%AB/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iOS获取内存使用情况</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -424,7 +434,7 @@ scene?.window?.overrideUserInterfaceStyle = .dark
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -531,10 +541,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -543,7 +549,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -551,11 +557,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -575,19 +585,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

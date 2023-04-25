@@ -9,17 +9,17 @@
   <title>MVP模式的学习 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo 打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。MVP似乎有好多的变种，作者所说的这种有如下特点：（原文如下：） the view part of the MVP consists of both UI">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MVP模式的学习">
-<meta property="og:url" content="http://yoursite.com/2019/06/23/MVP模式的学习/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/06/23/MVP%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo 打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。MVP似乎有好多的变种，作者所说的这种有如下特点：（原文如下：） the view part of the MVP consists of both UI">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-06-23T12:05:49.913Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-06-23T12:02:00.876Z">
+<meta property="article:modified_time" content="2019-06-23T12:05:49.913Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MVP模式的学习">
-<meta name="twitter:description" content="写在前面这两天时间宽松一点，所以我也来学学MVP的设计模式，有人说是架构，管他呢，好用就行。so，开干！ 后边有OC版本的demo 打开了Google，搜了一下关键字 MVP iOS，然后发现了一些文章，最后是这篇文章带给我对MVP 的一些认识。MVP似乎有好多的变种，作者所说的这种有如下特点：（原文如下：） the view part of the MVP consists of both UI">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/06/23/MVP模式的学习/" class="archive-article-date">
+        <a href="/2019/06/23/MVP%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/" class="archive-article-date">
   	<time datetime="2019-06-23T12:02:00.876Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-23</time>
 </a>
         
@@ -190,7 +190,8 @@ presenter拥有对 view交互的逻辑（就是上面说的意思）
 presenter跟model层通信，并将数据转化成对适应UI的数据并更新view
 presenter不需要依赖UIKit
 view层是单一，因为它是被动接受命令，没有主动能力
-</code></pre><p>presenter 作为业务逻辑的处理者，首先要向model层拿数据，所以它将可以向model层通信。其次，UI的处理权移交给了它，所以它需要与view成通讯，发送命令改变UI。同时，UI的响应将触发业务逻辑的处理，所以view 层向presenter层通讯，告诉他用户做了什么操作，需要你反馈对应的数据来更新UI。这样就完成了从用户交互获得交互反馈到整个业务逻辑。</p>
+</code></pre>
+<p>presenter 作为业务逻辑的处理者，首先要向model层拿数据，所以它将可以向model层通信。其次，UI的处理权移交给了它，所以它需要与view成通讯，发送命令改变UI。同时，UI的响应将触发业务逻辑的处理，所以view 层向presenter层通讯，告诉他用户做了什么操作，需要你反馈对应的数据来更新UI。这样就完成了从用户交互获得交互反馈到整个业务逻辑。</p>
 <h2 id="先看看结构"><a href="#先看看结构" class="headerlink" title="先看看结构"></a>先看看结构</h2><p>UserViewProtocol 协议定义了一下方法，这些方法其实就是presenter对view层发送的命令</p>
 <pre><code>#import &lt;Foundation/Foundation.h&gt;
 @protocol UserViewProtocol &lt;NSObject&gt;
@@ -199,54 +200,60 @@ view层是单一，因为它是被动接受命令，没有主动能力
 -(void) hideIndicator;
 -(void) showEmptyView;
 @end
-</code></pre><p>UserService 类是用来请求数据给presenter的，也能算是model层吧。我就只定义了一个方法。</p>
+</code></pre>
+<p>UserService 类是用来请求数据给presenter的，也能算是model层吧。我就只定义了一个方法。</p>
 <pre><code>-(void)getUserInfosSuccess:(SuccessHandler )success andFail:(FailHandler) failure
-</code></pre><p>这一层，其实也可以很复杂，这就涉及网络层的架构了</p>
+</code></pre>
+<p>这一层，其实也可以很复杂，这就涉及网络层的架构了</p>
 <p>ViewController类则是UI层，它实现了tableview自己的协议，还实现了用户交互的协议 UserViewProtocol，也就说，presenter向UI层发送命令，其实是发给UI层的viewController，实际上是控制器来被动的更新UI。这个不管是MVC还是MVP，view的实际控制权应该都是viewController，这个理解应该没错吧。<br>协议中的几个方法实现如下。</p>
-<pre><code>-(void)userViewDataSource:(NSArray*)data{
+<pre><code>-(void)userViewDataSource:(NSArray*)data&#123;
  self.friendlyUIData = data;
  [self.tableview reloadData];
-}
--(void) showIndicator{
+&#125;
+-(void) showIndicator&#123;
  self.indicator.hidden = NO;
-}
--(void) hideIndicator{
+&#125;
+-(void) hideIndicator&#123;
  self.indicator.hidden = YES;
-}
--(void) showEmptyView{
+&#125;
+-(void) showEmptyView&#123;
  UIAlertController *alertView = [UIAlertController alertControllerWithTitle:@&quot;Alert&quot; message:@&quot;show empty view&quot; preferredStyle:UIAlertControllerStyleAlert];
  [alertView addAction:[UIAlertAction actionWithTitle:@&quot;确定&quot; style:UIAlertActionStyleDefault handler:nil]];
- [self presentViewController:alertView animated:YES completion:^{
- }];
-}
-</code></pre><p>另外，在viewDidload中，调用了presenter的两个public 方法</p>
-<pre><code>self.presenter = [Presenter new];
-[self.presenter attachView:self];
-[self.presenter fetchData];
-</code></pre><p>那就来看看Presenter类，这个类我在demo中加了不少的注释，主要是为了理清自己的思路</p>
+ [self presentViewController:alertView animated:YES completion:^&#123;
+ &#125;];
+&#125;
+</code></pre>
+<p>另外，在viewDidload中，调用了presenter的两个public 方法</p>
+<pre><code> self.presenter = [Presenter new];
+ [self.presenter attachView:self];
+ [self.presenter fetchData];
+</code></pre>
+<p>那就来看看Presenter类，这个类我在demo中加了不少的注释，主要是为了理清自己的思路</p>
 <p>先说attachView 方法，这个方法是对外公开的，目的就是为了将实现了UserViewProtocol 协议的对象（其实应该就是控制器，因为view的直接操作者就是view Controller）绑定到presenter 上，说白了就是presenter 可以直接拿到实现了UserViewProtocol 协议的对象，并且向他发送命令（协议实现的方法，前面有说到），具体该方法的实现</p>
 <pre><code>@interface Presenter()
 @property (nonatomic,strong) UserService *userService;
 @property (nonatomic,weak) id&lt;UserViewProtocol&gt; attachView;
 @end
--(void)attachView:(id &lt;UserViewProtocol&gt;)view{
+-(void)attachView:(id &lt;UserViewProtocol&gt;)view&#123;
  self.attachView = view;
  self.userService  = [UserService new];
-}
-</code></pre><p>注意这里用了weak 来修饰attachView 树形，因为presenter和 viewController相互持有，所以必须要通过weak 来打破循环引用，这跟我们平时使用委托协议（ delegate）是一样的，只是名字换成了attachView 而已。</p>
+&#125;
+</code></pre>
+<p>注意这里用了weak 来修饰attachView 树形，因为presenter和 viewController相互持有，所以必须要通过weak 来打破循环引用，这跟我们平时使用委托协议（ delegate）是一样的，只是名字换成了attachView 而已。</p>
 <p>再来说fetchData方法，公开这个方法，只是为了数据请求有个统一的接口，而不需要presenter分开多次调用，presenter自己处理所有事情，不让viewController参和进来。具体实现就看demo</p>
 <p>最后说一下</p>
-<pre><code>-(NSArray *)processOriginDataToUIFriendlyData:(NSArray *) originData{
+<pre><code>-(NSArray *)processOriginDataToUIFriendlyData:(NSArray *) originData&#123;
  NSMutableArray *friendlyUIData = [NSMutableArray new];
- for (NSDictionary *dic in originData) {
-  if ([[dic valueForKey:@&quot;gender&quot;] isEqualToString:@&quot;males&quot;]) {
+ for (NSDictionary *dic in originData) &#123;
+  if ([[dic valueForKey:@&quot;gender&quot;] isEqualToString:@&quot;males&quot;]) &#123;
    [friendlyUIData addObject:dic];
-  }
- }
+  &#125;
+ &#125;
  return friendlyUIData;
-}
-</code></pre><p>这个私有方法是将原始数据转换成UI所需要的数据，这样UI拿到数据就可以直接使用，而不用做各种判断，逻辑依然放在了presenter中。而且，这个数据处理可以做成协议，输出不同UI需要的数据，这个也可以看casatwy大神 关于view架构的文章。</p>
-<p><a href="https://github.com/HecvStyle/MVPDemo" target="_blank" rel="noopener">Demo</a></p>
+&#125;
+</code></pre>
+<p>这个私有方法是将原始数据转换成UI所需要的数据，这样UI拿到数据就可以直接使用，而不用做各种判断，逻辑依然放在了presenter中。而且，这个数据处理可以做成协议，输出不同UI需要的数据，这个也可以看casatwy大神 关于view架构的文章。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/HecvStyle/MVPDemo">Demo</a></p>
 
       
 
@@ -337,7 +344,7 @@ view层是单一，因为它是被动接受命令，没有主动能力
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/06/23/MVP模式的学习/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/06/23/MVP%E6%A8%A1%E5%BC%8F%E7%9A%84%E5%AD%A6%E4%B9%A0/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -351,7 +358,7 @@ view层是单一，因为它是被动接受命令，没有主动能力
   
 <nav id="article-nav">
   
-    <a href="/2019/06/23/使用贝塞尔曲线绘制水波纹/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/06/23/%E4%BD%BF%E7%94%A8%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%E7%BB%98%E5%88%B6%E6%B0%B4%E6%B3%A2%E7%BA%B9/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -361,7 +368,7 @@ view层是单一，因为它是被动接受命令，没有主动能力
     </a>
   
   
-    <a href="/2019/06/23/runtime万能跳转界面/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/06/23/runtime%E4%B8%87%E8%83%BD%E8%B7%B3%E8%BD%AC%E7%95%8C%E9%9D%A2/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">runtime万能跳转界面</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -405,7 +412,7 @@ view层是单一，因为它是被动接受命令，没有主动能力
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -512,10 +519,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -524,7 +527,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -532,11 +535,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -556,19 +563,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

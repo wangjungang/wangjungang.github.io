@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Git的各种撤销 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Git各种撤销操作 1,  git checkout – file可以撤销add和commit之后的文件 git checkout -- a.txt 2,  git checkout branch a.txt用另外一个分支的文件替换当前分支的文件 git checkout master a.txt 3, git rm a.txt直接删除某个文件 git rm a.txt git commit -m">
-<meta name="keywords" content="Git">
+  <meta name="description" content="Git各种撤销操作 1,  git checkout – file可以撤销add和commit之后的文件 git checkout -- a.txt  2,  git checkout branch a.txt用另外一个分支的文件替换当前分支的文件 git checkout master a.txt  3, git rm a.txt直接删除某个文件 git rm a.txt git commit">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Git的各种撤销">
-<meta property="og:url" content="http://yoursite.com/2020/03/06/Git的各种撤销/index.html">
+<meta property="og:url" content="http://yoursite.com/2020/03/06/Git%E7%9A%84%E5%90%84%E7%A7%8D%E6%92%A4%E9%94%80/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="Git各种撤销操作 1,  git checkout – file可以撤销add和commit之后的文件 git checkout -- a.txt 2,  git checkout branch a.txt用另外一个分支的文件替换当前分支的文件 git checkout master a.txt 3, git rm a.txt直接删除某个文件 git rm a.txt git commit -m">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-06T03:24:31.671Z">
+<meta property="og:description" content="Git各种撤销操作 1,  git checkout – file可以撤销add和commit之后的文件 git checkout -- a.txt  2,  git checkout branch a.txt用另外一个分支的文件替换当前分支的文件 git checkout master a.txt  3, git rm a.txt直接删除某个文件 git rm a.txt git commit">
+<meta property="og:locale">
+<meta property="article:published_time" content="2020-03-06T03:19:08.853Z">
+<meta property="article:modified_time" content="2020-03-06T03:24:31.671Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="Git">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Git的各种撤销">
-<meta name="twitter:description" content="Git各种撤销操作 1,  git checkout – file可以撤销add和commit之后的文件 git checkout -- a.txt 2,  git checkout branch a.txt用另外一个分支的文件替换当前分支的文件 git checkout master a.txt 3, git rm a.txt直接删除某个文件 git rm a.txt git commit -m">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2020/03/06/Git的各种撤销/" class="archive-article-date">
+        <a href="/2020/03/06/Git%E7%9A%84%E5%90%84%E7%A7%8D%E6%92%A4%E9%94%80/" class="archive-article-date">
   	<time datetime="2020-03-06T03:19:08.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-06</time>
 </a>
         
@@ -178,18 +178,22 @@
         <h3 id="Git各种撤销操作"><a href="#Git各种撤销操作" class="headerlink" title="Git各种撤销操作"></a>Git各种撤销操作</h3><hr>
 <h4 id="1-git-checkout-–-file"><a href="#1-git-checkout-–-file" class="headerlink" title="1,  git checkout – file"></a>1,  git checkout – file</h4><p>可以撤销add和commit之后的文件</p>
 <pre><code>git checkout -- a.txt
-</code></pre><h4 id="2-git-checkout-branch-a-txt"><a href="#2-git-checkout-branch-a-txt" class="headerlink" title="2,  git checkout branch a.txt"></a>2,  git checkout branch a.txt</h4><p>用另外一个分支的文件替换当前分支的文件</p>
+</code></pre>
+<h4 id="2-git-checkout-branch-a-txt"><a href="#2-git-checkout-branch-a-txt" class="headerlink" title="2,  git checkout branch a.txt"></a>2,  git checkout branch a.txt</h4><p>用另外一个分支的文件替换当前分支的文件</p>
 <pre><code>git checkout master a.txt
-</code></pre><h4 id="3-git-rm-a-txt"><a href="#3-git-rm-a-txt" class="headerlink" title="3, git rm a.txt"></a>3, git rm a.txt</h4><p>直接删除某个文件</p>
+</code></pre>
+<h4 id="3-git-rm-a-txt"><a href="#3-git-rm-a-txt" class="headerlink" title="3, git rm a.txt"></a>3, git rm a.txt</h4><p>直接删除某个文件</p>
 <pre><code>git rm a.txt
 git commit -m &quot;del a.txt&quot;
-</code></pre><h4 id="4，-git-reset-–soft-–mixed-–hard-lt-commit-id-gt"><a href="#4，-git-reset-–soft-–mixed-–hard-lt-commit-id-gt" class="headerlink" title="4， git reset –soft|–mixed|–hard &lt;commit_id&gt;"></a>4， git reset –soft|–mixed|–hard &lt;commit_id&gt;</h4><p>回退到某一个提交</p>
+</code></pre>
+<h4 id="4，-git-reset-–soft-–mixed-–hard"><a href="#4，-git-reset-–soft-–mixed-–hard" class="headerlink" title="4， git reset –soft|–mixed|–hard "></a>4， git reset –soft|–mixed|–hard <commit_id></h4><p>回退到某一个提交</p>
 <p>1.第一种情况：还没有push，只是在本地commit</p>
 <pre><code>这里的&lt;commit_id&gt;就是每次commit的SHA-1，可以在log里查看到
 --mixed    会保留源码,只是将git commit和index 信息回退到了某个版本.
 --soft   保留源码,只回退到commit信息到某个版本.不涉及index的回退,如果还需要提交,直接commit即可.
 --hard    源码也会回退到某个版本,commit和index 都会回退到某个版本.(注意,这种方式是改变本地代码仓库源码)
-</code></pre><p>简单总结一下，其实就是–soft 、–mixed以及–hard是三个恢复等级。使用–soft就仅仅将头指针恢复，已经add的缓存以及工作空间的所有东西都不变。如果使用–mixed，就将头恢复掉，已经add的缓存也会丢失掉，工作空间的代码什么的是不变的。如果使用–hard，那么一切就全都恢复了，头变，aad的缓存消失，代码什么的也恢复到以前状态。</p>
+</code></pre>
+<p>简单总结一下，其实就是–soft 、–mixed以及–hard是三个恢复等级。使用–soft就仅仅将头指针恢复，已经add的缓存以及工作空间的所有东西都不变。如果使用–mixed，就将头恢复掉，已经add的缓存也会丢失掉，工作空间的代码什么的是不变的。如果使用–hard，那么一切就全都恢复了，头变，aad的缓存消失，代码什么的也恢复到以前状态。</p>
 <pre><code>git log
 // 如果没有你想要的就在冒号状态下一直回车，退出是在冒号下输入q
 git reset --hard f185d0ec
@@ -199,10 +203,13 @@ git push -f
 // 如果又后悔了，想回到最新的
 git reflog
 // 重复上边的步骤
-</code></pre><p>2.commit push 代码已经更新到远程仓库</p>
+    
+</code></pre>
+<p>2.commit push 代码已经更新到远程仓库</p>
 <pre><code>git revert &lt;commit_id&gt;
 git push -f
-</code></pre><p>revert 之后你的本地代码会回滚到指定的历史版本,这时你再 git push 既可以把线上的代码更新。<br>注意：git revert是用一次新的commit来回滚之前的commit，git reset是直接删除指定的commit，看似达到的效果是一样的,其实完全不同。</p>
+</code></pre>
+<p>revert 之后你的本地代码会回滚到指定的历史版本,这时你再 git push 既可以把线上的代码更新。<br>注意：git revert是用一次新的commit来回滚之前的commit，git reset是直接删除指定的commit，看似达到的效果是一样的,其实完全不同。</p>
 <p>第一:上面我们说的如果你已经push到线上代码库, reset 删除指定commit以后,你git push可能导致一大堆冲突.但是revert 并不会.</p>
 <p>第二:如果在日后现有分支和历史分支需要合并的时候,reset 恢复部分的代码依然会出现在历史分支里.但是revert 方向提交的commit 并不会出现在历史分支里.</p>
 <p>第三:reset 是在正常的commit历史中,删除了指定的commit,这时 HEAD 是向后移动了,而 revert 是在正常的commit历史中再commit一次,只不过是反向提交,他的 HEAD 是一直向前的.</p>
@@ -216,10 +223,13 @@ git reset HEAD~1
 git checkout .
 // 如果只是个别文件可以git checkout aa.txt bb.txt
 git push -f
-</code></pre><h4 id="6-git-rebase-–onto-baseBranch-from-to"><a href="#6-git-rebase-–onto-baseBranch-from-to" class="headerlink" title="6, git rebase –onto baseBranch from to"></a>6, git rebase –onto baseBranch from to</h4><p>删除中间的某次commit</p>
+        
+</code></pre>
+<h4 id="6-git-rebase-–onto-baseBranch-from-to"><a href="#6-git-rebase-–onto-baseBranch-from-to" class="headerlink" title="6, git rebase –onto baseBranch from to"></a>6, git rebase –onto baseBranch from to</h4><p>删除中间的某次commit</p>
 <p>我们先提交几次记录</p>
 <pre><code>git log
-</code></pre><p>我们会看到如下信息</p>
+</code></pre>
+<p>我们会看到如下信息</p>
 <pre><code>commit aa1f22523b7c27c692a59588a72d396a97ae04be (HEAD -&gt; branch2)
 Author:
 Date:   Tue Jul 10 21:34:55 2018 +0800
@@ -241,7 +251,8 @@ Date:   Tue Jul 10 21:34:24 2018 +0800
 commit 3427ac34d38fb6bb06cfd222896e7e3a7a837219
 Author:
 Date:   Tue Jul 10 21:34:10 2018 +0800
-</code></pre><p>我们要删掉3的那次commit，我所在的分支是branch2，–onto后边第一个参数是base，也就是要删掉的commit的上一个commit，</p>
+</code></pre>
+<p>我们要删掉3的那次commit，我所在的分支是branch2，–onto后边第一个参数是base，也就是要删掉的commit的上一个commit，</p>
 <p>第二个参数是我们要拼接的commit起始位置，第三个是结束位置</p>
 <p>~表示分支的上一次或者上几次commit</p>
 <pre><code>git rebase --onto branch2~3 branch2~1 branch2
@@ -249,7 +260,9 @@ Date:   Tue Jul 10 21:34:10 2018 +0800
 执行完会发现冲突，这时候删掉第3次commit的代码，解决完冲突，然后恢复到最后一次commit
 git add .
 git rebase --continue
-</code></pre><p>再git log，会发现，第三次commit已经没有了</p>
+        
+</code></pre>
+<p>再git log，会发现，第三次commit已经没有了</p>
 <pre><code>commit 20586673a513c53709f1e75f786e501c62d6537d (HEAD -&gt; branch2)
 Author: 
 Date:   Tue Jul 10 21:34:55 2018 +0800
@@ -267,8 +280,11 @@ Author:
 Date:   Tue Jul 10 21:34:10 2018 +0800
 
     1
-</code></pre><h4 id="7，git-commit-–amend"><a href="#7，git-commit-–amend" class="headerlink" title="7，git commit –amend"></a>7，git commit –amend</h4><pre><code>git commit --amend
-</code></pre><p>此时处于vim状态，按c开始编辑，修改完按esc退出编辑，连续按两次大写Z，退出</p>
+    
+</code></pre>
+<h4 id="7，git-commit-–amend"><a href="#7，git-commit-–amend" class="headerlink" title="7，git commit –amend"></a>7，git commit –amend</h4><pre><code>git commit --amend
+</code></pre>
+<p>此时处于vim状态，按c开始编辑，修改完按esc退出编辑，连续按两次大写Z，退出</p>
 <p>修改之前几次的<br>比如要修改的commit是倒数第三条，使用下述命令：</p>
 <pre><code>git rebase -i HEAD~3
 把pick改为edit
@@ -277,12 +293,14 @@ git commit --amend
 退出保存 :wq，然后回到正常状态
 git rebase --continue
 git push -f 推送到服务端
-</code></pre><h4 id="8-git-merge-–squash-branch"><a href="#8-git-merge-–squash-branch" class="headerlink" title="8, git merge –squash branch"></a>8, git merge –squash branch</h4><p>合并的时候不想携带分支的commit信息，合并到master的时候只会留下一条信息</p>
-<pre><code>git merge --squash branch
-git add .
- git commit -m &quot;merge branch&quot;
-git push
 </code></pre>
+<h4 id="8-git-merge-–squash-branch"><a href="#8-git-merge-–squash-branch" class="headerlink" title="8, git merge –squash branch"></a>8, git merge –squash branch</h4><p>合并的时候不想携带分支的commit信息，合并到master的时候只会留下一条信息</p>
+<pre><code>    git merge --squash branch
+    git add .
+ 	git commit -m &quot;merge branch&quot;
+    git push
+</code></pre>
+
       
 
       
@@ -372,7 +390,7 @@ git push
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/03/06/Git的各种撤销/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/03/06/Git%E7%9A%84%E5%90%84%E7%A7%8D%E6%92%A4%E9%94%80/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -386,7 +404,7 @@ git push
   
 <nav id="article-nav">
   
-    <a href="/2020/03/06/iOS 多线程相关之performSelector、死锁/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2020/03/06/iOS%20%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3%E4%B9%8BperformSelector%E3%80%81%E6%AD%BB%E9%94%81/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -396,7 +414,7 @@ git push
     </a>
   
   
-    <a href="/2020/03/04/史上最强无痕埋点/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2020/03/04/%E5%8F%B2%E4%B8%8A%E6%9C%80%E5%BC%BA%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">史上最强无痕埋点</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -440,7 +458,7 @@ git push
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -547,10 +565,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -559,7 +573,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -567,11 +581,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -591,19 +609,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

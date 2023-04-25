@@ -9,20 +9,20 @@
   <title>Xcode11 新建工程中的SceneDelegate | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面Xcode 11 建新工程默认会创建通过 UIScene 管理多个 UIWindow 的应用，工程中除了 AppDelegate 外还会有一个 SceneDelegate，这是为了实现iPadOS支持多窗口的结果。AppDelegate.h不再有window属性，window属性被定义在了SceneDelegate.h中，AppDelegate中有新增的关于scene的代理方法，Scene">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Xcode11 新建工程中的SceneDelegate">
-<meta property="og:url" content="http://yoursite.com/2019/11/29/Xcode11 新建工程中的SceneDelegate/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/11/29/Xcode11%20%E6%96%B0%E5%BB%BA%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84SceneDelegate/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面Xcode 11 建新工程默认会创建通过 UIScene 管理多个 UIWindow 的应用，工程中除了 AppDelegate 外还会有一个 SceneDelegate，这是为了实现iPadOS支持多窗口的结果。AppDelegate.h不再有window属性，window属性被定义在了SceneDelegate.h中，AppDelegate中有新增的关于scene的代理方法，Scene">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
 <meta property="og:image" content="http://img.wangjungang.cn/MCTA26.jpg">
 <meta property="og:image" content="http://img.wangjungang.cn/eI9CO0.jpg">
 <meta property="og:image" content="http://img.wangjungang.cn/UbOrNC.jpg">
-<meta property="og:updated_time" content="2019-11-29T08:25:26.181Z">
+<meta property="article:published_time" content="2019-11-29T08:13:08.143Z">
+<meta property="article:modified_time" content="2019-11-29T08:25:26.181Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Xcode11 新建工程中的SceneDelegate">
-<meta name="twitter:description" content="写在前面Xcode 11 建新工程默认会创建通过 UIScene 管理多个 UIWindow 的应用，工程中除了 AppDelegate 外还会有一个 SceneDelegate，这是为了实现iPadOS支持多窗口的结果。AppDelegate.h不再有window属性，window属性被定义在了SceneDelegate.h中，AppDelegate中有新增的关于scene的代理方法，Scene">
 <meta name="twitter:image" content="http://img.wangjungang.cn/MCTA26.jpg">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
@@ -41,7 +41,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -55,7 +55,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -64,7 +64,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -113,7 +113,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -144,7 +144,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -171,7 +171,7 @@
   
 
         
-        <a href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/" class="archive-article-date">
+        <a href="/2019/11/29/Xcode11%20%E6%96%B0%E5%BB%BA%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84SceneDelegate/" class="archive-article-date">
   	<time datetime="2019-11-29T08:13:08.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
 </a>
         
@@ -180,8 +180,8 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Xcode 11 建新工程默认会创建通过 UIScene 管理多个 UIWindow 的应用，工程中除了 AppDelegate 外还会有一个 SceneDelegate，这是为了实现iPadOS支持多窗口的结果。AppDelegate.h不再有window属性，window属性被定义在了SceneDelegate.h中，AppDelegate中有新增的关于scene的代理方法，SceneDelegate中也有相应的代理方法。因此，当我们用Xcode11针对不同版本的iOS开发应用时，就要做一些适配。</p>
-<h2 id="样式"><a href="#样式" class="headerlink" title="样式"></a>样式</h2><p><img src="http://img.wangjungang.cn/MCTA26.jpg" alt=""></p>
-<p><img src="http://img.wangjungang.cn/eI9CO0.jpg" alt=""></p>
+<h2 id="样式"><a href="#样式" class="headerlink" title="样式"></a>样式</h2><p><img src="http://img.wangjungang.cn/MCTA26.jpg"></p>
+<p><img src="http://img.wangjungang.cn/eI9CO0.jpg"></p>
 <p>AppDelegate.h中多了两个默认的代理方法：</p>
 <pre><code>#pragma mark - UISceneSession lifecycle
 
@@ -196,104 +196,108 @@ Delegate Class Name:  与哪个Scene代理对象关联;
 StoryBoard name: 这个Scene使用的哪个storyboard。
 注意：代理方法中调用的是配置名为Default Configuration的Scene，则系统就会自动去调用SceneDelegate这个类。这样SceneDelegate和AppDelegate产生了关联。
 */
-- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options &#123;
     // Called when a new scene session is being created.
     // Use this method to select a configuration to create the new scene with.
     return [[UISceneConfiguration alloc] initWithName:@&quot;Default Configuration&quot; sessionRole:connectingSceneSession.role];
-}
+&#125;
 
 // 在分屏中关闭其中一个或多个scene时候回调用
-- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet&lt;UISceneSession *&gt; *)sceneSessions {
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet&lt;UISceneSession *&gt; *)sceneSessions &#123;
     // Called when the user discards a scene session.
     // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
     // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-}
-</code></pre><p>SceneDelegate.m中的默认代理方法如下：</p>
-<pre><code>- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
+&#125;
+</code></pre>
+<p>SceneDelegate.m中的默认代理方法如下：</p>
+<pre><code>- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions &#123;
     // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
     // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
     // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-}
+&#125;
 
-- (void)sceneDidDisconnect:(UIScene *)scene {
+- (void)sceneDidDisconnect:(UIScene *)scene &#123;
     // Called as the scene is being released by the system.
     // This occurs shortly after the scene enters the background, or when its session is discarded.
     // Release any resources associated with this scene that can be re-created the next time the scene connects.
     // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
-}
+&#125;
 
-- (void)sceneDidBecomeActive:(UIScene *)scene {
+- (void)sceneDidBecomeActive:(UIScene *)scene &#123;
     // Called when the scene has moved from an inactive state to an active state.
     // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-}
+&#125;
 
-- (void)sceneWillResignActive:(UIScene *)scene {
+- (void)sceneWillResignActive:(UIScene *)scene &#123;
     // Called when the scene will move from an active state to an inactive state.
     // This may occur due to temporary interruptions (ex. an incoming phone call).
-}
+&#125;
 
-- (void)sceneWillEnterForeground:(UIScene *)scene {
+- (void)sceneWillEnterForeground:(UIScene *)scene &#123;
     // Called as the scene transitions from the background to the foreground.
     // Use this method to undo the changes made on entering the background.
-}
+&#125;
 
-- (void)sceneDidEnterBackground:(UIScene *)scene {
+- (void)sceneDidEnterBackground:(UIScene *)scene &#123;
     // Called as the scene transitions from the foreground to the background.
     // Use this method to save data, release shared resources, and store enough scene-specific state information
     // to restore the scene back to its current state.
-}
-</code></pre><h2 id="1-不需要多窗口（multiple-windows）"><a href="#1-不需要多窗口（multiple-windows）" class="headerlink" title="1. 不需要多窗口（multiple windows）"></a>1. 不需要多窗口（multiple windows）</h2><p>如果需要支持iOS 13 及之前多个版本的iOS，且又不需要多个窗口的功能，可以<strong><em>删除项目info.plist文件中的Application Scene Manifest的配置数据</em></strong>，AppDelegate中关于Scene的代理方法、SceneDelegate的类是否删除都可以。<br>如果使用纯代码来实现显示界面，需要在AppDelegate.h中手动添加window属性，添加以下代码即可：</p>
-<pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
+&#125;
+</code></pre>
+<h2 id="1-不需要多窗口（multiple-windows）"><a href="#1-不需要多窗口（multiple-windows）" class="headerlink" title="1. 不需要多窗口（multiple windows）"></a>1. 不需要多窗口（multiple windows）</h2><p>如果需要支持iOS 13 及之前多个版本的iOS，且又不需要多个窗口的功能，可以<em><strong>删除项目info.plist文件中的Application Scene Manifest的配置数据</strong></em>，AppDelegate中关于Scene的代理方法、SceneDelegate的类是否删除都可以。<br>如果使用纯代码来实现显示界面，需要在AppDelegate.h中手动添加window属性，添加以下代码即可：</p>
+<pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;
+  
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     [self.window setBackgroundColor:[UIColor whiteColor]];
-
+    
     ViewController *con = [[ViewController alloc] init];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
     [self.window setRootViewController:nav];
     [self.window makeKeyAndVisible];
     return YES;
-}
-</code></pre><h2 id="2-支持多窗口"><a href="#2-支持多窗口" class="headerlink" title="2. 支持多窗口"></a>2. 支持多窗口</h2><p>iOS 13项目info.plist中的配置项Application Scene Manifest是针对iPad multiple windows功能推出的。在保留Application Scene Manifest配置项不予删除时（其中，项目是否支持多窗口功能是个可勾选项），AppDelegate的生命周期方法不再起作用，需要在SceneDelegate中使用UIScene提供的生命周期方法，并且需要针对 iOS 13 需要在Scene中配置和 iOS 13 以下在AppDelegate中做两套配置。<br>下面是纯代码实现界面显示的代码：</p>
+&#125;
+</code></pre>
+<h2 id="2-支持多窗口"><a href="#2-支持多窗口" class="headerlink" title="2. 支持多窗口"></a>2. 支持多窗口</h2><p>iOS 13项目info.plist中的配置项Application Scene Manifest是针对iPad multiple windows功能推出的。在保留Application Scene Manifest配置项不予删除时（其中，项目是否支持多窗口功能是个可勾选项），AppDelegate的生命周期方法不再起作用，需要在SceneDelegate中使用UIScene提供的生命周期方法，并且需要针对 iOS 13 需要在Scene中配置和 iOS 13 以下在AppDelegate中做两套配置。<br>下面是纯代码实现界面显示的代码：</p>
 <pre><code>//// AppDelegate.m中
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;
     // Override point for customization after application launch.
+    
+    if (@available(iOS 13.0, *)) &#123;
 
-    if (@available(iOS 13.0, *)) {
-
-    } else {
+    &#125; else &#123;
         self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         [self.window setBackgroundColor:[UIColor whiteColor]];
-
+        
         ViewController *con = [[ViewController alloc] init];
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
         [self.window setRootViewController:nav];
         [self.window makeKeyAndVisible];
-    }
+    &#125;
     return YES;
-}
+&#125;
 
 
 //// SceneDelegate.m中
 
-- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
-
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions &#123;
+    
     //在这里手动创建新的window
-    if (@available(iOS 13.0, *)) {
+    if (@available(iOS 13.0, *)) &#123;
         UIWindowScene *windowScene = (UIWindowScene *)scene;
         self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         [self.window setWindowScene:windowScene];
         [self.window setBackgroundColor:[UIColor whiteColor]];
-
+        
         ViewController *con = [[ViewController alloc] init];
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
         [self.window setRootViewController:nav];
         [self.window makeKeyAndVisible];
-    }
-}
-</code></pre><p>注意：如果不使用storyboard，需要将配置中的storyboard项删除：</p>
-<p><img src="http://img.wangjungang.cn/UbOrNC.jpg" alt=""></p>
+    &#125;
+&#125;
+</code></pre>
+<p>注意：如果不使用storyboard，需要将配置中的storyboard项删除：</p>
+<p><img src="http://img.wangjungang.cn/UbOrNC.jpg"></p>
 
       
 
@@ -384,7 +388,7 @@ StoryBoard name: 这个Scene使用的哪个storyboard。
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/11/29/Xcode11 新建工程中的SceneDelegate/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/11/29/Xcode11%20%E6%96%B0%E5%BB%BA%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84SceneDelegate/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -398,7 +402,7 @@ StoryBoard name: 这个Scene使用的哪个storyboard。
   
 <nav id="article-nav">
   
-    <a href="/2019/11/29/iOS之runloop优化tableView的实现/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/11/29/iOS%E4%B9%8Brunloop%E4%BC%98%E5%8C%96tableView%E7%9A%84%E5%AE%9E%E7%8E%B0/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -408,7 +412,7 @@ StoryBoard name: 这个Scene使用的哪个storyboard。
     </a>
   
   
-    <a href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/09/26/RxSwift%20+%20MJRefresh%20%E8%87%AA%E5%8A%A8%E7%AE%A1%E7%90%86%E5%88%B7%E6%96%B0%E7%8A%B6%E6%80%81/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">RxSwift + MJRefresh 自动管理刷新状态</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -452,7 +456,7 @@ StoryBoard name: 这个Scene使用的哪个storyboard。
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -559,10 +563,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -571,7 +571,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -579,11 +579,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -603,19 +607,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

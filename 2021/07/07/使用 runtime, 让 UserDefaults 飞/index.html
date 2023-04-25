@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>使用 runtime, 让 UserDefaults 飞 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="封装 UserDefaults，用属性的方式存取数据  告别字符串硬编码，  统一形式，不再有各种类型存取方法  double(forKey: _ ) integer(forKey: _)   主要有参考 woshiccm/RCUserDefaults 调用print(UserDefaults.std.name) UserDefaults.std.name = &amp;quot;two&amp;quot; pr">
-<meta name="keywords" content="Swift">
+  <meta name="description" content="封装 UserDefaults，用属性的方式存取数据  告别字符串硬编码，  统一形式，不再有各种类型存取方法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 runtime, 让 UserDefaults 飞">
-<meta property="og:url" content="http://yoursite.com/2021/07/07/使用 runtime, 让 UserDefaults 飞/index.html">
+<meta property="og:url" content="http://yoursite.com/2021/07/07/%E4%BD%BF%E7%94%A8%20runtime,%20%E8%AE%A9%20UserDefaults%20%E9%A3%9E/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="封装 UserDefaults，用属性的方式存取数据  告别字符串硬编码，  统一形式，不再有各种类型存取方法  double(forKey: _ ) integer(forKey: _)   主要有参考 woshiccm/RCUserDefaults 调用print(UserDefaults.std.name) UserDefaults.std.name = &amp;quot;two&amp;quot; pr">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-10-08T06:52:39.079Z">
+<meta property="og:description" content="封装 UserDefaults，用属性的方式存取数据  告别字符串硬编码，  统一形式，不再有各种类型存取方法">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-07-07T06:13:40.954Z">
+<meta property="article:modified_time" content="2021-10-08T06:52:39.079Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="Swift">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="使用 runtime, 让 UserDefaults 飞">
-<meta name="twitter:description" content="封装 UserDefaults，用属性的方式存取数据  告别字符串硬编码，  统一形式，不再有各种类型存取方法  double(forKey: _ ) integer(forKey: _)   主要有参考 woshiccm/RCUserDefaults 调用print(UserDefaults.std.name) UserDefaults.std.name = &amp;quot;two&amp;quot; pr">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2021/07/07/使用 runtime, 让 UserDefaults 飞/" class="archive-article-date">
+        <a href="/2021/07/07/%E4%BD%BF%E7%94%A8%20runtime,%20%E8%AE%A9%20UserDefaults%20%E9%A3%9E/" class="archive-article-date">
   	<time datetime="2021-07-07T06:13:40.954Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-07</time>
 </a>
         
@@ -182,21 +182,24 @@
 <li><p>统一形式，不再有各种类型存取方法</p>
 <!--
       double(forKey: _ )
-      integer(forKey: _)
--->
-<pre><code>double(forKey: _ )
-integer(forKey: _)
-</code></pre></li>
+      integer(forKey: _)</li>
 </ul>
-<p>主要有参考 woshiccm/RCUserDefaults</p>
-<h2 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h2><pre><code>print(UserDefaults.std.name)
-UserDefaults.std.name = &quot;two&quot;
-print(UserDefaults.std.name)
-</code></pre><h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>添加属性</p>
-<pre><code>extension RCUserDefaults{
+<p>–&gt;</p>
+<pre><code>    double(forKey: _ )
+    integer(forKey: _)
+    
+</code></pre>
+<p>主要有参考 woshiccm&#x2F;RCUserDefaults</p>
+<h2 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h2><pre><code>    print(UserDefaults.std.name)
+    UserDefaults.std.name = &quot;two&quot;
+    print(UserDefaults.std.name)
+</code></pre>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>添加属性</p>
+<pre><code>extension RCUserDefaults&#123;
     @NSManaged var name: String
-}
-</code></pre><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><ul>
+&#125;
+</code></pre>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><ul>
 <li>一般给类添加属性，通过 objc_getAssociatedObject</li>
 </ul>
 <p>添加的属性，放在内存中</p>
@@ -219,45 +222,51 @@ print(UserDefaults.std.name)
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="添加的属性-放在扩展中"><a href="#添加的属性-放在扩展中" class="headerlink" title="添加的属性,放在扩展中"></a>添加的属性,放在扩展中</h3><p>做事情的是这个类 RCUserDefaults，</p>
 <p>为了简化写法，里面有一个属性是 UserDefaults.standard</p>
 <p>UserDefaults.standard 负责，实际的存取</p>
-<pre><code>class RCUserDefaults: NSObject{
+<pre><code>class RCUserDefaults: NSObject&#123;
     private let userDefaults = UserDefaults.standard
-}
-</code></pre><p>添加扩展属性</p>
-<pre><code>extension RCUserDefaults{
+&#125;
+</code></pre>
+<p>添加扩展属性</p>
+<pre><code>extension RCUserDefaults&#123;
     @NSManaged var name: String
-}
-</code></pre><h3 id="如果没有-NSManaged-报错"><a href="#如果没有-NSManaged-报错" class="headerlink" title="如果没有 @NSManaged, 报错"></a>如果没有 @NSManaged, 报错</h3><p>Extensions must not contain stored properties</p>
+&#125;
+</code></pre>
+<h3 id="如果没有-NSManaged-报错"><a href="#如果没有-NSManaged-报错" class="headerlink" title="如果没有 @NSManaged, 报错"></a>如果没有 @NSManaged, 报错</h3><p>Extensions must not contain stored properties</p>
 <p>扩展，不能包含属性</p>
 <p>与 Core Data 类似，添加 @NSManaged ，就好了</p>
 <p>the @NSManaged attribute informs the Swift compiler that the storage and implementation of a property will be provided at runtime.</p>
 <p>添加 @NSManaged，编译时不再检查，运行时保证存取即可</p>
 <h3 id="拿到添加的属性"><a href="#拿到添加的属性" class="headerlink" title="拿到添加的属性"></a>拿到添加的属性</h3><p>常规的运行时套路， class_copyPropertyList</p>
-<pre><code>extension NSObject {
+<pre><code>extension NSObject &#123;
 
-    static var properties: [Property] {
+    static var properties: [Property] &#123;
         var count: UInt32 = 0
-        guard let propertyList = class_copyPropertyList(self, &amp;count) else { return [] }
+        guard let propertyList = class_copyPropertyList(self, &amp;count) else &#123; return [] &#125;
 
         var properties = [Property]()
         let cnt = Int(count)
-        for i in 0..&lt;cnt{
+        for i in 0..&lt;cnt&#123;
             properties.append(Property(x: propertyList[i]))
-        }
+        &#125;
         free(propertyList)
         return properties
-    }
-}
-</code></pre><p>###知道,添加属性对应的类型</p>
+    &#125;
+&#125;
+</code></pre>
+<p>###知道,添加属性对应的类型</p>
 <p>才能在运行时，添加对应的 IMP,</p>
 <p>是</p>
 <pre><code>double(forKey: _ )
-</code></pre><p>还是</p>
+</code></pre>
+<p>还是</p>
 <pre><code>integer(forKey: _)
-</code></pre><p>调用入口</p>
-<pre><code>properties.append(Property(x: propertyList[i]))
-</code></pre><p>代码：</p>
+</code></pre>
+<p>调用入口</p>
+<pre><code> properties.append(Property(x: propertyList[i]))
+</code></pre>
+<p>代码：</p>
 <p>拿到 objc_property_t, 取各种属性 property_copyAttributeList</p>
-<pre><code>struct Property {
+<pre><code>struct Property &#123;
 
     let name: String
 
@@ -265,52 +274,53 @@ print(UserDefaults.std.name)
 
     private(set) var type: NSObject.Type?
 
-    init(x property: objc_property_t) {
+    init(x property: objc_property_t) &#123;
         // 拿到，我们赋予的属性名
         name = String(cString: property_getName(property))
 
         var count: UInt32 = 0
         let attributeList = property_copyAttributeList(property, &amp;count)!
-
-        for i in 0..&lt;Int(count) {
+        
+        for i in 0..&lt;Int(count) &#123;
             let attribute = attributeList[i]
 
             let nick = String(cString: attribute.name)
             let value = String(cString: attribute.value)
-
-            switch nick {
+            
+            switch nick &#123;
             case &quot;T&quot;:
                 var value = value
-                if value.hasPrefix(&quot;@\&quot;&quot;) &amp;&amp; value.hasSuffix(&quot;\&quot;&quot;) { // id
+                if value.hasPrefix(&quot;@\&quot;&quot;) &amp;&amp; value.hasSuffix(&quot;\&quot;&quot;) &#123; // id
                     value = value
                         .replacingOccurrences(of: &quot;@\&quot;&quot;, with: &quot;&quot;)
                         .replacingOccurrences(of: &quot;\&quot;&quot;, with: &quot;&quot;)
-                }
-                else if value.hasPrefix(&quot;r&quot;) { // const
+                &#125;
+                else if value.hasPrefix(&quot;r&quot;) &#123; // const
                     value = value.replacingOccurrences(of: &quot;r&quot;, with: &quot;&quot;)
-                }
+                &#125;
                 // 判断是类，还是值类型
-                if value.classExists{
+                if value.classExists&#123;
                     //  string
                     //  stringOptional
                     //  data
                     typeEncoding = ObjCTypeEncoding(e: &quot;@&quot;)
                     type = value.getClass
-                }
-                else {
+                &#125;
+                else &#123;
                     //  bool
                     //  double
                     typeEncoding = ObjCTypeEncoding(e: value)
-                }
+                &#125;
             // ...
             default: break
-            }
-        }
+            &#125;
+        &#125;
         // ...
-    }
-}
-</code></pre><h3 id="最后一步，给每一个属性，实现对应类型的存取方法"><a href="#最后一步，给每一个属性，实现对应类型的存取方法" class="headerlink" title="最后一步，给每一个属性，实现对应类型的存取方法"></a>最后一步，给每一个属性，实现对应类型的存取方法</h3><p>又来到了这个类 RCUserDefaults</p>
-<pre><code>class RCUserDefaults: NSObject{
+    &#125;
+&#125;
+</code></pre>
+<h3 id="最后一步，给每一个属性，实现对应类型的存取方法"><a href="#最后一步，给每一个属性，实现对应类型的存取方法" class="headerlink" title="最后一步，给每一个属性，实现对应类型的存取方法"></a>最后一步，给每一个属性，实现对应类型的存取方法</h3><p>又来到了这个类 RCUserDefaults</p>
+<pre><code>class RCUserDefaults: NSObject&#123;
     // 单例
     fileprivate static let standard = RCUserDefaults()
     //  记录信息
@@ -322,17 +332,18 @@ print(UserDefaults.std.name)
     // 参数，就是走一个形式
     // 为了这个单例， static let standard = RCUserDefaults()
     // 调用运行时添加 getter / setter 方法，  exchangeAccessMethods()
-    public init(placeHolder nan: Bool? = nil){
+    public init(placeHolder nan: Bool? = nil)&#123;
         super.init()
 
         exchangeAccessMethods()
-    }
-}
-</code></pre><p>运行时添加 getter / setter 方法</p>
-<pre><code>private func exchangeAccessMethods(){
+    &#125;
+&#125;
+</code></pre>
+<p>运行时添加 getter &#x2F; setter 方法</p>
+<pre><code>private func exchangeAccessMethods()&#123;
         let properties = RCUserDefaults.properties
         //  处理每一个属性
-        for property in properties{
+        for property in properties&#123;
 
             let getterKey = property.name
             let setterKey = objCDefaultSetterName(for: property.name)
@@ -348,51 +359,55 @@ print(UserDefaults.std.name)
 
             var getterImp: IMP!
             var setterImp: IMP!
-            switch property.typeEncoding {
-
+            switch property.typeEncoding &#123;
+            
             case .int, .longLong, .uInt8:
                 getterImp = unsafeBitCast(RCUserDefaults.longGetter, to: IMP.self)
                 setterImp = unsafeBitCast(RCUserDefaults.longSetter, to: IMP.self)
             // ...
             // 处理其他类型
-            }
+            &#125;
 
             let setterTypes = &quot;v@:\(property.typeEncoding)&quot;
             let getterTypes = &quot;\(property.typeEncoding)@:&quot;
 
-            setterTypes.withCString { typesCString in
+            setterTypes.withCString &#123; typesCString in
                 _ = class_addMethod(classForCoder, setterSel, setterImp, typesCString)
-            }
+            &#125;
 
-            getterTypes.withCString { typesCString in
+            getterTypes.withCString &#123; typesCString in
                 _ = class_addMethod(classForCoder, getterSel, getterImp, typesCString)
-            }
-        }
-    }
-</code></pre><p>最后 IMP</p>
+            &#125;
+        &#125;
+    &#125;
+</code></pre>
+<p>最后 IMP</p>
 <p>其中一种类型的 getter 和 setter,</p>
 <p>下面是 long ，长整型</p>
-<pre><code> private static let longGetter: @convention(c) (RCUserDefaults, Selector) -&gt; CLong = { _userDefault, _cmd in
-    // 从 getter 方法，拿到我们赋予的属性名
-    let key = defaultKey(for: _cmd)
-    // 又看到了熟悉的取方法
-    return _userDefault.userDefaults.integer(forKey: key)
-}
+<pre><code>     private static let longGetter: @convention(c) (RCUserDefaults, Selector) -&gt; CLong = &#123; _userDefault, _cmd in
+        // 从 getter 方法，拿到我们赋予的属性名
+        let key = defaultKey(for: _cmd)
+        // 又看到了熟悉的取方法
+        return _userDefault.userDefaults.integer(forKey: key)
+    &#125;
 
-private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) -&gt; Void = { _userDefault, _cmd, value in
-    // 从 setter 方法，拿到我们赋予的属性名
-    let key = defaultKey(for: _cmd)
-    // 又看到了熟悉的存方法
-    _userDefault.userDefaults.set(value, forKey: key)
-}
-</code></pre><p>回到开头，添加命名空间<br>给 UserDefaults 添加计算属性，</p>
-<p>返回的是 RCUserDefaults 的单例</p>
-<pre><code>extension UserDefaults{
-    static var std: RCUserDefaults{
-        return RCUserDefaults.standard
-    }
-}
+    private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) -&gt; Void = &#123; _userDefault, _cmd, value in
+        // 从 setter 方法，拿到我们赋予的属性名
+        let key = defaultKey(for: _cmd)
+        // 又看到了熟悉的存方法
+        _userDefault.userDefaults.set(value, forKey: key)
+    &#125;
+    
 </code></pre>
+<p>回到开头，添加命名空间<br>给 UserDefaults 添加计算属性，</p>
+<p>返回的是 RCUserDefaults 的单例</p>
+<pre><code>extension UserDefaults&#123;
+    static var std: RCUserDefaults&#123;
+        return RCUserDefaults.standard
+    &#125;
+&#125;
+</code></pre>
+
       
 
       
@@ -482,7 +497,7 @@ private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) 
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/07/07/使用 runtime, 让 UserDefaults 飞/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/07/07/%E4%BD%BF%E7%94%A8%20runtime,%20%E8%AE%A9%20UserDefaults%20%E9%A3%9E/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -496,7 +511,7 @@ private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) 
   
 <nav id="article-nav">
   
-    <a href="/2021/10/08/探索android的强指针实现 /" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2021/10/08/%E6%8E%A2%E7%B4%A2android%E7%9A%84%E5%BC%BA%E6%8C%87%E9%92%88%E5%AE%9E%E7%8E%B0%20/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -506,7 +521,7 @@ private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) 
     </a>
   
   
-    <a href="/2021/06/07/基石库-R.swift/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2021/06/07/%E5%9F%BA%E7%9F%B3%E5%BA%93-R.swift/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">基石库——R.swift</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -550,7 +565,7 @@ private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) 
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -657,10 +672,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -669,7 +680,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -677,11 +688,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -701,19 +716,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

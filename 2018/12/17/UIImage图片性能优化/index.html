@@ -9,17 +9,17 @@
   <title>UIImage图片性能优化 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面当你用 UIImage 或 CGImageSource 的那几个方法创建图片时，图片数据并不会立刻解码。图片设置到 UIImageView 或者 CALayer.contents 中去，并且 CALayer 被提交到 GPU 前，CGImage 中的数据才会得到解码。这一步是发生在主线程的，并且不可避免。如果想要绕开这个机制，常见的做法是在后台线程先把图片绘制到 CGBitmapConte">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="UIImage图片性能优化">
-<meta property="og:url" content="http://yoursite.com/2018/12/17/UIImage图片性能优化/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/12/17/UIImage%E5%9B%BE%E7%89%87%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面当你用 UIImage 或 CGImageSource 的那几个方法创建图片时，图片数据并不会立刻解码。图片设置到 UIImageView 或者 CALayer.contents 中去，并且 CALayer 被提交到 GPU 前，CGImage 中的数据才会得到解码。这一步是发生在主线程的，并且不可避免。如果想要绕开这个机制，常见的做法是在后台线程先把图片绘制到 CGBitmapConte">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-17T03:35:20.828Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-12-17T03:24:37.183Z">
+<meta property="article:modified_time" content="2018-12-17T03:35:20.828Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="UIImage图片性能优化">
-<meta name="twitter:description" content="写在前面当你用 UIImage 或 CGImageSource 的那几个方法创建图片时，图片数据并不会立刻解码。图片设置到 UIImageView 或者 CALayer.contents 中去，并且 CALayer 被提交到 GPU 前，CGImage 中的数据才会得到解码。这一步是发生在主线程的，并且不可避免。如果想要绕开这个机制，常见的做法是在后台线程先把图片绘制到 CGBitmapConte">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/12/17/UIImage图片性能优化/" class="archive-article-date">
+        <a href="/2018/12/17/UIImage%E5%9B%BE%E7%89%87%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="archive-article-date">
   	<time datetime="2018-12-17T03:24:37.183Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
 </a>
         
@@ -180,80 +180,85 @@
 <h2 id="图片解码产生的性能问题"><a href="#图片解码产生的性能问题" class="headerlink" title="图片解码产生的性能问题"></a>图片解码产生的性能问题</h2><p>下面我试试图片解码到底有多卡，我拿了10张超过1MB的图片进行测试。</p>
 <p>代码很简单，就是一个tableView，在cell里面显示图片。</p>
 <pre><code>- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+&#123;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;cell&quot;];
     if(!cell)
-    {
+    &#123;
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@&quot;cell&quot;];
-
+        
         UIImageView *headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 6, 80, 100-12)];
         headImageView.tag = 10;
         [cell.contentView addSubview:headImageView];
-    }
-
+    &#125;
+    
     NSString *fileName = [NSString stringWithFormat:@&quot;Start%zi&quot;,indexPath.row%12];
-    @autoreleasepool{
+    @autoreleasepool&#123;
         UIImage *image = [UIImage imageNamed:fileName];
         UIImageView *imageView = [cell.contentView viewWithTag:10];
         imageView.image = image;
-    }
+    &#125;
     return cell;
-}
-</code></pre><p>1、通过imageNamed加载图</p>
-<pre><code>@autoreleasepool{
+&#125;
+</code></pre>
+<p>1、通过imageNamed加载图</p>
+<pre><code>@autoreleasepool&#123;
         UIImage *image = [UIImage imageNamed:fileName];
         UIImageView *imageView = [cell.contentView viewWithTag:10];
         imageView.image = image;
-    }
-</code></pre><p>2、通过imageWithContentsOfFile加载图片</p>
-<pre><code>@autoreleasepool{
+    &#125;
+</code></pre>
+<p>2、通过imageWithContentsOfFile加载图片</p>
+<pre><code>@autoreleasepool&#123;
 //        UIImage *image = [UIImage imageNamed:fileName];
         NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@&quot;png&quot;];
         UIImage *image = [UIImage imageWithContentsOfFile:path];
         UIImageView *imageView = [cell.contentView viewWithTag:10];
         imageView.image = image;
-    }
-</code></pre><p>两种加载方式，一开始都是比较卡，好像imageNamed方式有缓存，后面再滑动tableView不卡了，因为缓存了解码后的图片。但imageWithContentsOfFile这种方式，一直都是卡顿，证明没有缓存，每次显示都进行了一次解码。</p>
+    &#125;
+</code></pre>
+<p>两种加载方式，一开始都是比较卡，好像imageNamed方式有缓存，后面再滑动tableView不卡了，因为缓存了解码后的图片。但imageWithContentsOfFile这种方式，一直都是卡顿，证明没有缓存，每次显示都进行了一次解码。</p>
 <p>给imageView.image赋值时候，才会发生图片解码，如果不执行这代码，发现没产生什么卡顿，证明imageNamed等的图片加载方法耗时不多，主要的耗时操作是在解码阶段。</p>
 <h2 id="二、图片解码的性能优化"><a href="#二、图片解码的性能优化" class="headerlink" title="二、图片解码的性能优化"></a>二、图片解码的性能优化</h2><p>对图片解码的性能优化，可以考虑把图片解码操作放到子线程执行。然后再把解码后的图片赋值给imageView.image，如果发现图片已经是解码过的，就不会再发生解码操作，就可以达到优化效果。</p>
 <p>SDWebImage的实现思路就是这样，从网络获取图片后，进行了一次解码操作，再缓存到内存和磁盘，以供显示</p>
 <p>SDWebImageDecoder的解码方法decodedImageWithImage，里面代码也不难，有兴趣可以详细看看，当然，网上也有一大堆源码分析。<br>下面，我就要用这方法优化上面的代码：</p>
 <pre><code>- (void)queryImageCache:(NSString *)filename block:(void(^)(UIImage *image))block
-{
+&#123;
     //从内存去取，如果没取到，就直接读取文件，在缓存起来
     UIImage *image = [self.memCache objectForKey:filename];
     if(image)
-    {
-        dispatch_async(dispatch_get_main_queue(), ^{
+    &#123;
+        dispatch_async(dispatch_get_main_queue(), ^&#123;
             if(block)
                 block(image);
-        });
-    }
+        &#125;);
+    &#125;
     else
-    {
-        dispatch_async(_ioQueue, ^{
-
-            @autoreleasepool{
+    &#123;
+        dispatch_async(_ioQueue, ^&#123;
+            
+            @autoreleasepool&#123;
                 NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:@&quot;png&quot;];
                 UIImage *image = [UIImage imageWithContentsOfFile:path];
                 //把解压操作放到子线程
                 image = [UIImage decodedImageWithImage:image];
                 [self.memCache setObject:image forKey:filename];
-                dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_main_queue(), ^&#123;
                     if(block)
                         block(image);
-                });
-            }
-        });
-    }
-}
-</code></pre><p>我把解码操作放到了子线程，解码完成后就缓存到内存，以供下次直接使用，执行如下：</p>
-<pre><code>[self queryImageCache:fileName block:^(UIImage *image) {
+                &#125;);
+            &#125;
+        &#125;);
+    &#125;
+&#125;
+</code></pre>
+<p>我把解码操作放到了子线程，解码完成后就缓存到内存，以供下次直接使用，执行如下：</p>
+<pre><code>[self queryImageCache:fileName block:^(UIImage *image) &#123;
         UIImageView *imageView = [cell.contentView viewWithTag:10];
         imageView.image = image;
-    }];
+    &#125;];
  return cell;
-</code></pre><p>不会出现卡顿现象，而且占用的内存比直接使用imageNamed少。</p>
+</code></pre>
+<p>不会出现卡顿现象，而且占用的内存比直接使用imageNamed少。</p>
 
       
 
@@ -344,7 +349,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/17/UIImage图片性能优化/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/17/UIImage%E5%9B%BE%E7%89%87%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -358,7 +363,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/12/17/performSelector传递参数/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/12/17/performSelector%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -368,7 +373,7 @@
     </a>
   
   
-    <a href="/2018/12/16/imagewithnamed渲染优化/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/12/16/imagewithnamed%E6%B8%B2%E6%9F%93%E4%BC%98%E5%8C%96/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">imagewithnamed渲染优化</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -412,7 +417,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -519,10 +524,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -531,7 +532,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -539,11 +540,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -563,19 +568,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

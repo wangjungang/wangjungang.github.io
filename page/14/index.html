@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/14/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/20/MVC架构实例/">MVC架构实例</a>
+      <a class="article-title" href="/2018/12/20/MVC%E6%9E%B6%E6%9E%84%E5%AE%9E%E4%BE%8B/">MVC架构实例</a>
     </h1>
   
 
         
-        <a href="/2018/12/20/MVC架构实例/" class="archive-article-date">
+        <a href="/2018/12/20/MVC%E6%9E%B6%E6%9E%84%E5%AE%9E%E4%BE%8B/" class="archive-article-date">
   	<time datetime="2018-12-20T08:14:13.787Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
 </a>
         
@@ -185,11 +185,11 @@
 <li>Controller层: Model 与 View层的中介，把Model数据在View上展示出来</li>
 <li>目的: 低耦合，可复用</li>
 </ul>
-<p><img src="http://img.wangjungang.cn/WX20181220-162442@2x.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/WX20181220-162442@2x.png"></p>
 <p>先看这张图，这张图是iOS的MVC架构中最经常出现的图了吧，因为IOS中的Controlller 是 UIViewController，所以导致很多人会把视图写在Controller中，如下图:</p>
 <pre><code>@implementation DemoViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad &#123;
     [super viewDidLoad];
 
     //setupUI
@@ -199,15 +199,16 @@
     view.frame = CGRectMake(100, 100, 100, 100);
     view.backgroundColor = [UIColor orangeColor];
     [self.view addSubview:view];
-
+    
     //2.createButton
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeInfoDark];
     btn.center = self.view.center;
     [self.view addSubview:btn];
-
+    
     //3...
-}
-</code></pre><p>这种写法在我刚蹭到iOS的时候也这样写过，先说这样写的好处，以及初学者为什么会这么写：</p>
+&#125;
+</code></pre>
+<p>这种写法在我刚蹭到iOS的时候也这样写过，先说这样写的好处，以及初学者为什么会这么写：</p>
 <ul>
 <li>比如按钮，可以在当前控制器直接add target:添加点击事件，在当前控制器内就能调用到点击方法，不需要设置代理之类的；</li>
 <li>比如要找某个界面，直接切到这个界面对应的controller就行，因为View 写在 Controller里面，不用去别的地方找，就这里有；</li>
@@ -224,66 +225,68 @@
 <li>模块化划分，每个模块对应自己的一个View，例如Demo2模块，View层里面有个Demo2View，将界面元素写到View中</li>
 </ul>
 <h3 id="知识点1-如何传值"><a href="#知识点1-如何传值" class="headerlink" title="知识点1 如何传值"></a>知识点1 如何传值</h3><pre><code>//View
-+ (instancetype)viewWithTitleStr:(NSString *)titleStr{
-
++ (instancetype)viewWithTitleStr:(NSString *)titleStr&#123;
+    
     //do createView
     //...
-}
+&#125;
 
 //Controller
 @implementation DemoViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad &#123;
     [super viewDidLoad];
 
     /*setupUI*/
     //1.createView - 参数通过`View`的函数作为外部参数传进去
     DemoView *view = [DemoView viewWithTitleStr:@&quot;我是参数&quot;];
     [self.view addSubview:view];
-}
-</code></pre><h3 id="知识点2-控件点击事件如何回调给控制器"><a href="#知识点2-控件点击事件如何回调给控制器" class="headerlink" title="知识点2 控件点击事件如何回调给控制器"></a>知识点2 控件点击事件如何回调给控制器</h3><pre><code>//View
+&#125;
+</code></pre>
+<h3 id="知识点2-控件点击事件如何回调给控制器"><a href="#知识点2-控件点击事件如何回调给控制器" class="headerlink" title="知识点2 控件点击事件如何回调给控制器"></a>知识点2 控件点击事件如何回调给控制器</h3><pre><code>//View
 @implementation DemoView
 
-- (instancetype)initWithTitleStr:(NSString *)titleStr{
-    if (self = [super init]) {
-
+- (instancetype)initWithTitleStr:(NSString *)titleStr&#123;
+    if (self = [super init]) &#123;
+        
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeInfoDark];
         [self addSubview:btn];
         [btn addTarget:self action:@selector(p_clickBtn:) forControlEvents:UIControlEventTouchUpInside];
-    }
+    &#125;
     return self;
-}
+&#125;
 
-- (void)p_clickBtn:(UIButton *)sender{
-
+- (void)p_clickBtn:(UIButton *)sender&#123;
+    
     //通过代理回调
     [_delegate respondsToSelector:@selector(clickBtn:)] ?
     [_delegate clickBtn:sender] : nil;
-}
+&#125;
 
 //Controller
 @implementation DemoViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad &#123;
     [super viewDidLoad];
 
     //setupUI
-
+    
     //1.createView
     DemoView *view = [DemoView viewWithTitleStr:@&quot;我是参数&quot;];
     view.delegate = self;
     [self.view addSubview:view];
-}
+&#125;
 
 #pragma mark - privateDelegate
-- (void)clickBtn:(UIButton *)sender{
+- (void)clickBtn:(UIButton *)sender&#123;
     //View层按钮的点击事件回调~
-}
-</code></pre><p><img src="http://img.wangjungang.cn/WX20181220-162530@2x.png" alt=""></p>
+&#125;
+</code></pre>
+<p><img src="http://img.wangjungang.cn/WX20181220-162530@2x.png"></p>
 <p>接下来看这张iOS MVC架构图二，这张也是特别常见，在上面解决了View层之后，我们来看下这里的Model层~</p>
 <pre><code>@implementation DemoViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad &#123;
     [super viewDidLoad];
 
     //loadDatas
@@ -291,15 +294,16 @@
                             parameters:parameters
                               progress:nil
                                success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
-    {
-
+    &#123;
+        
         //刷新tableView
         _datas = responseObject;
         [_tableView reloadDatas];
-
-    } failure:nil];
-}
-</code></pre><p>这种写法在我刚蹭到iOS的时候又这样写过，先说这样写的好处，以及初学者为什么会这么写：</p>
+        
+    &#125; failure:nil];
+&#125;
+</code></pre>
+<p>这种写法在我刚蹭到iOS的时候又这样写过，先说这样写的好处，以及初学者为什么会这么写：</p>
 <ul>
 <li>简单，网络请求完，直接在当前控制器刷新TableView的数据源</li>
 <li>比如要找某个界面的网络请求，直接切到这个界面对应的controller就行，因为数据请求 写在 Controller里面，不用去别的地方找，就这里有；</li>
@@ -312,76 +316,80 @@
 <li>如果某些接口有依赖要求，接口1请求完再请求接口2，嵌套起来，辣眼睛的程度差点治好我多年的近视</li>
 <li>特别low！！会被懂架构的人瞧不起，喷你根本不是MVC,如果你还用了上面的View写在Controller的操作的话，恭喜你，最终大法 - Controller架构顺利完成，并不需要什么Model &amp;&amp; View</li>
 </ul>
-<p><img src="http://img.wangjungang.cn/WX20181220-162706@2x.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/WX20181220-162706@2x.png"></p>
 <h2 id="如何告别VC模式，真正走到MVC？"><a href="#如何告别VC模式，真正走到MVC？" class="headerlink" title="如何告别VC模式，真正走到MVC？"></a>如何告别VC模式，真正走到MVC？</h2><ul>
 <li>不用洗脑，给自己一个大耳刮子让自己清醒清醒，这iOS的Controller就算是UIViewController，也没看到M啊，没有Model。（很关键的一步）</li>
 <li>模块化划分，每个模块对应自己的一个Model，例如Demo2模块，View层里面有个Demo2Model，将网络请求&amp;&amp;数据处理写到Model中</li>
 </ul>
 <h3 id="知识1：如何传值-参数"><a href="#知识1：如何传值-参数" class="headerlink" title="知识1：如何传值(参数)"></a>知识1：如何传值(参数)</h3><p>@implementation DemoModel</p>
-<pre><code>+ (NSArray *)fetchDatasWithUUid:(NSString *)uuid{
+<pre><code>+ (NSArray *)fetchDatasWithUUid:(NSString *)uuid&#123;
 
     //Model发送网络请求
-    NSDictionary *parameters = @{@&quot;uuid&quot;:uuid}
+    NSDictionary *parameters = @&#123;@&quot;uuid&quot;:uuid&#125;
         [[AFHTTPSessionManager manager]GET:url
                                 parameters:parameters
                                   progress:nil
                                    success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
-        {
+        &#123;
             //这是异步请求，无法return array
-        } failure:nil];
-
-}
-</code></pre><h3 id="知识2：如何回调-网络请求是异步请求-通过Block"><a href="#知识2：如何回调-网络请求是异步请求-通过Block" class="headerlink" title="知识2：如何回调(网络请求是异步请求) - 通过Block"></a>知识2：如何回调(网络请求是异步请求) - 通过Block</h3><pre><code>//Model
+        &#125; failure:nil];
+    
+&#125;
+</code></pre>
+<h3 id="知识2：如何回调-网络请求是异步请求-通过Block"><a href="#知识2：如何回调-网络请求是异步请求-通过Block" class="headerlink" title="知识2：如何回调(网络请求是异步请求) - 通过Block"></a>知识2：如何回调(网络请求是异步请求) - 通过Block</h3><pre><code>//Model
 @implementation DemoModel
 
-+ (void)fetchDatasWithUUid:(NSString *)uuid success:(successBlock)block{
++ (void)fetchDatasWithUUid:(NSString *)uuid success:(successBlock)block&#123;
 
     //Model发送网络请求
-    NSDictionary *parameters = @{@&quot;uuid&quot;:uuid}
+    NSDictionary *parameters = @&#123;@&quot;uuid&quot;:uuid&#125;
         [[AFHTTPSessionManager manager]GET:url
                                 parameters:parameters
                                   progress:nil
                                    success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)
-        {
+        &#123;
             //通过block异步回调~
             block(responseObject);
-
-        } failure:nil];   
-}
+    
+        &#125; failure:nil];   
+&#125;
 
 
 //Controller
 @implementation DemoViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad &#123;
     [super viewDidLoad];
 
     //loadDatas
-    [DemoModel fetchDatasWithUUid:_uuid success:^(NSArray *array) {
+    [DemoModel fetchDatasWithUUid:_uuid success:^(NSArray *array) &#123;
         _datas = array;
         [_tableView reloadDatas];
-    }];
-}
-</code></pre><p>基础的MVC讲解完毕，其实本质上就是让Controller减压，不该控制器管的他别让他知道，如上基础MVC操作之后的优势：</p>
+    &#125;];
+&#125;
+</code></pre>
+<p>基础的MVC讲解完毕，其实本质上就是让Controller减压，不该控制器管的他别让他知道，如上基础MVC操作之后的优势：</p>
 <ul>
 <li>MVC架构分明，在同一个模块内，如果视图有问题，找到该模块的View就行，其他同理，Controller代码大大减少，负责View的代理事件就可以</li>
 <li>可以复用，比如你一个产品列表的数据，首页也要用，产品页也要用，直接分别在其对应的VC1 &amp;&amp; VC2 调用函数[ProductModel fetchDatas]即可，无需写多次，View的复用同理</li>
 <li>结构分明，便于维护，拓展也是在此基础上拓展，代码干净简洁。</li>
 </ul>
 <h2 id="进阶讲解-MVC-配合-继承，进阶提高效率"><a href="#进阶讲解-MVC-配合-继承，进阶提高效率" class="headerlink" title="进阶讲解 - MVC 配合 继承，进阶提高效率"></a>进阶讲解 - MVC 配合 继承，进阶提高效率</h2><ul>
-<li>常用的方法，抽一个基类出来，继承是子类可以拥有父类的方法，重新父类的方法即可，无需声明</li>
+<li><p>常用的方法，抽一个基类出来，继承是子类可以拥有父类的方法，重新父类的方法即可，无需声明</p>
+<pre><code>  //数据基类
+  @interface MNBaseDatas : NSObject
+  
+  //请求数据成功
+  typedef void (^MNsuccessBlock)(NSArray *array);
+  
+  + (void)fetchDatasSuccessBlock:(MNsuccessBlock)block;
+  
+  + (void)fetchDatasSuccessBlock:(MNsuccessBlock)block
+                    failureBlock:(MNfailureBlock)failure;
+</code></pre>
+</li>
 </ul>
-<pre><code>//数据基类
-@interface MNBaseDatas : NSObject
-
-//请求数据成功
-typedef void (^MNsuccessBlock)(NSArray *array);
-
-+ (void)fetchDatasSuccessBlock:(MNsuccessBlock)block;
-
-+ (void)fetchDatasSuccessBlock:(MNsuccessBlock)block
-                  failureBlock:(MNfailureBlock)failure;
-</code></pre><p>如果，如果抽出一个数据模型的基类，比如这里的MNBaseDatas，如之前我们举例的DemoModel就无需声明</p>
+<p>如果，如果抽出一个数据模型的基类，比如这里的MNBaseDatas，如之前我们举例的DemoModel就无需声明</p>
 <pre><code>@interface DemoModel : MNBaseDatas
 
 /**继承自MNBaseDatas，父类有的就可以不用声明，这里的block 和 类方法都可以不用声明*/
@@ -394,16 +402,17 @@ typedef void (^MNsuccessBlock)(NSArray *array);
 //Controller
 @implementation DemoViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad &#123;
     [super viewDidLoad];
 
     //loadDatas - DemoModel没有声明 -fetchDatasSuccessBlock，一样可以调用，因为父类有此方法
-    [DemoModel fetchDatasSuccessBlock:^(NSArray *array) {
+    [DemoModel fetchDatasSuccessBlock:^(NSArray *array) &#123;
         _datas = array;
         [_tableView reloadDatas];
-    }];
-}
-</code></pre><p>如果父类没有的方法或属性，在子类里面写就行了，不会影响到父类代码，父类一般也是放公共，常用的方法(或属性)，如果是特殊的，直接在子类里面新增即可，无需添加到父类~</p>
+    &#125;];
+&#125;
+</code></pre>
+<p>如果父类没有的方法或属性，在子类里面写就行了，不会影响到父类代码，父类一般也是放公共，常用的方法(或属性)，如果是特殊的，直接在子类里面新增即可，无需添加到父类~</p>
 <h3 id="控制器也可以使用继承，可以减少不少冗余代码"><a href="#控制器也可以使用继承，可以减少不少冗余代码" class="headerlink" title="控制器也可以使用继承，可以减少不少冗余代码"></a>控制器也可以使用继承，可以减少不少冗余代码</h3><pre><code>//基类控制器
 @interface MNBaseViewController : UIViewController
 
@@ -424,14 +433,15 @@ UITableViewDelegate,UITableViewDataSource
 &gt;
 
 #pragma mark - setupUI
-- (void)setupUI{
+- (void)setupUI&#123;
      //统一创建tableView，设置当前代理=self
     UITableView *tableView = [[UITableView alloc]init];
     tableView.frame = Frame(0, DefaultNaviHeight, ScreenW, ScreenH - DefaultNaviHeight);
     tableView.delegate = self;
     tableView.dataSource = self;
-}
-</code></pre><ul>
+&#125;
+</code></pre>
+<ul>
 <li>根据我们的封装，基本上所有的控制器都需要设置界面 setupUI 获取数据  loadDatas，所以将这两个函数抽到基类MNBaseViewController 中</li>
 <li>因为iOS中，tableView应该算最常见的控件之一，基本上大多数界面都会用它展示数据，所以tableView也抽到基类中，当公告属性</li>
 <li>有tableView 就跑不了数据源了，datas 同理，也抽到基类</li>
@@ -462,7 +472,7 @@ UITableViewDelegate,UITableViewDataSource
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/20/MVC架构实例/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/20/MVC%E6%9E%B6%E6%9E%84%E5%AE%9E%E4%BE%8B/">展开全文 >></a>
         </p>
       
 
@@ -499,12 +509,12 @@ UITableViewDelegate,UITableViewDataSource
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/20/Swift中 ！和 ？的区别及使用/">Swift中 ！和 ？的区别及使用</a>
+      <a class="article-title" href="/2018/12/20/Swift%E4%B8%AD%20%EF%BC%81%E5%92%8C%20%EF%BC%9F%E7%9A%84%E5%8C%BA%E5%88%AB%E5%8F%8A%E4%BD%BF%E7%94%A8/">Swift中 ！和 ？的区别及使用</a>
     </h1>
   
 
         
-        <a href="/2018/12/20/Swift中 ！和 ？的区别及使用/" class="archive-article-date">
+        <a href="/2018/12/20/Swift%E4%B8%AD%20%EF%BC%81%E5%92%8C%20%EF%BC%9F%E7%9A%84%E5%8C%BA%E5%88%AB%E5%8F%8A%E4%BD%BF%E7%94%A8/" class="archive-article-date">
   	<time datetime="2018-12-20T03:54:43.457Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-20</time>
 </a>
         
@@ -517,27 +527,31 @@ UITableViewDelegate,UITableViewDataSource
 <p>Swift中是可以声明一个没有初始值的属性， Swift中引入了可选类型(Optional)来解决这一问题。它的定义是通过在类型生命后加加一个 ? 操作符完成的。</p>
 <p>例如： var name: String?</p>
 <p>Optional其实是个enum，里面有None和Some两种类型。其实所谓的nil就是Optional.None ， 非nil就是Optional.Some， 然后会通过Some(T)包装（wrap）原始值，这也是为什么在使用Optional的时候要拆包（从enum里取出来原始值）的原因。这里是enum Optional的定义</p>
-<pre><code>enum Optional&lt;T&gt; : LogicValue, Reflectable {  
+<pre><code>enum Optional&lt;T&gt; : LogicValue, Reflectable &#123;  
         case None  
         case Some(T)  
         init()  
         init(_ some: T)  
         /// Allow use in a Boolean context.  
         func getLogicValue() -&gt; Bool  
-       /// Haskell&apos;s fmap, which was mis-named  
+       /// Haskell&#39;s fmap, which was mis-named  
         func map&lt;U&gt;(f: (T) -&gt; U) -&gt; U?  
         func getMirror() -&gt; Mirror 
-}
-</code></pre><p>既然这样， 那对于 var name: String? 该怎样去理解这句语法呢？</p>
+&#125;
+</code></pre>
+<p>既然这样， 那对于 var name: String? 该怎样去理解这句语法呢？</p>
 <pre><code>var name: String?
-</code></pre><p> 上面这个Optional的声明，是”我声明了一个Optional类型值，<br> 它可能包含一个String值，也可能什么都不包含”，<br>也就是说实际上我们声明的是Optional类型，而不是声明了一个String类型 (这其实理解起来挺蛋疼的…)</p>
+</code></pre>
+<p> 上面这个Optional的声明，是”我声明了一个Optional类型值，<br> 它可能包含一个String值，也可能什么都不包含”，<br>也就是说实际上我们声明的是Optional类型，而不是声明了一个String类型 (这其实理解起来挺蛋疼的…)</p>
 <h2 id="和-使用"><a href="#和-使用" class="headerlink" title="? 和 ! 使用"></a>? 和 ! 使用</h2><p>一旦声明为Optional的，如果不显式的赋值就会有个默认值nil。判断一个Optional的值是否有值，可以用if来判断：</p>
-<pre><code>if name { 
+<pre><code>if name &#123; 
 // 有值再操作
-}
-</code></pre><p>怎么使用Optional值呢？文档中也有提到说，在使用Optional值的时候需要在具体的操作，比如调用方法、属性、下标索引等前面需要加上一个?，如果是nil值，也就是Optional.None，会跳过后面的操作不执行，如果有值，就是Optional.Some，可能就会拆包(unwrap)，然后对拆包后的值执行后面的操作，来保证执行这个操作的安全性。</p>
+&#125;
+</code></pre>
+<p>怎么使用Optional值呢？文档中也有提到说，在使用Optional值的时候需要在具体的操作，比如调用方法、属性、下标索引等前面需要加上一个?，如果是nil值，也就是Optional.None，会跳过后面的操作不执行，如果有值，就是Optional.Some，可能就会拆包(unwrap)，然后对拆包后的值执行后面的操作，来保证执行这个操作的安全性。</p>
 <pre><code>// 例如： let length = name?.characters.count
-</code></pre><p>PS:对于 Optional 值，不能直接进行操作，否则会报错。</p>
+</code></pre>
+<p>PS:对于 Optional 值，不能直接进行操作，否则会报错。</p>
 <h3 id="的使用场景"><a href="#的使用场景" class="headerlink" title="? 的使用场景:"></a>? 的使用场景:</h3><ul>
 <li>1.声明Optional值变量</li>
 <li>2.用在对Optional值操作中，用来判断是否能响应后面的操作</li>
@@ -548,26 +562,28 @@ UITableViewDelegate,UITableViewDataSource
 <pre><code>// 例子最为简单明了
 var str: String? = &quot;Hello&quot;
 let greeting = &quot;World!&quot;
-if let name = str { 
+if let name = str &#123; 
       let message = greeting + name 
       print(message)
-}
+&#125;
 
 /**自然语言解释意思：就是如果str有值,解包它,并且将它的值赋值给name, 
 然后执行下面的条件语句; 如果str为空, 直接跳过条件语句块。*/
-</code></pre><p>硬解包</p>
+</code></pre>
+<p>硬解包</p>
 <p>硬解包即直接在可选类型后面加一个感叹号（!）来表示它肯定有值。</p>
 <pre><code>var str1: String? = &quot;Hello&quot;
 let greeting = &quot;World!&quot;
-if (str1 != nil) { 
+if (str1 != nil) &#123; 
        let message = greeting + str1! 
        print(message)
-}
+&#125;
 
 /**上面例子，我们只是自己知道str1肯定有值, 所以才直接硬解包了str1变量。 但是万一有时候我们的感觉是错的,
  那程序在运行时可能会出现严重的错误. 所以Swift中是推荐先检查可选类型是否有值, 然后再进行解包的!
 */
-</code></pre><h3 id="的使用场景-1"><a href="#的使用场景-1" class="headerlink" title="! 的使用场景:"></a>! 的使用场景:</h3><ul>
+</code></pre>
+<h3 id="的使用场景-1"><a href="#的使用场景-1" class="headerlink" title="! 的使用场景:"></a>! 的使用场景:</h3><ul>
 <li>1.强制对Optional值进行拆包(unwrap)</li>
 <li>2.声明隐式拆包变量，一般用于类中的属性</li>
 </ul>
@@ -581,6 +597,7 @@ if (str1 != nil) {
 strValue = “1”
 print(strValue!.hashValue) //确定一定会有值可以用！
 </code></pre>
+
       
 
       
@@ -603,7 +620,7 @@ print(strValue!.hashValue) //确定一定会有值可以用！
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/20/Swift中 ！和 ？的区别及使用/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/20/Swift%E4%B8%AD%20%EF%BC%81%E5%92%8C%20%EF%BC%9F%E7%9A%84%E5%8C%BA%E5%88%AB%E5%8F%8A%E4%BD%BF%E7%94%A8/">展开全文 >></a>
         </p>
       
 
@@ -640,12 +657,12 @@ print(strValue!.hashValue) //确定一定会有值可以用！
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/19/关于@available/">关于@available</a>
+      <a class="article-title" href="/2018/12/19/%E5%85%B3%E4%BA%8E@available/">关于@available</a>
     </h1>
   
 
         
-        <a href="/2018/12/19/关于@available/" class="archive-article-date">
+        <a href="/2018/12/19/%E5%85%B3%E4%BA%8E@available/" class="archive-article-date">
   	<time datetime="2018-12-19T11:02:25.066Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-19</time>
 </a>
         
@@ -656,10 +673,11 @@ print(strValue!.hashValue) //确定一定会有值可以用！
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Swift 2.0 中，引入了可用性的概念。对于函数，类，协议等，可以使用@available声明这些类型的生命周期依赖于特定的平台和操作系统版本。而#available用在判断语句中（if, guard, while等），在不同的平台上做不同的逻辑。</p>
 <h2 id="available"><a href="#available" class="headerlink" title="@available"></a>@available</h2><h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><p>@available放在函数（方法），类或者协议前面。表明这些类型适用的平台和操作系统。看下面一个例子：</p>
 <pre><code>@available(iOS 9, *)
-func myMethod() {
+func myMethod() &#123;
     // do something
-}
-</code></pre><p>@available(iOS 9, <em>)必须包含至少2个特性参数，其中iOS 9表示必须在 iOS 9 版本以上才可用。如果你部署的平台包括 iOS 8 , 在调用此方法后，编译器会报错。<br>另外一个特性参数：星号（</em>），表示包含了所有平台，目前有以下几个平台：</p>
+&#125;
+</code></pre>
+<p>@available(iOS 9, <em>)必须包含至少2个特性参数，其中iOS 9表示必须在 iOS 9 版本以上才可用。如果你部署的平台包括 iOS 8 , 在调用此方法后，编译器会报错。<br>另外一个特性参数：星号（</em>），表示包含了所有平台，目前有以下几个平台：</p>
 <ul>
 <li>iOS</li>
 <li>iOSApplicationExtension</li>
@@ -671,31 +689,32 @@ func myMethod() {
 <li>tvOSApplicationExtension</li>
 </ul>
 <p>一般来讲，如果没有特殊的情况，都使用*表示全平台。</p>
-<p>@available(iOS 9, <em>)是一种简写形式。全写形式是@available(iOS, introduced=9.0)。introduced=9.0参数表示指定平台(iOS)从 9.0 开始引入该声明。为什么可以采用简写形式呢？当只有introduced这样一种参数时，就可以简写成以上简写形式。同理：@available(iOS 8.0, OSX 10.10, </em>) 这样也是可以的。表示同时在多个平台上（iOS 8.0 及其以上；OSX 10.10及其以上）的可用性。</p>
+<p>@available(iOS 9, *)是一种简写形式。全写形式是@available(iOS, introduced&#x3D;9.0)。introduced&#x3D;9.0参数表示指定平台(iOS)从 9.0 开始引入该声明。为什么可以采用简写形式呢？当只有introduced这样一种参数时，就可以简写成以上简写形式。同理：@available(iOS 8.0, OSX 10.10, *) 这样也是可以的。表示同时在多个平台上（iOS 8.0 及其以上；OSX 10.10及其以上）的可用性。</p>
 <p>另外，@available还有其他一些参数可以使用，分别是：</p>
 <ul>
-<li><p>deprecated=版本号：从指定平台某个版本开始过期该声明</p>
+<li><p>deprecated&#x3D;版本号：从指定平台某个版本开始过期该声明</p>
 </li>
-<li><p>obsoleted=版本号：从指定平台某个版本开始废弃（注意弃用的区别，deprecated是还可以继续使用，只不过是不推荐了，obsoleted是调用就会编译错误）该声明</p>
+<li><p>obsoleted&#x3D;版本号：从指定平台某个版本开始废弃（注意弃用的区别，deprecated是还可以继续使用，只不过是不推荐了，obsoleted是调用就会编译错误）该声明</p>
 </li>
-<li><p>message=信息内容：给出一些附加信息</p>
+<li><p>message&#x3D;信息内容：给出一些附加信息</p>
 </li>
 <li><p>unavailable：指定平台上是无效的</p>
 </li>
-<li><p>renamed=新名字：重命名声明</p>
+<li><p>renamed&#x3D;新名字：重命名声明</p>
 </li>
 </ul>
 <h2 id="available-1"><a href="#available-1" class="headerlink" title="#available"></a>#available</h2><h3 id="用法-1"><a href="#用法-1" class="headerlink" title="用法"></a>用法</h3><pre><code>#available 用在条件语句代码块中，判断不同的平台下，做不同的逻辑处理，比如：
 
-if #available(iOS 8, *) {
+if #available(iOS 8, *) &#123;
         // iOS 8 及其以上系统运行
-}
+&#125;
 
 
-guard #available(iOS 8, *) else {
+guard #available(iOS 8, *) else &#123;
     return //iOS 8 以下系统就直接返回
-}
+&#125;
 </code></pre>
+
       
 
       
@@ -718,7 +737,7 @@ guard #available(iOS 8, *) else {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/19/关于@available/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/19/%E5%85%B3%E4%BA%8E@available/">展开全文 >></a>
         </p>
       
 
@@ -755,12 +774,12 @@ guard #available(iOS 8, *) else {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/18/flutter框架概述/">flutter Widget框架概述</a>
+      <a class="article-title" href="/2018/12/18/flutter%E6%A1%86%E6%9E%B6%E6%A6%82%E8%BF%B0/">flutter Widget框架概述</a>
     </h1>
   
 
         
-        <a href="/2018/12/18/flutter框架概述/" class="archive-article-date">
+        <a href="/2018/12/18/flutter%E6%A1%86%E6%9E%B6%E6%A6%82%E8%BF%B0/" class="archive-article-date">
   	<time datetime="2018-12-18T08:36:46.040Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-18</time>
 </a>
         
@@ -801,9 +820,10 @@ guard #available(iOS 8, *) else {
 <h2 id="widget详解"><a href="#widget详解" class="headerlink" title="widget详解"></a>widget详解</h2><p>在Flutter中，我们平时自定义的widget，一般都是继承自StatefulWidget或StatelessWidget（并不是只有这两种），这两种widget也是目前最常用的两种。如果一个控件自身状态不会去改变，创建了就直接显示，不会有色值、大小或者其他属性的变化，这种widget一般都是继承自StatelessWidget，常见的有Container、ScrollView等。如果一个控件需要动态的去改变或者相应一些状态，例如点击态、色值、内容区域等，那么一般都是继承自StatefulWidget，常见的有CheckBox、AppBar、TabBar等。其实单纯的从名字也可以看出这两种widget的区别，这两种widget都是继承自Widget类。</p>
 <h3 id="Widget类"><a href="#Widget类" class="headerlink" title="Widget类"></a>Widget类</h3><p>Widget类在Flutter中是非常重要的，继承自Widget类的有PreferredSizeWidget、ProxyWidget、RenderObjectWidget、StatefulWidget、StatelessWidget。我们日常使用的绝大部分widget都是继承自Widget类，</p>
 <p>查看Widget类源码，内部实现非常简单，构造函数如下</p>
-<pre><code>const Widget({ this.key });
+<pre><code>const Widget(&#123; this.key &#125;);
 final Key key;
-</code></pre><p>这个key的作用，注视上写的很清楚，是用来控制在widget树中替换widget的时候使用的。其中Key类是Widget、Element以及SemanticsNode的唯一标识符，继承自Key的还有LocalKey以及GlobalKey。</p>
+</code></pre>
+<p>这个key的作用，注视上写的很清楚，是用来控制在widget树中替换widget的时候使用的。其中Key类是Widget、Element以及SemanticsNode的唯一标识符，继承自Key的还有LocalKey以及GlobalKey。</p>
 <h3 id="State"><a href="#State" class="headerlink" title="State"></a>State</h3><p>在说到StatefulWidget之前，先说下State。State的作用有两点：</p>
 <ul>
 <li>在widget构建的时候可以被同步读取；</li>
@@ -836,45 +856,43 @@ final Key key;
 </ul>
 <p>检查完一系列异常后，最后调用代码如下：</p>
 <pre><code>_element.markNeedsBuild();
-</code></pre><p>markNeedsBuild内部，则是通过标记element为diry，在下一帧的时候重建（rebuild）。可以看出setState并不是立即生效，它只是将widget进行了标记，真正的rebuild操作，则是等到下一帧的时候才会去进行。</p>
+</code></pre>
+<p>markNeedsBuild内部，则是通过标记element为diry，在下一帧的时候重建（rebuild）。可以看出setState并不是立即生效，它只是将widget进行了标记，真正的rebuild操作，则是等到下一帧的时候才会去进行。</p>
 <h4 id="StatefulWidget和StatelessWidget"><a href="#StatefulWidget和StatelessWidget" class="headerlink" title="StatefulWidget和StatelessWidget"></a>StatefulWidget和StatelessWidget</h4><p>一个StatelessWidget可以用多个不同的BuildContext构建，而一个StatefulWidget会为每个BuildContext创建一个State对象。</p>
 <h5 id="StatelessWidget"><a href="#StatelessWidget" class="headerlink" title="StatelessWidget"></a>StatelessWidget</h5><p>对于StatelessWidget，build方法会在如下三种情况下调用，</p>
 <ul>
-<li>widget第一次被插入到树中；</li>
-<li>widget的父节点更改了配置（configuration）；</li>
+<li><p>widget第一次被插入到树中；</p>
+</li>
+<li><p>widget的父节点更改了配置（configuration）；</p>
+</li>
 <li><p>widget依赖的InheritedWidget改变了。</p>
-<p>  class GreenFrog extends StatelessWidget {</p>
-<pre><code>const GreenFrog({ Key key }) : super(key: key);
-
-@override
-Widget build(BuildContext context) {
-  return new Container(color: const Color(0xFF2DBD3A));
-}
-</code></pre><p>  }</p>
+<p>  class GreenFrog extends StatelessWidget {<br>const GreenFrog({ Key key }) : super(key: key);<br><br>@override<br>Widget build(BuildContext context) {<br>  return new Container(color: const Color(0xFF2DBD3A));<br>}<br>  }</p>
 </li>
 </ul>
 <h5 id="StatefulWidget"><a href="#StatefulWidget" class="headerlink" title="StatefulWidget"></a>StatefulWidget</h5><p>StatefulWidget的两个主要类别：</p>
 <ul>
-<li>在initState中创建资源，在dispose中销毁，但是不依赖于InheritedWidget或者调用setState方法，这类widget基本上用在一个应用或者页面的root；</li>
+<li><p>在initState中创建资源，在dispose中销毁，但是不依赖于InheritedWidget或者调用setState方法，这类widget基本上用在一个应用或者页面的root；</p>
+</li>
 <li><p>使用setState或者依赖于InheritedWidget，这种在营业生命周期中会被重建（rebuild）很多次。</p>
-<pre><code>class YellowBird extends StatefulWidget {
-  const YellowBird({ Key key }) : super(key: key);
-
-  @override
-  _YellowBirdState createState() =&gt; new _YellowBirdState();
-}
-
-class _YellowBirdState extends State&lt;YellowBird&gt; {
-  @override
-  Widget build(BuildContext context) {
-    return new Container(color: const Color(0xFFFFE306));
-  }
-}
-</code></pre></li>
+<pre><code>  class YellowBird extends StatefulWidget &#123;
+    const YellowBird(&#123; Key key &#125;) : super(key: key);
+  
+    @override
+    _YellowBirdState createState() =&gt; new _YellowBirdState();
+  &#125;
+  
+  class _YellowBirdState extends State&lt;YellowBird&gt; &#123;
+    @override
+    Widget build(BuildContext context) &#123;
+      return new Container(color: const Color(0xFFFFE306));
+    &#125;
+  &#125;
+</code></pre>
+</li>
 </ul>
 <h2 id="如何布局"><a href="#如何布局" class="headerlink" title="如何布局"></a>如何布局</h2><p>Flutter Widget采用现代响应式框架构建，这是从 React 中获得的灵感，中心思想是用widget构建你的UI。 </p>
 <p>Widget描述了他们的视图在给定其当前配置和状态时应该看起来像什么。<br>当widget的状态发生变化时，widget会重新构建UI，Flutter会对比前后变化的不同，</p>
-<p>以确定底层渲染树从一个状态转换到下一个状态所需的最小更改（译者语：类似于React/Vue中虚拟DOM的diff算法）。</p>
+<p>以确定底层渲染树从一个状态转换到下一个状态所需的最小更改（译者语：类似于React&#x2F;Vue中虚拟DOM的diff算法）。</p>
 <p>在编写应用程序时，通常会创建新的widget，这些widget是无状态的StatelessWidget或者是有状态的StatefulWidget， </p>
 <p>具体的选择取决于您的widget是否需要管理一些状态。widget的主要工作是实现一个build函数，用以构建自身。</p>
 <p>  一个widget通常由一些较低级别widget组成。Flutter框架将依次构建这些widget，</p>
@@ -910,7 +928,7 @@ class _YellowBirdState extends State&lt;YellowBird&gt; {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/18/flutter框架概述/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/18/flutter%E6%A1%86%E6%9E%B6%E6%A6%82%E8%BF%B0/">展开全文 >></a>
         </p>
       
 
@@ -947,12 +965,12 @@ class _YellowBirdState extends State&lt;YellowBird&gt; {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/18/autorelease的理解/">autorelease的理解</a>
+      <a class="article-title" href="/2018/12/18/autorelease%E7%9A%84%E7%90%86%E8%A7%A3/">autorelease的理解</a>
     </h1>
   
 
         
-        <a href="/2018/12/18/autorelease的理解/" class="archive-article-date">
+        <a href="/2018/12/18/autorelease%E7%9A%84%E7%90%86%E8%A7%A3/" class="archive-article-date">
   	<time datetime="2018-12-18T02:31:21.613Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-18</time>
 </a>
         
@@ -966,73 +984,78 @@ class _YellowBirdState extends State&lt;YellowBird&gt; {
 <p>2、线程需要长期运行并且有可能产生大量autoreleased对象, 你应该使用autorelease pool blocks。</p>
 <p>3、长期在后台中运行的任务, 方法。</p>
 <h3 id="一切从一个例子开始吧："><a href="#一切从一个例子开始吧：" class="headerlink" title="一切从一个例子开始吧："></a>一切从一个例子开始吧：</h3><pre><code>__weak id wsPtr;
-    {
+    &#123;
         NSObject *obj = [[NSObject alloc] init];
         wsPtr = obj;
         NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-    }
+    &#125;
     NSLog(@&quot;2&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-</code></pre><p>结果为</p>
+</code></pre>
+<p>结果为</p>
 <pre><code>2018-09-21 14:05:00.154692+0800 SummaryTest[1333:1156186] 1&gt;&gt;&gt;&gt;&gt;&gt;NSObject
 2018-09-21 14:05:00.154904+0800 SummaryTest[1333:1156186] 2&gt;&gt;&gt;&gt;&gt;&gt;(null)
-</code></pre><p>这结果，大家都不会觉得奇怪，出了作用范围嘛，obj对象已经释放了，所以后面访问到为nil。</p>
+</code></pre>
+<p>这结果，大家都不会觉得奇怪，出了作用范围嘛，obj对象已经释放了，所以后面访问到为nil。</p>
 <p>改为如下情况呢：</p>
 <pre><code>__weak id wsPtr;
-    {
+    &#123;
         __autoreleasing NSObject *obj = [[NSObject alloc] init];
         wsPtr = obj;
         NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-    }
+    &#125;
     NSLog(@&quot;2&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-</code></pre><p>结果为</p>
+</code></pre>
+<p>结果为</p>
 <pre><code>2018-09-21 14:14:05.920146+0800 SummaryTest[1336:1157313] 1&gt;&gt;&gt;&gt;&gt;&gt;NSObject
 2018-09-21 14:14:05.920369+0800 SummaryTest[1336:1157313] 2&gt;&gt;&gt;&gt;&gt;&gt;NSObject
-</code></pre><p>结果是，在括号外部，生成的obj还是没有释放。这就是autoreleasePool对它的影响。虽然autorelease是系统控制，我们不好把控它的结束时间。但可以肯定，在一个函数内部，它不会释放的，所以，放到释放池的对象，在整个函数内部是有效的。那么问题来了，什么时候的对象才归autoreleasePool管理，为什么第一次申请的obj，没放到autoreleasePool中呢。</p>
+</code></pre>
+<p>结果是，在括号外部，生成的obj还是没有释放。这就是autoreleasePool对它的影响。虽然autorelease是系统控制，我们不好把控它的结束时间。但可以肯定，在一个函数内部，它不会释放的，所以，放到释放池的对象，在整个函数内部是有效的。那么问题来了，什么时候的对象才归autoreleasePool管理，为什么第一次申请的obj，没放到autoreleasePool中呢。</p>
 <p>在以下情况，会注册到autoreleasePool中：</p>
 <ul>
 <li><p>1、__autoreleasing修饰的对象，如上所述。</p>
 </li>
-<li><p>2、非自己生成并持有的对象。明显点的，就是通过一个函数返回的对象。使用alloc/new/copy/mutableCopy以外的方法来取得的对象。这就解释了，上面第一个例子的obj为什么没被autoreleasePool管理。</p>
+<li><p>2、非自己生成并持有的对象。明显点的，就是通过一个函数返回的对象。使用alloc&#x2F;new&#x2F;copy&#x2F;mutableCopy以外的方法来取得的对象。这就解释了，上面第一个例子的obj为什么没被autoreleasePool管理。</p>
 <ul>
-<li>(void)testAutorelease<br>{<br>  __weak id wsPtr;<br>  {<pre><code>NSObject *obj = [self gainObj];
-wsPtr = obj;
-NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-</code></pre>  }<br>  NSLog(@”2&gt;&gt;&gt;&gt;&gt;&gt;%@”,[wsPtr class]);<br>}</li>
-<li>(NSObject *)gainObj<br>{<br>  return [[NSObject alloc] init];<br>}</li>
+<li>(void)testAutorelease<br>  {<br>  __weak id wsPtr;<br>  {<br>  NSObject *obj &#x3D; [self gainObj];<br>  wsPtr &#x3D; obj;<br>  NSLog(@”1&gt;&gt;&gt;&gt;&gt;&gt;%@”,[wsPtr class]);<br>  }<br>  NSLog(@”2&gt;&gt;&gt;&gt;&gt;&gt;%@”,[wsPtr class]);<br>  }</li>
+<li>(NSObject *)gainObj<br>  {<br>  return [[NSObject alloc] init];<br>  }</li>
 </ul>
 </li>
 </ul>
 <p>结果是，obj注册到autoreleasepool中，括号外也可以访问对象。</p>
 <ul>
 <li><p>3、id的指针或对象的指针会默认加上__autoreleasing修饰符。如一些函数：</p>
-<pre><code>- (BOOL)performOperationWithError:(NSError **)error;
-</code></pre></li>
+<pre><code>  - (BOOL)performOperationWithError:(NSError **)error;
+</code></pre>
+</li>
 </ul>
 <h3 id="二、一些特殊情况"><a href="#二、一些特殊情况" class="headerlink" title="二、一些特殊情况"></a>二、一些特殊情况</h3><p>一切都按我的推理进行着，切出现了一个奇葩的情况：</p>
 <pre><code>__weak id reference;
 - (void)testAutorelease
-{
+&#123;
     NSString *myStr = [NSString stringWithFormat:@&quot;asdd&quot;];
     reference = myStr;
     NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,reference);
-}
+&#125;
 - (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event
-{
+&#123;
     NSLog(@&quot;2&gt;&gt;&gt;&gt;%@&quot;,reference);
-}
-</code></pre><p>我想测试，出了函数域，什么时候就会释放，所以加了个点击事件。结果是，不管什么时候点击，都可以访问到对象。然后我就一脸蒙蔽了。我又测试了NSObject、NSArray，都不会出现上面的情况。难道是NSString特有的性质，在view期间都不释放，最后随view一起释放。</p>
+&#125;
+</code></pre>
+<p>我想测试，出了函数域，什么时候就会释放，所以加了个点击事件。结果是，不管什么时候点击，都可以访问到对象。然后我就一脸蒙蔽了。我又测试了NSObject、NSArray，都不会出现上面的情况。难道是NSString特有的性质，在view期间都不释放，最后随view一起释放。</p>
 <pre><code>NSString *myStr = [NSString stringWithFormat:@&quot;assdfdsfdsfddd&quot;];
-</code></pre><p>把字符串加长一点，竟然会释放了。真是奇葩。看看它们的地址吧：</p>
+</code></pre>
+<p>把字符串加长一点，竟然会释放了。真是奇葩。看看它们的地址吧：</p>
 <pre><code>- (void)testAutorelease
-{
+&#123;
     NSString *myStr1 = [NSString stringWithFormat:@&quot;assdfdsfdsfddd&quot;];
     NSString *myStr2 = [NSString stringWithFormat:@&quot;ass&quot;];
     reference = myStr1;
     NSLog(@&quot;str1=%p  str2=%p&quot;,myStr1,myStr2);
-}
+&#125;
 
 2018-09-21 15:23:07.671661+0800 SummaryTest[1367:1168589] str1=0x1700373a0  str2=0xa000000007373613
-</code></pre><p>比较长的NSString存于堆区，较短的NSString感觉像是存于数据区，所以性质不一样吧，不懂。记住NSString特殊一点就可以了。</p>
+</code></pre>
+<p>比较长的NSString存于堆区，较短的NSString感觉像是存于数据区，所以性质不一样吧，不懂。记住NSString特殊一点就可以了。</p>
 
       
 
@@ -1056,7 +1079,7 @@ NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/18/autorelease的理解/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/18/autorelease%E7%9A%84%E7%90%86%E8%A7%A3/">展开全文 >></a>
         </p>
       
 
@@ -1093,12 +1116,12 @@ NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/17/swift Notification通知的使用/">swift Notification通知的使用</a>
+      <a class="article-title" href="/2018/12/17/swift%20Notification%E9%80%9A%E7%9F%A5%E7%9A%84%E4%BD%BF%E7%94%A8/">swift Notification通知的使用</a>
     </h1>
   
 
         
-        <a href="/2018/12/17/swift Notification通知的使用/" class="archive-article-date">
+        <a href="/2018/12/17/swift%20Notification%E9%80%9A%E7%9F%A5%E7%9A%84%E4%BD%BF%E7%94%A8/" class="archive-article-date">
   	<time datetime="2018-12-17T12:23:30.155Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
 </a>
         
@@ -1114,13 +1137,13 @@ NotificationCenter.default.addObserver(self, selector:#selector(notifiAction(not
                                                name: NotifyMsgName, object: nil)
 
 //通知处理函数
-func notifiAction(notification:NSNotification){
-
+func notifiAction(notification:NSNotification)&#123;
+        
     let userinfo = notification.userInfo //所属类型为 [AnyHashable : Any]? 尝试转换为 as! NSDictionary as! [String : Any]，发现报错
     let key_value = userinfo?[AnyHashable(&quot;name&quot;)] as! String
     print(notification.description+&quot; key=&quot;+key_value)
-
-}
+        
+&#125;
 
 
 //post通知
@@ -1128,10 +1151,11 @@ NotificationCenter.default.post(name:NotifyMsgName, object: nil, userInfo: [&quo
 
 
 //注销通知，在controller退出的时候注销
-deinit {
+deinit &#123;
     NotificationCenter.default.removeObserver(self)
-}
+&#125;
 </code></pre>
+
       
 
       
@@ -1154,7 +1178,7 @@ deinit {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/17/swift Notification通知的使用/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/17/swift%20Notification%E9%80%9A%E7%9F%A5%E7%9A%84%E4%BD%BF%E7%94%A8/">展开全文 >></a>
         </p>
       
 
@@ -1191,12 +1215,12 @@ deinit {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/17/performSelector传递参数/">performSelector传递参数</a>
+      <a class="article-title" href="/2018/12/17/performSelector%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/">performSelector传递参数</a>
     </h1>
   
 
         
-        <a href="/2018/12/17/performSelector传递参数/" class="archive-article-date">
+        <a href="/2018/12/17/performSelector%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/" class="archive-article-date">
   	<time datetime="2018-12-17T06:39:11.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
 </a>
         
@@ -1210,103 +1234,106 @@ deinit {
 <li>2、无法传递数值参数，如整形、浮点型等</li>
 </ul>
 <p>经过我的探索，我在网上一段代码上进行了修改，整合如下：</p>
-<pre><code>- (id)performSelector:(SEL)aSelector withTheObjects:(NSArray*)objects{
+<pre><code>- (id)performSelector:(SEL)aSelector withTheObjects:(NSArray*)objects&#123;
     //1、创建签名对象
     //  NSMethodSignature*signature = [self methodSignatureForSelector:aSelector];
     NSMethodSignature*signature = [[self class] instanceMethodSignatureForSelector:aSelector];
     //2、判断传入的方法是否存在
-    if (!signature) {
+    if (!signature) &#123;
         //传入的方法不存在 就抛异常
         NSString*info = [NSString stringWithFormat:@&quot;-[%@ %@]:unrecognized selector sent to instance&quot;,[self class],NSStringFromSelector(aSelector)];
         @throw [[NSException alloc] initWithName:@&quot;方法没有&quot; reason:info userInfo:nil];
         return nil;
-    }
+    &#125;
     //3、创建NSInvocation对象
     NSInvocation*invocation = [NSInvocation invocationWithMethodSignature:signature];
     //4、保存方法所属的对象
     invocation.target = self;           // index 0
     invocation.selector = aSelector;    // index 1
-
+    
     //5、设置参数
     NSInteger arguments = signature.numberOfArguments -2;
     NSUInteger objectsCount = objects.count;
     NSInteger count = MIN(arguments, objectsCount);
     [self setInv:invocation andArgs:objects argsCount:count];
-
+    
     //6、调用NSinvocation对象
     [invocation invoke];
-
+    
     //7、获取返回值
     id res = nil;
     if (signature.methodReturnLength ==0) return nil;
     //getReturnValue获取返回值
     [invocation getReturnValue:&amp;res];
     return res;
-}
+&#125;
 
-- (void)setInv:(NSInvocation *)inv andArgs:(NSArray *)args argsCount:(NSUInteger)count{
-    for (int i = 0; i&lt;count; i++) {
+- (void)setInv:(NSInvocation *)inv andArgs:(NSArray *)args argsCount:(NSUInteger)count&#123;
+    for (int i = 0; i&lt;count; i++) &#123;
         NSObject*obj = args[i];
         //处理参数是NULL类型的情况
-        if ([obj isKindOfClass:[NSNull class]]) {
+        if ([obj isKindOfClass:[NSNull class]]) &#123;
             obj = nil;
-        }
+        &#125;
         //对整形数值等的处理
         if([obj isKindOfClass:[NSNumber class]])      //对数值数据的处理
-        {
+        &#123;
             void *p;
             NSNumber *num = (NSNumber *)obj;
             if(strcmp([num objCType], @encode(float)) == 0)
-            {
+            &#123;
                 float v = [num floatValue];
                 p = &amp;v;
-            }
+            &#125;
             else if(strcmp([num objCType], @encode(double)) == 0)
-            {
+            &#123;
                 double v = [num doubleValue];
                 p = &amp;v;
-            }
+            &#125;
             else
-            {
+            &#123;
                 long v = [num longValue];
                 p = &amp;v;
-            }
-
+            &#125;
+            
             [inv setArgument:p atIndex:i+2];
             continue;
-        }
+        &#125;
 
         [inv setArgument:&amp;obj atIndex:i+2];
-    }
-}
-</code></pre><p>其实没有做什么改动，就加了下面的代码</p>
+    &#125;
+&#125;
+</code></pre>
+<p>其实没有做什么改动，就加了下面的代码</p>
 <pre><code>//对整形数值等的处理
         if([obj isKindOfClass:[NSNumber class]])      //对数值数据的处理
-        {
+        &#123;
             void *p;
             NSNumber *num = (NSNumber *)obj;
             if(strcmp([num objCType], @encode(float)) == 0)
-            {
+            &#123;
                 float v = [num floatValue];
                 p = &amp;v;
-            }
+            &#125;
             else if(strcmp([num objCType], @encode(double)) == 0)
-            {
+            &#123;
                 double v = [num doubleValue];
                 p = &amp;v;
-            }
+            &#125;
             else
-            {
+            &#123;
                 long v = [num longValue];
                 p = &amp;v;
-            }
-
+            &#125;
+            
             [inv setArgument:p atIndex:i+2];
             return;
-        }
-</code></pre><p>使用：<br>上面是NSObject的类别，传整形数值：</p>
+        &#125;
+</code></pre>
+<p>使用：<br>上面是NSObject的类别，传整形数值：</p>
 <pre><code>[_bledataMana performSelector:@selector(sendMsg:)withTheObjects:@[@10]];
 </code></pre>
+
       
 
       
@@ -1329,7 +1356,7 @@ deinit {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/17/performSelector传递参数/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/17/performSelector%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/">展开全文 >></a>
         </p>
       
 
@@ -1366,12 +1393,12 @@ deinit {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/17/UIImage图片性能优化/">UIImage图片性能优化</a>
+      <a class="article-title" href="/2018/12/17/UIImage%E5%9B%BE%E7%89%87%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">UIImage图片性能优化</a>
     </h1>
   
 
         
-        <a href="/2018/12/17/UIImage图片性能优化/" class="archive-article-date">
+        <a href="/2018/12/17/UIImage%E5%9B%BE%E7%89%87%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" class="archive-article-date">
   	<time datetime="2018-12-17T03:24:37.183Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
 </a>
         
@@ -1384,80 +1411,85 @@ deinit {
 <h2 id="图片解码产生的性能问题"><a href="#图片解码产生的性能问题" class="headerlink" title="图片解码产生的性能问题"></a>图片解码产生的性能问题</h2><p>下面我试试图片解码到底有多卡，我拿了10张超过1MB的图片进行测试。</p>
 <p>代码很简单，就是一个tableView，在cell里面显示图片。</p>
 <pre><code>- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+&#123;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@&quot;cell&quot;];
     if(!cell)
-    {
+    &#123;
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@&quot;cell&quot;];
-
+        
         UIImageView *headImageView = [[UIImageView alloc] initWithFrame:CGRectMake(10, 6, 80, 100-12)];
         headImageView.tag = 10;
         [cell.contentView addSubview:headImageView];
-    }
-
+    &#125;
+    
     NSString *fileName = [NSString stringWithFormat:@&quot;Start%zi&quot;,indexPath.row%12];
-    @autoreleasepool{
+    @autoreleasepool&#123;
         UIImage *image = [UIImage imageNamed:fileName];
         UIImageView *imageView = [cell.contentView viewWithTag:10];
         imageView.image = image;
-    }
+    &#125;
     return cell;
-}
-</code></pre><p>1、通过imageNamed加载图</p>
-<pre><code>@autoreleasepool{
+&#125;
+</code></pre>
+<p>1、通过imageNamed加载图</p>
+<pre><code>@autoreleasepool&#123;
         UIImage *image = [UIImage imageNamed:fileName];
         UIImageView *imageView = [cell.contentView viewWithTag:10];
         imageView.image = image;
-    }
-</code></pre><p>2、通过imageWithContentsOfFile加载图片</p>
-<pre><code>@autoreleasepool{
+    &#125;
+</code></pre>
+<p>2、通过imageWithContentsOfFile加载图片</p>
+<pre><code>@autoreleasepool&#123;
 //        UIImage *image = [UIImage imageNamed:fileName];
         NSString *path = [[NSBundle mainBundle] pathForResource:fileName ofType:@&quot;png&quot;];
         UIImage *image = [UIImage imageWithContentsOfFile:path];
         UIImageView *imageView = [cell.contentView viewWithTag:10];
         imageView.image = image;
-    }
-</code></pre><p>两种加载方式，一开始都是比较卡，好像imageNamed方式有缓存，后面再滑动tableView不卡了，因为缓存了解码后的图片。但imageWithContentsOfFile这种方式，一直都是卡顿，证明没有缓存，每次显示都进行了一次解码。</p>
+    &#125;
+</code></pre>
+<p>两种加载方式，一开始都是比较卡，好像imageNamed方式有缓存，后面再滑动tableView不卡了，因为缓存了解码后的图片。但imageWithContentsOfFile这种方式，一直都是卡顿，证明没有缓存，每次显示都进行了一次解码。</p>
 <p>给imageView.image赋值时候，才会发生图片解码，如果不执行这代码，发现没产生什么卡顿，证明imageNamed等的图片加载方法耗时不多，主要的耗时操作是在解码阶段。</p>
 <h2 id="二、图片解码的性能优化"><a href="#二、图片解码的性能优化" class="headerlink" title="二、图片解码的性能优化"></a>二、图片解码的性能优化</h2><p>对图片解码的性能优化，可以考虑把图片解码操作放到子线程执行。然后再把解码后的图片赋值给imageView.image，如果发现图片已经是解码过的，就不会再发生解码操作，就可以达到优化效果。</p>
 <p>SDWebImage的实现思路就是这样，从网络获取图片后，进行了一次解码操作，再缓存到内存和磁盘，以供显示</p>
 <p>SDWebImageDecoder的解码方法decodedImageWithImage，里面代码也不难，有兴趣可以详细看看，当然，网上也有一大堆源码分析。<br>下面，我就要用这方法优化上面的代码：</p>
 <pre><code>- (void)queryImageCache:(NSString *)filename block:(void(^)(UIImage *image))block
-{
+&#123;
     //从内存去取，如果没取到，就直接读取文件，在缓存起来
     UIImage *image = [self.memCache objectForKey:filename];
     if(image)
-    {
-        dispatch_async(dispatch_get_main_queue(), ^{
+    &#123;
+        dispatch_async(dispatch_get_main_queue(), ^&#123;
             if(block)
                 block(image);
-        });
-    }
+        &#125;);
+    &#125;
     else
-    {
-        dispatch_async(_ioQueue, ^{
-
-            @autoreleasepool{
+    &#123;
+        dispatch_async(_ioQueue, ^&#123;
+            
+            @autoreleasepool&#123;
                 NSString *path = [[NSBundle mainBundle] pathForResource:filename ofType:@&quot;png&quot;];
                 UIImage *image = [UIImage imageWithContentsOfFile:path];
                 //把解压操作放到子线程
                 image = [UIImage decodedImageWithImage:image];
                 [self.memCache setObject:image forKey:filename];
-                dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_main_queue(), ^&#123;
                     if(block)
                         block(image);
-                });
-            }
-        });
-    }
-}
-</code></pre><p>我把解码操作放到了子线程，解码完成后就缓存到内存，以供下次直接使用，执行如下：</p>
-<pre><code>[self queryImageCache:fileName block:^(UIImage *image) {
+                &#125;);
+            &#125;
+        &#125;);
+    &#125;
+&#125;
+</code></pre>
+<p>我把解码操作放到了子线程，解码完成后就缓存到内存，以供下次直接使用，执行如下：</p>
+<pre><code>[self queryImageCache:fileName block:^(UIImage *image) &#123;
         UIImageView *imageView = [cell.contentView viewWithTag:10];
         imageView.image = image;
-    }];
+    &#125;];
  return cell;
-</code></pre><p>不会出现卡顿现象，而且占用的内存比直接使用imageNamed少。</p>
+</code></pre>
+<p>不会出现卡顿现象，而且占用的内存比直接使用imageNamed少。</p>
 
       
 
@@ -1481,7 +1513,7 @@ deinit {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/17/UIImage图片性能优化/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/17/UIImage%E5%9B%BE%E7%89%87%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/">展开全文 >></a>
         </p>
       
 
@@ -1518,12 +1550,12 @@ deinit {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/16/imagewithnamed渲染优化/">imagewithnamed渲染优化</a>
+      <a class="article-title" href="/2018/12/16/imagewithnamed%E6%B8%B2%E6%9F%93%E4%BC%98%E5%8C%96/">imagewithnamed渲染优化</a>
     </h1>
   
 
         
-        <a href="/2018/12/16/imagewithnamed渲染优化/" class="archive-article-date">
+        <a href="/2018/12/16/imagewithnamed%E6%B8%B2%E6%9F%93%E4%BC%98%E5%8C%96/" class="archive-article-date">
   	<time datetime="2018-12-16T12:04:07.793Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-16</time>
 </a>
         
@@ -1532,19 +1564,20 @@ deinit {
     <div class="article-entry" itemprop="articleBody">
       
         <p>参考SDWebImage的图片编解码的思路，SD在拿到图片data的时候并没有将它直接转为image对象，而是在子线程里面做了一个解码的操作，这样已经被解码的图片就赋值给imageView的时候就不会再进行解码，也就不会妨碍主线程了。</p>
-<pre><code>- (void)decodedImageWithImageName:(NSString *)imageName block:(void(^)(UIImage *image))block {
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        @autoreleasepool{
+<pre><code>- (void)decodedImageWithImageName:(NSString *)imageName block:(void(^)(UIImage *image))block &#123;
+    dispatch_async(dispatch_get_global_queue(0, 0), ^&#123;
+        @autoreleasepool&#123;
             UIImage *image = [[UIImage imageNamed:imageName] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
             image = [UIImage decodedImageWithImage:image];
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(dispatch_get_main_queue(), ^&#123;
                 if(block)
                 block(image);
-            });
-        }
-    });
-}
-</code></pre><p>代码实现很简单，就是将图片的操作放入到一个全局队列中，当然也可以自己创建一个队列去执行这个异步操作。decodedImageWithImage:为SD的代码，需要#import “SDWebImageDecoder.h”，具体实现网上对这一块的源码解释的比较多，很容易理解。</p>
+            &#125;);
+        &#125;
+    &#125;);
+&#125;
+</code></pre>
+<p>代码实现很简单，就是将图片的操作放入到一个全局队列中，当然也可以自己创建一个队列去执行这个异步操作。decodedImageWithImage:为SD的代码，需要#import “SDWebImageDecoder.h”，具体实现网上对这一块的源码解释的比较多，很容易理解。</p>
 
       
 
@@ -1568,7 +1601,7 @@ deinit {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/16/imagewithnamed渲染优化/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/16/imagewithnamed%E6%B8%B2%E6%9F%93%E4%BC%98%E5%8C%96/">展开全文 >></a>
         </p>
       
 
@@ -1605,12 +1638,12 @@ deinit {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/15/轮子阅读之SDAutoLayout/">轮子阅读之SDAutoLayout</a>
+      <a class="article-title" href="/2018/12/15/%E8%BD%AE%E5%AD%90%E9%98%85%E8%AF%BB%E4%B9%8BSDAutoLayout/">轮子阅读之SDAutoLayout</a>
     </h1>
   
 
         
-        <a href="/2018/12/15/轮子阅读之SDAutoLayout/" class="archive-article-date">
+        <a href="/2018/12/15/%E8%BD%AE%E5%AD%90%E9%98%85%E8%AF%BB%E4%B9%8BSDAutoLayout/" class="archive-article-date">
   	<time datetime="2018-12-15T13:53:49.350Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
 </a>
         
@@ -1627,7 +1660,8 @@ titleLabel.sd_layout
              .topSpaceToView(self.view,100)
              .rightSpaceToView(self.view,20)
              .heightIs(20);
-</code></pre><p>上面这段代码就是就是用SDAutoLayout对一个Label进行适配不同屏幕的简单例子。很简单、很暴力，并且是我们用起来很方便的链式调用方式。我们进行断点调试进入到SDAutoLayout的源代码中。</p>
+</code></pre>
+<p>上面这段代码就是就是用SDAutoLayout对一个Label进行适配不同屏幕的简单例子。很简单、很暴力，并且是我们用起来很方便的链式调用方式。我们进行断点调试进入到SDAutoLayout的源代码中。</p>
 <p>首先执行sd_layout这个方法，这个方法的作用就是创建并初始化一些参数返回SDAutoLayoutModel这个对象的实例，然后就真正的开始进行自动布局的代码。</p>
 <p>接下来查看leftSpaceToView()这个方法会看到这个方法是一个懒加载的方法，在懒加载的方法中会执行这个方法marginToViewblockWithKey，这个方法很有意思，其中的key与SDAutoLayoutModel的私有属性left相同。</p>
 <p>进入到这个方法就可以看到返回值为一个block，而且在block中会通过KVC的方式设置SDAutoLayoutModel实例的属性（与这个方法的key名字相同）的value为SDAutoLayoutModelItem的实例对象，仔细发现SDAutoLayoutModel实例的私有属性的类型就是SDAutoLayoutModelItem。咋下面中我们也可到作者提供了这些属性的set方法，我们刚学KVC的时候大家都知道，KVC的机制是首先从调用setter方法，找不到setter方法就查找对象是否存在属性等的直到找不到任何相关的就会报错。我们查看这些setter方法就可以看到这写setter方法就是设置当前view的frame的属性。</p>
@@ -1638,7 +1672,8 @@ titleLabel.sd_layout
 4. 滑动UIScrollView的时候。
 5. 旋转Screen会触发父UIView上的layoutSubviews事件。
 6. 改变一个UIView大小的时候也会触发父UIView上的layoutSubviews事件。
-</code></pre><p>在替换的sd_layoutSubviews中执行了sd_layoutSubviewsHandle这个方法，这个方法就是针对不同的view及情况进行宽度、高度等属性进行计算，并且会缓存tableViewCell的高度等。</p>
+</code></pre>
+<p>在替换的sd_layoutSubviews中执行了sd_layoutSubviewsHandle这个方法，这个方法就是针对不同的view及情况进行宽度、高度等属性进行计算，并且会缓存tableViewCell的高度等。</p>
 <p>接下来的topSpaceToView、rightSpaceToView、heightIs等方法跟leftSpaceToView方法类似，大同小异，我就不做一一解释了。</p>
 <p>总结一下这个开源库的原理就是通过KVC、链式调用、Runtime的Method Swizzing等技术创造的轮子。这个库还提供了一些其他功能，我们平时开发使用起来还是很简单方便的，能很大程度上提高我们的开发效率。工作之余可以多学学作者怎么使用这些技术创造轮子以及为什么这样写也是一件很有趣的事情。</p>
 
@@ -1664,7 +1699,7 @@ titleLabel.sd_layout
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/15/轮子阅读之SDAutoLayout/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/15/%E8%BD%AE%E5%AD%90%E9%98%85%E8%AF%BB%E4%B9%8BSDAutoLayout/">展开全文 >></a>
         </p>
       
 
@@ -1696,7 +1731,7 @@ titleLabel.sd_layout
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/13/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/15/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/13/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/15/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -1708,7 +1743,7 @@ titleLabel.sd_layout
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1815,10 +1850,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -1827,7 +1858,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1835,11 +1866,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1859,19 +1894,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

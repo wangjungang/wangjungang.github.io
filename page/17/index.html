@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/17/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/28/mysql基本知识点梳理和查询优化/">mysql基本知识点梳理和查询优化</a>
+      <a class="article-title" href="/2018/11/28/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E7%82%B9%E6%A2%B3%E7%90%86%E5%92%8C%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">mysql基本知识点梳理和查询优化</a>
     </h1>
   
 
         
-        <a href="/2018/11/28/mysql基本知识点梳理和查询优化/" class="archive-article-date">
+        <a href="/2018/11/28/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E7%82%B9%E6%A2%B3%E7%90%86%E5%92%8C%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/" class="archive-article-date">
   	<time datetime="2018-11-28T08:13:24.177Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-28</time>
 </a>
         
@@ -176,7 +176,7 @@
 <h3 id="一、索引相关"><a href="#一、索引相关" class="headerlink" title="一、索引相关"></a>一、索引相关</h3><p>1.索引基数：</p>
 <p>基数是数据列所包含的不同值的数量。例如，某个数据列包含值1、3、7、4、7、3，那么它的基数就是4。索引的基数相对于数据表行数较高（也就是说，列中包含很多不同的值，重复的值很少）的时候，它的工作效果最好。如果某数据列含有很多不同的年龄，索引会很快地分辨数据行。如果某个数据列用于记录性别（只有”M”和”F”两种值），那么索引的用处就不大。如果值出现的几率几乎相等，那么无论搜索哪个值都可能得到一半的数据行。在这些情况下，最好根本不要使用索引，因为查询优化器发现某个值出现在表的数据行中的百分比很高的时候，它一般会忽略索引，进行全表扫描。惯用的百分比界线是”30%”。</p>
 <p>2.索引失败的原因</p>
-<pre><code>对索引列运算，运算包括（+、-、*、/、！、&lt;&gt;、%、like&apos;%_&apos;（%放在前面）
+<pre><code>对索引列运算，运算包括（+、-、*、/、！、&lt;&gt;、%、like&#39;%_&#39;（%放在前面）
 类型错误，如字段类型为varchar，where条件用number。
 对索引应用内部函数，这种情况下应该建立基于函数的索引
 如select * from template t where ROUND(t.logicdb_id) = 1
@@ -185,18 +185,19 @@
 如果列类型是字符串，那一定要在条件中数据使用引号，否则不使用索引；
 B-tree索引 is null不会走,is not null会走,位图索引 is null,is not null 都会走
 组合索引遵循最左原则
-</code></pre><h4 id="索引的建立"><a href="#索引的建立" class="headerlink" title="索引的建立"></a>索引的建立</h4><p>最重要的肯定是根据业务经常查询的语句</p>
-<p>尽量选择区分度高的列作为索引，区分度的公式是 COUNT(DISTINCT col) / COUNT(*)。表示字段不重复的比率，比率越大我们扫描的记录数就越少</p>
+</code></pre>
+<h4 id="索引的建立"><a href="#索引的建立" class="headerlink" title="索引的建立"></a>索引的建立</h4><p>最重要的肯定是根据业务经常查询的语句</p>
+<p>尽量选择区分度高的列作为索引，区分度的公式是 COUNT(DISTINCT col) &#x2F; COUNT(*)。表示字段不重复的比率，比率越大我们扫描的记录数就越少</p>
 <p>如果业务中唯一特性最好建立唯一键，一方面可以保证数据的正确性，另一方面索引的效率能大大提高</p>
 <h3 id="二、EXPLIAN中有用的信息"><a href="#二、EXPLIAN中有用的信息" class="headerlink" title="二、EXPLIAN中有用的信息"></a>二、EXPLIAN中有用的信息</h3><h4 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h4><p>desc 或者 explain 加上你的sql<br>extended explain加上你的sql，然后通过show warnings可以查看实际执行的语句，这一点也是非常有用的，很多时候不同的写法经过sql分析之后实际执行的代码是一样的</p>
 <h4 id="提高性能的特性"><a href="#提高性能的特性" class="headerlink" title="提高性能的特性"></a>提高性能的特性</h4><p>索引覆盖(covering index)：需要查询的数据在索引上都可以查到不需要回表 EXTRA列显示using index</p>
 <p>ICP特性(Index Condition Pushdown)：本来index仅仅是data access的一种访问模式，存数引擎通过索引回表获取的数据会传递到MySQL server层进行where条件过滤,5.6版本开始当ICP打开时，如果部分where条件能使用索引的字段，MySQL server会把这部分下推到引擎层，可以利用index过滤的where条件在存储引擎层进行数据过滤。EXTRA显示using index condition。需要了解mysql的架构图分为server和存储引擎层</p>
-<p>索引合并(index merge)：对多个索引分别进行条件扫描，然后将它们各自的结果进行合并(intersect/union)。一般用OR会用到，如果是AND条件，考虑建立复合索引。EXPLAIN显示的索引类型会显示index_merge，EXTRA会显示具体的合并算法和用到的索引</p>
+<p>索引合并(index merge)：对多个索引分别进行条件扫描，然后将它们各自的结果进行合并(intersect&#x2F;union)。一般用OR会用到，如果是AND条件，考虑建立复合索引。EXPLAIN显示的索引类型会显示index_merge，EXTRA会显示具体的合并算法和用到的索引</p>
 <h4 id="extra字段"><a href="#extra字段" class="headerlink" title="extra字段"></a>extra字段</h4><p>1、using filesort： 说明MySQL会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。MySQL中无法利用索引完成的排序操作称为“文件排序” ，其实不一定是文件排序，内部使用的是快排</p>
 <p>2、using temporary：  使用了临时表保存中间结果，MySQL在对查询结果排序时使用临时表。常见于排序order by和分组查询group by</p>
 <p>3、using index： 表示相应的SELECT操作中使用了覆盖索引（Covering Index），避免访问了表的数据行，效率不错。</p>
 <p>4、impossible where： WHERE子句的值总是false，不能用来获取任何元组</p>
-<p>5、select tables optimized away： 在没有GROUP BY子句的情况下基于索引优化MIN/MAX操作或者对于MyISAM存储引擎优化COUNT(*)操作， 不必等到执行阶段再进行计算，查询执行计划生成的阶段即完成优化</p>
+<p>5、select tables optimized away： 在没有GROUP BY子句的情况下基于索引优化MIN&#x2F;MAX操作或者对于MyISAM存储引擎优化COUNT(*)操作， 不必等到执行阶段再进行计算，查询执行计划生成的阶段即完成优化</p>
 <p>6、distinct： 优化distinct操作，在找到第一匹配的元祖后即停止找同样值的操作</p>
 <p>using filesort,using temporary这两项出现时需要注意下，这两项是十分耗费性能的，在使用group by的时候，虽然没有使用order by，如果没有索引，是可能同时出现using filesort,using temporary的，因为group by就是先排序在分组，如果没有排序的需要，可以加上一个order by NULL来避免排序，这样using filesort就会去除，能提升一点性能。</p>
 <h4 id="type字段"><a href="#type字段" class="headerlink" title="type字段"></a>type字段</h4><p>system：表只有一行记录（等于系统表），这是const类型的特例，平时不会出现</p>
@@ -209,9 +210,9 @@ B-tree索引 is null不会走,is not null会走,位图索引 is null,is not null
 <h3 id="三、字段类型和编码"><a href="#三、字段类型和编码" class="headerlink" title="三、字段类型和编码"></a>三、字段类型和编码</h3><ul>
 <li><p>mysql返回字符串长度：CHARACTER_LENGTH方法(CHAR_LENGTH一样的)返回的是字符数，LENGTH函数返回的是字节数，一个汉字三个字节</p>
 </li>
-<li><p>varvhar等字段建立索引长度计算语句：select count(distinct left(test,5))/count(*) from table; 越趋近1越好</p>
+<li><p>varvhar等字段建立索引长度计算语句：select count(distinct left(test,5))&#x2F;count(*) from table; 越趋近1越好</p>
 </li>
-<li><p>mysql的utf8最大是3个字节不支持emoji表情符号，必须只用utf8mb4。需要在mysql配置文件中配置客户端字符集为utf8mb4。jdbc的连接串不支持配置characterEncoding=utf8mb4，最好的办法是在连接池中指定初始化sql，例如：hikari连接池，其他连接池类似spring.datasource.hikari.connection-init-sql=set names utf8mb4。否则需要每次执行sql前都先执行set names utf8mb4。</p>
+<li><p>mysql的utf8最大是3个字节不支持emoji表情符号，必须只用utf8mb4。需要在mysql配置文件中配置客户端字符集为utf8mb4。jdbc的连接串不支持配置characterEncoding&#x3D;utf8mb4，最好的办法是在连接池中指定初始化sql，例如：hikari连接池，其他连接池类似spring.datasource.hikari.connection-init-sql&#x3D;set names utf8mb4。否则需要每次执行sql前都先执行set names utf8mb4。</p>
 </li>
 <li><p>msyql排序规则(一般使用_bin和_genera_ci)：</p>
 </li>
@@ -221,12 +222,12 @@ B-tree索引 is null不会走,is not null会走,位图索引 is null,is not null
 <p>utf8_bin将字符串中的每一个字符用二进制数据存储，区分大小写。</p>
 <p>那么，同样是区分大小写，utf8_general_cs和utf8_bin有什么区别？</p>
 <p>cs为case sensitive的缩写，即大小写敏感；bin的意思是二进制，也就是二进制编码比较。</p>
-<p>utf8_general_cs排序规则下，即便是区分了大小写，但是某些西欧的字符和拉丁字符是不区分的，比如ä=a，但是有时并不需要ä=a，所以才有utf8_bin</p>
+<p>utf8_general_cs排序规则下，即便是区分了大小写，但是某些西欧的字符和拉丁字符是不区分的，比如ä&#x3D;a，但是有时并不需要ä&#x3D;a，所以才有utf8_bin</p>
 <p>utf8_bin的特点在于使用字符的二进制的编码进行运算，任何不同的二进制编码都是不同的，因此在utf8_bin排序规则下：ä&lt;&gt;a</p>
 <h3 id="四、SQL语句总结"><a href="#四、SQL语句总结" class="headerlink" title="四、SQL语句总结"></a>四、SQL语句总结</h3><h4 id="常用的但容易忘的："><a href="#常用的但容易忘的：" class="headerlink" title="常用的但容易忘的："></a>常用的但容易忘的：</h4><ul>
 <li><p>如果有主键或者唯一键冲突则不插入：insert ignore into</p>
 </li>
-<li><p>如果有主键或者唯一键冲突则更新,注意这个会影响自增的增量：INSERT INTO room_remarks(room_id,room_remarks) VALUE(1,”sdf”) ON DUPLICATE KEY UPDATE room_remarks=”234”</p>
+<li><p>如果有主键或者唯一键冲突则更新,注意这个会影响自增的增量：INSERT INTO room_remarks(room_id,room_remarks) VALUE(1,”sdf”) ON DUPLICATE KEY UPDATE room_remarks&#x3D;”234”</p>
 </li>
 <li><p>如果有就用新的替代，values如果不包含自增列，自增列的值会变化： REPLACE INTO room_remarks(room_id,room_remarks) VALUE(1,”sdf”)</p>
 </li>
@@ -236,16 +237,16 @@ B-tree索引 is null不会走,is not null会走,位图索引 is null,is not null
 </li>
 <li><p>从查询语句中导入：INSERT INTO user_v2 SELECT * FROM user或者INSERT INTO user_v2(id,num) SELECT id,num FROM user</p>
 </li>
-<li><p>连表更新：UPDATE user a, room b SET a.num=a.num+1 WHERE a.room_id=b.id</p>
+<li><p>连表更新：UPDATE user a, room b SET a.num&#x3D;a.num+1 WHERE a.room_id&#x3D;b.id</p>
 </li>
-<li><p>连表删除：DELETE user FROM user,black WHERE user.id=black.id</p>
+<li><p>连表删除：DELETE user FROM user,black WHERE user.id&#x3D;black.id</p>
 </li>
 </ul>
 <h4 id="锁相关"><a href="#锁相关" class="headerlink" title="锁相关"></a>锁相关</h4><ul>
-<li>共享锁： select id from tb_test where id = 1 lock in share mode;</li>
-</ul>
-<ul>
-<li>排它锁： select id from tb_test where id = 1 for update</li>
+<li><p>共享锁： select id from tb_test where id &#x3D; 1 lock in share mode;</p>
+</li>
+<li><p>排它锁： select id from tb_test where id &#x3D; 1 for update</p>
+</li>
 </ul>
 <h4 id="优化时用到："><a href="#优化时用到：" class="headerlink" title="优化时用到："></a>优化时用到：</h4><ul>
 <li>强制使用某个索引： select * from table force index(idx_user) limit 2;</li>
@@ -269,26 +270,28 @@ B-tree索引 is null不会走,is not null会走,位图索引 is null,is not null
 </li>
 <li><p>聚合函数会自动滤空，比如a列的类型是int且全部是NULL，则SUM(a)返回的是NULL而不是0</p>
 </li>
-<li><p>mysql判断null相等不能用“a=null”,这个结果永远为UnKnown，where和having中,UnKnown永远被视为false，check约束中，UnKnown就会视为true来处理。所以要用“a is null”处理</p>
+<li><p>mysql判断null相等不能用“a&#x3D;null”,这个结果永远为UnKnown，where和having中,UnKnown永远被视为false，check约束中，UnKnown就会视为true来处理。所以要用“a is null”处理</p>
 </li>
 </ul>
 <h3 id="六、千万大表在线修改"><a href="#六、千万大表在线修改" class="headerlink" title="六、千万大表在线修改"></a>六、千万大表在线修改</h3><p>mysql在表数据量很大的时候，如果修改表结构会导致锁表，业务请求被阻塞。mysql在5.6之后引入了在线更新，但是在某些情况下还是会锁表，所以一般都采用pt工具( Percona Toolkit)</p>
 <p>如对表添加索引：</p>
-<pre><code>pt-online-schema-change --user=&apos;root&apos; --host=&apos;localhost&apos; --ask-pass --alter &quot;add index idx_user_id(room_id,create_time)&quot; D=fission_show_room_v2,t=room_favorite_info --execute
-</code></pre><h3 id="七、慢查询日志"><a href="#七、慢查询日志" class="headerlink" title="七、慢查询日志"></a>七、慢查询日志</h3><p>有时候如果线上请求超时，应该去关注下慢查询日志，慢查询的分析很简单，先找到慢查询日志文件的位置，然后利用mysqldumpslow去分析。查询慢查询日志信息可以直接通过执行sql命令查看相关变量，常用的sql如下：</p>
+<pre><code>pt-online-schema-change --user=&#39;root&#39; --host=&#39;localhost&#39; --ask-pass --alter &quot;add index idx_user_id(room_id,create_time)&quot; D=fission_show_room_v2,t=room_favorite_info --execute
+</code></pre>
+<h3 id="七、慢查询日志"><a href="#七、慢查询日志" class="headerlink" title="七、慢查询日志"></a>七、慢查询日志</h3><p>有时候如果线上请求超时，应该去关注下慢查询日志，慢查询的分析很简单，先找到慢查询日志文件的位置，然后利用mysqldumpslow去分析。查询慢查询日志信息可以直接通过执行sql命令查看相关变量，常用的sql如下：</p>
 <pre><code>-- 查看慢查询配置
 -- slow_query_log  慢查询日志是否开启
 -- slow_query_log_file 的值是记录的慢查询日志到文件中
 -- long_query_time 指定了慢查询的阈值
 -- log_queries_not_using_indexes 是否记录所有没有利用索引的查询
-SHOW VARIABLES LIKE &apos;%quer%&apos;;
+SHOW VARIABLES LIKE &#39;%quer%&#39;;
 
 -- 查看慢查询是日志还是表的形式
-SHOW VARIABLES LIKE &apos;log_output&apos;
+SHOW VARIABLES LIKE &#39;log_output&#39;
 
 -- 查看慢查询的数量
-SHOW GLOBAL STATUS LIKE &apos;slow_queries&apos;;
-</code></pre><p>mysqldumpslow的工具十分简单，我主要用到的是参数如下：</p>
+SHOW GLOBAL STATUS LIKE &#39;slow_queries&#39;;
+</code></pre>
+<p>mysqldumpslow的工具十分简单，我主要用到的是参数如下：</p>
 <p>-t:限制输出的行数，我一般取前十条就够了</p>
 <p>-s:根据什么来排序默认是平均查询时间at，我还经常用到c查询次数，因为查询次数很频繁但是时间不高也是有必要优化的，还有t查询时间，查看那个语句特别卡。</p>
 <p>-v:输出详细信息</p>
@@ -297,7 +300,8 @@ SHOW GLOBAL STATUS LIKE &apos;slow_queries&apos;;
 SHOW PROCESSLIST;
 --杀死某个进程
 kill 183665
-</code></pre><h3 id="九、一些数据库性能的思考"><a href="#九、一些数据库性能的思考" class="headerlink" title="九、一些数据库性能的思考"></a>九、一些数据库性能的思考</h3><p>在对公司慢查询日志做优化的时候，很多时候可能是忘了建索引，像这种问题很容易解决，加个索引就行了。但是有两种情况就不是简单能加索引能解决了：</p>
+</code></pre>
+<h3 id="九、一些数据库性能的思考"><a href="#九、一些数据库性能的思考" class="headerlink" title="九、一些数据库性能的思考"></a>九、一些数据库性能的思考</h3><p>在对公司慢查询日志做优化的时候，很多时候可能是忘了建索引，像这种问题很容易解决，加个索引就行了。但是有两种情况就不是简单能加索引能解决了：</p>
 <ul>
 <li><p>业务代码循环读数据库： 考虑这样一个场景，获取用户粉丝列表信息 加入分页是十个 其实像这样的sql是十分简单的，通过连表查询性能也很高，但是有时候，很多开发采用了取出一串id，然后循环读每个id的信息，这样如果id很多对数据库的压力是很大的，而且性能也很低</p>
 </li>
@@ -329,7 +333,7 @@ kill 183665
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/28/mysql基本知识点梳理和查询优化/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/11/28/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86%E7%82%B9%E6%A2%B3%E7%90%86%E5%92%8C%E6%9F%A5%E8%AF%A2%E4%BC%98%E5%8C%96/">展开全文 >></a>
         </p>
       
 
@@ -366,12 +370,12 @@ kill 183665
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/didSelectRowAtIndexPath中改变自定义Cell属性问题/">didSelectRowAtIndexPath中改变自定义Cell属性问题</a>
+      <a class="article-title" href="/2018/11/27/didSelectRowAtIndexPath%E4%B8%AD%E6%94%B9%E5%8F%98%E8%87%AA%E5%AE%9A%E4%B9%89Cell%E5%B1%9E%E6%80%A7%E9%97%AE%E9%A2%98/">didSelectRowAtIndexPath中改变自定义Cell属性问题</a>
     </h1>
   
 
         
-        <a href="/2018/11/27/didSelectRowAtIndexPath中改变自定义Cell属性问题/" class="archive-article-date">
+        <a href="/2018/11/27/didSelectRowAtIndexPath%E4%B8%AD%E6%94%B9%E5%8F%98%E8%87%AA%E5%AE%9A%E4%B9%89Cell%E5%B1%9E%E6%80%A7%E9%97%AE%E9%A2%98/" class="archive-article-date">
   	<time datetime="2018-11-27T09:21:14.836Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -381,14 +385,16 @@ kill 183665
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>今天犯了一个很低级的问题，而这个问题还让我找了很长时间才发现。<br>我在自定义cell中定义了一个属性</p>
 <pre><code>@property (assign, nonatomic) BOOL isChecked;
-</code></pre><p>并且重写了它的set方法实现了内部一个属性改变</p>
+</code></pre>
+<p>并且重写了它的set方法实现了内部一个属性改变</p>
 <pre><code>- (void)setIsChecked:(BOOL)isChecked
-{
+&#123;
     _checkBoxView.checked = isChecked;
-}
-</code></pre><p>当我改变自定义cell中的被选中状态时发现改变不了</p>
+&#125;
+</code></pre>
+<p>当我改变自定义cell中的被选中状态时发现改变不了</p>
 <pre><code>- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+&#123;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
     AddPartnerTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
@@ -396,11 +402,12 @@ kill 183665
     cell.isChecked = !cell.isChecked;
     FMLog(@&quot;isChecked2:%d&quot;,cell.isChecked);
 
-}
-</code></pre><p>但是我发现内部是改变了。 </p>
+&#125;
+</code></pre>
+<p>但是我发现内部是改变了。 </p>
 <p>后来无意中想起来重写这个方法还需要</p>
 <ul>
-<li>(void)setIsChecked:(BOOL)isChecked<br>{<br>  _isChecked = isChecked;<br>  _checkBoxView.checked = isChecked;<br>}</li>
+<li>(void)setIsChecked:(BOOL)isChecked<br>{<br>  _isChecked &#x3D; isChecked;<br>  _checkBoxView.checked &#x3D; isChecked;<br>}</li>
 </ul>
 <p>低级问题用于警醒。</p>
 
@@ -426,7 +433,7 @@ kill 183665
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/didSelectRowAtIndexPath中改变自定义Cell属性问题/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/11/27/didSelectRowAtIndexPath%E4%B8%AD%E6%94%B9%E5%8F%98%E8%87%AA%E5%AE%9A%E4%B9%89Cell%E5%B1%9E%E6%80%A7%E9%97%AE%E9%A2%98/">展开全文 >></a>
         </p>
       
 
@@ -463,12 +470,12 @@ kill 183665
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/iOS时区/">iOS时区</a>
+      <a class="article-title" href="/2018/11/27/iOS%E6%97%B6%E5%8C%BA/">iOS时区</a>
     </h1>
   
 
         
-        <a href="/2018/11/27/iOS时区/" class="archive-article-date">
+        <a href="/2018/11/27/iOS%E6%97%B6%E5%8C%BA/" class="archive-article-date">
   	<time datetime="2018-11-27T06:51:44.741Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -479,12 +486,13 @@ kill 183665
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>由于项目之前对时区没有做过统一的处理，导致国外友人使用起来不是很方便，借此机会，咱们聊一聊时区的事。</p>
 <h2 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h2><h3 id="1-获取所有已知的时区名称"><a href="#1-获取所有已知的时区名称" class="headerlink" title="1.获取所有已知的时区名称"></a>1.获取所有已知的时区名称</h3><pre><code>NSArray *zoneArray = [NSTimeZone knownTimeZoneNames];
 
-for(NSString *str in zoneArray){
+for(NSString *str in zoneArray)&#123;
 
 NSLog(@&quot;%@&quot;,str);
 
-}
-</code></pre><p>主意：没有北京时区</p>
+&#125;
+</code></pre>
+<p>主意：没有北京时区</p>
 <h3 id="2-返回时区名称和缩写"><a href="#2-返回时区名称和缩写" class="headerlink" title="2.返回时区名称和缩写"></a>2.返回时区名称和缩写</h3><pre><code>NSTimeZone *zone = [NSTimeZone localTimeZone];
 
 NSString *strZoneName = [zone name];
@@ -494,7 +502,8 @@ NSString *strZoneAbbreviation = [zone abbreviation];
 NSLog(@&quot;名称 是 %@&quot;,strZoneName);
 
 NSLog(@&quot;缩写 是 %@&quot;,strZoneAbbreviation);
-</code></pre><h3 id="3-系统时区-本地时区"><a href="#3-系统时区-本地时区" class="headerlink" title="3.系统时区 本地时区"></a>3.系统时区 本地时区</h3><pre><code>[NSTimeZone setDefaultTimeZone:[[NSTimeZone alloc] initWithName:@&quot;America/Chicago&quot;]];
+</code></pre>
+<h3 id="3-系统时区-本地时区"><a href="#3-系统时区-本地时区" class="headerlink" title="3.系统时区 本地时区"></a>3.系统时区 本地时区</h3><pre><code>[NSTimeZone setDefaultTimeZone:[[NSTimeZone alloc] initWithName:@&quot;America/Chicago&quot;]];
 
 NSTimeZone *systemZone = [NSTimeZone systemTimeZone];
 
@@ -503,14 +512,17 @@ NSTimeZone *localZone = [NSTimeZone localTimeZone];
 NSLog(@&quot;系统时区%@&quot;,systemZone);
 
 NSLog(@&quot;本地时区%@&quot;,localZone);
-</code></pre><p>其中，系统时区不能通过代码来进行更改。</p>
+</code></pre>
+<p>其中，系统时区不能通过代码来进行更改。</p>
 <h3 id="4-得到当前时区与零时区的间隔秒数"><a href="#4-得到当前时区与零时区的间隔秒数" class="headerlink" title="4.得到当前时区与零时区的间隔秒数"></a>4.得到当前时区与零时区的间隔秒数</h3><pre><code>NSTimeZone *zone = [NSTimeZone localTimeZone];
 
 NSInteger seconds = [zone secondsFromGMT];
 
 NSLog(@&quot;%ld&quot;,seconds);
-</code></pre><h3 id="5-根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）"><a href="#5-根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）" class="headerlink" title="5.根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）"></a>5.根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）</h3><pre><code>NSTimeZone* timeZone = [NSTimeZone timeZoneForSecondsFromGMT:8*3600];
-</code></pre><h2 id="演练"><a href="#演练" class="headerlink" title="演练"></a>演练</h2><p>无论身在何处，系统时间设置为北京时间</p>
+</code></pre>
+<h3 id="5-根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）"><a href="#5-根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）" class="headerlink" title="5.根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）"></a>5.根据上小结根据与零时区的秒数偏移返回一个新时区对象（设置的为上海时区）</h3><pre><code>NSTimeZone* timeZone = [NSTimeZone timeZoneForSecondsFromGMT:8*3600];
+</code></pre>
+<h2 id="演练"><a href="#演练" class="headerlink" title="演练"></a>演练</h2><p>无论身在何处，系统时间设置为北京时间</p>
 <pre><code>NSTimeZone *zone = [NSTimeZone localTimeZone];
 
 UILabel *titleLab = [[UILabel alloc] initWithFrame:CGRectMake(100, 100, 200, 30)];
@@ -541,6 +553,7 @@ dateLab.text = [dateFormatter stringFromDate:date];
 
 [self.view addSubview:dateLab];
 </code></pre>
+
       
 
       
@@ -563,7 +576,7 @@ dateLab.text = [dateFormatter stringFromDate:date];
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/iOS时区/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/11/27/iOS%E6%97%B6%E5%8C%BA/">展开全文 >></a>
         </p>
       
 
@@ -600,12 +613,12 @@ dateLab.text = [dateFormatter stringFromDate:date];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/使用两行代码就能完成80%的缓存需求 /">使用两行代码就能完成80%的缓存需求</a>
+      <a class="article-title" href="/2018/11/27/%7F($L%EF%BF%BD%011%EF%BF%BD%EF%BF%BD%1080%25%EF%BF%BD%13X%00B%20/">使用两行代码就能完成80%的缓存需求</a>
     </h1>
   
 
         
-        <a href="/2018/11/27/使用两行代码就能完成80%的缓存需求 /" class="archive-article-date">
+        <a href="/2018/11/27/%7F($L%EF%BF%BD%011%EF%BF%BD%EF%BF%BD%1080%25%EF%BF%BD%13X%00B%20/" class="archive-article-date">
   	<time datetime="2018-11-27T06:24:38.209Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -620,54 +633,20 @@ dateLab.text = [dateFormatter stringFromDate:date];
 <p>这个痛可能是：</p>
 <p>服务器压力、客户端网络优化、用户体验等等。</p>
 <h2 id="当我们在谈论缓存的时候，我们在谈论什么？"><a href="#当我们在谈论缓存的时候，我们在谈论什么？" class="headerlink" title="当我们在谈论缓存的时候，我们在谈论什么？"></a>当我们在谈论缓存的时候，我们在谈论什么？</h2><p>我们今天将站在小白用户的角度，给缓存这个概念进行重新的定义。</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>第一种</th>
-<th>第二种</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>目的</td>
-<td>优化型缓存</td>
-<td>功能型缓存</td>
-</tr>
-<tr>
-<td>具体描述</td>
-<td>出于优化考虑：服务器压力、用户体验、为用户剩流量等等。同时优化型缓存也有内存缓存和磁盘缓存之分。</td>
-<td>App离线也能查看，出于功能考虑，属于存储范畴</td>
-</tr>
-<tr>
-<td>常见概念</td>
-<td>GET网络请求缓存、WEB缓存</td>
-<td>离线存储</td>
-</tr>
-<tr>
-<td>典型应用</td>
-<td>微信首页的会话列表、微信头像、朋友圈、网易新闻新闻列表、</td>
-<td>微信聊天记录、</td>
-</tr>
-<tr>
-<td>Parse对应的类</td>
-<td>PFCachedQueryController</td>
-<td>PFOfflineStore</td>
-</tr>
-</tbody>
-</table>
-<p>重度使用缓存的App： 微信、微博、网易新闻、携程、去哪儿等等。</p>
+<p>| 第一种 |第二种<br>————-|————-|————-<br>目的| 优化型缓存 | 功能型缓存<br>具体描述 | 出于优化考虑：服务器压力、用户体验、为用户剩流量等等。同时优化型缓存也有内存缓存和磁盘缓存之分。 | App离线也能查看，出于功能考虑，属于存储范畴<br>常见概念 | GET网络请求缓存、WEB缓存 | 离线存储<br>典型应用 | 微信首页的会话列表、微信头像、朋友圈、网易新闻新闻列表、 | 微信聊天记录、<br>Parse对应的类 | PFCachedQueryController | PFOfflineStore<br>重度使用缓存的App： 微信、微博、网易新闻、携程、去哪儿等等。</p>
 <h2 id="GET网络请求缓存"><a href="#GET网络请求缓存" class="headerlink" title="GET网络请求缓存"></a>GET网络请求缓存</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>首先要知道，POST请求不能被缓存，只有 GET 请求能被缓存。因为从数学的角度来讲，GET 的结果是 幂等 的，就好像字典里的 key 与 value 就是幂等的，而 POST 不 幂等 。缓存的思路就是将查询的参数组成的值作为 key ，对应结果作为value。从这个意义上说，一个文件的资源链接，也叫 GET 请求，下文也会这样看待。</p>
 <h3 id="80-的缓存需求：两行代码就可满足"><a href="#80-的缓存需求：两行代码就可满足" class="headerlink" title="80%的缓存需求：两行代码就可满足"></a>80%的缓存需求：两行代码就可满足</h3><p>第一个步骤：请使用 GET 请求。</p>
 <p>第二个步骤：</p>
 <p>如果你已经使用 了 GET 请求，iOS 系统 SDK 已经帮你做好了缓存。你需要的仅仅是设置下内存缓存大小、磁盘缓存大小、以及缓存路径。甚至这两行代码不设置也是可以的，会有一个默认值。代码如下：</p>
 <pre><code>NSURLCache *urlCache = [[NSURLCache alloc] initWithMemoryCapacity:4 * 1024 * 1024 diskCapacity:20 * 1024 * 1024 diskPath:nil];
 [NSURLCache setSharedURLCache:urlCache];
-</code></pre><p>第三个步骤：没有第三步！</p>
+</code></pre>
+<p>第三个步骤：没有第三步！</p>
 <p>你只要设置了这两行代码，基本就可满足80%的缓存需求。AFNetworking 的作者 Mattt曾经说过：</p>
 <pre><code>无数开发者尝试自己做一个简陋而脆弱的系统来实现网络缓存的功能
 ，殊不知 NSURLCache 只要两行代码就能搞定且好上 100 倍。
-</code></pre><p>（AFN 是不是在暗讽 SDWebImage 复杂又蹩脚的缓存机制？？）</p>
+</code></pre>
+<p>（AFN 是不是在暗讽 SDWebImage 复杂又蹩脚的缓存机制？？）</p>
 <p>要注意</p>
 <ul>
 <li>iOS 5.0开始，支持磁盘缓存，但仅支持 HTTP</li>
@@ -684,57 +663,62 @@ dateLab.text = [dateFormatter stringFromDate:date];
 <p>Last-Modified 顾名思义，是资源最后修改的时间戳，往往与缓存时间进行对比来判断缓存是否过期。</p>
 <p>在浏览器第一次请求某一个URL时，服务器端的返回状态会是200，内容是你请求的资源，同时有一个Last-Modified的属性标记此文件在服务期端最后被修改的时间，格式类似这样：</p>
 <pre><code>Last-Modified: Fri, 12 May 2006 18:53:33 GMT
-</code></pre><p>客户端第二次请求此URL时，根据 HTTP 协议的规定，浏览器会向服务器传送 If-Modified-Since 报头，询问该时间之后文件是否有被修改过：</p>
+</code></pre>
+<p>客户端第二次请求此URL时，根据 HTTP 协议的规定，浏览器会向服务器传送 If-Modified-Since 报头，询问该时间之后文件是否有被修改过：</p>
 <pre><code>If-Modified-Since: Fri, 12 May 2006 18:53:33 GMT
-</code></pre><p>总结下来它的结构如下：</p>
-<p>请求 HeaderValue    响应 HeaderValue<br>Last-Modified    If-Modified-Since</p>
+</code></pre>
+<p>总结下来它的结构如下：</p>
+<p>请求 HeaderValue	响应 HeaderValue<br>Last-Modified	If-Modified-Since</p>
 <p>如果服务器端的资源没有变化，则自动返回 HTTP 304 （Not Changed.）状态码，内容为空，这样就节省了传输数据量。当服务器端代码发生改变或者重启服务器时，则重新发出资源，返回和第一次请求时类似。从而保证不向客户端重复发出资源，也保证当服务器有变化时，客户端能够得到最新的资源。</p>
 <p>判断方法用伪代码表示：</p>
 <pre><code>if ETagFromServer != ETagOnClient || LastModifiedFromServer != LastModifiedOnClient
   GetFromServer
 else
   GetFromCache
-</code></pre><p>NSURLConnection 和 NSURLSession 两个版本：</p>
-<p>/*!<br>@brief 如果本地缓存资源为最新，则使用使用本地缓存。如果服务器已经更新或本地无缓存则从服务器请求资源。</p>
+</code></pre>
+<p>NSURLConnection 和 NSURLSession 两个版本：</p>
+<p>&#x2F;*!<br>@brief 如果本地缓存资源为最新，则使用使用本地缓存。如果服务器已经更新或本地无缓存则从服务器请求资源。</p>
 <p>@details</p>
 <p>步骤：</p>
 <ol>
-<li>请求是可变的，缓存策略要每次都从服务器加载</li>
-<li>每次得到响应后，需要记录住 LastModified</li>
+<li><p>请求是可变的，缓存策略要每次都从服务器加载</p>
+</li>
+<li><p>每次得到响应后，需要记录住 LastModified</p>
+</li>
 <li><p>下次发送请求的同时，将LastModified一起发送给服务器（由服务器比较内容是否发生变化）</p>
-<p> @return 图片资源<br> */</p>
+<p> @return 图片资源<br> *&#x2F;</p>
 <ul>
-<li><p>(void)getData:(GetDataCompletion)completion {<br> NSURL <em>url = [NSURL URLWithString:kLastModifiedImageURL];<br> NSMutableURLRequest </em>request = [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15.0];</p>
-<p> //    // 发送 etag<br> //    if (self.etag.length &gt; 0) {<br> //        [request setValue:self.etag forHTTPHeaderField:@”If-None-Match”];<br> //    }<br> // 发送 LastModified<br> if (self.localLastModified.length &gt; 0) {</p>
-<pre><code>[request setValue:self.localLastModified forHTTPHeaderField:@&quot;If-Modified-Since&quot;];
-</code></pre><p> }</p>
-<p> [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData <em>data, NSURLResponse </em>response, NSError *error) {</p>
-<pre><code>// NSLog(@&quot;%@ %tu&quot;, response, data.length);
-// 类型转换（如果将父类设置给子类，需要强制转换）
-NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-NSLog(@&quot;statusCode == %@&quot;, @(httpResponse.statusCode));
-// 判断响应的状态码是否是 304 Not Modified （更多状态码含义解释： https://github.com/ChenYilong/iOSDevelopmentTips）
-if (httpResponse.statusCode == 304) {
-    NSLog(@&quot;加载本地缓存图片&quot;);
-    // 如果是，使用本地缓存
-    // 根据请求获取到`被缓存的响应`！
-    NSCachedURLResponse *cacheResponse =  [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
-    // 拿到缓存的数据
-    data = cacheResponse.data;
-}
-
-// 获取并且纪录 etag，区分大小写
-//        self.etag = httpResponse.allHeaderFields[@&quot;Etag&quot;];
-// 获取并且纪录 LastModified
-self.localLastModified = httpResponse.allHeaderFields[@&quot;Last-Modified&quot;];
-//        NSLog(@&quot;%@&quot;, self.etag);
-NSLog(@&quot;%@&quot;, self.localLastModified);
-dispatch_async(dispatch_get_main_queue(), ^{
-    !completion ?: completion(data);
-});
-</code></pre><p> }] resume];<br>}</p>
+<li><p>(void)getData:(GetDataCompletion)completion {<br> NSURL *url &#x3D; [NSURL URLWithString:kLastModifiedImageURL];<br> NSMutableURLRequest *request &#x3D; [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:15.0];</p>
+<p> &#x2F;&#x2F;    &#x2F;&#x2F; 发送 etag<br> &#x2F;&#x2F;    if (self.etag.length &gt; 0) {<br> &#x2F;&#x2F;        [request setValue:self.etag forHTTPHeaderField:@”If-None-Match”];<br> &#x2F;&#x2F;    }<br> &#x2F;&#x2F; 发送 LastModified<br> if (self.localLastModified.length &gt; 0) {<br> [request setValue:self.localLastModified forHTTPHeaderField:@”If-Modified-Since”];<br> }</p>
+<p> [[[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {</p>
+<pre><code> // NSLog(@&quot;%@ %tu&quot;, response, data.length);
+ // 类型转换（如果将父类设置给子类，需要强制转换）
+ NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+ NSLog(@&quot;statusCode == %@&quot;, @(httpResponse.statusCode));
+ // 判断响应的状态码是否是 304 Not Modified （更多状态码含义解释： https://github.com/ChenYilong/iOSDevelopmentTips）
+ if (httpResponse.statusCode == 304) &#123;
+     NSLog(@&quot;加载本地缓存图片&quot;);
+     // 如果是，使用本地缓存
+     // 根据请求获取到`被缓存的响应`！
+     NSCachedURLResponse *cacheResponse =  [[NSURLCache sharedURLCache] cachedResponseForRequest:request];
+     // 拿到缓存的数据
+     data = cacheResponse.data;
+ &#125;
+ 
+ // 获取并且纪录 etag，区分大小写
+ //        self.etag = httpResponse.allHeaderFields[@&quot;Etag&quot;];
+ // 获取并且纪录 LastModified
+ self.localLastModified = httpResponse.allHeaderFields[@&quot;Last-Modified&quot;];
+ //        NSLog(@&quot;%@&quot;, self.etag);
+ NSLog(@&quot;%@&quot;, self.localLastModified);
+ dispatch_async(dispatch_get_main_queue(), ^&#123;
+     !completion ?: completion(data);
+ &#125;);
+</code></pre>
+<p> }] resume];</p>
 </li>
 </ul>
+<p> }</p>
 </li>
 </ol>
 <h3 id="ETag"><a href="#ETag" class="headerlink" title="ETag"></a>ETag</h3><p>ETag 是什么？</p>
@@ -745,37 +729,41 @@ dispatch_async(dispatch_get_main_queue(), ^{
 客户端的查询更新格式是这样的：
 
 If-None-Match: W/&quot;50b1c1d4f775c61:df3&quot;
-</code></pre><p>其中：</p>
+</code></pre>
+<p>其中：</p>
 <p>If-None-Match - 与响应头的 Etag 相对应，可以判断本地缓存数据是否发生变化</p>
 <pre><code>如果ETag没改变，则返回状态304然后不返回，这也和Last-Modified一样。
-</code></pre><p>ETag 是的功能与 Last-Modified 类似：服务端不会每次都会返回文件资源。客户端每次向服务端发送上次服务器返回的 ETag 值，服务器会根据客户端与服务端的  ETag 值是否相等，来决定是否返回 data，同时总是返回对应的 HTTP 状态码。客户端通过 HTTP 状态码来决定是否使用缓存。比如：服务端与客户端的 ETag 值相等，则 HTTP 状态码为 304，不返回 data。服务端文件一旦修改，服务端与客户端的 ETag 值不等，并且状态值会变为200，同时返回 data。</p>
+</code></pre>
+<p>ETag 是的功能与 Last-Modified 类似：服务端不会每次都会返回文件资源。客户端每次向服务端发送上次服务器返回的 ETag 值，服务器会根据客户端与服务端的  ETag 值是否相等，来决定是否返回 data，同时总是返回对应的 HTTP 状态码。客户端通过 HTTP 状态码来决定是否使用缓存。比如：服务端与客户端的 ETag 值相等，则 HTTP 状态码为 304，不返回 data。服务端文件一旦修改，服务端与客户端的 ETag 值不等，并且状态值会变为200，同时返回 data。</p>
 <p>因为修改资源文件后该值会立即变更。这也决定了 ETag 在断点下载时非常有用。<br>比如 AFNetworking 在进行断点下载时，就是借助它来检验数据的。详见在 AFHTTPRequestOperation 类中的用法:</p>
 <pre><code>//下载暂停时提供断点续传功能，修改请求的HTTP头，记录当前下载的文件位置，下次可以从这个位置开始下载。
-- (void)pause {
+- (void)pause &#123;
    unsigned long long offset = 0;
-   if ([self.outputStream propertyForKey:NSStreamFileCurrentOffsetKey]) {
+   if ([self.outputStream propertyForKey:NSStreamFileCurrentOffsetKey]) &#123;
        offset = [[self.outputStream propertyForKey:NSStreamFileCurrentOffsetKey] unsignedLongLongValue];
-   } else {
+   &#125; else &#123;
        offset = [[self.outputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey] length];
-   }
+   &#125;
 
    NSMutableURLRequest *mutableURLRequest = [self.request mutableCopy];
-   if ([self.response respondsToSelector:@selector(allHeaderFields)] &amp;&amp; [[self.response allHeaderFields] valueForKey:@&quot;ETag&quot;]) {
+   if ([self.response respondsToSelector:@selector(allHeaderFields)] &amp;&amp; [[self.response allHeaderFields] valueForKey:@&quot;ETag&quot;]) &#123;
    //若请求返回的头部有ETag，则续传时要带上这个ETag，
    //ETag用于放置文件的唯一标识，比如文件MD5值
    //续传时带上ETag服务端可以校验相对上次请求，文件有没有变化，
    //若有变化则返回200，回应新文件的全数据，若无变化则返回206续传。
        [mutableURLRequest setValue:[[self.response allHeaderFields] valueForKey:@&quot;ETag&quot;] forHTTPHeaderField:@&quot;If-Range&quot;];
-   }
+   &#125;
    //给当前request加Range头部，下次请求带上头部，可以从offset位置继续下载
    [mutableURLRequest setValue:[NSString stringWithFormat:@&quot;bytes=%llu-&quot;, offset] forHTTPHeaderField:@&quot;Range&quot;];
    self.request = mutableURLRequest;
 
    [super pause];
-}
-</code></pre><p>七牛等第三方文件存储商现在都已经支持ETag，Demo8和9 中给出的演示图片就是使用的七牛的服务，见：</p>
+&#125;
+</code></pre>
+<p>七牛等第三方文件存储商现在都已经支持ETag，Demo8和9 中给出的演示图片就是使用的七牛的服务，见：</p>
 <pre><code>static NSString *const kETagImageURL = @&quot;http://ac-g3rossf7.clouddn.com/xc8hxXBbXexA8LpZEHbPQVB.jpg&quot;;
 </code></pre>
+
       
 
       
@@ -798,7 +786,7 @@ If-None-Match: W/&quot;50b1c1d4f775c61:df3&quot;
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/使用两行代码就能完成80%的缓存需求 /">展开全文 >></a>
+          <a class="article-more-a" href="/2018/11/27/%7F($L%EF%BF%BD%011%EF%BF%BD%EF%BF%BD%1080%25%EF%BF%BD%13X%00B%20/">展开全文 >></a>
         </p>
       
 
@@ -835,12 +823,12 @@ If-None-Match: W/&quot;50b1c1d4f775c61:df3&quot;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/">避免使用 GCD Global队列创建Runloop常驻线程</a>
+      <a class="article-title" href="/2018/11/27/%E9%81%BF%E5%85%8D%E4%BD%BF%E7%94%A8%20GCD%20Global%E9%98%9F%E5%88%97%E5%88%9B%E5%BB%BARunloop%E5%B8%B8%E9%A9%BB%E7%BA%BF%E7%A8%8B/">避免使用 GCD Global队列创建Runloop常驻线程</a>
     </h1>
   
 
         
-        <a href="/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/" class="archive-article-date">
+        <a href="/2018/11/27/%E9%81%BF%E5%85%8D%E4%BD%BF%E7%94%A8%20GCD%20Global%E9%98%9F%E5%88%97%E5%88%9B%E5%BB%BARunloop%E5%B8%B8%E9%A9%BB%E7%BA%BF%E7%A8%8B/" class="archive-article-date">
   	<time datetime="2018-11-27T06:10:53.369Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -854,26 +842,27 @@ If-None-Match: W/&quot;50b1c1d4f775c61:df3&quot;
 <p>如果全局队列对应的线程池如果满了，后续的派发的任务会怎么处置？有什么风险？</p>
 <p>答案大致是这样的：</p>
 <p>dispatch_async 函数分发到全局队列不一定会新建线程执行任务，全局队列底层有一个的线程池，如果线程池满了，那么后续的任务会被 block 住，等待前面的任务执行完成，才会继续执行。如果线程池中的线程长时间不结束，后续堆积的任务会越来越多，此时就会存在 APP crash的风险。</p>
-<pre><code>- (void)dispatchTest1 {
-    for (NSInteger i = 0; i&lt; 10000 ; i++) {
-dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+<pre><code>- (void)dispatchTest1 &#123;
+    for (NSInteger i = 0; i&lt; 10000 ; i++) &#123;
+dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;
             [self dispatchTask:i];
-        });
-    }
-}
+        &#125;);
+    &#125;
+&#125;
 
-- (void)dispatchTask:(NSInteger)index {
+- (void)dispatchTask:(NSInteger)index &#123;
         //模拟耗时操作，比如DB,网络，文件读写等等
         sleep(30);
         NSLog(@&quot;----:%ld&quot;,index);
-}
-</code></pre><p>以上逻辑用真机测试会有卡死的几率，并非每次都会发生，但多尝试几次就会复现，伴随前后台切换，crash几率增大。</p>
+&#125;
+</code></pre>
+<p>以上逻辑用真机测试会有卡死的几率，并非每次都会发生，但多尝试几次就会复现，伴随前后台切换，crash几率增大。</p>
 <p>下面做一下分析：</p>
 <p>参看 GCD 源码我们可以看到全局队列的相关源码如下：</p>
 <pre><code>DISPATCH_NOINLINE
 static void
 _dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
-{
+&#123;
    dispatch_root_queue_context_t qc = dq-&gt;do_ctxt;
    uint32_t i = n;
    int r;
@@ -886,92 +875,94 @@ _dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
 #if DISPATCH_USE_PTHREAD_POOL
    if (qc-&gt;dgq_kworkqueue != (void*)(~0ul))
 #endif
-   {
+   &#123;
        _dispatch_root_queue_debug(&quot;requesting new worker thread for global &quot;
                &quot;queue: %p&quot;, dq);
 #if DISPATCH_USE_LEGACY_WORKQUEUE_FALLBACK
-       if (qc-&gt;dgq_kworkqueue) {
+       if (qc-&gt;dgq_kworkqueue) &#123;
            pthread_workitem_handle_t wh;
            unsigned int gen_cnt;
-           do {
+           do &#123;
                r = pthread_workqueue_additem_np(qc-&gt;dgq_kworkqueue,
                        _dispatch_worker_thread4, dq, &amp;wh, &amp;gen_cnt);
                (void)dispatch_assume_zero(r);
-           } while (--i);
+           &#125; while (--i);
            return;
-       }
+       &#125;
 #endif // DISPATCH_USE_LEGACY_WORKQUEUE_FALLBACK
 #if HAVE_PTHREAD_WORKQUEUE_SETDISPATCH_NP
-       if (!dq-&gt;dq_priority) {
+       if (!dq-&gt;dq_priority) &#123;
            r = pthread_workqueue_addthreads_np(qc-&gt;dgq_wq_priority,
                    qc-&gt;dgq_wq_options, (int)i);
            (void)dispatch_assume_zero(r);
            return;
-       }
+       &#125;
 #endif
 #if HAVE_PTHREAD_WORKQUEUE_QOS
        r = _pthread_workqueue_addthreads((int)i, dq-&gt;dq_priority);
        (void)dispatch_assume_zero(r);
 #endif
        return;
-   }
+   &#125;
 #endif // HAVE_PTHREAD_WORKQUEUES
 #if DISPATCH_USE_PTHREAD_POOL
    dispatch_pthread_root_queue_context_t pqc = qc-&gt;dgq_ctxt;
-   if (fastpath(pqc-&gt;dpq_thread_mediator.do_vtable)) {
-       while (dispatch_semaphore_signal(&amp;pqc-&gt;dpq_thread_mediator)) {
-           if (!--i) {
+   if (fastpath(pqc-&gt;dpq_thread_mediator.do_vtable)) &#123;
+       while (dispatch_semaphore_signal(&amp;pqc-&gt;dpq_thread_mediator)) &#123;
+           if (!--i) &#123;
                return;
-           }
-       }
-   }
+           &#125;
+       &#125;
+   &#125;
    uint32_t j, t_count;
    // seq_cst with atomic store to tail &lt;rdar://problem/16932833&gt;
    t_count = dispatch_atomic_load2o(qc, dgq_thread_pool_size, seq_cst);
-   do {
-       if (!t_count) {
+   do &#123;
+       if (!t_count) &#123;
            _dispatch_root_queue_debug(&quot;pthread pool is full for root queue: &quot;
                    &quot;%p&quot;, dq);
            return;
-       }
+       &#125;
        j = i &gt; t_count ? t_count : i;
-   } while (!dispatch_atomic_cmpxchgvw2o(qc, dgq_thread_pool_size, t_count,
+   &#125; while (!dispatch_atomic_cmpxchgvw2o(qc, dgq_thread_pool_size, t_count,
            t_count - j, &amp;t_count, acquire));
 
    pthread_attr_t *attr = &amp;pqc-&gt;dpq_thread_attr;
    pthread_t tid, *pthr = &amp;tid;
 #if DISPATCH_ENABLE_PTHREAD_ROOT_QUEUES
-   if (slowpath(dq == &amp;_dispatch_mgr_root_queue)) {
+   if (slowpath(dq == &amp;_dispatch_mgr_root_queue)) &#123;
        pthr = _dispatch_mgr_root_queue_init();
-   }
+   &#125;
 #endif
-   do {
+   do &#123;
        _dispatch_retain(dq);
-       while ((r = pthread_create(pthr, attr, _dispatch_worker_thread, dq))) {
-           if (r != EAGAIN) {
+       while ((r = pthread_create(pthr, attr, _dispatch_worker_thread, dq))) &#123;
+           if (r != EAGAIN) &#123;
                (void)dispatch_assume_zero(r);
-           }
+           &#125;
            _dispatch_temporary_resource_shortage();
-       }
-   } while (--j);
+       &#125;
+   &#125; while (--j);
 #endif // DISPATCH_USE_PTHREAD_POOL
-}
-</code></pre><p>对于执行的任务来说，所执行的线程具体是哪个线程，则是通过 GCD 的线程池（Thread Pool）来进行调度</p>
+&#125;
+</code></pre>
+<p>对于执行的任务来说，所执行的线程具体是哪个线程，则是通过 GCD 的线程池（Thread Pool）来进行调度</p>
 <p>上面贴的源码，我们关注如下的部分：</p>
 <p>其中有一个用来记录线程池大小的字段 dgq_thread_pool_size。这个字段标记着GCD线程池的大小。摘录上面源码的一部分：</p>
 <pre><code>uint32_t j, t_count;
   // seq_cst with atomic store to tail &lt;rdar://problem/16932833&gt;
   t_count = dispatch_atomic_load2o(qc, dgq_thread_pool_size, seq_cst);
-  do {
-      if (!t_count) {
+  do &#123;
+      if (!t_count) &#123;
           _dispatch_root_queue_debug(&quot;pthread pool is full for root queue: &quot;
                   &quot;%p&quot;, dq);
           return;
-      }
+      &#125;
       j = i &gt; t_count ? t_count : i;
-  } while (!dispatch_atomic_cmpxchgvw2o(qc, dgq_thread_pool_size, t_count,
+  &#125; while (!dispatch_atomic_cmpxchgvw2o(qc, dgq_thread_pool_size, t_count,
           t_count - j, &amp;t_count, acquire));
-</code></pre><p>全局队列的底层是一个线程池，向全局队列中提交的 block，都会被放到这个线程池中执行，如果线程池已满，后续再提交 block 就不会再重新创建线程。这就是为什么 Demo 会造成卡顿甚至冻屏的原因。</p>
+</code></pre>
+<p>全局队列的底层是一个线程池，向全局队列中提交的 block，都会被放到这个线程池中执行，如果线程池已满，后续再提交 block 就不会再重新创建线程。这就是为什么 Demo 会造成卡顿甚至冻屏的原因。</p>
 <h2 id="避免使用-GCD-Global-队列创建-Runloop-常驻线程"><a href="#避免使用-GCD-Global-队列创建-Runloop-常驻线程" class="headerlink" title="避免使用 GCD Global 队列创建 Runloop 常驻线程"></a>避免使用 GCD Global 队列创建 Runloop 常驻线程</h2><p>在做网路请求时我们常常创建一个 Runloop 常驻线程用来接收、响应后续的服务端回执，比如NSURLConnection、AFNetworking等等，我们可以称这种线程为 Runloop 常驻线程。</p>
 <p>正如上文所述，用 GCD Global 队列创建线程进行耗时操作是存在风险的。那么我们可以试想下，如果这个耗时操作变成了 runloop 常驻线程，会是什么结果？下面做一下分析：</p>
 <p>先介绍下 Runloop 常驻线程的原理，在开发中一般有两种用法：</p>
@@ -983,109 +974,113 @@ _dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
 </ul>
 <h2 id="单一-Runloop-常驻线程"><a href="#单一-Runloop-常驻线程" class="headerlink" title="单一 Runloop 常驻线程"></a>单一 Runloop 常驻线程</h2><p>先说第一种用法：</p>
 <p>以 AFNetworking 为例，AFURLConnectionOperation 这个类是基于 NSURLConnection 构建的，其希望能在后台线程接收 Delegate 回调。为此 AFNetworking 单独创建了一个线程，并在这个线程中启动了一个 RunLoop：</p>
-<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object {
-    @autoreleasepool {
+<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object &#123;
+    @autoreleasepool &#123;
         [[NSThread currentThread] setName:@&quot;AFNetworking&quot;];
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
         [runLoop run];
-    }
-}
-
-+ (NSThread *)networkRequestThread {
+    &#125;
+&#125;
+ 
++ (NSThread *)networkRequestThread &#123;
     static NSThread *_networkRequestThread = nil;
     static dispatch_once_t oncePredicate;
-    dispatch_once(&amp;oncePredicate, ^{
+    dispatch_once(&amp;oncePredicate, ^&#123;
         _networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];
         [_networkRequestThread start];
-    });
+    &#125;);
     return _networkRequestThread;
-}
-</code></pre><h2 id="多个-Runloop-常驻线程"><a href="#多个-Runloop-常驻线程" class="headerlink" title="多个 Runloop 常驻线程"></a>多个 Runloop 常驻线程</h2><p>第二种用法，我写了一个小 Demo 来模拟这种场景，</p>
+&#125;
+</code></pre>
+<h2 id="多个-Runloop-常驻线程"><a href="#多个-Runloop-常驻线程" class="headerlink" title="多个 Runloop 常驻线程"></a>多个 Runloop 常驻线程</h2><p>第二种用法，我写了一个小 Demo 来模拟这种场景，</p>
 <p>我们模拟了一个场景：假设所有的网络请求全部超时，或者服务端根本不响应，然后网络库超时检测机制的做法：</p>
 <pre><code>#import &quot;Foo.h&quot;
 
-@interface Foo()  {
+@interface Foo()  &#123;
     NSRunLoop *_runloop;
     NSTimer *_timeoutTimer;
     NSTimeInterval _timeoutInterval;
     dispatch_semaphore_t _sem;
-}
+&#125;
 @end
 
 @implementation Foo
 
-- (instancetype)init {
-    if (!(self = [super init])) {
+- (instancetype)init &#123;
+    if (!(self = [super init])) &#123;
         return nil;
-    }
+    &#125;
     _timeoutInterval = 1 ;
     _sem = dispatch_semaphore_create(0);
     // Do any additional setup after loading the view, typically from a nib.
     return self;
-}
+&#125;
 
-- (id)test {
+- (id)test &#123;
     // 第一种方式：
     // NSThread *networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint0:) object:nil];
     // [networkRequestThread start];
     //第二种方式:
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) &#123;
         [self networkRequestThreadEntryPoint0:nil];
-    });
+    &#125;);
     dispatch_semaphore_wait(_sem, DISPATCH_TIME_FOREVER);
     return @(YES);
-}
+&#125;
 
-- (void)networkRequestThreadEntryPoint0:(id)__unused object {
-    @autoreleasepool {
+- (void)networkRequestThreadEntryPoint0:(id)__unused object &#123;
+    @autoreleasepool &#123;
         [[NSThread currentThread] setName:@&quot;CYLTest&quot;];
         _runloop = [NSRunLoop currentRunLoop];
         [_runloop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
         _timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(stopLoop) userInfo:nil repeats:NO];
         [_runloop addTimer:_timeoutTimer forMode:NSRunLoopCommonModes];
         [_runloop run];//在实际开发中最好使用这种方式来确保能runloop退出，做双重的保障[runloop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:(timeoutInterval+5)]];
-    }
-}
+    &#125;
+&#125;
 
-- (void)stopLoop {
+- (void)stopLoop &#123;
     CFRunLoopStop([_runloop getCFRunLoop]);
     dispatch_semaphore_signal(_sem);
-}
+&#125;
 
 @end
-</code></pre><p>如果</p>
-<pre><code>for (int i = 0; i &lt; 300 ; i++) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+</code></pre>
+<p>如果</p>
+<pre><code>for (int i = 0; i &lt; 300 ; i++) &#123;
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) &#123;
             [[Foo new] test];
             NSLog(@&quot;🔴类名与方法名：%@（在第%@行），描述：%@&quot;, @(__PRETTY_FUNCTION__), @(__LINE__), @&quot;&quot;);
-        });
-    }
-</code></pre><p>以上逻辑用真机测试会有卡死的几率，并非每次都会发生，但多尝试几次就会复现，伴随前后台切换，crash几率增大。</p>
+        &#125;);
+    &#125;
+</code></pre>
+<p>以上逻辑用真机测试会有卡死的几率，并非每次都会发生，但多尝试几次就会复现，伴随前后台切换，crash几率增大。</p>
 <p>其中我们采用了 GCD 全局队列的方式来创建常驻线程，因为在创建时可能已经出现了全局队列的线程池满了的情况，所以 GCD 派发的任务，无法执行，而且我们把超时检测的逻辑放进了这个任务中，所以导致的情况就是，有很多任务的超时检测功能失效了。此时就只能依赖于服务端响应来结束该任务（服务端响应能结束该任务的逻辑在 Demo 中未给出），但是如果再加之服务端不响应，那么任务就永远不会结束。后续的网络请求也会就此 block 住，造成 crash。</p>
 <p>如果我们把 GCD 全局队列换成 NSThread 的方式，那么就可以保证每次都会创建新的线程。</p>
 <p>注意：文章中只演示的是超时 cancel runloop 的操作，实际项目中一定有其他主动 cancel runloop 的操作，就比如网络请求成功或失败后需要进行cancel操作。代码中没有展示网络请求成功或失败后的 cancel 操作。</p>
 <p>Demo 的这种模拟可能比较极端，但是如果你维护的是一个像 AFNetworking 这样的一个网络库，你会放心把创建常驻线程这样的操作交给 GCD 全局队列吗？因为整个 APP 是在共享一个全局队列的线程池，那么如果 APP 把线程池沾满了，甚至线程池长时间占满且不结束，那么 AFNetworking 就自然不能再执行任务了，所以我们看到，即使是只会创建一条常驻线程， AFNetworking 依然采用了 NSThread 的方式而非 GCD 全局队列这种方式。</p>
 <p>注释：以下方法存在于老版本AFN 2.x 中。</p>
-<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object {
-    @autoreleasepool {
+<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object &#123;
+    @autoreleasepool &#123;
         [[NSThread currentThread] setName:@&quot;AFNetworking&quot;];
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
         [runLoop run];
-    }
-}
-
-+ (NSThread *)networkRequestThread {
+    &#125;
+&#125;
+ 
++ (NSThread *)networkRequestThread &#123;
     static NSThread *_networkRequestThread = nil;
     static dispatch_once_t oncePredicate;
-    dispatch_once(&amp;oncePredicate, ^{
+    dispatch_once(&amp;oncePredicate, ^&#123;
         _networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];
         [_networkRequestThread start];
-    });
+    &#125;);
     return _networkRequestThread;
-}
-</code></pre><p>正如你所看到的，没有任何一个库会用 GCD 全局队列来创建常驻线程，而你也应该</p>
+&#125;
+</code></pre>
+<p>正如你所看到的，没有任何一个库会用 GCD 全局队列来创建常驻线程，而你也应该</p>
 <p>避免使用 GCD Global 队列来创建 Runloop 常驻线程。</p>
 
       
@@ -1110,7 +1105,7 @@ _dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/避免使用 GCD Global队列创建Runloop常驻线程/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/11/27/%E9%81%BF%E5%85%8D%E4%BD%BF%E7%94%A8%20GCD%20Global%E9%98%9F%E5%88%97%E5%88%9B%E5%BB%BARunloop%E5%B8%B8%E9%A9%BB%E7%BA%BF%E7%A8%8B/">展开全文 >></a>
         </p>
       
 
@@ -1147,12 +1142,12 @@ _dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/">iOS子线程更新UI到主线程的三种方法</a>
+      <a class="article-title" href="/2018/11/27/iOS%E5%AD%90%E7%BA%BF%E7%A8%8B%E6%9B%B4%E6%96%B0UI%E5%88%B0%E4%B8%BB%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95/">iOS子线程更新UI到主线程的三种方法</a>
     </h1>
   
 
         
-        <a href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/" class="archive-article-date">
+        <a href="/2018/11/27/iOS%E5%AD%90%E7%BA%BF%E7%A8%8B%E6%9B%B4%E6%96%B0UI%E5%88%B0%E4%B8%BB%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95/" class="archive-article-date">
   	<time datetime="2018-11-27T06:00:05.548Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -1164,23 +1159,24 @@ _dispatch_queue_wakeup_global_slow(dispatch_queue_t dq, unsigned int n)
 <pre><code>// 1.NSThread
 [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
 
-- (void)updateUI {
+- (void)updateUI &#123;
     // UI更新代码
     self.alert.text = @&quot;Thanks!&quot;;
-}
+&#125;
 
 // 2.NSOperationQueue
-[[NSOperationQueue mainQueue] addOperationWithBlock:^{
+[[NSOperationQueue mainQueue] addOperationWithBlock:^&#123;
     // UI更新代码
     self.alert.text = @&quot;Thanks!&quot;;
-    }];
+    &#125;];
 
 // 3.GCD
-dispatch_async(dispatch_get_main_queue(), ^{
+dispatch_async(dispatch_get_main_queue(), ^&#123;
    // UI更新代码
    self.alert.text = @&quot;Thanks!&quot;;
-});
-</code></pre><p>看下面的例子： </p>
+&#125;);
+</code></pre>
+<p>看下面的例子： </p>
 <p>以下代码有什么问题？如何修复？</p>
 <pre><code>@interface TTWaitController : UIViewController
 
@@ -1191,7 +1187,7 @@ dispatch_async(dispatch_get_main_queue(), ^{
 @implementation TTWaitController
 
 - (void)viewDidLoad
-{
+&#123;
     CGRect frame = CGRectMake(20, 200, 200, 20);
     self.alert = [[UILabel alloc] initWithFrame:frame];
     self.alert.text = @&quot;Please wait 10 seconds...&quot;;
@@ -1199,11 +1195,11 @@ dispatch_async(dispatch_get_main_queue(), ^{
     [self.view addSubview:self.alert];
 
     NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
-    [waitQueue addOperationWithBlock:^{
+    [waitQueue addOperationWithBlock:^&#123;
         [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
         self.alert.text = @&quot;Thanks!&quot;;
-    }];
-}
+    &#125;];
+&#125;
 
 @end
 
@@ -1211,44 +1207,48 @@ dispatch_async(dispatch_get_main_queue(), ^{
 
 - (BOOL)application:(UIApplication *)application
   didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+&#123;
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = [[TTWaitController alloc] init];
     [self.window makeKeyAndVisible];
     return YES;
-}
-</code></pre><p>这段代码是想提醒用户等待10s，10s后在标签上显示“Thanks”，但多线程代码部分NSOperationQueue的addOperationWithBlock函数不能保证block里面的语句是在主线程中运行的，UILabel显示文字属于UI更新，必须要在主线程进行，否则会有未知的操作，无法在界面上及时正常显示。</p>
+&#125;
+</code></pre>
+<p>这段代码是想提醒用户等待10s，10s后在标签上显示“Thanks”，但多线程代码部分NSOperationQueue的addOperationWithBlock函数不能保证block里面的语句是在主线程中运行的，UILabel显示文字属于UI更新，必须要在主线程进行，否则会有未知的操作，无法在界面上及时正常显示。</p>
 <p>解决方法是将UI更新的代码写在主线程上即可，代码同步到主线程上主要有三种方法：NSThread、NSOperationQueue和GCD，三个层次的多线程都可以获取主线程并同步。</p>
 <h4 id="NSThread级主线程同步：performSelectorOnMainThread"><a href="#NSThread级主线程同步：performSelectorOnMainThread" class="headerlink" title="NSThread级主线程同步：performSelectorOnMainThread"></a>NSThread级主线程同步：performSelectorOnMainThread</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
-[waitQueue addOperationWithBlock:^{
+[waitQueue addOperationWithBlock:^&#123;
     [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
     // 同步到主线程
     [self performSelectorOnMainThread:@selector(updateUI) withObject:nil waitUntilDone:NO];
-}];
+&#125;];
 
 /**
  * UI更新函数
  */
-- (void)updateUI {
+- (void)updateUI &#123;
     self.alert.text = @&quot;Thanks!&quot;;
-}
-</code></pre><h4 id="NSOperationQueue级主线程同步：-NSOperationQueue-mainQueue"><a href="#NSOperationQueue级主线程同步：-NSOperationQueue-mainQueue" class="headerlink" title="NSOperationQueue级主线程同步：[NSOperationQueue mainQueue]"></a>NSOperationQueue级主线程同步：[NSOperationQueue mainQueue]</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
-[waitQueue addOperationWithBlock:^{
+&#125;
+</code></pre>
+<h4 id="NSOperationQueue级主线程同步：-NSOperationQueue-mainQueue"><a href="#NSOperationQueue级主线程同步：-NSOperationQueue-mainQueue" class="headerlink" title="NSOperationQueue级主线程同步：[NSOperationQueue mainQueue]"></a>NSOperationQueue级主线程同步：[NSOperationQueue mainQueue]</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
+[waitQueue addOperationWithBlock:^&#123;
     [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:10]];
     // 同步到主线程
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^&#123;
         self.alert.text = @&quot;Thanks!&quot;;
-    }];
-}];
-</code></pre><h4 id="GCD级主线程同步：dispatch-get-main-queue"><a href="#GCD级主线程同步：dispatch-get-main-queue" class="headerlink" title="GCD级主线程同步：dispatch_get_main_queue"></a>GCD级主线程同步：dispatch_get_main_queue</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
-[waitQueue addOperationWithBlock:^{
+    &#125;];
+&#125;];
+</code></pre>
+<h4 id="GCD级主线程同步：dispatch-get-main-queue"><a href="#GCD级主线程同步：dispatch-get-main-queue" class="headerlink" title="GCD级主线程同步：dispatch_get_main_queue"></a>GCD级主线程同步：dispatch_get_main_queue</h4><pre><code>NSOperationQueue *waitQueue = [[NSOperationQueue alloc] init];
+[waitQueue addOperationWithBlock:^&#123;
     [NSThread sleepUntilDate:[NSDate dateWithTimeIntervalSinceNow:3]];
     // 同步到主线程
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_async(dispatch_get_main_queue(), ^&#123;
         self.alert.text = @&quot;Thanks!&quot;;
-    });
-}];
+    &#125;);
+&#125;];
 </code></pre>
+
       
 
       
@@ -1271,7 +1271,7 @@ dispatch_async(dispatch_get_main_queue(), ^{
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/iOS子线程更新UI到主线程的三种方法/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/11/27/iOS%E5%AD%90%E7%BA%BF%E7%A8%8B%E6%9B%B4%E6%96%B0UI%E5%88%B0%E4%B8%BB%E7%BA%BF%E7%A8%8B%E7%9A%84%E4%B8%89%E7%A7%8D%E6%96%B9%E6%B3%95/">展开全文 >></a>
         </p>
       
 
@@ -1308,12 +1308,12 @@ dispatch_async(dispatch_get_main_queue(), ^{
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/利用消息转发机制防止Crach/">利用消息转发机制与Try Catch代码块防止崩溃</a>
+      <a class="article-title" href="/2018/11/27/%E5%88%A9%E7%94%A8%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E6%9C%BA%E5%88%B6%E9%98%B2%E6%AD%A2Crach/">利用消息转发机制与Try Catch代码块防止崩溃</a>
     </h1>
   
 
         
-        <a href="/2018/11/27/利用消息转发机制防止Crach/" class="archive-article-date">
+        <a href="/2018/11/27/%E5%88%A9%E7%94%A8%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E6%9C%BA%E5%88%B6%E9%98%B2%E6%AD%A2Crach/" class="archive-article-date">
   	<time datetime="2018-11-27T05:56:33.952Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -1325,19 +1325,23 @@ dispatch_async(dispatch_get_main_queue(), ^{
 <p>然而这种情况其实我们不仅可以避免而且我们可以做到更健壮的，尤其是开发过程中对于此种情况崩溃的定位是很有帮助的。</p>
 <p>首先说说消息转发机制：<br>程序在崩溃前系统会给你3次机会进行补救, 可以通过重写</p>
 <pre><code>+ (BOOL)resolveInstanceMethod:(SEL)aSEL
-</code></pre><p>也可以通过重写</p>
+</code></pre>
+<p>也可以通过重写</p>
 <pre><code>- (id)forwardingTargetForSelector:(SEL)aSelector
-</code></pre><p>还可以重写</p>
+</code></pre>
+<p>还可以重写</p>
 <pre><code>- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
 
 - (void)forwardInvocation:(NSInvocation *)invocation
-</code></pre><p>但是我们一般都是采用第三种模式。因为前两种方式信息量不够，它们只有一个SEL类型的参数, 也就是只能知道调用了哪个方法而不知道是谁调用的, 也就是不知道target是谁, 那么在这里去addMethod是没法做到通用的, 因为你连target都不知道.怎么能准确给出程序想要的去处呢! 而且, 实践时候发现forwardingTargetForSelector会拦截很多系统的方法, 可能是在这里进行重定向, 所以也不适合拦截这个方法.</p>
+</code></pre>
+<p>但是我们一般都是采用第三种模式。因为前两种方式信息量不够，它们只有一个SEL类型的参数, 也就是只能知道调用了哪个方法而不知道是谁调用的, 也就是不知道target是谁, 那么在这里去addMethod是没法做到通用的, 因为你连target都不知道.怎么能准确给出程序想要的去处呢! 而且, 实践时候发现forwardingTargetForSelector会拦截很多系统的方法, 可能是在这里进行重定向, 所以也不适合拦截这个方法.</p>
 <p>我们通过运行时的黑魔法来交换两个方法实现拦截系统的forwardInvocation和methodSignatureForSelector的目的。</p>
 <p>1.首先我们新建一个NSObject的Category<br>在.m文件中导入</p>
 <pre><code>#import &lt;objc/runtime.h&gt;
-</code></pre><p>然后开始你的表演</p>
+</code></pre>
+<p>然后开始你的表演</p>
 <pre><code>static NSString *errorMsg;
-void dynamicMethodIMP(id self,SEL _cmd){
+void dynamicMethodIMP(id self,SEL _cmd)&#123;
 
     NSString *error = [NSString stringWithFormat:@&quot;errorClass-&gt;:%@\n errorFuction-&gt;%@\n errorReason-&gt;UnRecognized Selector&quot;,NSStringFromClass([self class]),errorMsg];
 #ifdef DEBUG
@@ -1346,61 +1350,63 @@ void dynamicMethodIMP(id self,SEL _cmd){
     NSLog(@&quot;+++%@+++&quot;,error);
 #endif
 
-}
+&#125;
 #pragma mark 方法调换
-static inline void change_method(Class _originalClass ,SEL _originalSel,Class _newClass ,SEL _newSel){
+static inline void change_method(Class _originalClass ,SEL _originalSel,Class _newClass ,SEL _newSel)&#123;
     Method methodOriginal = class_getInstanceMethod(_originalClass, _originalSel);
     Method methodNew = class_getInstanceMethod(_newClass, _newSel);
     method_exchangeImplementations(methodOriginal, methodNew);
-}
+&#125;
 
 @implementation NSObject (UnRecognizedSelHandler)
-+ (void)load{
++ (void)load&#123;
 
     change_method([self class], @selector(methodSignatureForSelector:), [self class], @selector(GLL_methodSignatureForSelector:));
 
     change_method([self class], @selector(forwardInvocation:), [self class], @selector(GLL_forwardInvocation:));
-}
+&#125;
 
-- (NSMethodSignature *)GLL_methodSignatureForSelector:(SEL)aSelector{
-    if (![self respondsToSelector:aSelector]) {
+- (NSMethodSignature *)GLL_methodSignatureForSelector:(SEL)aSelector&#123;
+    if (![self respondsToSelector:aSelector]) &#123;
         errorMsg = NSStringFromSelector(aSelector);
         NSMethodSignature *methodSignature = [self GLL_methodSignatureForSelector:aSelector];
-        if (class_addMethod([self class], aSelector, (IMP)dynamicMethodIMP, &quot;v@:&quot;)) {//方法参数的获取存在问题
+        if (class_addMethod([self class], aSelector, (IMP)dynamicMethodIMP, &quot;v@:&quot;)) &#123;//方法参数的获取存在问题
             NSLog(@&quot;临时方法添加成功！&quot;);
-        }
-        if (!methodSignature) {
+        &#125;
+        if (!methodSignature) &#123;
             methodSignature = [self GLL_methodSignatureForSelector:aSelector];
-        }
+        &#125;
 
         return methodSignature;
 
-    }else{
+    &#125;else&#123;
         return [self GLL_methodSignatureForSelector:aSelector];
-    }
-}
+    &#125;
+&#125;
 
-- (void)GLL_forwardInvocation:(NSInvocation *)anInvocation{
+- (void)GLL_forwardInvocation:(NSInvocation *)anInvocation&#123;
     SEL selector = [anInvocation selector];
-    if ([self respondsToSelector:selector]) {
+    if ([self respondsToSelector:selector]) &#123;
         [anInvocation invokeWithTarget:self];
-    }else{
+    &#125;else&#123;
         [self GLL_forwardInvocation:anInvocation];
-    }
-}
-</code></pre><p>这样当你把这个文件导入到项目中之后，你再去点击一个按钮调用一个根本就不存在的方法，它会把错误日志NSLog出来。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>这样当你把这个文件导入到项目中之后，你再去点击一个按钮调用一个根本就不存在的方法，它会把错误日志NSLog出来。</p>
 <p>但是，假如你的问题依然没有解决的话那么请你接着往下看。</p>
 <p>消息转发机制虽然可以扑捉到根本就不存在或者说根本就没有声明的方法，但是当你点击按钮按钮调用一个已经声明却没有实现的方法的时候程序依然崩溃闪退了。于是你就莫名其妙不知道怎么处理了，所以你就用到了下面这个方法：Try Catch代码块。</p>
 <pre><code>语法：
 try
-{
+&#123;
     //有可能出现错误的代码写在这里
-}
+&#125;
 catch
-{
+&#123;
     //出错后的处理
-}
-</code></pre><p>如果try中的代码没有出错，则程序正常运行try中的内容后，不会执行catch中的内容，</p>
+&#125;
+</code></pre>
+<p>如果try中的代码没有出错，则程序正常运行try中的内容后，不会执行catch中的内容，</p>
 <p>如果try中的代码一但出错，程序立即跳入catch中去执行代码，那么try中出错代码后的所有代码就不再执行了.</p>
 <p>catch(…)能够捕获多种数据类型的异常对象，所以它提供给程序员一种对异常对象更好的控制手段，使开发的软件系统有很好的可靠性。因此一个比较有经验的程序员通常都会这样组织编写它的代码模块。</p>
 
@@ -1426,7 +1432,7 @@ catch
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/利用消息转发机制防止Crach/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/11/27/%E5%88%A9%E7%94%A8%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E6%9C%BA%E5%88%B6%E9%98%B2%E6%AD%A2Crach/">展开全文 >></a>
         </p>
       
 
@@ -1463,12 +1469,12 @@ catch
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/">理解 Swift 中的元类型：.Type 与 .self</a>
+      <a class="article-title" href="/2018/11/27/%E7%90%86%E8%A7%A3%20Swift%20%E4%B8%AD%E7%9A%84%E5%85%83%E7%B1%BB%E5%9E%8B%EF%BC%9A.Type%20%E4%B8%8E%20.self/">理解 Swift 中的元类型：.Type 与 .self</a>
     </h1>
   
 
         
-        <a href="/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/" class="archive-article-date">
+        <a href="/2018/11/27/%E7%90%86%E8%A7%A3%20Swift%20%E4%B8%AD%E7%9A%84%E5%85%83%E7%B1%BB%E5%9E%8B%EF%BC%9A.Type%20%E4%B8%8E%20.self/" class="archive-article-date">
   	<time datetime="2018-11-27T05:47:47.375Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -1480,80 +1486,95 @@ catch
 <p>比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的类型，术语表述为元类型：metaType。</p>
 <h3 id="Type-与-self"><a href="#Type-与-self" class="headerlink" title=".Type 与 .self"></a>.Type 与 .self</h3><p>Swift 中的元类型用 .Type 表示。比如 Int.Type 就是 Int 的元类型。 类型与值有着不同的形式，就像 Int 与 5 的关系。元类型也是类似，.Type 是类型，类型的 .self 是元类型的值。</p>
 <pre><code>let intMetatype: Int.Type = Int.self
-</code></pre><p>可能大家平时对元类型使用的比较少，加上这两个形式有一些接近，一个元类型只有一个对应的值，所以使用的时候常常写错：</p>
-<pre><code>types.append(Int.Type)
-types.append(Int.self)
-</code></pre><p>如果分清了 Int.Type 是类型的名称，不是值就不会再弄错了。因为你肯定不会这么写：</p>
+</code></pre>
+<p>可能大家平时对元类型使用的比较少，加上这两个形式有一些接近，一个元类型只有一个对应的值，所以使用的时候常常写错：</p>
+<pre><code> types.append(Int.Type)
+ types.append(Int.self)
+ 
+</code></pre>
+<p>如果分清了 Int.Type 是类型的名称，不是值就不会再弄错了。因为你肯定不会这么写：</p>
 <pre><code>numbers.append(Int)
-</code></pre><h3 id="AnyClass"><a href="#AnyClass" class="headerlink" title="AnyClass"></a>AnyClass</h3><p>获得元类型后可以访问静态变量和静态方法。其实我们经常使用元类型，只是有时 Xcode 帮我们隐藏了这些细节。比如我们经常用的 tableView 的一个方法：</p>
+</code></pre>
+<h3 id="AnyClass"><a href="#AnyClass" class="headerlink" title="AnyClass"></a>AnyClass</h3><p>获得元类型后可以访问静态变量和静态方法。其实我们经常使用元类型，只是有时 Xcode 帮我们隐藏了这些细节。比如我们经常用的 tableView 的一个方法：</p>
 <pre><code>func register(AnyClass?, forCellReuseIdentifier: String)
 
 tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cell&quot;)
-</code></pre><p>这里的 AnyClass 其实就是一个元类型：</p>
+</code></pre>
+<p>这里的 AnyClass 其实就是一个元类型：</p>
 <pre><code>typealias AnyClass = AnyObject.Type
-</code></pre><p>通过上面的定义我们可以知道，AnyClass 就是一个任意类型元类型的别名。 当我们访问静态变量的时候其实也是通过元类型的访问的，只是 Xcode 帮我们省略了 .self。下面两个写法是等价的。如果可以不引起歧义，我想没人会愿意多写一个 self。</p>
+</code></pre>
+<p>通过上面的定义我们可以知道，AnyClass 就是一个任意类型元类型的别名。 当我们访问静态变量的时候其实也是通过元类型的访问的，只是 Xcode 帮我们省略了 .self。下面两个写法是等价的。如果可以不引起歧义，我想没人会愿意多写一个 self。</p>
 <pre><code>Int.max
 Int.self.max
-</code></pre><h3 id="type-of-vs-self"><a href="#type-of-vs-self" class="headerlink" title="type(of:) vs .self"></a>type(of:) vs .self</h3><p>前面提到通过 type(of:) 和 .self都可以获得元类型的值。那么这两种方式的区别是什么呢？</p>
+</code></pre>
+<h3 id="type-of-vs-self"><a href="#type-of-vs-self" class="headerlink" title="type(of:) vs .self"></a>type(of:) vs .self</h3><p>前面提到通过 type(of:) 和 .self都可以获得元类型的值。那么这两种方式的区别是什么呢？</p>
 <pre><code>let instanceMetaType: String.Type = type(of: &quot;string&quot;)
 let staicMetaType: String.Type = String.self
-</code></pre><p>.self 取到的是静态的元类型，声明的时候是什么类型就是什么类型。type(of:) 取的是运行时候的元类型，也就是这个实例 的类型。</p>
+</code></pre>
+<p>.self 取到的是静态的元类型，声明的时候是什么类型就是什么类型。type(of:) 取的是运行时候的元类型，也就是这个实例 的类型。</p>
 <pre><code>let myNum: Any = 1 
 type(of: myNum) // Int.type
-</code></pre><h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>很多人对 Protocol 的元类型容易理解错。Protocol 自身不是一个类型，只有当一个对象实现了 protocol 后才有了类型对象。所以 Protocol.self 不等于 Protocol.Type。如果你写下面的代码会得到一个错误：</p>
-<pre><code>protocol MyProtocol { }
+</code></pre>
+<h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>很多人对 Protocol 的元类型容易理解错。Protocol 自身不是一个类型，只有当一个对象实现了 protocol 后才有了类型对象。所以 Protocol.self 不等于 Protocol.Type。如果你写下面的代码会得到一个错误：</p>
+<pre><code>protocol MyProtocol &#123; &#125;
 let metatype: MyProtocol.Type = MyProtocol.self
-</code></pre><p>正确的理解是 MyProtocol.Type 也是一个有效的元类型，那么就需要是一个可承载的类型的元类型。所以改成这样就可以了：</p>
-<pre><code>struct MyType: MyProtocol { }
+</code></pre>
+<p>正确的理解是 MyProtocol.Type 也是一个有效的元类型，那么就需要是一个可承载的类型的元类型。所以改成这样就可以了：</p>
+<pre><code>struct MyType: MyProtocol &#123; &#125;
 let metatype: MyProtocol.Type = MyType.self 
-</code></pre><p>那么 Protocol.self 是什么类型呢？为了满足你的好奇心苹果为你造了一个类型：</p>
+</code></pre>
+<p>那么 Protocol.self 是什么类型呢？为了满足你的好奇心苹果为你造了一个类型：</p>
 <pre><code>let protMetatype: MyProtocol.Protocol = MyProtocol.self
-</code></pre><h2 id="一个实战"><a href="#一个实战" class="headerlink" title="一个实战"></a>一个实战</h2><p>为了让大家能够熟悉元类型的使用我举一个例子。 假设我们有两个 Cell 类，想要一个工厂方法可以根据类型初始化对象。下面是两个 Cell 类：</p>
-<pre><code>protocol ContentCell { }
+</code></pre>
+<h2 id="一个实战"><a href="#一个实战" class="headerlink" title="一个实战"></a>一个实战</h2><p>为了让大家能够熟悉元类型的使用我举一个例子。 假设我们有两个 Cell 类，想要一个工厂方法可以根据类型初始化对象。下面是两个 Cell 类：</p>
+<pre><code>protocol ContentCell &#123; &#125;
 
-class IntCell: UIView, ContentCell {
-    required init(value: Int) {
+class IntCell: UIView, ContentCell &#123;
+    required init(value: Int) &#123;
         super.init(frame: CGRect.zero)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
+    &#125;
+    
+    required init?(coder aDecoder: NSCoder) &#123;
         fatalError(&quot;init(coder:) has not been implemented&quot;)
-    }
-}
+    &#125;
+&#125;
 
-class StringCell: UIView, ContentCell {
-    required init(value: String) {
+class StringCell: UIView, ContentCell &#123;
+    required init(value: String) &#123;
         super.init(frame: CGRect.zero)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
+    &#125;
+    
+    required init?(coder aDecoder: NSCoder) &#123;
         fatalError(&quot;init(coder:) has not been implemented&quot;)
-    }
-}
-</code></pre><p>工厂方法实现是这样的</p>
-<pre><code>func createCell(type: ContentCell.Type) -&gt; ContentCell? {
-    if let intCell = type as? IntCell.Type {
+    &#125;
+&#125;
+</code></pre>
+<p>工厂方法实现是这样的</p>
+<pre><code>func createCell(type: ContentCell.Type) -&gt; ContentCell? &#123;
+    if let intCell = type as? IntCell.Type &#123;
         return intCell.init(value: 5)
-    } else if let stringCell = type as? StringCell.Type {
+    &#125; else if let stringCell = type as? StringCell.Type &#123;
         return stringCell.init(value: &quot;xx&quot;)
-    }
+    &#125;
     return nil
-}
+&#125;
 
 let intCell = createCell(type: IntCell.self)
-</code></pre><p>当然我们也可以使用类型推断，再结合泛型来使用：</p>
-<pre><code>func createCell&lt;T: ContentCell&gt;() -&gt; T? {
-    if let intCell = T.self as? IntCell.Type {
+</code></pre>
+<p>当然我们也可以使用类型推断，再结合泛型来使用：</p>
+<pre><code>func createCell&lt;T: ContentCell&gt;() -&gt; T? &#123;
+    if let intCell = T.self as? IntCell.Type &#123;
         return intCell.init(value: 5) as? T
-    } else if let stringCell = T.self as? StringCell.Type {
+    &#125; else if let stringCell = T.self as? StringCell.Type &#123;
         return stringCell.init(value: &quot;xx&quot;) as? T
-    }
+    &#125;
     return nil
-}
+&#125;
 
 // 现在就根据返回类型推断需要使用的元类型
 let stringCell: StringCell? = createCell()
 </code></pre>
+
       
 
       
@@ -1576,7 +1597,7 @@ let stringCell: StringCell? = createCell()
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/11/27/%E7%90%86%E8%A7%A3%20Swift%20%E4%B8%AD%E7%9A%84%E5%85%83%E7%B1%BB%E5%9E%8B%EF%BC%9A.Type%20%E4%B8%8E%20.self/">展开全文 >></a>
         </p>
       
 
@@ -1613,12 +1634,12 @@ let stringCell: StringCell? = createCell()
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/">Runloop等待条件满足再向下执行但不主卡线程</a>
+      <a class="article-title" href="/2018/11/27/Runloop%E7%AD%89%E5%BE%85%E6%9D%A1%E4%BB%B6%E6%BB%A1%E8%B6%B3%E5%86%8D%E5%90%91%E4%B8%8B%E6%89%A7%E8%A1%8C%E4%BD%86%E4%B8%8D%E4%B8%BB%E5%8D%A1%E7%BA%BF%E7%A8%8B/">Runloop等待条件满足再向下执行但不主卡线程</a>
     </h1>
   
 
         
-        <a href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/" class="archive-article-date">
+        <a href="/2018/11/27/Runloop%E7%AD%89%E5%BE%85%E6%9D%A1%E4%BB%B6%E6%BB%A1%E8%B6%B3%E5%86%8D%E5%90%91%E4%B8%8B%E6%89%A7%E8%A1%8C%E4%BD%86%E4%B8%8D%E4%B8%BB%E5%8D%A1%E7%BA%BF%E7%A8%8B/" class="archive-article-date">
   	<time datetime="2018-11-27T04:27:18.019Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -1628,7 +1649,7 @@ let stringCell: StringCell? = createCell()
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>当我们需要等一个异步的结果才能向下执行代码，写回调又很麻烦，功能相对简单的时候</p>
 <pre><code>- (IBAction)start:(id)sender
-{
+&#123;
 pageStillLoading = YES;
 
 [NSThread detachNewThreadSelector:@selector(loadPageInBackground:)toTarget:self withObject:nil];
@@ -1636,14 +1657,15 @@ pageStillLoading = YES;
 [progress setHidden:NO];
 
 //执行代码
-while (pageStillLoading) {
+while (pageStillLoading) &#123;
 [NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-}
+&#125;
 
 [progress setHidden:YES];
 
-}
-</code></pre><p>当loadPageInBackground方法执行完了之后才让pageStillLoading=NO把进度条隐藏。</p>
+&#125;
+</code></pre>
+<p>当loadPageInBackground方法执行完了之后才让pageStillLoading&#x3D;NO把进度条隐藏。</p>
 
       
 
@@ -1667,7 +1689,7 @@ while (pageStillLoading) {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/11/27/Runloop%E7%AD%89%E5%BE%85%E6%9D%A1%E4%BB%B6%E6%BB%A1%E8%B6%B3%E5%86%8D%E5%90%91%E4%B8%8B%E6%89%A7%E8%A1%8C%E4%BD%86%E4%B8%8D%E4%B8%BB%E5%8D%A1%E7%BA%BF%E7%A8%8B/">展开全文 >></a>
         </p>
       
 
@@ -1704,12 +1726,12 @@ while (pageStillLoading) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/">iOS 利用运行时将对象序列化与反序列化</a>
+      <a class="article-title" href="/2018/11/27/iOS%20%E5%88%A9%E7%94%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B0%86%E5%AF%B9%E8%B1%A1%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">iOS 利用运行时将对象序列化与反序列化</a>
     </h1>
   
 
         
-        <a href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/" class="archive-article-date">
+        <a href="/2018/11/27/iOS%20%E5%88%A9%E7%94%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B0%86%E5%AF%B9%E8%B1%A1%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="archive-article-date">
   	<time datetime="2018-11-27T04:17:03.170Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -1721,63 +1743,69 @@ while (pageStillLoading) {
 <pre><code>-(void) encodeWithCoder:(NSCoder *)encoder;
 
 -(id) initWithCoder:(NSCoder *)decoder;
-</code></pre><p>然后在这两个方法中实现对象序列化与反序列化的操作.</p>
+</code></pre>
+<p>然后在这两个方法中实现对象序列化与反序列化的操作.</p>
 <p>例如: </p>
 <p>Person类有两个属性</p>
 <pre><code>@property (nonatomic, copy) NSString *userName;
 @property (nonatomic, copy) NSString *passWord;
-</code></pre><p>那么如果需要实现Person类的序列化与反序列化就需要在上述两个方法中分别实现</p>
-<pre><code>-(void) encodeWithCoder:(NSCoder *)encoder {
+</code></pre>
+<p>那么如果需要实现Person类的序列化与反序列化就需要在上述两个方法中分别实现</p>
+<pre><code>-(void) encodeWithCoder:(NSCoder *)encoder &#123;
     [encoder encodeObject:_userName forKey:@&quot;userName&quot;];
     [encoder encodeObject:_passWord forKey:@&quot;passWord&quot;];
-}
+&#125;
 
--(id) initWithCoder:(NSCoder *)decoder {
+-(id) initWithCoder:(NSCoder *)decoder &#123;
     _userName = [decoder decodeObjectForKey:@&quot;userName&quot;];
     _passWord = [decoder decodeObjectForKey:@&quot;passWord&quot;];
-}
-</code></pre><p>最后在需要对象序列化的地方调用</p>
+&#125;
+</code></pre>
+<p>最后在需要对象序列化的地方调用</p>
 <pre><code>BOOL isSuccess = [NSKeyedArchiver archiveRootObject:person toFile:@&quot;archiver.dat&quot;];
-</code></pre><p>返回布尔类型可以检查序列化操作是否成功.<br>然后在需要对象反序列化的地方调用</p>
+</code></pre>
+<p>返回布尔类型可以检查序列化操作是否成功.<br>然后在需要对象反序列化的地方调用</p>
 <pre><code>Person *person = [NSKeyedUnarchiver unarchiveObjectWithFile: @&quot;archiver.dat&quot;];
-</code></pre><p>获得已序列化的对象.<br>当然,序列化的对象可以是实现了Coding协议的对象数组或者其他.</p>
+</code></pre>
+<p>获得已序列化的对象.<br>当然,序列化的对象可以是实现了Coding协议的对象数组或者其他.</p>
 <h3 id="那么重点儿来了……"><a href="#那么重点儿来了……" class="headerlink" title="那么重点儿来了……"></a>那么重点儿来了……</h3><p>在我的项目中我写了N个需要序列化的对象,然后在N个需要序列化的对象中又有N个属性,然后可能还要不定期的增加、修改、删除某些属性,那我不就需要每天辗转这些序列化对象中做一些很无聊的工作吗?<br>一想到这个我都能烦死,那该怎么办呢?</p>
 <p>我想到了运行时中是有可以动态获取类属性的方法实现的.于是我在某个类中做了以下工作:</p>
 <pre><code>//解码
  - (id)initWithCoder:(NSCoder *)coder
- {
+ &#123;
     unsigned int iVarCount = 0;
     Ivar *iVarList = class_copyIvarList([self class], &amp;iVarCount);//取得变量列表,[self class]表示对自身类进行操作
-    for (int i = 0; i &lt; iVarCount; i++) {
+    for (int i = 0; i &lt; iVarCount; i++) &#123;
         Ivar var = *(iVarList + i);
         const char * varName = ivar_getName(var);//取得变量名字，将作为key
         NSString *key = [NSString stringWithUTF8String:varName];
         //decode
         id  value = [coder decodeObjectForKey:key];//解码
-        if (value) {
+        if (value) &#123;
             [self setValue:value forKey:key];//使用KVC强制写入到对象中
-        }
-    }
+        &#125;
+    &#125;
     free(iVarList);//记得释放内存
     return self;
-}
+&#125;
 //编码
 - (void)encodeWithCoder:(NSCoder *)coder
-{
+&#123;
     unsigned int varCount = 0;
     Ivar *ivarList = class_copyIvarList([self class], &amp;varCount);
-    for (int i = 0; i &lt; varCount; i++) {
+    for (int i = 0; i &lt; varCount; i++) &#123;
         Ivar var = *(ivarList + i);
         const char *varName = ivar_getName(var);
         NSString *key = [NSString stringWithUTF8String:varName];
         id varValue = [self valueForKey:key];//使用KVC获取key对应的变量值
-        if (varValue) {
+        if (varValue) &#123;
             [coder encodeObject:varValue forKey:key];
-        }
-    }
+        &#125;
+    &#125;
     free(ivarList);
-}
-</code></pre><p>照以上写法儿一般情况下都是可以满足需求的,因为该实现中获取变量时都是指定当前类，也就是[self class].当序列化对象不是直接继承NSObject时会遗漏掉父类的属性. </p>
+&#125;
+</code></pre>
+<p>照以上写法儿一般情况下都是可以满足需求的,因为该实现中获取变量时都是指定当前类，也就是[self class].当序列化对象不是直接继承NSObject时会遗漏掉父类的属性. </p>
 <p>所以我们需要对NSObject的上层所有序列对象的类属性进行编解码.但是在用class_copyIvarList获取父类属性的时候程序在[self valueForKey:key]崩掉了.后来了解到获取父类属性用class_copyPropertyList是正常的,如果这样的话在方法中只能做判断是否是当前类了.所以只要把以下代码复制粘贴到 你的序列化对象中就可以不再关注对象的.m文件动态添加、删除、修改类属性了. </p>
 <p>另外在其他地方了解到一个问题,那就是</p>
 <pre><code>iOS中打印propertyList会发现有 superClass、
@@ -1787,9 +1815,9 @@ description、debugDescription、hash等四个属性。对这几个
 属性进行encode操作会导致crash。因此在encode前需要屏蔽掉这些key
 
     - (id)initWithCoder:(NSCoder *)coder    
-{    
+&#123;    
     Class cls = [self class];   
-    while (cls != [NSObject class]) {   
+    while (cls != [NSObject class]) &#123;   
         /*判断是自身类还是父类*/    
         BOOL bIsSelfClass = (cls == [self class]);  
         unsigned int iVarCount = 0; 
@@ -1799,26 +1827,26 @@ description、debugDescription、hash等四个属性。对这几个
         objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/   
         sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   
 
-        for (int i = 0; i &lt; sharedVarCount; i++) {  
+        for (int i = 0; i &lt; sharedVarCount; i++) &#123;  
             const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); 
             NSString *key = [NSString stringWithUTF8String:varName];   
             id varValue = [coder decodeObjectForKey:key]; 
             NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;];   
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { 
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) &#123; 
                 [self setValue:varValue forKey:key];    
-            }   
-        }   
+            &#125;   
+        &#125;   
         free(ivarList); 
         free(propList); 
         cls = class_getSuperclass(cls); 
-    }   
+    &#125;   
     return self;    
-}   
+&#125;   
 
 - (void)encodeWithCoder:(NSCoder *)coder    
-{   
+&#123;   
     Class cls = [self class];   
-    while (cls != [NSObject class]) {   
+    while (cls != [NSObject class]) &#123;   
         /*判断是自身类还是父类*/    
         BOOL bIsSelfClass = (cls == [self class]);  
         unsigned int iVarCount = 0; 
@@ -1828,35 +1856,36 @@ description、debugDescription、hash等四个属性。对这几个
         objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/ 
         sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   
 
-        for (int i = 0; i &lt; sharedVarCount; i++) {  
+        for (int i = 0; i &lt; sharedVarCount; i++) &#123;  
             const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); 
             NSString *key = [NSString stringWithUTF8String:varName];    
             /*valueForKey只能获取本类所有变量以及所有层级父类的属性，不包含任何父类的私有变量(会崩溃)*/  
             id varValue = [self valueForKey:key];
             NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;];    
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { 
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) &#123; 
                 [coder encodeObject:varValue forKey:key];   
-            }   
-        }   
+            &#125;   
+        &#125;   
         free(ivarList); 
         free(propList); 
         cls = class_getSuperclass(cls); 
-    }   
-}
-</code></pre><p>但是这样的话我那么多序列化对象难道要一个一个粘贴过去么? </p>
+    &#125;   
+&#125;
+</code></pre>
+<p>但是这样的话我那么多序列化对象难道要一个一个粘贴过去么? </p>
 <p>能不能再做一层封装? </p>
 <p>答案是肯定的 </p>
 <p>在项目中新建一个.h文件 </p>
-<p><img src="https://img-blog.csdn.net/20180716095810557?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+<p><img src="https://img-blog.csdn.net/20180716095810557?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
 <p>然后复制下面的代码到.h文件中</p>
 <pre><code>#import &lt;objc/runtime.h&gt;
 
 #define SERIALIZER_CODER_DECODER()     \
 \
 - (id)initWithCoder:(NSCoder *)coder    \
-{   \
+&#123;   \
     Class cls = [self class];   \
-    while (cls != [NSObject class]) {   \
+    while (cls != [NSObject class]) &#123;   \
         /*判断是自身类还是父类*/    \
         BOOL bIsSelfClass = (cls == [self class]);  \
         unsigned int iVarCount = 0; \
@@ -1866,26 +1895,26 @@ description、debugDescription、hash等四个属性。对这几个
         objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/   \
         sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   \
 \
-        for (int i = 0; i &lt; sharedVarCount; i++) {  \
+        for (int i = 0; i &lt; sharedVarCount; i++) &#123;  \
             const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); \
             NSString *key = [NSString stringWithUTF8String:varName];   \
             id varValue = [coder decodeObjectForKey:key];   \
             NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;]; \
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { \
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) &#123; \
                 [self setValue:varValue forKey:key];    \
-            }   \
-        }   \
+            &#125;   \
+        &#125;   \
         free(ivarList); \
         free(propList); \
         cls = class_getSuperclass(cls); \
-    }   \
+    &#125;   \
     return self;    \
-}   \
+&#125;   \
 \
 - (void)encodeWithCoder:(NSCoder *)coder    \
-{   \
+&#123;   \
     Class cls = [self class];   \
-    while (cls != [NSObject class]) {   \
+    while (cls != [NSObject class]) &#123;   \
         /*判断是自身类还是父类*/    \
         BOOL bIsSelfClass = (cls == [self class]);  \
         unsigned int iVarCount = 0; \
@@ -1895,24 +1924,26 @@ description、debugDescription、hash等四个属性。对这几个
         objc_property_t *propList = bIsSelfClass ? NULL : class_copyPropertyList(cls, &amp;propVarCount);/*属性列表*/ \
         sharedVarCount = bIsSelfClass ? iVarCount : propVarCount;   \
         \
-        for (int i = 0; i &lt; sharedVarCount; i++) {  \
+        for (int i = 0; i &lt; sharedVarCount; i++) &#123;  \
             const char *varName = bIsSelfClass ? ivar_getName(*(ivarList + i)) : property_getName(*(propList + i)); \
             NSString *key = [NSString stringWithUTF8String:varName];    \
             /*valueForKey只能获取本类所有变量以及所有层级父类的属性，不包含任何父类的私有变量(会崩溃)*/  \
             id varValue = [self valueForKey:key];   \
             NSArray *filters = @[@&quot;superclass&quot;, @&quot;description&quot;, @&quot;debugDescription&quot;, @&quot;hash&quot;]; \
-            if (varValue &amp;&amp; [filters containsObject:key] == NO) { \
+            if (varValue &amp;&amp; [filters containsObject:key] == NO) &#123; \
                 [coder encodeObject:varValue forKey:key];   \
-            }   \
-        }   \
+            &#125;   \
+        &#125;   \
         free(ivarList); \
         free(propList); \
         cls = class_getSuperclass(cls); \
-    }   \
-}
-</code></pre><p>只需要在你需要序列化的对象中import你的.h文件然后直接调用</p>
+    &#125;   \
+&#125;
+</code></pre>
+<p>只需要在你需要序列化的对象中import你的.h文件然后直接调用</p>
 <pre><code>SERIALIZER_CODER_DECODER()
-</code></pre><p><img src="https://img-blog.csdn.net/2018071610055818?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt=""></p>
+</code></pre>
+<p><img src="https://img-blog.csdn.net/2018071610055818?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2xvbmdsb25nVmFsdWU=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70"></p>
 
       
 
@@ -1936,7 +1967,7 @@ description、debugDescription、hash等四个属性。对这几个
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/11/27/iOS%20%E5%88%A9%E7%94%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B0%86%E5%AF%B9%E8%B1%A1%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">展开全文 >></a>
         </p>
       
 
@@ -1968,7 +1999,7 @@ description、debugDescription、hash等四个属性。对这几个
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/16/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/18/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/16/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="page-number" href="/page/16/">16</a><span class="page-number current">17</span><a class="page-number" href="/page/18/">18</a><a class="page-number" href="/page/19/">19</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/18/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -1980,7 +2011,7 @@ description、debugDescription、hash等四个属性。对这几个
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -2087,10 +2118,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -2099,7 +2126,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2107,11 +2134,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2131,19 +2162,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

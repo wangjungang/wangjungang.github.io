@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>iOS10 跳转系统设置 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Objective-cNSString * urlString = @&amp;quot;App-Prefs:root=WIFI&amp;quot;;  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) {  if (iOS10) {  [[UIApplication sharedApplicat">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="Objective-cNSString * urlString &#x3D; @&quot;App-Prefs:root&#x3D;WIFI&quot;;  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) &amp;#123;  if (iOS10) &amp;#123;  [[UIApplication shar">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS10 跳转系统设置">
-<meta property="og:url" content="http://yoursite.com/2018/12/21/iOS10 跳转系统设置/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/12/21/iOS10%20%E8%B7%B3%E8%BD%AC%E7%B3%BB%E7%BB%9F%E8%AE%BE%E7%BD%AE/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="Objective-cNSString * urlString = @&amp;quot;App-Prefs:root=WIFI&amp;quot;;  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) {  if (iOS10) {  [[UIApplication sharedApplicat">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-21T10:48:14.493Z">
+<meta property="og:description" content="Objective-cNSString * urlString &#x3D; @&quot;App-Prefs:root&#x3D;WIFI&quot;;  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) &amp;#123;  if (iOS10) &amp;#123;  [[UIApplication shar">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-12-21T10:46:03.645Z">
+<meta property="article:modified_time" content="2018-12-21T10:48:14.493Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS10 跳转系统设置">
-<meta name="twitter:description" content="Objective-cNSString * urlString = @&amp;quot;App-Prefs:root=WIFI&amp;quot;;  if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) {  if (iOS10) {  [[UIApplication sharedApplicat">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/12/21/iOS10 跳转系统设置/" class="archive-article-date">
+        <a href="/2018/12/21/iOS10%20%E8%B7%B3%E8%BD%AC%E7%B3%BB%E7%BB%9F%E8%AE%BE%E7%BD%AE/" class="archive-article-date">
   	<time datetime="2018-12-21T10:46:03.645Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-21</time>
 </a>
         
@@ -177,49 +177,51 @@
       
         <h2 id="Objective-c"><a href="#Objective-c" class="headerlink" title="Objective-c"></a>Objective-c</h2><pre><code>NSString * urlString = @&quot;App-Prefs:root=WIFI&quot;;
 
-if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) {
+if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:urlString]]) &#123;
 
-if (iOS10) {
+if (iOS10) &#123;
 
-[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString] options:@{} completionHandler:nil];
+[[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString] options:@&#123;&#125; completionHandler:nil];
 
-} else {
+&#125; else &#123;
 
 [[UIApplication sharedApplication] openURL:[NSURL URLWithString:urlString]];
 
-}
+&#125;
 
-}
-</code></pre><h2 id="Swift"><a href="#Swift" class="headerlink" title="Swift"></a>Swift</h2><pre><code>if let url = URL(string:&quot;App-Prefs:root=WIFI&quot;)
- {if #available(iOS 10.0, *) 
- {
- UIApplication.shared.open(url, options: [:], completionHandler: nil)} 
-
+&#125;
+</code></pre>
+<h2 id="Swift"><a href="#Swift" class="headerlink" title="Swift"></a>Swift</h2><pre><code>if let url = URL(string:&quot;App-Prefs:root=WIFI&quot;)
+ &#123;if #available(iOS 10.0, *) 
+ &#123;
+ UIApplication.shared.open(url, options: [:], completionHandler: nil)&#125; 
+ 
  else 
- {
-
-     UIApplication.shared.openURL(url)
- }
-
-}
-</code></pre><h2 id="跳转-写法"><a href="#跳转-写法" class="headerlink" title="跳转 写法"></a>跳转 写法</h2><ul>
-<li>无线局域网 App-Prefs:root=WIFI</li>
-<li>蓝牙 App-Prefs:root=Bluetooth</li>
-<li>蜂窝移动网络 App-Prefs:root=MOBILE_DATA_SETTINGS_ID</li>
-<li>个人热点 App-Prefs:root=INTERNET_TETHERING</li>
-<li>运营商 App-Prefs:root=Carrier</li>
-<li>通知 App-Prefs:root=NOTIFICATIONS_ID</li>
-<li>通用 App-Prefs:root=General</li>
-<li>通用-关于本机 App-Prefs:root=General&amp;path=About</li>
-<li>通用-键盘 App-Prefs:root=General&amp;path=Keyboard</li>
-<li>通用-辅助功能 App-Prefs:root=General&amp;path=ACCESSIBILITY</li>
-<li>通用-语言与地区 App-Prefs:root=General&amp;path=INTERNATIONAL</li>
-<li>通用-还原 App-Prefs:root=Reset</li>
-<li>墙纸 App-Prefs:root=WallpaperSiri App-Prefs:root=SIRI</li>
-<li>隐私 App-Prefs:root=PrivacySafari App-Prefs:root=SAFARI</li>
-<li>音乐 App-Prefs:root=MUSIC</li>
-<li>音乐-均衡器 App-Prefs:root=MUSIC&amp;path=com.apple.Music:</li>
-<li>EQ照片与相机 App-Prefs:root=PhotosFaceTime App-Prefs:root=FACETIME</li>
+ &#123;
+ 
+ 	UIApplication.shared.openURL(url)
+ &#125;
+ 
+&#125;
+</code></pre>
+<h2 id="跳转-写法"><a href="#跳转-写法" class="headerlink" title="跳转 写法"></a>跳转 写法</h2><ul>
+<li>无线局域网 App-Prefs:root&#x3D;WIFI</li>
+<li>蓝牙 App-Prefs:root&#x3D;Bluetooth</li>
+<li>蜂窝移动网络 App-Prefs:root&#x3D;MOBILE_DATA_SETTINGS_ID</li>
+<li>个人热点 App-Prefs:root&#x3D;INTERNET_TETHERING</li>
+<li>运营商 App-Prefs:root&#x3D;Carrier</li>
+<li>通知 App-Prefs:root&#x3D;NOTIFICATIONS_ID</li>
+<li>通用 App-Prefs:root&#x3D;General</li>
+<li>通用-关于本机 App-Prefs:root&#x3D;General&amp;path&#x3D;About</li>
+<li>通用-键盘 App-Prefs:root&#x3D;General&amp;path&#x3D;Keyboard</li>
+<li>通用-辅助功能 App-Prefs:root&#x3D;General&amp;path&#x3D;ACCESSIBILITY</li>
+<li>通用-语言与地区 App-Prefs:root&#x3D;General&amp;path&#x3D;INTERNATIONAL</li>
+<li>通用-还原 App-Prefs:root&#x3D;Reset</li>
+<li>墙纸 App-Prefs:root&#x3D;WallpaperSiri App-Prefs:root&#x3D;SIRI</li>
+<li>隐私 App-Prefs:root&#x3D;PrivacySafari App-Prefs:root&#x3D;SAFARI</li>
+<li>音乐 App-Prefs:root&#x3D;MUSIC</li>
+<li>音乐-均衡器 App-Prefs:root&#x3D;MUSIC&amp;path&#x3D;com.apple.Music:</li>
+<li>EQ照片与相机 App-Prefs:root&#x3D;PhotosFaceTime App-Prefs:root&#x3D;FACETIME</li>
 </ul>
 
       
@@ -311,7 +313,7 @@ if (iOS10) {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/21/iOS10 跳转系统设置/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/21/iOS10%20%E8%B7%B3%E8%BD%AC%E7%B3%BB%E7%BB%9F%E8%AE%BE%E7%BD%AE/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -325,7 +327,7 @@ if (iOS10) {
   
 <nav id="article-nav">
   
-    <a href="/2018/12/24/iOS开发之APP内部切换语言/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/12/24/iOS%E5%BC%80%E5%8F%91%E4%B9%8BAPP%E5%86%85%E9%83%A8%E5%88%87%E6%8D%A2%E8%AF%AD%E8%A8%80/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -335,7 +337,7 @@ if (iOS10) {
     </a>
   
   
-    <a href="/2018/12/21/持续震动，想停就停/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/12/21/%E6%8C%81%E7%BB%AD%E9%9C%87%E5%8A%A8%EF%BC%8C%E6%83%B3%E5%81%9C%E5%B0%B1%E5%81%9C/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">持续震动，想停就停</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -379,7 +381,7 @@ if (iOS10) {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -486,10 +488,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -498,7 +496,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -506,11 +504,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -530,19 +532,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

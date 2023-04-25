@@ -9,17 +9,17 @@
   <title>iOS无痕埋点 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面当前互联网行业的竞争已经是非常激烈了， “功能驱动”的时代已经过去了， 现在更加注重软件的细节， 以及用户的体验问题。 说到用户体验，就不得不提到用户的操作行为。 在我们的软件中，我们会到处进行埋点， 以便提取到我们想要的数据，进而分析用户的行为习惯。 通过这些数据，我们也可以更好的分析出用户的操作趋势，从而在用户体验上把我们的app做的更好。 随着公司业务的发展，数据的重要性日益体现出来">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS无痕埋点">
-<meta property="og:url" content="http://yoursite.com/2018/12/07/iOS无痕埋点/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/12/07/iOS%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面当前互联网行业的竞争已经是非常激烈了， “功能驱动”的时代已经过去了， 现在更加注重软件的细节， 以及用户的体验问题。 说到用户体验，就不得不提到用户的操作行为。 在我们的软件中，我们会到处进行埋点， 以便提取到我们想要的数据，进而分析用户的行为习惯。 通过这些数据，我们也可以更好的分析出用户的操作趋势，从而在用户体验上把我们的app做的更好。 随着公司业务的发展，数据的重要性日益体现出来">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-07T07:21:59.267Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-12-07T06:55:49.144Z">
+<meta property="article:modified_time" content="2018-12-07T07:21:59.267Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS无痕埋点">
-<meta name="twitter:description" content="写在前面当前互联网行业的竞争已经是非常激烈了， “功能驱动”的时代已经过去了， 现在更加注重软件的细节， 以及用户的体验问题。 说到用户体验，就不得不提到用户的操作行为。 在我们的软件中，我们会到处进行埋点， 以便提取到我们想要的数据，进而分析用户的行为习惯。 通过这些数据，我们也可以更好的分析出用户的操作趋势，从而在用户体验上把我们的app做的更好。 随着公司业务的发展，数据的重要性日益体现出来">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/12/07/iOS无痕埋点/" class="archive-article-date">
+        <a href="/2018/12/07/iOS%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/" class="archive-article-date">
   	<time datetime="2018-12-07T06:55:49.144Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-07</time>
 </a>
         
@@ -183,400 +183,406 @@
 <h2 id="整体代码示例"><a href="#整体代码示例" class="headerlink" title="整体代码示例"></a>整体代码示例</h2><p>由于iOS中的事件场景是多样的， 在此我以UIControl, UITablview(collectionView与tableView基本相同)， UITapGesture， UIViewController的PV统计 为例，介绍一下具体思路。</p>
 <h4 id="1-UIViewController-PV统计"><a href="#1-UIViewController-PV统计" class="headerlink" title="1. UIViewController PV统计"></a>1. UIViewController PV统计</h4><p>页面的统计较为简单，利用Method Swizzing hook 系统的viewDidLoad，  直接通过页面名称即可锁定页面的展示代码如下：</p>
 <pre><code>@implementation UIViewController (Analysis)
-
+ 
 +(void)load
-{
+&#123;
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
-
+    dispatch_once(&amp;onceToken, ^&#123;
+     
         SEL originalDidLoadSelector = @selector(viewDidLoad);
         SEL swizzingDidLoadSelector = @selector(user_viewDidLoad);
         [MethodSwizzingTool swizzingForClass:[self class] originalSel:originalDidLoadSelector swizzingSel:swizzingDidLoadSelector];
-
-    });
-}
-
+         
+    &#125;);
+&#125;
+ 
 -(void)user_viewDidLoad
-{
+&#123;
     [self user_viewDidLoad];
-
+     
    //从配置表中取参数的过程 1 固定参数  2 业务参数（此处参数被target持有）
     NSString * identifier = [NSString stringWithFormat:@&quot;%@&quot;, [self class]];
     NSDictionary * dic = [[[DataContainer dataInstance].data objectForKey:@&quot;PAGEPV&quot;] objectForKey:identifier];
-    if (dic) {
+    if (dic) &#123;
         NSString * pageid = dic[@&quot;userDefined&quot;][@&quot;pageid&quot;];
         NSString * pagename = dic[@&quot;userDefined&quot;][@&quot;pagename&quot;];
         NSDictionary * pagePara = dic[@&quot;pagePara&quot;];
-
+         
         __block NSMutableDictionary * uploadDic = [NSMutableDictionary dictionaryWithCapacity:0];
-        [pagePara enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-
+        [pagePara enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) &#123;
+             
             id value = [CaptureTool captureVarforInstance:self withPara:obj];
-            if (value &amp;&amp; key) {
+            if (value &amp;&amp; key) &#123;
                 [uploadDic setObject:value forKey:key];
-            }
-        }];
-
+            &#125;
+        &#125;];
+         
         NSLog(@&quot;\n 事件唯一标识为：%@ \n  pageid === %@,\n  pagename === %@,\n pagepara === %@ \n&quot;, [self class], pageid, pagename, uploadDic);
-    }
-}
-</code></pre><h4 id="2-UIControl-点击统计。"><a href="#2-UIControl-点击统计。" class="headerlink" title="2. UIControl 点击统计。"></a>2. UIControl 点击统计。</h4><p>主要通过hook  sendAction:to:forEvent: 来实现, 其唯一标识符我们用 targetname/selector/tag来标记，具体代码如下：</p>
+    &#125;
+&#125;
+</code></pre>
+<h4 id="2-UIControl-点击统计。"><a href="#2-UIControl-点击统计。" class="headerlink" title="2. UIControl 点击统计。"></a>2. UIControl 点击统计。</h4><p>主要通过hook  sendAction:to:forEvent: 来实现, 其唯一标识符我们用 targetname&#x2F;selector&#x2F;tag来标记，具体代码如下：</p>
 <pre><code>@implementation UIControl (Analysis)
-
+ 
 +(void)load
-{
+&#123;
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
+    dispatch_once(&amp;onceToken, ^&#123;
         SEL originalSelector = @selector(sendAction:to:forEvent:);
         SEL swizzingSelector = @selector(user_sendAction:to:forEvent:);
         [MethodSwizzingTool swizzingForClass:[self class] originalSel:originalSelector swizzingSel:swizzingSelector];
-    });
-}
-
-
+    &#125;);
+&#125;
+ 
+ 
 -(void)user_sendAction:(SEL)action to:(id)target forEvent:(UIEvent *)event
-{
+&#123;
     [self user_sendAction:action to:target forEvent:event];
-
+     
     NSString * identifier = [NSString stringWithFormat:@&quot;%@/%@/%ld&quot;, [target class], NSStringFromSelector(action),self.tag];
     NSDictionary * dic = [[[DataContainer dataInstance].data objectForKey:@&quot;ACTION&quot;] objectForKey:identifier];
-    if (dic) {
-
+    if (dic) &#123;
+         
         NSString * eventid = dic[@&quot;userDefined&quot;][@&quot;eventid&quot;];
         NSString * targetname = dic[@&quot;userDefined&quot;][@&quot;target&quot;];
         NSString * pageid = dic[@&quot;userDefined&quot;][@&quot;pageid&quot;];
         NSString * pagename = dic[@&quot;userDefined&quot;][@&quot;pagename&quot;];
         NSDictionary * pagePara = dic[@&quot;pagePara&quot;];
         __block NSMutableDictionary * uploadDic = [NSMutableDictionary dictionaryWithCapacity:0];
-        [pagePara enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-
+        [pagePara enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) &#123;
+             
             id value = [CaptureTool captureVarforInstance:target withPara:obj];
-            if (value &amp;&amp; key) {
+            if (value &amp;&amp; key) &#123;
                 [uploadDic setObject:value forKey:key];
-            }
-        }];
-
-
+            &#125;
+        &#125;];
+         
+         
         NSLog(@&quot; \n  唯一标识符为 : %@, \n event id === %@,\n  target === %@, \n  pageid === %@,\n  pagename === %@,\n pagepara === %@ \n&quot;, identifier, eventid, targetname, pageid, pagename, uploadDic);
-    }
-}
-</code></pre><h4 id="3-TableView-CollectionView-的点击统计。"><a href="#3-TableView-CollectionView-的点击统计。" class="headerlink" title="3. TableView (CollectionView) 的点击统计。"></a>3. TableView (CollectionView) 的点击统计。</h4><p>tablview的唯一标识， 我们使用 delegate.class/tableview.class/tableview.tag的组合来唯一锁定。 主要是通过hook setDelegate 方法， 在设置代理的时候再去交互 didSelect 方法来实现，  具体的原理是 具体代码如下：</p>
+    &#125;
+&#125;
+</code></pre>
+<h4 id="3-TableView-CollectionView-的点击统计。"><a href="#3-TableView-CollectionView-的点击统计。" class="headerlink" title="3. TableView (CollectionView) 的点击统计。"></a>3. TableView (CollectionView) 的点击统计。</h4><p>tablview的唯一标识， 我们使用 delegate.class&#x2F;tableview.class&#x2F;tableview.tag的组合来唯一锁定。 主要是通过hook setDelegate 方法， 在设置代理的时候再去交互 didSelect 方法来实现，  具体的原理是 具体代码如下：</p>
 <pre><code>@implementation UITableView (Analysis)
-
+ 
 +(void)load
-{
+&#123;
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
-
+    dispatch_once(&amp;onceToken, ^&#123;
+     
         SEL originalAppearSelector = @selector(setDelegate:);
         SEL swizzingAppearSelector = @selector(user_setDelegate:);
         [MethodSwizzingTool swizzingForClass:[self class] originalSel:originalAppearSelector swizzingSel:swizzingAppearSelector];
-    });
-}
-
-
+    &#125;);
+&#125;
+ 
+ 
 -(void)user_setDelegate:(id)delegate
-{
+&#123;
     [self user_setDelegate:delegate];
-
+     
     SEL sel = @selector(tableView:didSelectRowAtIndexPath:);
-
+     
 // 初始化一个名字为  delegate.class/tableview.class/tableview.tag 的selector
     SEL sel_ =  NSSelectorFromString([NSString stringWithFormat:@&quot;%@/%ld&quot;, [self class], self.tag]);
-
+     
 // 将生成的selector的方法 加入的 delegate类中， 并且该方法的实现(IMP)指向当前类user_tableView:didSelectRowAtIndexPath: 方法的实现
     class_addMethod([delegate class],
                     sel_,
                     method_getImplementation(class_getInstanceMethod([self class], @selector(user_tableView:didSelectRowAtIndexPath:))),
                     nil);
-
-
+     
+     
     //判断是否有实现，没有的话添加一个实现
-    if (![self isContainSel:sel inClass:[delegate class]]) {
+    if (![self isContainSel:sel inClass:[delegate class]]) &#123;
         IMP imp = method_getImplementation(class_getInstanceMethod([delegate class], sel));
         class_addMethod([delegate class], sel, imp, nil);
-    }
-
-
+    &#125;
+     
+     
     // 将swizzle delegate method 和 origin delegate method 交换
     [MethodSwizzingTool swizzingForClass:[delegate class] originalSel:sel swizzingSel:sel_];
-}
+&#125;
 //判断页面是否实现了某个sel
-- (BOOL)isContainSel:(SEL)sel inClass:(Class)class {
+- (BOOL)isContainSel:(SEL)sel inClass:(Class)class &#123;
     unsigned int count;
-
+     
     Method *methodList = class_copyMethodList(class,&amp;count);
-    for (int i = 0; i &lt; count; i++) {
+    for (int i = 0; i &lt; count; i++) &#123;
         Method method = methodList[i];
         NSString *tempMethodString = [NSString stringWithUTF8String:sel_getName(method_getName(method))];
-        if ([tempMethodString isEqualToString:NSStringFromSelector(sel)]) {
+        if ([tempMethodString isEqualToString:NSStringFromSelector(sel)]) &#123;
             return YES;
-        }
-    }
+        &#125;
+    &#125;
     return NO;
-}
+&#125;
 // 由于我们交换了方法， 所以在tableview的 didselected 被调用的时候， 实质调用的是以下方法：
 -(void)user_tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-
+&#123;
+     
 //通过唯一标识的规则， 找到原来的方法 （即tableView:didSelectRowAtIndexPath: 方法）
     SEL sel = NSSelectorFromString([NSString stringWithFormat:@&quot;%@/%ld&quot;, [tableView class], tableView.tag]);
-    if ([self respondsToSelector:sel]) {
+    if ([self respondsToSelector:sel]) &#123;
 //以下是对方法的调用以及传参，performSelector 方法底层实现与此相似
         IMP imp = [self methodForSelector:sel];
         void (*func)(id, SEL,id,id) = (void *)imp;
         func(self, sel,tableView,indexPath);
-    }
-
+    &#125;
+     
     //配置表中， 事件唯一标识即为key， 通过key 取value， 取到了就说明该事件配置的有埋点上传
     NSString * identifier = [NSString stringWithFormat:@&quot;%@/%@/%ld&quot;, [self class],[tableView class], tableView.tag];
     NSDictionary * dic = [[[DataContainer dataInstance].data objectForKey:@&quot;TABLEVIEW&quot;] objectForKey:identifier];
-    if (dic) {
-
+    if (dic) &#123;
+         
         NSString * eventid = dic[@&quot;userDefined&quot;][@&quot;eventid&quot;];
         NSString * targetname = dic[@&quot;userDefined&quot;][@&quot;target&quot;];
         NSString * pageid = dic[@&quot;userDefined&quot;][@&quot;pageid&quot;];
         NSString * pagename = dic[@&quot;userDefined&quot;][@&quot;pagename&quot;];
         NSDictionary * pagePara = dic[@&quot;pagePara&quot;];
-
+                 
         UITableViewCell * cell = [tableView cellForRowAtIndexPath:indexPath];
         __block NSMutableDictionary * uploadDic = [NSMutableDictionary dictionaryWithCapacity:0];
-        [pagePara enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        [pagePara enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) &#123;
             NSInteger containIn = [obj[@&quot;containIn&quot;] integerValue];
             //通过containIn 参数判断数据持有者，后续会有解释
             id instance = containIn == 0 ? self : cell;
             id value = [CaptureTool captureVarforInstance:instance withPara:obj];
-            if (value &amp;&amp; key) {
+            if (value &amp;&amp; key) &#123;
                 [uploadDic setObject:value forKey:key];
-            }
-        }];
-
+            &#125;
+        &#125;];
+         
         NSLog(@&quot;\n 事件的唯一标识为 %@， \n event id === %@,\n  target === %@, \n  pageid === %@,\n  pagename === %@,\n pagepara === %@ \n&quot;, identifier,  eventid, targetname, pageid, pagename, uploadDic);
-    }
-}
-</code></pre><h4 id="4-gesture方式添加的的点击统计。"><a href="#4-gesture方式添加的的点击统计。" class="headerlink" title="4. gesture方式添加的的点击统计。"></a>4. gesture方式添加的的点击统计。</h4><p>gesture的事件，是通过 hook initWithTarget:action:方法来实现的， 事件的唯一标识依然是target.class/actionname来锁定的， 代码如下：</p>
+    &#125;
+&#125;
+</code></pre>
+<h4 id="4-gesture方式添加的的点击统计。"><a href="#4-gesture方式添加的的点击统计。" class="headerlink" title="4. gesture方式添加的的点击统计。"></a>4. gesture方式添加的的点击统计。</h4><p>gesture的事件，是通过 hook initWithTarget:action:方法来实现的， 事件的唯一标识依然是target.class&#x2F;actionname来锁定的， 代码如下：</p>
 <pre><code>@implementation UIGestureRecognizer (Analysis)
-
+ 
 + (void)load
-{
+&#123;
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
-
+    dispatch_once(&amp;onceToken, ^&#123;
+         
         [MethodSwizzingTool swizzingForClass:[self class] originalSel:@selector(initWithTarget:action:) swizzingSel:@selector(vi_initWithTarget:action:)];
-    });
-}
-
+    &#125;);
+&#125;
+ 
 - (instancetype)vi_initWithTarget:(nullable id)target action:(nullable SEL)action
-{
+&#123;
     UIGestureRecognizer *selfGestureRecognizer = [self vi_initWithTarget:target action:action];
-
-    if (!target &amp;&amp; !action) {
+     
+    if (!target &amp;&amp; !action) &#123;
         return selfGestureRecognizer;
-    }
-
-    if ([target isKindOfClass:[UIScrollView class]]) {
+    &#125;
+     
+    if ([target isKindOfClass:[UIScrollView class]]) &#123;
         return selfGestureRecognizer;
-    }
-
+    &#125;
+     
     Class class = [target class];
-
-
+     
+     
     SEL originalSEL = action;
-
+     
     NSString * sel_name = [NSString stringWithFormat:@&quot;%s/%@&quot;, class_getName([target class]),NSStringFromSelector(action)];
     SEL swizzledSEL =  NSSelectorFromString(sel_name);
-
+     
     BOOL isAddMethod = class_addMethod(class,
                                        swizzledSEL,
                                        method_getImplementation(class_getInstanceMethod([self class], @selector(responseUser_gesture:))),
                                        nil);
-
-    if (isAddMethod) {
+     
+    if (isAddMethod) &#123;
         [MethodSwizzingTool swizzingForClass:class originalSel:originalSEL swizzingSel:swizzledSEL];
-    }
-
+    &#125;
+     
     self.name = NSStringFromSelector(action);
     return selfGestureRecognizer;
-}
+&#125;
 -(void)responseUser_gesture:(UIGestureRecognizer *)gesture
-{
-
+&#123;
+     
     NSString * identifier = [NSString stringWithFormat:@&quot;%s/%@&quot;, class_getName([self class]),gesture.name];
-
+     
     SEL sel = NSSelectorFromString(identifier);
-    if ([self respondsToSelector:sel]) {
+    if ([self respondsToSelector:sel]) &#123;
         IMP imp = [self methodForSelector:sel];
         void (*func)(id, SEL,id) = (void *)imp;
         func(self, sel,gesture);
-    }
-
-
+    &#125;
+     
+     
     NSDictionary * dic = [[[DataContainer dataInstance].data objectForKey:@&quot;GESTURE&quot;] objectForKey:identifier];
-    if (dic) {
-
+    if (dic) &#123;
+         
         NSString * eventid = dic[@&quot;userDefined&quot;][@&quot;eventid&quot;];
         NSString * targetname = dic[@&quot;userDefined&quot;][@&quot;target&quot;];
         NSString * pageid = dic[@&quot;userDefined&quot;][@&quot;pageid&quot;];
         NSString * pagename = dic[@&quot;userDefined&quot;][@&quot;pagename&quot;];
         NSDictionary * pagePara = dic[@&quot;pagePara&quot;];
-
+         
         __block NSMutableDictionary * uploadDic = [NSMutableDictionary dictionaryWithCapacity:0];
-        [pagePara enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        [pagePara enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) &#123;
             id value = [CaptureTool captureVarforInstance:self withPara:obj];
-            if (value &amp;&amp; key) {
+            if (value &amp;&amp; key) &#123;
                 [uploadDic setObject:value forKey:key];
-            }
-        }];
-
+            &#125;
+        &#125;];
+         
         NSLog(@&quot;\n事件的唯一标识为 %@， \n event id === %@,\n  target === %@, \n  pageid === %@,\n  pagename === %@,\n pagepara === %@ \n&quot;, identifier， eventid, targetname, pageid, pagename, uploadDic);
-
-    }
-}
+         
+    &#125;
+&#125;
 @end
-</code></pre><h2 id="配置表结构"><a href="#配置表结构" class="headerlink" title="配置表结构"></a>配置表结构</h2><p>首先那， 配置表是一个json数据。 针对不同的场景 （UIControl , 页面PV， Tabeview, Gesture）都做了区分， 用不同的key区别。 对于 “固定参数” ， 我们之间写到配置表中，而对于业务参数， 我们之间写清楚参数在业务内的名字， 以及上传时的 keyName， 参数的持有者。 通过Runtime + KVC来取值。  配置表可以是这个样子：（仅供参考）</p>
-<pre><code>{
-    &quot;ACTION&quot;: {
-        &quot;ViewController/jumpSecond&quot;: {
-            &quot;userDefined&quot;: {
+</code></pre>
+<h2 id="配置表结构"><a href="#配置表结构" class="headerlink" title="配置表结构"></a>配置表结构</h2><p>首先那， 配置表是一个json数据。 针对不同的场景 （UIControl , 页面PV， Tabeview, Gesture）都做了区分， 用不同的key区别。 对于 “固定参数” ， 我们之间写到配置表中，而对于业务参数， 我们之间写清楚参数在业务内的名字， 以及上传时的 keyName， 参数的持有者。 通过Runtime + KVC来取值。  配置表可以是这个样子：（仅供参考）</p>
+<pre><code>&#123;
+    &quot;ACTION&quot;: &#123;
+        &quot;ViewController/jumpSecond&quot;: &#123;
+            &quot;userDefined&quot;: &#123;
                 &quot;eventid&quot;: &quot;201803074|93&quot;,
                 &quot;target&quot;: &quot;&quot;,
                 &quot;pageid&quot;: &quot;234&quot;,
                 &quot;pagename&quot;: &quot;button点击，跳转至下一个页面&quot;
-            },
-            &quot;pagePara&quot;: {
-                &quot;testKey9&quot;: {
+            &#125;,
+            &quot;pagePara&quot;: &#123;
+                &quot;testKey9&quot;: &#123;
                     &quot;propertyName&quot;: &quot;testPara&quot;,
                     &quot;propertyPath&quot;:&quot;&quot;,
                     &quot;containIn&quot;: &quot;0&quot;
-                }
-            }
-        }
-    },
-
-    &quot;PAGEPV&quot;: {
-        &quot;ViewController&quot;: {
-            &quot;userDefined&quot;: {
+                &#125;
+            &#125;
+        &#125;
+    &#125;,
+     
+    &quot;PAGEPV&quot;: &#123;
+        &quot;ViewController&quot;: &#123;
+            &quot;userDefined&quot;: &#123;
                 &quot;pageid&quot;: &quot;234&quot;,
                 &quot;pagename&quot;: &quot;XXX 页面展示了&quot;
-            },
-            &quot;pagePara&quot;: {
-                &quot;testKey10&quot;: {
+            &#125;,
+            &quot;pagePara&quot;: &#123;
+                &quot;testKey10&quot;: &#123;
                     &quot;propertyName&quot;: &quot;testPara&quot;,
                     &quot;propertyPath&quot;:&quot;&quot;,
                     &quot;containIn&quot;: &quot;0&quot;
-                }
-            }
-        }
-    },
-    &quot;TABLEVIEW&quot;: {
-        &quot;ViewController/UITableView/0&quot;:{
-            &quot;userDefined&quot;: {
+                &#125;
+            &#125;
+        &#125;
+    &#125;,
+    &quot;TABLEVIEW&quot;: &#123;
+        &quot;ViewController/UITableView/0&quot;:&#123;
+            &quot;userDefined&quot;: &#123;
                 &quot;eventid&quot;: &quot;201803074|93&quot;,
                 &quot;target&quot;: &quot;&quot;,
                 &quot;pageid&quot;: &quot;234&quot;,
                 &quot;pagename&quot;: &quot;tableview 被点击&quot;
-            },
-            &quot;pagePara&quot;: {
-                &quot;user_grade&quot;: {
+            &#125;,
+            &quot;pagePara&quot;: &#123;
+                &quot;user_grade&quot;: &#123;
                     &quot;propertyName&quot;: &quot;grade&quot;,
                     &quot;propertyPath&quot;:&quot;&quot;,
                     &quot;containIn&quot;: &quot;1&quot;
-                }
-            }
-        }
-    },
-
-    &quot;GESTURE&quot;: {
-        &quot;ViewController/controllerclicked:&quot;:{
-            &quot;userDefined&quot;: {
+                &#125;
+            &#125;
+        &#125;
+    &#125;,
+     
+    &quot;GESTURE&quot;: &#123;
+        &quot;ViewController/controllerclicked:&quot;:&#123;
+            &quot;userDefined&quot;: &#123;
                 &quot;eventid&quot;: &quot;201803074|93&quot;,
                 &quot;target&quot;: &quot;&quot;,
                 &quot;pageid&quot;: &quot;123&quot;,
                 &quot;pagename&quot;: &quot;手势响应&quot;
-            },
-            &quot;pagePara&quot;: {
-                &quot;testKey1&quot;: {
+            &#125;,
+            &quot;pagePara&quot;: &#123;
+                &quot;testKey1&quot;: &#123;
                     &quot;propertyName&quot;: &quot;testPara&quot;,
                     &quot;propertyPath&quot;:&quot;&quot;,
                     &quot;containIn&quot;: &quot;0&quot;
-                }
-            }
-        }
-    }
-}
-</code></pre><h2 id="取参方式"><a href="#取参方式" class="headerlink" title="取参方式"></a>取参方式</h2><pre><code>@implementation CaptureTool
-
+                &#125;
+            &#125;
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<h2 id="取参方式"><a href="#取参方式" class="headerlink" title="取参方式"></a>取参方式</h2><pre><code>@implementation CaptureTool
+ 
 +(id)captureVarforInstance:(id)instance varName:(NSString *)varName
-{
+&#123;
     id value = [instance valueForKey:varName];
-
+     
     unsigned int count;
     objc_property_t *properties = class_copyPropertyList([instance class], &amp;count);
-
-    if (!value) {
+     
+    if (!value) &#123;
         NSMutableArray * varNameArray = [NSMutableArray arrayWithCapacity:0];
-        for (int i = 0; i &lt; count; i++) {
+        for (int i = 0; i &lt; count; i++) &#123;
             objc_property_t property = properties[i];
             NSString* propertyAttributes = [NSString stringWithUTF8String:property_getAttributes(property)];
             NSArray* splitPropertyAttributes = [propertyAttributes componentsSeparatedByString:@&quot;\&quot;&quot;];
-            if (splitPropertyAttributes.count &lt; 2) {
+            if (splitPropertyAttributes.count &lt; 2) &#123;
                 continue;
-            }
+            &#125;
             NSString * className = [splitPropertyAttributes objectAtIndex:1];
             Class cls = NSClassFromString(className);
             NSBundle *bundle2 = [NSBundle bundleForClass:cls];
-            if (bundle2 == [NSBundle mainBundle]) {
+            if (bundle2 == [NSBundle mainBundle]) &#123;
 //                NSLog(@&quot;自定义的类----- %@&quot;, className);
                 const char * name = property_getName(property);
                 NSString * varname = [[NSString alloc] initWithCString:name encoding:NSUTF8StringEncoding];
                 [varNameArray addObject:varname];
-            } else {
+            &#125; else &#123;
 //                NSLog(@&quot;系统的类&quot;);
-            }
-        }
-
-        for (NSString * name in varNameArray) {
+            &#125;
+        &#125;
+         
+        for (NSString * name in varNameArray) &#123;
             id newValue = [instance valueForKey:name];
-            if (newValue) {
+            if (newValue) &#123;
                 value = [newValue valueForKey:varName];
-                if (value) {
+                if (value) &#123;
                     return value;
-                }else{
+                &#125;else&#123;
                     value = [[self class] captureVarforInstance:newValue varName:varName];
-                }
-            }
-        }
-    }
+                &#125;
+            &#125;
+        &#125;
+    &#125;
     return value;
-}
-
+&#125;
+ 
 +(id)captureVarforInstance:(id)instance withPara:(NSDictionary *)para
-{
+&#123;
     NSString * properyName = para[@&quot;propertyName&quot;];
     NSString * propertyPath = para[@&quot;propertyPath&quot;];
-    if (propertyPath.length &gt; 0) {
+    if (propertyPath.length &gt; 0) &#123;
         NSArray * keysArray = [propertyPath componentsSeparatedByString:@&quot;/&quot;];
-
+      
         return [[self class] captureVarforInstance:instance withKeys:keysArray];
-    }
+    &#125;
     return [[self class] captureVarforInstance:instance varName:properyName];
-}
-
+&#125;
+ 
 +(id)captureVarforInstance:(id)instance withKeys:(NSArray *)keyArray
-{
+&#123;
     id result = [instance valueForKey:keyArray[0]];
-
-    if (keyArray.count &gt; 1 &amp;&amp; result) {
+     
+    if (keyArray.count &gt; 1 &amp;&amp; result) &#123;
         int i = 1;
-        while (i &lt; keyArray.count &amp;&amp; result) {
+        while (i &lt; keyArray.count &amp;&amp; result) &#123;
             result = [result valueForKey:keyArray[i]];
             i++;
-        }
-    }
+        &#125;
+    &#125;
     return result;
-}
+&#125;
 @end
 </code></pre>
+
       
 
       
@@ -666,7 +672,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/07/iOS无痕埋点/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/07/iOS%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -680,7 +686,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/12/09/Nonnull区域设置(Audited Regions)/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/12/09/Nonnull%E5%8C%BA%E5%9F%9F%E8%AE%BE%E7%BD%AE(Audited%20Regions)/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -690,7 +696,7 @@
     </a>
   
   
-    <a href="/2018/12/06/Keychain的介绍和使用/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/12/06/Keychain%E7%9A%84%E4%BB%8B%E7%BB%8D%E5%92%8C%E4%BD%BF%E7%94%A8/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Keychain的介绍和使用</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -734,7 +740,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -841,10 +847,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -853,7 +855,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -861,11 +863,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -885,19 +891,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

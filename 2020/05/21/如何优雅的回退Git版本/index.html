@@ -9,17 +9,17 @@
   <title>如何优雅的回退Git版本 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面从接触编程就开始使用 Git 进行代码管理，先是自己玩 Github，又在工作中使用 Gitlab，虽然使用时间挺长，可是也只进行一些常用操作，如推拉代码、提交、合并等，更复杂的操作没有使用过，看过的教程也逐渐淡忘了，有些对不起 Linus 大神。 出来混总是要还的，前些天就遇到了 Git 里一种十分糟心的场景，并为之前没有深入理解 Git 命令付出了一下午时间的代价。 先介绍一下这种场景">
-<meta name="keywords" content="Git">
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何优雅的回退Git版本">
-<meta property="og:url" content="http://yoursite.com/2020/05/21/如何优雅的回退Git版本/index.html">
+<meta property="og:url" content="http://yoursite.com/2020/05/21/%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E7%9A%84%E5%9B%9E%E9%80%80Git%E7%89%88%E6%9C%AC/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面从接触编程就开始使用 Git 进行代码管理，先是自己玩 Github，又在工作中使用 Gitlab，虽然使用时间挺长，可是也只进行一些常用操作，如推拉代码、提交、合并等，更复杂的操作没有使用过，看过的教程也逐渐淡忘了，有些对不起 Linus 大神。 出来混总是要还的，前些天就遇到了 Git 里一种十分糟心的场景，并为之前没有深入理解 Git 命令付出了一下午时间的代价。 先介绍一下这种场景">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-05-21T02:22:17.933Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2020-05-21T02:16:02.887Z">
+<meta property="article:modified_time" content="2020-05-21T02:22:17.933Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="Git">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="如何优雅的回退Git版本">
-<meta name="twitter:description" content="写在前面从接触编程就开始使用 Git 进行代码管理，先是自己玩 Github，又在工作中使用 Gitlab，虽然使用时间挺长，可是也只进行一些常用操作，如推拉代码、提交、合并等，更复杂的操作没有使用过，看过的教程也逐渐淡忘了，有些对不起 Linus 大神。 出来混总是要还的，前些天就遇到了 Git 里一种十分糟心的场景，并为之前没有深入理解 Git 命令付出了一下午时间的代价。 先介绍一下这种场景">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2020/05/21/如何优雅的回退Git版本/" class="archive-article-date">
+        <a href="/2020/05/21/%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E7%9A%84%E5%9B%9E%E9%80%80Git%E7%89%88%E6%9C%AC/" class="archive-article-date">
   	<time datetime="2020-05-21T02:16:02.887Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-21</time>
 </a>
         
@@ -191,7 +191,8 @@
 <p>这个时候另一个可选项是在 master 分支上执行 reset，使用 –hard 选项完全抛弃这些旧代码，reset 后再强制推到远端。</p>
 <pre><code>master&gt; git reset --hard commit_id
 master&gt; git push --force origin master
-</code></pre><p>但是还是有问题，首先，我们的 master 分支在 gitlab 里是被保护的，不能使用 force push，毕竟风险挺大了，万一有人 reset 到最开始的提交再强制 push 的话，虽然可以使用 reflog 恢复，但也是一番折腾。</p>
+</code></pre>
+<p>但是还是有问题，首先，我们的 master 分支在 gitlab 里是被保护的，不能使用 force push，毕竟风险挺大了，万一有人 reset 到最开始的提交再强制 push 的话，虽然可以使用 reflog 恢复，但也是一番折腾。</p>
 <p>另外，reset 毕竟太野蛮，我们还是想能保留提交历史，以后排查问题也可以参考。</p>
 <h2 id="升级融合"><a href="#升级融合" class="headerlink" title="升级融合"></a>升级融合</h2><h3 id="rebase"><a href="#rebase" class="headerlink" title="rebase"></a>rebase</h3><p>只好用搜索引擎继续搜索，看到有人提出可以先使用 rebase 把多个提交合并成一个提交，再使用 revert 产生一次反提交，这种方法的思路非常清晰，把 revert 和 rebase 两个命令搭配得很好，相当于使用 revert 回退的升级版。</p>
 <p>先说一下 rebase，rebase 是”变基”的意思，这里的”基”，在我理解是指[多次] commit 形成的 git workflow，使用 rebase，我们可以改变这些历史提交，修改 commit 信息，将多个 commit 进行组合。</p>
@@ -205,14 +206,15 @@ master&gt; git push --force origin master
 pick 0b84ee7 commit2
 pick 986c6c8 commit3
 pick 91a0dcc commit4
-</code></pre><ol>
+</code></pre>
+<ol>
 <li>这些 commit 自旧到新由上而下排列，我们只需要在 commit_id 前添加操作命令即可。</li>
 </ol>
 <p>在合并 commit 这个需求里，我们可以选择 pick(p) 最旧的 commit1，然后在后续的 commit_id 前添加 squash(s) 命令，将这些 commits 都合并到最旧的 commit1 上。</p>
 <ol start="2">
 <li>保存 rebase 结果后，再编辑 commit 信息，使这次 rebase 失效，git 会将之前的这些 commit 都删除，并将其更改合并为一个新的 commit5</li>
 </ol>
-<p>如果出错了，也可以使用 git rebase –abort/–continue/–edit-todo 对之前的编辑进行撤销、继续编辑。</p>
+<p>如果出错了，也可以使用 git rebase –abort&#x2F;–continue&#x2F;–edit-todo 对之前的编辑进行撤销、继续编辑。</p>
 <ol start="3">
 <li>这个时候，主分支上的提交记录是 older, commit1, commit2, commit3, commit4</li>
 </ol>
@@ -324,7 +326,7 @@ pick 91a0dcc commit4
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/05/21/如何优雅的回退Git版本/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2020/05/21/%E5%A6%82%E4%BD%95%E4%BC%98%E9%9B%85%E7%9A%84%E5%9B%9E%E9%80%80Git%E7%89%88%E6%9C%AC/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -338,7 +340,7 @@ pick 91a0dcc commit4
   
 <nav id="article-nav">
   
-    <a href="/2020/12/05/ButterKnife被弃用，ViewBinding才是findView的未来？/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2020/12/05/ButterKnife%E8%A2%AB%E5%BC%83%E7%94%A8%EF%BC%8CViewBinding%E6%89%8D%E6%98%AFfindView%E7%9A%84%E6%9C%AA%E6%9D%A5%EF%BC%9F/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -348,7 +350,7 @@ pick 91a0dcc commit4
     </a>
   
   
-    <a href="/2020/05/20/分布式唯一ID的生成方式/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2020/05/20/%E5%88%86%E5%B8%83%E5%BC%8F%E5%94%AF%E4%B8%80ID%E7%9A%84%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">分布式唯一ID的生成方式</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -392,7 +394,7 @@ pick 91a0dcc commit4
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -499,10 +501,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -511,7 +509,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -519,11 +517,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -543,19 +545,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

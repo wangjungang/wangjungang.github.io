@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>iOS 对象数组的深拷贝(NSCoding协议) | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面项目过程中遇到了对象数组的使用：联系人界面——需要分区显示，如果我存放在一个数组然后每次显示都重新分组发现会有一个计算的延迟，所有我先进行分区放在了一个单例类中的字典中。当我需要用到这个联系人的界面额外定义一个NSDictionary对它赋值，试图修改NSDictionary时发现存放在单例类中的数组对象也被修改了。感觉很无语啊。当时我的嵌套是这样的 NSDictionary@{key1:">
-<meta name="keywords" content="Cocoapods">
+  <meta name="description" content="写在前面项目过程中遇到了对象数组的使用：联系人界面——需要分区显示，如果我存放在一个数组然后每次显示都重新分组发现会有一个计算的延迟，所有我先进行分区放在了一个单例类中的字典中。当我需要用到这个联系人的界面额外定义一个NSDictionary对它赋值，试图修改NSDictionary时发现存放在单例类中的数组对象也被修改了。感觉很无语啊。当时我的嵌套是这样的 NSDictionary@&amp;#123;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS 对象数组的深拷贝(NSCoding协议)">
-<meta property="og:url" content="http://yoursite.com/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/11/26/iOS%20%E5%AF%B9%E8%B1%A1%E6%95%B0%E7%BB%84%E7%9A%84%E6%B7%B1%E6%8B%B7%E8%B4%9D(NSCoding%E5%8D%8F%E8%AE%AE)/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面项目过程中遇到了对象数组的使用：联系人界面——需要分区显示，如果我存放在一个数组然后每次显示都重新分组发现会有一个计算的延迟，所有我先进行分区放在了一个单例类中的字典中。当我需要用到这个联系人的界面额外定义一个NSDictionary对它赋值，试图修改NSDictionary时发现存放在单例类中的数组对象也被修改了。感觉很无语啊。当时我的嵌套是这样的 NSDictionary@{key1:">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-26T03:22:59.084Z">
+<meta property="og:description" content="写在前面项目过程中遇到了对象数组的使用：联系人界面——需要分区显示，如果我存放在一个数组然后每次显示都重新分组发现会有一个计算的延迟，所有我先进行分区放在了一个单例类中的字典中。当我需要用到这个联系人的界面额外定义一个NSDictionary对它赋值，试图修改NSDictionary时发现存放在单例类中的数组对象也被修改了。感觉很无语啊。当时我的嵌套是这样的 NSDictionary@&amp;#123;">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-11-26T03:19:48.342Z">
+<meta property="article:modified_time" content="2018-11-26T03:22:59.084Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="Cocoapods">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS 对象数组的深拷贝(NSCoding协议)">
-<meta name="twitter:description" content="写在前面项目过程中遇到了对象数组的使用：联系人界面——需要分区显示，如果我存放在一个数组然后每次显示都重新分组发现会有一个计算的延迟，所有我先进行分区放在了一个单例类中的字典中。当我需要用到这个联系人的界面额外定义一个NSDictionary对它赋值，试图修改NSDictionary时发现存放在单例类中的数组对象也被修改了。感觉很无语啊。当时我的嵌套是这样的 NSDictionary@{key1:">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/" class="archive-article-date">
+        <a href="/2018/11/26/iOS%20%E5%AF%B9%E8%B1%A1%E6%95%B0%E7%BB%84%E7%9A%84%E6%B7%B1%E6%8B%B7%E8%B4%9D(NSCoding%E5%8D%8F%E8%AE%AE)/" class="archive-article-date">
   	<time datetime="2018-11-26T03:19:48.342Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
 </a>
         
@@ -176,9 +176,10 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>项目过程中遇到了对象数组的使用：联系人界面——需要分区显示，如果我存放在一个数组然后每次显示都重新分组发现会有一个计算的延迟，所有我先进行分区放在了一个单例类中的字典中。当我需要用到这个联系人的界面额外定义一个NSDictionary对它赋值，试图修改NSDictionary时发现存放在单例类中的数组对象也被修改了。感觉很无语啊。当时我的嵌套是这样的</p>
-<pre><code>NSDictionary@{key1:NSMutableArray@[对象1，对象2],key2:NSMutableArray@[对象3，对象4],...}
-</code></pre><p>就是在一个单例类中定义了一个不可变字典NSDictionary的属性，存放了n个可变数组NSMutableArray，而这些可变数组可以动态增加或者删除数组内存放的对象。</p>
-<p>在网上看了很多对象的深拷贝，浅拷贝copy/mutableCopy。并且我已经实现了NSCoding协议。可是发现全部无效。于是我写了一个Test工程发现一个问题</p>
+<pre><code>NSDictionary@&#123;key1:NSMutableArray@[对象1，对象2],key2:NSMutableArray@[对象3，对象4],...&#125;
+</code></pre>
+<p>就是在一个单例类中定义了一个不可变字典NSDictionary的属性，存放了n个可变数组NSMutableArray，而这些可变数组可以动态增加或者删除数组内存放的对象。</p>
+<p>在网上看了很多对象的深拷贝，浅拷贝copy&#x2F;mutableCopy。并且我已经实现了NSCoding协议。可是发现全部无效。于是我写了一个Test工程发现一个问题</p>
 <pre><code>NSArray *array1 = [NSArray arrayWithObjects:@&quot;a&quot;, nil];
 
  NSMutableArray *arry2 = [array1 mutableCopy];
@@ -186,7 +187,8 @@
  [arry2 replaceObjectAtIndex:0 withObject:@&quot;b&quot;];
 
  NSLog(@&quot;%@&quot;,array1);
-</code></pre><p>这样输出结果依然是@[a]</p>
+</code></pre>
+<p>这样输出结果依然是@[a]</p>
 <p>但是当我定义两个一个实现了NSCoding协议并且有一个name属性的Person对象并且放到数组中时</p>
 <pre><code>Person *person1 = [[Person alloc] init];
 
@@ -196,13 +198,14 @@ NSArray *array1 = [NSArray arrayWithObjects:person1, nil];
 
 NSArray *arry2 = [NSArray arrayWithArray:array1];
 
-[arry2 enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+[arry2 enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) &#123;
     Person *person = obj;
     person.name = @&quot;c&quot;;
- }];
+ &#125;];
 
 NSLog(@&quot;%@&quot;,array1);
-</code></pre><p>并且遍历的时候对象必须copy，不然还是难以达到深拷贝。 </p>
+</code></pre>
+<p>并且遍历的时候对象必须copy，不然还是难以达到深拷贝。 </p>
 <p>后来找到另一种方法，就是通过[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:]];</p>
 <pre><code>Person *person1 = [[Person alloc] init];
     person1.name = @&quot;a&quot;;
@@ -224,13 +227,14 @@ NSLog(@&quot;%@&quot;,array1);
 
     NSMutableArray *arrayM = [NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[temDict objectForKey:@&quot;a&quot;]]];
 
-    [arrayM enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [arrayM enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) &#123;
         Person *person = obj;
         person.name = @&quot;c&quot;;
-    }];
+    &#125;];
 
     NSLog(@&quot;2:%@&quot;,[Object shareObject].dict);
-</code></pre><p>并且不管你嵌套了多少层，只要每一层都实现了NSCoding协议也可以实现深拷贝。后来我就放弃了把联系人放在单例类中，直接放在了本地文件中。</p>
+</code></pre>
+<p>并且不管你嵌套了多少层，只要每一层都实现了NSCoding协议也可以实现深拷贝。后来我就放弃了把联系人放在单例类中，直接放在了本地文件中。</p>
 
       
 
@@ -321,7 +325,7 @@ NSLog(@&quot;%@&quot;,array1);
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/26/iOS%20%E5%AF%B9%E8%B1%A1%E6%95%B0%E7%BB%84%E7%9A%84%E6%B7%B1%E6%8B%B7%E8%B4%9D(NSCoding%E5%8D%8F%E8%AE%AE)/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -335,7 +339,7 @@ NSLog(@&quot;%@&quot;,array1);
   
 <nav id="article-nav">
   
-    <a href="/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/11/26/UITableView%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A1%E7%AE%97UILabel%E9%AB%98%E5%BA%A6%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -345,7 +349,7 @@ NSLog(@&quot;%@&quot;,array1);
     </a>
   
   
-    <a href="/2018/11/24/iOS NSConding 协议归档/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/11/24/iOS%20NSConding%20%E5%8D%8F%E8%AE%AE%E5%BD%92%E6%A1%A3/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iOS NSConding 协议归档</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -389,7 +393,7 @@ NSLog(@&quot;%@&quot;,array1);
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -496,10 +500,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -508,7 +508,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -516,11 +516,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -540,19 +544,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

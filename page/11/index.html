@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/11/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/22/UITableView + Refresh/">UITableView + Refresh</a>
+      <a class="article-title" href="/2019/02/22/UITableView%20+%20Refresh/">UITableView + Refresh</a>
     </h1>
   
 
         
-        <a href="/2019/02/22/UITableView + Refresh/" class="archive-article-date">
+        <a href="/2019/02/22/UITableView%20+%20Refresh/" class="archive-article-date">
   	<time datetime="2019-02-22T07:37:28.676Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
 </a>
         
@@ -173,12 +173,13 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="TableView-通常要和-Refresh功能结合使用-Refresh-大都从网络获取数据然后进行刷新"><a href="#TableView-通常要和-Refresh功能结合使用-Refresh-大都从网络获取数据然后进行刷新" class="headerlink" title="TableView 通常要和 Refresh功能结合使用, Refresh 大都从网络获取数据然后进行刷新"></a>TableView 通常要和 Refresh功能结合使用, Refresh 大都从网络获取数据然后进行刷新</h3><h2 id="数据获取-返回列表数据"><a href="#数据获取-返回列表数据" class="headerlink" title="数据获取, 返回列表数据"></a>数据获取, 返回列表数据</h2><pre><code>/// 获取数据
-func getRandomResult() -&gt; Observable&lt;[SectionModel&lt;String, Int&gt;]&gt; {
-    let items = (0..&lt;5).map { _ in Int(arc4random()) }
+func getRandomResult() -&gt; Observable&lt;[SectionModel&lt;String, Int&gt;]&gt; &#123;
+    let items = (0..&lt;5).map &#123; _ in Int(arc4random()) &#125;
     let observable = Observable.just([SectionModel(model: &quot;S&quot;, items: items)])
     return observable.delay(2, scheduler: MainScheduler.instance) // 模拟网络请求 延迟2秒钟
-}
-</code></pre><h2 id="创建表格并绑定数据"><a href="#创建表格并绑定数据" class="headerlink" title="创建表格并绑定数据"></a>创建表格并绑定数据</h2><pre><code>/// 设置导航栏右侧按钮为刷新
+&#125;
+</code></pre>
+<h2 id="创建表格并绑定数据"><a href="#创建表格并绑定数据" class="headerlink" title="创建表格并绑定数据"></a>创建表格并绑定数据</h2><pre><code>/// 设置导航栏右侧按钮为刷新
 let refreshButton = UIBarButtonItem()
 refreshButton.title = &quot;刷新&quot;
 self.navigationItem.rightBarButtonItem = refreshButton
@@ -198,16 +199,17 @@ let randomResult = refreshButton.rx.tap.asObservable()
 
 
 // 创建数据源
-let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, Int&gt;&gt;( configureCell: {
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, Int&gt;&gt;( configureCell: &#123;
     (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
     cell.textLabel?.text = &quot;条目\(indexPath.row): \(element)&quot;
     return cell
-})
+&#125;)
 
 // 数据绑定
 randomResult.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-</code></pre><h2 id="停止数据请求"><a href="#停止数据请求" class="headerlink" title="停止数据请求"></a>停止数据请求</h2><p>使用 takeUntil 来停止数据请求</p>
+</code></pre>
+<h2 id="停止数据请求"><a href="#停止数据请求" class="headerlink" title="停止数据请求"></a>停止数据请求</h2><p>使用 takeUntil 来停止数据请求</p>
 <pre><code>let cancelButton = UIBarButtonItem()
 cancelButton.title = &quot;取消&quot;
 self.navigationItem.leftBarButtonItem = cancelButton
@@ -219,13 +221,14 @@ self.navigationItem.leftBarButtonItem = cancelButton
 let randomResult = refreshButton.rx.tap.asObservable()
     .throttle(1, scheduler: MainScheduler.instance) // 在主线程中操作, 若1秒钟多次改变, 取最后一次
     .startWith(()) // 加这个是为了一开始就能自动请求一次数据
-    .flatMapLatest({
+    .flatMapLatest(&#123;
     // 核心代码
-    self.getRandomResult().takeUntil(self.cancelButton.rx.tap) }) // 停止数据请求
+    self.getRandomResult().takeUntil(self.cancelButton.rx.tap) &#125;) // 停止数据请求
     .share(replay: 1)
-
+    
 `
-</code></pre><p><code></code></p>
+</code></pre>
+<p><code> </code></p>
 
       
 
@@ -249,7 +252,7 @@ let randomResult = refreshButton.rx.tap.asObservable()
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/22/UITableView + Refresh/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/02/22/UITableView%20+%20Refresh/">展开全文 >></a>
         </p>
       
 
@@ -286,12 +289,12 @@ let randomResult = refreshButton.rx.tap.asObservable()
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/22/UITableView + RxDataSources/">UITableView + RxDataSources</a>
+      <a class="article-title" href="/2019/02/22/UITableView%20+%20RxDataSources/">UITableView + RxDataSources</a>
     </h1>
   
 
         
-        <a href="/2019/02/22/UITableView + RxDataSources/" class="archive-article-date">
+        <a href="/2019/02/22/UITableView%20+%20RxDataSources/" class="archive-article-date">
   	<time datetime="2019-02-22T07:32:54.645Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
 </a>
         
@@ -301,7 +304,8 @@ let randomResult = refreshButton.rx.tap.asObservable()
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>官方介绍</p>
 <pre><code>UITableView and UICollectionView Data Sources for RxSwift (sections, animated updates, editing ...)
-</code></pre><p>特点</p>
+</code></pre>
+<p>特点</p>
 <ul>
 <li><p>1、RxDataSource 的本质就是使用 RxSwift 对 UITableView 和 UICollectionView 的数据源做了一层包装。使用它可以大大减少我们的工作量</p>
 </li>
@@ -310,11 +314,14 @@ let randomResult = refreshButton.rx.tap.asObservable()
 </ul>
 <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
 <li><p>CocoaPods</p>
-<pre><code>pod &apos;RxDataSources&apos;
-</code></pre></li>
+<pre><code>  pod &#39;RxDataSources&#39;
+  
+</code></pre>
+</li>
 <li><p>Carthage</p>
-<pre><code>github &quot;RxSwiftCommunity/RxDataSources&quot;
-</code></pre></li>
+<pre><code>  github &quot;RxSwiftCommunity/RxDataSources&quot;
+</code></pre>
+</li>
 </ul>
 <h2 id="单分区-TableView"><a href="#单分区-TableView" class="headerlink" title="单分区 TableView"></a>单分区 TableView</h2><h3 id="方式一：使用自带的Section"><a href="#方式一：使用自带的Section" class="headerlink" title="方式一：使用自带的Section"></a>方式一：使用自带的Section</h3><pre><code>// 创建表格
 tableView = UITableView(frame: view.bounds, style: .plain)
@@ -331,34 +338,35 @@ let items = Observable.just([
     ])
 
 // 创建数据源
-let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;(configureCell: {
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;(configureCell: &#123;
     (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
     cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
     return cell
-})
+&#125;)
 
 // 数据绑定
 items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-</code></pre><h3 id="方式二：使用自定义的Section"><a href="#方式二：使用自定义的Section" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><p>自定义 SectionModel</p>
-<pre><code>struct XMSessionModel {
+</code></pre>
+<h3 id="方式二：使用自定义的Section"><a href="#方式二：使用自定义的Section" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><p>自定义 SectionModel</p>
+<pre><code>struct XMSessionModel &#123;
     var header: String
     var items: [Item]
-}
+&#125;
 
-extension XMSessionModel: AnimatableSectionModelType {
-
+extension XMSessionModel: AnimatableSectionModelType &#123;
+    
     typealias Item = String
-
-    var identity: String {
+    
+    var identity: String &#123;
         return header
-    }
-
-    init(original: XMSessionModel, items: [Item]) {
+    &#125;
+    
+    init(original: XMSessionModel, items: [Item]) &#123;
         self = original
         self.items = items
-    }
-}
+    &#125;
+&#125;
 
 // 创建表格
 tableView = UITableView(frame: view.bounds, style: .plain)
@@ -375,16 +383,17 @@ let sections = Observable.just([
     ])
 
 // 创建数据源
-let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: {
+let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: &#123;
     (dataSource, tableView, indexPath, item) -&gt; UITableViewCell in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;) ?? UITableViewCell(style: .default, reuseIdentifier: &quot;cellID&quot;)
     cell.textLabel?.text = &quot;\(indexPath.row): \(item)&quot;
     return cell
-})
+&#125;)
 
 // 数据绑定
 sections.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-</code></pre><h2 id="多分区的-TableView"><a href="#多分区的-TableView" class="headerlink" title="多分区的 TableView"></a>多分区的 TableView</h2><h3 id="方式一：使用自带的Section-1"><a href="#方式一：使用自带的Section-1" class="headerlink" title="方式一：使用自带的Section"></a>方式一：使用自带的Section</h3><pre><code>// 创建表格
+</code></pre>
+<h2 id="多分区的-TableView"><a href="#多分区的-TableView" class="headerlink" title="多分区的 TableView"></a>多分区的 TableView</h2><h3 id="方式一：使用自带的Section-1"><a href="#方式一：使用自带的Section-1" class="headerlink" title="方式一：使用自带的Section"></a>方式一：使用自带的Section</h3><pre><code>// 创建表格
 tableView = UITableView(frame: view.bounds, style: .plain)
 // 注册单元格
 tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
@@ -402,26 +411,27 @@ let items = Observable.just([
     ])
 
 // 创建数据源
-let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;( configureCell: {
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;( configureCell: &#123;
     (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
     cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
     return cell
-})
+&#125;)
 
 // 设置分区头标题
-dataSource.titleForHeaderInSection = { dataSource, index in
+dataSource.titleForHeaderInSection = &#123; dataSource, index in
     return dataSource.sectionModels[index].model
-}
+&#125;
 
 // 设置分区尾部标题
-dataSource.titleForFooterInSection = { dataSource, index in
+dataSource.titleForFooterInSection = &#123; dataSource, index in
     return &quot;footer&quot;
-}
+&#125;
 
 // 数据绑定
 items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-</code></pre><h3 id="方式二：使用自定义的Section-1"><a href="#方式二：使用自定义的Section-1" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><pre><code>// 创建表格
+</code></pre>
+<h3 id="方式二：使用自定义的Section-1"><a href="#方式二：使用自定义的Section-1" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><pre><code>// 创建表格
 tableView = UITableView(frame: view.bounds, style: .plain)
 // 注册单元格
 tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
@@ -439,26 +449,27 @@ let items = Observable.just([
     ])
 
 // 创建数据源
-let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: {
+let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: &#123;
     (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
     cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
     return cell
-})
+&#125;)
 
 // 设置分区头标题
-dataSource.titleForHeaderInSection = { dataSource, index in
+dataSource.titleForHeaderInSection = &#123; dataSource, index in
     return dataSource.sectionModels[index].header
-}
+&#125;
 
 // 设置分区尾部标题
-dataSource.titleForFooterInSection = { dataSource, index in
+dataSource.titleForFooterInSection = &#123; dataSource, index in
     return &quot;footer&quot;
-}
+&#125;
 
 // 数据绑定
 items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
 </code></pre>
+
       
 
       
@@ -481,7 +492,7 @@ items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeB
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/22/UITableView + RxDataSources/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/02/22/UITableView%20+%20RxDataSources/">展开全文 >></a>
         </p>
       
 
@@ -533,9 +544,9 @@ items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeB
       
         <h2 id="单个分区的表格"><a href="#单个分区的表格" class="headerlink" title="单个分区的表格"></a>单个分区的表格</h2><pre><code>var tableView: UITableView!
 
-override func viewDidLoad() {
+override func viewDidLoad() &#123;
     super.viewDidLoad()
-
+    
 tableView = UITableView(frame: view.bounds, style: .plain)
 
 // 注册cell
@@ -552,108 +563,116 @@ let items = Observable.just([
     ])
 
 // 设置 tableView 数据 (原理是对 cellForRow 的封装)
-items.bind(to: tableView.rx.items) { tableView, row, element in
+items.bind(to: tableView.rx.items) &#123; tableView, row, element in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellid&quot;)!
     cell.textLabel?.text = &quot;\(row): \(element)&quot;
     return cell
-}.disposed(by: disposeBag)
-}
-</code></pre><h2 id="单元格选中事件响应"><a href="#单元格选中事件响应" class="headerlink" title="单元格选中事件响应"></a>单元格选中事件响应</h2><pre><code>// 设置 tableView 数据 (原理是对 cellForRow 的封装)
-items.bind(to: tableView.rx.items) { tableView, row, element in
+&#125;.disposed(by: disposeBag)
+&#125;
+</code></pre>
+<h2 id="单元格选中事件响应"><a href="#单元格选中事件响应" class="headerlink" title="单元格选中事件响应"></a>单元格选中事件响应</h2><pre><code>// 设置 tableView 数据 (原理是对 cellForRow 的封装)
+items.bind(to: tableView.rx.items) &#123; tableView, row, element in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellid&quot;)!
     cell.textLabel?.text = &quot;\(row): \(element)&quot;
     return cell
-}.disposed(by: disposeBag)
+&#125;.disposed(by: disposeBag)
 
 // 获取选中项的索引
-tableView.rx.itemSelected.subscribe(onNext: { indexPath in
+tableView.rx.itemSelected.subscribe(onNext: &#123; indexPath in
     print(&quot;选中项的indexPath为: \(indexPath)&quot;)
-}).disposed(by: disposeBag)
+&#125;).disposed(by: disposeBag)
 
 // 获取选中项的内容
-tableView.rx.modelSelected(String.self).subscribe(onNext: { item in
+tableView.rx.modelSelected(String.self).subscribe(onNext: &#123; item in
     print(&quot;选中项的标题为: \(item)&quot;)
-}).disposed(by: disposeBag)
+&#125;).disposed(by: disposeBag)
 
 // 获取选中项的索引和内容
-Observable.zip(tableView.rx.itemSelected, tableView.rx.modelSelected(String.self)).bind { [weak self] indexPath, item in
+Observable.zip(tableView.rx.itemSelected, tableView.rx.modelSelected(String.self)).bind &#123; [weak self] indexPath, item in
     print(&quot;~选中项的indexPath为: \(indexPath)&quot;)
     print(&quot;~选中项的标题为: \(item)&quot;)
-}.disposed(by: disposeBag)
-</code></pre><h2 id="单元格取消选中事件响应"><a href="#单元格取消选中事件响应" class="headerlink" title="单元格取消选中事件响应"></a>单元格取消选中事件响应</h2><pre><code>// 获取被取消选中项的索引
-tableView.rx.itemDeselected.subscribe(onNext: { [weak self] indexPath in
+&#125;.disposed(by: disposeBag)
+</code></pre>
+<h2 id="单元格取消选中事件响应"><a href="#单元格取消选中事件响应" class="headerlink" title="单元格取消选中事件响应"></a>单元格取消选中事件响应</h2><pre><code>// 获取被取消选中项的索引
+tableView.rx.itemDeselected.subscribe(onNext: &#123; [weak self] indexPath in
     print(&quot;被取消选中项的indexPath为: \(indexPath)&quot;)
-}).disposed(by: disposeBag)
+&#125;).disposed(by: disposeBag)
 
 // 获取被取消选中项的内容
-tableView.rx.modelDeselected(String.self).subscribe(onNext: { item in
+tableView.rx.modelDeselected(String.self).subscribe(onNext: &#123; item in
     print(&quot;被取消选中项的标题为: \(item)&quot;)
-}).disposed(by: disposeBag)
+&#125;).disposed(by: disposeBag)
 
 // 获取选中项的索引和内容
-Observable.zip(tableView.rx.itemSelected, tableView.rx.modelDeselected(String.self)).bind { [weak self] indexPath, item in
+Observable.zip(tableView.rx.itemSelected, tableView.rx.modelDeselected(String.self)).bind &#123; [weak self] indexPath, item in
     print(&quot;~被取消选中项的indexPath为: \(indexPath)&quot;)
     print(&quot;~被取消选中项的标题为: \(item)&quot;)
-}.disposed(by: disposeBag)
-</code></pre><h2 id="单元格删除事件响应"><a href="#单元格删除事件响应" class="headerlink" title="单元格删除事件响应"></a>单元格删除事件响应</h2><pre><code>// 打开 cell 的编辑功能
+&#125;.disposed(by: disposeBag)
+</code></pre>
+<h2 id="单元格删除事件响应"><a href="#单元格删除事件响应" class="headerlink" title="单元格删除事件响应"></a>单元格删除事件响应</h2><pre><code>// 打开 cell 的编辑功能
 tableView.setEditing(true, animated: true)
 // 获取删除项的索引
-tableView.rx.itemDeleted.subscribe(onNext: { indexPath in
+tableView.rx.itemDeleted.subscribe(onNext: &#123; indexPath in
     print(&quot;删除项的indexPath: \(indexPath)&quot;)
-}).disposed(by: disposeBag)
+&#125;).disposed(by: disposeBag)
 
-tableView.rx.modelDeleted(String.self).subscribe(onNext: { item in
+tableView.rx.modelDeleted(String.self).subscribe(onNext: &#123; item in
     print(&quot;删除项的item: \(item)&quot;)
-}).disposed(by: disposeBag)
+&#125;).disposed(by: disposeBag)
 
 // 删除项的索引和内容
-Observable.zip(tableView.rx.itemDeleted, tableView.rx.modelDeleted(String.self)).bind { indexPath, item in
+Observable.zip(tableView.rx.itemDeleted, tableView.rx.modelDeleted(String.self)).bind &#123; indexPath, item in
     print(&quot;~删除项的indexPath: \(indexPath)&quot;)
     print(&quot;~删除项的item: \(item)&quot;)
-}.disposed(by: disposeBag)
-</code></pre><h2 id="单元格移动事件响应"><a href="#单元格移动事件响应" class="headerlink" title="单元格移动事件响应"></a>单元格移动事件响应</h2><pre><code>// 单元格移动事件响应
+&#125;.disposed(by: disposeBag)
+</code></pre>
+<h2 id="单元格移动事件响应"><a href="#单元格移动事件响应" class="headerlink" title="单元格移动事件响应"></a>单元格移动事件响应</h2><pre><code>// 单元格移动事件响应
 tableView.setEditing(true, animated: true)
-tableView.rx.itemMoved.subscribe(onNext: { sourceIndexPath, destinationIndexPath in
+tableView.rx.itemMoved.subscribe(onNext: &#123; sourceIndexPath, destinationIndexPath in
      print(&quot;移动项原来的的indexPath: \(sourceIndexPath)&quot;)
      print(&quot;移动项现在的的indexPath: \(destinationIndexPath)&quot;)
-}).disposed(by: disposeBag)
+&#125;).disposed(by: disposeBag)
 
 // 获取插入项的索引
-tableView.rx.itemInserted.subscribe(onNext: { [weak self] indexPath in
+tableView.rx.itemInserted.subscribe(onNext: &#123; [weak self] indexPath in
     print(&quot;插入项的indexPath为：\(indexPath)&quot;)
-}).disposed(by: disposeBag)
+&#125;).disposed(by: disposeBag)
 
 // 获取点击的尾部图标的索引
-tableView.rx.itemAccessoryButtonTapped.subscribe(onNext: { [weak self] indexPath in
+tableView.rx.itemAccessoryButtonTapped.subscribe(onNext: &#123; [weak self] indexPath in
     print(&quot;尾部项的indexPath为：\(indexPath)&quot;)
-}).disposed(by: disposeBag)
-</code></pre><h2 id="单元格插入事件响应"><a href="#单元格插入事件响应" class="headerlink" title="单元格插入事件响应"></a>单元格插入事件响应</h2><pre><code>// 单元格将要显示出来的事件响应
-tableView.rx.willDisplayCell.subscribe(onNext: { cell, indexPath in
+&#125;).disposed(by: disposeBag)
+</code></pre>
+<h2 id="单元格插入事件响应"><a href="#单元格插入事件响应" class="headerlink" title="单元格插入事件响应"></a>单元格插入事件响应</h2><pre><code>// 单元格将要显示出来的事件响应
+tableView.rx.willDisplayCell.subscribe(onNext: &#123; cell, indexPath in
     print(&quot;将要显示的indexPath为：\(indexPath)&quot;)
     print(&quot;将要显示的cell为：\(indexPath)&quot;)
-}).disposed(by: disposeBag)
-</code></pre><h2 id="设置代理"><a href="#设置代理" class="headerlink" title="设置代理"></a>设置代理</h2><pre><code>// 设置代理
+&#125;).disposed(by: disposeBag)
+</code></pre>
+<h2 id="设置代理"><a href="#设置代理" class="headerlink" title="设置代理"></a>设置代理</h2><pre><code>// 设置代理
 tableView.rx.setDelegate(self).disposed(by: disposeBag)
-</code></pre><h3 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h3><pre><code>// MARK: - UITableViewDelegate
-extension RxDataSourcesWithHeaderController: UITableViewDelegate {
+</code></pre>
+<h3 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h3><pre><code>// MARK: - UITableViewDelegate
+extension RxDataSourcesWithHeaderController: UITableViewDelegate &#123;
     // 设置单元格高度
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -&gt; CGFloat &#123;
         return 60
-    }
-
+    &#125;
+    
     // 设置分区头的高度
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -&gt; CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -&gt; CGFloat &#123;
         return 40
-    }
-
+    &#125;
+    
     // 是分区头部视图
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -&gt; UIView? {
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -&gt; UIView? &#123;
         let headerView = UIView()
         /// ...
         return headerView
-    }
-}
+    &#125;
+&#125;
 </code></pre>
+
       
 
       
@@ -713,12 +732,12 @@ extension RxDataSourcesWithHeaderController: UITableViewDelegate {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/22/Rxswift总结（二）/">Rxswift总结（二）</a>
+      <a class="article-title" href="/2019/02/22/Rxswift%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/">Rxswift总结（二）</a>
     </h1>
   
 
         
-        <a href="/2019/02/22/Rxswift总结（二）/" class="archive-article-date">
+        <a href="/2019/02/22/Rxswift%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/" class="archive-article-date">
   	<time datetime="2019-02-22T06:30:04.592Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
 </a>
         
@@ -734,57 +753,60 @@ extension RxDataSourcesWithHeaderController: UITableViewDelegate {
 Observable.just(&quot;Hello RxSwift&quot;)
         .bind(to: label.rx.text)
         .disposed(by: DisposeBag())
-</code></pre><h3 id="UITextFiled"><a href="#UITextFiled" class="headerlink" title="UITextFiled"></a>UITextFiled</h3><p>监听单个 textField 内容的变化</p>
-<pre><code>lazy var textFiled: UITextField = {
+</code></pre>
+<h3 id="UITextFiled"><a href="#UITextFiled" class="headerlink" title="UITextFiled"></a>UITextFiled</h3><p>监听单个 textField 内容的变化</p>
+<pre><code>lazy var textFiled: UITextField = &#123;
     let textfiled = UITextField()
     textfiled.frame = CGRect.init(x: 30, y: 200, width: 100, height: 40)
     return textfiled
-}()
+&#125;()
 
 
 self.view.addSubview(self.textFiled)
-
+    
 // MARK:监听textFiled的变化
-
-        textFiled.rx.text.orEmpty.asObservable().subscribe(onNext: {
+    
+        textFiled.rx.text.orEmpty.asObservable().subscribe(onNext: &#123;
         print(&quot;你输入的是: \($0)&quot;)
-    }).disposed(by: DisposeBag())
-
-    textFiled.rx.text.orEmpty.changed.subscribe(onNext: {
+    &#125;).disposed(by: DisposeBag())
+   
+    textFiled.rx.text.orEmpty.changed.subscribe(onNext: &#123;
         print(&quot;你输入的是: \($0)&quot;)
-    }).disposed(by: DisposeBag())
-</code></pre><h3 id="UIButton"><a href="#UIButton" class="headerlink" title="UIButton"></a>UIButton</h3><pre><code>let disposeBag = DisposeBag()
-lazy var submitBtn: UIButton = {
+    &#125;).disposed(by: DisposeBag())
+</code></pre>
+<h3 id="UIButton"><a href="#UIButton" class="headerlink" title="UIButton"></a>UIButton</h3><pre><code>let disposeBag = DisposeBag()
+lazy var submitBtn: UIButton = &#123;
     let btn = UIButton.init()
     btn.frame = CGRect.init(x: 40, y: 270, width: 100, height: 50)
     btn.backgroundColor = UIColor.orange
     btn.setTitle(&quot;点击&quot;, for: UIControl.State.normal)
     btn.setTitleColor(UIColor.black, for: UIControl.State.normal)
     return btn
-}()
+&#125;()
 
 //按钮点击
    self.submitBtn.rx.tap
-        .subscribe(onNext: { [weak self] in
+        .subscribe(onNext: &#123; [weak self] in
             self?.showMessage(&quot;按钮被点击&quot;)
 
-        })
+        &#125;)
         .disposed(by: disposeBag)
-
+    
     self.submitBtn.rx.tap
-        .bind { [weak self] in
+        .bind &#123; [weak self] in
             self?.showMessage(&quot;按钮被点击&quot;)
-        }
+        &#125;
         .disposed(by: disposeBag)
-
+        
        //显示消息提示框
-func showMessage(_ text: String) {
+func showMessage(_ text: String) &#123;
     let alertController = UIAlertController(title: text, message: nil, preferredStyle: .alert)
     let cancelAction = UIAlertAction(title: &quot;确定&quot;, style: .cancel, handler: nil)
     alertController.addAction(cancelAction)
     self.present(alertController, animated: true, completion: nil)
-}     
+&#125;     
 </code></pre>
+
       
 
       
@@ -807,7 +829,7 @@ func showMessage(_ text: String) {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/22/Rxswift总结（二）/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/02/22/Rxswift%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/">展开全文 >></a>
         </p>
       
 
@@ -844,12 +866,12 @@ func showMessage(_ text: String) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/21/Rxswift总结(一)/">Rxswift总结（一）</a>
+      <a class="article-title" href="/2019/02/21/Rxswift%E6%80%BB%E7%BB%93(%E4%B8%80)/">Rxswift总结（一）</a>
     </h1>
   
 
         
-        <a href="/2019/02/21/Rxswift总结(一)/" class="archive-article-date">
+        <a href="/2019/02/21/Rxswift%E6%80%BB%E7%BB%93(%E4%B8%80)/" class="archive-article-date">
   	<time datetime="2019-02-21T11:02:04.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
 </a>
         
@@ -868,7 +890,7 @@ func showMessage(_ text: String) {
 <h2 id="简化代码"><a href="#简化代码" class="headerlink" title="简化代码"></a>简化代码</h2><ul>
 <li>函数式风格：对可观察数据流使用无副作用的输入输出函数，避免了程序里错综复杂的状态</li>
 <li>简化代码：Rx的操作符通通常可以将复杂的难题简化为很少的几行代码</li>
-<li>异步错误处理：传统的try/catch没办法处理异步计算，Rx提供了合适的错误处理机制</li>
+<li>异步错误处理：传统的try&#x2F;catch没办法处理异步计算，Rx提供了合适的错误处理机制</li>
 <li>轻松使用并发：Rx的Observables和Schedulers让开发者可以摆脱底层的线程同步和各种并发问题</li>
 </ul>
 <h2 id="为什么要使用"><a href="#为什么要使用" class="headerlink" title="为什么要使用"></a>为什么要使用</h2><p>我们编写的绝大部分代码都涉及到外部事件的响应。当一个用户操作控制的时候，我们需要写一个@IBAction来处理。我们需要观察通知来监测键盘如何更改位置。URL回话响应数据时，我们需要用闭包来执行。我们使用KVO来监听变量的改变。所有这些不同的系统都让我们的代码不必要的复杂。如果有一个一致统一的系统来处理这些呼叫／响应，那岂不是很好。RX就是这样一个系统。</p>
@@ -883,7 +905,7 @@ func showMessage(_ text: String) {
 </li>
 </ul>
 <p>如果一个Observable发出一个next事件Event.next(Element)，她可以继续发出更多的事件。当然如果发出一个error事件Event.error(ErrorType)或者一个完成事件Event.completed,Observable队列不会再给订阅者发送额外的事件。源代码里是一个递归枚举</p>
-<pre><code>public enum Event&lt;Element&gt; {
+<pre><code>public enum Event&lt;Element&gt; &#123;
 
     /// Next element is produced.
     case next(Element)
@@ -893,137 +915,158 @@ func showMessage(_ text: String) {
 
     /// Sequence completed successfully.
     case completed
-}
-</code></pre><h3 id="Observables-and-observers"><a href="#Observables-and-observers" class="headerlink" title="Observables and observers"></a>Observables and observers</h3><p>Observables不会执行订阅的闭包除非有一个订阅者。下面的例子中，Observable的订阅闭包不会执行，因为她并没有订阅者。她只是一个可被订阅者。</p>
-<pre><code>_ = Observable&lt;String&gt;.create { observerOfString -&gt; Disposable in
+&#125;
+</code></pre>
+<h3 id="Observables-and-observers"><a href="#Observables-and-observers" class="headerlink" title="Observables and observers"></a>Observables and observers</h3><p>Observables不会执行订阅的闭包除非有一个订阅者。下面的例子中，Observable的订阅闭包不会执行，因为她并没有订阅者。她只是一个可被订阅者。</p>
+<pre><code>_ = Observable&lt;String&gt;.create &#123; observerOfString -&gt; Disposable in
      print(&quot;This will never be printed&quot;)
      observerOfString.on(.next(&quot;😬&quot;))
      observerOfString.on(.completed)
      return Disposables.create
-  }
-</code></pre><p>下面这种情况，当调用subscribe(_:)方法了，闭包就会被执行了</p>
-<pre><code>_ = Observable&lt;String&gt;.create { observerOfString in
+  &#125;
+</code></pre>
+<p>下面这种情况，当调用subscribe(_:)方法了，闭包就会被执行了</p>
+<pre><code>_ = Observable&lt;String&gt;.create &#123; observerOfString in
          print(&quot;Observable created&quot;)
          observerOfString.on(.next(&quot;😉&quot;))
          observerOfString.on(.completed)
          return Disposables.create()
-     }
-     .subscribe { event in
+     &#125;
+     .subscribe &#123; event in
          print(event)
-}
-</code></pre><p>subscribe(_:)这个方法返回Disposable实例。这种类型以后会讨论。就是一个可以被释放的类型，需要释放。</p>
+&#125;
+</code></pre>
+<p>subscribe(_:)这个方法返回Disposable实例。这种类型以后会讨论。就是一个可以被释放的类型，需要释放。</p>
 <h2 id="构建和订阅Observables"><a href="#构建和订阅Observables" class="headerlink" title="构建和订阅Observables"></a>构建和订阅Observables</h2><h3 id="never"><a href="#never" class="headerlink" title="never"></a>never</h3><p>构建一个从不终止和发出任何事件的队列</p>
 <pre><code>let disposeBag = DisposeBag()
 let neverSequence = Observable&lt;String&gt;.never()
-
+    
 let neverSequenceSubscription = neverSequence
-     .subscribe { _ in
+     .subscribe &#123; _ in
           print(&quot;This will never be printed&quot;)
-}
+&#125;
 neverSequenceSubscription.disposed(by: disposeBag)
-</code></pre><h3 id="empty"><a href="#empty" class="headerlink" title="empty"></a>empty</h3><p>构建一个空的Observable队列，只发出完成事件</p>
+</code></pre>
+<h3 id="empty"><a href="#empty" class="headerlink" title="empty"></a>empty</h3><p>构建一个空的Observable队列，只发出完成事件</p>
 <pre><code>let disposeBag = DisposeBag()
  Observable&lt;Int&gt;.empty()
-     .subscribe { event in
+     .subscribe &#123; event in
          print(event)
-     }
+     &#125;
      .disposed(by: disposeBag)
-</code></pre><h3 id="just"><a href="#just" class="headerlink" title="just"></a>just</h3><p>构建一个只有一个元素的Observable队列</p>
+    
+</code></pre>
+<h3 id="just"><a href="#just" class="headerlink" title="just"></a>just</h3><p>构建一个只有一个元素的Observable队列</p>
 <pre><code>let disposeBag = DisposeBag()
 Observable.just(&quot;🔴&quot;)
-   .subscribe { event in
+   .subscribe &#123; event in
        print(event)
-    }
+    &#125;
     .disposed(by: disposeBag)
-</code></pre><h3 id="of"><a href="#of" class="headerlink" title="of"></a>of</h3><p>构建一个拥有固定数量元素的Observable序列</p>
+</code></pre>
+<h3 id="of"><a href="#of" class="headerlink" title="of"></a>of</h3><p>构建一个拥有固定数量元素的Observable序列</p>
 <pre><code>let disposeBag = DisposeBag()
-
+    
 Observable.of(&quot;🐶&quot;, &quot;🐱&quot;, &quot;🐭&quot;, &quot;🐹&quot;)
-    .subscribe(onNext: { element in
+    .subscribe(onNext: &#123; element in
         print(element)
-    })
+    &#125;)
     .disposed(by: disposeBag)
-</code></pre><p>subscribe(_:)方法接受事件参数，下面这个例子接受元素参数</p>
+   
+</code></pre>
+<p>subscribe(_:)方法接受事件参数，下面这个例子接受元素参数</p>
 <pre><code>someObservable.subscribe(
-    onNext: { print(&quot;Element:&quot;, $0) },
-    onError: { print(&quot;Error:&quot;, $0) },
-    onCompleted: { print(&quot;Completed&quot;) },
-    onDisposed: { print(&quot;Disposed&quot;) }
+    onNext: &#123; print(&quot;Element:&quot;, $0) &#125;,
+    onError: &#123; print(&quot;Error:&quot;, $0) &#125;,
+    onCompleted: &#123; print(&quot;Completed&quot;) &#125;,
+    onDisposed: &#123; print(&quot;Disposed&quot;) &#125;
 )
-</code></pre><h3 id="from"><a href="#from" class="headerlink" title="from"></a>from</h3><p>从序列中创建可观察到的序列，如数组、字典或集合。</p>
+</code></pre>
+<h3 id="from"><a href="#from" class="headerlink" title="from"></a>from</h3><p>从序列中创建可观察到的序列，如数组、字典或集合。</p>
 <pre><code>let disposeBag = DisposeBag()
-
+    
 Observable.from([&quot;🐶&quot;, &quot;🐱&quot;, &quot;🐭&quot;, &quot;🐹&quot;])
-    .subscribe(onNext: { print($0) })
+    .subscribe(onNext: &#123; print($0) &#125;)
     .disposed(by: disposeBag)
-</code></pre><h3 id="create"><a href="#create" class="headerlink" title="create"></a>create</h3><p>构建一个自定义的可观察序列</p>
+   
+</code></pre>
+<h3 id="create"><a href="#create" class="headerlink" title="create"></a>create</h3><p>构建一个自定义的可观察序列</p>
 <pre><code>let disposeBag = DisposeBag()
-  let myJust = { (element: String) -&gt; Observable&lt;String&gt; in
-      return Observable.create { observer in
+  let myJust = &#123; (element: String) -&gt; Observable&lt;String&gt; in
+      return Observable.create &#123; observer in
           observer.on(.next(element))
           observer.on(.completed)
           return Disposables.create()
-      }
-  }
+      &#125;
+  &#125;
  myJust(&quot;🔴&quot;)
-     .subscribe { print($0) }
+     .subscribe &#123; print($0) &#125;
      .disposed(by: disposeBag)
-</code></pre><h3 id="range"><a href="#range" class="headerlink" title="range"></a>range</h3><p>创建一个可观察序列，该序列释放一系列连续整数，然后终止</p>
+</code></pre>
+<h3 id="range"><a href="#range" class="headerlink" title="range"></a>range</h3><p>创建一个可观察序列，该序列释放一系列连续整数，然后终止</p>
 <pre><code>let disposeBag = DisposeBag()
  Observable.range(start: 1, count: 10)
-    .subscribe { print($0) }
+    .subscribe &#123; print($0) &#125;
     .disposed(by: disposeBag)
-</code></pre><h3 id="repeatElement"><a href="#repeatElement" class="headerlink" title="repeatElement"></a>repeatElement</h3><p>创建一个可观察到的序列，它无限地释放给定的元素</p>
+   
+</code></pre>
+<h3 id="repeatElement"><a href="#repeatElement" class="headerlink" title="repeatElement"></a>repeatElement</h3><p>创建一个可观察到的序列，它无限地释放给定的元素</p>
 <pre><code>let disposeBag = DisposeBag()
 Observable.repeatElement(&quot;🔴&quot;)
      .take(3)
-     .subscribe(onNext: { print($0) })
+     .subscribe(onNext: &#123; print($0) &#125;)
      .disposed(by: disposeBag)
-</code></pre><h3 id="generate"><a href="#generate" class="headerlink" title="generate"></a>generate</h3><p>创建一个可观察的序列，只要所提供的条件求值为true，就生成值。</p>
+</code></pre>
+<h3 id="generate"><a href="#generate" class="headerlink" title="generate"></a>generate</h3><p>创建一个可观察的序列，只要所提供的条件求值为true，就生成值。</p>
 <pre><code>let disposeBag = DisposeBag()
  Observable.generate(
         initialState: 0,
-        condition: { $0 &lt; 3 },
-        iterate: { $0 + 1 }
+        condition: &#123; $0 &lt; 3 &#125;,
+        iterate: &#123; $0 + 1 &#125;
     )
-    .subscribe(onNext: { print($0) })
+    .subscribe(onNext: &#123; print($0) &#125;)
     .disposed(by: disposeBag)
-</code></pre><h3 id="deferred"><a href="#deferred" class="headerlink" title="deferred"></a>deferred</h3><p>为每个订阅者创建一个新的可观察序列。</p>
+</code></pre>
+<h3 id="deferred"><a href="#deferred" class="headerlink" title="deferred"></a>deferred</h3><p>为每个订阅者创建一个新的可观察序列。</p>
 <pre><code>let disposeBag = DisposeBag()
 var count = 1
- let deferredSequence = Observable&lt;String&gt;.deferred {
+ let deferredSequence = Observable&lt;String&gt;.deferred &#123;
     print(&quot;Creating \(count)&quot;)
     count += 1
-
-    return Observable.create { observer in
+        
+    return Observable.create &#123; observer in
         print(&quot;Emitting...&quot;)
         observer.onNext(&quot;🐶&quot;)
         observer.onNext(&quot;🐱&quot;)
         observer.onNext(&quot;🐵&quot;)
         return Disposables.create()
-    }
-}
-
+    &#125;
+&#125;
+    
 deferredSequence
-    .subscribe(onNext: { print($0) })
+    .subscribe(onNext: &#123; print($0) &#125;)
     .disposed(by: disposeBag)
-
+    
 deferredSequence
-    .subscribe(onNext: { print($0) })
+    .subscribe(onNext: &#123; print($0) &#125;)
     .disposed(by: disposeBag)
-</code></pre><h3 id="error"><a href="#error" class="headerlink" title="error"></a>error</h3><p>创建一个没有任何元素的可观察序列，并立即以错误结束。</p>
-<pre><code>let disposeBag = DisposeBag()
-Observable&lt;Int&gt;.error(TestError.test)
-   .subscribe { print($0) }
-   .disposed(by: disposeBag)
-</code></pre><h3 id="doOn"><a href="#doOn" class="headerlink" title="doOn"></a>doOn</h3><p>为每个发出的事件调用副作用动作并返回（传递）原始事件。</p>
-<pre><code>let disposeBag = DisposeBag()
-
-Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&quot;)
-    .do(onNext: { print(&quot;Intercepted:&quot;, $0) }, onError: { print(&quot;Intercepted error:&quot;, $0) }, onCompleted: { print(&quot;Completed&quot;)  })
-    .subscribe(onNext: { print($0) })
+   
+</code></pre>
+<h3 id="error"><a href="#error" class="headerlink" title="error"></a>error</h3><p>创建一个没有任何元素的可观察序列，并立即以错误结束。</p>
+<pre><code> let disposeBag = DisposeBag()
+ Observable&lt;Int&gt;.error(TestError.test)
+    .subscribe &#123; print($0) &#125;
     .disposed(by: disposeBag)
 </code></pre>
+<h3 id="doOn"><a href="#doOn" class="headerlink" title="doOn"></a>doOn</h3><p>为每个发出的事件调用副作用动作并返回（传递）原始事件。</p>
+<pre><code>let disposeBag = DisposeBag()
+    
+Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&quot;)
+    .do(onNext: &#123; print(&quot;Intercepted:&quot;, $0) &#125;, onError: &#123; print(&quot;Intercepted error:&quot;, $0) &#125;, onCompleted: &#123; print(&quot;Completed&quot;)  &#125;)
+    .subscribe(onNext: &#123; print($0) &#125;)
+    .disposed(by: disposeBag)
+</code></pre>
+
       
 
       
@@ -1046,7 +1089,7 @@ Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&q
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/21/Rxswift总结(一)/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/02/21/Rxswift%E6%80%BB%E7%BB%93(%E4%B8%80)/">展开全文 >></a>
         </p>
       
 
@@ -1083,12 +1126,12 @@ Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&q
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/21/好好看看 KVC && KVO/">好好看看 KVC &amp;&amp; KVO</a>
+      <a class="article-title" href="/2019/02/21/%E5%A5%BD%E5%A5%BD%E7%9C%8B%E7%9C%8B%20KVC%20&&%20KVO/">好好看看 KVC &amp;&amp; KVO</a>
     </h1>
   
 
         
-        <a href="/2019/02/21/好好看看 KVC && KVO/" class="archive-article-date">
+        <a href="/2019/02/21/%E5%A5%BD%E5%A5%BD%E7%9C%8B%E7%9C%8B%20KVC%20&&%20KVO/" class="archive-article-date">
   	<time datetime="2019-02-21T07:34:53.020Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
 </a>
         
@@ -1098,12 +1141,13 @@ Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&q
       
         <h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><h3 id="字典快速赋值"><a href="#字典快速赋值" class="headerlink" title="字典快速赋值"></a>字典快速赋值</h3><p>KVC 可以将字典里面和 model 同名的 property 进行快速赋值 setValuesForKeysWithDictionary</p>
 <pre><code>//前提：model 中的各个 property 必须和 NSDictionary 中的属性一致
-- (instancetype)initWithDic:(NSDictionary *)dic{
+- (instancetype)initWithDic:(NSDictionary *)dic&#123;
     BannerModel *model = [BannerModel new];
     [model setValuesForKeysWithDictionary:dic];
     return model;  
-}
-</code></pre><p>但是这里会有2种特殊情况。</p>
+&#125;
+</code></pre>
+<p>但是这里会有2种特殊情况。</p>
 <ul>
 <li>情况一 在 model 里面有 property 但是在 NSDictionary 里面没有这个值</li>
 </ul>
@@ -1112,10 +1156,11 @@ Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&q
 <li>情况二 在 NSDictionary 中存在某个值，但是在 model 里面没有值</li>
 </ul>
 <p>运行后编译成功，但是代码奔溃掉。原因是 KVC 。所以我们只需要实现这么一个方法。甚至不需要写函数体部分</p>
-<pre><code>- (void)setValue:(id)value forUndefinedKey:(NSString *)key{
-
-}
-</code></pre><ul>
+<pre><code>- (void)setValue:(id)value forUndefinedKey:(NSString *)key&#123;
+    
+&#125;
+</code></pre>
+<ul>
 <li>情况三 如果 Dictionary 和 Model 中的 property 不同名</li>
 </ul>
 <p>我们照样可以利用 setValue:forUndefinedKey: 去处理</p>
@@ -1124,22 +1169,25 @@ Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&q
 @property (nonatomic,copy)NSString *sex;
 @property (nonatomic,copy) NSString* age;
 //NSDictionary
-NSDictionary *dic = @{@&quot;username&quot;:@&quot;张三&quot;,@&quot;sex&quot;:@&quot;男&quot;,@&quot;id&quot;:@&quot;22&quot;};
+NSDictionary *dic = @&#123;@&quot;username&quot;:@&quot;张三&quot;,@&quot;sex&quot;:@&quot;男&quot;,@&quot;id&quot;:@&quot;22&quot;&#125;;
 
--(void)setValue:(id)value forUndefinedKey:(NSString *)key{
-    if([key isEqualToString:@&quot;id&quot;]){
+-(void)setValue:(id)value forUndefinedKey:(NSString *)key&#123;
+    if([key isEqualToString:@&quot;id&quot;])&#123;
         self.age=value;
-    }
-    if([key isEqualToString:@&quot;username&quot;]){
+    &#125;
+    if([key isEqualToString:@&quot;username&quot;])&#123;
         self.name=value;
-    }
-}    
-</code></pre><ul>
+    &#125;
+&#125;    
+</code></pre>
+<ul>
 <li><p>情况四 如果我们观察对象的属性是数组，我们经常会观察不到变化，因为 KVO 是观察 setter 方法。我们可以用 mutableArrayValueForKeyPath 进行属性的操作</p>
-<pre><code>NSMutableArray *hobbies = [_person mutableArrayValueForKeyPath:@&quot;hobbies&quot;];
-[hobbies addObject:@&quot;Web&quot;];
-</code></pre></li>
-<li>情况五 注册依赖键.</li>
+<pre><code>  NSMutableArray *hobbies = [_person mutableArrayValueForKeyPath:@&quot;hobbies&quot;];
+  [hobbies addObject:@&quot;Web&quot;];
+</code></pre>
+</li>
+<li><p>情况五 注册依赖键.</p>
+</li>
 </ul>
 <p>KVO 可以观察属性的二级属性对象的所有属性变化。说人话就是“假如 Person 类有个 Dog 类，Dog 类有 name、fur、weight 等属性，我们给 Person 的 Dog 属性观察，假如 Dog 的任何属性变化是，Person 的观察者对象都可以拿到当前的变化值。我们只需要在 Person 中写下面的方法即可”</p>
 <pre><code>[self.person  addObserver:self
@@ -1152,24 +1200,26 @@ self.person.dog.weight = 50;
 
 
 // Person.m
-+ (NSSet&lt;NSString *&gt; *)keyPathsForValuesAffectingValueForKey:(NSString *)key {
++ (NSSet&lt;NSString *&gt; *)keyPathsForValuesAffectingValueForKey:(NSString *)key &#123;
     NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
-
-    if ([key isEqualToString:@&quot;dog&quot;]) {
+    
+    if ([key isEqualToString:@&quot;dog&quot;]) &#123;
         NSArray *affectingKeys = @[@&quot;name&quot;, @&quot;fur&quot;, @&quot;weight&quot;];
         keyPaths = [keyPaths setByAddingObjectsFromArray:affectingKeys];
-    }
+    &#125;
     return keyPaths;
-}
-</code></pre><h2 id="KVO的本质"><a href="#KVO的本质" class="headerlink" title="KVO的本质"></a>KVO的本质</h2><p>kVO 是Objective-C 对观察者模式的实现。也是 Cocoa Binding 的基础。</p>
+&#125;
+</code></pre>
+<h2 id="KVO的本质"><a href="#KVO的本质" class="headerlink" title="KVO的本质"></a>KVO的本质</h2><p>kVO 是Objective-C 对观察者模式的实现。也是 Cocoa Binding 的基础。</p>
 <h3 id="几个基本的知识点"><a href="#几个基本的知识点" class="headerlink" title="几个基本的知识点"></a>几个基本的知识点</h3><ul>
 <li><p>1 KVO 观察者和属性被观察的对象之间不是强引用的关系</p>
 </li>
 <li><p>2 KVO 的触发分为自动触发模式和手动触发模式2种。通常我们使用的都是自动通知，注册观察者之后，当条件触发的时候会自动调用-(void)observeValueForKeyPath…  如果需要实现手动通知，我们需要使用下面的方法</p>
-<pre><code>+ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
-    return NO;
-}
-</code></pre></li>
+<pre><code>  + (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key &#123;
+      return NO;
+  &#125;
+</code></pre>
+</li>
 <li><p>3 若类有实例变量 NSString *_foo， 调用 setValue:forKey: 是以 foo 还是 _foo 作为 key ？<br>都可以</p>
 </li>
 <li><p>4 KVC 的 keyPath 中的集合运算符如何使用</p>
@@ -1201,7 +1251,7 @@ self.person.dog.weight = 50;
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/21/好好看看 KVC && KVO/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/02/21/%E5%A5%BD%E5%A5%BD%E7%9C%8B%E7%9C%8B%20KVC%20&&%20KVO/">展开全文 >></a>
         </p>
       
 
@@ -1238,12 +1288,12 @@ self.person.dog.weight = 50;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/21/iOS改变图片颜色/">iOS改变图片颜色</a>
+      <a class="article-title" href="/2019/02/21/iOS%E6%94%B9%E5%8F%98%E5%9B%BE%E7%89%87%E9%A2%9C%E8%89%B2/">iOS改变图片颜色</a>
     </h1>
   
 
         
-        <a href="/2019/02/21/iOS改变图片颜色/" class="archive-article-date">
+        <a href="/2019/02/21/iOS%E6%94%B9%E5%8F%98%E5%9B%BE%E7%89%87%E9%A2%9C%E8%89%B2/" class="archive-article-date">
   	<time datetime="2019-02-21T07:24:36.731Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
 </a>
         
@@ -1252,25 +1302,28 @@ self.person.dog.weight = 50;
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在做项目的时候碰到了一个需求，就是设计做的图片的颜色和需求不符合，需要把图片的颜色改变一下。下面是改变图片颜色的方法。</p>
-<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>首先我们创建一个UIImage的Category，名为ChangeColor。这个名为ChangeColor的Category只有一个方法，即-(UIImage<em>)imageChangeColor:(UIColor</em>)color。这个方法的具体实现如下：</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><p>首先我们创建一个UIImage的Category，名为ChangeColor。这个名为ChangeColor的Category只有一个方法，即-(UIImage*)imageChangeColor:(UIColor*)color。这个方法的具体实现如下：</p>
 <pre><code>#import &quot;UIImage+ChangeColor.h&quot;@implementation UIImage (ChangeColor)//绘图-(UIImage*)imageChangeColor:(UIColor*)color
-{    //获取画布
+&#123;    //获取画布
     UIGraphicsBeginImageContextWithOptions(self.size, NO, 0.0f);    //画笔沾取颜色
     [color setFill];    
     CGRect bounds = CGRectMake(0, 0, self.size.width, self.size.height);    UIRectFill(bounds);    //绘制一次
     [self drawInRect:bounds blendMode:kCGBlendModeOverlay alpha:1.0f];    //再绘制一次
     [self drawInRect:bounds blendMode:kCGBlendModeDestinationIn alpha:1.0f];    //获取图片
     UIImage *img = UIGraphicsGetImageFromCurrentImageContext();    UIGraphicsEndImageContext();    return img;
-}
-</code></pre><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>首先我们看一下不改变颜色时，真实的图片颜色</p>
+&#125;
+</code></pre>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>首先我们看一下不改变颜色时，真实的图片颜色</p>
 <pre><code>UIImage *image = [UIImage imageNamed:@&quot;qr-code&quot;];UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
 [imageView setFrame:CGRectMake(100, 100, 100, 100)];
 [self.view addSubview:imageView];
-</code></pre><p>然后我们改变图片的颜色为绿色：</p>
+</code></pre>
+<p>然后我们改变图片的颜色为绿色：</p>
 <pre><code>UIImage *image = [UIImage imageNamed:@&quot;qr-code&quot;];UIImageView *imageView = [[UIImageView alloc] initWithImage:[image imageChangeColor:[UIColor blueColor]]];
 [imageView setFrame:CGRectMake(100, 100, 100, 100)];
 [self.view addSubview:imageView];
 </code></pre>
+
       
 
       
@@ -1293,7 +1346,7 @@ self.person.dog.weight = 50;
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/21/iOS改变图片颜色/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/02/21/iOS%E6%94%B9%E5%8F%98%E5%9B%BE%E7%89%87%E9%A2%9C%E8%89%B2/">展开全文 >></a>
         </p>
       
 
@@ -1330,12 +1383,12 @@ self.person.dog.weight = 50;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/21/JavaBean及其用法/">JavaBean及其用法</a>
+      <a class="article-title" href="/2019/02/21/JavaBean%E5%8F%8A%E5%85%B6%E7%94%A8%E6%B3%95/">JavaBean及其用法</a>
     </h1>
   
 
         
-        <a href="/2019/02/21/JavaBean及其用法/" class="archive-article-date">
+        <a href="/2019/02/21/JavaBean%E5%8F%8A%E5%85%B6%E7%94%A8%E6%B3%95/" class="archive-article-date">
   	<time datetime="2019-02-21T06:56:55.198Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
 </a>
         
@@ -1356,7 +1409,7 @@ self.person.dog.weight = 50;
  * @author gacl
  * Person类就是一个最简单的JavaBean
  */
-public class Person {
+public class Person &#123;
 
     //------------------Person类封装的私有属性---------------------------------------
     // 姓名 String类型
@@ -1368,51 +1421,52 @@ public class Person {
     //是否已婚 boolean类型
     private boolean married;
     //---------------------------------------------------------
-
+    
     //------------------Person类的无参数构造方法---------------------------------------
     /**
      * 无参数构造方法
      */
-    public Person() {
-
-    }
+    public Person() &#123;
+        
+    &#125;
     //---------------------------------------------------------
-
+    
     //------------------Person类对外提供的用于访问私有属性的public方法---------------------------------------
-    public String getName() {
+    public String getName() &#123;
         return name;
-    }
+    &#125;
 
-    public void setName(String name) {
+    public void setName(String name) &#123;
         this.name = name;
-    }
+    &#125;
 
-    public String getSex() {
+    public String getSex() &#123;
         return sex;
-    }
+    &#125;
 
-    public void setSex(String sex) {
+    public void setSex(String sex) &#123;
         this.sex = sex;
-    }
+    &#125;
 
-    public int getAge() {
+    public int getAge() &#123;
         return age;
-    }
+    &#125;
 
-    public void setAge(int age) {
+    public void setAge(int age) &#123;
         this.age = age;
-    }
+    &#125;
 
-    public boolean isMarried() {
+    public boolean isMarried() &#123;
         return married;
-    }
+    &#125;
 
-    public void setMarried(boolean married) {
+    public void setMarried(boolean married) &#123;
         this.married = married;
-    }
+    &#125;
     //---------------------------------------------------------
-}
-</code></pre><p>　　JavaBean在J2EE开发中，通常用于封装数据，对于遵循以上写法的JavaBean组件，其它程序可以通过反射技术实例化JavaBean对象，并且通过反射那些遵守命名规范的方法，从而获知JavaBean的属性，进而调用其属性保存数据。
+&#125;
+</code></pre>
+<p>　　JavaBean在J2EE开发中，通常用于封装数据，对于遵循以上写法的JavaBean组件，其它程序可以通过反射技术实例化JavaBean对象，并且通过反射那些遵守命名规范的方法，从而获知JavaBean的属性，进而调用其属性保存数据。
 　　
 　</p>
 <h2 id="JavaBean的属性"><a href="#JavaBean的属性" class="headerlink" title="JavaBean的属性"></a>JavaBean的属性</h2><p>JavaBean的属性可以是任意类型，并且一个JavaBean可以有多个属性。每个属性通常都需要具有相应的setter、 getter方法，setter方法称为属性修改器，getter方法称为属性访问器。</p>
@@ -1420,14 +1474,14 @@ public class Person {
 　　</p>
 <h2 id="在JSP中使用JavaBean"><a href="#在JSP中使用JavaBean" class="headerlink" title="在JSP中使用JavaBean"></a>在JSP中使用JavaBean</h2><p>JSP技术提供了三个关于JavaBean组件的动作元素，即JSP标签，它们分别为：</p>
 <ul>
-<li><a href="jsp:useBean" target="_blank" rel="noopener">jsp:useBean</a>标签：用于在JSP页面中查找或实例化一个JavaBean组件。</li>
-<li><a href="jsp:setProperty" target="_blank" rel="noopener">jsp:setProperty</a>标签：用于在JSP页面中设置一个JavaBean组件的属性。</li>
-<li><a href="jsp:getProperty" target="_blank" rel="noopener">jsp:getProperty</a>标签：用于在JSP页面中获取一个JavaBean组件的属性。</li>
+<li><a href="jsp:useBean">jsp:useBean</a>标签：用于在JSP页面中查找或实例化一个JavaBean组件。</li>
+<li><a href="jsp:setProperty">jsp:setProperty</a>标签：用于在JSP页面中设置一个JavaBean组件的属性。</li>
+<li><a href="jsp:getProperty">jsp:getProperty</a>标签：用于在JSP页面中获取一个JavaBean组件的属性。</li>
 </ul>
-<h3 id="jsp-useBean标签"><a href="#jsp-useBean标签" class="headerlink" title="jsp:useBean标签"></a><a href="jsp:useBean" target="_blank" rel="noopener">jsp:useBean</a>标签</h3><p><a href="jsp:useBean" target="_blank" rel="noopener">jsp:useBean</a>标签用于在指定的域范围内查找指定名称的JavaBean对象，如果存在则直接返回该JavaBean对象的引用，如果不存在则实例化一个新的JavaBean对象并将它以指定的名称存储到指定的域范围中。 </p>
-<p>　常用语法：<br>　<br>&lt;jsp:useBean id=”beanName” class=”package.class” scope=”page|request|session|application”/&gt;</p>
+<h3 id="jsp-useBean标签"><a href="#jsp-useBean标签" class="headerlink" title="jsp:useBean标签"></a><a href="jsp:useBean">jsp:useBean</a>标签</h3><p><a href="jsp:useBean">jsp:useBean</a>标签用于在指定的域范围内查找指定名称的JavaBean对象，如果存在则直接返回该JavaBean对象的引用，如果不存在则实例化一个新的JavaBean对象并将它以指定的名称存储到指定的域范围中。 </p>
+<p>　常用语法：<br>　<br>&lt;jsp:useBean id&#x3D;”beanName” class&#x3D;”package.class” scope&#x3D;”page|request|session|application”&#x2F;&gt;</p>
 <p>“id”属性用于指定JavaBean实例对象的引用名称和其存储在域范围中的名称。<br>　　<br>“class”属性用于指定JavaBean的完整类名（即必须带有包名）。<br>　　<br>“scope”属性用于指定JavaBean实例对象所存储的域范围，其取值只能是page、request、session和application等四个值中的一个，其默认值是page。</p>
-<p><a href="jsp:useBean" target="_blank" rel="noopener">jsp:useBean</a>标签使用范例：</p>
+<p><a href="jsp:useBean">jsp:useBean</a>标签使用范例：</p>
 <pre><code>&lt;%@ page language=&quot;java&quot; import=&quot;java.util.*&quot; pageEncoding=&quot;UTF-8&quot;%&gt;
 &lt;%--
 在jsp中使用jsp:useBean标签来实例化一个Java类的对象
@@ -1455,7 +1509,7 @@ public class Person {
   &lt;head&gt;
     &lt;title&gt;jsp:useBean标签使用范例&lt;/title&gt;
   &lt;/head&gt;
-
+  
   &lt;body&gt;
     &lt;%--使用getXxx()方法获取对象的属性值 --%&gt;
     &lt;h2&gt;姓名：&lt;%=person.getName()%&gt;&lt;/h2&gt;
@@ -1464,20 +1518,25 @@ public class Person {
     &lt;h2&gt;已婚：&lt;%=person.isMarried()%&gt;&lt;/h2&gt;
   &lt;/body&gt;
 &lt;/html&gt;
-</code></pre><h3 id="jsp-setProperty标签"><a href="#jsp-setProperty标签" class="headerlink" title="jsp:setProperty标签"></a><a href="jsp:setProperty" target="_blank" rel="noopener">jsp:setProperty</a>标签</h3><p><a href="jsp:setProperty" target="_blank" rel="noopener">jsp:setProperty</a>标签用于设置和访问JavaBean对象的属性。</p>
+</code></pre>
+<h3 id="jsp-setProperty标签"><a href="#jsp-setProperty标签" class="headerlink" title="jsp:setProperty标签"></a><a href="jsp:setProperty">jsp:setProperty</a>标签</h3><p><a href="jsp:setProperty">jsp:setProperty</a>标签用于设置和访问JavaBean对象的属性。</p>
 <p>语法格式一：</p>
 <pre><code>&lt;jsp:setProperty name=&quot;beanName&quot; property=&quot;propertyName value=&quot;string字符串&quot;/&gt;
-</code></pre><p>语法格式二：</p>
+</code></pre>
+<p>语法格式二：</p>
 <pre><code>&lt;jsp:setProperty name=&quot;beanName&quot; property=&quot;propertyName&quot; value=&quot;&lt;%= expression %&gt;&quot; /&gt;
-</code></pre><p>语法格式三</p>
+</code></pre>
+<p>语法格式三</p>
 <pre><code>&lt;jsp:setProperty name=&quot;beanName&quot; property=&quot;propertyName&quot; param=&quot;parameterName&quot;/&gt;
-</code></pre><p>语法格式四：</p>
+</code></pre>
+<p>语法格式四：</p>
 <pre><code>&lt;jsp:setProperty name=&quot;beanName&quot; property= &quot;*&quot; /&gt;
-</code></pre><p>name属性用于指定JavaBean对象的名称。 </p>
+</code></pre>
+<p>name属性用于指定JavaBean对象的名称。 </p>
 <p>property属性用于指定JavaBean实例对象的属性名。</p>
 <p>value属性用于指定JavaBean对象的某个属性的值，value的值可以是字符串，也可以是表达式。为字符串时，该值会自动转化为JavaBean属性相应的类型，如果value的值是一个表达式，那么该表达式的计算结果必须与所要设置的JavaBean属性的类型一致。  </p>
 <p>param属性用于将JavaBean实例对象的某个属性值设置为一个请求参数值，该属性值同样会自动转换成要设置的JavaBean属性的类型。</p>
-<h3 id="jsp-getProperty标签"><a href="#jsp-getProperty标签" class="headerlink" title="jsp:getProperty标签"></a><a href="jsp:getProperty" target="_blank" rel="noopener">jsp:getProperty</a>标签</h3><pre><code>&lt;jsp:getProperty&gt;标签用于读取JavaBean对象的属性，也就是调用JavaBean对象的getter方法，然后将读取的属性值转换成字符串后插入进输出的响应正文中。
+<h3 id="jsp-getProperty标签"><a href="#jsp-getProperty标签" class="headerlink" title="jsp:getProperty标签"></a><a href="jsp:getProperty">jsp:getProperty</a>标签</h3><pre><code>&lt;jsp:getProperty&gt;标签用于读取JavaBean对象的属性，也就是调用JavaBean对象的getter方法，然后将读取的属性值转换成字符串后插入进输出的响应正文中。
 
 语法：
     　　&lt;jsp:getProperty name=&quot;beanInstanceName&quot; property=&quot;PropertyName&quot; /&gt;
@@ -1485,6 +1544,7 @@ public class Person {
 　　　　property属性用于指定JavaBean实例对象的属性名。
 　　如果一个JavaBean实例对象的某个属性的值为null，那么，使用&lt;jsp:getProperty&gt;标签输出该属性的结果将是一个内容为“null”的字符串。
 </code></pre>
+
       
 
       
@@ -1507,7 +1567,7 @@ public class Person {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/21/JavaBean及其用法/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/02/21/JavaBean%E5%8F%8A%E5%85%B6%E7%94%A8%E6%B3%95/">展开全文 >></a>
         </p>
       
 
@@ -1544,12 +1604,12 @@ public class Person {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/20/Hexo博客部署到腾讯云教程/">Hexo博客部署到腾讯云教程</a>
+      <a class="article-title" href="/2019/02/20/Hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E8%85%BE%E8%AE%AF%E4%BA%91%E6%95%99%E7%A8%8B/">Hexo博客部署到腾讯云教程</a>
     </h1>
   
 
         
-        <a href="/2019/02/20/Hexo博客部署到腾讯云教程/" class="archive-article-date">
+        <a href="/2019/02/20/Hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E8%85%BE%E8%AE%AF%E4%BA%91%E6%95%99%E7%A8%8B/" class="archive-article-date">
   	<time datetime="2019-02-20T05:58:16.146Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-20</time>
 </a>
         
@@ -1564,71 +1624,90 @@ public class Person {
 <h3 id="前期需要准备："><a href="#前期需要准备：" class="headerlink" title="前期需要准备："></a>前期需要准备：</h3><p>1 一个腾讯云服务器</p>
 <p>2 hexo 本地博客</p>
 <h2 id="1-进入云服务器中"><a href="#1-进入云服务器中" class="headerlink" title="1. 进入云服务器中"></a>1. 进入云服务器中</h2><p>首先点击下边网站，登录你的进入云服务器的控制台</p>
-<p>腾讯云服务器的控制台：<a href="https://console.cloud.tencent.com/cvm/index" target="_blank" rel="noopener">https://console.cloud.tencent.com/cvm/index</a></p>
+<p>腾讯云服务器的控制台：<a target="_blank" rel="noopener" href="https://console.cloud.tencent.com/cvm/index">https://console.cloud.tencent.com/cvm/index</a></p>
 <p>左边菜单选择云主机，然后找到你的服务器。点击登录</p>
 <p>输入密码，进入 云服务器 CentOS中。（初始密码在控制台右上角的消息列表中）</p>
 <h2 id="云服务器端配置-git"><a href="#云服务器端配置-git" class="headerlink" title="云服务器端配置 git"></a>云服务器端配置 git</h2><h3 id="安装依赖库和编译工具"><a href="#安装依赖库和编译工具" class="headerlink" title="安装依赖库和编译工具"></a>安装依赖库和编译工具</h3><p>1 安装依赖库：</p>
 <pre><code>yum install curl-devel expat-devel gettext-devel openssl-devel zlib-devel 
-</code></pre><p>2 安装编译工具：</p>
+</code></pre>
+<p>2 安装编译工具：</p>
 <pre><code>yum install gcc perl-ExtUtils-MakeMaker package
-</code></pre><h3 id="下载-git"><a href="#下载-git" class="headerlink" title="下载 git"></a>下载 git</h3><p>1 选择一个目录来存放下载下来的 git 安装包。这里选择了/usr/local/src 目录</p>
+</code></pre>
+<h3 id="下载-git"><a href="#下载-git" class="headerlink" title="下载 git"></a>下载 git</h3><p>1 选择一个目录来存放下载下来的 git 安装包。这里选择了&#x2F;usr&#x2F;local&#x2F;src 目录</p>
 <pre><code>cd /usr/local/src
-</code></pre><p>2 到官网找一个新版稳定的源码包下载到 /usr/local/src 文件夹里</p>
+</code></pre>
+<p>2 到官网找一个新版稳定的源码包下载到 &#x2F;usr&#x2F;local&#x2F;src 文件夹里</p>
 <pre><code>wget https://www.kernel.org/pub/software/scm/git/git-2.16.2.tar.gz
-</code></pre><p>3 解压编译 git</p>
+</code></pre>
+<p>3 解压编译 git</p>
 <ul>
 <li><p>在当前目录下解压 git-2.16.2.tar.gz</p>
-<pre><code>tar -zvxf git-2.16.2.tar.gz
-</code></pre></li>
+<pre><code>  tar -zvxf git-2.16.2.tar.gz
+</code></pre>
+</li>
 <li><p>进入 git-2.16.2.tar.gz 目录下</p>
-<pre><code>cd git-2.16.2
-</code></pre></li>
+<pre><code>  cd git-2.16.2
+</code></pre>
+</li>
 <li><p>执行编译</p>
-<pre><code>make all prefix=/usr/local/git
-</code></pre></li>
-<li><p>安装 git 到 /usr/local/git 目录下</p>
-<pre><code>make install prefix=/usr/local/git
-</code></pre></li>
+<pre><code>  make all prefix=/usr/local/git
+</code></pre>
+</li>
+<li><p>安装 git 到 &#x2F;usr&#x2F;local&#x2F;git 目录下</p>
+<pre><code>  make install prefix=/usr/local/git
+</code></pre>
+</li>
 </ul>
 <p>4 配置 git 环境变量</p>
 <ul>
 <li><p>将 git 加入 PATH 目录中</p>
-<pre><code>echo &apos;export PATH=$PATH:/usr/local/git/bin&apos; &gt;&gt; /etc/bashrc
-</code></pre></li>
+<pre><code>  echo &#39;export PATH=$PATH:/usr/local/git/bin&#39; &gt;&gt; /etc/bashrc
+</code></pre>
+</li>
 <li><p>使 git 环境变量生效</p>
-<pre><code>source /etc/bashrc
-</code></pre></li>
+<pre><code>  source /etc/bashrc
+</code></pre>
+</li>
 </ul>
 <p>5 查看 git 版本</p>
-<pre><code>git --version
-</code></pre><p>如果此时能查看到 git 的版本号，说明我们已经安装成功了。</p>
+<pre><code>    git --version
+</code></pre>
+<p>如果此时能查看到 git 的版本号，说明我们已经安装成功了。</p>
 <p>6 创建 git 仓库，用于存放博客网站资源。</p>
-<p>在 home/git 的目录下，创建一个名为hexoBlog的裸仓库（bare repo）。</p>
-<p>如果没有 home/git 目录，需要先创建；然后修改目录的所有权和用户权限。</p>
+<p>在 home&#x2F;git 的目录下，创建一个名为hexoBlog的裸仓库（bare repo）。</p>
+<p>如果没有 home&#x2F;git 目录，需要先创建；然后修改目录的所有权和用户权限。</p>
 <pre><code>mkdir /home/git/
 chown -R $USER:$USER /home/git/
 chmod -R 755 /home/git/
-</code></pre><p>然后，执行如下命令：</p>
+</code></pre>
+<p>然后，执行如下命令：</p>
 <pre><code>cd /home/git/
 git init --bare hexoBlog.git
-</code></pre><p>刚才这一步主要创建一个裸的 git 仓库。</p>
+</code></pre>
+<p>刚才这一步主要创建一个裸的 git 仓库。</p>
 <p>7.创建一个新的 git 钩子，用于自动部署。</p>
-<p>在 /home/git/hexoBlog.git 下，有一个自动生成的 hooks 文件夹。我们需要在里边新建一个新的钩子文件 post-receive。</p>
+<p>在 &#x2F;home&#x2F;git&#x2F;hexoBlog.git 下，有一个自动生成的 hooks 文件夹。我们需要在里边新建一个新的钩子文件 post-receive。</p>
 <pre><code>vim /home/git/hexoBlog.git/hooks/post-receive
-</code></pre><p>按 i 键进入文件的编辑模式，在该文件中添加两行代码（将下边的代码粘贴进去)，指定 Git 的工作树（源代码）和 Git 目录（配置文件等）。</p>
+</code></pre>
+<p>按 i 键进入文件的编辑模式，在该文件中添加两行代码（将下边的代码粘贴进去)，指定 Git 的工作树（源代码）和 Git 目录（配置文件等）。</p>
 <pre><code>#!/bin/bash
 git --work-tree=/home/hexoBlog --git-dir=/home/git/hexoBlog.git checkout -f
-</code></pre><p>然后，按 Esc 键退出编辑模式，输入:wq 保存退出。</p>
+</code></pre>
+<p>然后，按 Esc 键退出编辑模式，输入:wq 保存退出。</p>
 <p>修改文件权限，使得其可执行。</p>
 <pre><code>chmod +x /home/git/hexoBlog.git/hooks/post-receive
-</code></pre><p>到这里，我们的 git 仓库算是完全搭建好了。下面进行 Nginx 的配置。</p>
+</code></pre>
+<p>到这里，我们的 git 仓库算是完全搭建好了。下面进行 Nginx 的配置。</p>
 <h2 id="云服务器端配置-Nginx"><a href="#云服务器端配置-Nginx" class="headerlink" title="云服务器端配置 Nginx"></a>云服务器端配置 Nginx</h2><p>1 安装 Nginx</p>
 <pre><code>yum install -y nginx
-</code></pre><p>2 启动 Nginx</p>
+</code></pre>
+<p>2 启动 Nginx</p>
 <pre><code>service nginx start
-</code></pre><p>3 测试 Nginx 服务器</p>
-<pre><code>wget http://127.0.0.1    
-</code></pre><p>能够正常获取以下欢迎页面说明Nginx安装成功。</p>
+</code></pre>
+<p>3 测试 Nginx 服务器</p>
+<pre><code>wget http://127.0.0.1	
+</code></pre>
+<p>能够正常获取以下欢迎页面说明Nginx安装成功。</p>
 <pre><code>Connecting to 127.0.0.1:80... connected.
 HTTP request sent, awaiting response... 200 OK
 Length: 43704 (43K) [text/html]
@@ -1637,48 +1716,58 @@ Saving to: ‘index.html’
 100%[=======================================&gt;] 43,704      --.-K/s   in 0s
 
 2018-03-09 23:04:09 (487 MB/s) - ‘index.html’ saved [43704/43704]
-</code></pre><p>4 测试网页是否能打开</p>
+</code></pre>
+<p>4 测试网页是否能打开</p>
 <p>在浏览器中输入服务器 ip 地址，就是服务器的公网 ip。</p>
 <p>5 配置 Nginx 托管文件目录</p>
-<p>接下来，创建 /home/hexoBlog目录，用于 Nginx 托管。</p>
+<p>接下来，创建 &#x2F;home&#x2F;hexoBlog目录，用于 Nginx 托管。</p>
 <pre><code>mkdir /home/hexoBlog/
 chown -R $USER:$USER /home/hexoBlog/
 chmod -R 755 /home/hexoBlog/
-</code></pre><p>查看 Nginx 的默认配置的安装位置</p>
+</code></pre>
+<p>查看 Nginx 的默认配置的安装位置</p>
 <pre><code>nginx -t
-</code></pre><p>修改Nginx的默认配置，其中 cd 后边就是刚才查到的安装位置（每个人可能都不一样）</p>
+</code></pre>
+<p>修改Nginx的默认配置，其中 cd 后边就是刚才查到的安装位置（每个人可能都不一样）</p>
 <pre><code>vim /etc/nginx/nginx.conf
-</code></pre><p>按方向键，找到如下位置</p>
-<pre><code>server {
+</code></pre>
+<p>按方向键，找到如下位置</p>
+<pre><code>server &#123;
     listen 80 default_server;
     listen [::]:80 default_server;
     root /home/hexoBlog;    #需要修改
-
+    
     server_name www.bujige.net; #需要修改
-
+    
     # Load configuration files for the default server block.
     include /etc/nginx/default.d/*.conf;
-    location / {
-    }
+    location / &#123;
+    &#125;
     error_page 404 /404.html;
-        location = /40x.html {
-    }
-</code></pre><p>按i键进入插入模式，将其中的 root 值改为 /home/hexoBlog （刚才创建的托管仓库目录）。</p>
+        location = /40x.html &#123;
+    &#125;
+   
+</code></pre>
+<p>按i键进入插入模式，将其中的 root 值改为 &#x2F;home&#x2F;hexoBlog （刚才创建的托管仓库目录）。</p>
 <p>将 server_name 值改成你的域名。</p>
 <p>重启 Nginx 服务</p>
 <pre><code>service nginx restart
-</code></pre><p>至此，服务器端配置就结束了。接下来，就剩下本地 hexo 的配置更改了。</p>
+</code></pre>
+<p>至此，服务器端配置就结束了。接下来，就剩下本地 hexo 的配置更改了。</p>
 <h2 id="修改-hexo-站点配置文件-git-相关设置"><a href="#修改-hexo-站点配置文件-git-相关设置" class="headerlink" title="修改 hexo 站点配置文件 git 相关设置"></a>修改 hexo 站点配置文件 git 相关设置</h2><p>打开你本地的 hexo 博客所在文件，打开站点配置文件（不是主题配置文件），做以下修改。</p>
 <pre><code>deploy:
     type: git
     repo: root@CVM 你的云服务器的IP地址:/home/git/hexoBlog
     branch: master
-</code></pre><p>在 hexo 目录下执行部署，试试看。</p>
-<pre><code>cd 你的 hexo 目录
-hexo clean
-hexo generate
-hexo deploy
-</code></pre><p>打开你的公网 IP，看是不是已经部署成功了。</p>
+   
+</code></pre>
+<p>在 hexo 目录下执行部署，试试看。</p>
+<pre><code>    cd 你的 hexo 目录
+    hexo clean
+    hexo generate
+    hexo deploy
+</code></pre>
+<p>打开你的公网 IP，看是不是已经部署成功了。</p>
 <p>最后一步，更改域名解析</p>
 
       
@@ -1703,7 +1792,7 @@ hexo deploy
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/20/Hexo博客部署到腾讯云教程/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/02/20/Hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E8%85%BE%E8%AE%AF%E4%BA%91%E6%95%99%E7%A8%8B/">展开全文 >></a>
         </p>
       
 
@@ -1740,12 +1829,12 @@ hexo deploy
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/02/20/一步步彻底学会iOS应用间跳转/">一步步彻底学会iOS应用间跳转</a>
+      <a class="article-title" href="/2019/02/20/%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%BD%BB%E5%BA%95%E5%AD%A6%E4%BC%9AiOS%E5%BA%94%E7%94%A8%E9%97%B4%E8%B7%B3%E8%BD%AC/">一步步彻底学会iOS应用间跳转</a>
     </h1>
   
 
         
-        <a href="/2019/02/20/一步步彻底学会iOS应用间跳转/" class="archive-article-date">
+        <a href="/2019/02/20/%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%BD%BB%E5%BA%95%E5%AD%A6%E4%BC%9AiOS%E5%BA%94%E7%94%A8%E9%97%B4%E8%B7%B3%E8%BD%AC/" class="archive-article-date">
   	<time datetime="2019-02-20T03:50:42.534Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-20</time>
 </a>
         
@@ -1774,100 +1863,106 @@ hexo deploy
 <li><p>选择项目App-B -&gt; TARGETS -&gt; Info -&gt; URL Types -&gt; URL Schemes，设置App-B的URL Schemes为AppB。</p>
 </li>
 </ul>
-<p><img src="http://img.wangjungang.cn/1877784-f621398f16a06a5f.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/1877784-f621398f16a06a5f.png"></p>
 <p>在应用程序App-A中添加一个用来点击跳转的Button，并监听点击事件，添加跳转代码。</p>
-<p><img src="http://img.wangjungang.cn/1877784-87372b714aa681ad.png" alt=""></p>
-<pre><code>- (IBAction)jumpToAppB:(id)sender {
+<p><img src="http://img.wangjungang.cn/1877784-87372b714aa681ad.png"></p>
+<pre><code>- (IBAction)jumpToAppB:(id)sender &#123;
     // 1.获取应用程序App-B的URL Scheme
     NSURL *appBUrl = [NSURL URLWithString:@&quot;AppB://&quot;];
 
     // 2.判断手机中是否安装了对应程序
-    if ([[UIApplication sharedApplication] canOpenURL:appBUrl]) {
+    if ([[UIApplication sharedApplication] canOpenURL:appBUrl]) &#123;
         // 3. 打开应用程序App-B
         [[UIApplication sharedApplication] openURL:appBUrl];
-    } else {
+    &#125; else &#123;
         NSLog(@&quot;没有安装&quot;);
-    }
-}
-</code></pre><p>如果是iOS9之前的模拟器或是真机，那么在相同的模拟器中先后运行App-B、App-A，点击按钮，就可以实现跳转了。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>如果是iOS9之前的模拟器或是真机，那么在相同的模拟器中先后运行App-B、App-A，点击按钮，就可以实现跳转了。</p>
 <p>如果是iOS9之后的模拟器或是真机，那么则需要再在应用程序App-A中将App-B的URL Schemes添加到白名单中，原因和做法如下。</p>
 <ul>
 <li>iOS9引入了白名单的概念。</li>
 <li>在iOS9中，如果使用 canOpenURL:方法，该方法所涉及到的 URL Schemes 必须在”Info.plist”中将它们列为白名单，否则不能使用。key叫做LSApplicationQueriesSchemes ，键值内容是对应应用程序的URL Schemes。</li>
 </ul>
 <p>具体做法就是在App-A的Info文件中，添加LSApplicationQueriesSchemes数组，然后添加键值为AppB的字符串。</p>
-<p><img src="http://img.wangjungang.cn/1877784-5bf4dd0f0a5095cf.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/1877784-5bf4dd0f0a5095cf.png"></p>
 <p>添加白名单之后在相同的模拟器中先后运行App-B、App-A，点击按钮，就可以实现跳转了。</p>
 <h3 id="应用A跳转到应用B的特定界面"><a href="#应用A跳转到应用B的特定界面" class="headerlink" title="应用A跳转到应用B的特定界面"></a>应用A跳转到应用B的特定界面</h3><p>很多时候，我们做应用程序之间的跳转并不只是跳转到其他程序就可以了，而是要跳转到其他程序的特定页面上。比如我们在浏览网页时，会有分享到微信朋友圈或是分享给微信朋友，这就需要跳转到微信朋友圈界面或是微信朋友选择界面。</p>
 <p>具体如何做呢？</p>
 <ul>
 <li>1 首先我们先来为App-B搭建两个页面Page1和Page2。这里用导航控制器Push两个ViewController，通过Storyboard Segue设置两个ViewController的标识符绑定，分别为”homeToPage1”和”homeToPage2”。</li>
 </ul>
-<p><img src="http://img.wangjungang.cn/1877784-10c9f942f107be1e.png" alt=""></p>
-<p><img src="http://img.wangjungang.cn/1877784-6bbaa79ff2880cbf.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/1877784-10c9f942f107be1e.png"></p>
+<p><img src="http://img.wangjungang.cn/1877784-6bbaa79ff2880cbf.png"></p>
 <ul>
 <li>2.在应用程序App-A中添加两个用来点击跳转的Button，一个跳转到Page1，一个跳转到Page2，并监听点击事件，添加跳转代码。</li>
 </ul>
-<p><img src="http://img.wangjungang.cn/1877784-b1d06f6b6a2569ec.png" alt=""></p>
-<pre><code>- (IBAction)jumpToAppBPage1:(id)sender {
+<p><img src="http://img.wangjungang.cn/1877784-b1d06f6b6a2569ec.png"></p>
+<pre><code>- (IBAction)jumpToAppBPage1:(id)sender &#123;
     // 1.获取应用程序App-B的Page1页面的URL
     NSURL *appBUrl = [NSURL URLWithString:@&quot;AppB://Page1&quot;];
 
     // 2.判断手机中是否安装了对应程序
-    if ([[UIApplication sharedApplication] canOpenURL:appBUrl]) {
+    if ([[UIApplication sharedApplication] canOpenURL:appBUrl]) &#123;
         // 3. 打开应用程序App-B的Page1页面
         [[UIApplication sharedApplication] openURL:appBUrl];
-    } else {
+    &#125; else &#123;
         NSLog(@&quot;没有安装&quot;);
-    }
-}
+    &#125;
+&#125;
 
-- (IBAction)jumpToAppBPage2:(id)sender {
+- (IBAction)jumpToAppBPage2:(id)sender &#123;
     // 1.获取应用程序App-B的Page2页面的URL
     NSURL *appBUrl = [NSURL URLWithString:@&quot;AppB://Page2&quot;];
 
     // 2.判断手机中是否安装了对应程序
-    if ([[UIApplication sharedApplication] canOpenURL:appBUrl]) {
+    if ([[UIApplication sharedApplication] canOpenURL:appBUrl]) &#123;
         // 3. 打开应用程序App-B的Page2页面
         [[UIApplication sharedApplication] openURL:appBUrl];
-    } else {
+    &#125; else &#123;
         NSLog(@&quot;没有安装&quot;);
-    }
-}
-</code></pre><ul>
+    &#125;
+&#125;
+</code></pre>
+<ul>
 <li><p>3.在应用App-B中通过AppDelegate监听跳转，进行判断，执行不同页面的跳转</p>
-<pre><code>- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
-{
-    // 1.获取导航栏控制器
-    UINavigationController *rootNav = (UINavigationController *)self.window.rootViewController;
-    // 2.获得主控制器
-    ViewController *mainVc = [rootNav.childViewControllers firstObject];
-
-    // 3.每次跳转前必须是在跟控制器(细节)
-    [rootNav popToRootViewControllerAnimated:NO];   
-
-    // 4.根据字符串关键字来跳转到不同页面
-    if ([url.absoluteString containsString:@&quot;Page1&quot;]) { // 跳转到应用App-B的Page1页面
-        // 根据segue标示进行跳转
-        [mainVc performSegueWithIdentifier:@&quot;homeToPage1&quot; sender:nil];
-    } else if ([url.absoluteString containsString:@&quot;Page2&quot;]) { // 跳转到应用App-B的Page2页面
-        // 根据segue标示进行跳转
-        [mainVc performSegueWithIdentifier:@&quot;homeToPage2&quot; sender:nil];
-    }   
-
-    return YES;
-}
-</code></pre></li>
+<pre><code>  - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+  &#123;
+      // 1.获取导航栏控制器
+      UINavigationController *rootNav = (UINavigationController *)self.window.rootViewController;
+      // 2.获得主控制器
+      ViewController *mainVc = [rootNav.childViewControllers firstObject];
+  
+      // 3.每次跳转前必须是在跟控制器(细节)
+      [rootNav popToRootViewControllerAnimated:NO];   
+  
+      // 4.根据字符串关键字来跳转到不同页面
+      if ([url.absoluteString containsString:@&quot;Page1&quot;]) &#123; // 跳转到应用App-B的Page1页面
+          // 根据segue标示进行跳转
+          [mainVc performSegueWithIdentifier:@&quot;homeToPage1&quot; sender:nil];
+      &#125; else if ([url.absoluteString containsString:@&quot;Page2&quot;]) &#123; // 跳转到应用App-B的Page2页面
+          // 根据segue标示进行跳转
+          [mainVc performSegueWithIdentifier:@&quot;homeToPage2&quot; sender:nil];
+      &#125;   
+  
+      return YES;
+  &#125;
+</code></pre>
+</li>
 </ul>
 <h2 id="从应用B跳转回应用A"><a href="#从应用B跳转回应用A" class="headerlink" title="从应用B跳转回应用A"></a>从应用B跳转回应用A</h2><h3 id="步骤分析："><a href="#步骤分析：" class="headerlink" title="步骤分析："></a>步骤分析：</h3><p>1 我们想要从应用B再跳转回应用A，那么在跳转到应用B的时候，还应将应用A的URL Schemes传递过来。这样我们才能判断应该跳转回哪个应用程序。</p>
 <ul>
-<li><p>这样我们指定一个传递URL的规则：协议头://应用B的URL Schemes?应用A的URL Schemes。即：AppB://Page1?AppA。</p>
+<li><p>这样我们指定一个传递URL的规则：协议头:&#x2F;&#x2F;应用B的URL Schemes?应用A的URL Schemes。即：AppB:&#x2F;&#x2F;Page1?AppA。</p>
 </li>
 <li><p>AppB是跳转过来的应用App-B的URL Schemes；</p>
 </li>
-<li>Page1是用来区别跳转页面的标识；</li>
-<li>? 是分割符；</li>
-<li>AppA是跳转回的应用App-A的URL Schemes</li>
+<li><p>Page1是用来区别跳转页面的标识；</p>
+</li>
+<li><p>? 是分割符；</p>
+</li>
+<li><p>AppA是跳转回的应用App-A的URL Schemes</p>
+</li>
 </ul>
 <p>2 我们根据传递来的数据，进行反跳回去。</p>
 <ul>
@@ -1879,63 +1974,66 @@ hexo deploy
 <li>因为我们想要跳转回应用A，首先我们要先设置应用App-A的URL Schemes，将其设置为AppA。同时在应用App-B中添加白名单。具体操作和之前相似。</li>
 <li>在App-B项目中的Page1和Page2两个页面各添加一个Button，用于跳转回App-A。同时添加Page1和Page2的页面控制器Page1ViewController和Page2ViewController。</li>
 </ul>
-<p><img src="http://img.wangjungang.cn/1877784-88b1f315262b92e2.png" alt=""></p>
+<p><img src="http://img.wangjungang.cn/1877784-88b1f315262b92e2.png"></p>
 <ul>
-<li><p>在App-A中修改传递的URL。<br>分别修改为：@”AppB://?AppA”、@”AppB://Page1?AppA”、@”AppB://Page2?AppA”</p>
+<li><p>在App-A中修改传递的URL。<br>分别修改为：@”AppB:&#x2F;&#x2F;?AppA”、@”AppB:&#x2F;&#x2F;Page1?AppA”、@”AppB:&#x2F;&#x2F;Page2?AppA”</p>
 </li>
 <li><p>在App-B的主控制器ViewController中增加一条属性@property (nonatomic, copy) NSString *urlString;，并在App-B中通过AppDelegate中保存完整的URL。</p>
 </li>
 <li><p>在将要跳转的页面控制器Page1ViewController和Page2ViewController中定义一个属性@property (nonatomic, copy) NSString *urlString;，用于接受、截取出跳转回的应用（即App-A）的URL Schemes，执行跳转。</p>
 </li>
 <li><p>重写App-B的主控制器的- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender方法。</p>
-<pre><code>- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    if ([segue.identifier isEqualToString:@&quot;homeToPage1&quot;]) {
-        // 获得将要跳转的界面Page1的控制器
-        Page1ViewController *Page1Vc = segue.destinationViewController;
-        // 保存完整的App-A的URL给跳转界面Page1
-        Page1Vc.urlString = self.urlString;
-    } else if ([segue.identifier isEqualToString:@&quot;homeToPage2&quot;]) {
-        // 获得将要跳转的界面Page2的控制器
-        Page2ViewController *Page2Vc = segue.destinationViewController;
-        // 保存完整的App-A的URL给跳转界面Page1
-        Page2Vc.urlString = self.urlString;
-    }
-}
-</code></pre></li>
+<pre><code>  - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+  &#123;
+      if ([segue.identifier isEqualToString:@&quot;homeToPage1&quot;]) &#123;
+          // 获得将要跳转的界面Page1的控制器
+          Page1ViewController *Page1Vc = segue.destinationViewController;
+          // 保存完整的App-A的URL给跳转界面Page1
+          Page1Vc.urlString = self.urlString;
+      &#125; else if ([segue.identifier isEqualToString:@&quot;homeToPage2&quot;]) &#123;
+          // 获得将要跳转的界面Page2的控制器
+          Page2ViewController *Page2Vc = segue.destinationViewController;
+          // 保存完整的App-A的URL给跳转界面Page1
+          Page2Vc.urlString = self.urlString;
+      &#125;
+  &#125;
+</code></pre>
+</li>
 </ul>
 <p>在对应界面控制器Page1ViewController和Page2ViewController中实现跳转代码</p>
 <ul>
 <li><p>Page1ViewController.m</p>
-<pre><code>- (IBAction)page1BackToAppA:(id)sender {
-    // 1.拿到对应应用程序的URL Scheme
-    NSString *urlSchemeString = [[self.urlString componentsSeparatedByString:@&quot;?&quot;] lastObject];
-    NSString *urlString = [urlSchemeString stringByAppendingString:@&quot;://&quot;];
-
-    // 2.获取对应应用程序的URL
-    NSURL *url = [NSURL URLWithString:urlString];
-
-    // 3.判断是否可以打开
-    if ([[UIApplication sharedApplication] canOpenURL:url]) {
-        [[UIApplication sharedApplication] openURL:url];
-    }
-}
-</code></pre></li>
+<pre><code>  - (IBAction)page1BackToAppA:(id)sender &#123;
+      // 1.拿到对应应用程序的URL Scheme
+      NSString *urlSchemeString = [[self.urlString componentsSeparatedByString:@&quot;?&quot;] lastObject];
+      NSString *urlString = [urlSchemeString stringByAppendingString:@&quot;://&quot;];
+  
+      // 2.获取对应应用程序的URL
+      NSURL *url = [NSURL URLWithString:urlString];
+  
+      // 3.判断是否可以打开
+      if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;
+          [[UIApplication sharedApplication] openURL:url];
+      &#125;
+  &#125;
+</code></pre>
+</li>
 <li><p>Page2ViewController.m</p>
-<pre><code>- (IBAction)page2BackToAppA:(id)sender {
-    // 1.拿到对应应用程序的URL Scheme
-    NSString *urlSchemeString = [[self.urlString componentsSeparatedByString:@&quot;?&quot;] lastObject];
-    NSString *urlString = [urlSchemeString stringByAppendingString:@&quot;://&quot;];
-
-    // 2.获取对应应用程序的URL
-    NSURL *url = [NSURL URLWithString:urlString];
-
-    // 3.判断是否可以打开
-    if ([[UIApplication sharedApplication] canOpenURL:url]) {
-        [[UIApplication sharedApplication] openURL:url];
-    }
-}
-</code></pre></li>
+<pre><code> - (IBAction)page2BackToAppA:(id)sender &#123;
+     // 1.拿到对应应用程序的URL Scheme
+     NSString *urlSchemeString = [[self.urlString componentsSeparatedByString:@&quot;?&quot;] lastObject];
+     NSString *urlString = [urlSchemeString stringByAppendingString:@&quot;://&quot;];
+ 
+     // 2.获取对应应用程序的URL
+     NSURL *url = [NSURL URLWithString:urlString];
+ 
+     // 3.判断是否可以打开
+     if ([[UIApplication sharedApplication] canOpenURL:url]) &#123;
+         [[UIApplication sharedApplication] openURL:url];
+     &#125;
+ &#125;
+</code></pre>
+</li>
 </ul>
 
       
@@ -1960,7 +2058,7 @@ hexo deploy
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/02/20/一步步彻底学会iOS应用间跳转/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/02/20/%E4%B8%80%E6%AD%A5%E6%AD%A5%E5%BD%BB%E5%BA%95%E5%AD%A6%E4%BC%9AiOS%E5%BA%94%E7%94%A8%E9%97%B4%E8%B7%B3%E8%BD%AC/">展开全文 >></a>
         </p>
       
 
@@ -1992,7 +2090,7 @@ hexo deploy
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/10/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/12/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/10/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="page-number" href="/page/10/">10</a><span class="page-number current">11</span><a class="page-number" href="/page/12/">12</a><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/12/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -2004,7 +2102,7 @@ hexo deploy
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -2111,10 +2209,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -2123,7 +2217,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2131,11 +2225,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2155,19 +2253,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

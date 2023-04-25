@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>performSelector传递参数 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="performSelector有两个缺陷：  1、最多只能传递两个参数 2、无法传递数值参数，如整形、浮点型等  经过我的探索，我在网上一段代码上进行了修改，整合如下： - (id)performSelector:(SEL)aSelector withTheObjects:(NSArray*)objects{     //1、创建签名对象     //  NSMethodSignature*sig">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="performSelector有两个缺陷：  1、最多只能传递两个参数 2、无法传递数值参数，如整形、浮点型等  经过我的探索，我在网上一段代码上进行了修改，整合如下： - (id)performSelector:(SEL)aSelector withTheObjects:(NSArray*)objects&amp;#123;     &#x2F;&#x2F;1、创建签名对象     &#x2F;&#x2F;  NSMethodSignatur">
 <meta property="og:type" content="article">
 <meta property="og:title" content="performSelector传递参数">
-<meta property="og:url" content="http://yoursite.com/2018/12/17/performSelector传递参数/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/12/17/performSelector%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="performSelector有两个缺陷：  1、最多只能传递两个参数 2、无法传递数值参数，如整形、浮点型等  经过我的探索，我在网上一段代码上进行了修改，整合如下： - (id)performSelector:(SEL)aSelector withTheObjects:(NSArray*)objects{     //1、创建签名对象     //  NSMethodSignature*sig">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-17T06:43:13.361Z">
+<meta property="og:description" content="performSelector有两个缺陷：  1、最多只能传递两个参数 2、无法传递数值参数，如整形、浮点型等  经过我的探索，我在网上一段代码上进行了修改，整合如下： - (id)performSelector:(SEL)aSelector withTheObjects:(NSArray*)objects&amp;#123;     &#x2F;&#x2F;1、创建签名对象     &#x2F;&#x2F;  NSMethodSignatur">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-12-17T06:39:11.344Z">
+<meta property="article:modified_time" content="2018-12-17T06:43:13.361Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="performSelector传递参数">
-<meta name="twitter:description" content="performSelector有两个缺陷：  1、最多只能传递两个参数 2、无法传递数值参数，如整形、浮点型等  经过我的探索，我在网上一段代码上进行了修改，整合如下： - (id)performSelector:(SEL)aSelector withTheObjects:(NSArray*)objects{     //1、创建签名对象     //  NSMethodSignature*sig">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/12/17/performSelector传递参数/" class="archive-article-date">
+        <a href="/2018/12/17/performSelector%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/" class="archive-article-date">
   	<time datetime="2018-12-17T06:39:11.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-17</time>
 </a>
         
@@ -181,103 +181,106 @@
 <li>2、无法传递数值参数，如整形、浮点型等</li>
 </ul>
 <p>经过我的探索，我在网上一段代码上进行了修改，整合如下：</p>
-<pre><code>- (id)performSelector:(SEL)aSelector withTheObjects:(NSArray*)objects{
+<pre><code>- (id)performSelector:(SEL)aSelector withTheObjects:(NSArray*)objects&#123;
     //1、创建签名对象
     //  NSMethodSignature*signature = [self methodSignatureForSelector:aSelector];
     NSMethodSignature*signature = [[self class] instanceMethodSignatureForSelector:aSelector];
     //2、判断传入的方法是否存在
-    if (!signature) {
+    if (!signature) &#123;
         //传入的方法不存在 就抛异常
         NSString*info = [NSString stringWithFormat:@&quot;-[%@ %@]:unrecognized selector sent to instance&quot;,[self class],NSStringFromSelector(aSelector)];
         @throw [[NSException alloc] initWithName:@&quot;方法没有&quot; reason:info userInfo:nil];
         return nil;
-    }
+    &#125;
     //3、创建NSInvocation对象
     NSInvocation*invocation = [NSInvocation invocationWithMethodSignature:signature];
     //4、保存方法所属的对象
     invocation.target = self;           // index 0
     invocation.selector = aSelector;    // index 1
-
+    
     //5、设置参数
     NSInteger arguments = signature.numberOfArguments -2;
     NSUInteger objectsCount = objects.count;
     NSInteger count = MIN(arguments, objectsCount);
     [self setInv:invocation andArgs:objects argsCount:count];
-
+    
     //6、调用NSinvocation对象
     [invocation invoke];
-
+    
     //7、获取返回值
     id res = nil;
     if (signature.methodReturnLength ==0) return nil;
     //getReturnValue获取返回值
     [invocation getReturnValue:&amp;res];
     return res;
-}
+&#125;
 
-- (void)setInv:(NSInvocation *)inv andArgs:(NSArray *)args argsCount:(NSUInteger)count{
-    for (int i = 0; i&lt;count; i++) {
+- (void)setInv:(NSInvocation *)inv andArgs:(NSArray *)args argsCount:(NSUInteger)count&#123;
+    for (int i = 0; i&lt;count; i++) &#123;
         NSObject*obj = args[i];
         //处理参数是NULL类型的情况
-        if ([obj isKindOfClass:[NSNull class]]) {
+        if ([obj isKindOfClass:[NSNull class]]) &#123;
             obj = nil;
-        }
+        &#125;
         //对整形数值等的处理
         if([obj isKindOfClass:[NSNumber class]])      //对数值数据的处理
-        {
+        &#123;
             void *p;
             NSNumber *num = (NSNumber *)obj;
             if(strcmp([num objCType], @encode(float)) == 0)
-            {
+            &#123;
                 float v = [num floatValue];
                 p = &amp;v;
-            }
+            &#125;
             else if(strcmp([num objCType], @encode(double)) == 0)
-            {
+            &#123;
                 double v = [num doubleValue];
                 p = &amp;v;
-            }
+            &#125;
             else
-            {
+            &#123;
                 long v = [num longValue];
                 p = &amp;v;
-            }
-
+            &#125;
+            
             [inv setArgument:p atIndex:i+2];
             continue;
-        }
+        &#125;
 
         [inv setArgument:&amp;obj atIndex:i+2];
-    }
-}
-</code></pre><p>其实没有做什么改动，就加了下面的代码</p>
+    &#125;
+&#125;
+</code></pre>
+<p>其实没有做什么改动，就加了下面的代码</p>
 <pre><code>//对整形数值等的处理
         if([obj isKindOfClass:[NSNumber class]])      //对数值数据的处理
-        {
+        &#123;
             void *p;
             NSNumber *num = (NSNumber *)obj;
             if(strcmp([num objCType], @encode(float)) == 0)
-            {
+            &#123;
                 float v = [num floatValue];
                 p = &amp;v;
-            }
+            &#125;
             else if(strcmp([num objCType], @encode(double)) == 0)
-            {
+            &#123;
                 double v = [num doubleValue];
                 p = &amp;v;
-            }
+            &#125;
             else
-            {
+            &#123;
                 long v = [num longValue];
                 p = &amp;v;
-            }
-
+            &#125;
+            
             [inv setArgument:p atIndex:i+2];
             return;
-        }
-</code></pre><p>使用：<br>上面是NSObject的类别，传整形数值：</p>
+        &#125;
+</code></pre>
+<p>使用：<br>上面是NSObject的类别，传整形数值：</p>
 <pre><code>[_bledataMana performSelector:@selector(sendMsg:)withTheObjects:@[@10]];
 </code></pre>
+
       
 
       
@@ -367,7 +370,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/17/performSelector传递参数/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/17/performSelector%E4%BC%A0%E9%80%92%E5%8F%82%E6%95%B0/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -381,7 +384,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/12/17/swift Notification通知的使用/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/12/17/swift%20Notification%E9%80%9A%E7%9F%A5%E7%9A%84%E4%BD%BF%E7%94%A8/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -391,7 +394,7 @@
     </a>
   
   
-    <a href="/2018/12/17/UIImage图片性能优化/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/12/17/UIImage%E5%9B%BE%E7%89%87%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">UIImage图片性能优化</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -435,7 +438,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -542,10 +545,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -554,7 +553,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -562,11 +561,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -586,19 +589,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

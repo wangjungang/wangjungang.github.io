@@ -9,17 +9,17 @@
   <title>多个网络请求的处理 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="1. dispatch_semaphore 信号量信号量是一个整型值并且具有初始计数值，信号量通常支持两个操作：通知和等待。当信号被通知的时候计数值会增加，当信号量在线程上等待的时候，必要的情况下线程会被阻塞掉，直至信号被通知时计数值大于0，然后线程会减少这个计数继续工作。 GCD中又3个信号量有关的操作： dispatch_semaphore_create 信号量创建  dispatch_sem">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="多个网络请求的处理">
-<meta property="og:url" content="http://yoursite.com/2019/08/27/多个网络请求的处理/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/08/27/%E5%A4%9A%E4%B8%AA%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E7%9A%84%E5%A4%84%E7%90%86/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="1. dispatch_semaphore 信号量信号量是一个整型值并且具有初始计数值，信号量通常支持两个操作：通知和等待。当信号被通知的时候计数值会增加，当信号量在线程上等待的时候，必要的情况下线程会被阻塞掉，直至信号被通知时计数值大于0，然后线程会减少这个计数继续工作。 GCD中又3个信号量有关的操作： dispatch_semaphore_create 信号量创建  dispatch_sem">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-08-27T08:49:12.094Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-08-27T08:31:20.113Z">
+<meta property="article:modified_time" content="2019-08-27T08:49:12.094Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="多个网络请求的处理">
-<meta name="twitter:description" content="1. dispatch_semaphore 信号量信号量是一个整型值并且具有初始计数值，信号量通常支持两个操作：通知和等待。当信号被通知的时候计数值会增加，当信号量在线程上等待的时候，必要的情况下线程会被阻塞掉，直至信号被通知时计数值大于0，然后线程会减少这个计数继续工作。 GCD中又3个信号量有关的操作： dispatch_semaphore_create 信号量创建  dispatch_sem">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/08/27/多个网络请求的处理/" class="archive-article-date">
+        <a href="/2019/08/27/%E5%A4%9A%E4%B8%AA%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E7%9A%84%E5%A4%84%E7%90%86/" class="archive-article-date">
   	<time datetime="2019-08-27T08:31:20.113Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-08-27</time>
 </a>
         
@@ -184,7 +184,8 @@ dispatch_semaphore_signal 发送通知
 dispatch_semaphore_wait 信号量等待
 
 dispatch_semaphore_create创建一个信号量
-</code></pre><ul>
+</code></pre>
+<ul>
 <li>dispatch_semaphore_create创建一个信号量</li>
 </ul>
 <p>传入的参数为long，输出一个dispatch_semaphore_t类型且值为value的信号量。<br>值得注意的是，这里的传入的参数value必须大于或等于0，否则dispatch_semaphore_create会返回NULL</p>
@@ -204,46 +205,48 @@ dispatch_semaphore_create创建一个信号量
 dispatch_semaphore_t sem = dispatch_semaphore_create(0);
 // 创建队列
 dispatch_queue_t testQueue = dispatch_queue_create(&quot;test&quot;, NULL);
-    dispatch_async(testQueue, ^{
-
-        for (int i = 0; i &lt; 10; i ++) {
+    dispatch_async(testQueue, ^&#123;
+    
+        for (int i = 0; i &lt; 10; i ++) &#123;
             NSLog(@&quot;i的值是-----&gt;%d&quot;,i);
-        }
+        &#125;
         // 发送一个信号
         dispatch_semaphore_signal(sem);
-    });
-
+    &#125;);
+    
     // 信号量等待
     dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
-    for (int j = 0; j &lt; 10; j ++) {
+    for (int j = 0; j &lt; 10; j ++) &#123;
         NSLog(@&quot;j 的值是-----&gt;%d&quot;,j);
-}
-</code></pre><h2 id="2-dispatch-group"><a href="#2-dispatch-group" class="headerlink" title="2. dispatch group"></a>2. dispatch group</h2><pre><code>dispatch_group_t group = dispatch_group_create();
+&#125;
+</code></pre>
+<h2 id="2-dispatch-group"><a href="#2-dispatch-group" class="headerlink" title="2. dispatch group"></a>2. dispatch group</h2><pre><code>dispatch_group_t group = dispatch_group_create();
 dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
 // 进入组（进入组和离开组必须成对出现,否则会造成死锁）
 dispatch_group_enter(group);
-dispatch_group_async(group, queue, ^{
+dispatch_group_async(group, queue, ^&#123;
     // 执行异步任务1
-    for (int i = 0; i&lt;10; i++) {
+    for (int i = 0; i&lt;10; i++) &#123;
         NSLog(@&quot;i的值是:%d&quot;,i);
-    }
+    &#125;
     dispatch_group_leave(group);
 
-});
+&#125;);
 dispatch_group_enter(group);
-dispatch_group_async(group, queue, ^{
-
+dispatch_group_async(group, queue, ^&#123;
+    
     // 执行异步任务2
-    for (int j = 0; j&lt;20; j++) {
+    for (int j = 0; j&lt;20; j++) &#123;
         NSLog(@&quot;j的值是:%d&quot;,j);
-    }
+    &#125;
     dispatch_group_leave(group);
-});
+&#125;);
 
-dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+dispatch_group_notify(group, dispatch_get_main_queue(), ^&#123;
     NSLog(@&quot;完成...&quot;);
-});
+&#125;);
 </code></pre>
+
       
 
       
@@ -333,7 +336,7 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/08/27/多个网络请求的处理/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/08/27/%E5%A4%9A%E4%B8%AA%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E7%9A%84%E5%A4%84%E7%90%86/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -347,7 +350,7 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
   
 <nav id="article-nav">
   
-    <a href="/2019/08/29/Sign in with Apple/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/08/29/Sign%20in%20with%20Apple/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -357,7 +360,7 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
     </a>
   
   
-    <a href="/2019/07/04/看完就懂的无痕埋点/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/07/04/%E7%9C%8B%E5%AE%8C%E5%B0%B1%E6%87%82%E7%9A%84%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">看完就懂的无痕埋点</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -401,7 +404,7 @@ dispatch_group_notify(group, dispatch_get_main_queue(), ^{
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -508,10 +511,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -520,7 +519,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -528,11 +527,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -552,19 +555,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

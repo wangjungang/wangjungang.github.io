@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/15/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/15/日历的提醒添加/">日历的提醒添加</a>
+      <a class="article-title" href="/2018/12/15/%E6%97%A5%E5%8E%86%E7%9A%84%E6%8F%90%E9%86%92%E6%B7%BB%E5%8A%A0/">日历的提醒添加</a>
     </h1>
   
 
         
-        <a href="/2018/12/15/日历的提醒添加/" class="archive-article-date">
+        <a href="/2018/12/15/%E6%97%A5%E5%8E%86%E7%9A%84%E6%8F%90%E9%86%92%E6%B7%BB%E5%8A%A0/" class="archive-article-date">
   	<time datetime="2018-12-15T13:46:46.774Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
 </a>
         
@@ -180,11 +180,11 @@
 <p>①每场比赛展示主场、客场球队的信息以及比赛的北京日期、比赛地点等</p>
 <p>②提供导入日历按钮，点击后将当前展示球队的赛程导入到苹果手机的日历中</p>
 <h2 id="分析需求、确定数据来源（接口API）"><a href="#分析需求、确定数据来源（接口API）" class="headerlink" title="分析需求、确定数据来源（接口API）"></a>分析需求、确定数据来源（接口API）</h2><p>通过分析上面的需求，可以得出主要有两个页面，球队列表页面和球队比赛赛程列表页面。通过查找数据得出需要下面三个接口：</p>
-<p><a href="http://china.nba.com/static/data/league/conferenceteamlist.json" target="_blank" rel="noopener">获取球队列表数据</a></p>
-<p><a href="http://china.nba.com/static/data/team/schedule_celtics.json" target="_blank" rel="noopener">获取某球队的比赛赛程信息</a></p>
-<p><a href="http://mat1.gtimg.com/sports/nba/logo/1602/2.png" target="_blank" rel="noopener">获取球队logo</a></p>
+<p><a target="_blank" rel="noopener" href="http://china.nba.com/static/data/league/conferenceteamlist.json">获取球队列表数据</a></p>
+<p><a target="_blank" rel="noopener" href="http://china.nba.com/static/data/team/schedule_celtics.json">获取某球队的比赛赛程信息</a></p>
+<p><a target="_blank" rel="noopener" href="http://mat1.gtimg.com/sports/nba/logo/1602/2.png">获取球队logo</a></p>
 <h2 id="动手开发，写Code"><a href="#动手开发，写Code" class="headerlink" title="动手开发，写Code"></a>动手开发，写Code</h2><h3 id="开发球队列表页面"><a href="#开发球队列表页面" class="headerlink" title="开发球队列表页面"></a>开发球队列表页面</h3><p>当前页面是一个列表页面，实现方式为一个tableView的group形式。<br>①定义模型Team，包含名称、代号、城市、分区、联盟分区、联盟分区显示字段、球队logo等字段</p>
-<pre><code>class Team: Mappable {
+<pre><code>class Team: Mappable &#123;
 
   var name:String?  //名称
   var code:String?  //代号
@@ -194,84 +194,87 @@
   var displayConference:String? //联盟分区显示
   var imageUrl:String? //球队图片
 
-  required init?(map: Map) {
+  required init?(map: Map) &#123;
+    
+  &#125;
 
-  }
-
-  func mapping(map: Map) {
+  func mapping(map: Map) &#123;
       name &lt;- map[&quot;name&quot;]
       code &lt;- map[&quot;code&quot;]
       city &lt;- map[&quot;city&quot;]
       division &lt;- map[&quot;division&quot;]
       conference &lt;- map[&quot;conference&quot;]
       displayConference &lt;- map[&quot;displayConference&quot;]
-  }
+  &#125;
 
-}
-</code></pre><p>自定义Cell,展示Demo tableView</p>
+&#125;
+</code></pre>
+<p>自定义Cell,展示Demo tableView</p>
 <p>通过上面的获取球队列表的接口，使用Alamofire拿到球队列表数据，使用SwiftJson、ObjectMapper将返回的结果转化为Team模型数组。注意以为获取到的球队数据中不包含球队Logo Url,可以通过自定义的Json文件team_logo.json来进行配置，然后通过获取球队Logo的接口获取到对于的球队Logo 的url。</p>
-<pre><code>Alamofire.request(&quot;http://china.nba.com/static/data/league/conferenceteamlist.json&quot;).responseJSON { (response) in
+<pre><code>Alamofire.request(&quot;http://china.nba.com/static/data/league/conferenceteamlist.json&quot;).responseJSON &#123; (response) in
         let result = JSON(response.result.value as Any)
 //            print(result)
         let listGroups = result[&quot;payload&quot;][&quot;listGroups&quot;].arrayValue
-
-        for teams in listGroups{
+        
+        for teams in listGroups&#123;
             var tempArray = [Team]()
-            for teamJson in teams[&quot;teams&quot;].arrayValue{
+            for teamJson in teams[&quot;teams&quot;].arrayValue&#123;
 //                    print(teamJson[&quot;profile&quot;].rawString()!)
                 let team = Team(JSONString: teamJson[&quot;profile&quot;].rawString()!)
                 tempArray.append(team!)
-            }
+            &#125;
             self.teamsData.append(tempArray)
-        }
+        &#125;
         self.tableView.reloadData()
-    }
-</code></pre><h3 id="开发球队赛程列表页面"><a href="#开发球队赛程列表页面" class="headerlink" title="开发球队赛程列表页面"></a>开发球队赛程列表页面</h3><p>当前页面是一个列表页面，实现方式为一个tableView的plain形式。实现方式类似上面的球队列表页面。</p>
+    &#125;
+</code></pre>
+<h3 id="开发球队赛程列表页面"><a href="#开发球队赛程列表页面" class="headerlink" title="开发球队赛程列表页面"></a>开发球队赛程列表页面</h3><p>当前页面是一个列表页面，实现方式为一个tableView的plain形式。实现方式类似上面的球队列表页面。</p>
 <p>①定义模型Game，包含日期、比赛地址、主场城市、主场球队、客场球队、客场城市<br>②自定义Cell,展示Demo tableView</p>
 <p>③通过上面的获取球队赛程列表的接口，使用Alamofire拿到球队列表数据，使用SwiftJson、ObjectMapper将返回的结果转化为Game模型数组。</p>
 <p>④展示球队赛程列表，完善细节。</p>
 <h3 id="导入比赛到手机日历中"><a href="#导入比赛到手机日历中" class="headerlink" title="导入比赛到手机日历中"></a>导入比赛到手机日历中</h3><p>点击导入日历按钮，确定后开始执行导入日历功能<br>这就要用到iOS提供的EventKit框架来实现将比赛写入到日历的功能了。<br>首先要去获取授权，没有被授权的话是不能使用EventKit框架的，iOS自身框架大部分都有这个限制。而且在iOS 10以上的系统还要添加访问calendar的隐私说明，否则会引起崩溃。</p>
 <pre><code>lazy var eventStore = EKEventStore()
 // 获取访问日历的权限
-self.eventStore .requestAccess(to: .event, completion: { (granted, error) in
+self.eventStore .requestAccess(to: .event, completion: &#123; (granted, error) in
 
         //授权过可以访问日历
-        if granted{
+        if granted&#123;
             let tempArray = self.eventStore.calendars(for: .event)
             var inserted = false
-            for calendar in tempArray{
+            for calendar in tempArray&#123;
                 print(calendar)
-
+                
                 //判断是否已经导入了比赛内容
-                if calendar.title == self.team.name {
+                if calendar.title == self.team.name &#123;
                     inserted = true
-                }
-            }
-
-            if !inserted {
+                &#125;
+            &#125;
+            
+            if !inserted &#123;
                 self.saveEvent()
-            }else{
-                DispatchQueue.main.async {
+            &#125;else&#123;
+                DispatchQueue.main.async &#123;
                     CDAlertView(title: &quot;&quot;, message: &quot;已经导入过该队比赛!&quot;, type: .notification).show()
-                }
-            }
-        }
-    })
-</code></pre><p>接下来就可以执行导入时间到日历的功能了。</p>
+                &#125;
+            &#125;
+        &#125;
+    &#125;)
+</code></pre>
+<p>接下来就可以执行导入时间到日历的功能了。</p>
 <pre><code>self.startAnimating(CGSize(width: 30, height: 30),type:.ballBeat,color: UIColor.init(hexString: &quot;#E0486C&quot;),backgroundColor:UIColor.white)
-
+        
     //    因为是读写操作，比较耗时，需要放到后台去执行。
-        DispatchQueue.global().async {
+        DispatchQueue.global().async &#123;
         //把比赛写入日历
   //            print(self.eventStore)
-            for game in self.datas{
-
+            for game in self.datas&#123;
+                
                 let event = EKEvent(eventStore: self.eventStore)
-
+                
                 // 标题
                 let title = game.homeTeamName! + &quot;VS&quot; + game.awayTeamName!
                 event.title = title
-
+                
                 //时间
                 let date = Date.init(timeIntervalSince1970: TimeInterval(Int64(game.gameDate!)!/1000))
 
@@ -283,18 +286,19 @@ self.eventStore .requestAccess(to: .event, completion: { (granted, error) in
                 calendar.title = self.team.name! + &quot;赛程&quot;
                 calendar.cgColor = UIColor.purple.cgColor
                 event.calendar = calendar
-
-                do{
+                
+                do&#123;
                     try self.eventStore.save(event, span: EKSpan.thisEvent)
-                }catch let error as NSError{
+                &#125;catch let error as NSError&#123;
                     print(error)
-                }
-            }
+                &#125;
+            &#125;
             //结束后，主线程刷新UI
-            DispatchQueue.main.async {
+            DispatchQueue.main.async &#123;
                 self.stopAnimating()
-            }
+            &#125;
 </code></pre>
+
       
 
       
@@ -317,7 +321,7 @@ self.eventStore .requestAccess(to: .event, completion: { (granted, error) in
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/15/日历的提醒添加/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/15/%E6%97%A5%E5%8E%86%E7%9A%84%E6%8F%90%E9%86%92%E6%B7%BB%E5%8A%A0/">展开全文 >></a>
         </p>
       
 
@@ -354,12 +358,12 @@ self.eventStore .requestAccess(to: .event, completion: { (granted, error) in
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/15/swift构造过程、析构过程/">swift构造过程、析构过程</a>
+      <a class="article-title" href="/2018/12/15/swift%E6%9E%84%E9%80%A0%E8%BF%87%E7%A8%8B%E3%80%81%E6%9E%90%E6%9E%84%E8%BF%87%E7%A8%8B/">swift构造过程、析构过程</a>
     </h1>
   
 
         
-        <a href="/2018/12/15/swift构造过程、析构过程/" class="archive-article-date">
+        <a href="/2018/12/15/swift%E6%9E%84%E9%80%A0%E8%BF%87%E7%A8%8B%E3%80%81%E6%9E%90%E6%9E%84%E8%BF%87%E7%A8%8B/" class="archive-article-date">
   	<time datetime="2018-12-15T12:36:06.300Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
 </a>
         
@@ -378,20 +382,22 @@ self.eventStore .requestAccess(to: .event, completion: { (granted, error) in
 <li>构造器</li>
 </ul>
 <p>构造器在创建某个特定类型的新实例时被调用。它的最简形式类似于一个不带任何参数的实例方法，以关键字init命名：</p>
-<pre><code>init() {
+<pre><code>init() &#123;
     // 在此处执行构造过程
-}
-</code></pre><p>下面例子中定义了一个用来保存华氏温度的结构体Fahrenheit，它拥有一个Double类型的存储型属性temperature：</p>
-<pre><code>struct Fahrenheit {
+&#125;
+</code></pre>
+<p>下面例子中定义了一个用来保存华氏温度的结构体Fahrenheit，它拥有一个Double类型的存储型属性temperature：</p>
+<pre><code>struct Fahrenheit &#123;
     var temperature: Double
-    init() {
+    init() &#123;
         temperature = 32.0
-    }
-}
+    &#125;
+&#125;
 var f = Fahrenheit()
 print(&quot;The default temperature is \(f.temperature)° Fahrenheit&quot;)
 // 打印 &quot;The default temperature is 32.0° Fahrenheit”
-</code></pre><p>这个结构体定义了一个不带参数的构造器init，并在里面将存储型属性temperature的值初始化为32.0（华氏温度下水的冰点）。</p>
+</code></pre>
+<p>这个结构体定义了一个不带参数的构造器init，并在里面将存储型属性temperature的值初始化为32.0（华氏温度下水的冰点）。</p>
 <ul>
 <li>默认属性值</li>
 </ul>
@@ -399,29 +405,31 @@ print(&quot;The default temperature is \(f.temperature)° Fahrenheit&quot;)
 <p>注意</p>
 <p>如果一个属性总是使用相同的初始值，那么为其设置一个默认值比每次都在构造器中赋值要好。两种方法的效果是一样的，只不过使用默认值让属性的初始化和声明结合得更紧密。使用默认值能让你的构造器更简洁、更清晰，且能通过默认值自动推导出属性的类型；同时，它也能让你充分利用默认构造器、构造器继承等特性。</p>
 <p>你可以使用更简单的方式在定义结构体Fahrenheit时为属性temperature设置默认值：</p>
-<pre><code>struct Fahrenheit {
+<pre><code>struct Fahrenheit &#123;
     var temperature = 32.0
-}
-</code></pre><h3 id="自定义构造过程"><a href="#自定义构造过程" class="headerlink" title="自定义构造过程"></a>自定义构造过程</h3><p>你可以通过输入参数和可选类型的属性来自定义构造过程，也可以在构造过程中修改常量属性。这些都将在后面章节中提到。</p>
+&#125;
+</code></pre>
+<h3 id="自定义构造过程"><a href="#自定义构造过程" class="headerlink" title="自定义构造过程"></a>自定义构造过程</h3><p>你可以通过输入参数和可选类型的属性来自定义构造过程，也可以在构造过程中修改常量属性。这些都将在后面章节中提到。</p>
 <ul>
 <li>构造参数</li>
 </ul>
 <p>自定义构造过程时，可以在定义中提供构造参数，指定所需值的类型和名字。构造参数的功能和语法跟函数和方法的参数相同。</p>
 <p>下面例子中定义了一个包含摄氏度温度的结构体Celsius。它定义了两个不同的构造器：init(fromFahrenheit:)和init(fromKelvin:)，二者分别通过接受不同温标下的温度值来创建新的实例：</p>
-<pre><code>struct Celsius {
+<pre><code>struct Celsius &#123;
     var temperatureInCelsius: Double
-    init(fromFahrenheit fahrenheit: Double) {
+    init(fromFahrenheit fahrenheit: Double) &#123;
         temperatureInCelsius = (fahrenheit - 32.0) / 1.8
-    }
-    init(fromKelvin kelvin: Double) {
+    &#125;
+    init(fromKelvin kelvin: Double) &#123;
         temperatureInCelsius = kelvin - 273.15
-    }
-}
+    &#125;
+&#125;
 let boilingPointOfWater = Celsius(fromFahrenheit: 212.0)
 // boilingPointOfWater.temperatureInCelsius 是 100.0
 let freezingPointOfWater = Celsius(fromKelvin: 273.15)
 // freezingPointOfWater.temperatureInCelsius 是 0.0
-</code></pre><p>第一个构造器拥有一个构造参数，其外部名字为fromFahrenheit，内部名字为fahrenheit；第二个构造器也拥有一个构造参数，其外部名字为fromKelvin，内部名字为kelvin。这两个构造器都将唯一的参数值转换成摄氏温度值，并保存在属性temperatureInCelsius中。</p>
+</code></pre>
+<p>第一个构造器拥有一个构造参数，其外部名字为fromFahrenheit，内部名字为fahrenheit；第二个构造器也拥有一个构造参数，其外部名字为fromKelvin，内部名字为kelvin。这两个构造器都将唯一的参数值转换成摄氏温度值，并保存在属性temperatureInCelsius中。</p>
 <ul>
 <li>参数的内部名称和外部名称</li>
 </ul>
@@ -429,65 +437,70 @@ let freezingPointOfWater = Celsius(fromKelvin: 273.15)
 <p>然而，构造器并不像函数和方法那样在括号前有一个可辨别的名字。因此在调用构造器时，主要通过构造器中的参数名和类型来确定应该被调用的构造器。正因为参数如此重要，如果你在定义构造器时没有提供参数的外部名字，Swift 会为构造器的每个参数自动生成一个跟内部名字相同的外部名。</p>
 <p>以下例子中定义了一个结构体Color，它包含了三个常量：red、green和blue。这些属性可以存储0.0到1.0之间的值，用来指示颜色中红、绿、蓝成分的含量。</p>
 <p>Color提供了一个构造器，其中包含三个Double类型的构造参数。Color也可以提供第二个构造器，它只包含名为white的Double类型的参数，它被用于给上述三个构造参数赋予同样的值。</p>
-<pre><code>struct Color {
+<pre><code>struct Color &#123;
     let red, green, blue: Double
-    init(red: Double, green: Double, blue: Double) {
+    init(red: Double, green: Double, blue: Double) &#123;
         self.red   = red
         self.green = green
         self.blue  = blue
-    }
-    init(white: Double) {
+    &#125;
+    init(white: Double) &#123;
         red   = white
         green = white
         blue  = white
-    }
-}
-</code></pre><p>两种构造器都能用于创建一个新的Color实例，你需要为构造器每个外部参数传值：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>两种构造器都能用于创建一个新的Color实例，你需要为构造器每个外部参数传值：</p>
 <pre><code>let magenta = Color(red: 1.0, green: 0.0, blue: 1.0)
 let halfGray = Color(white: 0.5)
-</code></pre><p>注意，如果不通过外部参数名字传值，你是没法调用这个构造器的。只要构造器定义了某个外部参数名，你就必须使用它，忽略它将导致编译错误：</p>
+</code></pre>
+<p>注意，如果不通过外部参数名字传值，你是没法调用这个构造器的。只要构造器定义了某个外部参数名，你就必须使用它，忽略它将导致编译错误：</p>
 <pre><code>let veryGreen = Color(0.0, 1.0, 0.0)
 // 报编译时错误，需要外部名称
-</code></pre><ul>
+</code></pre>
+<ul>
 <li>不带外部名的构造器参数</li>
 </ul>
 <p>如果你不希望为构造器的某个参数提供外部名字，你可以使用下划线(_)来显式描述它的外部名，以此重写上面所说的默认行为。</p>
 <p>下面是之前Celsius例子的扩展，跟之前相比添加了一个带有Double类型参数的构造器，其外部名用_代替：</p>
-<pre><code>struct Celsius {
+<pre><code>struct Celsius &#123;
     var temperatureInCelsius: Double
-    init(fromFahrenheit fahrenheit: Double) {
+    init(fromFahrenheit fahrenheit: Double) &#123;
         temperatureInCelsius = (fahrenheit - 32.0) / 1.8
-    }
-    init(fromKelvin kelvin: Double) {
+    &#125;
+    init(fromKelvin kelvin: Double) &#123;
         temperatureInCelsius = kelvin - 273.15
-    }
-    init(_ celsius: Double){
+    &#125;
+    init(_ celsius: Double)&#123;
         temperatureInCelsius = celsius
-    }
-}
+    &#125;
+&#125;
 let bodyTemperature = Celsius(37.0)
 // bodyTemperature.temperatureInCelsius 为 37.0
-</code></pre><p>调用Celsius(37.0)意图明确，不需要外部参数名称。因此适合使用init(_ celsius: Double)这样的构造器，从而可以通过提供Double类型的参数值调用构造器，而不需要加上外部名。</p>
+</code></pre>
+<p>调用Celsius(37.0)意图明确，不需要外部参数名称。因此适合使用init(_ celsius: Double)这样的构造器，从而可以通过提供Double类型的参数值调用构造器，而不需要加上外部名。</p>
 <ul>
 <li>可选属性类型</li>
 </ul>
 <p>如果你定制的类型包含一个逻辑上允许取值为空的存储型属性——无论是因为它无法在初始化时赋值，还是因为它在之后某个时间点可以赋值为空——你都需要将它定义为可选类型。可选类型的属性将自动初始化为nil，表示这个属性是有意在初始化时设置为空的。</p>
 <p>下面例子中定义了类SurveyQuestion，它包含一个可选字符串属性response：</p>
-<pre><code>class SurveyQuestion {
+<pre><code>class SurveyQuestion &#123;
     var text: String
     var response: String?
-    init(text: String) {
+    init(text: String) &#123;
         self.text = text
-    }
-    func ask() {
+    &#125;
+    func ask() &#123;
         print(text)
-    }
-}
+    &#125;
+&#125;
 let cheeseQuestion = SurveyQuestion(text: &quot;Do you like cheese?&quot;)
 cheeseQuestion.ask()
 // 打印 &quot;Do you like cheese?&quot;
 cheeseQuestion.response = &quot;Yes, I do like cheese.&quot;
-</code></pre><p>调查问题的答案在回答前是无法确定的，因此我们将属性response声明为String?类型，或者说是可选字符串类型。当SurveyQuestion实例化时，它将自动赋值为nil，表明此字符串暂时还没有值。</p>
+</code></pre>
+<p>调查问题的答案在回答前是无法确定的，因此我们将属性response声明为String?类型，或者说是可选字符串类型。当SurveyQuestion实例化时，它将自动赋值为nil，表明此字符串暂时还没有值。</p>
 <ul>
 <li>构造过程中常量属性的修改</li>
 </ul>
@@ -495,77 +508,85 @@ cheeseQuestion.response = &quot;Yes, I do like cheese.&quot;
 <p>注意</p>
 <p>对于类的实例来说，它的常量属性只能在定义它的类的构造过程中修改；不能在子类中修改。</p>
 <p>你可以修改上面的SurveyQuestion示例，用常量属性替代变量属性text，表示问题内容text在SurveyQuestion的实例被创建之后不会再被修改。尽管text属性现在是常量，我们仍然可以在类的构造器中设置它的值：</p>
-<pre><code>class SurveyQuestion {
+<pre><code>class SurveyQuestion &#123;
     let text: String
     var response: String?
-    init(text: String) {
+    init(text: String) &#123;
         self.text = text
-    }
-    func ask() {
+    &#125;
+    func ask() &#123;
         print(text)
-    }
-}
+    &#125;
+&#125;
 let beetsQuestion = SurveyQuestion(text: &quot;How about beets?&quot;)
 beetsQuestion.ask()
 // 打印 &quot;How about beets?&quot;
 beetsQuestion.response = &quot;I also like beets. (But not with cheese.)&quot;
-</code></pre><h3 id="默认构造器"><a href="#默认构造器" class="headerlink" title="默认构造器"></a>默认构造器</h3><p>如果结构体或类的所有属性都有默认值，同时没有自定义的构造器，那么 Swift 会给这些结构体或类提供一个默认构造器（default initializers）。这个默认构造器将简单地创建一个所有属性值都设置为默认值的实例。</p>
+</code></pre>
+<h3 id="默认构造器"><a href="#默认构造器" class="headerlink" title="默认构造器"></a>默认构造器</h3><p>如果结构体或类的所有属性都有默认值，同时没有自定义的构造器，那么 Swift 会给这些结构体或类提供一个默认构造器（default initializers）。这个默认构造器将简单地创建一个所有属性值都设置为默认值的实例。</p>
 <p>下面例子中创建了一个类ShoppingListItem，它封装了购物清单中的某一物品的属性：名字（name）、数量（quantity）和购买状态 purchase state：</p>
-<pre><code>class ShoppingListItem {
+<pre><code>class ShoppingListItem &#123;
     var name: String?
     var quantity = 1
     var purchased = false
-}
+&#125;
 var item = ShoppingListItem()
-</code></pre><p>由于ShoppingListItem类中的所有属性都有默认值，且它是没有父类的基类，它将自动获得一个可以为所有属性设置默认值的默认构造器（尽管代码中没有显式为name属性设置默认值，但由于name是可选字符串类型，它将默认设置为nil）。上面例子中使用默认构造器创造了一个ShoppingListItem类的实例（使用ShoppingListItem()形式的构造器语法），并将其赋值给变量item。</p>
+</code></pre>
+<p>由于ShoppingListItem类中的所有属性都有默认值，且它是没有父类的基类，它将自动获得一个可以为所有属性设置默认值的默认构造器（尽管代码中没有显式为name属性设置默认值，但由于name是可选字符串类型，它将默认设置为nil）。上面例子中使用默认构造器创造了一个ShoppingListItem类的实例（使用ShoppingListItem()形式的构造器语法），并将其赋值给变量item。</p>
 <h4 id="结构体的逐一成员构造器"><a href="#结构体的逐一成员构造器" class="headerlink" title="结构体的逐一成员构造器"></a>结构体的逐一成员构造器</h4><p>除了上面提到的默认构造器，如果结构体没有提供自定义的构造器，它们将自动获得一个逐一成员构造器，即使结构体的存储型属性没有默认值。</p>
 <p>逐一成员构造器是用来初始化结构体新实例里成员属性的快捷方法。我们在调用逐一成员构造器时，通过与成员属性名相同的参数名进行传值来完成对成员属性的初始赋值。</p>
 <p>下面例子中定义了一个结构体Size，它包含两个属性width和height。Swift 可以根据这两个属性的初始赋值0.0自动推导出它们的类型为Double。</p>
 <p>结构体Size自动获得了一个逐一成员构造器init(width:height:)。你可以用它来为Size创建新的实例：</p>
-<pre><code>struct Size {
+<pre><code>struct Size &#123;
     var width = 0.0, height = 0.0
-}
+&#125;
 let twoByTwo = Size(width: 2.0, height: 2.0)
-</code></pre><h4 id="值类型的构造器代理"><a href="#值类型的构造器代理" class="headerlink" title="值类型的构造器代理"></a>值类型的构造器代理</h4><p>构造器可以通过调用其它构造器来完成实例的部分构造过程。这一过程称为构造器代理，它能减少多个构造器间的代码重复。</p>
+</code></pre>
+<h4 id="值类型的构造器代理"><a href="#值类型的构造器代理" class="headerlink" title="值类型的构造器代理"></a>值类型的构造器代理</h4><p>构造器可以通过调用其它构造器来完成实例的部分构造过程。这一过程称为构造器代理，它能减少多个构造器间的代码重复。</p>
 <p>构造器代理的实现规则和形式在值类型和类类型中有所不同。值类型（结构体和枚举类型）不支持继承，所以构造器代理的过程相对简单，因为它们只能代理给自己的其它构造器。类则不同，它可以继承自其它类，这意味着类有责任保证其所有继承的存储型属性在构造时也能正确的初始化。</p>
 <p>对于值类型，你可以使用self.init在自定义的构造器中引用相同类型中的其它构造器。并且你只能在构造器内部调用self.init。</p>
 <p>如果你为某个值类型定义了一个自定义的构造器，你将无法访问到默认构造器（如果是结构体，还将无法访问逐一成员构造器）。这种限制可以防止你为值类型增加了一个额外的且十分复杂的构造器之后,仍然有人错误的使用自动生成的构造器。</p>
 <p>注意</p>
 <p>假如你希望默认构造器、逐一成员构造器以及你自己的自定义构造器都能用来创建实例，可以将自定义的构造器写到扩展（extension）中，而不是写在值类型的原始定义中。</p>
 <p>下面例子将定义一个结构体Rect，用来代表几何矩形。这个例子需要两个辅助的结构体Size和Point，它们各自为其所有的属性提供了初始值0.0。</p>
-<pre><code>struct Size {
+<pre><code>struct Size &#123;
     var width = 0.0, height = 0.0
-}
-struct Point {
+&#125;
+struct Point &#123;
     var x = 0.0, y = 0.0
-}
-</code></pre><p>你可以通过以下三种方式为Rect创建实例——使用被初始化为默认值的origin和size属性来初始化；提供指定的origin和size实例来初始化；提供指定的center和size来初始化。在下面Rect结构体定义中，我们为这三种方式提供了三个自定义的构造器：</p>
-<pre><code>struct Rect {
+&#125;
+</code></pre>
+<p>你可以通过以下三种方式为Rect创建实例——使用被初始化为默认值的origin和size属性来初始化；提供指定的origin和size实例来初始化；提供指定的center和size来初始化。在下面Rect结构体定义中，我们为这三种方式提供了三个自定义的构造器：</p>
+<pre><code>struct Rect &#123;
     var origin = Point()
     var size = Size()
-    init() {}
-    init(origin: Point, size: Size) {
+    init() &#123;&#125;
+    init(origin: Point, size: Size) &#123;
         self.origin = origin
         self.size = size
-    }
-    init(center: Point, size: Size) {
+    &#125;
+    init(center: Point, size: Size) &#123;
         let originX = center.x - (size.width / 2)
         let originY = center.y - (size.height / 2)
         self.init(origin: Point(x: originX, y: originY), size: size)
-    }
-}
-</code></pre><p>第一个Rect构造器init()，在功能上跟没有自定义构造器时自动获得的默认构造器是一样的。这个构造器是一个空函数，使用一对大括号{}来表示，它没有执行任何构造过程。调用这个构造器将返回一个Rect实例，它的origin和size属性都使用定义时的默认值Point(x: 0.0, y: 0.0)和Size(width: 0.0, height: 0.0)：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>第一个Rect构造器init()，在功能上跟没有自定义构造器时自动获得的默认构造器是一样的。这个构造器是一个空函数，使用一对大括号{}来表示，它没有执行任何构造过程。调用这个构造器将返回一个Rect实例，它的origin和size属性都使用定义时的默认值Point(x: 0.0, y: 0.0)和Size(width: 0.0, height: 0.0)：</p>
 <pre><code>let basicRect = Rect()
 // basicRect 的 origin 是 (0.0, 0.0)，size 是 (0.0, 0.0)
-</code></pre><p>第二个Rect构造器init(origin:size:)，在功能上跟结构体在没有自定义构造器时获得的逐一成员构造器是一样的。这个构造器只是简单地将origin和size的参数值赋给对应的存储型属性：</p>
+</code></pre>
+<p>第二个Rect构造器init(origin:size:)，在功能上跟结构体在没有自定义构造器时获得的逐一成员构造器是一样的。这个构造器只是简单地将origin和size的参数值赋给对应的存储型属性：</p>
 <pre><code>let originRect = Rect(origin: Point(x: 2.0, y: 2.0),
     size: Size(width: 5.0, height: 5.0))
 // originRect 的 origin 是 (2.0, 2.0)，size 是 (5.0, 5.0)
-</code></pre><p>第三个Rect构造器init(center:size:)稍微复杂一点。它先通过center和size的值计算出origin的坐标，然后再调用（或者说代理给）init(origin:size:)构造器来将新的origin和size值赋值到对应的属性中：</p>
+</code></pre>
+<p>第三个Rect构造器init(center:size:)稍微复杂一点。它先通过center和size的值计算出origin的坐标，然后再调用（或者说代理给）init(origin:size:)构造器来将新的origin和size值赋值到对应的属性中：</p>
 <pre><code>let centerRect = Rect(center: Point(x: 4.0, y: 4.0),
     size: Size(width: 3.0, height: 3.0))
 // centerRect 的 origin 是 (2.5, 2.5)，size 是 (3.0, 3.0)
-</code></pre><p>构造器init(center:size:)可以直接将origin和size的新值赋值到对应的属性中。然而，利用恰好提供了相关功能的现有构造器会更为方便，构造器init(center:size:)的意图也会更加清晰。</p>
+</code></pre>
+<p>构造器init(center:size:)可以直接将origin和size的新值赋值到对应的属性中。然而，利用恰好提供了相关功能的现有构造器会更为方便，构造器init(center:size:)的意图也会更加清晰。</p>
 <h4 id="类的继承和构造过程"><a href="#类的继承和构造过程" class="headerlink" title="类的继承和构造过程"></a>类的继承和构造过程</h4><p>类里面的所有存储型属性——包括所有继承自父类的属性——都必须在构造过程中设置初始值。</p>
 <p>Swift 为类类型提供了两种构造器来确保实例中所有存储型属性都能获得初始值，它们分别是指定构造器和便利构造器。</p>
 <ul>
@@ -579,14 +600,16 @@ struct Point {
 <li>指定构造器和便利构造器的语法</li>
 </ul>
 <p>类的指定构造器的写法跟值类型简单构造器一样：</p>
-<pre><code>init(parameters) {
+<pre><code>init(parameters) &#123;
     statements
-}
-</code></pre><p>便利构造器也采用相同样式的写法，但需要在init关键字之前放置convenience关键字，并使用空格将它们俩分开：</p>
-<pre><code>convenience init(parameters) {
+&#125;
+</code></pre>
+<p>便利构造器也采用相同样式的写法，但需要在init关键字之前放置convenience关键字，并使用空格将它们俩分开：</p>
+<pre><code>convenience init(parameters) &#123;
     statements
-}
-</code></pre><ul>
+&#125;
+</code></pre>
+<ul>
 <li>类的构造器代理规则</li>
 </ul>
 <p>为了简化指定构造器和便利构造器之间的调用关系，Swift 采用以下三条规则来限制构造器之间的代理调用：</p>
@@ -614,17 +637,22 @@ struct Point {
 </li>
 <li><p>某个指定构造器或便利构造器被调用。</p>
 </li>
-<li>完成新实例内存的分配，但此时内存还没有被初始化。</li>
-<li>指定构造器确保其所在类引入的所有存储型属性都已赋初值。存储型属性所属的内存完成初始化。</li>
-<li>指定构造器将调用父类的构造器，完成父类属性的初始化。</li>
-<li>这个调用父类构造器的过程沿着构造器链一直往上执行，直到到达构造器链的最顶部。</li>
+<li><p>完成新实例内存的分配，但此时内存还没有被初始化。</p>
+</li>
+<li><p>指定构造器确保其所在类引入的所有存储型属性都已赋初值。存储型属性所属的内存完成初始化。</p>
+</li>
+<li><p>指定构造器将调用父类的构造器，完成父类属性的初始化。</p>
+</li>
+<li><p>这个调用父类构造器的过程沿着构造器链一直往上执行，直到到达构造器链的最顶部。</p>
+</li>
 <li><p>当到达了构造器链最顶部，且已确保所有实例包含的存储型属性都已经赋值，这个实例的内存被认为已经完全初始化。此时阶段 1 完成。</p>
 </li>
 <li><p>阶段 2</p>
 </li>
 <li><p>从顶部构造器链一直往下，每个构造器链中类的指定构造器都有机会进一步定制实例。构造器此时可以访问self、修改它的属性并调用实例方法等等。</p>
 </li>
-<li>最终，任意构造器链中的便利构造器可以有机会定制实例和使用self。</li>
+<li><p>最终，任意构造器链中的便利构造器可以有机会定制实例和使用self。</p>
+</li>
 </ul>
 <h4 id="构造器的继承和重写"><a href="#构造器的继承和重写" class="headerlink" title="构造器的继承和重写"></a>构造器的继承和重写</h4><p>跟 Objective-C 中的子类不同，Swift 中的子类默认情况下不会继承父类的构造器。Swift 的这种机制可以防止一个父类的简单构造器被一个更精细的子类继承，并被错误地用来创建子类的实例。</p>
 <p>注意</p>
@@ -636,30 +664,34 @@ struct Point {
 <p>当你重写一个父类的指定构造器时，你总是需要写override修饰符，即使你的子类将父类的指定构造器重写为了便利构造器。</p>
 <p>相反，如果你编写了一个和父类便利构造器相匹配的子类构造器，由于子类不能直接调用父类的便利构造器（每个规则都在上文类的构造器代理规则有所描述），因此，严格意义上来讲，你的子类并未对一个父类构造器提供重写。最后的结果就是，你在子类中“重写”一个父类便利构造器时，不需要加override前缀。</p>
 <p>在下面的例子中定义了一个叫Vehicle的基类。基类中声明了一个存储型属性numberOfWheels，它是值为0的Int类型的存储型属性。numberOfWheels属性用于创建名为descrpiption的String类型的计算型属性：</p>
-<pre><code>class Vehicle {
+<pre><code>class Vehicle &#123;
     var numberOfWheels = 0
-    var description: String {
+    var description: String &#123;
         return &quot;\(numberOfWheels) wheel(s)&quot;
-    }
-}
-</code></pre><p>Vehicle类只为存储型属性提供默认值，而不自定义构造器。因此，它会自动获得一个默认构造器。自动获得的默认构造器总会是类中的指定构造器，它可以用于创建numberOfWheels为0的Vehicle实例：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>Vehicle类只为存储型属性提供默认值，而不自定义构造器。因此，它会自动获得一个默认构造器。自动获得的默认构造器总会是类中的指定构造器，它可以用于创建numberOfWheels为0的Vehicle实例：</p>
 <pre><code>let vehicle = Vehicle()
 print(&quot;Vehicle: \(vehicle.description)&quot;)
 // Vehicle: 0 wheel(s)
-</code></pre><p>下面例子中定义了一个Vehicle的子类Bicycle：</p>
-<pre><code>class Bicycle: Vehicle {
-    override init() {
+</code></pre>
+<p>下面例子中定义了一个Vehicle的子类Bicycle：</p>
+<pre><code>class Bicycle: Vehicle &#123;
+    override init() &#123;
         super.init()
         numberOfWheels = 2
-    }
-}
-</code></pre><p>子类Bicycle定义了一个自定义指定构造器init()。这个指定构造器和父类的指定构造器相匹配，所以Bicycle中的指定构造器需要带上override修饰符。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>子类Bicycle定义了一个自定义指定构造器init()。这个指定构造器和父类的指定构造器相匹配，所以Bicycle中的指定构造器需要带上override修饰符。</p>
 <p>Bicycle的构造器init()以调用super.init()方法开始，这个方法的作用是调用Bicycle的父类Vehicle的默认构造器。这样可以确保Bicycle在修改属性之前，它所继承的属性numberOfWheels能被Vehicle类初始化。在调用super.init()之后，属性numberOfWheels的原值被新值2替换。</p>
 <p>如果你创建一个Bicycle实例，你可以调用继承的description计算型属性去查看属性numberOfWheels是否有改变：</p>
 <pre><code>let bicycle = Bicycle()
 print(&quot;Bicycle: \(bicycle.description)&quot;)
 // 打印 &quot;Bicycle: 2 wheel(s)&quot;
-</code></pre><p>注意</p>
+</code></pre>
+<p>注意</p>
 <p>子类可以在初始化时修改继承来的变量属性，但是不能修改继承来的常量属性。</p>
 <h4 id="构造器的自动继承"><a href="#构造器的自动继承" class="headerlink" title="构造器的自动继承"></a>构造器的自动继承</h4><p>如上所述，子类在默认情况下不会继承父类的构造器。但是如果满足特定条件，父类构造器是可以被自动继承的。在实践中，这意味着对于许多常见场景你不必重写父类的构造器，并且可以在安全的情况下以最小的代价继承父类的构造器。</p>
 <p>假设你为子类中引入的所有新属性都提供了默认值，以下 2 个规则适用：</p>
@@ -672,34 +704,38 @@ print(&quot;Bicycle: \(bicycle.description)&quot;)
 <p>对于规则 2，子类可以将父类的指定构造器实现为便利构造器。</p>
 <h4 id="指定构造器和便利构造器实践"><a href="#指定构造器和便利构造器实践" class="headerlink" title="指定构造器和便利构造器实践"></a>指定构造器和便利构造器实践</h4><p>接下来的例子将在实践中展示指定构造器、便利构造器以及构造器的自动继承。这个例子定义了包含三个类Food、RecipeIngredient以及ShoppingListItem的类层次结构，并将演示它们的构造器是如何相互作用的。</p>
 <p>类层次中的基类是Food，它是一个简单的用来封装食物名字的类。Food类引入了一个叫做name的String类型的属性，并且提供了两个构造器来创建Food实例：</p>
-<pre><code>class Food {
+<pre><code>class Food &#123;
     var name: String
-    init(name: String) {
+    init(name: String) &#123;
         self.name = name
-    }
-    convenience init() {
+    &#125;
+    convenience init() &#123;
         self.init(name: &quot;[Unnamed]&quot;)
-    }
-}
-</code></pre><p>类类型没有默认的逐一成员构造器，所以Food类提供了一个接受单一参数name的指定构造器。这个构造器可以使用一个特定的名字来创建新的Food实例：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>类类型没有默认的逐一成员构造器，所以Food类提供了一个接受单一参数name的指定构造器。这个构造器可以使用一个特定的名字来创建新的Food实例：</p>
 <pre><code>let namedMeat = Food(name: &quot;Bacon&quot;)
 // namedMeat 的名字是 &quot;Bacon”
-</code></pre><p>Food类中的构造器init(name: String)被定义为一个指定构造器，因为它能确保Food实例的所有存储型属性都被初始化。Food类没有父类，所以init(name: String)构造器不需要调用super.init()来完成构造过程。</p>
+</code></pre>
+<p>Food类中的构造器init(name: String)被定义为一个指定构造器，因为它能确保Food实例的所有存储型属性都被初始化。Food类没有父类，所以init(name: String)构造器不需要调用super.init()来完成构造过程。</p>
 <p>Food类同样提供了一个没有参数的便利构造器init()。这个init()构造器为新食物提供了一个默认的占位名字，通过横向代理到指定构造器init(name: String)并给参数name传值[Unnamed]来实现：</p>
 <pre><code>let mysteryMeat = Food()
 // mysteryMeat 的名字是 [Unnamed]
-</code></pre><p>类层级中的第二个类是Food的子类RecipeIngredient。RecipeIngredient类用来表示食谱中的一项原料。它引入了Int类型的属性quantity（以及从Food继承过来的name属性），并且定义了两个构造器来创建RecipeIngredient实例：</p>
-<pre><code>class RecipeIngredient: Food {
+</code></pre>
+<p>类层级中的第二个类是Food的子类RecipeIngredient。RecipeIngredient类用来表示食谱中的一项原料。它引入了Int类型的属性quantity（以及从Food继承过来的name属性），并且定义了两个构造器来创建RecipeIngredient实例：</p>
+<pre><code>class RecipeIngredient: Food &#123;
     var quantity: Int
-    init(name: String, quantity: Int) {
+    init(name: String, quantity: Int) &#123;
         self.quantity = quantity
         super.init(name: name)
-    }
-    override convenience init(name: String) {
+    &#125;
+    override convenience init(name: String) &#123;
         self.init(name: name, quantity: 1)
-    }
-}
-</code></pre><p>RecipeIngredient类拥有一个指定构造器init(name: String, quantity: Int)，它可以用来填充RecipeIngredient实例的所有属性值。这个构造器一开始先将传入的quantity参数赋值给quantity属性，这个属性也是唯一在RecipeIngredient中新引入的属性。随后，构造器向上代理到父类Food的init(name: String)。这个过程满足两段式构造过程中的安全检查 1。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>RecipeIngredient类拥有一个指定构造器init(name: String, quantity: Int)，它可以用来填充RecipeIngredient实例的所有属性值。这个构造器一开始先将传入的quantity参数赋值给quantity属性，这个属性也是唯一在RecipeIngredient中新引入的属性。随后，构造器向上代理到父类Food的init(name: String)。这个过程满足两段式构造过程中的安全检查 1。</p>
 <p>RecipeIngredient还定义了一个便利构造器init(name: String)，它只通过name来创建RecipeIngredient的实例。这个便利构造器假设任意RecipeIngredient实例的quantity为1，所以不需要显式指明数量即可创建出实例。这个便利构造器的定义可以更加方便和快捷地创建实例，并且避免了创建多个quantity为1的RecipeIngredient实例时的代码重复。这个便利构造器只是简单地横向代理到类中的指定构造器，并为quantity参数传递1。</p>
 <p>注意，RecipeIngredient的便利构造器init(name: String)使用了跟Food中指定构造器init(name: String)相同的参数。由于这个便利构造器重写了父类的指定构造器init(name: String)，因此必须在前面使用override修饰符。</p>
 <p>尽管RecipeIngredient将父类的指定构造器重写为了便利构造器，它依然提供了父类的所有指定构造器的实现。因此，RecipeIngredient会自动继承父类的所有便利构造器。</p>
@@ -708,17 +744,19 @@ print(&quot;Bicycle: \(bicycle.description)&quot;)
 <pre><code>let oneMysteryItem = RecipeIngredient()
 let oneBacon = RecipeIngredient(name: &quot;Bacon&quot;)
 let sixEggs = RecipeIngredient(name: &quot;Eggs&quot;, quantity: 6)
-</code></pre><p>类层级中第三个也是最后一个类是RecipeIngredient的子类，叫做ShoppingListItem。这个类构建了购物单中出现的某一种食谱原料。</p>
+</code></pre>
+<p>类层级中第三个也是最后一个类是RecipeIngredient的子类，叫做ShoppingListItem。这个类构建了购物单中出现的某一种食谱原料。</p>
 <p>购物单中的每一项总是从未购买状态开始的。为了呈现这一事实，ShoppingListItem引入了一个布尔类型的属性purchased，它的默认值是false。ShoppingListItem还添加了一个计算型属性description，它提供了关于ShoppingListItem实例的一些文字描述：</p>
-<pre><code>class ShoppingListItem: RecipeIngredient {
+<pre><code>class ShoppingListItem: RecipeIngredient &#123;
     var purchased = false
-    var description: String {
+    var description: String &#123;
         var output = &quot;\(quantity) x \(name)&quot;
         output += purchased ? &quot; ✔&quot; : &quot; ✘&quot;
         return output
-    }
-}
-</code></pre><p>注意</p>
+    &#125;
+&#125;
+</code></pre>
+<p>注意</p>
 <p>ShoppingListItem没有定义构造器来为purchased提供初始值，因为添加到购物单的物品的初始状态总是未购买。</p>
 <p>由于它为自己引入的所有属性都提供了默认值，并且自己没有定义任何构造器，ShoppingListItem将自动继承所有父类中的指定构造器和便利构造器。</p>
 <h3 id="可失败构造器"><a href="#可失败构造器" class="headerlink" title="可失败构造器"></a>可失败构造器</h3><p>如果一个类、结构体或枚举类型的对象，在构造过程中有可能失败，则为其定义一个可失败构造器。这里所指的“失败”是指，如给构造器传入无效的参数值，或缺少某种所需的外部资源，又或是不满足某种必要的条件等。</p>
@@ -732,53 +770,57 @@ let sixEggs = RecipeIngredient(name: &quot;Eggs&quot;, quantity: 6)
 <pre><code>let wholeNumber: Double = 12345.0
 let pi = 3.14159
 
-if let valueMaintained = Int(exactly: wholeNumber) {
+if let valueMaintained = Int(exactly: wholeNumber) &#123;
     print(&quot;\(wholeNumber) conversion to Int maintains value&quot;)
-}
+&#125;
 // 打印 &quot;12345.0 conversion to Int maintains value&quot;
 
 let valueChanged = Int(exactly: pi)
 // valueChanged 是 Int? 类型, 不是 Int 类型
 
-if valueChanged == nil {
+if valueChanged == nil &#123;
     print(&quot;\(pi) conversion to Int does not maintain value&quot;)
-}
+&#125;
 // 打印 &quot;3.14159 conversion to Int does not maintain value&quot;
-</code></pre><p>下例中，定义了一个名为Animal的结构体，其中有一个名为species的String类型的常量属性。同时该结构体还定义了一个接受一个名为species的String类型参数的可失败构造器。这个可失败构造器检查传入的参数是否为一个空字符串。如果为空字符串，则构造失败。否则，species属性被赋值，构造成功。</p>
-<pre><code>struct Animal {
+</code></pre>
+<p>下例中，定义了一个名为Animal的结构体，其中有一个名为species的String类型的常量属性。同时该结构体还定义了一个接受一个名为species的String类型参数的可失败构造器。这个可失败构造器检查传入的参数是否为一个空字符串。如果为空字符串，则构造失败。否则，species属性被赋值，构造成功。</p>
+<pre><code>struct Animal &#123;
     let species: String
-    init?(species: String) {
-        if species.isEmpty { return nil }
+    init?(species: String) &#123;
+        if species.isEmpty &#123; return nil &#125;
         self.species = species
-    }
-}
-</code></pre><p>你可以通过该可失败构造器来构建一个Animal的实例，并检查构造过程是否成功：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>你可以通过该可失败构造器来构建一个Animal的实例，并检查构造过程是否成功：</p>
 <pre><code>let someCreature = Animal(species: &quot;Giraffe&quot;)
 // someCreature 的类型是 Animal? 而不是 Animal
 
-if let giraffe = someCreature {
+if let giraffe = someCreature &#123;
     print(&quot;An animal was initialized with a species of \(giraffe.species)&quot;)
-}
+&#125;
 // 打印 &quot;An animal was initialized with a species of Giraffe&quot;
-</code></pre><p>如果你给该可失败构造器传入一个空字符串作为其参数，则会导致构造失败：</p>
+</code></pre>
+<p>如果你给该可失败构造器传入一个空字符串作为其参数，则会导致构造失败：</p>
 <pre><code>let anonymousCreature = Animal(species: &quot;&quot;)
 // anonymousCreature 的类型是 Animal?, 而不是 Animal
 
-if anonymousCreature == nil {
+if anonymousCreature == nil &#123;
     print(&quot;The anonymous creature could not be initialized&quot;)
-}
+&#125;
 // 打印 &quot;The anonymous creature could not be initialized&quot;
-</code></pre><p>注意</p>
+</code></pre>
+<p>注意</p>
 <p>空字符串（如””，而不是”Giraffe”）和一个值为nil的可选类型的字符串是两个完全不同的概念。上例中的空字符串（””）其实是一个有效的，非可选类型的字符串。这里我们之所以让Animal的可失败构造器构造失败，只是因为对于Animal这个类的species属性来说，它更适合有一个具体的值，而不是空字符串。</p>
 <ul>
 <li>枚举类型的可失败构造器</li>
 </ul>
 <p>你可以通过一个带一个或多个参数的可失败构造器来获取枚举类型中特定的枚举成员。如果提供的参数无法匹配任何枚举成员，则构造失败。</p>
 <p>下例中，定义了一个名为TemperatureUnit的枚举类型。其中包含了三个可能的枚举成员(Kelvin，Celsius，和Fahrenheit)，以及一个根据Character值找出所对应的枚举成员的可失败构造器：</p>
-<pre><code>enum TemperatureUnit {
+<pre><code>enum TemperatureUnit &#123;
     case Kelvin, Celsius, Fahrenheit
-    init?(symbol: Character) {
-        switch symbol {
+    init?(symbol: Character) &#123;
+        switch symbol &#123;
         case &quot;K&quot;:
             self = .Kelvin
         case &quot;C&quot;:
@@ -787,42 +829,45 @@ if anonymousCreature == nil {
             self = .Fahrenheit
         default:
             return nil
-        }
-    }
-}
-</code></pre><p>你可以利用该可失败构造器在三个枚举成员中获取一个相匹配的枚举成员，当参数的值不能与任何枚举成员相匹配时，则构造失败：</p>
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>你可以利用该可失败构造器在三个枚举成员中获取一个相匹配的枚举成员，当参数的值不能与任何枚举成员相匹配时，则构造失败：</p>
 <pre><code>let fahrenheitUnit = TemperatureUnit(symbol: &quot;F&quot;)
-if fahrenheitUnit != nil {
+if fahrenheitUnit != nil &#123;
     print(&quot;This is a defined temperature unit, so initialization succeeded.&quot;)
-}
+&#125;
 // 打印 &quot;This is a defined temperature unit, so initialization succeeded.&quot;
 
 let unknownUnit = TemperatureUnit(symbol: &quot;X&quot;)
-if unknownUnit == nil {
+if unknownUnit == nil &#123;
     print(&quot;This is not a defined temperature unit, so initialization failed.&quot;)
-}
+&#125;
 // 打印 &quot;This is not a defined temperature unit, so initialization failed.&quot;
-</code></pre><ul>
+</code></pre>
+<ul>
 <li>带原始值的枚举类型的可失败构造器</li>
 </ul>
 <p>带原始值的枚举类型会自带一个可失败构造器init?(rawValue:)，该可失败构造器有一个名为rawValue的参数，其类型和枚举类型的原始值类型一致，如果该参数的值能够和某个枚举成员的原始值匹配，则该构造器会构造相应的枚举成员，否则构造失败。</p>
 <p>因此上面的TemperatureUnit的例子可以重写为：</p>
-<pre><code>enum TemperatureUnit: Character {
+<pre><code>enum TemperatureUnit: Character &#123;
     case Kelvin = &quot;K&quot;, Celsius = &quot;C&quot;, Fahrenheit = &quot;F&quot;
-}
+&#125;
 
 let fahrenheitUnit = TemperatureUnit(rawValue: &quot;F&quot;)
-if fahrenheitUnit != nil {
+if fahrenheitUnit != nil &#123;
     print(&quot;This is a defined temperature unit, so initialization succeeded.&quot;)
-}
+&#125;
 // 打印 &quot;This is a defined temperature unit, so initialization succeeded.&quot;
 
 let unknownUnit = TemperatureUnit(rawValue: &quot;X&quot;)
-if unknownUnit == nil {
+if unknownUnit == nil &#123;
     print(&quot;This is not a defined temperature unit, so initialization failed.&quot;)
-}
+&#125;
 // 打印 &quot;This is not a defined temperature unit, so initialization failed.&quot;
-</code></pre><ul>
+</code></pre>
+<ul>
 <li>构造失败的传递</li>
 </ul>
 <p>类，结构体，枚举的可失败构造器可以横向代理到类型中的其他可失败构造器。类似的，子类的可失败构造器也能向上代理到父类的可失败构造器。</p>
@@ -830,43 +875,47 @@ if unknownUnit == nil {
 <p>注意</p>
 <p>可失败构造器也可以代理到其它的非可失败构造器。通过这种方式，你可以增加一个可能的失败状态到现有的构造过程中。</p>
 <p>下面这个例子，定义了一个名为CartItem的Product类的子类。这个类建立了一个在线购物车中的物品的模型，它有一个名为quantity的常量存储型属性，并确保该属性的值至少为1：</p>
-<pre><code>class Product {
+<pre><code>class Product &#123;
     let name: String
-    init?(name: String) {   
-        if name.isEmpty { return nil }
+    init?(name: String) &#123;   
+        if name.isEmpty &#123; return nil &#125;
         self.name = name
-    }
-}
+    &#125;
+&#125;
 
-class CartItem: Product {
+class CartItem: Product &#123;
     let quantity: Int
-    init?(name: String, quantity: Int) {
-        if quantity &lt; 1 { return nil }
+    init?(name: String, quantity: Int) &#123;
+        if quantity &lt; 1 &#123; return nil &#125;
         self.quantity = quantity
         super.init(name: name)
-    }
-}
-</code></pre><p>CartItem 可失败构造器首先验证接收的 quantity 值是否大于等于 1 。倘若 quantity 值无效，则立即终止整个构造过程，返回失败结果，且不再执行余下代码。同样地，Product 的可失败构造器首先检查 name 值，假如 name 值为空字符串，则构造器立即执行失败。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>CartItem 可失败构造器首先验证接收的 quantity 值是否大于等于 1 。倘若 quantity 值无效，则立即终止整个构造过程，返回失败结果，且不再执行余下代码。同样地，Product 的可失败构造器首先检查 name 值，假如 name 值为空字符串，则构造器立即执行失败。</p>
 <p>如果你通过传入一个非空字符串 name 以及一个值大于等于 1 的 quantity 来创建一个 CartItem 实例，那么构造方法能够成功被执行：</p>
-<pre><code>if let twoSocks = CartItem(name: &quot;sock&quot;, quantity: 2) {
+<pre><code>if let twoSocks = CartItem(name: &quot;sock&quot;, quantity: 2) &#123;
     print(&quot;Item: \(twoSocks.name), quantity: \(twoSocks.quantity)&quot;)
-}
+&#125;
 // 打印 &quot;Item: sock, quantity: 2”
-</code></pre><p>倘若你以一个值为 0 的 quantity 来创建一个 CartItem 实例，那么将导致 CartItem 构造器失败：</p>
-<pre><code>if let zeroShirts = CartItem(name: &quot;shirt&quot;, quantity: 0) {
+</code></pre>
+<p>倘若你以一个值为 0 的 quantity 来创建一个 CartItem 实例，那么将导致 CartItem 构造器失败：</p>
+<pre><code>if let zeroShirts = CartItem(name: &quot;shirt&quot;, quantity: 0) &#123;
     print(&quot;Item: \(zeroShirts.name), quantity: \(zeroShirts.quantity)&quot;)
-} else {
+&#125; else &#123;
     print(&quot;Unable to initialize zero shirts&quot;)
-}
+&#125;
 // 打印 &quot;Unable to initialize zero shirts”
-</code></pre><p>同样地，如果你尝试传入一个值为空字符串的 name来创建一个 CartItem 实例，那么将导致父类 Product 的构造过程失败：</p>
-<pre><code>if let oneUnnamed = CartItem(name: &quot;&quot;, quantity: 1) {
+</code></pre>
+<p>同样地，如果你尝试传入一个值为空字符串的 name来创建一个 CartItem 实例，那么将导致父类 Product 的构造过程失败：</p>
+<pre><code>if let oneUnnamed = CartItem(name: &quot;&quot;, quantity: 1) &#123;
     print(&quot;Item: \(oneUnnamed.name), quantity: \(oneUnnamed.quantity)&quot;)
-} else {
+&#125; else &#123;
     print(&quot;Unable to initialize one unnamed product&quot;)
-}
+&#125;
 // 打印 &quot;Unable to initialize one unnamed product”
-</code></pre><ul>
+</code></pre>
+<ul>
 <li>重写一个可失败构造器</li>
 </ul>
 <p>如同其它的构造器，你可以在子类中重写父类的可失败构造器。或者你也可以用子类的非可失败构造器重写一个父类的可失败构造器。这使你可以定义一个不会构造失败的子类，即使父类的构造器允许构造失败。</p>
@@ -874,159 +923,165 @@ class CartItem: Product {
 <p>注意</p>
 <p>你可以用非可失败构造器重写可失败构造器，但反过来却不行。</p>
 <p>下例定义了一个名为Document的类，name属性的值必须为一个非空字符串或nil，但不能是一个空字符串：</p>
-<pre><code>class Document {
+<pre><code>class Document &#123;
     var name: String?
     // 该构造器创建了一个 name 属性的值为 nil 的 document 实例
-    init() {}
+    init() &#123;&#125;
     // 该构造器创建了一个 name 属性的值为非空字符串的 document 实例
-    init?(name: String) {
+    init?(name: String) &#123;
         self.name = name
-        if name.isEmpty { return nil }
-    }
-}
-</code></pre><p>下面这个例子，定义了一个Document类的子类AutomaticallyNamedDocument。这个子类重写了父类的两个指定构造器，确保了无论是使用init()构造器，还是使用init(name:)构造器并为参数传递空字符串，生成的实例中的name属性总有初始”[Untitled]”：</p>
-<pre><code>class AutomaticallyNamedDocument: Document {
-    override init() {
+        if name.isEmpty &#123; return nil &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>下面这个例子，定义了一个Document类的子类AutomaticallyNamedDocument。这个子类重写了父类的两个指定构造器，确保了无论是使用init()构造器，还是使用init(name:)构造器并为参数传递空字符串，生成的实例中的name属性总有初始”[Untitled]”：</p>
+<pre><code>class AutomaticallyNamedDocument: Document &#123;
+    override init() &#123;
         super.init()
         self.name = &quot;[Untitled]&quot;
-    }
-    override init(name: String) {
+    &#125;
+    override init(name: String) &#123;
         super.init()
-        if name.isEmpty {
+        if name.isEmpty &#123;
             self.name = &quot;[Untitled]&quot;
-        } else {
+        &#125; else &#123;
             self.name = name
-        }
-    }
-}
-</code></pre><p>AutomaticallyNamedDocument用一个非可失败构造器init(name:)重写了父类的可失败构造器init?(name:)。因为子类用另一种方式处理了空字符串的情况，所以不再需要一个可失败构造器，因此子类用一个非可失败构造器代替了父类的可失败构造器。</p>
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>AutomaticallyNamedDocument用一个非可失败构造器init(name:)重写了父类的可失败构造器init?(name:)。因为子类用另一种方式处理了空字符串的情况，所以不再需要一个可失败构造器，因此子类用一个非可失败构造器代替了父类的可失败构造器。</p>
 <p>你可以在子类的非可失败构造器中使用强制解包来调用父类的可失败构造器。比如，下面的UntitledDocument子类的name属性的值总是”[Untitled]”，它在构造过程中使用了父类的可失败构造器init?(name:)：</p>
-<pre><code>class UntitledDocument: Document {
-    override init() {
+<pre><code>class UntitledDocument: Document &#123;
+    override init() &#123;
         super.init(name: &quot;[Untitled]&quot;)!
-    }
-}
-</code></pre><p>在这个例子中，如果在调用父类的可失败构造器init?(name:)时传入的是空字符串，那么强制解包操作会引发运行时错误。不过，因为这里是通过非空的字符串常量来调用它，所以并不会发生运行时错误。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>在这个例子中，如果在调用父类的可失败构造器init?(name:)时传入的是空字符串，那么强制解包操作会引发运行时错误。不过，因为这里是通过非空的字符串常量来调用它，所以并不会发生运行时错误。</p>
 <ul>
 <li>可失败构造器 init!</li>
 </ul>
 <p>通常来说我们通过在init关键字后添加问号的方式（init?）来定义一个可失败构造器，但你也可以通过在init后面添加惊叹号的方式来定义一个可失败构造器（init!），该可失败构造器将会构建一个对应类型的隐式解包可选类型的对象。</p>
 <p>你可以在init?中代理到init!，反之亦然。你也可以用init?重写init!，反之亦然。你还可以用init代理到init!，不过，一旦init!构造失败，则会触发一个断言。</p>
 <h3 id="必要构造器"><a href="#必要构造器" class="headerlink" title="必要构造器"></a>必要构造器</h3><p>在类的构造器前添加required修饰符表明所有该类的子类都必须实现该构造器：</p>
-<pre><code>class SomeClass {
-    required init() {
+<pre><code>class SomeClass &#123;
+    required init() &#123;
         // 构造器的实现代码
-    }
-}
-</code></pre><p>在子类重写父类的必要构造器时，必须在子类的构造器前也添加required修饰符，表明该构造器要求也应用于继承链后面的子类。在重写父类中必要的指定构造器时，不需要添加override修饰符：</p>
-<pre><code>class SomeSubclass: SomeClass {
-    required init() {
+    &#125;
+&#125;
+</code></pre>
+<p>在子类重写父类的必要构造器时，必须在子类的构造器前也添加required修饰符，表明该构造器要求也应用于继承链后面的子类。在重写父类中必要的指定构造器时，不需要添加override修饰符：</p>
+<pre><code>class SomeSubclass: SomeClass &#123;
+    required init() &#123;
         // 构造器的实现代码
-    }
-}
-</code></pre><p>注意</p>
+    &#125;
+&#125;
+</code></pre>
+<p>注意</p>
 <p>如果子类继承的构造器能满足必要构造器的要求，则无须在子类中显式提供必要构造器的实现。</p>
 <h3 id="通过闭包或函数设置属性的默认值"><a href="#通过闭包或函数设置属性的默认值" class="headerlink" title="通过闭包或函数设置属性的默认值"></a>通过闭包或函数设置属性的默认值</h3><p>如果某个存储型属性的默认值需要一些定制或设置，你可以使用闭包或全局函数为其提供定制的默认值。每当某个属性所在类型的新实例被创建时，对应的闭包或函数会被调用，而它们的返回值会当做默认值赋值给这个属性。</p>
 <p>这种类型的闭包或函数通常会创建一个跟属性类型相同的临时变量，然后修改它的值以满足预期的初始状态，最后返回这个临时变量，作为属性的默认值。</p>
 <p>下面介绍了如何用闭包为属性提供默认值：</p>
-<pre><code>class SomeClass {
-    let someProperty: SomeType = {
+<pre><code>class SomeClass &#123;
+    let someProperty: SomeType = &#123;
         // 在这个闭包中给 someProperty 创建一个默认值
         // someValue 必须和 SomeType 类型相同
         return someValue
-    }()
-}
-</code></pre><p>注意闭包结尾的大括号后面接了一对空的小括号。这用来告诉 Swift 立即执行此闭包。如果你忽略了这对括号，相当于将闭包本身作为值赋值给了属性，而不是将闭包的返回值赋值给属性。</p>
+    &#125;()
+&#125;
+</code></pre>
+<p>注意闭包结尾的大括号后面接了一对空的小括号。这用来告诉 Swift 立即执行此闭包。如果你忽略了这对括号，相当于将闭包本身作为值赋值给了属性，而不是将闭包的返回值赋值给属性。</p>
 <p>注意</p>
 <p>如果你使用闭包来初始化属性，请记住在闭包执行时，实例的其它部分都还没有初始化。这意味着你不能在闭包里访问其它属性，即使这些属性有默认值。同样，你也不能使用隐式的self属性，或者调用任何实例方法。</p>
 <h3 id="构造过程总结"><a href="#构造过程总结" class="headerlink" title="构造过程总结"></a>构造过程总结</h3><p>构造过程</p>
 <pre><code>// 构造器
-struct Fahrenheit {
+struct Fahrenheit &#123;
     var temperature: Double
-    init() {
+    init() &#123;
         temperature = 32.0
-    }
-}
+    &#125;
+&#125;
 var f = Fahrenheit()
 print(&quot;The default temperature is \(f.temperature)&quot;)
 
 // 构造参数
-struct Celsius {
+struct Celsius &#123;
     var temperatureInCelsius: Double
-    init(fromFahrenheit fahrenheit: Double) {
+    init(fromFahrenheit fahrenheit: Double) &#123;
         temperatureInCelsius = (fahrenheit - 32.0) / 1.8
-    }
-    init(fromKelvin kelvin: Double) {
+    &#125;
+    init(fromKelvin kelvin: Double) &#123;
         temperatureInCelsius = kelvin - 273.15
-    }
-}
+    &#125;
+&#125;
 let boilingPointOfWater = Celsius(fromFahrenheit: 212.0)
 boilingPointOfWater.temperatureInCelsius
 let freezingPointOfWater = Celsius(fromKelvin: 273.15)
 freezingPointOfWater.temperatureInCelsius
 
-struct Color {
+struct Color &#123;
     let red, green, blue: Double
-    init(red: Double, green: Double, blue: Double) {
+    init(red: Double, green: Double, blue: Double) &#123;
         self.red = red
         self.green = green
         self.blue = blue
-    }
-    init(white: Double) {
+    &#125;
+    init(white: Double) &#123;
         red = white
         green = white
         blue = white
-    }
-}
+    &#125;
+&#125;
 let magenta = Color(red: 1.0, green: 0.0, blue: 1.0)
 let halfGray = Color(white: 0.5)
 halfGray.red
 halfGray.green
 
 // 构造器的继承
-class Vehicle {
+class Vehicle &#123;
     var numberOfWheels = 0
-    var description: String {
+    var description: String &#123;
         return &quot;\(numberOfWheels) wheel(s)&quot;
-    }
-}
+    &#125;
+&#125;
 let vehicle = Vehicle()
 vehicle.description
 
-class Bicycle: Vehicle {
-    override init() {
+class Bicycle: Vehicle &#123;
+    override init() &#123;
         super.init()
         numberOfWheels = 2
-    }
-}
+    &#125;
+&#125;
 let bicycle = Bicycle()
 bicycle.description
 
 // 指定构造器和便利构造器的实践
-class Food {
+class Food &#123;
     var name: String
-    init(name: String) {
+    init(name: String) &#123;
         self.name = name
-    }
-    convenience init() {
+    &#125;
+    convenience init() &#123;
         self.init(name: &quot;[Unnamed]&quot;)
-    }
-}
+    &#125;
+&#125;
 var nameMeat = Food()
 nameMeat.name
 nameMeat = Food(name: &quot;猪肉&quot;)
 nameMeat.name
 
-class RecipeIngredient: Food {
+class RecipeIngredient: Food &#123;
     var quantity: Int
-    init(name: String, quantity:Int) {
+    init(name: String, quantity:Int) &#123;
         self.quantity = quantity
         super.init(name: name)
-    }
-    override convenience init(name: String) {
+    &#125;
+    override convenience init(name: String) &#123;
         self.init(name: name, quantity: 1)
-    }
-}
+    &#125;
+&#125;
 let oneMysteryItem = RecipeIngredient()
 oneMysteryItem.name
 let oneBacon = RecipeIngredient(name: &quot;Bacon&quot;)
@@ -1034,14 +1089,14 @@ oneBacon.name
 oneBacon.quantity
 let sixEggs = RecipeIngredient(name: &quot;Eggs&quot;, quantity: 6)
 
-class ShoppingListItem: RecipeIngredient {
+class ShoppingListItem: RecipeIngredient &#123;
     var purchase = false
-    var description: String {
+    var description: String &#123;
         var output = &quot;\(quantity) x \(name)&quot;
         output += purchase ? &quot; √&quot; : &quot; ×&quot;
         return output
-    }
-}
+    &#125;
+&#125;
 var breakfastList = [
     ShoppingListItem(),
     ShoppingListItem(name: &quot;Bacon&quot;),
@@ -1049,156 +1104,163 @@ var breakfastList = [
 ]
 breakfastList[0].name = &quot;Orange Juice&quot;
 breakfastList[0].purchase = true
-for item in breakfastList {
+for item in breakfastList &#123;
     print(item.description)
-}
+&#125;
 
 // 可失败构造器
 let wholeNumber: Double = 12345.0
 let pi = 3.14159
-if let valueMaintained = Int(exactly: wholeNumber) {
+if let valueMaintained = Int(exactly: wholeNumber) &#123;
     print(valueMaintained)
-}
-if let valueChanged = Int(exactly: pi) {
+&#125;
+if let valueChanged = Int(exactly: pi) &#123;
     print(&quot;是整数&quot;)
-} else {
+&#125; else &#123;
     print(&quot;不是整数&quot;)
-}
+&#125;
 
-struct Animal {
+struct Animal &#123;
     let species: String
-    init?(species: String) {
-        if species.isEmpty {
+    init?(species: String) &#123;
+        if species.isEmpty &#123;
             return nil
-        }
+        &#125;
         self.species = species
-    }
-}
+    &#125;
+&#125;
 let someCreature = Animal(species: &quot;Giraffe&quot;)
-if let giraffe = someCreature {
+if let giraffe = someCreature &#123;
     print(&quot;An animal was initialized with a species of \(giraffe.species)&quot;)
-}
+&#125;
 
 let anonymousCreature = Animal(species: &quot;&quot;)
-if let unknow = anonymousCreature {
+if let unknow = anonymousCreature &#123;
     print(&quot;An animal was initialized with a species of \(unknow.species)&quot;)
-} else {
+&#125; else &#123;
     print(&quot;不是动物&quot;)
-}
+&#125;
 
 // 构造失败的传递
-class Product {
+class Product &#123;
     let name: String
-    init?(name: String) {
-        if name.isEmpty { return nil }
+    init?(name: String) &#123;
+        if name.isEmpty &#123; return nil &#125;
         self.name = name
-    }
-}
+    &#125;
+&#125;
 
-class CartItem: Product {
+class CartItem: Product &#123;
     let quantity: Int
-    init?(name: String, quantity: Int) {
-        if quantity &lt; 1 { return nil }
+    init?(name: String, quantity: Int) &#123;
+        if quantity &lt; 1 &#123; return nil &#125;
         self.quantity = quantity
         super.init(name: name)
-    }
-}
-if let twoSocks = CartItem(name: &quot;sock&quot;, quantity: 2) {
+    &#125;
+&#125;
+if let twoSocks = CartItem(name: &quot;sock&quot;, quantity: 2) &#123;
     print(&quot;Item: \(twoSocks.name), quantity: \(twoSocks.quantity)&quot;)
-}
+&#125;
 
-if let zeroShirts = CartItem(name: &quot;shirt&quot;, quantity: 0) {
+if let zeroShirts = CartItem(name: &quot;shirt&quot;, quantity: 0) &#123;
     print(&quot;Item: \(zeroShirts.name), quantity: \(zeroShirts.quantity)&quot;)
-} else {
+&#125; else &#123;
     print(&quot;Unable to initialize zero shirts&quot;)
-}
+&#125;
 
-if let oneUnnamed = CartItem(name: &quot;&quot;, quantity: 1) {
+if let oneUnnamed = CartItem(name: &quot;&quot;, quantity: 1) &#123;
     print(&quot;Item: \(oneUnnamed.name), quantity: \(oneUnnamed.quantity)&quot;)
-} else {
+&#125; else &#123;
     print(&quot;Unable to initialize one unnamed product&quot;)
-}
+&#125;
 
 // 重写一个可失败的构造器
-class Document {
+class Document &#123;
     var name: String?
 
-    init() {}
+    init() &#123;&#125;
 
-    init?(name: String) {
+    init?(name: String) &#123;
         self.name = name
-        if name.isEmpty { return nil }
-    }
-}
+        if name.isEmpty &#123; return nil &#125;
+    &#125;
+&#125;
 
-class AutomaticallyNamedDocument: Document {
-    override init() {
+class AutomaticallyNamedDocument: Document &#123;
+    override init() &#123;
         super.init()
         self.name = &quot;[Untitle]&quot;
-    }
+    &#125;
     // 子类用非可失败构造器重写了父类的可失败构造器
-    override init(name: String) {
+    override init(name: String) &#123;
         super.init()
         (name.isEmpty) ? (self.name = &quot;[Untitle]&quot;) : (self.name = name)
-    }
-}
-</code></pre><h2 id="析构过程"><a href="#析构过程" class="headerlink" title="析构过程"></a>析构过程</h2><p>析构器只适用于类类型，当一个类的实例被释放之前，析构器会被立即调用。析构器用关键字deinit来标示，类似于构造器要用init来标示。</p>
+    &#125;
+&#125;
+</code></pre>
+<h2 id="析构过程"><a href="#析构过程" class="headerlink" title="析构过程"></a>析构过程</h2><p>析构器只适用于类类型，当一个类的实例被释放之前，析构器会被立即调用。析构器用关键字deinit来标示，类似于构造器要用init来标示。</p>
 <h3 id="析构过程原理"><a href="#析构过程原理" class="headerlink" title="析构过程原理"></a>析构过程原理</h3><p>Swift 会自动释放不再需要的实例以释放资源。Swift 通过自动引用计数（ARC）处理实例的内存管理。通常当你的实例被释放时不需要手动地去清理。但是，当使用自己的资源时，你可能需要进行一些额外的清理。例如，如果创建了一个自定义的类来打开一个文件，并写入一些数据，你可能需要在类实例被释放之前手动去关闭该文件。</p>
 <p>在类的定义中，每个类最多只能有一个析构器，而且析构器不带任何参数，如下所示：</p>
-<pre><code>deinit {
+<pre><code>deinit &#123;
     // 执行析构过程
-}
-</code></pre><p>析构器是在实例释放发生前被自动调用。你不能主动调用析构器。子类继承了父类的析构器，并且在子类析构器实现的最后，父类的析构器会被自动调用。即使子类没有提供自己的析构器，父类的析构器也同样会被调用。</p>
+&#125;
+</code></pre>
+<p>析构器是在实例释放发生前被自动调用。你不能主动调用析构器。子类继承了父类的析构器，并且在子类析构器实现的最后，父类的析构器会被自动调用。即使子类没有提供自己的析构器，父类的析构器也同样会被调用。</p>
 <p>因为直到实例的析构器被调用后，实例才会被释放，所以析构器可以访问实例的所有属性，并且可以根据那些属性可以修改它的行为（比如查找一个需要被关闭的文件）。</p>
 <h3 id="析构器实践"><a href="#析构器实践" class="headerlink" title="析构器实践"></a>析构器实践</h3><p>这是一个析构器实践的例子。这个例子描述了一个简单的游戏，这里定义了两种新类型，分别是Bank和Player。Bank类管理一种虚拟硬币，确保流通的硬币数量永远不可能超过 10,000。在游戏中有且只能有一个Bank存在，因此Bank用类来实现，并使用类型属性和类型方法来存储和管理其当前状态。</p>
-<pre><code>class Bank {
+<pre><code>class Bank &#123;
     static var coinsInBank = 10_000
-    static func distribute(coins numberOfCoinsRequested: Int) -&gt; Int {
+    static func distribute(coins numberOfCoinsRequested: Int) -&gt; Int &#123;
         let numberOfCoinsToVend = min(numberOfCoinsRequested, coinsInBank)
         coinsInBank -= numberOfCoinsToVend
         return numberOfCoinsToVend
-    }
-    static func receive(coins: Int) {
+    &#125;
+    static func receive(coins: Int) &#123;
         coinsInBank += coins
-    }
-}
-</code></pre><p>Bank使用coinsInBank属性来跟踪它当前拥有的硬币数量。Bank还提供了两个方法，distribute(coins:)和receive(coins:)，分别用来处理硬币的分发和收集。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>Bank使用coinsInBank属性来跟踪它当前拥有的硬币数量。Bank还提供了两个方法，distribute(coins:)和receive(coins:)，分别用来处理硬币的分发和收集。</p>
 <p>distribute(coins:)方法在Bank对象分发硬币之前检查是否有足够的硬币。如果硬币不足，Bank对象会返回一个比请求时小的数字（如果Bank对象中没有硬币了就返回0）。此方法返回一个整型值，表示提供的硬币的实际数量。</p>
 <p>receive(coins:)方法只是将Bank实例接收到的硬币数目加回硬币存储中。</p>
 <p>Player类描述了游戏中的一个玩家。每一个玩家在任意时间都有一定数量的硬币存储在他们的钱包中。这通过玩家的coinsInPurse属性来表示：</p>
-<pre><code>class Player {
+<pre><code>class Player &#123;
     var coinsInPurse: Int
-    init(coins: Int) {
+    init(coins: Int) &#123;
         coinsInPurse = Bank.distribute(coins: coins)
-    }
-    func win(coins: Int) {
+    &#125;
+    func win(coins: Int) &#123;
         coinsInPurse += Bank.distribute(coins: coins)
-    }
-    deinit {
+    &#125;
+    deinit &#123;
         Bank.receive(coins: coinsInPurse)
-    }
-}
-</code></pre><p>每个Player实例在初始化的过程中，都从Bank对象获取指定数量的硬币。如果没有足够的硬币可用，Player实例可能会收到比指定数量少的硬币.</p>
+    &#125;
+&#125;
+</code></pre>
+<p>每个Player实例在初始化的过程中，都从Bank对象获取指定数量的硬币。如果没有足够的硬币可用，Player实例可能会收到比指定数量少的硬币.</p>
 <p>Player类定义了一个win(coins:)方法，该方法从Bank对象获取一定数量的硬币，并把它们添加到玩家的钱包。Player类还实现了一个析构器，这个析构器在Player实例释放前被调用。在这里，析构器的作用只是将玩家的所有硬币都返还给Bank对象：</p>
 <pre><code>var playerOne: Player? = Player(coins: 100)
 print(&quot;A new player has joined the game with \(playerOne!.coinsInPurse) coins&quot;)
 // 打印 &quot;A new player has joined the game with 100 coins&quot;
 print(&quot;There are now \(Bank.coinsInBank) coins left in the bank&quot;)
 // 打印 &quot;There are now 9900 coins left in the bank&quot;
-</code></pre><p>创建一个Player实例的时候，会向Bank对象请求 100 个硬币，如果有足够的硬币可用的话。这个Player实例存储在一个名为playerOne的可选类型的变量中。这里使用了一个可选类型的变量，因为玩家可以随时离开游戏，设置为可选使你可以追踪玩家当前是否在游戏中。</p>
+</code></pre>
+<p>创建一个Player实例的时候，会向Bank对象请求 100 个硬币，如果有足够的硬币可用的话。这个Player实例存储在一个名为playerOne的可选类型的变量中。这里使用了一个可选类型的变量，因为玩家可以随时离开游戏，设置为可选使你可以追踪玩家当前是否在游戏中。</p>
 <p>因为playerOne是可选的，所以访问其coinsInPurse属性来打印钱包中的硬币数量时，使用感叹号（!）来解包：</p>
 <pre><code>playerOne!.win(coins: 2_000)
 print(&quot;PlayerOne won 2000 coins &amp; now has \(playerOne!.coinsInPurse) coins&quot;)
 // 输出 &quot;PlayerOne won 2000 coins &amp; now has 2100 coins&quot;
 print(&quot;The bank now only has \(Bank.coinsInBank) coins left&quot;)
 // 输出 &quot;The bank now only has 7900 coins left&quot;
-</code></pre><p>这里，玩家已经赢得了 2,000 枚硬币，所以玩家的钱包中现在有 2,100 枚硬币，而Bank对象只剩余 7,900 枚硬币。</p>
+</code></pre>
+<p>这里，玩家已经赢得了 2,000 枚硬币，所以玩家的钱包中现在有 2,100 枚硬币，而Bank对象只剩余 7,900 枚硬币。</p>
 <pre><code>playerOne = nil
 print(&quot;PlayerOne has left the game&quot;)
 // 打印 &quot;PlayerOne has left the game&quot;
 print(&quot;The bank now has \(Bank.coinsInBank) coins&quot;)
 // 打印 &quot;The bank now has 10000 coins&quot;
-</code></pre><p>玩家现在已经离开了游戏。这通过将可选类型的playerOne变量设置为nil来表示，意味着“没有Player实例”。当这一切发生时，playerOne变量对Player实例的引用被破坏了。没有其它属性或者变量引用Player实例，因此该实例会被释放，以便回收内存。在这之前，该实例的析构器被自动调用，玩家的硬币被返还给银行。</p>
+</code></pre>
+<p>玩家现在已经离开了游戏。这通过将可选类型的playerOne变量设置为nil来表示，意味着“没有Player实例”。当这一切发生时，playerOne变量对Player实例的引用被破坏了。没有其它属性或者变量引用Player实例，因此该实例会被释放，以便回收内存。在这之前，该实例的析构器被自动调用，玩家的硬币被返还给银行。</p>
 
       
 
@@ -1222,7 +1284,7 @@ print(&quot;The bank now has \(Bank.coinsInBank) coins&quot;)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/15/swift构造过程、析构过程/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/15/swift%E6%9E%84%E9%80%A0%E8%BF%87%E7%A8%8B%E3%80%81%E6%9E%90%E6%9E%84%E8%BF%87%E7%A8%8B/">展开全文 >></a>
         </p>
       
 
@@ -1259,12 +1321,12 @@ print(&quot;The bank now has \(Bank.coinsInBank) coins&quot;)
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/15/swift下标，继承/">swift下标，继承</a>
+      <a class="article-title" href="/2018/12/15/swift%E4%B8%8B%E6%A0%87%EF%BC%8C%E7%BB%A7%E6%89%BF/">swift下标，继承</a>
     </h1>
   
 
         
-        <a href="/2018/12/15/swift下标，继承/" class="archive-article-date">
+        <a href="/2018/12/15/swift%E4%B8%8B%E6%A0%87%EF%BC%8C%E7%BB%A7%E6%89%BF/" class="archive-article-date">
   	<time datetime="2018-12-15T12:17:28.021Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
 </a>
         
@@ -1275,31 +1337,34 @@ print(&quot;The bank now has \(Bank.coinsInBank) coins&quot;)
         <h2 id="下标"><a href="#下标" class="headerlink" title="下标"></a>下标</h2><p>下标可以定义在类、结构体和枚举中，是访问集合，列表或序列中元素的快捷方式。可以使用下标的索引，设置和获取值，而不需要再调用对应的存取方法。举例来说，用下标访问一个Array实例中的元素可以写作someArray[index]，访问Dictionary实例中的元素可以写作someDictionary[key]。</p>
 <p>一个类型可以定义多个下标，通过不同索引类型进行重载。下标不限于一维，你可以定义具有多个入参的下标满足自定义类型的需求。</p>
 <h3 id="下标语法"><a href="#下标语法" class="headerlink" title="下标语法"></a>下标语法</h3><p>下标允许你通过在实例名称后面的方括号中传入一个或者多个索引值来对实例进行存取。语法类似于实例方法语法和计算型属性语法的混合。与定义实例方法类似，定义下标使用subscript关键字，指定一个或多个输入参数和返回类型；与实例方法不同的是，下标可以设定为读写或只读。这种行为由 getter 和 setter 实现，有点类似计算型属性：</p>
-<pre><code>subscript(index: Int) -&gt; Int {
-    get {
+<pre><code>subscript(index: Int) -&gt; Int &#123;
+    get &#123;
       // 返回一个适当的 Int 类型的值
-    }
+    &#125;
 
-    set(newValue) {
+    set(newValue) &#123;
       // 执行适当的赋值操作
-    }
-}
-</code></pre><p>newValue的类型和下标的返回类型相同。如同计算型属性，可以不指定 setter 的参数（newValue）。如果不指定参数，setter 会提供一个名为newValue的默认参数。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>newValue的类型和下标的返回类型相同。如同计算型属性，可以不指定 setter 的参数（newValue）。如果不指定参数，setter 会提供一个名为newValue的默认参数。</p>
 <p>如同只读计算型属性，可以省略只读下标的get关键字：</p>
-<pre><code>subscript(index: Int) -&gt; Int {
+<pre><code>subscript(index: Int) -&gt; Int &#123;
     // 返回一个适当的 Int 类型的值
-}
-</code></pre><p>下面代码演示了只读下标的实现，这里定义了一个TimesTable结构体，用来表示传入整数的乘法表：</p>
-<pre><code>struct TimesTable {
+&#125;
+</code></pre>
+<p>下面代码演示了只读下标的实现，这里定义了一个TimesTable结构体，用来表示传入整数的乘法表：</p>
+<pre><code>struct TimesTable &#123;
     let multiplier: Int
-    subscript(index: Int) -&gt; Int {
+    subscript(index: Int) -&gt; Int &#123;
         return multiplier * index
-    }
-}
+    &#125;
+&#125;
 let threeTimesTable = TimesTable(multiplier: 3)
 print(&quot;six times three is \(threeTimesTable[6])&quot;)
 // 打印 &quot;six times three is 18&quot;
-</code></pre><p>在上例中，创建了一个TimesTable实例，用来表示整数3的乘法表。数值3被传递给结构体的构造函数，作为实例成员multiplier的值。</p>
+</code></pre>
+<p>在上例中，创建了一个TimesTable实例，用来表示整数3的乘法表。数值3被传递给结构体的构造函数，作为实例成员multiplier的值。</p>
 <p>你可以通过下标访问threeTimesTable实例，例如上面演示的threeTimesTable[6]。这条语句查询了3的乘法表中的第六个元素，返回3的6倍即18。</p>
 <p>注意</p>
 <p>TimesTable例子基于一个固定的数学公式，对threeTimesTable[someIndex]进行赋值操作并不合适，因此下标定义为只读的。</p>
@@ -1307,82 +1372,87 @@ print(&quot;six times three is \(threeTimesTable[6])&quot;)
 <p>例如，Swift 的Dictionary类型实现下标用于对其实例中储存的值进行存取操作。为字典设值时，在下标中使用和字典的键类型相同的键，并把一个和字典的值类型相同的值赋给这个下标：</p>
 <pre><code>var numberOfLegs = [&quot;spider&quot;: 8, &quot;ant&quot;: 6, &quot;cat&quot;: 4]
 numberOfLegs[&quot;bird&quot;] = 2
-</code></pre><p>上例定义一个名为numberOfLegs的变量，并用一个包含三对键值的字典字面量初始化它。numberOfLegs字典的类型被推断为[String: Int]。字典创建完成后，该例子通过下标将String类型的键bird和Int类型的值2添加到字典中。</p>
+</code></pre>
+<p>上例定义一个名为numberOfLegs的变量，并用一个包含三对键值的字典字面量初始化它。numberOfLegs字典的类型被推断为[String: Int]。字典创建完成后，该例子通过下标将String类型的键bird和Int类型的值2添加到字典中。</p>
 <p>注意</p>
 <p>Swift 的Dictionary类型的下标接受并返回可选类型的值。上例中的numberOfLegs字典通过下标返回的是一个Int?或者说“可选的int”。Dictionary类型之所以如此实现下标，是因为不是每个键都有个对应的值，同时这也提供了一种通过键删除对应值的方式，只需将键对应的值赋值为nil即可。</p>
 <h3 id="下标选项"><a href="#下标选项" class="headerlink" title="下标选项"></a>下标选项</h3><p>下标可以接受任意数量的入参，并且这些入参可以是任意类型。下标的返回值也可以是任意类型。下标可以使用变量参数和可变参数，但是不能使用输入输出参数，也不能给参数设置默认值。</p>
 <p>一个类或结构体可以根据自身需要提供多个下标实现，使用下标时将通过入参的数量和类型进行区分，自动匹配合适的下标，这就是下标的重载。</p>
 <p>虽然接受单一入参的下标是最常见的，但也可以根据情况定义接受多个入参的下标。例如下例定义了一个Matrix结构体，用于表示一个Double类型的二维矩阵。Matrix结构体的下标接受两个整型参数：</p>
-<pre><code>struct Matrix {
+<pre><code>struct Matrix &#123;
     let rows: Int, columns: Int
     var grid: [Double]
-    init(rows: Int, columns: Int) {
+    init(rows: Int, columns: Int) &#123;
         self.rows = rows
         self.columns = columns
         grid = Array(repeatElement(0.0, count: rows * columns))
-    }
-    func indexIsValidForRow(row: Int, column: Int) -&gt; Bool {
+    &#125;
+    func indexIsValidForRow(row: Int, column: Int) -&gt; Bool &#123;
         return row &gt;= 0 &amp;&amp; row &lt; rows &amp;&amp; column &gt;= 0 &amp;&amp; column &lt; columns
-    }
-    subscript(row: Int, column: Int) -&gt; Double {
-        get {
+    &#125;
+    subscript(row: Int, column: Int) -&gt; Double &#123;
+        get &#123;
             assert(indexIsValidForRow(row, column: column), &quot;Index out of range&quot;)
             return grid[(row * columns) + column]
-        }
-        set {
+        &#125;
+        set &#123;
             assert(indexIsValidForRow(row, column: column), &quot;Index out of range&quot;)
             grid[(row * columns) + column] = newValue
-        }
-    }
-}
-</code></pre><p>Matrix提供了一个接受两个入参的构造方法，入参分别是rows和columns，创建了一个足够容纳rows * columns个Double类型的值的数组。通过传入数组长度和初始值0.0到数组的构造器，将矩阵中每个位置的值初始化为0.0。</p>
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>Matrix提供了一个接受两个入参的构造方法，入参分别是rows和columns，创建了一个足够容纳rows * columns个Double类型的值的数组。通过传入数组长度和初始值0.0到数组的构造器，将矩阵中每个位置的值初始化为0.0。</p>
 <p>你可以通过传入合适的row和column的数量来构造一个新的Matrix实例：</p>
 <pre><code>var matrix = Matrix(rows: 2, columns: 2)
-</code></pre><p>上例中创建了一个Matrix实例来表示两行两列的矩阵。该Matrix实例的grid数组按照从左上到右下的阅读顺序将矩阵扁平化存储：</p>
+</code></pre>
+<p>上例中创建了一个Matrix实例来表示两行两列的矩阵。该Matrix实例的grid数组按照从左上到右下的阅读顺序将矩阵扁平化存储：</p>
 <p>将row和column的值传入下标来为矩阵设值，下标的入参使用逗号分隔：</p>
 <pre><code>matrix[0, 1] = 1.5
 matrix[1, 0] = 3.2
-</code></pre><p>上面两条语句分别调用下标的 setter 将矩阵右上角位置（即row为0、column为1的位置）的值设置为1.5，将矩阵左下角位置（即row为1、column为0的位置）的值设置为3.2：</p>
+</code></pre>
+<p>上面两条语句分别调用下标的 setter 将矩阵右上角位置（即row为0、column为1的位置）的值设置为1.5，将矩阵左下角位置（即row为1、column为0的位置）的值设置为3.2：</p>
 <p>Matrix下标的 getter 和 setter 中都含有断言，用来检查下标入参row和column的值是否有效。为了方便进行断言，Matrix包含了一个名为indexIsValidForRow(_:column:)的便利方法，用来检查入参row和column的值是否在矩阵范围内，断言在下标越界时触发：</p>
 <pre><code>let someValue = matrix[2, 2]
 // 断言将会触发，因为 [2, 2] 已经超过了 matrix 的范围
-</code></pre><h3 id="下标总结"><a href="#下标总结" class="headerlink" title="下标总结"></a>下标总结</h3><p>下标</p>
+</code></pre>
+<h3 id="下标总结"><a href="#下标总结" class="headerlink" title="下标总结"></a>下标总结</h3><p>下标</p>
 <pre><code>// 下标语法
-struct TimesTable {
+struct TimesTable &#123;
     let multiplier: Int
-    subscript(index: Int) -&gt; Int {
+    subscript(index: Int) -&gt; Int &#123;
         return multiplier * index
-    }
-}
+    &#125;
+&#125;
 let threeTimesTable = TimesTable(multiplier: 3)
 print(&quot;\(threeTimesTable[6])&quot;)
 
 
-struct Matrix {
+struct Matrix &#123;
     let rows: Int, columns: Int
     var grid: [Double]
 
-    init(rows: Int, columns: Int) {
+    init(rows: Int, columns: Int) &#123;
         self.rows = rows
         self.columns = columns
         grid = Array(repeatElement(0.0, count: rows * columns))
-    }
+    &#125;
 
-    func indexIsValidForRow(row: Int, column: Int) -&gt; Bool {
+    func indexIsValidForRow(row: Int, column: Int) -&gt; Bool &#123;
         return row &gt;= 0 &amp;&amp; row &lt; rows &amp;&amp; column &gt;= 0 &amp;&amp; column &lt; columns
-    }
+    &#125;
 
-    subscript(row: Int, column: Int) -&gt; Double {
-        get {
+    subscript(row: Int, column: Int) -&gt; Double &#123;
+        get &#123;
             assert(indexIsValidForRow(row: row, column: column), &quot;Index out of range&quot;)
             return grid[(row * columns) + column]
-        }
-        set {
+        &#125;
+        set &#123;
             assert(indexIsValidForRow(row: row, column: column), &quot;Index out of range&quot;)
             grid[(row * columns) + column] = newValue
-        }
-    }
-}
+        &#125;
+    &#125;
+&#125;
 
 var matrix = Matrix(rows: 2, columns: 2)
 print(matrix.grid)
@@ -1391,7 +1461,8 @@ matrix[0, 0] = 1.0
 print(matrix.grid)
 
 // matrix[2, 2] = 19
-</code></pre><h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>一个类可以继承另一个类的方法，属性和其它特性。当一个类继承其它类时，继承类叫子类，被继承类叫超类（或父类）。在 Swift 中，继承是区分「类」与其它类型的一个基本特征。</p>
+</code></pre>
+<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>一个类可以继承另一个类的方法，属性和其它特性。当一个类继承其它类时，继承类叫子类，被继承类叫超类（或父类）。在 Swift 中，继承是区分「类」与其它类型的一个基本特征。</p>
 <p>在 Swift 中，类可以调用和访问超类的方法，属性和下标，并且可以重写这些方法，属性和下标来优化或修改它们的行为。Swift 会检查你的重写定义在超类中是否有匹配的定义，以此确保你的重写行为是正确的。</p>
 <p>可以为类中继承来的属性添加属性观察器，这样一来，当属性值改变时，类就会被通知到。可以为任何属性添加属性观察器，无论它原本被定义为存储型属性还是计算型属性。</p>
 <h3 id="定义一个基类"><a href="#定义一个基类" class="headerlink" title="定义一个基类"></a>定义一个基类</h3><p>不继承于其它类的类，称之为基类。</p>
@@ -1399,44 +1470,52 @@ print(matrix.grid)
 <p>Swift 中的类并不是从一个通用的基类继承而来。如果你不为你定义的类指定一个超类的话，这个类就自动成为基类。</p>
 <p>下面的例子定义了一个叫Vehicle的基类。这个基类声明了一个名为currentSpeed，默认值是0.0的存储属性（属性类型推断为Double）。currentSpeed属性的值被一个String类型的只读计算型属性description使用，用来创建车辆的描述。</p>
 <p>Vehicle基类也定义了一个名为makeNoise的方法。这个方法实际上不为Vehicle实例做任何事，但之后将会被Vehicle的子类定制：</p>
-<pre><code>class Vehicle {
+<pre><code>class Vehicle &#123;
     var currentSpeed = 0.0
-    var description: String {
+    var description: String &#123;
         return &quot;traveling at \(currentSpeed) miles per hour&quot;
-    }
-    func makeNoise() {
+    &#125;
+    func makeNoise() &#123;
         // 什么也不做-因为车辆不一定会有噪音
-    }
-}
-</code></pre><p>您可以用初始化语法创建一个Vehicle的新实例，即类名后面跟一个空括号：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>您可以用初始化语法创建一个Vehicle的新实例，即类名后面跟一个空括号：</p>
 <pre><code>let someVehicle = Vehicle()
-</code></pre><p>现在已经创建了一个Vehicle的新实例，你可以访问它的description属性来打印车辆的当前速度：</p>
+</code></pre>
+<p>现在已经创建了一个Vehicle的新实例，你可以访问它的description属性来打印车辆的当前速度：</p>
 <pre><code>print(&quot;Vehicle: \(someVehicle.description)&quot;)
 // 打印 &quot;Vehicle: traveling at 0.0 miles per hour&quot;
-</code></pre><p>Vehicle类定义了一个通用特性的车辆类，实际上没什么用处。为了让它变得更加有用，需要完善它从而能够描述一个更加具体类型的车辆。</p>
+</code></pre>
+<p>Vehicle类定义了一个通用特性的车辆类，实际上没什么用处。为了让它变得更加有用，需要完善它从而能够描述一个更加具体类型的车辆。</p>
 <h3 id="子类生成"><a href="#子类生成" class="headerlink" title="子类生成"></a>子类生成</h3><p>子类生成指的是在一个已有类的基础上创建一个新的类。子类继承超类的特性，并且可以进一步完善。你还可以为子类添加新的特性。</p>
 <p>为了指明某个类的超类，将超类名写在子类名的后面，用冒号分隔：</p>
-<pre><code>class SomeClass: SomeSuperclass {
+<pre><code>class SomeClass: SomeSuperclass &#123;
     // 这里是子类的定义
-}
-</code></pre><p>下一个例子，定义一个叫Bicycle的子类，继承成父类Vehicle：</p>
-<pre><code>class Bicycle: Vehicle {
+&#125;
+</code></pre>
+<p>下一个例子，定义一个叫Bicycle的子类，继承成父类Vehicle：</p>
+<pre><code>class Bicycle: Vehicle &#123;
     var hasBasket = false
-}
-</code></pre><p>新的Bicycle类自动获得Vehicle类的所有特性，比如currentSpeed和description属性，还有它的makeNoise()方法。</p>
+&#125;
+</code></pre>
+<p>新的Bicycle类自动获得Vehicle类的所有特性，比如currentSpeed和description属性，还有它的makeNoise()方法。</p>
 <p>除了它所继承的特性，Bicycle类还定义了一个默认值为false的存储型属性hasBasket（属性推断为Bool）。</p>
 <p>默认情况下，你创建任何新的Bicycle实例将不会有一个篮子（即hasBasket属性默认为false），创建该实例之后，你可以为特定的Bicycle实例设置hasBasket属性为ture：</p>
 <pre><code>let bicycle = Bicycle()
 bicycle.hasBasket = true
-</code></pre><p>你还可以修改Bicycle实例所继承的currentSpeed属性，和查询实例所继承的description属性：</p>
+</code></pre>
+<p>你还可以修改Bicycle实例所继承的currentSpeed属性，和查询实例所继承的description属性：</p>
 <pre><code>bicycle.currentSpeed = 15.0
 print(&quot;Bicycle: \(bicycle.description)&quot;)
 // 打印 &quot;Bicycle: traveling at 15.0 miles per hour&quot;
-</code></pre><p>子类还可以继续被其它类继承，下面的示例为Bicycle创建了一个名为Tandem（双人自行车）的子类：</p>
-<pre><code>class Tandem: Bicycle {
+</code></pre>
+<p>子类还可以继续被其它类继承，下面的示例为Bicycle创建了一个名为Tandem（双人自行车）的子类：</p>
+<pre><code>class Tandem: Bicycle &#123;
     var currentNumberOfPassengers = 0
-}
-</code></pre><p>Tandem从Bicycle继承了所有的属性与方法，这又使它同时继承了Vehicle的所有属性与方法。Tandem也增加了一个新的叫做currentNumberOfPassengers的存储型属性，默认值为0。</p>
+&#125;
+</code></pre>
+<p>Tandem从Bicycle继承了所有的属性与方法，这又使它同时继承了Vehicle的所有属性与方法。Tandem也增加了一个新的叫做currentNumberOfPassengers的存储型属性，默认值为0。</p>
 <p>如果你创建了一个Tandem的实例，你可以使用它所有的新属性和继承的属性，还能查询从Vehicle继承来的只读属性description：</p>
 <pre><code>let tandem = Tandem()
 tandem.hasBasket = true
@@ -1444,7 +1523,8 @@ tandem.currentNumberOfPassengers = 2
 tandem.currentSpeed = 22.0
 print(&quot;Tandem: \(tandem.description)&quot;)
 // 打印：&quot;Tandem: traveling at 22.0 miles per hour&quot;
-</code></pre><h3 id="重写"><a href="#重写" class="headerlink" title="重写"></a>重写</h3><p>子类可以为继承来的实例方法，类方法，实例属性，或下标提供自己定制的实现。我们把这种行为叫重写。</p>
+</code></pre>
+<h3 id="重写"><a href="#重写" class="headerlink" title="重写"></a>重写</h3><p>子类可以为继承来的实例方法，类方法，实例属性，或下标提供自己定制的实现。我们把这种行为叫重写。</p>
 <p>如果要重写某个特性，你需要在重写定义的前面加上override关键字。这么做，你就表明了你是想提供一个重写版本，而非错误地提供了一个相同的定义。意外的重写行为可能会导致不可预知的错误，任何缺少override关键字的重写都会在编译时被诊断为错误。</p>
 <p>override关键字会提醒 Swift 编译器去检查该类的超类（或其中一个父类）是否有匹配重写版本的声明。这个检查可以确保你的重写定义是正确的。</p>
 <h4 id="访问超类的方法，属性及下标"><a href="#访问超类的方法，属性及下标" class="headerlink" title="访问超类的方法，属性及下标"></a>访问超类的方法，属性及下标</h4><p>当你在子类中重写超类的方法，属性或下标时，有时在你的重写版本中使用已经存在的超类实现会大有裨益。比如，你可以完善已有实现的行为，或在一个继承来的变量中存储一个修改过的值。</p>
@@ -1455,16 +1535,18 @@ print(&quot;Tandem: \(tandem.description)&quot;)
 <li>在下标的重写实现中，可以通过super[someIndex]来访问超类版本中的相同下标。</li>
 </ul>
 <h4 id="重写方法"><a href="#重写方法" class="headerlink" title="重写方法"></a>重写方法</h4><p>在子类中，你可以重写继承来的实例方法或类方法，提供一个定制或替代的方法实现。下面的例子定义了Vehicle的一个新的子类，叫Train，它重写了从Vehicle类继承来的makeNoise()方法：</p>
-<pre><code>class Train: Vehicle {
-    override func makeNoise() {
+<pre><code>class Train: Vehicle &#123;
+    override func makeNoise() &#123;
         print(&quot;Choo Choo&quot;)
-    }
-}
-</code></pre><p>如果你创建一个Train的新实例，并调用了它的makeNoise()方法，你就会发现Train版本的方法被调用：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>如果你创建一个Train的新实例，并调用了它的makeNoise()方法，你就会发现Train版本的方法被调用：</p>
 <pre><code>let train = Train()
 train.makeNoise()
 // 打印 &quot;Choo Choo&quot;
-</code></pre><h4 id="重写属性"><a href="#重写属性" class="headerlink" title="重写属性"></a>重写属性</h4><p>你可以重写继承来的实例属性或类型属性，提供自己定制的 getter 和 setter，或添加属性观察器使重写的属性可以观察属性值什么时候发生改变</p>
+</code></pre>
+<h4 id="重写属性"><a href="#重写属性" class="headerlink" title="重写属性"></a>重写属性</h4><p>你可以重写继承来的实例属性或类型属性，提供自己定制的 getter 和 setter，或添加属性观察器使重写的属性可以观察属性值什么时候发生改变</p>
 <ul>
 <li>重写属性的 Getters 和 Setters</li>
 </ul>
@@ -1473,20 +1555,22 @@ train.makeNoise()
 <p>注意</p>
 <p>如果你在重写属性中提供了 setter，那么你也一定要提供 getter。如果你不想在重写版本中的 getter 里修改继承来的属性值，你可以直接通过super.someProperty来返回继承来的值，其中someProperty是你要重写的属性的名字。</p>
 <p>以下的例子定义了一个新类，叫Car，它是Vehicle的子类。这个类引入了一个新的存储型属性叫做gear，默认值为整数1。Car类重写了继承自Vehicle的description属性，提供包含当前档位的自定义描述：</p>
-<pre><code>class Car: Vehicle {
+<pre><code>class Car: Vehicle &#123;
     var gear = 1
-    override var description: String {
+    override var description: String &#123;
         return super.description + &quot; in gear \(gear)&quot;
-    }
-}
-</code></pre><p>重写的description属性首先要调用super.description返回Vehicle类的description属性。之后，Car类版本的description在末尾增加了一些额外的文本来提供关于当前档位的信息。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>重写的description属性首先要调用super.description返回Vehicle类的description属性。之后，Car类版本的description在末尾增加了一些额外的文本来提供关于当前档位的信息。</p>
 <p>如果你创建了Car的实例并且设置了它的gear和currentSpeed属性，你可以看到它的description返回了Car中的自定义描述：</p>
 <pre><code>let car = Car()
 car.currentSpeed = 25.0
 car.gear = 3
 print(&quot;Car: \(car.description)&quot;)
 // 打印 &quot;Car: traveling at 25.0 miles per hour in gear 3&quot;
-</code></pre><ul>
+</code></pre>
+<ul>
 <li>重写属性观察器</li>
 </ul>
 <p>你可以通过重写属性为一个继承来的属性添加属性观察器。这样一来，当继承来的属性值发生改变时，你就会被通知到，无论那个属性原本是如何实现的。</p>
@@ -1494,50 +1578,52 @@ print(&quot;Car: \(car.description)&quot;)
 <p>你不可以为继承来的常量存储型属性或继承来的只读计算型属性添加属性观察器。这些属性的值是不可以被设置的，所以，为它们提供willSet或didSet实现是不恰当。</p>
 <p>此外还要注意，你不可以同时提供重写的 setter 和重写的属性观察器。如果你想观察属性值的变化，并且你已经为那个属性提供了定制的 setter，那么你在 setter 中就可以观察到任何值变化了。</p>
 <p>下面的例子定义了一个新类叫AutomaticCar，它是Car的子类。AutomaticCar表示自动挡汽车，它可以根据当前的速度自动选择合适的挡位:</p>
-<pre><code>class AutomaticCar: Car {
-    override var currentSpeed: Double {
-        didSet {
+<pre><code>class AutomaticCar: Car &#123;
+    override var currentSpeed: Double &#123;
+        didSet &#123;
             gear = Int(currentSpeed / 10.0) + 1
-        }
-    }
-}
-</code></pre><p>当你设置AutomaticCar的currentSpeed属性，属性的didSet观察器就会自动地设置gear属性，为新的速度选择一个合适的挡位。具体来说就是，属性观察器将新的速度值除以10，然后向下取得最接近的整数值，最后加1来得到档位gear的值。例如，速度为35.0时，挡位为4：</p>
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>当你设置AutomaticCar的currentSpeed属性，属性的didSet观察器就会自动地设置gear属性，为新的速度选择一个合适的挡位。具体来说就是，属性观察器将新的速度值除以10，然后向下取得最接近的整数值，最后加1来得到档位gear的值。例如，速度为35.0时，挡位为4：</p>
 <pre><code>let automatic = AutomaticCar()
 automatic.currentSpeed = 35.0
 print(&quot;AutomaticCar: \(automatic.description)&quot;)
 // 打印 &quot;AutomaticCar: traveling at 35.0 miles per hour in gear 4&quot;
-</code></pre><h4 id="防止重写"><a href="#防止重写" class="headerlink" title="防止重写"></a>防止重写</h4><p>你可以通过把方法，属性或下标标记为final来防止它们被重写，只需要在声明关键字前加上final修饰符即可（例如：final var，final func，final class func，以及final subscript）。</p>
+</code></pre>
+<h4 id="防止重写"><a href="#防止重写" class="headerlink" title="防止重写"></a>防止重写</h4><p>你可以通过把方法，属性或下标标记为final来防止它们被重写，只需要在声明关键字前加上final修饰符即可（例如：final var，final func，final class func，以及final subscript）。</p>
 <p>如果你重写了带有final标记的方法，属性或下标，在编译时会报错。在类扩展中的方法，属性或下标也可以在扩展的定义里标记为 final 的。</p>
 <p>你可以通过在关键字class前添加final修饰符（final class）来将整个类标记为 final 的。这样的类是不可被继承的，试图继承这样的类会导致编译报错。</p>
 <h4 id="继承总结"><a href="#继承总结" class="headerlink" title="继承总结"></a>继承总结</h4><p>继承</p>
 <pre><code>// 定义一个基类
-class Vechicle {
+class Vechicle &#123;
     var currentSpeed = 0.0
-    var description: String {
+    var description: String &#123;
         return &quot;traveling at \(currentSpeed) miles per hour&quot;
-    }
+    &#125;
 
-    func makeNoise() {
+    func makeNoise() &#123;
         // 什么也不做，有的车辆不一定会有噪音
-    }
-}
+    &#125;
+&#125;
 
 // 初始化语法创建实例
 let someVechicle = Vechicle()
 print(someVechicle.description)
 
 // 子类生成
-class Bicycle: Vechicle {
+class Bicycle: Vechicle &#123;
     var hasBasket = false
-}
+&#125;
 let bicycle = Bicycle()
 bicycle.hasBasket = true
 bicycle.currentSpeed = 15.0
 print(bicycle.description)
 
-class Tandem: Bicycle {
+class Tandem: Bicycle &#123;
     var currentNumberOfPassengers = 0
-}
+&#125;
 let tandem = Tandem()
 tandem.hasBasket = true
 tandem.currentNumberOfPassengers = 2
@@ -1545,38 +1631,39 @@ tandem.currentSpeed = 22.0
 print(tandem.description)
 
 // 重写方法
-class Train: Vechicle {
-    override func makeNoise() {
+class Train: Vechicle &#123;
+    override func makeNoise() &#123;
         print(&quot;Choo Choo&quot;)
-    }
-}
+    &#125;
+&#125;
 let train = Train()
 train.makeNoise()
 
 // 重写属性
-class Car: Vechicle {
+class Car: Vechicle &#123;
     var gear = 1
-    override var description: String {
+    override var description: String &#123;
         return super.description + &quot; in gear \(gear)&quot;
-    }
-}
+    &#125;
+&#125;
 let car = Car()
 car.currentSpeed = 25.0
 car.gear = 3
 print(car.description)
 
 // 重写属性观察器
-class AutomaticCar: Car {
-    override var currentSpeed: Double {
-        didSet {
+class AutomaticCar: Car &#123;
+    override var currentSpeed: Double &#123;
+        didSet &#123;
             gear = Int((currentSpeed / 10.0) + 1)
-        }
-    }
-}
+        &#125;
+    &#125;
+&#125;
 let automatic = AutomaticCar()
 automatic.currentSpeed = 35.0
 print(automatic.gear)
 </code></pre>
+
       
 
       
@@ -1599,7 +1686,7 @@ print(automatic.gear)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/15/swift下标，继承/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/15/swift%E4%B8%8B%E6%A0%87%EF%BC%8C%E7%BB%A7%E6%89%BF/">展开全文 >></a>
         </p>
       
 
@@ -1636,12 +1723,12 @@ print(automatic.gear)
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/15/swift之协议/">swift之协议</a>
+      <a class="article-title" href="/2018/12/15/swift%E4%B9%8B%E5%8D%8F%E8%AE%AE/">swift之协议</a>
     </h1>
   
 
         
-        <a href="/2018/12/15/swift之协议/" class="archive-article-date">
+        <a href="/2018/12/15/swift%E4%B9%8B%E5%8D%8F%E8%AE%AE/" class="archive-article-date">
   	<time datetime="2018-12-15T12:04:38.237Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
 </a>
         
@@ -1651,138 +1738,147 @@ print(automatic.gear)
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>协议定义了用来实现某一特定任务或者功能的属性、方法以及需要的东西。</p>
 <p>类、结构体、枚举都可以采用协议，但是都必须实现协议所必须的要求。除了采纳协议规定的要求，还可以给协议扩展一下方法、属性，这样采纳该协议的类型就能够使用这些功能。</p>
-<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><pre><code>protocol SomeProtocol1{
+<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><pre><code>protocol SomeProtocol1&#123;
     //定义一下使用该协议要实现的内容
-}
-</code></pre><p>要让自定义的类型采用协议，需要在需要的类型名后加上协议名，并用 “:” 隔开，如果采纳多个协议，协议之间用逗号隔开。如果类型继承某个类，需要将继承的类写在协议的最前面。</p>
-<pre><code>class someClass:SomeSuperClass,SomeProtocol{
+&#125;
+</code></pre>
+<p>要让自定义的类型采用协议，需要在需要的类型名后加上协议名，并用 “:” 隔开，如果采纳多个协议，协议之间用逗号隔开。如果类型继承某个类，需要将继承的类写在协议的最前面。</p>
+<pre><code>class someClass:SomeSuperClass,SomeProtocol&#123;
 
-}
-</code></pre><h2 id="属性要求"><a href="#属性要求" class="headerlink" title="属性要求"></a>属性要求</h2><p>协议可以要求采纳该协议的类型提供特定名称和类型的实例属性或者类型属性。但协议不指定协议的属性是存储还是计算型属性。它指定名字和类型。此外，还可以指定属性是可读还是可写的。</p>
+&#125;
+</code></pre>
+<h2 id="属性要求"><a href="#属性要求" class="headerlink" title="属性要求"></a>属性要求</h2><p>协议可以要求采纳该协议的类型提供特定名称和类型的实例属性或者类型属性。但协议不指定协议的属性是存储还是计算型属性。它指定名字和类型。此外，还可以指定属性是可读还是可写的。</p>
 <p>通常用var来指定属性，在类型声明后加{set get}来表明属性是可读还是可写的。</p>
-<pre><code>protocol SomeProtocol2{
-    var musetBeSettable:Int {set get} //如果有set，必须有get
-    var doesnotBeSettable:Int {get}
-}
-</code></pre><p>在协议中定义类属性的时候，使用static 关键字修饰，当类类型采纳协议时，还可以用class 来声明类型属性</p>
-<pre><code>protocol FullName{
-    var fullName:String{get}
-}
+<pre><code>protocol SomeProtocol2&#123;
+    var musetBeSettable:Int &#123;set get&#125; //如果有set，必须有get
+    var doesnotBeSettable:Int &#123;get&#125;
+&#125;
+</code></pre>
+<p>在协议中定义类属性的时候，使用static 关键字修饰，当类类型采纳协议时，还可以用class 来声明类型属性</p>
+<pre><code>protocol FullName&#123;
+    var fullName:String&#123;get&#125;
+&#125;
 
-struct Person:FullName {
-    var fullName:String{ //提供FullName的属性的get实现
+struct Person:FullName &#123;
+    var fullName:String&#123; //提供FullName的属性的get实现
         return &quot;iyaqi&quot;
-    }
-}
+    &#125;
+&#125;
 print(Person().fullName) // iyaqi
-</code></pre><h2 id="方法要求"><a href="#方法要求" class="headerlink" title="方法要求"></a>方法要求</h2><p>协议可以要求采纳该协议的类型必须实现指定的实例方法或者类方法，但是这些方法不需要提供具体的实现。类似属性，可以类方法需用static关键字修饰，类类型还可以使用class修饰。</p>
-<pre><code>protocol RandomNumberGenerator{
+</code></pre>
+<h2 id="方法要求"><a href="#方法要求" class="headerlink" title="方法要求"></a>方法要求</h2><p>协议可以要求采纳该协议的类型必须实现指定的实例方法或者类方法，但是这些方法不需要提供具体的实现。类似属性，可以类方法需用static关键字修饰，类类型还可以使用class修饰。</p>
+<pre><code>protocol RandomNumberGenerator&#123;
     func random()-&gt;Double
     //static func someMethod()
-}
-class LinearCongruentialGenerator: RandomNumberGenerator {
+&#125;
+class LinearCongruentialGenerator: RandomNumberGenerator &#123;
     var lastRandom = 42.0
     let m = 139968.0
     let a = 3877.0
     let c = 29573.0
-    func random() -&gt; Double {
+    func random() -&gt; Double &#123;
         lastRandom = ((lastRandom * a + c) % m)
         return lastRandom / m
-    }
-}
+    &#125;
+&#125;
 let generator = LinearCongruentialGenerator()
 generator.random() //0.3746499199817101
 generator.random() //0.729023776863283
-</code></pre><p>如果需要修改实例或者实例的属性的值，需要在方法的func前面加 mutating。实现协议的 mutating方法时，如果是类类型，在实现的方法前面不需要加 mutating，结构体、枚举需要添加 mutating。</p>
-<pre><code>protocol Togglable{
+</code></pre>
+<p>如果需要修改实例或者实例的属性的值，需要在方法的func前面加 mutating。实现协议的 mutating方法时，如果是类类型，在实现的方法前面不需要加 mutating，结构体、枚举需要添加 mutating。</p>
+<pre><code>protocol Togglable&#123;
     mutating func toggle()
-}
-enum OnOffSwitch:Togglable{
+&#125;
+enum OnOffSwitch:Togglable&#123;
     case Off,On
-    mutating func toggle() {
-        switch self{
+    mutating func toggle() &#123;
+        switch self&#123;
         case .Off:
             self = .On
         case .On:
             self = .Off
-        }
-    }
-}
+        &#125;
+    &#125;
+&#125;
 var switcher = OnOffSwitch.Off
-print(&quot;switcher&apos;s status:\(switcher)&quot;) //switcher&apos;s statu:Off\n
+print(&quot;switcher&#39;s status:\(switcher)&quot;) //switcher&#39;s statu:Off\n
 switcher.toggle()
-print(&quot;switcher&apos;s status:\(switcher)&quot;) //switcher&apos;s statu:On\n
-</code></pre><h2 id="构造器要求"><a href="#构造器要求" class="headerlink" title="构造器要求"></a>构造器要求</h2><p>协议可以要求采纳协议的类型实现指定的构造器。类似与普通的构造器一样，但是不需要具体实现。</p>
-<pre><code>protocol aProtocol{
+print(&quot;switcher&#39;s status:\(switcher)&quot;) //switcher&#39;s statu:On\n
+</code></pre>
+<h2 id="构造器要求"><a href="#构造器要求" class="headerlink" title="构造器要求"></a>构造器要求</h2><p>协议可以要求采纳协议的类型实现指定的构造器。类似与普通的构造器一样，但是不需要具体实现。</p>
+<pre><code>protocol aProtocol&#123;
     init (someParameters:Int)
-}
-</code></pre><p>构造器在类中的实现</p>
+&#125;
+</code></pre>
+<p>构造器在类中的实现</p>
 <p>在类中的实现，无需指定是指定构造器还是便利构造器,并且需要加上 required 修饰符</p>
-<pre><code>class someClass:aProtocol{
-    init(a:Int){}
-    required init(someParameters: Int) {
+<pre><code>class someClass:aProtocol&#123;
+    init(a:Int)&#123;&#125;
+    required init(someParameters: Int) &#123;
         //这里是实现部分。
-    }
-}
+    &#125;
+&#125;
 
-class superClass {
-    init(someParameters:Int){}
-}
+class superClass &#123;
+    init(someParameters:Int)&#123;&#125;
+&#125;
 
-class subClass: superClass,aProtocol {
+class subClass: superClass,aProtocol &#123;
     //父类和协议都定义了这个构造器，所以要加上 override &amp; required
-    override required init( someParameters: Int) {
-
+    override required init( someParameters: Int) &#123;
+        
         super.init(someParameters: 1)
-    }
-}
-</code></pre><h2 id="协议作为类型"><a href="#协议作为类型" class="headerlink" title="协议作为类型"></a>协议作为类型</h2><pre><code>//协议可以 像普通类型一样，作为参数、返回值，或者是属性，数组、字典中等容器的元素。
-class Dice{
+    &#125;
+&#125;
+</code></pre>
+<h2 id="协议作为类型"><a href="#协议作为类型" class="headerlink" title="协议作为类型"></a>协议作为类型</h2><pre><code>//协议可以 像普通类型一样，作为参数、返回值，或者是属性，数组、字典中等容器的元素。
+class Dice&#123;
     let sides:Int
     let generator :LinearCongruentialGenerator //协议作为属性
-    init(sides:Int,generator:LinearCongruentialGenerator){ //协议作为参数
+    init(sides:Int,generator:LinearCongruentialGenerator)&#123; //协议作为参数
         self.sides = sides
         self.generator = generator
-    }
-    func roll()-&gt;Int{
+    &#125;
+    func roll()-&gt;Int&#123;
         return Int(generator.random() * Double(sides)) + 1
-    }
-}
+    &#125;
+&#125;
 
 
 var dice = Dice(sides: 3, generator: LinearCongruentialGenerator())
-for _ in 1...5{
+for _ in 1...5&#123;
     print(dice.roll()) //2,3,2,3,2
-}
-</code></pre><h2 id="代理-委托-模式"><a href="#代理-委托-模式" class="headerlink" title="代理(委托)模式"></a>代理(委托)模式</h2><p>委托是一种设计模式，它允许类和结构体将一些功能委托给其他类型的实例来操作。委托的实现很简单：定义协议封装那些要实现的功能，这样采纳该协议的类型就能够提供这些功能。</p>
-<pre><code>protocol DiceGame{
-    var dice:Dice {get}
+&#125;
+</code></pre>
+<h2 id="代理-委托-模式"><a href="#代理-委托-模式" class="headerlink" title="代理(委托)模式"></a>代理(委托)模式</h2><p>委托是一种设计模式，它允许类和结构体将一些功能委托给其他类型的实例来操作。委托的实现很简单：定义协议封装那些要实现的功能，这样采纳该协议的类型就能够提供这些功能。</p>
+<pre><code>protocol DiceGame&#123;
+    var dice:Dice &#123;get&#125;
     func play()
-}
-protocol DiceGameDelegate{
+&#125;
+protocol DiceGameDelegate&#123;
     func diceDidStart(game:DiceGame)
     func game(game:DiceGame,didStartNewTurnWithDiceRoll dicRoll:Int)
     func gameEnd(game:DiceGame)
-}
+&#125;
 
-class SnakeAndLadders: DiceGame {
+class SnakeAndLadders: DiceGame &#123;
     let finalSquare = 25
     var dice = Dice(sides: 6, generator: LinearCongruentialGenerator())
     var square = 0
     var board = [Int]()
-    init(){
+    init()&#123;
         board = [Int](count: finalSquare, repeatedValue: 0)
         board[03] = +08; board[06] = +11; board[09] = +09; board[10] = +02
         board[14] = -10; board[19] = -11; board[22] = -02; board[24] = -08
-    }
+    &#125;
     var delegate : DiceGameDelegate?
-    func play() {
+    func play() &#123;
         square = 0
         delegate?.diceDidStart(self)
-        gameLoop:while square != finalSquare{
+        gameLoop:while square != finalSquare&#123;
             let diceRoll = dice.roll()
             delegate?.game(self, didStartNewTurnWithDiceRoll: diceRoll)
-            switch square + diceRoll{
+            switch square + diceRoll&#123;
             case finalSquare:
                 break gameLoop
             case let newSquare where newSquare &gt; finalSquare:
@@ -1790,137 +1886,145 @@ class SnakeAndLadders: DiceGame {
             default:
                 square += diceRoll
                 square += board[square]
-            }
-        }
+            &#125;
+        &#125;
         delegate?.gameEnd(self)
-    }
-}
-</code></pre><h2 id="通过扩展添加协议一致性"><a href="#通过扩展添加协议一致性" class="headerlink" title="通过扩展添加协议一致性"></a>通过扩展添加协议一致性</h2><p>即便无法修改源代码，依然可以用扩展令已有类型采纳并符合协议。协议可以为类型添加属性、方法、下标等来让类型符合协议的要求</p>
-<pre><code>protocol TextRepresentable{
-    var textualDescription:String{get}
-}
-extension Dice:TextRepresentable{
-    var textualDescription:String{
+    &#125;
+&#125;
+</code></pre>
+<h2 id="通过扩展添加协议一致性"><a href="#通过扩展添加协议一致性" class="headerlink" title="通过扩展添加协议一致性"></a>通过扩展添加协议一致性</h2><p>即便无法修改源代码，依然可以用扩展令已有类型采纳并符合协议。协议可以为类型添加属性、方法、下标等来让类型符合协议的要求</p>
+<pre><code>protocol TextRepresentable&#123;
+    var textualDescription:String&#123;get&#125;
+&#125;
+extension Dice:TextRepresentable&#123;
+    var textualDescription:String&#123;
         return &quot;a side of Dice&quot;
-    }
-}
-</code></pre><p>通过扩展来采纳并实现协议，跟在原始定义中实现是同样的效果。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>通过扩展来采纳并实现协议，跟在原始定义中实现是同样的效果。</p>
 <h2 id="协议的集合"><a href="#协议的集合" class="headerlink" title="协议的集合"></a>协议的集合</h2><pre><code>let things:[TextRepresentable] = [dice]
-for thing in things{
+for thing in things&#123;
     print(thing.textualDescription)
-}
-</code></pre><h2 id="协议的继承"><a href="#协议的继承" class="headerlink" title="协议的继承"></a>协议的继承</h2><p>协议能够继承一个或者多个协议，多个协议之间用逗号隔开，语法跟类的继承相同。如果继承的协议还继承了其他协议，那么采纳该协议的类型也必须实现其他协议的要求。比如，协议B 继承 协议A，类型C采纳了B协议，那么C必须也实现协议A规定的东西。</p>
+&#125;
+</code></pre>
+<h2 id="协议的继承"><a href="#协议的继承" class="headerlink" title="协议的继承"></a>协议的继承</h2><p>协议能够继承一个或者多个协议，多个协议之间用逗号隔开，语法跟类的继承相同。如果继承的协议还继承了其他协议，那么采纳该协议的类型也必须实现其他协议的要求。比如，协议B 继承 协议A，类型C采纳了B协议，那么C必须也实现协议A规定的东西。</p>
 <h2 id="类类型专属协议"><a href="#类类型专属协议" class="headerlink" title="类类型专属协议"></a>类类型专属协议</h2><p>可以在协议的继承列表中，添加class 关键字表示该协议只能被类类型采纳。其他类型不能采纳。</p>
 <h2 id="协议的合成"><a href="#协议的合成" class="headerlink" title="协议的合成"></a>协议的合成</h2><p>如果采用多个协议，可以将多个协议放在protocol&lt;&gt;里面。表示采纳的协议列表，称协议合成，协议之间用逗号隔开</p>
-<pre><code>protocol Named{
-    var name:String{get}
-}
-protocol Aged{
-    var age:Int {get set}
-}
-struct People :Named,Aged{
+<pre><code>protocol Named&#123;
+    var name:String&#123;get&#125;
+&#125;
+protocol Aged&#123;
+    var age:Int &#123;get set&#125;
+&#125;
+struct People :Named,Aged&#123;
     var name:String
     var age:Int
-}
-</code></pre><p>协议合成,这个方法的参数不关心类型，之关心这个参数是否符合Named,Aged协议。</p>
-<pre><code>func wishHappyBirthday(celebrator:protocol&lt;Named,Aged&gt;){
+&#125;
+</code></pre>
+<p>协议合成,这个方法的参数不关心类型，之关心这个参数是否符合Named,Aged协议。</p>
+<pre><code>func wishHappyBirthday(celebrator:protocol&lt;Named,Aged&gt;)&#123;
     print(&quot;Happy birthday \(celebrator.name) for \(celebrator.age)&quot;)
-}
+&#125;
 
 let birthdayPerson = People(name: &quot;iyaqi&quot;, age: 25)
 print(wishHappyBirthday(birthdayPerson))
-</code></pre><h2 id="检查协议的一致性"><a href="#检查协议的一致性" class="headerlink" title="检查协议的一致性"></a>检查协议的一致性</h2><p>使用is as来检查协议一致性。即是否符合某协议，并且可以转换到指定的协议类型</p>
+</code></pre>
+<h2 id="检查协议的一致性"><a href="#检查协议的一致性" class="headerlink" title="检查协议的一致性"></a>检查协议的一致性</h2><p>使用is as来检查协议一致性。即是否符合某协议，并且可以转换到指定的协议类型</p>
 <pre><code>is 用来检查实例是否符合某个协议，若符合则返回 true，否则返回 false。
 as? 返回一个可选值，当实例符合某个协议时，返回类型为协议类型的可选值，否则返回 nil。
 as! 将实例强制向下转换到某个协议类型，如果强转失败，会引发运行时错误。
 
-protocol HasArea{
-    var area:Double{get}
-}
+protocol HasArea&#123;
+    var area:Double&#123;get&#125;
+&#125;
 
-class Circle: HasArea {
+class Circle: HasArea &#123;
     let pi:Double = 3.1415
     var radius:Double
-    init(radius:Double){
+    init(radius:Double)&#123;
         self.radius = radius;
-    }
-    var area:Double{
+    &#125;
+    var area:Double&#123;
         return radius * radius * pi
-    }
-}
-class Country: HasArea {
+    &#125;
+&#125;
+class Country: HasArea &#123;
     var area:Double
-    init(area:Double){self.area = area}
-}
+    init(area:Double)&#123;self.area = area&#125;
+&#125;
 
-class Animal {
+class Animal &#123;
     var legs:Int
-    init(legs:Int){self.legs = legs}
-}
+    init(legs:Int)&#123;self.legs = legs&#125;
+&#125;
 
 var objects:[AnyObject] = [Circle(radius: 3),Country(area: 2000),Animal(legs: 2)]
-for object in objects{
-    if let hasAreaType = object as? HasArea{
+for object in objects&#123;
+    if let hasAreaType = object as? HasArea&#123;
         //在这里object会被转化为 HasArea类型，虽然他们仍然是circle、country、animal类型，当object 赋给 hasAreaType时，只能访问area属性
         print(hasAreaType.area) // 28.2735 ,200
-    }
-}
-</code></pre><h2 id="可选的协议要求"><a href="#可选的协议要求" class="headerlink" title="可选的协议要求"></a>可选的协议要求</h2><p>可以在协议中定义可以选择实现的要求，采纳该协议的类型可以选择是否采用这些要求。用optional关键字修饰。注意，可选的协议要求只能用在标记@objc的协议中，标记@objc的协议只能被OC的类或者是@objc类采纳，其他类型均不能采纳</p>
-<pre><code>@objc protocol CounterDataSource {
+    &#125;
+&#125;
+</code></pre>
+<h2 id="可选的协议要求"><a href="#可选的协议要求" class="headerlink" title="可选的协议要求"></a>可选的协议要求</h2><p>可以在协议中定义可以选择实现的要求，采纳该协议的类型可以选择是否采用这些要求。用optional关键字修饰。注意，可选的协议要求只能用在标记@objc的协议中，标记@objc的协议只能被OC的类或者是@objc类采纳，其他类型均不能采纳</p>
+<pre><code>@objc protocol CounterDataSource &#123;
     optional func incrementForCount(count:Int)-&gt;Int
-    optional var fixedIncrement:Int{get}
-}
+    optional var fixedIncrement:Int&#123;get&#125;
+&#125;
 
-class Counter{
+class Counter&#123;
     var count = 0
     var datasource : CounterDataSource?
-    func increment(){
-        if let amount = datasource?.incrementForCount?(count){
+    func increment()&#123;
+        if let amount = datasource?.incrementForCount?(count)&#123;
             count += amount
-        }else if let amount = datasource?.fixedIncrement{
+        &#125;else if let amount = datasource?.fixedIncrement&#123;
             count += amount
-        }
-    }
-}
+        &#125;
+    &#125;
+&#125;
 var counter = Counter()
 
-class threeSource: NSObject,CounterDataSource {
+class threeSource: NSObject,CounterDataSource &#123;
     let fixedIncrement = 3
-}
+&#125;
 
 counter.datasource = threeSource()
-for _ in 1..&lt;4{
+for _ in 1..&lt;4&#123;
     counter.increment() //
     print(counter.count) // 3 6 9
-}
+&#125;
 
-class  TowardsZeroSource:NSObject,CounterDataSource{
-    func incrementForCount(count: Int) -&gt; Int {
-        if count == 0  {
+class  TowardsZeroSource:NSObject,CounterDataSource&#123;
+    func incrementForCount(count: Int) -&gt; Int &#123;
+        if count == 0  &#123;
             return 0
-        }else if count &lt; 0{
+        &#125;else if count &lt; 0&#123;
             return 1
-        }else{
+        &#125;else&#123;
             return -1
-        }
-    }
-}
+        &#125;
+    &#125;
+&#125;
 
 print(counter.count) //9
 counter.datasource = TowardsZeroSource()
 counter.increment()
 print(counter.count) //8
-</code></pre><h2 id="协议扩展"><a href="#协议扩展" class="headerlink" title="协议扩展"></a>协议扩展</h2><p>协议可以通过扩展来添加方法、属性、下标等，基于此，可以通过给协议添加扩展，来实现这些功能，而无需在每个采纳该协议的类型中添加这些功能。通过协议扩展，所有采纳该协议的类型都会自动获取到该扩展增加的方法实现，无需任何额外修改。</p>
-<pre><code>extension RandomNumberGenerator{
-    func randomBool()-&gt;Bool{
+</code></pre>
+<h2 id="协议扩展"><a href="#协议扩展" class="headerlink" title="协议扩展"></a>协议扩展</h2><p>协议可以通过扩展来添加方法、属性、下标等，基于此，可以通过给协议添加扩展，来实现这些功能，而无需在每个采纳该协议的类型中添加这些功能。通过协议扩展，所有采纳该协议的类型都会自动获取到该扩展增加的方法实现，无需任何额外修改。</p>
+<pre><code>extension RandomNumberGenerator&#123;
+    func randomBool()-&gt;Bool&#123;
         return random() &gt; 0.5
-    }
-}
+    &#125;
+&#125;
 
 let generator2 = LinearCongruentialGenerator()
 print(generator.random()) // 0.636466906721536
 print(generator.randomBool()) // 0.636466906721536 &gt; 0.5 返回 true
-</code></pre><p>可以提供默认的实现,也可以为协议添加限制条件</p>
+</code></pre>
+<p>可以提供默认的实现,也可以为协议添加限制条件</p>
 
       
 
@@ -1944,7 +2048,7 @@ print(generator.randomBool()) // 0.636466906721536 &gt; 0.5 返回 true
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/15/swift之协议/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/15/swift%E4%B9%8B%E5%8D%8F%E8%AE%AE/">展开全文 >></a>
         </p>
       
 
@@ -1981,12 +2085,12 @@ print(generator.randomBool()) // 0.636466906721536 &gt; 0.5 返回 true
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/14/Swift泛型/">Swift泛型</a>
+      <a class="article-title" href="/2018/12/14/Swift%E6%B3%9B%E5%9E%8B/">Swift泛型</a>
     </h1>
   
 
         
-        <a href="/2018/12/14/Swift泛型/" class="archive-article-date">
+        <a href="/2018/12/14/Swift%E6%B3%9B%E5%9E%8B/" class="archive-article-date">
   	<time datetime="2018-12-14T12:35:29.137Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-14</time>
 </a>
         
@@ -1997,26 +2101,29 @@ print(generator.randomBool()) // 0.636466906721536 &gt; 0.5 返回 true
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>泛型能够让开发者编写自定义需求已经任意类型的灵活可用的的函数和类型。能够让我们避免重复的代码。用一种清晰和抽象的方式来表达代码的意图。</p>
 <p>范型可以说是 Swift 跟 OC 相比最大的优势了。通过给像集合这类东西关联泛型, 可以写出更可预测并且更安全的代码。在 Swift4 中类型约束更为强大， 它能够让我们更能够轻而易举的做很多事情。即使是通用代码, 也能充分的利用 Swift 的类型系统。</p>
 <h2 id="泛型解决的问题"><a href="#泛型解决的问题" class="headerlink" title="泛型解决的问题"></a>泛型解决的问题</h2><p>下面是一个非泛型的例子</p>
-<pre><code>func swapTwoIntValue(inout a:Int,inout b:Int){
+<pre><code>func swapTwoIntValue(inout a:Int,inout b:Int)&#123;
     //使用inout关键字可以修改传入的数值的原始值。
     let tempValue = a
     a = b
     b = tempValue
-}
-</code></pre><p>这个函数用来交换两个整形的数值</p>
+&#125;
+</code></pre>
+<p>这个函数用来交换两个整形的数值</p>
 <pre><code>var oneInt = 3
 var twoInt = 4
 swapTwoIntValue(&amp;oneInt, b: &amp;twoInt)
 print(oneInt,twoInt) //oneInt = 4,twoInt = 3
-</code></pre><p>对于这个例子，假如我们想交换两个Double类型、或者是其他类型的值，就需要针对每个类型写不同的方法，只是参数类型不同。为了解决这个问题，Swift提供了泛型，帮助我们来解决这个问题。</p>
+</code></pre>
+<p>对于这个例子，假如我们想交换两个Double类型、或者是其他类型的值，就需要针对每个类型写不同的方法，只是参数类型不同。为了解决这个问题，Swift提供了泛型，帮助我们来解决这个问题。</p>
 <p>注意:Swift是安全的语言，不允许两个不同类型互换值</p>
 <h2 id="泛型函数"><a href="#泛型函数" class="headerlink" title="泛型函数"></a>泛型函数</h2><p>下面是一个泛型的函数</p>
-<pre><code>func SwapTwoValues &lt;T&gt; (inout a: T,inout b :T){
+<pre><code>func SwapTwoValues &lt;T&gt; (inout a: T,inout b :T)&#123;
     let  tempValue = a
     a = b
     b = tempValue
-}
-</code></pre><p>这个函数主体、功能跟上面的例子类似，用来交换两个同样类型的值，但是这个函数用 T 占位符来代替实际的类型。并没有指定具体的类型，但是传入的a ,b 必须是同一类型T。在调用这个函数的时候才能指定 T 是那种具体的类型。还有函数名后跟的那个 <t> 是函数定义的一个占位类型名，并不会查找T的具体类型</t></p>
+&#125;
+</code></pre>
+<p>这个函数主体、功能跟上面的例子类似，用来交换两个同样类型的值，但是这个函数用 T 占位符来代替实际的类型。并没有指定具体的类型，但是传入的a ,b 必须是同一类型T。在调用这个函数的时候才能指定 T 是那种具体的类型。还有函数名后跟的那个 <T> 是函数定义的一个占位类型名，并不会查找T的具体类型</p>
 <pre><code>SwapTwoValues(&amp;oneInt, b: &amp;twoInt)
 print(&quot;oneInt:\(oneInt),twoInt:\(twoInt)&quot;) // oneInt:3,twoInt:4
 
@@ -2030,34 +2137,37 @@ var oneDouble = 10.01
 var twoDouble = 20.02
 SwapTwoValues(&amp;oneDouble, b: &amp;twoDouble)
 print(&quot;oneDouble:\(oneDouble),twoDouble:\(twoDouble)&quot;)// oneDouble:20.02,twoDouble:10.01
-</code></pre><p>这个例子用泛型完美的解决了上述的问题，只需要定义一个泛型函数，只要保证 传入的两个参数是同一个类型，就不用根据传入参数的类型不同而写不同的方法。</p>
+</code></pre>
+<p>这个例子用泛型完美的解决了上述的问题，只需要定义一个泛型函数，只要保证 传入的两个参数是同一个类型，就不用根据传入参数的类型不同而写不同的方法。</p>
 <h2 id="类型参数"><a href="#类型参数" class="headerlink" title="类型参数"></a>类型参数</h2><p>在上面的泛型函数例子中，占位符T是类型参数的一个例子。类型参数指定并命名一个占位符类型，并用&lt;&gt;包裹，放在函数名后面。一旦一个参数类型确定，就可以指定参数类型，或者返回值的类型，还可以用作函数体的注释类型。在调用的时候会被实际的类型替代，如传递的是Int，就替换为Int，如果传入的是Double类型就替换为Double等等</p>
 <h2 id="命名类型参数"><a href="#命名类型参数" class="headerlink" title="命名类型参数"></a>命名类型参数</h2><p>上面的泛型例子的 T，只是一个描述性的名字，通常用单一的字母来命名，例如：T、U、V等。T代表只是一个占位符，命名规则同驼峰命名法</p>
 <h2 id="泛型类型"><a href="#泛型类型" class="headerlink" title="泛型类型"></a>泛型类型</h2><p>除了定义泛型函数，还可以定义泛型类型。如Array，Dictionary的用法</p>
 <p>下面展示一个非泛型版本栈</p>
-<pre><code>struct IntStack{
+<pre><code>struct IntStack&#123;
     var items = [Int]()
-
+    
     //压栈
-    mutating func push(item:Int){
+    mutating func push(item:Int)&#123;
         items .append(item)
-    }
+    &#125;
     //出栈
-    mutating func pop()-&gt;Int{
+    mutating func pop()-&gt;Int&#123;
         return items.removeLast()
-    }
-}
-</code></pre><p>这个是一个泛型版本的栈</p>
-<pre><code>struct Stack&lt;Element&gt;{
+    &#125;
+&#125;
+</code></pre>
+<p>这个是一个泛型版本的栈</p>
+<pre><code>struct Stack&lt;Element&gt;&#123;
     var items = [Element]()
-    mutating func push(item:Element){
+    mutating func push(item:Element)&#123;
         items.append(item)
-    }
-    mutating func pop()-&gt;Element{
+    &#125;
+    mutating func pop()-&gt;Element&#123;
         return items.removeLast()
-    }
-}
-</code></pre><p>首先在函数名后面加&lt;泛型类型名&gt;，&lt;&gt;里面表明类型参数名。然后在函数主体里面完成跟非泛型栈类似的功能。这样这个泛型结构体就不只能压栈Int类型的值，还可以是其它类型</p>
+    &#125;
+&#125;
+</code></pre>
+<p>首先在函数名后面加&lt;泛型类型名&gt;，&lt;&gt;里面表明类型参数名。然后在函数主体里面完成跟非泛型栈类似的功能。这样这个泛型结构体就不只能压栈Int类型的值，还可以是其它类型</p>
 <pre><code>var stack = Stack&lt;String&gt;() //要在类型名后面加&lt;类型名&gt;
 stack.push(&quot;uno&quot;)
 stack.push(&quot;dos&quot;)
@@ -2065,118 +2175,129 @@ stack.push(&quot;tres&quot;)
 stack.push(&quot;cuatro&quot;)
 
 print(stack.pop()) // cuatro
-</code></pre><h2 id="扩展一个泛型类型"><a href="#扩展一个泛型类型" class="headerlink" title="扩展一个泛型类型"></a>扩展一个泛型类型</h2><p>可以扩展一个泛型类型，给这个泛型类型添加属性、方法、下标等。</p>
-<pre><code>extension Stack{
+</code></pre>
+<h2 id="扩展一个泛型类型"><a href="#扩展一个泛型类型" class="headerlink" title="扩展一个泛型类型"></a>扩展一个泛型类型</h2><p>可以扩展一个泛型类型，给这个泛型类型添加属性、方法、下标等。</p>
+<pre><code>extension Stack&#123;
     //给泛型Stack扩展一个计算型属性topItem，返回最上面的item
-    var topItem:Element?{
+    var topItem:Element?&#123;
         return items.isEmpty ? nil : items[items.count-1]
-    }
-}
+    &#125;
+&#125;
 
-print(&quot;stack&apos;s top item is : \(stack.topItem!)&quot;) //stack&apos;s top item is : tres
-</code></pre><h2 id="类型约束"><a href="#类型约束" class="headerlink" title="类型约束"></a>类型约束</h2><p>在上面的SwapTwoVlues 和 Stack中，可以作用任何类型。但是也可以添加一个约束，比如指定一个类型必须采纳某协议或者是指定类等。在Swift中（Bool,Int,Doube,String默认都是哈希的），Dictionary的键就需要必须是可哈希的，方便字典查找是否已包含某个键的值。</p>
+print(&quot;stack&#39;s top item is : \(stack.topItem!)&quot;) //stack&#39;s top item is : tres
+</code></pre>
+<h2 id="类型约束"><a href="#类型约束" class="headerlink" title="类型约束"></a>类型约束</h2><p>在上面的SwapTwoVlues 和 Stack中，可以作用任何类型。但是也可以添加一个约束，比如指定一个类型必须采纳某协议或者是指定类等。在Swift中（Bool,Int,Doube,String默认都是哈希的），Dictionary的键就需要必须是可哈希的，方便字典查找是否已包含某个键的值。</p>
 <p>类型约束语法</p>
 <p>可以在类型参数名后面加一个类型或者协议名，通过冒号隔开，多个类型参数之间用逗号隔开</p>
-<pre><code>func somFuntion&lt;C:SomeClass,P:SomeProtocol&gt;(someClass:C,someProtocol:P){
-
-}
-</code></pre><p>在定义的这个函数中，有两个类型约束，第一次类型参数C代表是某个类，第二个参数P代表某个协议。</p>
+<pre><code>func somFuntion&lt;C:SomeClass,P:SomeProtocol&gt;(someClass:C,someProtocol:P)&#123;
+    
+&#125;
+</code></pre>
+<p>在定义的这个函数中，有两个类型约束，第一次类型参数C代表是某个类，第二个参数P代表某个协议。</p>
 <h2 id="类型约束实践"><a href="#类型约束实践" class="headerlink" title="类型约束实践"></a>类型约束实践</h2><p>这个非泛型类型的方法用来查找某个字符串是否在字符数组中，存在返回index</p>
-<pre><code>func findStrInArray(array:[String],strToFind:String)-&gt;Int?{
-    for  (index,value) in array.enumerate(){
-        if strToFind == value{
+<pre><code>func findStrInArray(array:[String],strToFind:String)-&gt;Int?&#123;
+    for  (index,value) in array.enumerate()&#123;
+        if strToFind == value&#123;
             return index
-        }
-    }
+        &#125;
+    &#125;
     return nil
-}
-</code></pre><p>下面这是针对上面非泛型方法泛型版本的方法</p>
-<pre><code>func findIndex &lt;S:Equatable&gt; (array:[S],_ valueToFind:S)-&gt;Int? {
-    for  (index,value) in array.enumerate(){
-        if value == valueToFind { //如果没指定S：Equatable 这句话会编译不通过
+&#125;
+</code></pre>
+<p>下面这是针对上面非泛型方法泛型版本的方法</p>
+<pre><code>func findIndex &lt;S:Equatable&gt; (array:[S],_ valueToFind:S)-&gt;Int? &#123;
+    for  (index,value) in array.enumerate()&#123;
+        if value == valueToFind &#123; //如果没指定S：Equatable 这句话会编译不通过
             return index
-        }
-    }
+        &#125;
+    &#125;
     return nil
-}
-</code></pre><p>在这个泛型例子中，不是所有的类型都可以 用 == 来比较的，所有必须指定泛型类型参数的约束为 Swift提供的 Equatable 协议,这表示S代表的类型必须是支持 Equatable 协议的。所有的Swift标准类型默认都是支持Equatable协议的.</p>
+&#125;
+</code></pre>
+<p>在这个泛型例子中，不是所有的类型都可以 用 &#x3D;&#x3D; 来比较的，所有必须指定泛型类型参数的约束为 Swift提供的 Equatable 协议,这表示S代表的类型必须是支持 Equatable 协议的。所有的Swift标准类型默认都是支持Equatable协议的.</p>
 <pre><code>let value = findIndex([3.14159, 0.1, 0.25], 9.3)
 // doubleIndex 类型为 Int?，其值为 nil，因为 9.3 不在数组中
 let stringIndex = findIndex([&quot;Mike&quot;, &quot;Malcolm&quot;, &quot;Andrea&quot;], &quot;Andrea&quot;)
 // stringIndex 类型为 Int?，其值为 2
-</code></pre><h2 id="关联类型"><a href="#关联类型" class="headerlink" title="关联类型"></a>关联类型</h2><p>在定义协议的时候，有时候用一个或者多个关联类型作为定义协议的一部分，关联类型作为协议的一部分，为某个类型提供了一个占位符，其实际类型会在采纳的时候被指定。并用关键字typealias 关键字来指定关联名</p>
+</code></pre>
+<h2 id="关联类型"><a href="#关联类型" class="headerlink" title="关联类型"></a>关联类型</h2><p>在定义协议的时候，有时候用一个或者多个关联类型作为定义协议的一部分，关联类型作为协议的一部分，为某个类型提供了一个占位符，其实际类型会在采纳的时候被指定。并用关键字typealias 关键字来指定关联名</p>
 <h3 id="关联类型实践"><a href="#关联类型实践" class="headerlink" title="关联类型实践"></a>关联类型实践</h3><p>下面定义一个协议，协议指定了一个关联类型</p>
-<pre><code>protocol Container{
+<pre><code>protocol Container&#123;
     typealias itemType //声明一个关联类型
     mutating func append(item:itemType)
-    var count:Int{get}
-    subscript(i:Int)-&gt;itemType {get}
-}
-</code></pre><p>下面是非泛型的版本采纳 Container 协议</p>
-<pre><code>struct intStack: Container {
+    var count:Int&#123;get&#125;
+    subscript(i:Int)-&gt;itemType &#123;get&#125;
+&#125;
+</code></pre>
+<p>下面是非泛型的版本采纳 Container 协议</p>
+<pre><code>struct intStack: Container &#123;
     // IntStack 的原始实现部分
     var items = [Int]()
-    mutating func push(item: Int) {
+    mutating func push(item: Int) &#123;
         items.append(item)
-    }
-    mutating func pop() -&gt; Int {
+    &#125;
+    mutating func pop() -&gt; Int &#123;
         return items.removeLast()
-    }
-
+    &#125;
+    
     // Container 协议的实现部分
     typealias ItemType = Int
-    mutating func append(item: Int) {
+    mutating func append(item: Int) &#123;
         self.push(item)
-    }
-    var count: Int {
+    &#125;
+    var count: Int &#123;
         return items.count
-    }
-    subscript(i: Int) -&gt; Int {
+    &#125;
+    subscript(i: Int) -&gt; Int &#123;
         return items[i]
-    }
-}
-</code></pre><p>下面是一个泛型版本的</p>
-<pre><code>struct genericStack&lt;Element&gt;:Container{
+    &#125;
+&#125;
+</code></pre>
+<p>下面是一个泛型版本的</p>
+<pre><code>struct genericStack&lt;Element&gt;:Container&#123;
     // genericStack&lt;Element&gt; 的原始实现部分
     var items = [Element]()
-    mutating func push(item: Element) {
+    mutating func push(item: Element) &#123;
         items.append(item)
-    }
-    mutating func pop() -&gt; Element {
+    &#125;
+    mutating func pop() -&gt; Element &#123;
         return items.removeLast()
-    }
-
+    &#125;
+    
     // Container 协议的实现部分
     typealias ItemType = Element
-    mutating func append(item: Element) {
+    mutating func append(item: Element) &#123;
         self.push(item)
-    }
-    var count: Int {
+    &#125;
+    var count: Int &#123;
         return items.count
-    }
-    subscript(i: Int) -&gt; Element {
+    &#125;
+    subscript(i: Int) -&gt; Element &#123;
         return items[i]
-    }
-}
-</code></pre><h3 id="通过扩展一个存在类型来指定关联类型"><a href="#通过扩展一个存在类型来指定关联类型" class="headerlink" title="通过扩展一个存在类型来指定关联类型"></a>通过扩展一个存在类型来指定关联类型</h3><p>通过扩展添加协议的一致性描述了如何利用一个已存在类型符合一个协议，这包括了使用关联协议</p>
+    &#125;
+&#125;
+</code></pre>
+<h3 id="通过扩展一个存在类型来指定关联类型"><a href="#通过扩展一个存在类型来指定关联类型" class="headerlink" title="通过扩展一个存在类型来指定关联类型"></a>通过扩展一个存在类型来指定关联类型</h3><p>通过扩展添加协议的一致性描述了如何利用一个已存在类型符合一个协议，这包括了使用关联协议</p>
 <p>Swift中的Array都满足了Container协议的要求，意味着可以扩展Array采纳Container协议,你可以通过一个空扩展来实现这点.</p>
-<pre><code>extension Array :Container{}
-</code></pre><p>定义这个扩展之后，可以用Array当做Container类型使用。</p>
+<pre><code>extension Array :Container&#123;&#125;
+</code></pre>
+<p>定义这个扩展之后，可以用Array当做Container类型使用。</p>
 <h3 id="Where子句"><a href="#Where子句" class="headerlink" title="Where子句"></a>Where子句</h3><p>类型约束能够让我们为泛型类型添加一些约束和条件。为关联类型添加一些约束也是很有必要的。可以在参数列表中使用where子句来为关联类型添加约束。</p>
 <p>下面的例子判断两个采纳Container协议的类型是否所有的元素顺序及值都相等。</p>
-<pre><code>func allItemsMatch&lt;C1:Container,C2:Container where C1.itemType == C2.itemType,C1.itemType:Equatable&gt;(someContainer:C1,_ anotherContainer:C2) -&gt; Bool{
-    if someContainer.count != anotherContainer.count{
+<pre><code>func allItemsMatch&lt;C1:Container,C2:Container where C1.itemType == C2.itemType,C1.itemType:Equatable&gt;(someContainer:C1,_ anotherContainer:C2) -&gt; Bool&#123;
+    if someContainer.count != anotherContainer.count&#123;
         return false
-    }
-
-    for i in 0...someContainer.count-1{
-        if someContainer[i] != anotherContainer[i]{
+    &#125;
+    
+    for i in 0...someContainer.count-1&#123;
+        if someContainer[i] != anotherContainer[i]&#123;
             return false
-        }
-    }
+        &#125;
+    &#125;
     return true
-}
-</code></pre><p>这个泛型函数在类型参数里面添加了where子句约束，C1,C2都必须是采纳Container协议的类型，并且C1、C2的泛型类型必须相同，而且C1的泛型类型必须是采纳Equatable的。</p>
+&#125;
+</code></pre>
+<p>这个泛型函数在类型参数里面添加了where子句约束，C1,C2都必须是采纳Container协议的类型，并且C1、C2的泛型类型必须相同，而且C1的泛型类型必须是采纳Equatable的。</p>
 <pre><code>var stackOfStrings = genericStack&lt;String&gt;()
 stackOfStrings.append(&quot;uno&quot;)
 stackOfStrings.append(&quot;dos&quot;)
@@ -2184,14 +2305,15 @@ stackOfStrings.append(&quot;tres&quot;)
 
 var arrayOfStrings = [&quot;uno&quot;, &quot;dos&quot;, &quot;tres&quot;] //array类型的满足Container类型，参考上面的extension Array
 
-if allItemsMatch(stackOfStrings, arrayOfStrings) {
+if allItemsMatch(stackOfStrings, arrayOfStrings) &#123;
     print(&quot;All items match.&quot;)
-} else {
+&#125; else &#123;
     print(&quot;Not all items match.&quot;)
-}
+&#125;
 
 //结果是：All items match.
 </code></pre>
+
       
 
       
@@ -2214,7 +2336,7 @@ if allItemsMatch(stackOfStrings, arrayOfStrings) {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/14/Swift泛型/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/14/Swift%E6%B3%9B%E5%9E%8B/">展开全文 >></a>
         </p>
       
 
@@ -2251,12 +2373,12 @@ if allItemsMatch(stackOfStrings, arrayOfStrings) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/14/RunLoop底层应用/">RunLoop底层方法应用</a>
+      <a class="article-title" href="/2018/12/14/RunLoop%E5%BA%95%E5%B1%82%E5%BA%94%E7%94%A8/">RunLoop底层方法应用</a>
     </h1>
   
 
         
-        <a href="/2018/12/14/RunLoop底层应用/" class="archive-article-date">
+        <a href="/2018/12/14/RunLoop%E5%BA%95%E5%B1%82%E5%BA%94%E7%94%A8/" class="archive-article-date">
   	<time datetime="2018-12-14T08:04:30.407Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-14</time>
 </a>
         
@@ -2267,112 +2389,117 @@ if allItemsMatch(stackOfStrings, arrayOfStrings) {
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>一般来说，一个线程只能执行一个任务，执行完就会退出，如果我们需要一种机制，让线程能随时处理时间但并不退出，那么 RunLoop 就是这样的一个机制。Runloop是事件接收和分发机制的一个实现。</p>
 <p>RunLoop实际上是一个对象，这个对象在循环中用来处理程序运行过程中出现的各种事件（比如说触摸事件、UI刷新事件、定时器事件、Selector事件），从而保持程序的持续运行；而且在没有事件处理的时候，会进入睡眠模式，从而节省CPU资源，提高程序性能。</p>
 <p>简单的说run loop是事件驱动的一个大循环，如下代码所示：</p>
-<pre><code>int main(int argc, char * argv[]) {
+<pre><code>int main(int argc, char * argv[]) &#123;
      //程序一直运行状态
-     while (AppIsRunning) {
+     while (AppIsRunning) &#123;
           //睡眠状态，等待唤醒事件
           id whoWakesMe = SleepForWakingUp();
           //得到唤醒事件
           id event = GetEvent(whoWakesMe);
           //开始处理事件
           HandleEvent(event);
-     }
+     &#125;
      return 0;
-}
-</code></pre><h2 id="Runloop-基本作用"><a href="#Runloop-基本作用" class="headerlink" title="Runloop 基本作用"></a>Runloop 基本作用</h2><h3 id="保持程序持续运行"><a href="#保持程序持续运行" class="headerlink" title="保持程序持续运行"></a>保持程序持续运行</h3><p>程序一启动就会开一个主线程，主线程一开起来就会跑一个主线程对应的Runloop, Runloop保证主线程不会被销毁，也就保证了程序的持续运行。不光iOS，在其他的编程平台，Android, Windows等都有一个类似Runloop的机制保证程序的持续运行。</p>
+&#125;
+</code></pre>
+<h2 id="Runloop-基本作用"><a href="#Runloop-基本作用" class="headerlink" title="Runloop 基本作用"></a>Runloop 基本作用</h2><h3 id="保持程序持续运行"><a href="#保持程序持续运行" class="headerlink" title="保持程序持续运行"></a>保持程序持续运行</h3><p>程序一启动就会开一个主线程，主线程一开起来就会跑一个主线程对应的Runloop, Runloop保证主线程不会被销毁，也就保证了程序的持续运行。不光iOS，在其他的编程平台，Android, Windows等都有一个类似Runloop的机制保证程序的持续运行。</p>
 <h3 id="处理App中的各类事件"><a href="#处理App中的各类事件" class="headerlink" title="处理App中的各类事件"></a>处理App中的各类事件</h3><h4 id="系统级别"><a href="#系统级别" class="headerlink" title="系统级别"></a>系统级别</h4><p>GCD, mach kernel, block, pthread</p>
 <h4 id="应用层"><a href="#应用层" class="headerlink" title="应用层"></a>应用层</h4><p>NSTimer, UIEvent, Autorelease, NSObject(NSDelayedPerforming), NSObject(NSThreadPerformAddition), CADisplayLink, CATransition, CAAnimation, dispatch_get_main_queue() (GCD 中dispatch到main queue的block会被dispatch到main Runloop中执行)， NSPort, NSURLConnection, AFNetworking（这个第三方网络请求框架使用在开启新线程中添加自己到Runloop监听事件）</p>
 <h3 id="节省CPU资源，提高程序性能"><a href="#节省CPU资源，提高程序性能" class="headerlink" title="节省CPU资源，提高程序性能"></a>节省CPU资源，提高程序性能</h3><p>程序运行起来时，当什么操作都没有做的时候，Runloop告诉CPU, 现在没有事情做，我要去休息， 这时CPU就会将资源释放出来去做其他的事情，当有事情做的时候Runloop就会立马起来去做事情。</p>
-<h2 id="RunLoop开启"><a href="#RunLoop开启" class="headerlink" title="RunLoop开启"></a>RunLoop开启</h2><h3 id="程序入口"><a href="#程序入口" class="headerlink" title="程序入口"></a>程序入口</h3><pre><code>int main(int argc, char * argv[]) {
-    @autoreleasepool {
+<h2 id="RunLoop开启"><a href="#RunLoop开启" class="headerlink" title="RunLoop开启"></a>RunLoop开启</h2><h3 id="程序入口"><a href="#程序入口" class="headerlink" title="程序入口"></a>程序入口</h3><pre><code>int main(int argc, char * argv[]) &#123;
+    @autoreleasepool &#123;
         return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
-    }
-}
-</code></pre><p>程序主线程一开起来，就会跑一个和主线程对应的Runloop, 那么Runloop一定是在程序的入口main函数中开启。</p>
-<h3 id="在main-thread-堆栈中所处的位置"><a href="#在main-thread-堆栈中所处的位置" class="headerlink" title="在main thread 堆栈中所处的位置"></a>在main thread 堆栈中所处的位置</h3><p>堆栈最底层是start(dyld)，往上依次是main，UIApplication(main.m) -&gt; GSEventRunModal(Graphic Services) -&gt; RunLoop(包含CFRunLoopRunSpecific，<strong>CFRunLoopRun，</strong>CFRunLoopDoSouces0，CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION) -&gt; Handle Touch Event</p>
+    &#125;
+&#125;
+</code></pre>
+<p>程序主线程一开起来，就会跑一个和主线程对应的Runloop, 那么Runloop一定是在程序的入口main函数中开启。</p>
+<h3 id="在main-thread-堆栈中所处的位置"><a href="#在main-thread-堆栈中所处的位置" class="headerlink" title="在main thread 堆栈中所处的位置"></a>在main thread 堆栈中所处的位置</h3><p>堆栈最底层是start(dyld)，往上依次是main，UIApplication(main.m) -&gt; GSEventRunModal(Graphic Services) -&gt; RunLoop(包含CFRunLoopRunSpecific，__CFRunLoopRun，__CFRunLoopDoSouces0，CFRUNLOOP_IS_CALLING_OUT_TO_A_SOURCE0_PERFORM_FUNCTION) -&gt; Handle Touch Event</p>
 <h2 id="Runloop-原理"><a href="#Runloop-原理" class="headerlink" title="Runloop 原理"></a>Runloop 原理</h2><p>Runloop源码</p>
-<pre><code>void CFRunLoopRun(void) {    /* DOES CALLOUT */
+<pre><code>void CFRunLoopRun(void) &#123;	/* DOES CALLOUT */
     int32_t result;
-    do {
+    do &#123;
         result = CFRunLoopRunSpecific(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, 1.0e10, false);
         CHECK_FOR_FORK();
-    } while (kCFRunLoopRunStopped != result &amp;&amp; kCFRunLoopRunFinished != result);
-}
-</code></pre><p>我们发现RunLoop确实是do while通过判断result的值实现的。因此，我们可以把RunLoop看成一个死循环。如果没有RunLoop，UIApplicationMain函数执行完毕之后将直接返回，也就没有程序持续运行一说了。</p>
+    &#125; while (kCFRunLoopRunStopped != result &amp;&amp; kCFRunLoopRunFinished != result);
+&#125;
+</code></pre>
+<p>我们发现RunLoop确实是do while通过判断result的值实现的。因此，我们可以把RunLoop看成一个死循环。如果没有RunLoop，UIApplicationMain函数执行完毕之后将直接返回，也就没有程序持续运行一说了。</p>
 <p>执行顺序的伪代码：</p>
 <pre><code>int32_t __CFRunLoopRun()
-{
+&#123;
     // 通知即将进入runloop
     __CFRunLoopDoObservers(KCFRunLoopEntry);
-
+    
     do
-    {
+    &#123;
         // 通知将要处理timer和source
         __CFRunLoopDoObservers(kCFRunLoopBeforeTimers);
         __CFRunLoopDoObservers(kCFRunLoopBeforeSources);
-
+        
         // 处理非延迟的主线程调用
         __CFRunLoopDoBlocks();
         // 处理Source0事件
         __CFRunLoopDoSource0();
-
-        if (sourceHandledThisLoop) {
+        
+        if (sourceHandledThisLoop) &#123;
             __CFRunLoopDoBlocks();
-         }
+         &#125;
         /// 如果有 Source1 (基于port) 处于 ready 状态，直接处理这个 Source1 然后跳转去处理消息。
-        if (__Source0DidDispatchPortLastTime) {
+        if (__Source0DidDispatchPortLastTime) &#123;
             Boolean hasMsg = __CFRunLoopServiceMachPort();
             if (hasMsg) goto handle_msg;
-        }
-
+        &#125;
+            
         /// 通知 Observers: RunLoop 的线程即将进入休眠(sleep)。
-        if (!sourceHandledThisLoop) {
+        if (!sourceHandledThisLoop) &#123;
             __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeWaiting);
-        }
-
+        &#125;
+            
         // GCD dispatch main queue
         CheckIfExistMessagesInMainDispatchQueue();
-
+        
         // 即将进入休眠
         __CFRunLoopDoObservers(kCFRunLoopBeforeWaiting);
-
+        
         // 等待内核mach_msg事件
         mach_port_t wakeUpPort = SleepAndWaitForWakingUpPorts();
-
+        
         // 等待。。。
-
+        
         // 从等待中醒来
         __CFRunLoopDoObservers(kCFRunLoopAfterWaiting);
-
+        
         // 处理因timer的唤醒
         if (wakeUpPort == timerPort)
             __CFRunLoopDoTimers();
-
+        
         // 处理异步方法唤醒,如dispatch_async
         else if (wakeUpPort == mainDispatchQueuePort)
             __CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE__()
-
+            
         // 处理Source1
         else
             __CFRunLoopDoSource1();
-
+        
         // 再次确保是否有同步的方法需要调用
         __CFRunLoopDoBlocks();
-
-    } while (!stop &amp;&amp; !timeout);
-
+        
+    &#125; while (!stop &amp;&amp; !timeout);
+    
     // 通知即将退出runloop
     __CFRunLoopDoObservers(CFRunLoopExit);
-}
-</code></pre><h2 id="Runloop-对象"><a href="#Runloop-对象" class="headerlink" title="Runloop 对象"></a>Runloop 对象</h2><p>RunLoop对象包括Fundation中的NSRunLoop对象和CoreFoundation中的CFRunLoopRef对象。因为Fundation框架是基于CFRunLoopRef的封装，因此我们学习RunLoop还是要研究CFRunLoopRef 源码。</p>
+&#125;
+</code></pre>
+<h2 id="Runloop-对象"><a href="#Runloop-对象" class="headerlink" title="Runloop 对象"></a>Runloop 对象</h2><p>RunLoop对象包括Fundation中的NSRunLoop对象和CoreFoundation中的CFRunLoopRef对象。因为Fundation框架是基于CFRunLoopRef的封装，因此我们学习RunLoop还是要研究CFRunLoopRef 源码。</p>
 <h3 id="获得Runloop-对象"><a href="#获得Runloop-对象" class="headerlink" title="获得Runloop 对象"></a>获得Runloop 对象</h3><pre><code>//Foundation
 [NSRunLoop currentRunLoop]; // 获得当前线程的RunLoop对象
 [NSRunLoop mainRunLoop]; // 获得主线程的RunLoop对象
-
+ 
 //Core Foundation
 CFRunLoopGetCurrent(); // 获得当前线程的RunLoop对象
 CFRunLoopGetMain(); // 获得主线程的RunLoop对象
-</code></pre><p>值的注意的是子线程中的runloop不是默认开启的，需要手动开启，当调用 [NSRunLoop currentRunLoop] 时，若已存在当前线程的runloop返回，若不存在创建一个新的runloop对象再返回。</p>
+</code></pre>
+<p>值的注意的是子线程中的runloop不是默认开启的，需要手动开启，当调用 [NSRunLoop currentRunLoop] 时，若已存在当前线程的runloop返回，若不存在创建一个新的runloop对象再返回。</p>
 <h2 id="Runloop-和-线程"><a href="#Runloop-和-线程" class="headerlink" title="Runloop 和 线程"></a>Runloop 和 线程</h2><h3 id="Runloop-和-线程-之间的关系"><a href="#Runloop-和-线程-之间的关系" class="headerlink" title="Runloop 和 线程 之间的关系"></a>Runloop 和 线程 之间的关系</h3><ul>
 <li>每条线程都有唯一的一个与之对应的Runloop 对象</li>
 <li>主线程的Runloop已经自动创建好了，子线程的Runloop需要手动创建</li>
@@ -2388,19 +2515,20 @@ CFRunLoopGetMain(); // 获得主线程的RunLoop对象
 
 // 保存主线程 将主线程-key和RunLoop-Value保存到字典中
  CFDictionarySetValue(dict, pthreadPointer(pthread_main_thread_np()), mainLoop);
-</code></pre><h3 id="创建与子线程想关联的Runloop"><a href="#创建与子线程想关联的Runloop" class="headerlink" title="创建与子线程想关联的Runloop"></a>创建与子线程想关联的Runloop</h3><p>Apple 不允许直接创建Runloop, 它只提供了两个自动获取的函数： CFRunLoopGetMain() 和 CFRunLoopGetCurrent()。 CFRunLoopRef源码:</p>
+</code></pre>
+<h3 id="创建与子线程想关联的Runloop"><a href="#创建与子线程想关联的Runloop" class="headerlink" title="创建与子线程想关联的Runloop"></a>创建与子线程想关联的Runloop</h3><p>Apple 不允许直接创建Runloop, 它只提供了两个自动获取的函数： CFRunLoopGetMain() 和 CFRunLoopGetCurrent()。 CFRunLoopRef源码:</p>
 <pre><code>/// 用DefaultMode启动
-void CFRunLoopRun(void) {
+void CFRunLoopRun(void) &#123;
     CFRunLoopRunSpecific(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, 1.0e10, false);
-}
-
+&#125;
+ 
 /// 用指定的Mode启动，允许设置RunLoop超时时间
-int CFRunLoopRunInMode(CFStringRef modeName, CFTimeInterval seconds, Boolean stopAfterHandle) {
+int CFRunLoopRunInMode(CFStringRef modeName, CFTimeInterval seconds, Boolean stopAfterHandle) &#123;
     return CFRunLoopRunSpecific(CFRunLoopGetCurrent(), modeName, seconds, returnAfterSourceHandled);
-}
-
+&#125;
+ 
 /// RunLoop的实现
-int CFRunLoopRunSpecific(runloop, modeName, seconds, stopAfterHandle) {
+int CFRunLoopRunSpecific(runloop, modeName, seconds, stopAfterHandle) &#123;
 
 /// 首先根据modeName找到对应mode
 CFRunLoopModeRef currentMode = __CFRunLoopFindMode(runloop, modeName, false);
@@ -2411,11 +2539,11 @@ if (__CFRunLoopModeIsEmpty(currentMode)) return;
 __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopEntry);
 
 /// 内部函数，进入loop
-__CFRunLoopRun(runloop, currentMode, seconds, returnAfterSourceHandled) {
-
+__CFRunLoopRun(runloop, currentMode, seconds, returnAfterSourceHandled) &#123;
+    
     Boolean sourceHandledThisLoop = NO;
     int retVal = 0;
-    do {
+    do &#123;
 
         /// 2. 通知 Observers: RunLoop 即将触发 Timer 回调。
         __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeTimers);
@@ -2423,83 +2551,84 @@ __CFRunLoopRun(runloop, currentMode, seconds, returnAfterSourceHandled) {
         __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeSources);
         /// 执行被加入的block
         __CFRunLoopDoBlocks(runloop, currentMode);
-
+        
         /// 4. RunLoop 触发 Source0 (非port) 回调。
         sourceHandledThisLoop = __CFRunLoopDoSources0(runloop, currentMode, stopAfterHandle);
         /// 执行被加入的block
         __CFRunLoopDoBlocks(runloop, currentMode);
 
         /// 5. 如果有 Source1 (基于port) 处于 ready 状态，直接处理这个 Source1 然后跳转去处理消息。
-        if (__Source0DidDispatchPortLastTime) {
+        if (__Source0DidDispatchPortLastTime) &#123;
             Boolean hasMsg = __CFRunLoopServiceMachPort(dispatchPort, &amp;msg)
             if (hasMsg) goto handle_msg;
-        }
-
+        &#125;
+        
         /// 通知 Observers: RunLoop 的线程即将进入休眠(sleep)。
-        if (!sourceHandledThisLoop) {
+        if (!sourceHandledThisLoop) &#123;
             __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeWaiting);
-        }
-
+        &#125;
+        
         /// 7. 调用 mach_msg 等待接受 mach_port 的消息。线程将进入休眠, 直到被下面某一个事件唤醒。
         /// • 一个基于 port 的Source 的事件。
         /// • 一个 Timer 到时间了
         /// • RunLoop 自身的超时时间到了
         /// • 被其他什么调用者手动唤醒
-        __CFRunLoopServiceMachPort(waitSet, &amp;msg, sizeof(msg_buffer), &amp;livePort) {
+        __CFRunLoopServiceMachPort(waitSet, &amp;msg, sizeof(msg_buffer), &amp;livePort) &#123;
             mach_msg(msg, MACH_RCV_MSG, port); // thread wait for receive msg
-        }
+        &#125;
 
         /// 8. 通知 Observers: RunLoop 的线程刚刚被唤醒了。
         __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopAfterWaiting);
-
+        
         /// 收到消息，处理消息。
         handle_msg:
 
         /// 9.1 如果一个 Timer 到时间了，触发这个Timer的回调。
-        if (msg_is_timer) {
+        if (msg_is_timer) &#123;
             __CFRunLoopDoTimers(runloop, currentMode, mach_absolute_time())
-        } 
+        &#125; 
 
         /// 9.2 如果有dispatch到main_queue的block，执行block。
-        else if (msg_is_dispatch) {
+        else if (msg_is_dispatch) &#123;
             __CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE__(msg);
-        } 
+        &#125; 
 
         /// 9.3 如果一个 Source1 (基于port) 发出事件了，处理这个事件
-        else {
+        else &#123;
             CFRunLoopSourceRef source1 = __CFRunLoopModeFindSourceForMachPort(runloop, currentMode, livePort);
             sourceHandledThisLoop = __CFRunLoopDoSource1(runloop, currentMode, source1, msg);
-            if (sourceHandledThisLoop) {
+            if (sourceHandledThisLoop) &#123;
                 mach_msg(reply, MACH_SEND_MSG, reply);
-            }
-        }
-
+            &#125;
+        &#125;
+        
         /// 执行加入到Loop的block
         __CFRunLoopDoBlocks(runloop, currentMode);
+        
 
-
-        if (sourceHandledThisLoop &amp;&amp; stopAfterHandle) {
+        if (sourceHandledThisLoop &amp;&amp; stopAfterHandle) &#123;
             /// 进入loop时参数说处理完事件就返回。
             retVal = kCFRunLoopRunHandledSource;
-        } else if (timeout) {
+        &#125; else if (timeout) &#123;
             /// 超出传入参数标记的超时时间了
             retVal = kCFRunLoopRunTimedOut;
-        } else if (__CFRunLoopIsStopped(runloop)) {
+        &#125; else if (__CFRunLoopIsStopped(runloop)) &#123;
             /// 被外部调用者强制停止了
             retVal = kCFRunLoopRunStopped;
-        } else if (__CFRunLoopModeIsEmpty(runloop, currentMode)) {
+        &#125; else if (__CFRunLoopModeIsEmpty(runloop, currentMode)) &#123;
             /// source/timer/observer一个都没有了
             retVal = kCFRunLoopRunFinished;
-        }
-
+        &#125;
+        
         /// 如果没超时，mode里没空，loop也没被停止，那继续loop。
-    } while (retVal == 0);
-}
+    &#125; while (retVal == 0);
+&#125;
 
 /// 10. 通知 Observers: RunLoop 即将退出。
 __CFRunLoopDoObservers(rl, currentMode, kCFRunLoopExit);
-}
-</code></pre><p>可以看出，线程和 RunLoop 之间是一一对应的，其关系是保存在一个全局的 Dictionary 里。线程刚创建时并没有 RunLoop，如果你不主动获取，那它一直都不会有。RunLoop 的创建是发生在第一次获取时，RunLoop 的销毁是发生在线程结束时。你只能在一个线程的内部获取其 RunLoop（主线程除外）。</p>
+&#125;
+</code></pre>
+<p>可以看出，线程和 RunLoop 之间是一一对应的，其关系是保存在一个全局的 Dictionary 里。线程刚创建时并没有 RunLoop，如果你不主动获取，那它一直都不会有。RunLoop 的创建是发生在第一次获取时，RunLoop 的销毁是发生在线程结束时。你只能在一个线程的内部获取其 RunLoop（主线程除外）。</p>
 <p>[NSRunLoop currentRunLoop];方法调用时，会先看一下字典里有没有存子线程相对用的RunLoop，如果有则直接返回RunLoop，如果没有则会创建一个，并将与之对应的子线程存入字典中。</p>
 <h2 id="Runloop-相关类"><a href="#Runloop-相关类" class="headerlink" title="Runloop 相关类"></a>Runloop 相关类</h2><p>Core Foundation中关于RunLoop的5个类：</p>
 <pre><code>CFRunLoopRef  //获得当前RunLoop和主RunLoop
@@ -2507,18 +2636,20 @@ CFRunLoopModeRef  //运行模式，只能选择一种，在不同模式中做不
 CFRunLoopSourceRef  //事件源，输入源
 CFRunLoopTimerRef //定时器时间
 CFRunLoopObserverRef //观察者
-</code></pre><h3 id="CFRunLoopModeRef"><a href="#CFRunLoopModeRef" class="headerlink" title="CFRunLoopModeRef"></a>CFRunLoopModeRef</h3><p>一个Runloop包含若干个Mode, 每个Mode又包含若干个Source / Timer / Observer. 每次调用Runloop 的主函数时，只能指定其中一个Mode, 这个Mode被称作 CurrentMode. 如果需要切换Mode, 只能退出Loop, 再重新指定一个Mode进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer, 让其互不影响。</p>
+</code></pre>
+<h3 id="CFRunLoopModeRef"><a href="#CFRunLoopModeRef" class="headerlink" title="CFRunLoopModeRef"></a>CFRunLoopModeRef</h3><p>一个Runloop包含若干个Mode, 每个Mode又包含若干个Source &#x2F; Timer &#x2F; Observer. 每次调用Runloop 的主函数时，只能指定其中一个Mode, 这个Mode被称作 CurrentMode. 如果需要切换Mode, 只能退出Loop, 再重新指定一个Mode进入。这样做主要是为了分隔开不同组的 Source&#x2F;Timer&#x2F;Observer, 让其互不影响。</p>
 <p>系统默认注册了 5 个Mode, 其中常见的有第 1，2 种：</p>
 <pre><code>1. kCFRunLoopDefaultMode：App的默认Mode，通常主线程是在这个Mode下运行
 2. UITrackingRunLoopMode：界面跟踪 Mode，用于 ScrollView 追踪触摸滑动，保证界面滑动时不受其他 Mode 影响
 3. UIInitializationRunLoopMode: 在刚启动 App 时第进入的第一个 Mode，启动完成后就不再使用
 4. GSEventReceiveRunLoopMode: 接受系统事件的内部 Mode，通常用不到
 5. kCFRunLoopCommonModes: 这是一个占位用的Mode，作为标记kCFRunLoopDefaultMode和UITrackingRunLoopMode用，并不是一种真正的Mode
-</code></pre><p>上面的Source/Timer/Observer 被统称为 model item， 一个item 可以被同时加入多个 Mode. 但一个item被重复加入同一个mode时是不会有效果的。如果一个mode中一个item都没有，则Runloop会直接退出，不进入循环。</p>
+</code></pre>
+<p>上面的Source&#x2F;Timer&#x2F;Observer 被统称为 model item， 一个item 可以被同时加入多个 Mode. 但一个item被重复加入同一个mode时是不会有效果的。如果一个mode中一个item都没有，则Runloop会直接退出，不进入循环。</p>
 <p>Mode 间切换</p>
 <p>我们平时在开发中一定遇到过，当我们使用NSTimer每一段时间执行一些事情时滑动UIScrollView，NSTimer就会暂停，当我们停止滑动以后，NSTimer又会重新恢复的情况，我们通过一段代码来看一下：</p>
 <pre><code>-(void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event
-{
+&#123;
     // [NSTimer scheduledTimerWithTimeInterval:2.0 target:self selector:@selector(show) userInfo:nil repeats:YES];
     NSTimer *timer = [NSTimer timerWithTimeInterval:2.0 target:self selector:@selector(show) userInfo:nil repeats:YES];
     // 加入到RunLoop中才可以运行
@@ -2533,20 +2664,21 @@ CFRunLoopObserverRef //观察者
     // 3. 那个如何让timer在两个模式下都可以运行呢？
     // 3.1 在两个模式下都添加timer 是可以的，但是timer添加了两次，并不是同一个timer
         // 3.2 使用站位的运行模式 NSRunLoopCommonModes标记，凡是被打上NSRunLoopCommonModes标记的都可以运行，下面两种模式被打上标签
-    //0 : &lt;CFString 0x10b7fe210 [0x10a8c7a40]&gt;{contents = &quot;UITrackingRunLoopMode&quot;}
-    //2 : &lt;CFString 0x10a8e85e0 [0x10a8c7a40]&gt;{contents = &quot;kCFRunLoopDefaultMode&quot;}
+    //0 : &lt;CFString 0x10b7fe210 [0x10a8c7a40]&gt;&#123;contents = &quot;UITrackingRunLoopMode&quot;&#125;
+    //2 : &lt;CFString 0x10a8e85e0 [0x10a8c7a40]&gt;&#123;contents = &quot;kCFRunLoopDefaultMode&quot;&#125;
     // 因此也就是说如果我们使用NSRunLoopCommonModes，timer可以在UITrackingRunLoopMode，kCFRunLoopDefaultMode两种模式下运行
         [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
         NSLog(@&quot;%@&quot;,[NSRunLoop mainRunLoop]);
-}
+&#125;
 -(void)show
-{
+&#123;
     NSLog(@&quot;-------&quot;);
-}
-</code></pre><p>由上述代码可以看出，NSTimer不管用是因为Mode的切换，因为如果我们在主线程使用定时器，此时RunLoop的Mode为kCFRunLoopDefaultMode，即定时器属于kCFRunLoopDefaultMode，那么此时我们滑动ScrollView时，RunLoop的Mode会切换到UITrackingRunLoopMode，因此在主线程的定时器就不在管用了，调用的方法也就不再执行了，当我们停止滑动时，RunLoop的Mode切换回kCFRunLoopDefaultMode，所有NSTimer就又管用了。</p>
+&#125;
+</code></pre>
+<p>由上述代码可以看出，NSTimer不管用是因为Mode的切换，因为如果我们在主线程使用定时器，此时RunLoop的Mode为kCFRunLoopDefaultMode，即定时器属于kCFRunLoopDefaultMode，那么此时我们滑动ScrollView时，RunLoop的Mode会切换到UITrackingRunLoopMode，因此在主线程的定时器就不在管用了，调用的方法也就不再执行了，当我们停止滑动时，RunLoop的Mode切换回kCFRunLoopDefaultMode，所有NSTimer就又管用了。</p>
 <p>使用GCD也可以创建计时器，而且更为精确：</p>
 <pre><code>-(void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event
-{
+&#123;
     //创建队列
     dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
     //1.创建一个GCD定时器
@@ -2569,13 +2701,14 @@ CFRunLoopObserverRef //观察者
     dispatch_source_set_timer(timer, DISPATCH_TIME_NOW, 2.0 * NSEC_PER_SEC, 0 * NSEC_PER_SEC);
 
     //3.设置定时器要执行的事情
-    dispatch_source_set_event_handler(timer, ^{
+    dispatch_source_set_event_handler(timer, ^&#123;
         NSLog(@&quot;---%@--&quot;,[NSThread currentThread]);
-    });
+    &#125;);
     // 启动
     dispatch_resume(timer);
-}
-</code></pre><h3 id="CFRunLoopSourceRef"><a href="#CFRunLoopSourceRef" class="headerlink" title="CFRunLoopSourceRef"></a>CFRunLoopSourceRef</h3><p>Source分为两种：</p>
+&#125;
+</code></pre>
+<h3 id="CFRunLoopSourceRef"><a href="#CFRunLoopSourceRef" class="headerlink" title="CFRunLoopSourceRef"></a>CFRunLoopSourceRef</h3><p>Source分为两种：</p>
 <p>Source0：非基于Port的 用于用户主动触发的事件（点击button 或点击屏幕）<br>Source1：基于Port的 通过内核和其他线程相互发送消息（与内核相关）<br>注意：Source1在处理的时候会分发一些操作给Source0去处理</p>
 <h3 id="CFRunLoopTimer"><a href="#CFRunLoopTimer" class="headerlink" title="CFRunLoopTimer"></a>CFRunLoopTimer</h3><p>NSTimer是对RunLoopTimer的封装</p>
 <pre><code>+ (NSTimer *)timerWithTimeInterval:(NSTimeInterval)ti invocation:(NSInvocation *)invocation repeats:(BOOL)yesOrNo;
@@ -2585,9 +2718,10 @@ CFRunLoopObserverRef //观察者
 
 + (CADisplayLink *)displayLinkWithTarget:(id)target selector:(SEL)sel;
 - (void)addToRunLoop:(NSRunLoop *)runloop forMode:(NSString *)mode;
-</code></pre><h3 id="CFRunLoopObserverRef"><a href="#CFRunLoopObserverRef" class="headerlink" title="CFRunLoopObserverRef"></a>CFRunLoopObserverRef</h3><p>CFRunLoopObserverRef是观察者，能够监听RunLoop的状态改变。 我们直接来看代码，给RunLoop添加监听者，监听其运行状态：</p>
+</code></pre>
+<h3 id="CFRunLoopObserverRef"><a href="#CFRunLoopObserverRef" class="headerlink" title="CFRunLoopObserverRef"></a>CFRunLoopObserverRef</h3><p>CFRunLoopObserverRef是观察者，能够监听RunLoop的状态改变。 我们直接来看代码，给RunLoop添加监听者，监听其运行状态：</p>
 <pre><code>-(void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event
-{
+&#123;
      //创建监听者
      /*
      第一个参数 CFAllocatorRef allocator：分配存储空间 CFAllocatorGetDefault()默认分配
@@ -2598,7 +2732,7 @@ CFRunLoopObserverRef //观察者
      */
      /*
      所有事件
-     typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
+     typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) &#123;
      kCFRunLoopEntry = (1UL &lt;&lt; 0),   //   即将进入RunLoop
      kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1), // 即将处理Timer
      kCFRunLoopBeforeSources = (1UL &lt;&lt; 2), // 即将处理Source
@@ -2606,10 +2740,10 @@ CFRunLoopObserverRef //观察者
      kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6),// 刚从休眠中唤醒
      kCFRunLoopExit = (1UL &lt;&lt; 7),// 即将退出RunLoop
      kCFRunLoopAllActivities = 0x0FFFFFFFU
-     };
+     &#125;;
      */
-    CFRunLoopObserverRef observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault(), kCFRunLoopAllActivities, YES, 0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
-        switch (activity) {
+    CFRunLoopObserverRef observer = CFRunLoopObserverCreateWithHandler(CFAllocatorGetDefault(), kCFRunLoopAllActivities, YES, 0, ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) &#123;
+        switch (activity) &#123;
             case kCFRunLoopEntry:
                 NSLog(@&quot;RunLoop进入&quot;);
                 break;
@@ -2631,8 +2765,8 @@ CFRunLoopObserverRef //观察者
 
             default:
                 break;
-        }
-    });
+        &#125;
+    &#125;);
 
     // 给RunLoop添加监听者
     /*
@@ -2647,86 +2781,95 @@ CFRunLoopObserverRef //观察者
      GCD本来在iOS6.0之前也是需要我们释放的，6.0之后GCD已经纳入到了ARC中，所以我们不需要管了
      */
     CFRelease(observer);
-}
-</code></pre><h2 id="Runloop-退出"><a href="#Runloop-退出" class="headerlink" title="Runloop 退出"></a>Runloop 退出</h2><ul>
-<li>主线程销魂Runloop退出</li>
-<li>Mode中有一些Timer, Source, Observer, 这些保证Mode不为空时保证Runloop没有空转并且是在运行的，当Mode中为空的时候，Runloop会立刻退出。</li>
+&#125;
+</code></pre>
+<h2 id="Runloop-退出"><a href="#Runloop-退出" class="headerlink" title="Runloop 退出"></a>Runloop 退出</h2><ul>
+<li><p>主线程销魂Runloop退出</p>
+</li>
+<li><p>Mode中有一些Timer, Source, Observer, 这些保证Mode不为空时保证Runloop没有空转并且是在运行的，当Mode中为空的时候，Runloop会立刻退出。</p>
+</li>
 <li><p>我们在启动Runloop的时候可以设置什么时候停止。</p>
-<pre><code>[NSRunLoop currentRunLoop]runUntilDate:&lt;#(nonnull NSDate *)#&gt;
-[NSRunLoop currentRunLoop]runMode:&lt;#(nonnull NSString *)#&gt; beforeDate:&lt;#(nonnull NSDate *)#&gt;
-</code></pre></li>
+<pre><code>  [NSRunLoop currentRunLoop]runUntilDate:&lt;#(nonnull NSDate *)#&gt;
+  [NSRunLoop currentRunLoop]runMode:&lt;#(nonnull NSString *)#&gt; beforeDate:&lt;#(nonnull NSDate *)#&gt;
+</code></pre>
+</li>
 </ul>
 <h2 id="一些有关Runloop的问题"><a href="#一些有关Runloop的问题" class="headerlink" title="一些有关Runloop的问题"></a>一些有关Runloop的问题</h2><h3 id="基于NSTimer的轮播器什么情况下会被页面滚动暂停，怎样可以不被暂停，为什么？"><a href="#基于NSTimer的轮播器什么情况下会被页面滚动暂停，怎样可以不被暂停，为什么？" class="headerlink" title="基于NSTimer的轮播器什么情况下会被页面滚动暂停，怎样可以不被暂停，为什么？"></a>基于NSTimer的轮播器什么情况下会被页面滚动暂停，怎样可以不被暂停，为什么？</h3><p>NSTimer不管用是因为Mode的切换，因为如果我们在主线程使用定时器，此时RunLoop的Mode为kCFRunLoopDefaultMode，即定时器属于kCFRunLoopDefaultMode，那么此时我们滑动ScrollView时，RunLoop的Mode会切换到UITrackingRunLoopMode，因此在主线程的定时器就不在管用了，调用的方法也就不再执行了，当我们停止滑动时，RunLoop的Mode切换回kCFRunLoopDefaultMode，所有NSTimer就又管用了。若想定时器继续执行，需要将NSTimer 注册为 kCFRunLoopCommonModes 。</p>
 <h3 id="延迟执行performSelecter相关方法是怎样被执行的？在子线程中也是一样的吗？"><a href="#延迟执行performSelecter相关方法是怎样被执行的？在子线程中也是一样的吗？" class="headerlink" title="延迟执行performSelecter相关方法是怎样被执行的？在子线程中也是一样的吗？"></a>延迟执行performSelecter相关方法是怎样被执行的？在子线程中也是一样的吗？</h3><p>当调用 NSObject 的 performSelecter:afterDelay: 后，实际上其内部会创建一个 Timer 并添加到当前线程的 RunLoop 中。所以如果当前线程没有 RunLoop，则这个方法会失效。<br>当调用 performSelector:onThread: 时，实际上其会创建一个 Timer 加到对应的线程去，同样的，如果对应线程没有 RunLoop 该方法也会失效。</p>
 <h3 id="事件响应和手势识别底层处理是一致的吗，为什么？"><a href="#事件响应和手势识别底层处理是一致的吗，为什么？" class="headerlink" title="事件响应和手势识别底层处理是一致的吗，为什么？"></a>事件响应和手势识别底层处理是一致的吗，为什么？</h3><p>事件响应：</p>
-<p>苹果注册了一个 Source1 (基于 mach port 的) 用来接收系统事件，其回调函数为 __IOHIDEventSystemClientQueueCallback()。<br>当一个硬件事件(触摸/锁屏/摇晃等)发生后，首先由 IOKit.framework 生成一个 IOHIDEvent 事件并由 SpringBoard 接收。SpringBoard 只接收按键(锁屏/静音等)，触摸，加速，接近传感器等几种 Event，随后用 mach port 转发给需要的App进程。随后苹果注册的那个 Source1 就会触发回调，并调用 _UIApplicationHandleEventQueue() 进行应用内部的分发。</p>
-<p>_UIApplicationHandleEventQueue() 会把 IOHIDEvent 处理并包装成 UIEvent 进行处理或分发，其中包括识别 UIGesture/处理屏幕旋转/发送给 UIWindow 等。通常事件比如 UIButton 点击、touchesBegin/Move/End/Cancel 事件都是在这个回调中完成的。</p>
+<p>苹果注册了一个 Source1 (基于 mach port 的) 用来接收系统事件，其回调函数为 __IOHIDEventSystemClientQueueCallback()。<br>当一个硬件事件(触摸&#x2F;锁屏&#x2F;摇晃等)发生后，首先由 IOKit.framework 生成一个 IOHIDEvent 事件并由 SpringBoard 接收。SpringBoard 只接收按键(锁屏&#x2F;静音等)，触摸，加速，接近传感器等几种 Event，随后用 mach port 转发给需要的App进程。随后苹果注册的那个 Source1 就会触发回调，并调用 _UIApplicationHandleEventQueue() 进行应用内部的分发。</p>
+<p>_UIApplicationHandleEventQueue() 会把 IOHIDEvent 处理并包装成 UIEvent 进行处理或分发，其中包括识别 UIGesture&#x2F;处理屏幕旋转&#x2F;发送给 UIWindow 等。通常事件比如 UIButton 点击、touchesBegin&#x2F;Move&#x2F;End&#x2F;Cancel 事件都是在这个回调中完成的。</p>
 <p>手势识别：</p>
-<p>当上面的 _UIApplicationHandleEventQueue() 识别了一个手势时，其首先会调用 Cancel 将当前的 touchesBegin/Move/End 系列回调打断。随后系统将对应的 UIGestureRecognizer 标记为待处理。<br>苹果注册了一个 Observer 监测 BeforeWaiting (Loop即将进入休眠) 事件，这个Observer的回调函数是 _UIGestureRecognizerUpdateObserver()，其内部会获取所有刚被标记为待处理的 GestureRecognizer，并执行GestureRecognizer的回调。</p>
-<p>当有 UIGestureRecognizer 的变化(创建/销毁/状态改变)时，这个回调都会进行相应处理。</p>
-<h3 id="界面刷新时，是在什么时候会真正执行刷新，为什么会刷新不及时？"><a href="#界面刷新时，是在什么时候会真正执行刷新，为什么会刷新不及时？" class="headerlink" title="界面刷新时，是在什么时候会真正执行刷新，为什么会刷新不及时？"></a>界面刷新时，是在什么时候会真正执行刷新，为什么会刷新不及时？</h3><p>当在操作 UI 时，比如改变了 Frame、更新了 UIView/CALayer 的层次时，或者手动调用了 UIView/CALayer 的 setNeedsLayout/setNeedsDisplay方法后，这个 UIView/CALayer 就被标记为待处理，并被提交到一个全局的容器去。</p>
+<p>当上面的 _UIApplicationHandleEventQueue() 识别了一个手势时，其首先会调用 Cancel 将当前的 touchesBegin&#x2F;Move&#x2F;End 系列回调打断。随后系统将对应的 UIGestureRecognizer 标记为待处理。<br>苹果注册了一个 Observer 监测 BeforeWaiting (Loop即将进入休眠) 事件，这个Observer的回调函数是 _UIGestureRecognizerUpdateObserver()，其内部会获取所有刚被标记为待处理的 GestureRecognizer，并执行GestureRecognizer的回调。</p>
+<p>当有 UIGestureRecognizer 的变化(创建&#x2F;销毁&#x2F;状态改变)时，这个回调都会进行相应处理。</p>
+<h3 id="界面刷新时，是在什么时候会真正执行刷新，为什么会刷新不及时？"><a href="#界面刷新时，是在什么时候会真正执行刷新，为什么会刷新不及时？" class="headerlink" title="界面刷新时，是在什么时候会真正执行刷新，为什么会刷新不及时？"></a>界面刷新时，是在什么时候会真正执行刷新，为什么会刷新不及时？</h3><p>当在操作 UI 时，比如改变了 Frame、更新了 UIView&#x2F;CALayer 的层次时，或者手动调用了 UIView&#x2F;CALayer 的 setNeedsLayout&#x2F;setNeedsDisplay方法后，这个 UIView&#x2F;CALayer 就被标记为待处理，并被提交到一个全局的容器去。</p>
 <p>苹果注册了一个 Observer 监听 BeforeWaiting(即将进入休眠) 和 Exit (即将退出Loop) 事件，回调去执行一个很长的函数：</p>
-<p>_ZN2CA11Transaction17observer_callbackEP19__CFRunLoopObservermPv()。这个函数里会遍历所有待处理的 UIView/CAlayer 以执行实际的绘制和调整，并更新 UI 界面。所以说界面刷新并不一定是在setNeedsLayout相关的代码执行后立刻进行的。</p>
+<p>_ZN2CA11Transaction17observer_callbackEP19__CFRunLoopObservermPv()。这个函数里会遍历所有待处理的 UIView&#x2F;CAlayer 以执行实际的绘制和调整，并更新 UI 界面。所以说界面刷新并不一定是在setNeedsLayout相关的代码执行后立刻进行的。</p>
 <h3 id="项目程序运行中，总是伴随着多次自动释放池的创建和销毁，这些是在什么时候发生的呢？"><a href="#项目程序运行中，总是伴随着多次自动释放池的创建和销毁，这些是在什么时候发生的呢？" class="headerlink" title="项目程序运行中，总是伴随着多次自动释放池的创建和销毁，这些是在什么时候发生的呢？"></a>项目程序运行中，总是伴随着多次自动释放池的创建和销毁，这些是在什么时候发生的呢？</h3><p>系统就是通过@autoreleasepool {}这种方式来为我们创建自动释放池的，一个线程对应一个runloop，系统会为每一个runloop隐式的创建一个自动释放池，所有的autoreleasePool构成一个栈式结构，在每个runloop结束时，当前栈顶的autoreleasePool会被销毁，而且会对其中的每一个对象做一次release（严格来说，是你对这个对象做了几次autorelease就会做几次release，不一定是一次)，特别指出，使用容器的block版本的枚举器的时候，系统会自动添加一个autoreleasePool</p>
-<pre><code>[array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) { 
+<pre><code>[array enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) &#123; 
 // 这里被一个局部@autoreleasepool包围着 
-}];
-</code></pre><h3 id="当我们在子线程上需要执行代理方法或者回调时，怎么确保当前线程没有被销毁？"><a href="#当我们在子线程上需要执行代理方法或者回调时，怎么确保当前线程没有被销毁？" class="headerlink" title="当我们在子线程上需要执行代理方法或者回调时，怎么确保当前线程没有被销毁？"></a>当我们在子线程上需要执行代理方法或者回调时，怎么确保当前线程没有被销毁？</h3><p>首先引入一个概念：Event_loop，一般一个线程执行完任务后就会退出，当需要保证该线程不退出，可以通过类似以下方式：</p>
-<pre><code>function do_loop() {
+&#125;];
+</code></pre>
+<h3 id="当我们在子线程上需要执行代理方法或者回调时，怎么确保当前线程没有被销毁？"><a href="#当我们在子线程上需要执行代理方法或者回调时，怎么确保当前线程没有被销毁？" class="headerlink" title="当我们在子线程上需要执行代理方法或者回调时，怎么确保当前线程没有被销毁？"></a>当我们在子线程上需要执行代理方法或者回调时，怎么确保当前线程没有被销毁？</h3><p>首先引入一个概念：Event_loop，一般一个线程执行完任务后就会退出，当需要保证该线程不退出，可以通过类似以下方式：</p>
+<pre><code>function do_loop() &#123;
     initialize();
-    do {
+    do &#123;
         var message = get_next_message();
         process_message(message);
-    } while (message != quit);
-}
-</code></pre><p>开启一个循环，保证线程不退出，这就是Event_loop模型。这是在很多操作系统中都使用的模型，例如OS/iOS中的RunLoop。这种模型最大的作用就是管理事件/消息，在有新消息到来时立刻唤醒处理，没有待处理消息时线程休眠，避免资源浪费。</p>
+    &#125; while (message != quit);
+&#125;
+</code></pre>
+<p>开启一个循环，保证线程不退出，这就是Event_loop模型。这是在很多操作系统中都使用的模型，例如OS&#x2F;iOS中的RunLoop。这种模型最大的作用就是管理事件&#x2F;消息，在有新消息到来时立刻唤醒处理，没有待处理消息时线程休眠，避免资源浪费。</p>
 <h2 id="RunLoop应用"><a href="#RunLoop应用" class="headerlink" title="RunLoop应用"></a>RunLoop应用</h2><h3 id="AFNetworking"><a href="#AFNetworking" class="headerlink" title="AFNetworking"></a>AFNetworking</h3><p>使用NSOperation+NSURLConnection并发模型都会面临NSURLConnection下载完成前线程退出导致NSOperation对象接收不到回调的问题。AFNetWorking解决这个问题的方法是按照官方的guid NSURLConnection 上写的NSURLConnection的delegate方法需要在connection发起的线程runloop中调用，于是AFNetWorking直接借鉴了Apple自己的一个Demo的实现方法单独起一个global thread，内置一个runloop，所有的connection都由这个runloop发起，回调也是它接收，不占用主线程，也不耗CPU资源。</p>
-<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object {
-     @autoreleasepool {
+<pre><code>+ (void)networkRequestThreadEntryPoint:(id)__unused object &#123;
+     @autoreleasepool &#123;
           [[NSThread currentThread] setName:@&quot;AFNetworking&quot;];
           NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
           [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
           [runLoop run];
-     }
-}
+     &#125;
+&#125;
 
-+ (NSThread *)networkRequestThread {
++ (NSThread *)networkRequestThread &#123;
      static NSThread *_networkRequestThread = nil;
      static dispatch_once_t oncePredicate;
-     dispatch_once(&amp;oncePredicate, ^{
+     dispatch_once(&amp;oncePredicate, ^&#123;
           _networkRequestThread =
           [[NSThread alloc] initWithTarget:self
                selector:@selector(networkRequestThreadEntryPoint:)
                object:nil];
           [_networkRequestThread start];
-     });
+     &#125;);
 
      return _networkRequestThread;
-}
-</code></pre><p>类似的可以用这个方法创建一个常驻服务的线程。</p>
+&#125;
+</code></pre>
+<p>类似的可以用这个方法创建一个常驻服务的线程。</p>
 <h3 id="TableView中实现平滑滚动延迟加载图片"><a href="#TableView中实现平滑滚动延迟加载图片" class="headerlink" title="TableView中实现平滑滚动延迟加载图片"></a>TableView中实现平滑滚动延迟加载图片</h3><p>利用CFRunLoopMode的特性，可以将图片的加载放到NSDefaultRunLoopMode的mode里，这样在滚动UITrackingRunLoopMode这个mode时不会被加载而影响到。</p>
 <pre><code>UIImage *downloadedImage = ...;
 [self.imageView performSelector:@selector(setImage:)
      withObject:downloadedImage
      afterDelay:0
      inModes:@[NSDefaultRunLoopMode]];
-</code></pre><h3 id="接到程序崩溃时的信号进行自主处理例如弹出提示等"><a href="#接到程序崩溃时的信号进行自主处理例如弹出提示等" class="headerlink" title="接到程序崩溃时的信号进行自主处理例如弹出提示等"></a>接到程序崩溃时的信号进行自主处理例如弹出提示等</h3><pre><code>CFRunLoopRef runLoop = CFRunLoopGetCurrent();
+</code></pre>
+<h3 id="接到程序崩溃时的信号进行自主处理例如弹出提示等"><a href="#接到程序崩溃时的信号进行自主处理例如弹出提示等" class="headerlink" title="接到程序崩溃时的信号进行自主处理例如弹出提示等"></a>接到程序崩溃时的信号进行自主处理例如弹出提示等</h3><pre><code>CFRunLoopRef runLoop = CFRunLoopGetCurrent();
 NSArray *allModes = CFBridgingRelease(CFRunLoopCopyAllModes(runLoop));
-while (1) {
-     for (NSString *mode in allModes) {
+while (1) &#123;
+     for (NSString *mode in allModes) &#123;
           CFRunLoopRunInMode((CFStringRef)mode, 0.001, false);
-     }
-}
-</code></pre><h3 id="异步测试"><a href="#异步测试" class="headerlink" title="异步测试"></a>异步测试</h3><pre><code>- (BOOL)runUntilBlock:(BOOL(^)())block timeout:(NSTimeInterval)timeout
-{
+     &#125;
+&#125;
+</code></pre>
+<h3 id="异步测试"><a href="#异步测试" class="headerlink" title="异步测试"></a>异步测试</h3><pre><code>- (BOOL)runUntilBlock:(BOOL(^)())block timeout:(NSTimeInterval)timeout
+&#123;
      __block Boolean fulfilled = NO;
      void (^beforeWaiting) (CFRunLoopObserverRef observer, CFRunLoopActivity activity) =
-     ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) {
+     ^(CFRunLoopObserverRef observer, CFRunLoopActivity activity) &#123;
           fulfilled = block();
-          if (fulfilled) {
+          if (fulfilled) &#123;
                CFRunLoopStop(CFRunLoopGetCurrent());
-          }
-     };
+          &#125;
+     &#125;;
 
      CFRunLoopObserverRef observer = CFRunLoopObserverCreateWithHandler(NULL, kCFRunLoopBeforeWaiting, true, 0, beforeWaiting);
      CFRunLoopAddObserver(CFRunLoopGetCurrent(), observer, kCFRunLoopDefaultMode);
@@ -2738,8 +2881,9 @@ while (1) {
      CFRelease(observer);
 
      return fulfilled;
-}
+&#125;
 </code></pre>
+
       
 
       
@@ -2762,7 +2906,7 @@ while (1) {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/14/RunLoop底层应用/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/14/RunLoop%E5%BA%95%E5%B1%82%E5%BA%94%E7%94%A8/">展开全文 >></a>
         </p>
       
 
@@ -2799,12 +2943,12 @@ while (1) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/14/最简单易用的数据库工具类XWDatabase/">最简单易用的数据库工具类XWDatabase</a>
+      <a class="article-title" href="/2018/12/14/%E6%9C%80%E7%AE%80%E5%8D%95%E6%98%93%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%85%B7%E7%B1%BBXWDatabase/">最简单易用的数据库工具类XWDatabase</a>
     </h1>
   
 
         
-        <a href="/2018/12/14/最简单易用的数据库工具类XWDatabase/" class="archive-article-date">
+        <a href="/2018/12/14/%E6%9C%80%E7%AE%80%E5%8D%95%E6%98%93%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%85%B7%E7%B1%BBXWDatabase/" class="archive-article-date">
   	<time datetime="2018-12-14T07:38:27.640Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-14</time>
 </a>
         
@@ -2814,133 +2958,146 @@ while (1) {
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>XWDatabase 将数据库操作简化到难以想象的程度，你甚至不需要知道数据库的存在，当然更不需要写 SQL 语句，你只需要直接操作模型即可对模型进行增删改查的操作，她会根据模型动态在数据库中创建以当前模型类名为名称的数据库表，当然你也可以自定义表名；她会根据模型的成员变量和成员变量的类型动态进行字段的设计，有多少成员变量，表中自然就会有多少字段与其对应，当然，你也可以忽略其中的某些你不想存储的成员变量，也可以自定义字段的名称；如果哪天模型的字段变化了，她会自动进行表中原有字段的更新，而且无论原表中有多少数据，都会一条不落的迁移到新表中；她的API简单到只有一行代码，你无需关注数据库的开启和关闭，一行代码实现增删改查和数据迁移； 你甚至可以在任何线程中调用她的API，她一定是线程安全的，不会出现多线程访问同一个数据库和死锁的问题；数据操作是耗时操作，所以你无需手动开启异步线程操作数据库操作，她会统一在一个保活的异步线程中执行；她支持存储常见的数据类型（int,long,signed,float,double,NSInteger,CGFloat,BOOL,NSString,NSMutableString,NSNumber,NSArray,NSMutableArray,NSDictionary,NSMutableDictionary,NSData,NSMutableData,UIImage,NSDate,NSURL,NSRange,CGRect,CGSize,CGPoint,自定义对象 等的存储.）； 她还对二进制文件的存储做了优化，比如同一张图片表中所有数据都持有这张图片对象，她在数据库中只会有一份拷贝，竭尽她所能优化存储空间</p>
 <h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="增加"><a href="#增加" class="headerlink" title="增加"></a>增加</h3><h4 id="1-保存一个模型"><a href="#1-保存一个模型" class="headerlink" title="1.保存一个模型"></a>1.保存一个模型</h4><pre><code>- (void)saveOnePerson
-{
+&#123;
     XWPerson *person = [XWPerson testPerson:2];
-    [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
+    [XWDatabase saveModel:person completion:^(BOOL isSuccess) &#123;
 
-    }];
-}
-</code></pre><p>实例化一个对象，调用 saveModel 方法。</p>
-<h4 id="保存多个模型"><a href="#保存多个模型" class="headerlink" title="保存多个模型"></a>保存多个模型</h4><pre><code>- (void)saveModels
-{
-    NSMutableArray *persons = [[NSMutableArray alloc] init];
-    for (int i = 0; i &lt; 1000; i++) {
-        [persons addObject:[XWPerson testPerson:i]];
-    }
-    [XWDatabase saveModels:persons completion:^(BOOL isSuccess) {
-
-    }];
-}
-</code></pre><p>实例化一堆对象，调用saveModels方法</p>
+    &#125;];
+&#125;
+</code></pre>
+<p>实例化一个对象，调用 saveModel 方法。</p>
+<h4 id="保存多个模型"><a href="#保存多个模型" class="headerlink" title="保存多个模型"></a>保存多个模型</h4><pre><code>    - (void)saveModels
+    &#123;
+        NSMutableArray *persons = [[NSMutableArray alloc] init];
+        for (int i = 0; i &lt; 1000; i++) &#123;
+            [persons addObject:[XWPerson testPerson:i]];
+        &#125;
+        [XWDatabase saveModels:persons completion:^(BOOL isSuccess) &#123;
+            
+        &#125;];
+    &#125;
+</code></pre>
+<p>实例化一堆对象，调用saveModels方法</p>
 <h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><h4 id="删除一个对象"><a href="#删除一个对象" class="headerlink" title="删除一个对象"></a>删除一个对象</h4><pre><code>- (void)deleteModel
-{
+&#123;
     XWPerson *person = [XWPerson new];
     person.cardID = @&quot;1&quot;; /// 指定想删除的主键（或联合主键）
-    [XWDatabase deleteModel:person completion:^(BOOL isSuccess) {
-
-    }];
-}
-</code></pre><p>实例化一个对象，为主键赋值（得知道删的是哪个，让她猜，臣妾做不到）， 调用 deleteModel 方法。</p>
+    [XWDatabase deleteModel:person completion:^(BOOL isSuccess) &#123;
+        
+    &#125;];
+&#125;
+</code></pre>
+<p>实例化一个对象，为主键赋值（得知道删的是哪个，让她猜，臣妾做不到）， 调用 deleteModel 方法。</p>
 <h4 id="删除多个对象"><a href="#删除多个对象" class="headerlink" title="删除多个对象"></a>删除多个对象</h4><pre><code>- (void)clearModel
-{
-    [XWDatabase clearModel:XWPerson.class completion:^(BOOL isSuccess) {
+&#123;
+    [XWDatabase clearModel:XWPerson.class completion:^(BOOL isSuccess) &#123;
 
-    }];
-}
-</code></pre><p>调用 clearModel 方法，传入想删除的模型类</p>
+    &#125;];
+&#125;
+</code></pre>
+<p>调用 clearModel 方法，传入想删除的模型类</p>
 <h4 id="3-选择性删除此模型存储的数据"><a href="#3-选择性删除此模型存储的数据" class="headerlink" title="3.选择性删除此模型存储的数据"></a>3.选择性删除此模型存储的数据</h4><pre><code>/// 删除 age &gt; 50 的数据
 - (void)clearModel
-{
-    [XWDatabase clearModel:XWPerson.class condition:@&quot;age &gt; &apos;50&apos;&quot; completion:^(BOOL isSuccess) {
-
-    }];
-}
-</code></pre><p>调用 clearModel 方法，传入想删除的模型类和条件</p>
+&#123;
+    [XWDatabase clearModel:XWPerson.class condition:@&quot;age &gt; &#39;50&#39;&quot; completion:^(BOOL isSuccess) &#123;
+        
+    &#125;];
+&#125;
+</code></pre>
+<p>调用 clearModel 方法，传入想删除的模型类和条件</p>
 <h3 id="改"><a href="#改" class="headerlink" title="改"></a>改</h3><h4 id="1-更新某模型某个成员变量-（选择性更新）"><a href="#1-更新某模型某个成员变量-（选择性更新）" class="headerlink" title="1.更新某模型某个成员变量 （选择性更新）"></a>1.更新某模型某个成员变量 （选择性更新）</h4><pre><code>/// 改名
 - (void)updateModel
-{
+&#123;
     XWPerson *person = [XWPerson new];
     person.cardID = @&quot;2&quot;;
     person.name = @&quot;新名字&quot;;
-
+    
     /// 自定义成员变量更新
-    [XWDatabase updateModel:person updatePropertys:@[@&quot;name&quot;] completion:^(BOOL isSuccess) {
-
-   }];
-
-}
-</code></pre><p>实例化一个对象，为主键和有变化的成员变量赋值， 调用 updateModel 方法，传入想更新的成员变量名称。</p>
+    [XWDatabase updateModel:person updatePropertys:@[@&quot;name&quot;] completion:^(BOOL isSuccess) &#123;
+        
+   &#125;];
+    
+&#125;
+</code></pre>
+<p>实例化一个对象，为主键和有变化的成员变量赋值， 调用 updateModel 方法，传入想更新的成员变量名称。</p>
 <h4 id="2-更新某模型所有数据-（全量更新）"><a href="#2-更新某模型所有数据-（全量更新）" class="headerlink" title="2.更新某模型所有数据 （全量更新）"></a>2.更新某模型所有数据 （全量更新）</h4><pre><code>/// 根据传入的模型整体更新
 - (void)updateModel
-{
+&#123;
     XWPerson *person = [XWPerson new];
     person.cardID = @&quot;2&quot;;
     person.name = @&quot;新名字&quot;;
     person.girls = @[@&quot;小妹&quot;,@&quot;校花&quot;,@&quot;小baby&quot;];
-
+    
     /// 整个模型更新
-    [XWDatabase saveModel:person completion:^(BOOL isSuccess) {
-
-    }];
-
-}
-</code></pre><p>实例化一个对象， 调用 updateModel 方法，传入想更新的模型。</p>
+    [XWDatabase saveModel:person completion:^(BOOL isSuccess) &#123;
+        
+    &#125;];
+    
+&#125;
+</code></pre>
+<p>实例化一个对象， 调用 updateModel 方法，传入想更新的模型。</p>
 <h3 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h3><h4 id="1-根据主键查询模型"><a href="#1-根据主键查询模型" class="headerlink" title="1.根据主键查询模型"></a>1.根据主键查询模型</h4><pre><code>- (void)getOnePerson
-{
+&#123;
     XWPerson *person = [XWPerson new];
     person.cardID = @&quot;81&quot;;
-    [XWDatabase getModel:person completion:^(XWPerson * obj) {
-
-    }];
-}
-</code></pre><p>实例化一个对象，为主键赋值， 调用 getModel 方法。</p>
+    [XWDatabase getModel:person completion:^(XWPerson * obj) &#123;
+        
+    &#125;];
+&#125;
+</code></pre>
+<p>实例化一个对象，为主键赋值， 调用 getModel 方法。</p>
 <h4 id="2-查询数据库中所有该模型存储的数据"><a href="#2-查询数据库中所有该模型存储的数据" class="headerlink" title="2.查询数据库中所有该模型存储的数据"></a>2.查询数据库中所有该模型存储的数据</h4><pre><code>- (void)getModels
-{
-    [XWDatabase getModels:XWPerson.class completion:^(NSArray * _Nullable objs) {
-
-
-    }];
-}
-</code></pre><p>调用 getModels 方法，传入模型类</p>
+&#123;
+    [XWDatabase getModels:XWPerson.class completion:^(NSArray * _Nullable objs) &#123;
+        
+        
+    &#125;];
+&#125;
+</code></pre>
+<p>调用 getModels 方法，传入模型类</p>
 <h4 id="3-查询数据库中所有该模型存储的数据-按某成员变量排序"><a href="#3-查询数据库中所有该模型存储的数据-按某成员变量排序" class="headerlink" title="3.查询数据库中所有该模型存储的数据 - 按某成员变量排序"></a>3.查询数据库中所有该模型存储的数据 - 按某成员变量排序</h4><pre><code>/// 获取数据库中所有该模型存储的数据 - 按 age 字段降序排列
 - (void)getModelsSortAge
-{
-    [XWDatabase getModels:XWPerson.class sortColumn:@&quot;age&quot; isOrderDesc:YES completion:^(NSArray * _Nullable objs) {
-
-    }];
-}
-</code></pre><p>调用 getModels 方法，传入模型类和要排序的字段</p>
+&#123;
+    [XWDatabase getModels:XWPerson.class sortColumn:@&quot;age&quot; isOrderDesc:YES completion:^(NSArray * _Nullable objs) &#123;
+        
+    &#125;];
+&#125;
+</code></pre>
+<p>调用 getModels 方法，传入模型类和要排序的字段</p>
 <h4 id="4-查询数据库中所有该模型存储的数据-自定义查询条件"><a href="#4-查询数据库中所有该模型存储的数据-自定义查询条件" class="headerlink" title="4.查询数据库中所有该模型存储的数据 - 自定义查询条件"></a>4.查询数据库中所有该模型存储的数据 - 自定义查询条件</h4><pre><code>/// 获取数据库中所有该模型存储的数据 - 自定义查找条件 (例如模糊查询 name 含 学伟 的数据)
 - (void)getModelsCondition
-{
-    [XWDatabase getModels:XWPerson.class condition:@&quot;name like &apos;%学伟&apos;&quot; completion:^(NSArray * _Nullable objs) {
-
-    }];
-}
-</code></pre><p>调用 getModels 方法，传入模型类和查询的条件</p>
+&#123;
+    [XWDatabase getModels:XWPerson.class condition:@&quot;name like &#39;%学伟&#39;&quot; completion:^(NSArray * _Nullable objs) &#123;
+        
+    &#125;];
+&#125;
+</code></pre>
+<p>调用 getModels 方法，传入模型类和查询的条件</p>
 <h4 id="5-查询数据库中所有该模型存储的数据-自定义查询条件并且可按照某字段排序"><a href="#5-查询数据库中所有该模型存储的数据-自定义查询条件并且可按照某字段排序" class="headerlink" title="5.查询数据库中所有该模型存储的数据 - 自定义查询条件并且可按照某字段排序"></a>5.查询数据库中所有该模型存储的数据 - 自定义查询条件并且可按照某字段排序</h4><pre><code>/// 获取数据库中所有该模型存储的数据 - 自定义查找条件可排序 (例如模糊查询 name 含 学伟 的数据, 并且按 age 升序排序)
 - (void)getModelsConditionSort
-{
-    [XWDatabase getModels:XWPerson.class sortColumn:@&quot;age&quot; isOrderDesc:NO condition:@&quot;name like &apos;%学伟&apos;&quot; completion:^(NSArray * _Nullable objs) {
-
-    }];
-}
-</code></pre><p>调用 getModels 方法，传入模型类和查询的条件和排序的成员变量名称</p>
+&#123;
+    [XWDatabase getModels:XWPerson.class sortColumn:@&quot;age&quot; isOrderDesc:NO condition:@&quot;name like &#39;%学伟&#39;&quot; completion:^(NSArray * _Nullable objs) &#123;
+        
+    &#125;];
+&#125;
+</code></pre>
+<p>调用 getModels 方法，传入模型类和查询的条件和排序的成员变量名称</p>
 <h3 id="数据迁移"><a href="#数据迁移" class="headerlink" title="数据迁移"></a>数据迁移</h3><h4 id="模型中成员变量发生变化，动态进行数据迁移"><a href="#模型中成员变量发生变化，动态进行数据迁移" class="headerlink" title="模型中成员变量发生变化，动态进行数据迁移"></a>模型中成员变量发生变化，动态进行数据迁移</h4><pre><code>+ (void)initialize 
-+ {
-    [XWDatabase updateTable:self completion:^(BOOL isSuccess) {
-
-    }];
-</code></pre><p>在模型对象的 initialize 方法中 调用 updateTable 方法。之所以在 initialize 方法中调用是保证用户无感知的情况下在操作此模型进行数据操作时自动更新。</p>
++ &#123;
+    [XWDatabase updateTable:self completion:^(BOOL isSuccess) &#123;
+        
+    &#125;];
+</code></pre>
+<p>在模型对象的 initialize 方法中 调用 updateTable 方法。之所以在 initialize 方法中调用是保证用户无感知的情况下在操作此模型进行数据操作时自动更新。</p>
 <h3 id="XWDatabaseModelProtocol-协议"><a href="#XWDatabaseModelProtocol-协议" class="headerlink" title="XWDatabaseModelProtocol 协议"></a>XWDatabaseModelProtocol 协议</h3><pre><code>/**
  主键 不可更改/唯一性
-
+ 
  @return 主键的属性名
  */
 + (NSString *)xw_primaryKey;
 
 /**
- 联合主键成员变量数组 (多个属性共同定义主键) - 优先级大于 &apos;xw_primaryKey&apos;
+ 联合主键成员变量数组 (多个属性共同定义主键) - 优先级大于 &#39;xw_primaryKey&#39;
 
  @return 联合主键成员变量数组
  */
@@ -2955,7 +3112,7 @@ while (1) {
 
 /**
  忽略不保存数据库的属性
-
+ 
  @return 忽略的属性名数组
  */
 + (NSSet &lt;NSString *&gt;*)xw_ignoreColumnNames;
@@ -2973,19 +3130,28 @@ while (1) {
  @return 自定义表名
  */
 + (NSString *)xw_customTableName;
-</code></pre><p>当模型遵守 XWDatabaseModelProtocol 协议并选择性实现其中某些方法时她便会更好的为您服务。当然 主键 xw_primaryKey（或联合主键 xw_unionPrimaryKey ）是查询和更新必须要实现的方法。</p>
+</code></pre>
+<p>当模型遵守 XWDatabaseModelProtocol 协议并选择性实现其中某些方法时她便会更好的为您服务。当然 主键 xw_primaryKey（或联合主键 xw_unionPrimaryKey ）是查询和更新必须要实现的方法。</p>
 <p>如果模型中成员变量存在其他的自定义模型，那其他的自定义模型需要遵从 NSCoding 协议并实现 initWithCoder 和 encodeWithCoder 方法。 XWDatabase 中的 NSObject+XWModel 提供了一个宏可以快速使自定义对象具备归解档的功能 XWCodingImplementation</p>
 <h2 id="设计思路"><a href="#设计思路" class="headerlink" title="设计思路"></a>设计思路</h2><ul>
-<li>根据 runtime 获取对象成员变量名称和类型生成 建表 SQL 语句</li>
-<li>根据当前对象成员变量名称和原有数据库表中字段排序后进行比较，有差异进行数据迁移</li>
-<li>根据模型动态生成 SQL 语句</li>
-<li>利用事务进行大数据量的操作</li>
-<li>创建一个保活的子线程（使异步线程的 Runloop 保持活跃）进行数据库操作，使用主线程队列保证数据操作的同步</li>
-<li>数据库底层封装自 FMDB</li>
-<li>创建一个单独存放图片二进制的库存储二进制文件。真实表中存储 二进制 文件的 hash 值已达到数据重用。</li>
-</ul>
-<pre><code>pod &apos;XWDatabase&apos;
+<li><p>根据 runtime 获取对象成员变量名称和类型生成 建表 SQL 语句</p>
+</li>
+<li><p>根据当前对象成员变量名称和原有数据库表中字段排序后进行比较，有差异进行数据迁移</p>
+</li>
+<li><p>根据模型动态生成 SQL 语句</p>
+</li>
+<li><p>利用事务进行大数据量的操作</p>
+</li>
+<li><p>创建一个保活的子线程（使异步线程的 Runloop 保持活跃）进行数据库操作，使用主线程队列保证数据操作的同步</p>
+</li>
+<li><p>数据库底层封装自 FMDB</p>
+</li>
+<li><p>创建一个单独存放图片二进制的库存储二进制文件。真实表中存储 二进制 文件的 hash 值已达到数据重用。</p>
+<pre><code>  pod &#39;XWDatabase&#39;
 </code></pre>
+</li>
+</ul>
+
       
 
       
@@ -3008,7 +3174,7 @@ while (1) {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/14/最简单易用的数据库工具类XWDatabase/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/14/%E6%9C%80%E7%AE%80%E5%8D%95%E6%98%93%E7%94%A8%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E5%B7%A5%E5%85%B7%E7%B1%BBXWDatabase/">展开全文 >></a>
         </p>
       
 
@@ -3045,12 +3211,12 @@ while (1) {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/14/Swift命名空间/">Swift命名空间</a>
+      <a class="article-title" href="/2018/12/14/Swift%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4/">Swift命名空间</a>
     </h1>
   
 
         
-        <a href="/2018/12/14/Swift命名空间/" class="archive-article-date">
+        <a href="/2018/12/14/Swift%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4/" class="archive-article-date">
   	<time datetime="2018-12-14T06:17:52.561Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-14</time>
 </a>
         
@@ -3063,64 +3229,68 @@ while (1) {
 <p>Swift的命名空间是基于module而不是在代码中显示地指明，每个module代表了Swift中的一个命名空间。也就是说，同一个target里的类型名称还是不能相同的。</p>
 <h2 id="为什么需要命名空间"><a href="#为什么需要命名空间" class="headerlink" title="为什么需要命名空间"></a>为什么需要命名空间</h2><p>为了防止代码冲突</p>
 <p>在开发中，尤其是在多模块开发中，很难保证模块之间的类名不会重复，为了保证不同模块下同名的类可以正常使用而不报错，引入命名空间来保证即使创建的类名一样，只要命名空间不一样，这些类也是不一样的，所以，这是一种安全机制，用命名空间来防止冲突。可以看出，Swift中的类名的完整形式其实是“命名空间+类名”。我们可以尝试在类中打印当前类来查看一下完整名字：</p>
-<pre><code>override func viewDidLoad() {
+<pre><code>override func viewDidLoad() &#123;
     super.viewDidLoad()
     print(self)
-}
+&#125;
 //打印结果是：&lt;aa.viewcontroller: 0x7fec6a00e5c0&gt;&lt;/aa.viewcontroller: 0x7fec6a00e5c0&gt;
-</code></pre><h2 id="命名空间查看与修改"><a href="#命名空间查看与修改" class="headerlink" title="命名空间查看与修改"></a>命名空间查看与修改</h2><p>从上面的打印结果来看，命名空间是我们项目的名字，那么如果查看呢？我们需要用源代码的形式打开Info.plist，可以看到里面有一个字段CFBundleExecutable，它对应的值就是命名空间。</p>
-<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688598233397.png" alt=""></p>
+</code></pre>
+<h2 id="命名空间查看与修改"><a href="#命名空间查看与修改" class="headerlink" title="命名空间查看与修改"></a>命名空间查看与修改</h2><p>从上面的打印结果来看，命名空间是我们项目的名字，那么如果查看呢？我们需要用源代码的形式打开Info.plist，可以看到里面有一个字段CFBundleExecutable，它对应的值就是命名空间。</p>
+<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688598233397.png"></p>
 <p>如果要修改命名空间，注意不要直接编辑Info.plist，可以进入Build Settings中搜索Product Name，然后进行修改。</p>
-<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688648110559.png" alt=""></p>
+<p><img src="http://cc.cocimg.com/api/uploads//20181213/1544688648110559.png"></p>
 <h2 id="命名空间如何获取"><a href="#命名空间如何获取" class="headerlink" title="命名空间如何获取"></a>命名空间如何获取</h2><p>既然知道可以通过Info.plist获取命名空间，那么如何在程序中获取呢？很显然需要解析Info.plist文件，拿到CFBundleExecutable对应的value值。</p>
 <pre><code>let namespace = Bundle.main.infoDictionary![&quot;CFBundleExecutable&quot;]
 // 返回的是一个可选型      
 print(namespace!)
-</code></pre><h2 id="命名空间在开发中的使用"><a href="#命名空间在开发中的使用" class="headerlink" title="命名空间在开发中的使用"></a>命名空间在开发中的使用</h2><ul>
+</code></pre>
+<h2 id="命名空间在开发中的使用"><a href="#命名空间在开发中的使用" class="headerlink" title="命名空间在开发中的使用"></a>命名空间在开发中的使用</h2><ul>
 <li><p>由于Objective-C中没有命名空间，所以写起来很轻松。</p>
-<pre><code>//viewDidLoad中添加一个个控制器
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self addNavigationChildVC:@&quot;ContactViewController&quot; :@&quot;联系人&quot; :@&quot;tabbar_contacts&quot; :@&quot;tabbar_contactsHL&quot;];
-}
-
-//自定的方法中根据传进来的字符串创建控制器
--(void)addNavigationChildVC: (NSString *) vcName :(NSString *)title :(NSString *)nomalImageName :(NSString *)selectedImageName {
-    //创建控制器
-    Class class = NSClassFromString(vcName);
-    UIViewController *vc = [[class alloc]init];
-    ...
-}
-</code></pre></li>
+<pre><code>  //viewDidLoad中添加一个个控制器
+  - (void)viewDidLoad &#123;
+      [super viewDidLoad];
+      [self addNavigationChildVC:@&quot;ContactViewController&quot; :@&quot;联系人&quot; :@&quot;tabbar_contacts&quot; :@&quot;tabbar_contactsHL&quot;];
+  &#125;
+   
+  //自定的方法中根据传进来的字符串创建控制器
+  -(void)addNavigationChildVC: (NSString *) vcName :(NSString *)title :(NSString *)nomalImageName :(NSString *)selectedImageName &#123;
+      //创建控制器
+      Class class = NSClassFromString(vcName);
+      UIViewController *vc = [[class alloc]init];
+      ...
+  &#125;
+</code></pre>
+</li>
 <li><p>Swift中命名空间的存在，如果按照上述做法得不到想要的结果，这时候就需要想办法进行处理</p>
-<pre><code>//viewDidLoad中添加一个个控制器
-override func viewDidLoad() {
-    super.viewDidLoad()
-    addChildViewController(vcName: &quot;ContactsViewController&quot;, title: &quot;联系人&quot;, image: &quot;tabbar_contacts&quot;, selectedImage: &quot;tabbar_contactsHL&quot;)
-}
-
-//创建一个函数来将控制器的名字转成具体的类
-func stringToVC(vcName:String) -&gt; UIViewController? {
-    //获取命名空间
-    guard let namespace = Bundle.main.infoDictionary![&quot;CFBundleExecutable&quot;] as? String else {
-        print(&quot;获取失败&quot;)
-        return nil
-    }        
-    //拼接完整的类
-    guard let vcClass = NSClassFromString(namespace + &quot;.&quot; + vcName) else {
-        print(&quot;拼接失败&quot;)
-        return nil
-    }   
-    //转换成UIViewController
-    guard let vcType = vcClass as? UIViewController.Type else {
-        print(&quot;转换失败&quot;)
-        return nil
-    }  
-    //根据类型创建对应的控制器
-    let vc = vcType.init()
-    return vc
-}
-</code></pre></li>
+<pre><code>  //viewDidLoad中添加一个个控制器
+  override func viewDidLoad() &#123;
+      super.viewDidLoad()
+      addChildViewController(vcName: &quot;ContactsViewController&quot;, title: &quot;联系人&quot;, image: &quot;tabbar_contacts&quot;, selectedImage: &quot;tabbar_contactsHL&quot;)
+  &#125;
+   
+  //创建一个函数来将控制器的名字转成具体的类
+  func stringToVC(vcName:String) -&gt; UIViewController? &#123;
+      //获取命名空间
+      guard let namespace = Bundle.main.infoDictionary![&quot;CFBundleExecutable&quot;] as? String else &#123;
+          print(&quot;获取失败&quot;)
+          return nil
+      &#125;        
+      //拼接完整的类
+      guard let vcClass = NSClassFromString(namespace + &quot;.&quot; + vcName) else &#123;
+          print(&quot;拼接失败&quot;)
+          return nil
+      &#125;   
+      //转换成UIViewController
+      guard let vcType = vcClass as? UIViewController.Type else &#123;
+          print(&quot;转换失败&quot;)
+          return nil
+      &#125;  
+      //根据类型创建对应的控制器
+      let vc = vcType.init()
+      return vc
+  &#125;
+</code></pre>
+</li>
 </ul>
 
       
@@ -3145,7 +3315,7 @@ func stringToVC(vcName:String) -&gt; UIViewController? {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/14/Swift命名空间/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/14/Swift%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4/">展开全文 >></a>
         </p>
       
 
@@ -3182,12 +3352,12 @@ func stringToVC(vcName:String) -&gt; UIViewController? {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/13/什么是RESTful API/">什么是RESTful API</a>
+      <a class="article-title" href="/2018/12/13/%E4%BB%80%E4%B9%88%E6%98%AFRESTful%20API/">什么是RESTful API</a>
     </h1>
   
 
         
-        <a href="/2018/12/13/什么是RESTful API/" class="archive-article-date">
+        <a href="/2018/12/13/%E4%BB%80%E4%B9%88%E6%98%AFRESTful%20API/" class="archive-article-date">
   	<time datetime="2018-12-13T09:07:52.264Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
 </a>
         
@@ -3214,7 +3384,8 @@ func stringToVC(vcName:String) -&gt; UIViewController? {
 GET /blog/addArticles --&gt; POST /blog/Articles  添加一篇文章
 GET /blog/editArticles --&gt; PUT /blog/Articles  修改一篇文章 
 GET /rest/api/deleteArticles?id=1 --&gt; DELETE /blog/Articles/1  删除一篇文章
-</code></pre><h3 id="统一资源接口"><a href="#统一资源接口" class="headerlink" title="统一资源接口"></a>统一资源接口</h3><p>RESTful架构应该遵循统一接口原则，统一接口包含了一组受限的预定义的操作，不论什么样的资源，都是通过使用相同的接口进行资源的访问。接口应该使用标准的HTTP方法如GET，PUT和POST，并遵循这些方法的语义。</p>
+</code></pre>
+<h3 id="统一资源接口"><a href="#统一资源接口" class="headerlink" title="统一资源接口"></a>统一资源接口</h3><p>RESTful架构应该遵循统一接口原则，统一接口包含了一组受限的预定义的操作，不论什么样的资源，都是通过使用相同的接口进行资源的访问。接口应该使用标准的HTTP方法如GET，PUT和POST，并遵循这些方法的语义。</p>
 <p>如果按照HTTP方法的语义来暴露资源，那么接口将会拥有安全性和幂等性的特性，例如GET和HEAD请求都是安全的， 无论请求多少次，都不会改变服务器状态。而GET、HEAD、PUT和DELETE请求都是幂等的，无论对资源操作多少次， 结果总是一样的，后面的请求并不会产生比第一次更多的影响。</p>
 <p>下面列出了GET，DELETE，PUT和POST的典型用法:</p>
 <h4 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h4><ul>
@@ -3282,14 +3453,15 @@ GET /rest/api/deleteArticles?id=1 --&gt; DELETE /blog/Articles/1  删除一篇�
 <li>500 （internal server error）- 通用错误响应</li>
 <li>503 （Service Unavailable）- 服务端当前无法处理请求</li>
 </ul>
-<h3 id="POST和PUT用于创建资源时有什么区别"><a href="#POST和PUT用于创建资源时有什么区别" class="headerlink" title="POST和PUT用于创建资源时有什么区别?"></a>POST和PUT用于创建资源时有什么区别?</h3><p>POST和PUT在创建资源的区别在于，所创建的资源的名称(URI)是否由客户端决定。 例如为我的博文增加一个java的分类，生成的路径就是分类名/categories/java，那么就可以采用PUT方法。不过很多人直接把POST、GET、PUT、DELETE直接对应上CRUD，例如在一个典型的rails实现的RESTful应用中就是这么做的。</p>
+<h3 id="POST和PUT用于创建资源时有什么区别"><a href="#POST和PUT用于创建资源时有什么区别" class="headerlink" title="POST和PUT用于创建资源时有什么区别?"></a>POST和PUT用于创建资源时有什么区别?</h3><p>POST和PUT在创建资源的区别在于，所创建的资源的名称(URI)是否由客户端决定。 例如为我的博文增加一个java的分类，生成的路径就是分类名&#x2F;categories&#x2F;java，那么就可以采用PUT方法。不过很多人直接把POST、GET、PUT、DELETE直接对应上CRUD，例如在一个典型的rails实现的RESTful应用中就是这么做的。</p>
 <p>我认为，这是因为rails默认使用服务端生成的ID作为URI的缘故，而不少人就是通过rails实践REST的，所以很容易造成这种误解。</p>
 <h3 id="客户端不一定都支持这些HTTP方法吧"><a href="#客户端不一定都支持这些HTTP方法吧" class="headerlink" title="客户端不一定都支持这些HTTP方法吧?"></a>客户端不一定都支持这些HTTP方法吧?</h3><p>的确有这种情况，特别是一些比较古老的基于浏览器的客户端，只能支持GET和POST两种方法。</p>
-<p>在实践上，客户端和服务端都可能需要做一些妥协。例如rails框架就支持通过隐藏参数_method=DELETE来传递真实的请求方法， 而像Backbone这样的客户端MVC框架则允许传递_method传输和设置X-HTTP-Method-Override头来规避这个问题。</p>
+<p>在实践上，客户端和服务端都可能需要做一些妥协。例如rails框架就支持通过隐藏参数_method&#x3D;DELETE来传递真实的请求方法， 而像Backbone这样的客户端MVC框架则允许传递_method传输和设置X-HTTP-Method-Override头来规避这个问题。</p>
 <h3 id="统一接口是否意味着不能扩展带特殊语义的方法"><a href="#统一接口是否意味着不能扩展带特殊语义的方法" class="headerlink" title="统一接口是否意味着不能扩展带特殊语义的方法?"></a>统一接口是否意味着不能扩展带特殊语义的方法?</h3><p>统一接口并不阻止你扩展方法，只要方法对资源的操作有着具体的、可识别的语义即可，并能够保持整个接口的统一性。</p>
 <p>像WebDAV就对HTTP方法进行了扩展，增加了LOCK、UPLOCK等方法。而github的API则支持使用PATCH方法来进行issue的更新，例如:</p>
 <pre><code>PATCH /repos/:owner/:repo/issues/:number
-</code></pre><p>不过，需要注意的是，像PATCH这种不是HTTP标准方法的，服务端需要考虑客户端是否能够支持的问题。</p>
+</code></pre>
+<p>不过，需要注意的是，像PATCH这种不是HTTP标准方法的，服务端需要考虑客户端是否能够支持的问题。</p>
 
       
 
@@ -3313,7 +3485,7 @@ GET /rest/api/deleteArticles?id=1 --&gt; DELETE /blog/Articles/1  删除一篇�
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/13/什么是RESTful API/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/13/%E4%BB%80%E4%B9%88%E6%98%AFRESTful%20API/">展开全文 >></a>
         </p>
       
 
@@ -3350,12 +3522,12 @@ GET /rest/api/deleteArticles?id=1 --&gt; DELETE /blog/Articles/1  删除一篇�
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/13/如何安全使用dispatch_sync/">如何安全使用dispatch_sync</a>
+      <a class="article-title" href="/2018/12/13/%E5%A6%82%E4%BD%95%E5%AE%89%E5%85%A8%E4%BD%BF%E7%94%A8dispatch_sync/">如何安全使用dispatch_sync</a>
     </h1>
   
 
         
-        <a href="/2018/12/13/如何安全使用dispatch_sync/" class="archive-article-date">
+        <a href="/2018/12/13/%E5%A6%82%E4%BD%95%E5%AE%89%E5%85%A8%E4%BD%BF%E7%94%A8dispatch_sync/" class="archive-article-date">
   	<time datetime="2018-12-13T07:47:16.816Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
 </a>
         
@@ -3367,52 +3539,59 @@ GET /rest/api/deleteArticles?id=1 --&gt; DELETE /blog/Articles/1  删除一篇�
 <h2 id="GCD基础"><a href="#GCD基础" class="headerlink" title="GCD基础"></a>GCD基础</h2><p>GCD最基础的两个接口</p>
 <pre><code>dispatch_sync(dispatch_queue_t queue, dispatch_block_t block);
 dispatch_async(dispatch_queue_t queue, dispatch_block_t block);
-</code></pre><p>第一个参数queue为队列对象，第二个参数block为block对象。这两个接口可以将任务block扔到队列queue中去执行。</p>
+</code></pre>
+<p>第一个参数queue为队列对象，第二个参数block为block对象。这两个接口可以将任务block扔到队列queue中去执行。</p>
 <p>开发者使用最频繁的，就是在子线程环境下，需要做UI更新时，我们可以将任务扔到主线程去执行，</p>
 <pre><code>dispatch_sync(dispatch_get_main_queue(), block);
 dispatch_async(dispatch_get_main_queue(), block);
-</code></pre><p>而dispatch_sync(dispatch_get_main_queue(), block)有可能引入死锁的问题。</p>
+</code></pre>
+<p>而dispatch_sync(dispatch_get_main_queue(), block)有可能引入死锁的问题。</p>
 <h3 id="async-VS-sync"><a href="#async-VS-sync" class="headerlink" title="async VS. sync"></a>async VS. sync</h3><p>disptach_async是异步扔一个block到queue中，即扔完我就不管了，继续执行我的下一行代码。实际上当下一行代码执行时，这个block还未执行，只是入了队列queue，queue会排队来执行这个block。</p>
 <p>而disptach_sync则是同步扔一个block到queue中，即扔了我就等着，等到queue排队把这个block执行完了之后，才继续执行下一行代码。</p>
 <h2 id="为什么要使用sync"><a href="#为什么要使用sync" class="headerlink" title="为什么要使用sync"></a>为什么要使用sync</h2><p>disptach_sync主要用于代码上下文对时序有强要求的场景。简单点说，就是下一行代码的执行，依赖于上一行代码的结果。例如说，我们需要在子线程中读取一个image对象，使用接口[UIImage imageNamed:]，但imageNamed:实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取image，然后再切回子线程拿到这个image，</p>
 <pre><code>// ...currently in a subthread
 __block UIImage *image;
-dispatch_sync_on_main_queue(^{
+dispatch_sync_on_main_queue(^&#123;
     image = [UIImage imageNamed:@&quot;Resource/img&quot;];
-});
+&#125;);
 attachment.image = image;
-</code></pre><p>这里我们必须使用sync。</p>
+</code></pre>
+<p>这里我们必须使用sync。</p>
 <h2 id="为什么会死锁"><a href="#为什么会死锁" class="headerlink" title="为什么会死锁"></a>为什么会死锁</h2><p>假设当前我们的代码正在queue0中执行。然后我们调用disptach_sync将一个任务block1扔到queue0中执行，</p>
-<pre><code>// ... currently in queue0 or queue0&apos;s corresponding thread.
+<pre><code>// ... currently in queue0 or queue0&#39;s corresponding thread.
 dispatch_sync(queue0, block1);
-</code></pre><p>这时，dispatch_sync将等待queue0排队执行完block1，然后才能继续执行下一行代码。But，当前代码执行的环境也是queue0。假设当前执行的任务为block0。也就是说，block0在执行到一半时，需要等到自己的下一个任务block1执行完，自己才能继续执行。而block1排队在后面，需要等block0执行完才能执行。这时死锁就产生了，block0和block1互相等待执行，当前线程就卡死在dispatch_sync这行代码处。</p>
+</code></pre>
+<p>这时，dispatch_sync将等待queue0排队执行完block1，然后才能继续执行下一行代码。But，当前代码执行的环境也是queue0。假设当前执行的任务为block0。也就是说，block0在执行到一半时，需要等到自己的下一个任务block1执行完，自己才能继续执行。而block1排队在后面，需要等block0执行完才能执行。这时死锁就产生了，block0和block1互相等待执行，当前线程就卡死在dispatch_sync这行代码处。</p>
 <p>我们发现的卡死问题，一般都是主线程死锁。一种较为常见的情况是，本身就已经在主线程了，还同步向主线程扔了一个任务：</p>
 <pre><code>// ... currently in the main thread
 dispatch_sync(dispatch_get_main_queue(), block);
-</code></pre><h2 id="安全方式"><a href="#安全方式" class="headerlink" title="安全方式"></a>安全方式</h2><p>YYKit中提供了一个同步扔任务到主线程的安全方法：</p>
+</code></pre>
+<h2 id="安全方式"><a href="#安全方式" class="headerlink" title="安全方式"></a>安全方式</h2><p>YYKit中提供了一个同步扔任务到主线程的安全方法：</p>
 <pre><code>/**
  Submits a block for execution on a main queue and waits until the block completes.
 */
-static inline void dispatch_sync_on_main_queue(void (^block)()) {
-    if (pthread_main_np()) {
+static inline void dispatch_sync_on_main_queue(void (^block)()) &#123;
+    if (pthread_main_np()) &#123;
         block();
-    } else {
+    &#125; else &#123;
         dispatch_sync(dispatch_get_main_queue(), block);
-    }
-}
-</code></pre><p>其方式就是在扔任务给主线程之前，先检查当前线程是否已经是主线程，如果是，就不用调用GCD的队列调度接口dispatch_sync了，直接执行即可；如果不是主线程，那么调用GCD的dispatch_sync也不会卡死。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>其方式就是在扔任务给主线程之前，先检查当前线程是否已经是主线程，如果是，就不用调用GCD的队列调度接口dispatch_sync了，直接执行即可；如果不是主线程，那么调用GCD的dispatch_sync也不会卡死。</p>
 <p>但事实上并不是这样的，dispatch_sync_on_main_queue也可能会卡死，这个安全接口并不安全。这个接口只能保证两个block之间不因互相等待而死锁。多于两个block的互相依赖就束手无策了。</p>
 <p>举个例子，假设queue0是一个子线程的队列：</p>
 <pre><code>/* block0 */
 // ... currently in the main thread.
-dispatch_sync(queue0, ^{
+dispatch_sync(queue0, ^&#123;
     /* block1 */
-    // ... currently in queue0&apos;s corresponding subthread.
-    dispatch_sync_on_main_queue(^{
+    // ... currently in queue0&#39;s corresponding subthread.
+    dispatch_sync_on_main_queue(^&#123;
         /* block2 */
-    });
-});
-</code></pre><p>在上述代码中，block0正在主线程中执行，并且同步等待子线程执行完block1。block1又同步等待主线程执行完block2。而当前主线程正在执行block0，即block2的执行需要等到block0执行完。这样就成了block0–&gt;block1–&gt;block2–&gt;block0…这样一个循环等待，即死锁。由于block1的环境是子线程，所以安全API的线程判断不起任何作用。</p>
+    &#125;);
+&#125;);
+</code></pre>
+<p>在上述代码中，block0正在主线程中执行，并且同步等待子线程执行完block1。block1又同步等待主线程执行完block2。而当前主线程正在执行block0，即block2的执行需要等到block0执行完。这样就成了block0–&gt;block1–&gt;block2–&gt;block0…这样一个循环等待，即死锁。由于block1的环境是子线程，所以安全API的线程判断不起任何作用。</p>
 <p>另举一个例子：</p>
 <pre><code>/* block0 */
 // ... currently in the main thread.
@@ -3422,14 +3601,17 @@ dispatch_sync(queue0, ^{
 [[NSNotificationCenter defaultCenter] addObserverForName:@&quot;aNotification&quot;
                                                   object:nil
                                                    queue:queue0
-                                              usingBlock:^(NSNotification * _Nonnull note) {
+                                              usingBlock:^(NSNotification * _Nonnull note) &#123;
                                                   /* block1 */
-                                                  // ... currently in queue0&apos;s corresponding subthread.
-                                                  dispatch_sync_on_main_queue(^{
+                                                  // ... currently in queue0&#39;s corresponding subthread.
+                                                  dispatch_sync_on_main_queue(^&#123;
                                                       /* block2 */
-                                                  });
-                                              }];
-</code></pre><p>由于通知NSNotification的执行是同步的，这里会出现和上一例一样的死锁情况：block0–&gt;block1–&gt;block2–&gt;block0…</p>
+                                                  &#125;);
+                                              &#125;];
+                                              
+                                              
+</code></pre>
+<p>由于通知NSNotification的执行是同步的，这里会出现和上一例一样的死锁情况：block0–&gt;block1–&gt;block2–&gt;block0…</p>
 <h2 id="如何定位死锁问题"><a href="#如何定位死锁问题" class="headerlink" title="如何定位死锁问题"></a>如何定位死锁问题</h2><p>1.死锁监测和堆栈上报机制</p>
 <p>要定位死锁的问题，我们需要知道在哪一行代码上死锁了，以及为什么会出现死锁。通常只要知道哪一行代码死锁了，我们就能通过代码分析出问题所在了。所以，如果死锁的时候，我们能够把堆栈上报上来，就能知道哪一行代码死锁了。这里需要有完善的死锁监测和堆栈上报机制。</p>
 <p>2.打印日志</p>
@@ -3458,7 +3640,7 @@ dispatch_sync(queue0, ^{
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/13/如何安全使用dispatch_sync/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/12/13/%E5%A6%82%E4%BD%95%E5%AE%89%E5%85%A8%E4%BD%BF%E7%94%A8dispatch_sync/">展开全文 >></a>
         </p>
       
 
@@ -3490,7 +3672,7 @@ dispatch_sync(queue0, ^{
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/14/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/16/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/14/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/16/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -3502,7 +3684,7 @@ dispatch_sync(queue0, ^{
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -3609,10 +3791,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -3621,7 +3799,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3629,11 +3807,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3653,19 +3835,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

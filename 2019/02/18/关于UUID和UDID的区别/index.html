@@ -9,17 +9,17 @@
   <title>关于UUID和UDID的区别 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="1 UDID（Unique Device Identifier）UDID是Unique Device Identifier的缩写,中文意思是设备唯一标识. 在很多需要限制一台设备一个账号的应用中经常会用到,在Symbian时代,我们是使用IMEI作为设备的唯一标识的,可惜的是Apple官方不允许开发者获得设备的IMEI. iOS5 sdk中的获取方法: [UIDevice currentDevic">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="关于UUID和UDID的区别">
-<meta property="og:url" content="http://yoursite.com/2019/02/18/关于UUID和UDID的区别/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/02/18/%E5%85%B3%E4%BA%8EUUID%E5%92%8CUDID%E7%9A%84%E5%8C%BA%E5%88%AB/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="1 UDID（Unique Device Identifier）UDID是Unique Device Identifier的缩写,中文意思是设备唯一标识. 在很多需要限制一台设备一个账号的应用中经常会用到,在Symbian时代,我们是使用IMEI作为设备的唯一标识的,可惜的是Apple官方不允许开发者获得设备的IMEI. iOS5 sdk中的获取方法: [UIDevice currentDevic">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-02-18T07:42:51.022Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-02-18T07:34:08.159Z">
+<meta property="article:modified_time" content="2019-02-18T07:42:51.022Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="关于UUID和UDID的区别">
-<meta name="twitter:description" content="1 UDID（Unique Device Identifier）UDID是Unique Device Identifier的缩写,中文意思是设备唯一标识. 在很多需要限制一台设备一个账号的应用中经常会用到,在Symbian时代,我们是使用IMEI作为设备的唯一标识的,可惜的是Apple官方不允许开发者获得设备的IMEI. iOS5 sdk中的获取方法: [UIDevice currentDevic">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/02/18/关于UUID和UDID的区别/" class="archive-article-date">
+        <a href="/2019/02/18/%E5%85%B3%E4%BA%8EUUID%E5%92%8CUDID%E7%9A%84%E5%8C%BA%E5%88%AB/" class="archive-article-date">
   	<time datetime="2019-02-18T07:34:08.159Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-18</time>
 </a>
         
@@ -179,10 +179,12 @@
 <p>在很多需要限制一台设备一个账号的应用中经常会用到,在Symbian时代,我们是使用IMEI作为设备的唯一标识的,可惜的是Apple官方不允许开发者获得设备的IMEI.</p>
 <p>iOS5 sdk中的获取方法:</p>
 <pre><code>[UIDevice currentDevice] uniqueIdentifier]
-</code></pre><p>uniqueIdentifier在UIDevice.h中的定义如下:@property(nonatomic,readonly,retain) NSString    *uniqueIdentifier  <strong>OSX_AVAILABLE_BUT_DEPRECATED(</strong>MAC意思是iOS2.0以上及iOS5.0以下的系统可用,但不建议使用.Apple有可能在iOS5.0之后删除该函数.</p>
+</code></pre>
+<p>uniqueIdentifier在UIDevice.h中的定义如下:@property(nonatomic,readonly,retain) NSString    *uniqueIdentifier  __OSX_AVAILABLE_BUT_DEPRECATED(__MAC意思是iOS2.0以上及iOS5.0以下的系统可用,但不建议使用.Apple有可能在iOS5.0之后删除该函数.</p>
 <p>iOS6之后 换成 </p>
 <pre><code>[[UIDevice currentDevice] identifierForVendor]；
-</code></pre><p>但是我们需要注意的一点是,对于已越狱了的设备,UDID并不是唯一的.使用Cydia插件UDIDFaker,可以为每一个应用分配不同的UDID.</p>
+</code></pre>
+<p>但是我们需要注意的一点是,对于已越狱了的设备,UDID并不是唯一的.使用Cydia插件UDIDFaker,可以为每一个应用分配不同的UDID.</p>
 <p>所以UDID作为标识唯一设备的用途已经不大了</p>
 <h2 id="UUID-Universally-Unique-Identifier"><a href="#UUID-Universally-Unique-Identifier" class="headerlink" title="UUID(Universally Unique Identifier)"></a>UUID(Universally Unique Identifier)</h2><p>UUID是Universally Unique Identifier的缩写,中文意思是通用唯一识别码.</p>
 <p>由网上资料显示,UUID是一个软件建构的标准,也是被开源软件基金会(Open Software Foundation,OSF)的组织在分布式计算环境(Distributed Computing Environment,DCE)领域的一部份.UUID的目的,是让分布式系统中的所有元素,都能有唯一的辨识资讯,而不需要透过中央控制端来做辨识资讯的指定.</p>
@@ -282,7 +284,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/18/关于UUID和UDID的区别/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/18/%E5%85%B3%E4%BA%8EUUID%E5%92%8CUDID%E7%9A%84%E5%8C%BA%E5%88%AB/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -296,7 +298,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/02/18/常用的setNeedsDisplay和setNeedsLayout/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/02/18/%E5%B8%B8%E7%94%A8%E7%9A%84setNeedsDisplay%E5%92%8CsetNeedsLayout/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -306,7 +308,7 @@
     </a>
   
   
-    <a href="/2019/02/15/精确还原UI稿多行文字间距/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/02/15/%E7%B2%BE%E7%A1%AE%E8%BF%98%E5%8E%9FUI%E7%A8%BF%E5%A4%9A%E8%A1%8C%E6%96%87%E5%AD%97%E9%97%B4%E8%B7%9D/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">精确还原UI稿多行文字间距</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -350,7 +352,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -457,10 +459,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -469,7 +467,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -477,11 +475,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -501,19 +503,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

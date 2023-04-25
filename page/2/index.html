@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/2/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2022/03/31/优雅的动态删除第三方SDK的权限/">优雅的动态删除第三方SDK的权限</a>
+      <a class="article-title" href="/2022/03/31/%E4%BC%98%E9%9B%85%E7%9A%84%E5%8A%A8%E6%80%81%E5%88%A0%E9%99%A4%E7%AC%AC%E4%B8%89%E6%96%B9SDK%E7%9A%84%E6%9D%83%E9%99%90/">优雅的动态删除第三方SDK的权限</a>
     </h1>
   
 
         
-        <a href="/2022/03/31/优雅的动态删除第三方SDK的权限/" class="archive-article-date">
+        <a href="/2022/03/31/%E4%BC%98%E9%9B%85%E7%9A%84%E5%8A%A8%E6%80%81%E5%88%A0%E9%99%A4%E7%AC%AC%E4%B8%89%E6%96%B9SDK%E7%9A%84%E6%9D%83%E9%99%90/" class="archive-article-date">
   	<time datetime="2022-03-31T01:48:11.083Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-31</time>
 </a>
         
@@ -177,40 +177,42 @@
    android:name=&quot;android.permission.CHANGE_NETWORK_STATE&quot;
    tools:node=&quot;remove&quot;
 /&gt;
-</code></pre><p>这样 Android 处理 AndroidManifest.xml 文件时会自动删除这个权限。</p>
-<p>有时我们在 debug 需要这个权限，但是在 release 正式版不想有这个权限。比如我在测试包的时候写了点测试功能，需要引入一个  android:name=”android.permission.SYSTEM_ALERT_WINDOW” 权限，但是正式环境并不需要。</p>
+</code></pre>
+<p>这样 Android 处理 AndroidManifest.xml 文件时会自动删除这个权限。</p>
+<p>有时我们在 debug 需要这个权限，但是在 release 正式版不想有这个权限。比如我在测试包的时候写了点测试功能，需要引入一个  android:name&#x3D;”android.permission.SYSTEM_ALERT_WINDOW” 权限，但是正式环境并不需要。</p>
 <p>一个做法是，将这个测试功能单独做成一个 lib 引入，正式版引用一个 lib-noop 版本，常见的第三方库如滴滴的多啦爱梦就是这么做的。</p>
 <p>如果我们自己处理可以利用 gradle 直接对 xml 文件进行操作:</p>
 <h2 id="方法2：利用-gradle-编辑-xml-文件"><a href="#方法2：利用-gradle-编辑-xml-文件" class="headerlink" title="方法2：利用 gradle 编辑 xml 文件"></a>方法2：利用 gradle 编辑 xml 文件</h2><p>gradle 处理 Manifest 任务之后会有一个回调，我们在系统处理完之后再进行二次处理，通过 XmlParser 解析 xml 来修改文件。<br>以下是一个 删除  android.permission.SYSTEM_ALERT_WINDOW 的例子:</p>
 <pre><code>// 发布正式版时 将 manifest 中不必要的权限删除
-android.applicationVariants.all { variant -&gt;
-  if (variant.buildType.name == &quot;release&quot;) {
+android.applicationVariants.all &#123; variant -&gt;
+  if (variant.buildType.name == &quot;release&quot;) &#123;
         def output = variant.outputs[0]
-        output.getProcessManifestProvider().get().doLast {
+        output.getProcessManifestProvider().get().doLast &#123;
           println(&quot;start process manifest&quot;)
-          def manifestFilePath = &quot;${manifestOutputDirectory.asFile.get()}/AndroidManifest.xml&quot;
+          def manifestFilePath = &quot;$&#123;manifestOutputDirectory.asFile.get()&#125;/AndroidManifest.xml&quot;
           def xmlParser = new XmlParser()
           Node manifest = xmlParser.parse(file(manifestFilePath))
-          def android = new Namespace(&apos;http://schemas.android.com/apk/res/android&apos;, &apos;android&apos;)
-          def tools = new Namespace(&apos;http://schemas.android.com/tools&apos;, &apos;tools&apos;)
-          Node systemAlertWindow = manifest.get(&quot;uses-permission&quot;).find {
+          def android = new Namespace(&#39;http://schemas.android.com/apk/res/android&#39;, &#39;android&#39;)
+          def tools = new Namespace(&#39;http://schemas.android.com/tools&#39;, &#39;tools&#39;)
+          Node systemAlertWindow = manifest.get(&quot;uses-permission&quot;).find &#123;
             def name = it.attributes().get(android.name)
             def remove = it.attributes().get(tools.remove)
             name == &quot;android.permission.SYSTEM_ALERT_WINDOW&quot;
-          }
+          &#125;
           def remove = manifest.remove(systemAlertWindow)
 
           // write xml to file
-          file(manifestFilePath).withPrintWriter { out -&gt;
+          file(manifestFilePath).withPrintWriter &#123; out -&gt;
             def printer = new XmlNodePrinter(out)
             printer.preserveWhitespace = true
             printer.print(manifest)
-          }
+          &#125;
           println(&quot;end process manifest, delete systemAlertWindow permission success?  $remove&quot;)
-        }
-      }
-}
+        &#125;
+      &#125;
+&#125;
 </code></pre>
+
       
 
       
@@ -233,7 +235,7 @@ android.applicationVariants.all { variant -&gt;
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2022/03/31/优雅的动态删除第三方SDK的权限/">展开全文 >></a>
+          <a class="article-more-a" href="/2022/03/31/%E4%BC%98%E9%9B%85%E7%9A%84%E5%8A%A8%E6%80%81%E5%88%A0%E9%99%A4%E7%AC%AC%E4%B8%89%E6%96%B9SDK%E7%9A%84%E6%9D%83%E9%99%90/">展开全文 >></a>
         </p>
       
 
@@ -270,12 +272,12 @@ android.applicationVariants.all { variant -&gt;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/11/19/从ViewPager到ViewPager2/">从ViewPager到ViewPager2</a>
+      <a class="article-title" href="/2021/11/19/%E4%BB%8EViewPager%E5%88%B0ViewPager2/">从ViewPager到ViewPager2</a>
     </h1>
   
 
         
-        <a href="/2021/11/19/从ViewPager到ViewPager2/" class="archive-article-date">
+        <a href="/2021/11/19/%E4%BB%8EViewPager%E5%88%B0ViewPager2/" class="archive-article-date">
   	<time datetime="2021-11-19T05:13:26.051Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-19</time>
 </a>
         
@@ -306,14 +308,16 @@ android.applicationVariants.all { variant -&gt;
 <li>ViewPager2支持从右到左 (RTL) 的布局支持、垂直方向支持</li>
 <li>ViewPager2支持停用用户输入的功能（setUserInputEnabled、isUserInputEnabled）</li>
 </ul>
-<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><h3 id="1、引入依赖"><a href="#1、引入依赖" class="headerlink" title="1、引入依赖"></a>1、引入依赖</h3><pre><code>implementation &apos;androidx.viewpager2:viewpager2:1.0.0&apos;
-implementation &apos;androidx.recyclerview:recyclerview:1.1.0&apos; // ViewPager 2 需要使用 RecycleView 的 adapter
-</code></pre><h3 id="2、xml布局"><a href="#2、xml布局" class="headerlink" title="2、xml布局"></a>2、xml布局</h3><pre><code>&lt;androidx.viewpager2.widget.ViewPager2
-        android:id=&quot;@+id/vp_rg&quot;
-        android:layout_width=&quot;match_parent&quot;
-        android:layout_height=&quot;match_parent&quot;
-        android:layout_above=&quot;@+id/rg_vp&quot; /&gt;
-</code></pre><h3 id="3、Adapter"><a href="#3、Adapter" class="headerlink" title="3、Adapter"></a>3、Adapter</h3><pre><code>import androidx.annotation.NonNull;
+<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><h3 id="1、引入依赖"><a href="#1、引入依赖" class="headerlink" title="1、引入依赖"></a>1、引入依赖</h3><pre><code>implementation &#39;androidx.viewpager2:viewpager2:1.0.0&#39;
+implementation &#39;androidx.recyclerview:recyclerview:1.1.0&#39; // ViewPager 2 需要使用 RecycleView 的 adapter
+</code></pre>
+<h3 id="2、xml布局"><a href="#2、xml布局" class="headerlink" title="2、xml布局"></a>2、xml布局</h3><pre><code>&lt;androidx.viewpager2.widget.ViewPager2
+        android:id=&quot;@+id/vp_rg&quot;
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;match_parent&quot;
+        android:layout_above=&quot;@+id/rg_vp&quot; /&gt;
+</code></pre>
+<h3 id="3、Adapter"><a href="#3、Adapter" class="headerlink" title="3、Adapter"></a>3、Adapter</h3><pre><code>import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -325,43 +329,44 @@ import java.util.List;
  * CreateTime: 2021/10/30 21:32
  * Author: iwen大大怪
  */
-public class RgAdapter extends FragmentStateAdapter {
+public class RgAdapter extends FragmentStateAdapter &#123;
 ​
-    private List&lt;Class&gt; fragments;
+    private List&lt;Class&gt; fragments;
 ​
-    public RgAdapter(@NonNull FragmentActivity fragmentActivity) {
-        super(fragmentActivity);
-        if (fragments == null) {
-            fragments = new ArrayList&lt;&gt;();
-        }
-    }
+    public RgAdapter(@NonNull FragmentActivity fragmentActivity) &#123;
+        super(fragmentActivity);
+        if (fragments == null) &#123;
+            fragments = new ArrayList&lt;&gt;();
+        &#125;
+    &#125;
 ​
-    public void addFragment(Fragment fragment) {
-        if (fragments != null) {
-            fragments.add(fragment.getClass());
-        }
-    }
+    public void addFragment(Fragment fragment) &#123;
+        if (fragments != null) &#123;
+            fragments.add(fragment.getClass());
+        &#125;
+    &#125;
 ​
-    @NonNull
-    @Override
-    public Fragment createFragment(int position) {
-        try {
-            return (Fragment) fragments.get(position).newInstance();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+    @NonNull
+    @Override
+    public Fragment createFragment(int position) &#123;
+        try &#123;
+            return (Fragment) fragments.get(position).newInstance();
+        &#125; catch (IllegalAccessException e) &#123;
+            e.printStackTrace();
+        &#125; catch (InstantiationException e) &#123;
+            e.printStackTrace();
+        &#125;
+        return null;
+    &#125;
 ​
-    @Override
-    public int getItemCount() {
-        return fragments.size();
-    }
-}
+    @Override
+    public int getItemCount() &#123;
+        return fragments.size();
+    &#125;
+&#125;
 ​
-</code></pre><p>这里需要说的是 registerOnPageChangeCallback 方法 ，这个方法可以可以监听到 ViewPager 2 的界面变化，进而去操作其他的控件</p>
+</code></pre>
+<p>这里需要说的是 registerOnPageChangeCallback 方法 ，这个方法可以可以监听到 ViewPager 2 的界面变化，进而去操作其他的控件</p>
 <h2 id="关于DiffUtil"><a href="#关于DiffUtil" class="headerlink" title="关于DiffUtil"></a>关于DiffUtil</h2><p>使用过DiffUtil都知道它的好处，没有用使用过也没有关系，听我给你说说。</p>
 <p>它可以通过计算判断两个列表之间的差异进行局部刷新，而我们平时使用的notifyDataSetChanged();是一个无脑刷新的操作，会刷新整个列表，对性能和视觉上并不是很友好。</p>
 <p>使用差分进化算法计算更新的最小系数。</p>
@@ -389,7 +394,7 @@ public class RgAdapter extends FragmentStateAdapter {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/11/19/从ViewPager到ViewPager2/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/11/19/%E4%BB%8EViewPager%E5%88%B0ViewPager2/">展开全文 >></a>
         </p>
       
 
@@ -426,12 +431,12 @@ public class RgAdapter extends FragmentStateAdapter {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/11/17/Swift里面怎么知道一个协议被多少类遵循/">Swift里面怎么知道一个协议被多少类遵循</a>
+      <a class="article-title" href="/2021/11/17/Swift%E9%87%8C%E9%9D%A2%E6%80%8E%E4%B9%88%E7%9F%A5%E9%81%93%E4%B8%80%E4%B8%AA%E5%8D%8F%E8%AE%AE%E8%A2%AB%E5%A4%9A%E5%B0%91%E7%B1%BB%E9%81%B5%E5%BE%AA/">Swift里面怎么知道一个协议被多少类遵循</a>
     </h1>
   
 
         
-        <a href="/2021/11/17/Swift里面怎么知道一个协议被多少类遵循/" class="archive-article-date">
+        <a href="/2021/11/17/Swift%E9%87%8C%E9%9D%A2%E6%80%8E%E4%B9%88%E7%9F%A5%E9%81%93%E4%B8%80%E4%B8%AA%E5%8D%8F%E8%AE%AE%E8%A2%AB%E5%A4%9A%E5%B0%91%E7%B1%BB%E9%81%B5%E5%BE%AA/" class="archive-article-date">
   	<time datetime="2021-11-17T07:44:11.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-17</time>
 </a>
         
@@ -440,88 +445,93 @@ public class RgAdapter extends FragmentStateAdapter {
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>开发中想知道一个协议被多少类实现了。有没有方法知道呢。</p>
-<pre><code>protocol Animal {
+<pre><code>protocol Animal &#123;
     func speak()
-}
+&#125;
 
-class Cat:Animal {
-    func speak() {
+class Cat:Animal &#123;
+    func speak() &#123;
         print(&quot;meow&quot;)
-    }
-}
+    &#125;
+&#125;
 
-class Dog: Animal {
-    func speak() {
+class Dog: Animal &#123;
+    func speak() &#123;
         print(&quot;An An!&quot;)
-    }
-}
+    &#125;
+&#125;
 
-class Horse: Animal {
-    func speak() {
+class Horse: Animal &#123;
+    func speak() &#123;
         print(&quot;Hurrrr&quot;)
-    }
-}
-</code></pre><p>在网上找能找到这几个方法</p>
+    &#125;
+&#125;
+</code></pre>
+<p>在网上找能找到这几个方法</p>
 <ul>
-<li>objc_copyProtocolList // 获取运行时知道的所有协议</li>
-<li>protocol_copyProtocolList // 返回一个协议所采用的协议的数组。</li>
+<li>objc_copyProtocolList &#x2F;&#x2F; 获取运行时知道的所有协议</li>
+<li>protocol_copyProtocolList &#x2F;&#x2F; 返回一个协议所采用的协议的数组。</li>
 </ul>
 <p>上面两个方法，一个是知道有多少协议数组，一个是知道协议采用的协议数组。他们都没法知道一个协议被多少类实现。都没有达成目的。那就需要变通了。 反过来，找到这两个方法</p>
 <ul>
-<li>objc_getClassList // 获取运行时知道的所有的类</li>
-<li>class_conformsToProtocol // 获取一个类是否实现某个协议。</li>
+<li>objc_getClassList &#x2F;&#x2F; 获取运行时知道的所有的类</li>
+<li>class_conformsToProtocol &#x2F;&#x2F; 获取一个类是否实现某个协议。</li>
 </ul>
 <p>利用这两个方法，那就可以这样，先获取所有的类，然后遍历每个类是否实现了目标协议。代码如下：</p>
-<pre><code>func getClassesConformingProtocol() -&gt; {
+<pre><code>func getClassesConformingProtocol() -&gt; &#123;
         let expectedClassCount = objc_getClassList(nil, 0)
         let allClasses = UnsafeMutablePointer&lt;AnyClass&gt;.allocate(capacity: Int(expectedClassCount))
         let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer&lt;AnyClass&gt;(allClasses)
         let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
 
-        for i in 0 ..&lt; actualClassCount {
+        for i in 0 ..&lt; actualClassCount &#123;
             let currentClass = allClasses[Int(i)]
-            if class_conformsToProtocol(currentClass, Animal.Type) {
+            if class_conformsToProtocol(currentClass, Animal.Type) &#123;
                 print(currentClass)
-            }
-        }
-}
-</code></pre><p>这里有个问题，在Swift中class_conformsToProtocol判断总是失败。</p>
+            &#125;
+        &#125;
+&#125;
+</code></pre>
+<p>这里有个问题，在Swift中class_conformsToProtocol判断总是失败。</p>
 <p>那就再变通，因为我们知道在swift中判断一个类是否遵循某个协议可以这样(aclass as? aprotocol)。代码修改如下：</p>
-<pre><code>func getClassesConformingProtocol() -&gt; {
+<pre><code>func getClassesConformingProtocol() -&gt; &#123;
         let expectedClassCount = objc_getClassList(nil, 0)
         let allClasses = UnsafeMutablePointer&lt;AnyClass&gt;.allocate(capacity: Int(expectedClassCount))
         let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer&lt;AnyClass&gt;(allClasses)
         let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
 
-        for i in 0 ..&lt; actualClassCount {
+        for i in 0 ..&lt; actualClassCount &#123;
             let currentClass = allClasses[Int(i)]
-            if let cls = currentClass as? Animal.Type {
+            if let cls = currentClass as? Animal.Type &#123;
                 print(currentClass)
-            }
-        }
-}
-</code></pre><p>目标达成</p>
+            &#125;
+        &#125;
+&#125;
+</code></pre>
+<p>目标达成</p>
 <p>当这部分代码被OC调用了，会出现这个错误。</p>
-<pre><code>*** NSForwarding: warning: object 0x10bec81d0 of class &apos;Object&apos; does not implement methodSignatureForSelector: -- trouble ahead
-*** NSForwarding: warning: object 0x10bec81d0 of class &apos;Object&apos; does not implement doesNotRecognizeSelector: -- abort
-</code></pre><p>解决方法也简单</p>
-<pre><code>func getClassesConformingProtocol() -&gt; {
+<pre><code> *** NSForwarding: warning: object 0x10bec81d0 of class &#39;Object&#39; does not implement methodSignatureForSelector: -- trouble ahead
+ *** NSForwarding: warning: object 0x10bec81d0 of class &#39;Object&#39; does not implement doesNotRecognizeSelector: -- abort
+</code></pre>
+<p>解决方法也简单</p>
+<pre><code>func getClassesConformingProtocol() -&gt; &#123;
         let expectedClassCount = objc_getClassList(nil, 0)
         let allClasses = UnsafeMutablePointer&lt;AnyClass&gt;.allocate(capacity: Int(expectedClassCount))
         let autoreleasingAllClasses = AutoreleasingUnsafeMutablePointer&lt;AnyClass&gt;(allClasses)
         let actualClassCount:Int32 = objc_getClassList(autoreleasingAllClasses, expectedClassCount)
 
-        for i in 0 ..&lt; actualClassCount {
+        for i in 0 ..&lt; actualClassCount &#123;
             let currentClass = allClasses[Int(i)]
             if (class_getInstanceMethod(currentClass, NSSelectorFromString(&quot;methodSignatureForSelector:&quot;)) != nil),
 
-               (class_getInstanceMethod(currentClass, NSSelectorFromString(&quot;doesNotRecognizeSelector:&quot;)) != nil),
-               let cls = currentClass as? Animal.Type {
+               (class_getInstanceMethod(currentClass, NSSelectorFromString(&quot;doesNotRecognizeSelector:&quot;)) != nil),
+               let cls = currentClass as? Animal.Type &#123;
                 print(currentClass)
-            }
-        }
-}
+            &#125;
+        &#125;
+&#125;
 </code></pre>
+
       
 
       
@@ -544,7 +554,7 @@ class Horse: Animal {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/11/17/Swift里面怎么知道一个协议被多少类遵循/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/11/17/Swift%E9%87%8C%E9%9D%A2%E6%80%8E%E4%B9%88%E7%9F%A5%E9%81%93%E4%B8%80%E4%B8%AA%E5%8D%8F%E8%AE%AE%E8%A2%AB%E5%A4%9A%E5%B0%91%E7%B1%BB%E9%81%B5%E5%BE%AA/">展开全文 >></a>
         </p>
       
 
@@ -581,12 +591,12 @@ class Horse: Animal {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/08/Swift中的Any&AnyObject/">Swift中的Any&amp;AnyObject</a>
+      <a class="article-title" href="/2021/10/08/Swift%E4%B8%AD%E7%9A%84Any&AnyObject/">Swift中的Any&amp;AnyObject</a>
     </h1>
   
 
         
-        <a href="/2021/10/08/Swift中的Any&AnyObject/" class="archive-article-date">
+        <a href="/2021/10/08/Swift%E4%B8%AD%E7%9A%84Any&AnyObject/" class="archive-article-date">
   	<time datetime="2021-10-08T07:27:15.345Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
 </a>
         
@@ -608,14 +618,16 @@ class Horse: Animal {
 <p>再者栈上的struct和enum都是值类型，堆上的class是引用类型。</p>
 <p>不懂先记下来，这些都是需要实战才能完全理解的。</p>
 <h2 id="Any"><a href="#Any" class="headerlink" title="Any"></a>Any</h2><p>我们先看看Any到底是个啥东西：</p>
-<pre><code>protocol Any {}
-</code></pre><p>Any其实是一个空协议，并且根据查阅资料看，三大类在创建的时候，都隐式的遵守了这个协议，你可以理解成为这样：</p>
-<pre><code>struct Person: Any {}
+<pre><code>protocol Any &#123;&#125;
+</code></pre>
+<p>Any其实是一个空协议，并且根据查阅资料看，三大类在创建的时候，都隐式的遵守了这个协议，你可以理解成为这样：</p>
+<pre><code>struct Person: Any &#123;&#125;
 
-class Animal: Any {}
+class Animal: Any &#123;&#125;
 
-enum Type: Any {}
-</code></pre><p>可以这么说，Any可以表示Swift语言构建的任何类型。</p>
+enum Type: Any &#123;&#125;
+</code></pre>
+<p>可以这么说，Any可以表示Swift语言构建的任何类型。</p>
 <p>追加一句：包括函数类型，即闭包类型。像() -&gt; Void也可以用Any表示</p>
 <h2 id="AnyObject"><a href="#AnyObject" class="headerlink" title="AnyObject"></a>AnyObject</h2><p>AnyObject其实就表示的就比较单一了，它表示的是类的类型。我摘选了一部分源码和注释，大家看看就理解了。</p>
 <pre><code>/// The protocol to which all classes implicitly conform.
@@ -626,9 +638,11 @@ enum Type: Any {}
 /// instance of any class, class type, or class-only protocol.
 
 public typealias AnyObject
-</code></pre><p>大家可能会好奇，那么我们经常这么写代码：</p>
-<pre><code>class AClass: NSObject {}
-</code></pre><p>AnyObject和NSObject到底啥关系？</p>
+</code></pre>
+<p>大家可能会好奇，那么我们经常这么写代码：</p>
+<pre><code>class AClass: NSObject &#123;&#125;
+</code></pre>
+<p>AnyObject和NSObject到底啥关系？</p>
 <p>其实有两点我要解释：</p>
 <ul>
 <li><p>写class的时候不需要都继承NSObject，Swift中的class会隐式继承一个特有的Swift.SwiftObject。建议IDE提示你需要添加NSObject的时候，再添加，一般这种时候都是需要实现代理。</p>
@@ -659,7 +673,7 @@ public typealias AnyObject
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/08/Swift中的Any&AnyObject/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/10/08/Swift%E4%B8%AD%E7%9A%84Any&AnyObject/">展开全文 >></a>
         </p>
       
 
@@ -696,12 +710,12 @@ public typealias AnyObject
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/08/Swift-适配深色模式与UIColor扩展/">Swift:适配深色模式与UIColor扩展</a>
+      <a class="article-title" href="/2021/10/08/Swift-%E9%80%82%E9%85%8D%E6%B7%B1%E8%89%B2%E6%A8%A1%E5%BC%8F%E4%B8%8EUIColor%E6%89%A9%E5%B1%95/">Swift:适配深色模式与UIColor扩展</a>
     </h1>
   
 
         
-        <a href="/2021/10/08/Swift-适配深色模式与UIColor扩展/" class="archive-article-date">
+        <a href="/2021/10/08/Swift-%E9%80%82%E9%85%8D%E6%B7%B1%E8%89%B2%E6%A8%A1%E5%BC%8F%E4%B8%8EUIColor%E6%89%A9%E5%B1%95/" class="archive-article-date">
   	<time datetime="2021-10-08T07:02:24.916Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
 </a>
         
@@ -715,72 +729,79 @@ public typealias AnyObject
 <p>锁死浅色：</p>
 <pre><code>&lt;key&gt;UIUserInterfaceStyle&lt;/key&gt;
 &lt;string&gt;Light&lt;/string&gt;
-</code></pre><p>锁死深色：</p>
+</code></pre>
+<p>锁死深色：</p>
 <pre><code>&lt;key&gt;UIUserInterfaceStyle&lt;/key&gt;
 &lt;string&gt;Dark&lt;/string&gt;
-</code></pre><p>如果你要比较细化的适配浅色和深色，请接着往下看。</p>
+</code></pre>
+<p>如果你要比较细化的适配浅色和深色，请接着往下看。</p>
 <h2 id="UIColor分类"><a href="#UIColor分类" class="headerlink" title="UIColor分类"></a>UIColor分类</h2><p>抽取一个构造方法，可以传入浅色与深色的方法，生成一个UIColor，我的方法如下：</p>
 <pre><code>//MARK: - LightMode与DarkMode的颜色思路
-extension UIColor {
+extension UIColor &#123;
 
-    /// 便利构造函数(配合cssHex函数使用 更好)
-    /// - Parameters:
-    ///   - lightThemeColor: 明亮主题的颜色
-    ///   - darkThemeColor: 黑暗主题的颜色
+    /// 便利构造函数(配合cssHex函数使用 更好)
+    /// - Parameters:
+    ///   - lightThemeColor: 明亮主题的颜色
+    ///   - darkThemeColor: 黑暗主题的颜色
 
-    public convenience init(lightThemeColor: UIColor, darkThemeColor: UIColor? = nil) {
-        if #available(iOS 13.0, *) {
-            self.init { (traitCollection) -&gt; UIColor in
-                switch traitCollection.userInterfaceStyle {
-                    case .light:
-                        return lightThemeColor
-                    case .unspecified:
-                        return lightThemeColor
-                    case .dark:
-                        return darkThemeColor ?? lightThemeColor
-                    @unknown default:
-                        fatalError()
-                }
-            }
-        } else {
-            self.init(cgColor: lightThemeColor.cgColor)
-        }
-    }
-}
-</code></pre><p>最好对于App类常用的颜色都进行UIColor的分类扩展编写。比如下面这种：</p>
-<pre><code>extension UIColor {
+    public convenience init(lightThemeColor: UIColor, darkThemeColor: UIColor? = nil) &#123;
+        if #available(iOS 13.0, *) &#123;
+            self.init &#123; (traitCollection) -&gt; UIColor in
+                switch traitCollection.userInterfaceStyle &#123;
+                    case .light:
+                        return lightThemeColor
+                    case .unspecified:
+                        return lightThemeColor
+                    case .dark:
+                        return darkThemeColor ?? lightThemeColor
+                    @unknown default:
+                        fatalError()
+                &#125;
+            &#125;
+        &#125; else &#123;
+            self.init(cgColor: lightThemeColor.cgColor)
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>最好对于App类常用的颜色都进行UIColor的分类扩展编写。比如下面这种：</p>
+<pre><code>extension UIColor &#123;
 
-    /// 文字颜色 light为黑 dark为白
-    static let playAndroidTitle = UIColor(lightThemeColor: .black, darkThemeColor: .white)
+    /// 文字颜色 light为黑 dark为白
+    static let playAndroidTitle = UIColor(lightThemeColor: .black, darkThemeColor: .white)
 
-    /// 背景颜色 light为白 dark为黑
-    static let playAndroidBg = UIColor(lightThemeColor: .white, darkThemeColor: .black)
+    /// 背景颜色 light为白 dark为黑
+    static let playAndroidBg = UIColor(lightThemeColor: .white, darkThemeColor: .black)
 
-}
-</code></pre><p>使用的时候这样就可以了：</p>
+&#125;
+</code></pre>
+<p>使用的时候这样就可以了：</p>
 <pre><code>let label = UILabel()
 label.textColor = .playAndroidTitle
-</code></pre><h2 id="UIColor的colorName-API使用"><a href="#UIColor的colorName-API使用" class="headerlink" title="UIColor的colorName API使用"></a>UIColor的colorName API使用</h2><p>另外我们可以通过iOS 11之后的新API与配置方法进行深色模式的适配：</p>
-<p>先在Assets新建色彩资源：<br><img src="http://img.wangjungang.cn/uPic/ZdvVYH.jpg" alt=""></p>
+</code></pre>
+<h2 id="UIColor的colorName-API使用"><a href="#UIColor的colorName-API使用" class="headerlink" title="UIColor的colorName API使用"></a>UIColor的colorName API使用</h2><p>另外我们可以通过iOS 11之后的新API与配置方法进行深色模式的适配：</p>
+<p>先在Assets新建色彩资源：<br><img src="http://img.wangjungang.cn/uPic/ZdvVYH.jpg"></p>
 <p>2.设置好颜色配置。</p>
 <p>3.调用</p>
 <p>系统api如下</p>
-<pre><code>extension UIColor {
-    @available(iOS 11.0, *)
-    public /*not inherited*/ init?(named name: String) // load from main bundle
+<pre><code>extension UIColor &#123;
+    @available(iOS 11.0, *)
+    public /*not inherited*/ init?(named name: String) // load from main bundle
 
-    @available(iOS 11.0, *)
-    public /*not inherited*/ init?(named name: String, in bundle: Bundle?, compatibleWith traitCollection: UITraitCollection?)
+    @available(iOS 11.0, *)
+    public /*not inherited*/ init?(named name: String, in bundle: Bundle?, compatibleWith traitCollection: UITraitCollection?)
 
-}
-</code></pre><p>编写分类：</p>
-<pre><code>extension UIColor {
-
+&#125;
+</code></pre>
+<p>编写分类：</p>
+<pre><code>extension UIColor &#123;
+    
     /// UIColor的原始调用，硬编码不够安全，而且返回的还是一个可选类型，需要注意
     /// 可以考虑使用R函数
-    static let theme = UIColor.colorNamed(&quot;mainTheme&quot;)
-}
+    static let theme = UIColor.colorNamed(&quot;mainTheme&quot;)
+&#125;
 </code></pre>
+
       
 
       
@@ -803,7 +824,7 @@ label.textColor = .playAndroidTitle
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/08/Swift-适配深色模式与UIColor扩展/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/10/08/Swift-%E9%80%82%E9%85%8D%E6%B7%B1%E8%89%B2%E6%A8%A1%E5%BC%8F%E4%B8%8EUIColor%E6%89%A9%E5%B1%95/">展开全文 >></a>
         </p>
       
 
@@ -840,12 +861,12 @@ label.textColor = .playAndroidTitle
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/08/Android中的轻量级指针/">android中的轻量级指针</a>
+      <a class="article-title" href="/2021/10/08/Android%E4%B8%AD%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%8C%87%E9%92%88/">android中的轻量级指针</a>
     </h1>
   
 
         
-        <a href="/2021/10/08/Android中的轻量级指针/" class="archive-article-date">
+        <a href="/2021/10/08/Android%E4%B8%AD%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%8C%87%E9%92%88/" class="archive-article-date">
   	<time datetime="2021-10-08T06:45:30.204Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
 </a>
         
@@ -865,38 +886,39 @@ label.textColor = .playAndroidTitle
 <pre><code>//模板类
 template &lt;class T&gt;
 class LightRefBase
-{
+&#123;
 public:
     //公共的内联函数
-    inline LightRefBase() : mCount(0) { }
-    inline void incStrong(__attribute__((unused)) const void* id) const {
+    inline LightRefBase() : mCount(0) &#123; &#125;
+    inline void incStrong(__attribute__((unused)) const void* id) const &#123;
         __sync_fetch_and_add(&amp;mCount, 1);
-    }
-    inline void decStrong(__attribute__((unused)) const void* id) const {
-        if (__sync_fetch_and_sub(&amp;mCount, 1) == 1) {
+    &#125;
+    inline void decStrong(__attribute__((unused)) const void* id) const &#123;
+        if (__sync_fetch_and_sub(&amp;mCount, 1) == 1) &#123;
             delete static_cast&lt;const T*&gt;(this);
-        }
-    }
+        &#125;
+    &#125;
     //! DEBUGGING ONLY: Get current strong ref count.
-    inline int32_t getStrongCount() const {
+    inline int32_t getStrongCount() const &#123;
         return mCount;
-    }
+    &#125;
 
     typedef LightRefBase&lt;T&gt; basetype;
 
 protected:
     //内联的虚构函数
-    inline ~LightRefBase() { }
+    inline ~LightRefBase() &#123; &#125;
 
 private:
     friend class ReferenceMover;
     inline static void moveReferences(void*, void const*, size_t,
-            const ReferenceConverterBase&amp;) { }
+            const ReferenceConverterBase&amp;) &#123; &#125;
 
 private:
     mutable volatile int32_t mCount;
-};
-</code></pre><p>上面LightRefBase类定义涉及到几个知识点：</p>
+&#125;;
+</code></pre>
+<p>上面LightRefBase类定义涉及到几个知识点：</p>
 <p>1、C++的三个访问权限类型：public、protected、private。</p>
 <p>public:可以被任意实体访问。 protected:只允许子类及本类的成员函数访问。 private:只允许本类的成员函数访问。</p>
 <p>2、C++中的inline内联函数 在函数第一部分如果包含有inline关键字的函数，那么这个函数就表示为内联函数。内联函数主要为了解决一些频繁调用的小函数大量消耗栈空间（栈内存）的问题。</p>
@@ -910,11 +932,11 @@ private:
 <pre><code>//模板类
 template &lt;typename T&gt;
 class wp
-{
+&#123;
 public:
     typedef typename RefBase::weakref_type weakref_type;
     //轻量级指针需要用到的构造函数
-    inline wp() : m_ptr(0) { }
+    inline wp() : m_ptr(0) &#123; &#125;
 
     wp(T* other);
     wp(const wp&lt;T&gt;&amp; other);
@@ -947,9 +969,9 @@ public:
 
     // Accessors
 
-    inline  weakref_type* get_refs() const { return m_refs; }
+    inline  weakref_type* get_refs() const &#123; return m_refs; &#125;
 
-    inline  T* unsafe_get() const { return m_ptr; }
+    inline  T* unsafe_get() const &#123; return m_ptr; &#125;
 
     // Operators
 
@@ -960,35 +982,35 @@ public:
     COMPARE_WEAK(&lt;=)
     COMPARE_WEAK(&gt;=)
 
-    inline bool operator == (const wp&lt;T&gt;&amp; o) const {
+    inline bool operator == (const wp&lt;T&gt;&amp; o) const &#123;
         return (m_ptr == o.m_ptr) &amp;&amp; (m_refs == o.m_refs);
-    }
+    &#125;
     template&lt;typename U&gt;
-    inline bool operator == (const wp&lt;U&gt;&amp; o) const {
+    inline bool operator == (const wp&lt;U&gt;&amp; o) const &#123;
         return m_ptr == o.m_ptr;
-    }
+    &#125;
 
-    inline bool operator &gt; (const wp&lt;T&gt;&amp; o) const {
+    inline bool operator &gt; (const wp&lt;T&gt;&amp; o) const &#123;
         return (m_ptr == o.m_ptr) ? (m_refs &gt; o.m_refs) : (m_ptr &gt; o.m_ptr);
-    }
+    &#125;
     template&lt;typename U&gt;
-    inline bool operator &gt; (const wp&lt;U&gt;&amp; o) const {
+    inline bool operator &gt; (const wp&lt;U&gt;&amp; o) const &#123;
         return (m_ptr == o.m_ptr) ? (m_refs &gt; o.m_refs) : (m_ptr &gt; o.m_ptr);
-    }
+    &#125;
 
-    inline bool operator &lt; (const wp&lt;T&gt;&amp; o) const {
+    inline bool operator &lt; (const wp&lt;T&gt;&amp; o) const &#123;
         return (m_ptr == o.m_ptr) ? (m_refs &lt; o.m_refs) : (m_ptr &lt; o.m_ptr);
-    }
+    &#125;
     template&lt;typename U&gt;
-    inline bool operator &lt; (const wp&lt;U&gt;&amp; o) const {
+    inline bool operator &lt; (const wp&lt;U&gt;&amp; o) const &#123;
         return (m_ptr == o.m_ptr) ? (m_refs &lt; o.m_refs) : (m_ptr &lt; o.m_ptr);
-    }
-                         inline bool operator != (const wp&lt;T&gt;&amp; o) const { return m_refs != o.m_refs; }
-    template&lt;typename U&gt; inline bool operator != (const wp&lt;U&gt;&amp; o) const { return !operator == (o); }
-                         inline bool operator &lt;= (const wp&lt;T&gt;&amp; o) const { return !operator &gt; (o); }
-    template&lt;typename U&gt; inline bool operator &lt;= (const wp&lt;U&gt;&amp; o) const { return !operator &gt; (o); }
-                         inline bool operator &gt;= (const wp&lt;T&gt;&amp; o) const { return !operator &lt; (o); }
-    template&lt;typename U&gt; inline bool operator &gt;= (const wp&lt;U&gt;&amp; o) const { return !operator &lt; (o); }
+    &#125;
+                         inline bool operator != (const wp&lt;T&gt;&amp; o) const &#123; return m_refs != o.m_refs; &#125;
+    template&lt;typename U&gt; inline bool operator != (const wp&lt;U&gt;&amp; o) const &#123; return !operator == (o); &#125;
+                         inline bool operator &lt;= (const wp&lt;T&gt;&amp; o) const &#123; return !operator &gt; (o); &#125;
+    template&lt;typename U&gt; inline bool operator &lt;= (const wp&lt;U&gt;&amp; o) const &#123; return !operator &gt; (o); &#125;
+                         inline bool operator &gt;= (const wp&lt;T&gt;&amp; o) const &#123; return !operator &lt; (o); &#125;
+    template&lt;typename U&gt; inline bool operator &gt;= (const wp&lt;U&gt;&amp; o) const &#123; return !operator &lt; (o); &#125;
 
 private:
     template&lt;typename Y&gt; friend class sp;
@@ -996,8 +1018,9 @@ private:
     //轻量级指针会用到的变量m_ptr
     T*              m_ptr;
     weakref_type*   m_refs;
-};
-</code></pre><p>##总结</p>
+&#125;;
+</code></pre>
+<p>##总结</p>
 <p>通过前面的概念和系统源码实现功能原理分析，我们如果要使用轻量级指针的话，那么要包含头文件并采用继承LightRefBase类的方式，那么就可以使用轻量级指针的功能了。</p>
 
       
@@ -1022,7 +1045,7 @@ private:
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/08/Android中的轻量级指针/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/10/08/Android%E4%B8%AD%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%8C%87%E9%92%88/">展开全文 >></a>
         </p>
       
 
@@ -1059,12 +1082,12 @@ private:
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/08/探索android的强指针实现 /">探索android的强指针实现</a>
+      <a class="article-title" href="/2021/10/08/%E6%8E%A2%E7%B4%A2android%E7%9A%84%E5%BC%BA%E6%8C%87%E9%92%88%E5%AE%9E%E7%8E%B0%20/">探索android的强指针实现</a>
     </h1>
   
 
         
-        <a href="/2021/10/08/探索android的强指针实现 /" class="archive-article-date">
+        <a href="/2021/10/08/%E6%8E%A2%E7%B4%A2android%E7%9A%84%E5%BC%BA%E6%8C%87%E9%92%88%E5%AE%9E%E7%8E%B0%20/" class="archive-article-date">
   	<time datetime="2021-10-08T06:43:20.102Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
 </a>
         
@@ -1079,20 +1102,20 @@ private:
 <p>强指针和弱指针关系相对于轻量级指针来说更加亲密，因此他们一般是相互配合使用的。</p>
 <h2 id="强指针原理分析"><a href="#强指针原理分析" class="headerlink" title="强指针原理分析"></a>强指针原理分析</h2><p>以下针对源码的分析都是来源于android5.0系统源码 强指针的定义实现主要在\frameworks\rs\cpp\util\RefBase.h文件中</p>
 <pre><code>class RefBase
-{
+&#123;
 public:
             //定义了成员变量用于维护强引用对象的引用计数
             void            incStrong(const void* id) const;
             //定义了成员变量用于维护强引用对象的引用计数
             void            decStrong(const void* id) const;
-
+          
             void            forceIncStrong(const void* id) const;
 
             //获取强指针计数的数量.
             int32_t         getStrongCount() const;
     //这个类主要实现计数器的
     class weakref_type
-    {
+    &#123;
     public:
         RefBase*            refBase() const;
 
@@ -1121,20 +1144,20 @@ public:
         //           outstanding ones.
 
         void                trackMe(bool enable, bool retain);
-    };
+    &#125;;
 
             weakref_type*   createWeak(const void* id) const;
 
             weakref_type*   getWeakRefs() const;
 
             //! DEBUGGING ONLY: Print references held on object.
-    inline  void            printRefs() const { getWeakRefs()-&gt;printRefs(); }
+    inline  void            printRefs() const &#123; getWeakRefs()-&gt;printRefs(); &#125;
 
             //! DEBUGGING ONLY: Enable tracking of object.
     inline  void            trackMe(bool enable, bool retain)
-    {
+    &#123;
         getWeakRefs()-&gt;trackMe(enable, retain);
-    }
+    &#125;
 
     typedef RefBase basetype;
 
@@ -1143,18 +1166,18 @@ protected:
     virtual                 ~RefBase();
 
     //! Flags for extendObjectLifetime()
-    enum {
+    enum &#123;
         OBJECT_LIFETIME_STRONG  = 0x0000,
         OBJECT_LIFETIME_WEAK    = 0x0001,
         OBJECT_LIFETIME_MASK    = 0x0001
-    };
+    &#125;;
 
             void            extendObjectLifetime(int32_t mode);
 
     //! Flags for onIncStrongAttempted()
-    enum {
+    enum &#123;
         FIRST_INC_STRONG = 0x0001
-    };
+    &#125;;
 
     virtual void            onFirstRef();
     virtual void            onLastStrongRef(const void* id);
@@ -1175,8 +1198,9 @@ private:
             RefBase&amp;        operator=(const RefBase&amp; o);
 
         weakref_impl* const mRefs;
-};
-</code></pre><p>通过以上类定义可以看到 RefBase类里面嵌套着weakref_type类，这个weakref_type类也的对象mRefs来描述对象的引用计数。也就是说每一个RefBase对象都包含一个weakref_type对象。</p>
+&#125;;
+</code></pre>
+<p>通过以上类定义可以看到 RefBase类里面嵌套着weakref_type类，这个weakref_type类也的对象mRefs来描述对象的引用计数。也就是说每一个RefBase对象都包含一个weakref_type对象。</p>
 <p>virtual表示的是虚函数。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果一个对象的生命周期控制标志值被设置为0的情况下，只要它的强引用计数值也为0，那么系统就会自动释放这个对象。</p>
 
@@ -1202,7 +1226,7 @@ private:
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/08/探索android的强指针实现 /">展开全文 >></a>
+          <a class="article-more-a" href="/2021/10/08/%E6%8E%A2%E7%B4%A2android%E7%9A%84%E5%BC%BA%E6%8C%87%E9%92%88%E5%AE%9E%E7%8E%B0%20/">展开全文 >></a>
         </p>
       
 
@@ -1239,12 +1263,12 @@ private:
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/07/07/使用 runtime, 让 UserDefaults 飞/">使用 runtime, 让 UserDefaults 飞</a>
+      <a class="article-title" href="/2021/07/07/%E4%BD%BF%E7%94%A8%20runtime,%20%E8%AE%A9%20UserDefaults%20%E9%A3%9E/">使用 runtime, 让 UserDefaults 飞</a>
     </h1>
   
 
         
-        <a href="/2021/07/07/使用 runtime, 让 UserDefaults 飞/" class="archive-article-date">
+        <a href="/2021/07/07/%E4%BD%BF%E7%94%A8%20runtime,%20%E8%AE%A9%20UserDefaults%20%E9%A3%9E/" class="archive-article-date">
   	<time datetime="2021-07-07T06:13:40.954Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-07-07</time>
 </a>
         
@@ -1259,21 +1283,24 @@ private:
 <li><p>统一形式，不再有各种类型存取方法</p>
 <!--
       double(forKey: _ )
-      integer(forKey: _)
--->
-<pre><code>double(forKey: _ )
-integer(forKey: _)
-</code></pre></li>
+      integer(forKey: _)</li>
 </ul>
-<p>主要有参考 woshiccm/RCUserDefaults</p>
-<h2 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h2><pre><code>print(UserDefaults.std.name)
-UserDefaults.std.name = &quot;two&quot;
-print(UserDefaults.std.name)
-</code></pre><h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>添加属性</p>
-<pre><code>extension RCUserDefaults{
+<p>–&gt;</p>
+<pre><code>    double(forKey: _ )
+    integer(forKey: _)
+    
+</code></pre>
+<p>主要有参考 woshiccm&#x2F;RCUserDefaults</p>
+<h2 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h2><pre><code>    print(UserDefaults.std.name)
+    UserDefaults.std.name = &quot;two&quot;
+    print(UserDefaults.std.name)
+</code></pre>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><p>添加属性</p>
+<pre><code>extension RCUserDefaults&#123;
     @NSManaged var name: String
-}
-</code></pre><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><ul>
+&#125;
+</code></pre>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><ul>
 <li>一般给类添加属性，通过 objc_getAssociatedObject</li>
 </ul>
 <p>添加的属性，放在内存中</p>
@@ -1296,45 +1323,51 @@ print(UserDefaults.std.name)
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="添加的属性-放在扩展中"><a href="#添加的属性-放在扩展中" class="headerlink" title="添加的属性,放在扩展中"></a>添加的属性,放在扩展中</h3><p>做事情的是这个类 RCUserDefaults，</p>
 <p>为了简化写法，里面有一个属性是 UserDefaults.standard</p>
 <p>UserDefaults.standard 负责，实际的存取</p>
-<pre><code>class RCUserDefaults: NSObject{
+<pre><code>class RCUserDefaults: NSObject&#123;
     private let userDefaults = UserDefaults.standard
-}
-</code></pre><p>添加扩展属性</p>
-<pre><code>extension RCUserDefaults{
+&#125;
+</code></pre>
+<p>添加扩展属性</p>
+<pre><code>extension RCUserDefaults&#123;
     @NSManaged var name: String
-}
-</code></pre><h3 id="如果没有-NSManaged-报错"><a href="#如果没有-NSManaged-报错" class="headerlink" title="如果没有 @NSManaged, 报错"></a>如果没有 @NSManaged, 报错</h3><p>Extensions must not contain stored properties</p>
+&#125;
+</code></pre>
+<h3 id="如果没有-NSManaged-报错"><a href="#如果没有-NSManaged-报错" class="headerlink" title="如果没有 @NSManaged, 报错"></a>如果没有 @NSManaged, 报错</h3><p>Extensions must not contain stored properties</p>
 <p>扩展，不能包含属性</p>
 <p>与 Core Data 类似，添加 @NSManaged ，就好了</p>
 <p>the @NSManaged attribute informs the Swift compiler that the storage and implementation of a property will be provided at runtime.</p>
 <p>添加 @NSManaged，编译时不再检查，运行时保证存取即可</p>
 <h3 id="拿到添加的属性"><a href="#拿到添加的属性" class="headerlink" title="拿到添加的属性"></a>拿到添加的属性</h3><p>常规的运行时套路， class_copyPropertyList</p>
-<pre><code>extension NSObject {
+<pre><code>extension NSObject &#123;
 
-    static var properties: [Property] {
+    static var properties: [Property] &#123;
         var count: UInt32 = 0
-        guard let propertyList = class_copyPropertyList(self, &amp;count) else { return [] }
+        guard let propertyList = class_copyPropertyList(self, &amp;count) else &#123; return [] &#125;
 
         var properties = [Property]()
         let cnt = Int(count)
-        for i in 0..&lt;cnt{
+        for i in 0..&lt;cnt&#123;
             properties.append(Property(x: propertyList[i]))
-        }
+        &#125;
         free(propertyList)
         return properties
-    }
-}
-</code></pre><p>###知道,添加属性对应的类型</p>
+    &#125;
+&#125;
+</code></pre>
+<p>###知道,添加属性对应的类型</p>
 <p>才能在运行时，添加对应的 IMP,</p>
 <p>是</p>
 <pre><code>double(forKey: _ )
-</code></pre><p>还是</p>
+</code></pre>
+<p>还是</p>
 <pre><code>integer(forKey: _)
-</code></pre><p>调用入口</p>
-<pre><code>properties.append(Property(x: propertyList[i]))
-</code></pre><p>代码：</p>
+</code></pre>
+<p>调用入口</p>
+<pre><code> properties.append(Property(x: propertyList[i]))
+</code></pre>
+<p>代码：</p>
 <p>拿到 objc_property_t, 取各种属性 property_copyAttributeList</p>
-<pre><code>struct Property {
+<pre><code>struct Property &#123;
 
     let name: String
 
@@ -1342,52 +1375,53 @@ print(UserDefaults.std.name)
 
     private(set) var type: NSObject.Type?
 
-    init(x property: objc_property_t) {
+    init(x property: objc_property_t) &#123;
         // 拿到，我们赋予的属性名
         name = String(cString: property_getName(property))
 
         var count: UInt32 = 0
         let attributeList = property_copyAttributeList(property, &amp;count)!
-
-        for i in 0..&lt;Int(count) {
+        
+        for i in 0..&lt;Int(count) &#123;
             let attribute = attributeList[i]
 
             let nick = String(cString: attribute.name)
             let value = String(cString: attribute.value)
-
-            switch nick {
+            
+            switch nick &#123;
             case &quot;T&quot;:
                 var value = value
-                if value.hasPrefix(&quot;@\&quot;&quot;) &amp;&amp; value.hasSuffix(&quot;\&quot;&quot;) { // id
+                if value.hasPrefix(&quot;@\&quot;&quot;) &amp;&amp; value.hasSuffix(&quot;\&quot;&quot;) &#123; // id
                     value = value
                         .replacingOccurrences(of: &quot;@\&quot;&quot;, with: &quot;&quot;)
                         .replacingOccurrences(of: &quot;\&quot;&quot;, with: &quot;&quot;)
-                }
-                else if value.hasPrefix(&quot;r&quot;) { // const
+                &#125;
+                else if value.hasPrefix(&quot;r&quot;) &#123; // const
                     value = value.replacingOccurrences(of: &quot;r&quot;, with: &quot;&quot;)
-                }
+                &#125;
                 // 判断是类，还是值类型
-                if value.classExists{
+                if value.classExists&#123;
                     //  string
                     //  stringOptional
                     //  data
                     typeEncoding = ObjCTypeEncoding(e: &quot;@&quot;)
                     type = value.getClass
-                }
-                else {
+                &#125;
+                else &#123;
                     //  bool
                     //  double
                     typeEncoding = ObjCTypeEncoding(e: value)
-                }
+                &#125;
             // ...
             default: break
-            }
-        }
+            &#125;
+        &#125;
         // ...
-    }
-}
-</code></pre><h3 id="最后一步，给每一个属性，实现对应类型的存取方法"><a href="#最后一步，给每一个属性，实现对应类型的存取方法" class="headerlink" title="最后一步，给每一个属性，实现对应类型的存取方法"></a>最后一步，给每一个属性，实现对应类型的存取方法</h3><p>又来到了这个类 RCUserDefaults</p>
-<pre><code>class RCUserDefaults: NSObject{
+    &#125;
+&#125;
+</code></pre>
+<h3 id="最后一步，给每一个属性，实现对应类型的存取方法"><a href="#最后一步，给每一个属性，实现对应类型的存取方法" class="headerlink" title="最后一步，给每一个属性，实现对应类型的存取方法"></a>最后一步，给每一个属性，实现对应类型的存取方法</h3><p>又来到了这个类 RCUserDefaults</p>
+<pre><code>class RCUserDefaults: NSObject&#123;
     // 单例
     fileprivate static let standard = RCUserDefaults()
     //  记录信息
@@ -1399,17 +1433,18 @@ print(UserDefaults.std.name)
     // 参数，就是走一个形式
     // 为了这个单例， static let standard = RCUserDefaults()
     // 调用运行时添加 getter / setter 方法，  exchangeAccessMethods()
-    public init(placeHolder nan: Bool? = nil){
+    public init(placeHolder nan: Bool? = nil)&#123;
         super.init()
 
         exchangeAccessMethods()
-    }
-}
-</code></pre><p>运行时添加 getter / setter 方法</p>
-<pre><code>private func exchangeAccessMethods(){
+    &#125;
+&#125;
+</code></pre>
+<p>运行时添加 getter &#x2F; setter 方法</p>
+<pre><code>private func exchangeAccessMethods()&#123;
         let properties = RCUserDefaults.properties
         //  处理每一个属性
-        for property in properties{
+        for property in properties&#123;
 
             let getterKey = property.name
             let setterKey = objCDefaultSetterName(for: property.name)
@@ -1425,51 +1460,55 @@ print(UserDefaults.std.name)
 
             var getterImp: IMP!
             var setterImp: IMP!
-            switch property.typeEncoding {
-
+            switch property.typeEncoding &#123;
+            
             case .int, .longLong, .uInt8:
                 getterImp = unsafeBitCast(RCUserDefaults.longGetter, to: IMP.self)
                 setterImp = unsafeBitCast(RCUserDefaults.longSetter, to: IMP.self)
             // ...
             // 处理其他类型
-            }
+            &#125;
 
             let setterTypes = &quot;v@:\(property.typeEncoding)&quot;
             let getterTypes = &quot;\(property.typeEncoding)@:&quot;
 
-            setterTypes.withCString { typesCString in
+            setterTypes.withCString &#123; typesCString in
                 _ = class_addMethod(classForCoder, setterSel, setterImp, typesCString)
-            }
+            &#125;
 
-            getterTypes.withCString { typesCString in
+            getterTypes.withCString &#123; typesCString in
                 _ = class_addMethod(classForCoder, getterSel, getterImp, typesCString)
-            }
-        }
-    }
-</code></pre><p>最后 IMP</p>
+            &#125;
+        &#125;
+    &#125;
+</code></pre>
+<p>最后 IMP</p>
 <p>其中一种类型的 getter 和 setter,</p>
 <p>下面是 long ，长整型</p>
-<pre><code> private static let longGetter: @convention(c) (RCUserDefaults, Selector) -&gt; CLong = { _userDefault, _cmd in
-    // 从 getter 方法，拿到我们赋予的属性名
-    let key = defaultKey(for: _cmd)
-    // 又看到了熟悉的取方法
-    return _userDefault.userDefaults.integer(forKey: key)
-}
+<pre><code>     private static let longGetter: @convention(c) (RCUserDefaults, Selector) -&gt; CLong = &#123; _userDefault, _cmd in
+        // 从 getter 方法，拿到我们赋予的属性名
+        let key = defaultKey(for: _cmd)
+        // 又看到了熟悉的取方法
+        return _userDefault.userDefaults.integer(forKey: key)
+    &#125;
 
-private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) -&gt; Void = { _userDefault, _cmd, value in
-    // 从 setter 方法，拿到我们赋予的属性名
-    let key = defaultKey(for: _cmd)
-    // 又看到了熟悉的存方法
-    _userDefault.userDefaults.set(value, forKey: key)
-}
-</code></pre><p>回到开头，添加命名空间<br>给 UserDefaults 添加计算属性，</p>
-<p>返回的是 RCUserDefaults 的单例</p>
-<pre><code>extension UserDefaults{
-    static var std: RCUserDefaults{
-        return RCUserDefaults.standard
-    }
-}
+    private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) -&gt; Void = &#123; _userDefault, _cmd, value in
+        // 从 setter 方法，拿到我们赋予的属性名
+        let key = defaultKey(for: _cmd)
+        // 又看到了熟悉的存方法
+        _userDefault.userDefaults.set(value, forKey: key)
+    &#125;
+    
 </code></pre>
+<p>回到开头，添加命名空间<br>给 UserDefaults 添加计算属性，</p>
+<p>返回的是 RCUserDefaults 的单例</p>
+<pre><code>extension UserDefaults&#123;
+    static var std: RCUserDefaults&#123;
+        return RCUserDefaults.standard
+    &#125;
+&#125;
+</code></pre>
+
       
 
       
@@ -1492,7 +1531,7 @@ private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) 
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/07/07/使用 runtime, 让 UserDefaults 飞/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/07/07/%E4%BD%BF%E7%94%A8%20runtime,%20%E8%AE%A9%20UserDefaults%20%E9%A3%9E/">展开全文 >></a>
         </p>
       
 
@@ -1529,12 +1568,12 @@ private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) 
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/06/07/基石库-R.swift/">基石库——R.swift</a>
+      <a class="article-title" href="/2021/06/07/%E5%9F%BA%E7%9F%B3%E5%BA%93-R.swift/">基石库——R.swift</a>
     </h1>
   
 
         
-        <a href="/2021/06/07/基石库-R.swift/" class="archive-article-date">
+        <a href="/2021/06/07/%E5%9F%BA%E7%9F%B3%E5%BA%93-R.swift/" class="archive-article-date">
   	<time datetime="2021-06-07T05:22:28.661Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-07</time>
 </a>
         
@@ -1551,11 +1590,13 @@ private static let longSetter: @convention(c) (RCUserDefaults, Selector, CLong) 
 </ul>
 <p>也许你的App没有网络请求或者网络请求少，你可以不需要Alamofire。<br>也许你的App的UI不是特别复杂，简单的xib和storyboard就可以胜任。<br>但是在当下一个App中，图片资源、字符串资源等，作为一个App开发者，你是不得不用的。<br>举个栗子，传统的获取一个image资源我们都是这么写：</p>
 <pre><code>let image = UImage(named: &quot;saber&quot;)
-</code></pre><p>这么写的最大弊端就是saber这是一个字符串硬编码，靠的的是纯手工敲打，一旦出错，界面就会出现异常。</p>
+</code></pre>
+<p>这么写的最大弊端就是saber这是一个字符串硬编码，靠的的是纯手工敲打，一旦出错，界面就会出现异常。</p>
 <p>在开发中，需要尽量避免这种硬编码，如何高效将这种硬编码的表达方式更换为高效安全的方式，就由本次的主角出场了–R.swift。</p>
 <p>统和所有的资源，以现代化的方式引用资源，项目中使用它，虽然不会让你的App上升一个层次，不过却给你的编码极度舒适。</p>
 <pre><code>let image = R.image.saber()
-</code></pre><p>同样是Ex咖喱棒，味道却完全不同，哈哈。</p>
+</code></pre>
+<p>同样是Ex咖喱棒，味道却完全不同，哈哈。</p>
 <p>基石库就是那些你无法避免不得不用的库，而R.swift恰恰就是。</p>
 <h2 id="R-swift"><a href="#R-swift" class="headerlink" title="R.swift"></a>R.swift</h2><p>何为R，即Resource的缩写，我们先看看官方给出的一些例子：</p>
 <p>使用R.swift函数前：</p>
@@ -1564,13 +1605,15 @@ let font = UIFont(name: &quot;San Francisco&quot;, size: 42)
 let color = UIColor(named: &quot;indicator highlight&quot;)
 let viewController = CustomViewController(nibName: &quot;CustomView&quot;, bundle: nil)
 let string = String(format: NSLocalizedString(&quot;welcome.withName&quot;, comment: &quot;&quot;), locale: NSLocale.current, &quot;Arthur Dent&quot;)
-</code></pre><p>使用R.swift函数后：</p>
+</code></pre>
+<p>使用R.swift函数后：</p>
 <pre><code>let icon = R.image.settingsIcon()
 let font = R.font.sanFrancisco(size: 42)
 let color = R.color.indicatorHighlight()
 let viewController = CustomViewController(nib: R.nib.customView)
 let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
-</code></pre><p>所有的资源都函数化后，编写过程想出错都难，特别需要注意的是最后一个涉及国际化的函数R.string.localizable.welcomeWithName(“Arthur Dent”)，Arthur Dent这个字符串需要自己具体制定，可以通过在做国际化时，通过info.strings进行处理。</p>
+</code></pre>
+<p>所有的资源都函数化后，编写过程想出错都难，特别需要注意的是最后一个涉及国际化的函数R.string.localizable.welcomeWithName(“Arthur Dent”)，Arthur Dent这个字符串需要自己具体制定，可以通过在做国际化时，通过info.strings进行处理。</p>
 <p>R.swift目前支持下面这些资源文件管理：</p>
 <ul>
 <li>Images</li>
@@ -1586,21 +1629,24 @@ let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
 <p>基本上覆盖了绝大多数的App中的资源管理。</p>
 <h2 id="安装和使用"><a href="#安装和使用" class="headerlink" title="安装和使用"></a>安装和使用</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>R.swift使用其他特别舒服，不过它的安装确实比其他的第三方库稍微麻烦一点，正所谓工欲善其事必先利其器，这一点麻烦是值得的。</p>
 <p>1.添加’R.swift’ 在工程的Podfile文件中，并运行pod install。 2.如下图所示。添加脚本：</p>
-<p><img src="http://img.wangjungang.cn/uPic/U1H1D4.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/uPic/U1H1D4.jpg"></p>
 <p>3.如下图所示，移动脚本的位置，让它在Compile Sources phase和Check Pods Manifest.lock之间：</p>
-<p><img src="http://img.wangjungang.cn/uPic/EqieCU.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/uPic/EqieCU.jpg"></p>
 <p>4.添加脚本：</p>
-<p><img src="http://img.wangjungang.cn/uPic/BIkAYB.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/uPic/BIkAYB.jpg"></p>
 <p>在shell，下面这一栏添加</p>
 <pre><code>&quot;$PODS_ROOT/R.swift/rswift&quot; generate &quot;$SRCROOT/R.generated.swift&quot;
-</code></pre><p>在input Files通过+号添加</p>
+</code></pre>
+<p>在input Files通过+号添加</p>
 <pre><code>$TEMP_DIR/rswift-lastrun
-</code></pre><p>在Output Files通过+号添加</p>
+</code></pre>
+<p>在Output Files通过+号添加</p>
 <pre><code>$SRCROOT/R.generated.swift
-</code></pre><p>5.运行添加R.generated.swift：</p>
-<p>完成第4步后，进行command + B编译，然后在工程的根目录下面会找到R.generated.swift文件：<br><img src="http://img.wangjungang.cn/uPic/axDe8k.jpg" alt=""></p>
+</code></pre>
+<p>5.运行添加R.generated.swift：</p>
+<p>完成第4步后，进行command + B编译，然后在工程的根目录下面会找到R.generated.swift文件：<br><img src="http://img.wangjungang.cn/uPic/axDe8k.jpg"></p>
 <p>将这个文件拖入到工程中，并且不要勾选Copy items if needed</p>
-<p><img src="http://img.wangjungang.cn/uPic/92gr2O.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/uPic/92gr2O.jpg"></p>
 <p>这样，R.swift就安装完成啦。</p>
 <h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>每一次添加了新的资源文件，就运行一次command + B一次，这样R.generated.swift文件就将新加入的资源文件更新，使用使用的时候只用通过R.来进行引用了。</p>
 
@@ -1626,7 +1672,7 @@ let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/06/07/基石库-R.swift/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/06/07/%E5%9F%BA%E7%9F%B3%E5%BA%93-R.swift/">展开全文 >></a>
         </p>
       
 
@@ -1663,12 +1709,12 @@ let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/16/iOS导出ipa包的时，四个选项的作用/">iOS导出ipa包的时，四个选项的作用</a>
+      <a class="article-title" href="/2021/03/16/iOS%E5%AF%BC%E5%87%BAipa%E5%8C%85%E7%9A%84%E6%97%B6%EF%BC%8C%E5%9B%9B%E4%B8%AA%E9%80%89%E9%A1%B9%E7%9A%84%E4%BD%9C%E7%94%A8/">iOS导出ipa包的时，四个选项的作用</a>
     </h1>
   
 
         
-        <a href="/2021/03/16/iOS导出ipa包的时，四个选项的作用/" class="archive-article-date">
+        <a href="/2021/03/16/iOS%E5%AF%BC%E5%87%BAipa%E5%8C%85%E7%9A%84%E6%97%B6%EF%BC%8C%E5%9B%9B%E4%B8%AA%E9%80%89%E9%A1%B9%E7%9A%84%E4%BD%9C%E7%94%A8/" class="archive-article-date">
   	<time datetime="2021-03-16T03:13:05.390Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-16</time>
 </a>
         
@@ -1676,7 +1722,7 @@ let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><img src="https://upload-images.jianshu.io/upload_images/855108-4e72f6ef2b0a6d78.png?imageMogr2/auto-orient/strip|imageView2/2/w/585/format/webp" alt=""></p>
+        <p><img src="https://upload-images.jianshu.io/upload_images/855108-4e72f6ef2b0a6d78.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/585/format/webp"></p>
 <h4 id="如图-在-iOS-导出-ipa包的时候-会有四个选项，这四个选项的作用如下："><a href="#如图-在-iOS-导出-ipa包的时候-会有四个选项，这四个选项的作用如下：" class="headerlink" title="如图 在 iOS 导出 ipa包的时候 会有四个选项，这四个选项的作用如下："></a>如图 在 iOS 导出 ipa包的时候 会有四个选项，这四个选项的作用如下：</h4><ol>
 <li>Save for iOS App Store Deployment</li>
 </ol>
@@ -1716,7 +1762,7 @@ let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/16/iOS导出ipa包的时，四个选项的作用/">展开全文 >></a>
+          <a class="article-more-a" href="/2021/03/16/iOS%E5%AF%BC%E5%87%BAipa%E5%8C%85%E7%9A%84%E6%97%B6%EF%BC%8C%E5%9B%9B%E4%B8%AA%E9%80%89%E9%A1%B9%E7%9A%84%E4%BD%9C%E7%94%A8/">展开全文 >></a>
         </p>
       
 
@@ -1748,7 +1794,7 @@ let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -1760,7 +1806,7 @@ let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1867,10 +1913,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -1879,7 +1921,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1887,11 +1929,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1911,19 +1957,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

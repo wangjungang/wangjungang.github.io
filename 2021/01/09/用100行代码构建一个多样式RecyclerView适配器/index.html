@@ -9,17 +9,17 @@
   <title>用100行代码构建一个多样式RecyclerView适配器 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面RecyclerView多样式布局的框架有很多，大家熟悉已久的BaseRecyclerViewAdapterHelper，vlayout等等，包括google在新版本RecyclerView中推出的MergeAdapter(后面重命名为ConcatAdapter了)等。既然有这么多现成的框架，为什么还要去自己编写一个呢?很多时候这些框架考虑的都是常见通用性场景，在某些奇葩的产品设计需求中也">
-<meta name="keywords" content="Android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="用100行代码构建一个多样式RecyclerView适配器">
-<meta property="og:url" content="http://yoursite.com/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/index.html">
+<meta property="og:url" content="http://yoursite.com/2021/01/09/%E7%94%A8100%E8%A1%8C%E4%BB%A3%E7%A0%81%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%A4%9A%E6%A0%B7%E5%BC%8FRecyclerView%E9%80%82%E9%85%8D%E5%99%A8/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面RecyclerView多样式布局的框架有很多，大家熟悉已久的BaseRecyclerViewAdapterHelper，vlayout等等，包括google在新版本RecyclerView中推出的MergeAdapter(后面重命名为ConcatAdapter了)等。既然有这么多现成的框架，为什么还要去自己编写一个呢?很多时候这些框架考虑的都是常见通用性场景，在某些奇葩的产品设计需求中也">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-01-09T11:43:27.743Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-01-09T11:39:21.155Z">
+<meta property="article:modified_time" content="2021-01-09T11:43:27.743Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="用100行代码构建一个多样式RecyclerView适配器">
-<meta name="twitter:description" content="写在前面RecyclerView多样式布局的框架有很多，大家熟悉已久的BaseRecyclerViewAdapterHelper，vlayout等等，包括google在新版本RecyclerView中推出的MergeAdapter(后面重命名为ConcatAdapter了)等。既然有这么多现成的框架，为什么还要去自己编写一个呢?很多时候这些框架考虑的都是常见通用性场景，在某些奇葩的产品设计需求中也">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/" class="archive-article-date">
+        <a href="/2021/01/09/%E7%94%A8100%E8%A1%8C%E4%BB%A3%E7%A0%81%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%A4%9A%E6%A0%B7%E5%BC%8FRecyclerView%E9%80%82%E9%85%8D%E5%99%A8/" class="archive-article-date">
   	<time datetime="2021-01-09T11:39:21.155Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-09</time>
 </a>
         
@@ -178,7 +178,7 @@
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>RecyclerView多样式布局的框架有很多，大家熟悉已久的BaseRecyclerViewAdapterHelper，vlayout等等，包括google在新版本RecyclerView中推出的MergeAdapter(后面重命名为ConcatAdapter了)等。既然有这么多现成的框架，为什么还要去自己编写一个呢?很多时候这些框架考虑的都是常见通用性场景，在某些奇葩的产品设计需求中也许并不适用，这也是这篇文章出现的原因。</p>
 <p>目前多样式适配器框架总体的设计方案有两种，一种是BaseRecyclerViewAdapterHelper这种极度简化开发者编写的代码量，用最简洁的方式去实现多样式。另外一种就是ConcatAdapter这种，将每种样式设计为单独模块(子适配器)，视图创建，数据绑定都在该模块内部处理，再用一个主适配器将这些子适配器进行包装关联。本文采用的是第二种设计方式。</p>
 <h2 id="由于代码量极少，下面就不多说了，直接贴代码："><a href="#由于代码量极少，下面就不多说了，直接贴代码：" class="headerlink" title="由于代码量极少，下面就不多说了，直接贴代码："></a>由于代码量极少，下面就不多说了，直接贴代码：</h2><h3 id="1-视图构建器，保持原生api命名方式"><a href="#1-视图构建器，保持原生api命名方式" class="headerlink" title="1. 视图构建器，保持原生api命名方式"></a>1. 视图构建器，保持原生api命名方式</h3><pre><code>&lt;ViewTypeCreator.kt&gt;
-abstract class ViewTypeCreator&lt;T, VH : ViewHolder&gt; {
+abstract class ViewTypeCreator&lt;T, VH : ViewHolder&gt; &#123;
 
     abstract fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): VH
 
@@ -188,121 +188,125 @@ abstract class ViewTypeCreator&lt;T, VH : ViewHolder&gt; {
 
     open fun getItemId(position: Int) = RecyclerView.NO_ID
 
-}
-</code></pre><h3 id="2-数据适配器"><a href="#2-数据适配器" class="headerlink" title="2.数据适配器"></a>2.数据适配器</h3><pre><code>&lt;MultiTypeAdapter.kt&gt;
-abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() {
+&#125;
+</code></pre>
+<h3 id="2-数据适配器"><a href="#2-数据适配器" class="headerlink" title="2.数据适配器"></a>2.数据适配器</h3><pre><code>&lt;MultiTypeAdapter.kt&gt;
+abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() &#123;
     private val dataCache: ArrayList&lt;Class&lt;*&gt;&gt; = ArrayList()
     private val creatorCache: SparseArray&lt;SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt;&gt; = SparseArray()
     private val viewTypeCache: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = SparseArray()
 
     abstract fun getData(position: Int): Any
 
-    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) {
+    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) &#123;
         registerCreatorInner(T::class.java, creator)
-    }
+    &#125;
 
-    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) {
+    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) &#123;
         var index = dataCache.indexOf(clazz)
-        if (index == -1) {
+        if (index == -1) &#123;
             dataCache.add(clazz)
             index = dataCache.size - 1
-        }
+        &#125;
         var cache = creatorCache[index]
-        if (cache == null) {
+        if (cache == null) &#123;
             cache = SparseArray()
-        }
+        &#125;
         val id = System.identityHashCode(creator)
         @Suppress(&quot;UNCHECKED_CAST&quot;)
         cache.put(id, creator as ViewTypeCreator&lt;Any, *&gt;)
         creatorCache.put(index, cache)
-    }
+    &#125;
 
-    override fun getItemViewType(position: Int): Int {
+    override fun getItemViewType(position: Int): Int &#123;
         val data = getData(position)
         val viewType = getCreatorViewType(data)
-        return if (viewType != -1) {
+        return if (viewType != -1) &#123;
             viewType
-        } else
+        &#125; else
             super.getItemViewType(position)
-    }
+    &#125;
 
-    override fun getItemId(position: Int): Long {
+    override fun getItemId(position: Int): Long &#123;
         val itemViewType = getItemViewType(position)
         val viewCreator = getViewCreatorByViewType(itemViewType)
         return viewCreator.getItemId(position)
-    }
+    &#125;
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder &#123;
         val viewCreator: ViewTypeCreator&lt;*, *&gt; = getViewCreatorByViewType(viewType)
         return viewCreator.onCreateViewHolder(LayoutInflater.from(parent.context), parent)
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) &#123;
         val data = getData(position)
         @Suppress(&quot;UNCHECKED_CAST&quot;)
         val viewCreator: ViewTypeCreator&lt;Any, ViewHolder&gt; =
             getViewCreatorByViewType(getItemViewType(position)) as ViewTypeCreator&lt;Any, ViewHolder&gt;
         viewCreator.onBindViewHolder(holder, data)
-    }
+    &#125;
 
-    private fun getCreatorViewType(data: Any): Int {
+    private fun getCreatorViewType(data: Any): Int &#123;
         val clazz: Class&lt;*&gt; = data::class.java
         var viewType: Int
         val index = dataCache.indexOf(clazz)
-        if (dataCache.size &gt; 0 &amp;&amp; index != -1) {
+        if (dataCache.size &gt; 0 &amp;&amp; index != -1) &#123;
             val creators: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = creatorCache[index]
             // The Data bind more than one viewTypeCreator.
-            if (creators.size() &gt; 1) {
-                creators.forEach { id, viewCreator -&gt;
-                    if (viewCreator.match(data)) {
+            if (creators.size() &gt; 1) &#123;
+                creators.forEach &#123; id, viewCreator -&gt;
+                    if (viewCreator.match(data)) &#123;
                         viewType = id
-                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
+                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) &#123;
                             viewTypeCache.put(viewType, viewCreator)
-                        }
+                        &#125;
                         return viewType
-                    }
-                }
-            }
+                    &#125;
+                &#125;
+            &#125;
             // The Data only bind one viewTypeCreator.
-            else if (creators.size() == 1) {
+            else if (creators.size() == 1) &#123;
                 viewType = creators.keyAt(0)
-                if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
+                if (viewTypeCache.indexOfKey(viewType) &lt; 0) &#123;
                     viewTypeCache.put(viewType, creators.valueAt(0))
-                }
+                &#125;
                 return viewType
-            }
-        }
+            &#125;
+        &#125;
         throw RuntimeException(&quot;Current dataType [$clazz] is not found in DataTypeCache:\n$dataCache \nPlease check the Type of data for your custom creator.&quot;)
-    }
+    &#125;
 
-    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; {
+    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; &#123;
         return viewTypeCache[viewType]
-    }
-}
-</code></pre><h2 id="好了，代码就这么多，下面简单介绍下原理："><a href="#好了，代码就这么多，下面简单介绍下原理：" class="headerlink" title="好了，代码就这么多，下面简单介绍下原理："></a>好了，代码就这么多，下面简单介绍下原理：</h2><h3 id="1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法"><a href="#1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法" class="headerlink" title="1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:"></a>1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:</h3><pre><code>fun match(data: T): Boolean
-</code></pre><p>这里面接收一个数据类型参数，需要返回一个Boolean值，通常的产品设计常见一种数据类型应该是对应一种视图类型，但是就是存在这么奇葩的设计，比如返回一个Person数据类型，如果sex为男需要展示一种样式(左右布局:头像在左边，右边显示简介)，如果sex为女则需要展示另一种样式(上下布局:头像在中间，下面显示简介)，这样的场景就可以这样定义两种视图:</p>
+    &#125;
+&#125;
+</code></pre>
+<h2 id="好了，代码就这么多，下面简单介绍下原理："><a href="#好了，代码就这么多，下面简单介绍下原理：" class="headerlink" title="好了，代码就这么多，下面简单介绍下原理："></a>好了，代码就这么多，下面简单介绍下原理：</h2><h3 id="1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法"><a href="#1-视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法" class="headerlink" title="1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:"></a>1.视图构建器不过多介绍，主要就是抽象出视图构建的方法，这里只重点说下match这个方法:</h3><pre><code>fun match(data: T): Boolean
+</code></pre>
+<p>这里面接收一个数据类型参数，需要返回一个Boolean值，通常的产品设计常见一种数据类型应该是对应一种视图类型，但是就是存在这么奇葩的设计，比如返回一个Person数据类型，如果sex为男需要展示一种样式(左右布局:头像在左边，右边显示简介)，如果sex为女则需要展示另一种样式(上下布局:头像在中间，下面显示简介)，这样的场景就可以这样定义两种视图:</p>
 <pre><code>&lt;ManCreator.kt&gt;
-class ManCreator : ViewTypeCreator&lt;Person, ManCreator.Holder&gt;() {
+class ManCreator : ViewTypeCreator&lt;Person, ManCreator.Holder&gt;() &#123;
     ...
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder &#123;
         return Holder(inflater.inflate(R.layout.view_type_man, parent, false))
-    }
+    &#125;
     // 当person为男性的时候会通过该Creator创建视图
     override fun match(data: Person) = data.sex == Sex.MAN
-}
+&#125;
 
 &lt;WomanCreator.kt&gt;
-class WomanCreator : ViewTypeCreator&lt;Person, WomanCreator.Holder&gt;() {
+class WomanCreator : ViewTypeCreator&lt;Person, WomanCreator.Holder&gt;() &#123;
     ...
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder &#123;
         return Holder(inflater.inflate(R.layout.view_type_female, parent, false))
-    }
+    &#125;
     // 当person为女性的时候会通过该Creator创建视图
     override fun match(data: Person) = data.sex == Sex.WOMAN
-}
-</code></pre><h3 id="2-适配器，当然是继承RecyclerView-Adapter"><a href="#2-适配器，当然是继承RecyclerView-Adapter" class="headerlink" title="2.适配器，当然是继承RecyclerView.Adapter"></a>2.适配器，当然是继承RecyclerView.Adapter</h3><p>先介绍一下3个缓存：</p>
+&#125;
+</code></pre>
+<h3 id="2-适配器，当然是继承RecyclerView-Adapter"><a href="#2-适配器，当然是继承RecyclerView-Adapter" class="headerlink" title="2.适配器，当然是继承RecyclerView.Adapter"></a>2.适配器，当然是继承RecyclerView.Adapter</h3><p>先介绍一下3个缓存：</p>
 <pre><code>&lt;MultiTypeAdapter.kt&gt;
-abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() {
+abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() &#123;
     // 按数据顺序，存储数据类型
     private val dataCache: ArrayList&lt;Class&lt;*&gt;&gt; = ArrayList()// [DataType]
     // 存储ViewTypeCreator，索引为该数据类型在缓存的下标，由于一个数据类型可对应多个Creator，
@@ -310,194 +314,202 @@ abstract class MultiTypeAdapter : RecyclerView.Adapter&lt;ViewHolder&gt;() {
     private val creatorCache: SparseArray&lt;SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt;&gt; = SparseArray()// DataTypeIndex - [ViewTypeCreators]
     // 存储ViewTypeCreator，索引为对应的viewType，一对一的关系，该缓存是为了快速查找
     private val viewTypeCache: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = SparseArray()// ViewType - ViewTypeCreator
-}
-</code></pre><p>接下来看下注册视图构建器的方法：</p>
+&#125;
+</code></pre>
+<p>接下来看下注册视图构建器的方法：</p>
 <pre><code>&lt;MultiTypeAdapter.kt&gt;
     // 自动读取泛型Data数据的类型进行存储
-    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) {
+    inline fun &lt;reified T : Any&gt; registerCreator(creator: ViewTypeCreator&lt;T, *&gt;) &#123;
         registerCreatorInner(T::class.java, creator)
-    }
+    &#125;
 
-    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) {
+    fun registerCreatorInner(clazz: Class&lt;*&gt;, creator: ViewTypeCreator&lt;*, *&gt;) &#123;
         var index = dataCache.indexOf(clazz)
-        if (index == -1) {
+        if (index == -1) &#123;
             // 如果没有存储过进行缓存
             dataCache.add(clazz)
             index = dataCache.size - 1
-        }
+        &#125;
         // 初始化该Data数据类型对应的ViewTypeCreator集合
         var cache = creatorCache[index]
-        if (cache == null) {
+        if (cache == null) &#123;
             cache = SparseArray()
-        }
+        &#125;
         // 构造唯一标识作为索引
         val id = System.identityHashCode(creator)
         @Suppress(&quot;UNCHECKED_CAST&quot;)
         cache.put(id, creator as ViewTypeCreator&lt;Any, *&gt;)
         creatorCache.put(index, cache)
-    }
-</code></pre><p>最后按照RecyclerView.Adapter调用流程分析下原理：</p>
+    &#125;
+</code></pre>
+<p>最后按照RecyclerView.Adapter调用流程分析下原理：</p>
 <pre><code>&lt;MultiTypeAdapter.kt&gt;
     // 获取当前索引的数据
     abstract fun getData(position: Int): Any
 
-    override fun getItemViewType(position: Int): Int {
+    override fun getItemViewType(position: Int): Int &#123;
         val data = getData(position)// 1.获取当前索引对应的数据
         val viewType = getCreatorViewType(data)// 2.根据当前数据获取ViewType
-        return if (viewType != -1) {
+        return if (viewType != -1) &#123;
             viewType
-        } else
+        &#125; else
             super.getItemViewType(position)
-    }
+    &#125;
 
-    private fun getCreatorViewType(data: Any): Int {
+    private fun getCreatorViewType(data: Any): Int &#123;
         val clazz: Class&lt;*&gt; = data::class.java// 获取data数据的class类型
         var viewType: Int
         val index = dataCache.indexOf(clazz)// 查找出该data在缓存中的索引
-        if (dataCache.size &gt; 0 &amp;&amp; index != -1) {// 判断是否注册过该data对应的ViewTypeCreator
+        if (dataCache.size &gt; 0 &amp;&amp; index != -1) &#123;// 判断是否注册过该data对应的ViewTypeCreator
             val creators: SparseArray&lt;ViewTypeCreator&lt;Any, *&gt;&gt; = creatorCache[index]// 获取该data对应的ViewTypeCreator集合
             // The Data bind more than one viewTypeCreator.
-            if (creators.size() &gt; 1) {// 一个data数据对应多种viewType
-                creators.forEach { id, viewCreator -&gt;
-                    if (viewCreator.match(data)) {// 遍历ViewTypeCreator，并且判断是否符合条件，也就是上面说的match匹配方法
+            if (creators.size() &gt; 1) &#123;// 一个data数据对应多种viewType
+                creators.forEach &#123; id, viewCreator -&gt;
+                    if (viewCreator.match(data)) &#123;// 遍历ViewTypeCreator，并且判断是否符合条件，也就是上面说的match匹配方法
                         viewType = id// viewType就是上面根据ViewTypeCreator实例获取到的唯一id：System.identityHashCode
-                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) {// 如果viewTypeCache没有缓存过，则添加入缓存
+                        if (viewTypeCache.indexOfKey(viewType) &lt; 0) &#123;// 如果viewTypeCache没有缓存过，则添加入缓存
                             viewTypeCache.put(viewType, viewCreator)// 这一级缓存是为了能够快速根据viewType查找对应的ViewTypeCreator
-                        }
+                        &#125;
                         return viewType
-                    }
-                }
-            }
+                    &#125;
+                &#125;
+            &#125;
             // The Data only bind one viewTypeCreator.
-            else if (creators.size() == 1) {// 一个data数据对应一种viewType
+            else if (creators.size() == 1) &#123;// 一个data数据对应一种viewType
                 viewType = creators.keyAt(0)
-                if (viewTypeCache.indexOfKey(viewType) &lt; 0) {
+                if (viewTypeCache.indexOfKey(viewType) &lt; 0) &#123;
                     viewTypeCache.put(viewType, creators.valueAt(0))
-                }
+                &#125;
                 return viewType
-            }
-        }
+            &#125;
+        &#125;
         throw RuntimeException(&quot;Current dataType [$clazz] is not found in DataTypeCache:\n$dataCache \nPlease check the Type of data for your custom creator.&quot;)
-    }
+    &#125;
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder &#123;
         // 根据viewType查找到对应的ViewTypeCreator，并且通过onCreateViewHolder构建Holer视图
         val viewCreator: ViewTypeCreator&lt;*, *&gt; = getViewCreatorByViewType(viewType)
         return viewCreator.onCreateViewHolder(LayoutInflater.from(parent.context), parent)
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) &#123;
         // 根据viewType查找到对应的ViewTypeCreator，并且通过onBindViewHolder绑定数据
         val data = getData(position)
         @Suppress(&quot;UNCHECKED_CAST&quot;)
         val viewCreator: ViewTypeCreator&lt;Any, ViewHolder&gt; =
             getViewCreatorByViewType(getItemViewType(position)) as ViewTypeCreator&lt;Any, ViewHolder&gt;
         viewCreator.onBindViewHolder(holder, data)
-    }
+    &#125;
 
     // 根据viewType查找到对应的ViewTypeCreator
-    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; {
+    private fun getViewCreatorByViewType(viewType: Int): ViewTypeCreator&lt;Any, *&gt; &#123;
         return viewTypeCache[viewType]
-    }
-</code></pre><p>以上就是MultiTypeAdapter的所有代码</p>
+    &#125;
+
+        
+</code></pre>
+<p>以上就是MultiTypeAdapter的所有代码</p>
 <h3 id="3-下面举个使用案例："><a href="#3-下面举个使用案例：" class="headerlink" title="3.下面举个使用案例："></a>3.下面举个使用案例：</h3><p>先定义一个适配器，继承MultiTypeAdapter</p>
-<pre><code>class SampleAdapter : MultiTypeAdapter() {
+<pre><code>class SampleAdapter : MultiTypeAdapter() &#123;
 
     val data = mutableListOf&lt;Any&gt;()
 
     override fun getData(position: Int) = data[position]
 
     override fun getItemCount() = data.size
-}
-</code></pre><p>定义两种展示文字和一种展示图片的viewType</p>
+&#125;
+</code></pre>
+<p>定义两种展示文字和一种展示图片的viewType</p>
 <pre><code>// 文字数据类型定义：包含主标题和副标题
 data class Title(val mainTitle: String = &quot;&quot;, val subTitle: String = &quot;&quot;)
 // 文字样式1
-class MainTitleCreator : ViewTypeCreator&lt;Title, MainTitleCreator.Holder&gt;() {
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class MainTitleCreator : ViewTypeCreator&lt;Title, MainTitleCreator.Holder&gt;() &#123;
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) &#123;
         val title: TextView = itemView.findViewById(R.id.main_title)
-    }
+    &#125;
 
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder &#123;
         return Holder(inflater.inflate(R.layout.view_type_main_title, parent, false))
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: Holder, data: Title) {
+    override fun onBindViewHolder(holder: Holder, data: Title) &#123;
         holder.title.text = data.mainTitle
-    }
+    &#125;
 
-    override fun match(data: Title): Boolean {
+    override fun match(data: Title): Boolean &#123;
         return !TextUtils.isEmpty(data.mainTitle) &amp;&amp; TextUtils.isEmpty(data.subTitle)
-    }
-}
+    &#125;
+&#125;
 // 文字样式2
-class SubTitleCreator : ViewTypeCreator&lt;Title, SubTitleCreator.Holder&gt;() {
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class SubTitleCreator : ViewTypeCreator&lt;Title, SubTitleCreator.Holder&gt;() &#123;
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) &#123;
         val title: TextView = itemView.findViewById(R.id.sub_title)
-    }
+    &#125;
 
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder &#123;
         return Holder(inflater.inflate(R.layout.view_type_sub_title, parent, false))
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: Holder, data: Title) {
+    override fun onBindViewHolder(holder: Holder, data: Title) &#123;
         holder.title.text = data.subTitle
-    }
+    &#125;
 
-    override fun match(data: Title): Boolean {
+    override fun match(data: Title): Boolean &#123;
         return !TextUtils.isEmpty(data.subTitle) &amp;&amp; TextUtils.isEmpty(data.mainTitle)
-    }
-}
+    &#125;
+&#125;
 
 // 图片样式
-class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
-    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() &#123;
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) &#123;
         val image: ImageView = itemView.findViewById(R.id.image)
-    }
+    &#125;
 
-    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder {
+    override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): Holder &#123;
         return Holder(inflater.inflate(R.layout.view_type_image, parent, false))
-    }
+    &#125;
 
-    override fun onBindViewHolder(holder: Holder, data: Int) {
+    override fun onBindViewHolder(holder: Holder, data: Int) &#123;
         holder.image.setImageResource(data)
-    }
+    &#125;
 
-    override fun match(data: Int): Boolean {
+    override fun match(data: Int): Boolean &#123;
         return false
-    }
-}
-</code></pre><p>注册viewTypeCreator</p>
-<pre><code>class MainActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        recycler_view.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
-        val adapter = SampleAdapter().apply {
-            // image type
-            registerCreator(ImageCreator())
-            // text type
-            registerCreator(TextCreator())
-            // the same bean but different view type
-            registerCreator(MainTitleCreator())
-            registerCreator(SubTitleCreator())
-        }
-        fillData(adapter)
-        recycler_view.adapter = adapter
-    }
-
-    private fun fillData(adapter: SampleAdapter) {
-        for (i in 0..10) {
-            adapter.data.run {
-                add(R.drawable.test)
-                add(&quot;I am string&quot;)
-                add(Title(&quot;I am MainTitle&quot;))
-                add(Title(&quot;&quot;, &quot;I am SubTitle&quot;))
-            }
-        }
-    }
+    &#125;
+&#125;
 </code></pre>
+<p>注册viewTypeCreator</p>
+<pre><code>    class MainActivity : AppCompatActivity() &#123;
+    
+        override fun onCreate(savedInstanceState: Bundle?) &#123;
+            super.onCreate(savedInstanceState)
+            setContentView(R.layout.activity_main)
+            recycler_view.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+            val adapter = SampleAdapter().apply &#123;
+                // image type
+                registerCreator(ImageCreator())
+                // text type
+                registerCreator(TextCreator())
+                // the same bean but different view type
+                registerCreator(MainTitleCreator())
+                registerCreator(SubTitleCreator())
+            &#125;
+            fillData(adapter)
+            recycler_view.adapter = adapter
+        &#125;
+    
+        private fun fillData(adapter: SampleAdapter) &#123;
+            for (i in 0..10) &#123;
+                adapter.data.run &#123;
+                    add(R.drawable.test)
+                    add(&quot;I am string&quot;)
+                    add(Title(&quot;I am MainTitle&quot;))
+                    add(Title(&quot;&quot;, &quot;I am SubTitle&quot;))
+                &#125;
+            &#125;
+        &#125;
+</code></pre>
+
       
 
       
@@ -587,7 +599,7 @@ class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/01/09/%E7%94%A8100%E8%A1%8C%E4%BB%A3%E7%A0%81%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%A4%9A%E6%A0%B7%E5%BC%8FRecyclerView%E9%80%82%E9%85%8D%E5%99%A8/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -601,7 +613,7 @@ class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
   
 <nav id="article-nav">
   
-    <a href="/2021/01/09/Dialog圆角问题/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2021/01/09/Dialog%E5%9C%86%E8%A7%92%E9%97%AE%E9%A2%98/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -611,7 +623,7 @@ class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
     </a>
   
   
-    <a href="/2021/01/07/Flutter&Android启动页(闪屏页)的加载流程和优化方案/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2021/01/07/Flutter&Android%E5%90%AF%E5%8A%A8%E9%A1%B5(%E9%97%AA%E5%B1%8F%E9%A1%B5)%E7%9A%84%E5%8A%A0%E8%BD%BD%E6%B5%81%E7%A8%8B%E5%92%8C%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Flutter&amp;Android启动页(闪屏页)的加载流程和优化方案</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -655,7 +667,7 @@ class ImageCreator : ViewTypeCreator&lt;Int, ImageCreator.Holder&gt;() {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -762,10 +774,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -774,7 +782,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -782,11 +790,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -806,19 +818,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

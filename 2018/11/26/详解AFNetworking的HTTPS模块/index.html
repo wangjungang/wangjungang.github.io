@@ -9,17 +9,17 @@
   <title>详解AFNetworking的HTTPS模块 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面内容包括  AFNetworking简介  ATS和HTTPS介绍  AF中的证书验证介绍  如何创建服务端和客户端自签名证书  如何创建简单的https服务器  对CA正式证书和自签名证书的各种情况进行代码验证   1.0 AFNetworking简介AFNetworking（下面简称AF）是一个优秀的网络框架，从事iOS开发工作的同学几乎都用过它。 同时，AF也是一个简单，高效的网络框">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="详解AFNetworking的HTTPS模块">
-<meta property="og:url" content="http://yoursite.com/2018/11/26/详解AFNetworking的HTTPS模块/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/11/26/%E8%AF%A6%E8%A7%A3AFNetworking%E7%9A%84HTTPS%E6%A8%A1%E5%9D%97/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面内容包括  AFNetworking简介  ATS和HTTPS介绍  AF中的证书验证介绍  如何创建服务端和客户端自签名证书  如何创建简单的https服务器  对CA正式证书和自签名证书的各种情况进行代码验证   1.0 AFNetworking简介AFNetworking（下面简称AF）是一个优秀的网络框架，从事iOS开发工作的同学几乎都用过它。 同时，AF也是一个简单，高效的网络框">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-26T04:30:50.025Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-11-26T03:48:45.867Z">
+<meta property="article:modified_time" content="2018-11-26T04:30:50.025Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="详解AFNetworking的HTTPS模块">
-<meta name="twitter:description" content="写在前面内容包括  AFNetworking简介  ATS和HTTPS介绍  AF中的证书验证介绍  如何创建服务端和客户端自签名证书  如何创建简单的https服务器  对CA正式证书和自签名证书的各种情况进行代码验证   1.0 AFNetworking简介AFNetworking（下面简称AF）是一个优秀的网络框架，从事iOS开发工作的同学几乎都用过它。 同时，AF也是一个简单，高效的网络框">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/11/26/详解AFNetworking的HTTPS模块/" class="archive-article-date">
+        <a href="/2018/11/26/%E8%AF%A6%E8%A7%A3AFNetworking%E7%9A%84HTTPS%E6%A8%A1%E5%9D%97/" class="archive-article-date">
   	<time datetime="2018-11-26T03:48:45.867Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
 </a>
         
@@ -217,40 +217,41 @@
 <pre><code>- (void)URLSession:(NSURLSession *)session
 didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
  completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
-{
+&#123;
     NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
     __block NSURLCredential *credential = nil;
 
-    if (self.sessionDidReceiveAuthenticationChallenge) {
+    if (self.sessionDidReceiveAuthenticationChallenge) &#123;
         disposition = self.sessionDidReceiveAuthenticationChallenge(session, challenge, &amp;credential);
-    } else {
-        if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-            if ([self.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host]) {
+    &#125; else &#123;
+        if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) &#123;
+            if ([self.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host]) &#123;
                 credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
-                if (credential) {
+                if (credential) &#123;
                     disposition = NSURLSessionAuthChallengeUseCredential;
-                } else {
+                &#125; else &#123;
                     disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-                }
-            } else {
+                &#125;
+            &#125; else &#123;
                 disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
-            }
-        }
-    }
+            &#125;
+        &#125;
+    &#125;
 
-    if (completionHandler) {
+    if (completionHandler) &#123;
         completionHandler(disposition, credential);
-    }
-}
-</code></pre><p>在NSURLSession中，当请求https的接口时，会触发- (void)URLSession:(NSURLSession <em>)session didReceiveChallenge:(NSURLAuthenticationChallenge </em>)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler回调，在这个回调中，你需要验证服务端发送过来的证书，并返回一个NSURLCredential对象。</p>
+    &#125;
+&#125;
+</code></pre>
+<p>在NSURLSession中，当请求https的接口时，会触发- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler回调，在这个回调中，你需要验证服务端发送过来的证书，并返回一个NSURLCredential对象。</p>
 <p>其中 disposition 这个变量用于表示你对证书的验证结果，NSURLSessionAuthChallengeUseCredential表示验证通过，其他值都表示验证失败。</p>
 <p>challenge.protectionSpace.authenticationMethod 这个枚举字符串表示的是回调触发的原因，其中，</p>
 <p>NSURLAuthenticationMethodServerTrust表示服务端发来证书，NSURLAuthenticationMethodClientCertificate表示服务端请求验证客户端证书。</p>
 <p>验证证书的方法在AFSecurityPolicy.m中</p>
 <pre><code>- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust
                   forDomain:(NSString *)domain
-{
-    if (domain &amp;&amp; self.allowInvalidCertificates &amp;&amp; self.validatesDomainName &amp;&amp; (self.SSLPinningMode == AFSSLPinningModeNone || [self.pinnedCertificates count] == 0)) {
+&#123;
+    if (domain &amp;&amp; self.allowInvalidCertificates &amp;&amp; self.validatesDomainName &amp;&amp; (self.SSLPinningMode == AFSSLPinningModeNone || [self.pinnedCertificates count] == 0)) &#123;
         // https://developer.apple.com/library/mac/documentation/NetworkingInternet/Conceptual/NetworkingTopics/Articles/OverridingSSLChainValidationCorrectly.html
         //  According to the docs, you should only trust your provided certs for evaluation.
         //  Pinned certificates are added to the trust. Without pinned certificates,
@@ -261,67 +262,68 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
         //           Instead, add your own (self-signed) CA certificate to the list of trusted anchors.&quot;
         NSLog(@&quot;In order to validate a domain name for self signed certificates, you MUST use pinning.&quot;);
         return NO;
-    }
+    &#125;
 
     NSMutableArray *policies = [NSMutableArray array];
-    if (self.validatesDomainName) {
+    if (self.validatesDomainName) &#123;
         [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
-    } else {
+    &#125; else &#123;
         [policies addObject:(__bridge_transfer id)SecPolicyCreateBasicX509()];
-    }
+    &#125;
 
     SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
 
-    if (self.SSLPinningMode == AFSSLPinningModeNone) {
+    if (self.SSLPinningMode == AFSSLPinningModeNone) &#123;
         return self.allowInvalidCertificates || AFServerTrustIsValid(serverTrust);
-    } else if (!AFServerTrustIsValid(serverTrust) &amp;&amp; !self.allowInvalidCertificates) {
+    &#125; else if (!AFServerTrustIsValid(serverTrust) &amp;&amp; !self.allowInvalidCertificates) &#123;
         return NO;
-    }
+    &#125;
 
-    switch (self.SSLPinningMode) {
+    switch (self.SSLPinningMode) &#123;
         case AFSSLPinningModeNone:
         default:
             return NO;
-        case AFSSLPinningModeCertificate: {
+        case AFSSLPinningModeCertificate: &#123;
             NSMutableArray *pinnedCertificates = [NSMutableArray array];
-            for (NSData *certificateData in self.pinnedCertificates) {
+            for (NSData *certificateData in self.pinnedCertificates) &#123;
                 [pinnedCertificates addObject:(__bridge_transfer id)SecCertificateCreateWithData(NULL, (__bridge CFDataRef)certificateData)];
-            }
+            &#125;
             SecTrustSetAnchorCertificates(serverTrust, (__bridge CFArrayRef)pinnedCertificates);
 
-            if (!AFServerTrustIsValid(serverTrust)) {
+            if (!AFServerTrustIsValid(serverTrust)) &#123;
                 return NO;
-            }
+            &#125;
 
-            // obtain the chain after being validated, which *should* contain the pinned certificate in the last position (if it&apos;s the Root CA)
+            // obtain the chain after being validated, which *should* contain the pinned certificate in the last position (if it&#39;s the Root CA)
             NSArray *serverCertificates = AFCertificateTrustChainForServerTrust(serverTrust);
-
-            for (NSData *trustChainCertificate in [serverCertificates reverseObjectEnumerator]) {
-                if ([self.pinnedCertificates containsObject:trustChainCertificate]) {
+            
+            for (NSData *trustChainCertificate in [serverCertificates reverseObjectEnumerator]) &#123;
+                if ([self.pinnedCertificates containsObject:trustChainCertificate]) &#123;
                     return YES;
-                }
-            }
-
+                &#125;
+            &#125;
+            
             return NO;
-        }
-        case AFSSLPinningModePublicKey: {
+        &#125;
+        case AFSSLPinningModePublicKey: &#123;
             NSUInteger trustedPublicKeyCount = 0;
             NSArray *publicKeys = AFPublicKeyTrustChainForServerTrust(serverTrust);
 
-            for (id trustChainPublicKey in publicKeys) {
-                for (id pinnedPublicKey in self.pinnedPublicKeys) {
-                    if (AFSecKeyIsEqualToKey((__bridge SecKeyRef)trustChainPublicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
+            for (id trustChainPublicKey in publicKeys) &#123;
+                for (id pinnedPublicKey in self.pinnedPublicKeys) &#123;
+                    if (AFSecKeyIsEqualToKey((__bridge SecKeyRef)trustChainPublicKey, (__bridge SecKeyRef)pinnedPublicKey)) &#123;
                         trustedPublicKeyCount += 1;
-                    }
-                }
-            }
+                    &#125;
+                &#125;
+            &#125;
             return trustedPublicKeyCount &gt; 0;
-        }
-    }
-
+        &#125;
+    &#125;
+    
     return NO;
-}
-</code></pre><p>代码解析：</p>
+&#125;
+</code></pre>
+<p>代码解析：</p>
 <p>函数第一行就是一长串的逻辑判断，乍一看，这里看的人很懵，它包含的信息很多。但实际上它的作用是用来处理服务端自签名证书的。其他情况无需考虑此处逻辑。根据后面代码来看，如果你服务端证书使用的是自签名证书，AFSecurityPolicy的allowInvalidCertificates属性必须设为YES，所以这里判断会带上self.allowInvalidCertificates。</p>
 <p>接下来就是验证服务端证书的过程，SSLPinningMode 有3个值，AFSSLPinningModeNone表示服务端使用的是CA机构签发的正式证书，另外2个值表示服务端使用的是自签名证书。</p>
 <p>AFServerTrustIsValid这个函数使用的是Security.framework中的方法，用于验证服务端发送来的证书是否是可信任的，只要证书链中任何一个证书是已经信任的证书，那么这个服务端证书就是合法的。详细过程已经被Security.framework处理了，不需要我们做额外工作。关于证书链可以参考这里。</p>
@@ -349,30 +351,147 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
 <p>脚本会生成3种证书：根证书，客户端证书，服务端证书。</p>
 <p>其中不同的证书没有本质区别，只是用在不同的地方而已。<br>每种证书包含5个文件，分别是：</p>
 <ul>
-<li>der格式证书</li>
-<li>pem格式证书</li>
-<li>p12格式证书</li>
-<li>pem格式私钥</li>
+<li><p>der格式证书</p>
+</li>
+<li><p>pem格式证书</p>
+</li>
+<li><p>p12格式证书</p>
+</li>
+<li><p>pem格式私钥</p>
+</li>
 <li><p>csr格式证书申请文件</p>
-<pre><code>#!/bin/sh
-
-locale=&apos;CN&apos; #地区
-province=&apos;Beijing&apos; #省份
-city=$province #城市
-company=&apos;xxx&apos; #公司
-unit=&apos;yyy&apos; #部门
-hostname=&apos;127.0.0.1&apos; #域名
-email=&apos;hr@suning.com&apos; #邮箱
-
-#clean
-function clean(){
-    echo &apos;清理文件...&apos;
-    ls | grep -v create.sh | xargs rm -rf
-}
-
-#用法
-function usage(){
-    echo &apos;usage: ./create.sh 
+<pre><code>  #!/bin/sh
+  
+  locale=&#39;CN&#39; #地区
+  province=&#39;Beijing&#39; #省份
+  city=$province #城市
+  company=&#39;xxx&#39; #公司
+  unit=&#39;yyy&#39; #部门
+  hostname=&#39;127.0.0.1&#39; #域名
+  email=&#39;hr@suning.com&#39; #邮箱
+  
+  #clean
+  function clean()&#123;
+      echo &#39;清理文件...&#39;
+      ls | grep -v create.sh | xargs rm -rf
+  &#125;
+  
+  #用法
+  function usage()&#123;
+      echo &#39;usage: ./create.sh 
+          [-l [localevalue]]
+          [-p [provincevalue]]
+          [-c [cityvalue]]
+          [-d [companyvalue]]
+          [-u [unitvalue]]
+          [-h [hostnamevalue]]
+          [-e [emailvalue]]
+      &#39;
+      exit
+  &#125;
+  
+  #参数
+  if [ $# -gt 0 ]; then
+      while getopts &quot;cl:p:c:d:u:h:e&quot; arg;
+      do
+          case $arg in
+              c)
+                  clean &amp;&amp; exit
+                  ;;
+              l)
+                  locale=$OPTARG
+                  ;;
+              p)
+                  province=$OPTARG
+                  ;;
+              c)
+                  city=$OPTARG
+                  ;;
+              d)
+                  company=$OPTARG
+                  ;;
+              u)
+                  unit=$OPTARG
+                  ;;
+              h)
+                  hostname=$OPTARG
+                  ;;
+              e)
+                  email=$OPTARG
+                  ;;
+              ?)
+                  usage
+                  ;;
+          esac
+      done
+  fi
+  
+  clean
+  
+  echo &#39;开始创建根证书...&#39;
+  
+  openssl genrsa -out ca-private-key.pem 1024
+  openssl req -new -out ca-req.csr -key ca-private-key.pem &lt;&lt;EOF
+  $&#123;locale&#125;
+  $&#123;province&#125;
+  $&#123;city&#125;
+  $&#123;company&#125;
+  $&#123;unit&#125;
+  $&#123;hostname&#125;
+  $&#123;email&#125;
+  
+  EOF
+  openssl x509 -req -in ca-req.csr -out ca-cert.pem -outform PEM -signkey ca-private-key.pem -days 3650
+  openssl x509 -req -in ca-req.csr -out ca-cert.der -outform DER -signkey ca-private-key.pem -days 3650
+  echo &#39;请输入根证书p12文件密码，直接回车表示密码为空字符串...&#39;
+  openssl pkcs12 -export -clcerts -in ca-cert.pem -inkey ca-private-key.pem -out ca-cert.p12
+  
+  echo &#39;开始创建服务端证书...&#39;
+  
+  openssl genrsa -out server-private-key.pem 1024
+  openssl req -new -out server-req.csr -key server-private-key.pem &lt;&lt; EOF
+  $&#123;locale&#125;
+  $&#123;province&#125;
+  $&#123;city&#125;
+  $&#123;company&#125;
+  $&#123;unit&#125;
+  $&#123;hostname&#125;
+  $&#123;email&#125;
+  
+  EOF
+  openssl x509 -req -in server-req.csr -out server-cert.pem -outform PEM -signkey server-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
+  openssl x509 -req -in server-req.csr -out server-cert.der -outform DER -signkey server-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
+  echo &#39;请输入服务端证书p12文件密码，直接回车表示密码为空字符串...&#39;
+  openssl pkcs12 -export -clcerts -in server-cert.pem -inkey server-private-key.pem -out server-cert.p12
+  
+  echo &#39;开始创建客户端证书...&#39;
+  
+  openssl genrsa -out client-private-key.pem 1024
+  openssl req -new -out client-req.csr -key client-private-key.pem &lt;&lt; EOF
+  $&#123;locale&#125;
+  $&#123;province&#125;
+  $&#123;city&#125;
+  $&#123;company&#125;
+  $&#123;unit&#125;
+  $&#123;hostname&#125;
+  $&#123;email&#125;
+  
+  EOF
+  openssl x509 -req -in client-req.csr -out client-cert.pem -outform PEM -signkey client-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
+  openssl x509 -req -in client-req.csr -out client-cert.der -outform DER -signkey client-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
+  echo &#39;请输入客户端证书p12文件密码，直接回车表示密码为空字符串...&#39;
+  openssl pkcs12 -export -clcerts -in client-cert.pem -inkey client-private-key.pem -out client-cert.p12
+  
+  echo &#39;finishied&#39;
+</code></pre>
+</li>
+</ul>
+<p>你可以按照步骤操作：</p>
+<p>复制脚本内容，保存到文件中，文件名为create.sh</p>
+<p>打开终端，通过cd命令进入create.sh所在的文件夹</p>
+<p>在终端内输入：chmod +x create.sh 点击回车</p>
+<p>在终端输入：.&#x2F;create.sh -h，此时会打印用法</p>
+<pre><code>    usage: ./create.sh 
         [-l [localevalue]]
         [-p [provincevalue]]
         [-c [cityvalue]]
@@ -380,219 +499,116 @@ function usage(){
         [-u [unitvalue]]
         [-h [hostnamevalue]]
         [-e [emailvalue]]
-    &apos;
-    exit
-}
-
-#参数
-if [ $# -gt 0 ]; then
-    while getopts &quot;cl:p:c:d:u:h:e&quot; arg;
-    do
-        case $arg in
-            c)
-                clean &amp;&amp; exit
-                ;;
-            l)
-                locale=$OPTARG
-                ;;
-            p)
-                province=$OPTARG
-                ;;
-            c)
-                city=$OPTARG
-                ;;
-            d)
-                company=$OPTARG
-                ;;
-            u)
-                unit=$OPTARG
-                ;;
-            h)
-                hostname=$OPTARG
-                ;;
-            e)
-                email=$OPTARG
-                ;;
-            ?)
-                usage
-                ;;
-        esac
-    done
-fi
-
-clean
-
-echo &apos;开始创建根证书...&apos;
-
-openssl genrsa -out ca-private-key.pem 1024
-openssl req -new -out ca-req.csr -key ca-private-key.pem &lt;&lt;EOF
-${locale}
-${province}
-${city}
-${company}
-${unit}
-${hostname}
-${email}
-
-EOF
-openssl x509 -req -in ca-req.csr -out ca-cert.pem -outform PEM -signkey ca-private-key.pem -days 3650
-openssl x509 -req -in ca-req.csr -out ca-cert.der -outform DER -signkey ca-private-key.pem -days 3650
-echo &apos;请输入根证书p12文件密码，直接回车表示密码为空字符串...&apos;
-openssl pkcs12 -export -clcerts -in ca-cert.pem -inkey ca-private-key.pem -out ca-cert.p12
-
-echo &apos;开始创建服务端证书...&apos;
-
-openssl genrsa -out server-private-key.pem 1024
-openssl req -new -out server-req.csr -key server-private-key.pem &lt;&lt; EOF
-${locale}
-${province}
-${city}
-${company}
-${unit}
-${hostname}
-${email}
-
-EOF
-openssl x509 -req -in server-req.csr -out server-cert.pem -outform PEM -signkey server-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
-openssl x509 -req -in server-req.csr -out server-cert.der -outform DER -signkey server-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
-echo &apos;请输入服务端证书p12文件密码，直接回车表示密码为空字符串...&apos;
-openssl pkcs12 -export -clcerts -in server-cert.pem -inkey server-private-key.pem -out server-cert.p12
-
-echo &apos;开始创建客户端证书...&apos;
-
-openssl genrsa -out client-private-key.pem 1024
-openssl req -new -out client-req.csr -key client-private-key.pem &lt;&lt; EOF
-${locale}
-${province}
-${city}
-${company}
-${unit}
-${hostname}
-${email}
-
-EOF
-openssl x509 -req -in client-req.csr -out client-cert.pem -outform PEM -signkey client-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
-openssl x509 -req -in client-req.csr -out client-cert.der -outform DER -signkey client-private-key.pem -CA ca-cert.pem -CAkey ca-private-key.pem -CAcreateserial -days 3650
-echo &apos;请输入客户端证书p12文件密码，直接回车表示密码为空字符串...&apos;
-openssl pkcs12 -export -clcerts -in client-cert.pem -inkey client-private-key.pem -out client-cert.p12
-
-echo &apos;finishied&apos;
-</code></pre></li>
-</ul>
-<p>你可以按照步骤操作：</p>
-<p>复制脚本内容，保存到文件中，文件名为create.sh</p>
-<p>打开终端，通过cd命令进入create.sh所在的文件夹</p>
-<p>在终端内输入：chmod +x create.sh 点击回车</p>
-<p>在终端输入：./create.sh -h，此时会打印用法</p>
-<pre><code>usage: ./create.sh 
-    [-l [localevalue]]
-    [-p [provincevalue]]
-    [-c [cityvalue]]
-    [-d [companyvalue]]
-    [-u [unitvalue]]
-    [-h [hostnamevalue]]
-    [-e [emailvalue]]
-</code></pre><p>脚本有下面几种用法：</p>
+</code></pre>
+<p>脚本有下面几种用法：</p>
 <ul>
-<li><p>./create.sh -h 打印用法</p>
+<li><p>.&#x2F;create.sh -h 打印用法</p>
 </li>
-<li><p>./create.sh -c 会清空生成的所有文件</p>
+<li><p>.&#x2F;create.sh -c 会清空生成的所有文件</p>
 </li>
-<li><p>./create.sh 直接回车，会使用默认参数生成证书</p>
+<li><p>.&#x2F;create.sh 直接回车，会使用默认参数生成证书</p>
 </li>
-<li><p>./create.sh + 用法中所述选项 会使用自定义的参数生成证书</p>
+<li><p>.&#x2F;create.sh + 用法中所述选项 会使用自定义的参数生成证书</p>
 </li>
 </ul>
 <h2 id="4-2-搭建简单的HTTPS服务器"><a href="#4-2-搭建简单的HTTPS服务器" class="headerlink" title="4.2 搭建简单的HTTPS服务器"></a>4.2 搭建简单的HTTPS服务器</h2><p>我们使用nodejs来搭建https服务器，请按照如下步骤操作：</p>
 <p>首先下载nodejs并安装</p>
 <p>建立一个文件夹，文件夹内创建一个文件，名字为package.json，内容如下：</p>
-<pre><code>{
+<pre><code>&#123;
     &quot;name&quot;: &quot;test-https&quot;,
     &quot;version&quot;: &quot;1.0.0&quot;,
     &quot;main&quot;: &quot;app.js&quot;,
-    &quot;scripts&quot;: {
+    &quot;scripts&quot;: &#123;
         &quot;start&quot;: &quot;node app.js&quot;
-    },
+    &#125;,
     &quot;debug&quot;: true,
-    &quot;dependencies&quot;: {
+    &quot;dependencies&quot;: &#123;
         &quot;koa&quot;: &quot;2.5.2&quot;,
         &quot;koa-router&quot;: &quot;7.4.0&quot;
-    }
-}
-</code></pre><p>建立另一个文件，名字为app.js，内容如下：</p>
-<pre><code>const Koa = require(&apos;koa&apos;);
-const https = require(&apos;https&apos;);
-const fs = require(&apos;fs&apos;);
-const router = require(&apos;koa-router&apos;)();
+    &#125;
+&#125;
+</code></pre>
+<p>建立另一个文件，名字为app.js，内容如下：</p>
+<pre><code>const Koa = require(&#39;koa&#39;);
+const https = require(&#39;https&#39;);
+const fs = require(&#39;fs&#39;);
+const router = require(&#39;koa-router&#39;)();
 
 const app = new Koa();
 
 //路由
-router.get(&apos;/&apos;, (ctx, next) =&gt; {
-    ctx.response.body = &apos;this is a simple node js https server response&apos;;
-})
+router.get(&#39;/&#39;, (ctx, next) =&gt; &#123;
+    ctx.response.body = &#39;this is a simple node js https server response&#39;;
+&#125;)
 app.use(router.routes());
 
 //https
-https.createServer({
-    key: fs.readFileSync(&apos;./yourServerCertPrivatekey.key&apos;),
-    cert: fs.readFileSync(&apos;./yourServerCert.pem&apos;),
+https.createServer(&#123;
+    key: fs.readFileSync(&#39;./yourServerCertPrivatekey.key&#39;),
+    cert: fs.readFileSync(&#39;./yourServerCert.pem&#39;),
     requestCert: true,
-    ca:[fs.readFileSync(&apos;./yourClientCert.pem&apos;)]
-}, app.callback()).listen(3000);
+    ca:[fs.readFileSync(&#39;./yourClientCert.pem&#39;)]
+&#125;, app.callback()).listen(3000);
 
 console.log(`https app started at port 3000`)
-</code></pre><p>打开终端，使用cd命令进入我们创建的服务器文件夹，然后执行命令：npm install，等待命令完成(可能会比较慢，根据网络情况而定)。如出现下列字样表示安装成功(不一定完全相同)：</p>
+</code></pre>
+<p>打开终端，使用cd命令进入我们创建的服务器文件夹，然后执行命令：npm install，等待命令完成(可能会比较慢，根据网络情况而定)。如出现下列字样表示安装成功(不一定完全相同)：</p>
 <pre><code>added 40 packages from 21 contributors and audited 53 packages in 8.446s
 found 0 vulnerabilities
-</code></pre><p>至此我们的简易https服务器就搭建完成了。我们可以使用命令：node app.js 来启动服务器。但是你会发现会报错，这是因为fs.readFileSync(filename)这句代码表示要读取一个证书文件，要确保文件存在才可以。我们后续根据需求来修改此处文件路径即可。</p>
+</code></pre>
+<p>至此我们的简易https服务器就搭建完成了。我们可以使用命令：node app.js 来启动服务器。但是你会发现会报错，这是因为fs.readFileSync(filename)这句代码表示要读取一个证书文件，要确保文件存在才可以。我们后续根据需求来修改此处文件路径即可。</p>
 <p>服务器启动成功后，你可以在终端看到下面的文字：</p>
 <pre><code>https app started at port 3000
-</code></pre><h2 id="4-3-建立客户端工程"><a href="#4-3-建立客户端工程" class="headerlink" title="4.3 建立客户端工程"></a>4.3 建立客户端工程</h2><pre><code>-(void) test{
+</code></pre>
+<h2 id="4-3-建立客户端工程"><a href="#4-3-建立客户端工程" class="headerlink" title="4.3 建立客户端工程"></a>4.3 建立客户端工程</h2><pre><code>-(void) test&#123;
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] init];
-
+    
     //HTTPS验证代码，我们主要修改这里
     AFSecurityPolicy *policy = [AFSecurityPolicy defaultPolicy];
     policy.validatesDomainName = NO;//不验证域名，是为了测试方便，否则你需要修改host文件了
     manager.securityPolicy = policy;
-
+    
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     //请求地址就写这个
-    [manager GET:@&quot;https://127.0.0.1:3000/&quot; parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [manager GET:@&quot;https://127.0.0.1:3000/&quot; parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) &#123;
         NSLog(@&quot;succ and response = [%@]&quot;, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+    &#125; failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) &#123;
         NSLog(@&quot;fail&quot;);
-    }];
-}
-</code></pre><h2 id="4-4-服务端使用CA机构颁发的正式证书"><a href="#4-4-服务端使用CA机构颁发的正式证书" class="headerlink" title="4.4 服务端使用CA机构颁发的正式证书"></a>4.4 服务端使用CA机构颁发的正式证书</h2><p>这个是最简单的情况，AF已经支持，我们不需要做任何额外工作就能够支持。</p>
+    &#125;];
+&#125;
+</code></pre>
+<h2 id="4-4-服务端使用CA机构颁发的正式证书"><a href="#4-4-服务端使用CA机构颁发的正式证书" class="headerlink" title="4.4 服务端使用CA机构颁发的正式证书"></a>4.4 服务端使用CA机构颁发的正式证书</h2><p>这个是最简单的情况，AF已经支持，我们不需要做任何额外工作就能够支持。</p>
 <p>首先，我们将服务端的代码中的证书路径指向我们在CA机构申请好的服务端证书路径，其中key表示证书私钥，cert表示pem格式证书。另外将requestCert和ca这两个字段先删除，然后重新启动服务器。像下面这样：</p>
 <pre><code>... ...
 //https
-https.createServer({
+https.createServer(&#123;
     key: fs.readFileSync(这里改成你的私钥路径),
     cert: fs.readFileSync(这里改成你的pem格式证书路径)
-}, app.callback()).listen(3000);
+&#125;, app.callback()).listen(3000);
 ... ...
-</code></pre><p>然后，客户端的代码不需要修改。直接运行xcode，正常情况下你可以看到如下输出：</p>
+</code></pre>
+<p>然后，客户端的代码不需要修改。直接运行xcode，正常情况下你可以看到如下输出：</p>
 <pre><code>succ and response = [this is a simple node js https server response]
-</code></pre><h2 id="4-5-服务端使用自签名证书"><a href="#4-5-服务端使用自签名证书" class="headerlink" title="4.5 服务端使用自签名证书"></a>4.5 服务端使用自签名证书</h2><p>服务端代码不变，只是将证书和私钥路径修改为我们自签名的证书路径。</p>
+</code></pre>
+<h2 id="4-5-服务端使用自签名证书"><a href="#4-5-服务端使用自签名证书" class="headerlink" title="4.5 服务端使用自签名证书"></a>4.5 服务端使用自签名证书</h2><p>服务端代码不变，只是将证书和私钥路径修改为我们自签名的证书路径。</p>
 <p>上文中，我们已经创建过自签名的证书。</p>
 <p>首先把证书文件夹的私钥文件server-private-key.pem和证书文件server-cert.pem复制到服务器文件夹下。</p>
 <p>然后服务器代码修改如下：</p>
 <pre><code>... ...
 //https
-https.createServer({
-    key: fs.readFileSync(&apos;./server-private-key.pem&apos;),
-    cert: fs.readFileSync(&apos;./server-cert.pem&apos;)
-}, app.callback()).listen(3000);
+https.createServer(&#123;
+    key: fs.readFileSync(&#39;./server-private-key.pem&#39;),
+    cert: fs.readFileSync(&#39;./server-cert.pem&#39;)
+&#125;, app.callback()).listen(3000);
 ... ...
-</code></pre><p>重启服务器。</p>
+</code></pre>
+<p>重启服务器。</p>
 <p>客户端需要把证书文件夹内的server-cert.der文件拖入xcode中，然后将xcode中的证书修改名字为server-cert.cer。</p>
 <p>客户端代码做如下修改（请看注释）</p>
-<pre><code>-(void) test{
+<pre><code>-(void) test&#123;
     //使用服务器自签名证书，需要指定baseUrl属性。
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithBaseURL:[NSURL URLWithString:@&quot;https://127.0.0.1:3000&quot;]];
-
+    
     //AFSSLPinningModeCertificate表示使用自签名证书
     AFSecurityPolicy *policy = [AFSecurityPolicy policyWithPinningMode:AFSSLPinningModeCertificate];
     //为了测试方便不验证域名，若要验证域名，则请求时的域名要和创建证书（创建证书的脚本执行时可指定域名）时的域名一致
@@ -601,93 +617,95 @@ https.createServer({
     policy.allowInvalidCertificates = YES;
     //指定本地证书路径
     policy.pinnedCertificates = [AFSecurityPolicy certificatesInBundle:[NSBundle mainBundle]];
-
+    
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    [manager GET:@&quot;https://127.0.0.1:3000/&quot; parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [manager GET:@&quot;https://127.0.0.1:3000/&quot; parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) &#123;
         NSLog(@&quot;succ and response = [%@]&quot;, [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding]);
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+    &#125; failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) &#123;
         NSLog(@&quot;fail&quot;);
-    }];
-}
-</code></pre><p>运行工程，正常情况下，可以看到正确输出。</p>
+    &#125;];
+&#125;
+</code></pre>
+<p>运行工程，正常情况下，可以看到正确输出。</p>
 <h2 id="4-6-服务端验证客户端证书"><a href="#4-6-服务端验证客户端证书" class="headerlink" title="4.6 服务端验证客户端证书"></a>4.6 服务端验证客户端证书</h2><p>这叫做双向验证，客户端验证服务端无误之后，服务端也可以验证客户端证书，这样可以保证数据传输双方都是自己想要的目标。</p>
 <p>首先，把证书文件夹内的client-cert.pem文件复制到服务器文件夹内。</p>
 <p>然后修改服务端代码：</p>
 <pre><code>... ...
 //https
-https.createServer({
-    key: fs.readFileSync(&apos;./server-private-key.pem&apos;),
-    cert: fs.readFileSync(&apos;./server-cert.pem&apos;),
+https.createServer(&#123;
+    key: fs.readFileSync(&#39;./server-private-key.pem&#39;),
+    cert: fs.readFileSync(&#39;./server-cert.pem&#39;),
     requestCert: true,//表示客户端需要证书
-    ca:[fs.readFileSync(&apos;./client-cert.pem&apos;)]//用于匹配客户端证书
-}, app.callback()).listen(3000);
+    ca:[fs.readFileSync(&#39;./client-cert.pem&#39;)]//用于匹配客户端证书
+&#125;, app.callback()).listen(3000);
 ... ...
-</code></pre><p>重启服务器。</p>
+</code></pre>
+<p>重启服务器。</p>
 <p>客户端需要把证书文件夹内的client-cert.p12文件拖到xcode中。<br>客户端请求代码不需要修改。</p>
 <p>因为AF3.0并没有提供对客户端证书的支持，所以我们需要修改AF的代码。</p>
 <p>找到AFURLSessionManager.m文件，</p>
-<p>在- (void)URLSession:(NSURLSession <em>)session didReceiveChallenge:(NSURLAuthenticationChallenge </em>)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler方法。</p>
+<p>在- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler方法。</p>
 <pre><code>- (void)URLSession:(NSURLSession *)session
 didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
  completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler
-{
+&#123;
     NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
     __block NSURLCredential *credential = nil;
 
-    if (self.sessionDidReceiveAuthenticationChallenge) {
+    if (self.sessionDidReceiveAuthenticationChallenge) &#123;
         disposition = self.sessionDidReceiveAuthenticationChallenge(session, challenge, &amp;credential);
-    } else {
+    &#125; else &#123;
         NSString *authMethod = challenge.protectionSpace.authenticationMethod;
-        if ([authMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-            if ([self.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host]) {
+        if ([authMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) &#123;
+            if ([self.securityPolicy evaluateServerTrust:challenge.protectionSpace.serverTrust forDomain:challenge.protectionSpace.host]) &#123;
                 credential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
-                if (credential) {
+                if (credential) &#123;
                     disposition = NSURLSessionAuthChallengeUseCredential;
-                } else {
+                &#125; else &#123;
                     disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-                }
-            } else {
+                &#125;
+            &#125; else &#123;
                 disposition = NSURLSessionAuthChallengeCancelAuthenticationChallenge;
-            }
-        } else if([authMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]){
+            &#125;
+        &#125; else if([authMethod isEqualToString:NSURLAuthenticationMethodClientCertificate])&#123;
             NSData *p12Data = [NSData dataWithContentsOfFile:[NSBundle pathForResource:@&quot;client-cert&quot; ofType:@&quot;p12&quot; inDirectory:[NSBundle mainBundle].bundlePath]];
-            if([p12Data isKindOfClass:[NSData class]]){
+            if([p12Data isKindOfClass:[NSData class]])&#123;
                 SecTrustRef trust = NULL;
                 SecIdentityRef identity = NULL;
                 [[self class] extractIdentity:&amp;identity andTrust:&amp;trust fromPKCS12Data:p12Data];
-                if(identity){
+                if(identity)&#123;
                     SecCertificateRef certificate = NULL;
                     SecIdentityCopyCertificate(identity, &amp;certificate);
-                    const void *certs[] = {certificate};
+                    const void *certs[] = &#123;certificate&#125;;
                     CFArrayRef certArray =CFArrayCreate(kCFAllocatorDefault, certs, 1, NULL);
                     credential = [NSURLCredential credentialWithIdentity:identity certificates:(__bridge  NSArray*)certArray persistence:NSURLCredentialPersistencePermanent];
                     disposition = NSURLSessionAuthChallengeUseCredential;
-                }else{
+                &#125;else&#123;
                     disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-                }
-            }else{
+                &#125;
+            &#125;else&#123;
                 disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-            }
-        } else {
+            &#125;
+        &#125; else &#123;
             disposition = NSURLSessionAuthChallengePerformDefaultHandling;
-        }
-    }
-
-    if (completionHandler) {
+        &#125;
+    &#125;
+    
+    if (completionHandler) &#123;
         completionHandler(disposition, credential);
-    }
-}
+    &#125;
+&#125;
 
-+ (BOOL)extractIdentity:(SecIdentityRef*)outIdentity andTrust:(SecTrustRef *)outTrust fromPKCS12Data:(NSData *)inPKCS12Data {
++ (BOOL)extractIdentity:(SecIdentityRef*)outIdentity andTrust:(SecTrustRef *)outTrust fromPKCS12Data:(NSData *)inPKCS12Data &#123;
     OSStatus securityError = errSecSuccess;
     //客户端证书密码
     NSDictionary*optionsDictionary = [NSDictionary dictionaryWithObject: @&quot;&quot;
                                                                  forKey: (__bridge id)kSecImportExportPassphrase];
-
+    
     CFArrayRef items = CFArrayCreate(NULL, 0, 0, NULL);
     securityError = SecPKCS12Import((__bridge CFDataRef)inPKCS12Data,(__bridge CFDictionaryRef)optionsDictionary ,&amp;items);
-
-    if(securityError == 0) {
+    
+    if(securityError == 0) &#123;
         CFDictionaryRef myIdentityAndTrust = CFArrayGetValueAtIndex(items, 0);
         const void *tempIdentity = NULL;
         tempIdentity = CFDictionaryGetValue(myIdentityAndTrust, kSecImportItemIdentity);
@@ -696,12 +714,13 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
         tempTrust = CFDictionaryGetValue(myIdentityAndTrust, kSecImportItemTrust);
         *outTrust = (SecTrustRef)tempTrust;
         return YES;
-    } else {
+    &#125; else &#123;
         NSLog(@&quot;SecPKCS12Import is failed with error code %d&quot;, (int)securityError);
         return NO;
-    }
-}
-</code></pre><p>值得注意的有2个地方：</p>
+    &#125;
+&#125;
+</code></pre>
+<p>值得注意的有2个地方：</p>
 <p>一个是p12文件的文件名，我们这里写死了client-cert.p12，可以根据具体情况做修改。<br>还有一个是p12文件的密码，在extractIdentity:方法的第三行，可以改成你的p12文件密码，密码可以为空。</p>
 
       
@@ -793,7 +812,7 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/26/详解AFNetworking的HTTPS模块/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/26/%E8%AF%A6%E8%A7%A3AFNetworking%E7%9A%84HTTPS%E6%A8%A1%E5%9D%97/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -807,7 +826,7 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
   
 <nav id="article-nav">
   
-    <a href="/2018/11/27/iOS 利用运行时将对象序列化与反序列化/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/11/27/iOS%20%E5%88%A9%E7%94%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B0%86%E5%AF%B9%E8%B1%A1%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%8E%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -817,7 +836,7 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
     </a>
   
   
-    <a href="/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/11/26/UITableView%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A1%E7%AE%97UILabel%E9%AB%98%E5%BA%A6%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">UITableView性能优化的一点感悟及计算UILabel高度的新方法</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -861,7 +880,7 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -968,10 +987,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -980,7 +995,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -988,11 +1003,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1012,19 +1031,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

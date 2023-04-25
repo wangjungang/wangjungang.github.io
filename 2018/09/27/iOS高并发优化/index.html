@@ -9,17 +9,17 @@
   <title>iOS高并发优化 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="一.消息列表页面的优化：首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化： 1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。 2.如果消息已经显示过">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS高并发优化">
-<meta property="og:url" content="http://yoursite.com/2018/09/27/iOS高并发优化/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/09/27/iOS%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="一.消息列表页面的优化：首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化： 1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。 2.如果消息已经显示过">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-09-27T14:46:15.687Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-09-27T14:31:57.006Z">
+<meta property="article:modified_time" content="2018-09-27T14:46:15.687Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS高并发优化">
-<meta name="twitter:description" content="一.消息列表页面的优化：首先我们发消息时候观察一下消息列表的特性，当发送一条消息时候，消息的数量会变化，列表会出现在最上边的位置，列表内的内容会发生变化。从消息列表的特性，我们就可以分析出要优化的点了。通过这些点，我们做了一些优化： 1.如果列表消息从没显示过需要刷新列表，创建好一个cell后，将cell插入到第一位上，cell插入的性能要高于刷新tableview的性能。 2.如果消息已经显示过">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/09/27/iOS高并发优化/" class="archive-article-date">
+        <a href="/2018/09/27/iOS%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/" class="archive-article-date">
   	<time datetime="2018-09-27T14:31:57.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-27</time>
 </a>
         
@@ -181,7 +181,7 @@
 <p>3.如果消息已经显示，并且是第一位，则只需要cell的内容变化。</p>
 <p>4.只修改cell里的内容，不进行刷新cell整体，这里要注意的是，一定要最小化刷新。刷新点越小，性能损耗越小。我们项目架构是MVVM,采用了ReactiveCocoa框架,针对每个cell上的可变化的控件数据进行了监听，每一个cell上对应一个vm，这样当vm上的数据变化时候，cell上的数据也就跟着变了。做到了最小化刷新。</p>
 <p>5.避免使用autolayout计算位置，这个很重要，在性能要求高的情况下，autolayout计算会很耗时间，尤其在算tableview高度的时候可见一斑。可喜的是消息列表的高度是固定的，所以在计算高度时候我们并未花费时间。</p>
-<p>6.使用(<strong>kindof UITableViewCell <em>)dequeueReusableCellWithIdentifier:(NSString </em>)identifier forIndexPath:(NSIndexPath *)indexPath而不使用-(nullable </strong>kindof UITableViewCell <em>)dequeueReusableCellWithIdentifier:(NSString </em>)identifier来查找cell,因为下边的方法会多查一次，耗时更长一点。</p>
+<p>6.使用(__kindof UITableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier forIndexPath:(NSIndexPath *)indexPath而不使用-(nullable __kindof UITableViewCell *)dequeueReusableCellWithIdentifier:(NSString *)identifier来查找cell,因为下边的方法会多查一次，耗时更长一点。</p>
 <p>7.cellForRowAtIndexPath方法只负责创建cell,willDisplayCell方法才给cell进行赋值操作。从方法名字就可以看出来原因</p>
 <p>8.当来消息轰炸时候，必然会是不同的人发来的消息，会导致tableview不可避免的刷新，如果不加处理必然会卡顿，要知道，机器也是有瓶颈的。这里我们做的优化是根据cpu的使用率选择性的刷新tableview。后来我们发现微信也是有这个现象，并不是实时的刷新，我们猜测也是类似处理。</p>
 <p>9.重绘制系统控件，相信你也发现了消息列表里，主要有两个控件，一个是头像，一个是label。而系统的UIImageView用来显示头像，未免有点重。我们的处理是使用UIView，设置View得layer.content来处理。针对layer层做的setImageWithUrl的第三方库也不少，大家可以自行查询。另一个就是label，如果你能集成UIView自己绘制一个label,我想也许会有一点效果。</p>
@@ -298,7 +298,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/27/iOS高并发优化/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/09/27/iOS%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -312,7 +312,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/10/02/无限循环滚动的TableView/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/10/02/%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%9A%E5%8A%A8%E7%9A%84TableView/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -322,7 +322,7 @@
     </a>
   
   
-    <a href="/2018/09/22/每个程序员对着电梯都想过调度算法/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/09/22/%E6%AF%8F%E4%B8%AA%E7%A8%8B%E5%BA%8F%E5%91%98%E5%AF%B9%E7%9D%80%E7%94%B5%E6%A2%AF%E9%83%BD%E6%83%B3%E8%BF%87%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">每个程序员对着电梯都想过调度算法吧！</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -366,7 +366,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -473,10 +473,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -485,7 +481,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -493,11 +489,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -517,19 +517,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

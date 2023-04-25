@@ -9,17 +9,17 @@
   <title>Swift中Result类型的强大功能 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面Swift类型系统的一大好处是它可以让我们在处理各种操作的结果时消除很多歧义。通过泛型和枚举值等功能，我们可以轻松创建类型，让我们利用编译器来确保我们以正确的方式处理结果。 这种类型的一个例子是Result类型 - 虽然它（尚未）构建到标准库中，但它是一种在许多不同的Swift项目中很常见的类型。我们将探讨这种结果类型，以及它与Swift的一些语言功能结合使用时可以做的一些很酷的事情。 网">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Swift中Result类型的强大功能">
-<meta property="og:url" content="http://yoursite.com/2019/04/20/Swift中Result类型的强大功能/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/04/20/Swift%E4%B8%ADResult%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%BC%BA%E5%A4%A7%E5%8A%9F%E8%83%BD/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面Swift类型系统的一大好处是它可以让我们在处理各种操作的结果时消除很多歧义。通过泛型和枚举值等功能，我们可以轻松创建类型，让我们利用编译器来确保我们以正确的方式处理结果。 这种类型的一个例子是Result类型 - 虽然它（尚未）构建到标准库中，但它是一种在许多不同的Swift项目中很常见的类型。我们将探讨这种结果类型，以及它与Swift的一些语言功能结合使用时可以做的一些很酷的事情。 网">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-20T15:01:10.419Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-04-20T14:59:07.606Z">
+<meta property="article:modified_time" content="2019-04-20T15:01:10.419Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift中Result类型的强大功能">
-<meta name="twitter:description" content="写在前面Swift类型系统的一大好处是它可以让我们在处理各种操作的结果时消除很多歧义。通过泛型和枚举值等功能，我们可以轻松创建类型，让我们利用编译器来确保我们以正确的方式处理结果。 这种类型的一个例子是Result类型 - 虽然它（尚未）构建到标准库中，但它是一种在许多不同的Swift项目中很常见的类型。我们将探讨这种结果类型，以及它与Swift的一些语言功能结合使用时可以做的一些很酷的事情。 网">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/04/20/Swift中Result类型的强大功能/" class="archive-article-date">
+        <a href="/2019/04/20/Swift%E4%B8%ADResult%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%BC%BA%E5%A4%A7%E5%8A%9F%E8%83%BD/" class="archive-article-date">
   	<time datetime="2019-04-20T14:59:07.606Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
 </a>
         
@@ -180,85 +180,89 @@
 <h3 id="网络请求是我们经常用到的场景，而网络请求一般会有2种结果："><a href="#网络请求是我们经常用到的场景，而网络请求一般会有2种结果：" class="headerlink" title="网络请求是我们经常用到的场景，而网络请求一般会有2种结果："></a>网络请求是我们经常用到的场景，而网络请求一般会有2种结果：</h3><p>成功</p>
 <p>失败 让我们来看看afnetworking框架是怎么去处理他们的结果的：</p>
 <pre><code>AFHTTPSessionManager *session = [AFHTTPSessionManager manager];
-[session GET:@&quot;需要请求的url&quot; parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+[session GET:@&quot;需要请求的url&quot; parameters:nil success:^(NSURLSessionDataTask *task, id responseObject) &#123;
         NSLog(@&quot;请求成功&quot;);
-} failure:^(NSURLSessionDataTask *task, NSError *error) {
+&#125; failure:^(NSURLSessionDataTask *task, NSError *error) &#123;
         NSLog(@&quot;请求失败&quot;);        
-}];
-</code></pre><p>显然，他通过2个block来处理成功与失败的回调，但是，我们能不能用一个对象去处理完这种事情呢？？？ <strong><em>Result</em></strong>类型可以帮到你…..</p>
-<pre><code>public protocol TDWSuccessedProtocol {
+&#125;];
+</code></pre>
+<p>显然，他通过2个block来处理成功与失败的回调，但是，我们能不能用一个对象去处理完这种事情呢？？？ <em><strong>Result</strong></em>类型可以帮到你…..</p>
+<pre><code>public protocol TDWSuccessedProtocol &#123;
+    
+&#125;
 
-}
+public protocol TDWFailedProtocol &#123;
+    
+&#125;
 
-public protocol TDWFailedProtocol {
-
-}
-
-public enum TDWResult&lt;T:TDWSuccessedProtocol, Error:TDWFailedProtocol&gt; {
+public enum TDWResult&lt;T:TDWSuccessedProtocol, Error:TDWFailedProtocol&gt; &#123;
     case success(T)
     case failure(Error)
-
-    public init(value:T) {
+    
+    public init(value:T) &#123;
         self = .success(value)
-    }
-
-    public init(error:Error) {
+    &#125;
+    
+    public init(error:Error) &#123;
         self = .failure(error)
-    }
-
-}
-</code></pre><p>以上就是一个很基础的<strong><em>Result</em></strong>的类型。</p>
+    &#125;
+    
+&#125;
+</code></pre>
+<p>以上就是一个很基础的<em><strong>Result</strong></em>的类型。</p>
 <h3 id="我们先定义2个协议："><a href="#我们先定义2个协议：" class="headerlink" title="我们先定义2个协议："></a>我们先定义2个协议：</h3><ul>
 <li>TDWSuccessedProtocol 成功的协议，可以扩展成功的对象需要的任何东西。</li>
 <li>TDWFailedProtocol 失败的协议，可以扩展失败的对象需要的任何东西。</li>
 </ul>
-<h3 id="我们创建一个TDWResult枚举"><a href="#我们创建一个TDWResult枚举" class="headerlink" title="我们创建一个TDWResult枚举"></a>我们创建一个TDWResult枚举</h3><p>枚举有2个泛型，T<strong><em>继承</em></strong>TDWSuccessedProtocol，Error<strong><em>继承</em></strong>TDWFailedProtocol。枚举有2种情况，一种是成功（success），一种是失败（failure），还有对应的初始化。<br>这样，我们就完成了一个<strong><em>Result</em></strong>类型的定义了</p>
+<h3 id="我们创建一个TDWResult枚举"><a href="#我们创建一个TDWResult枚举" class="headerlink" title="我们创建一个TDWResult枚举"></a>我们创建一个TDWResult枚举</h3><p>枚举有2个泛型，T<em><strong>继承</strong></em>TDWSuccessedProtocol，Error<em><strong>继承</strong></em>TDWFailedProtocol。枚举有2种情况，一种是成功（success），一种是失败（failure），还有对应的初始化。<br>这样，我们就完成了一个<em><strong>Result</strong></em>类型的定义了</p>
 <p>网络请求的例子</p>
-<pre><code>struct TDWSuccess:TDWSuccessedProtocol {
+<pre><code>struct TDWSuccess:TDWSuccessedProtocol &#123;
+    
+&#125;
 
-}
-
-struct TDWFailure:TDWFailedProtocol {
-
-}
+struct TDWFailure:TDWFailedProtocol &#123;
+    
+&#125;
 
 typealias Completion = (_ result:TDWResult&lt;TDWSuccess,TDWFailure&gt;)-&gt;Void
 
-class TDWNetworkTest {
-
-    class func tdw_request(parameters:String,completion:@escaping Completion) {
-
+class TDWNetworkTest &#123;
+    
+    class func tdw_request(parameters:String,completion:@escaping Completion) &#123;
+        
         //network request
-
-        if parameters.count &gt; 0 {
+        
+        if parameters.count &gt; 0 &#123;
             let successResult = TDWSuccess()
             completion(TDWResult(value: successResult))
-
-        } else {
-
+            
+        &#125; else &#123;
+            
             let failResult = TDWFailure()
             completion(TDWResult(error: failResult))
-
-        }
-
-
-    }
-
-}
-</code></pre><p>调用:</p>
-<pre><code>TDWNetworkTest.tdw_request(parameters: &quot;abc&quot;) {(result) in
-
-            switch result {
-
+            
+        &#125;
+        
+        
+    &#125;
+    
+&#125;
+</code></pre>
+<p>调用:</p>
+<pre><code>TDWNetworkTest.tdw_request(parameters: &quot;abc&quot;) &#123;(result) in
+            
+            switch result &#123;
+                
             case .success(let response):
                 print(response)
-
+                
             case .failure(let response):
                 print(response)
-            }
-
-        }
-</code></pre><p>这样做的话，我们要扩展就比较简单了，不用再多定义个block，多定义元组，我们直接在<strong><em>TDWResult</em></strong>里面多定义一种case就可以了，扩展性就大大增强了。</p>
+            &#125;
+            
+        &#125;
+</code></pre>
+<p>这样做的话，我们要扩展就比较简单了，不用再多定义个block，多定义元组，我们直接在<em><strong>TDWResult</strong></em>里面多定义一种case就可以了，扩展性就大大增强了。</p>
 
       
 
@@ -349,7 +353,7 @@ class TDWNetworkTest {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/20/Swift中Result类型的强大功能/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/20/Swift%E4%B8%ADResult%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%BC%BA%E5%A4%A7%E5%8A%9F%E8%83%BD/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -363,7 +367,7 @@ class TDWNetworkTest {
   
 <nav id="article-nav">
   
-    <a href="/2019/04/24/如何查找内存泄漏/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/04/24/%E5%A6%82%E4%BD%95%E6%9F%A5%E6%89%BE%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -373,7 +377,7 @@ class TDWNetworkTest {
     </a>
   
   
-    <a href="/2019/04/20/swift内存管理之weak与unowned/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/04/20/swift%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E4%B9%8Bweak%E4%B8%8Eunowned/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">swift内存管理之weak与unowned</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -417,7 +421,7 @@ class TDWNetworkTest {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -524,10 +528,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -536,7 +536,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -544,11 +544,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -568,19 +572,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -9,17 +9,17 @@
   <title>Swift自定义UIFont字号自适应屏幕 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="【Swift】自定义UIFont字号自适应屏幕为方便项目中统一调用不同的字号，及字号大小自适应屏幕，对UIFont进行类方法扩展 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172">
-<meta name="keywords" content="swift">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Swift自定义UIFont字号自适应屏幕">
-<meta property="og:url" content="http://yoursite.com/2022/06/21/Swift自定义UIFont字号自适应屏幕/index.html">
+<meta property="og:url" content="http://yoursite.com/2022/06/21/Swift%E8%87%AA%E5%AE%9A%E4%B9%89UIFont%E5%AD%97%E5%8F%B7%E8%87%AA%E9%80%82%E5%BA%94%E5%B1%8F%E5%B9%95/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="【Swift】自定义UIFont字号自适应屏幕为方便项目中统一调用不同的字号，及字号大小自适应屏幕，对UIFont进行类方法扩展 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2022-06-21T02:53:23.737Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-06-21T02:52:43.930Z">
+<meta property="article:modified_time" content="2022-06-21T02:53:23.737Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="swift">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift自定义UIFont字号自适应屏幕">
-<meta name="twitter:description" content="【Swift】自定义UIFont字号自适应屏幕为方便项目中统一调用不同的字号，及字号大小自适应屏幕，对UIFont进行类方法扩展 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2022/06/21/Swift自定义UIFont字号自适应屏幕/" class="archive-article-date">
+        <a href="/2022/06/21/Swift%E8%87%AA%E5%AE%9A%E4%B9%89UIFont%E5%AD%97%E5%8F%B7%E8%87%AA%E9%80%82%E5%BA%94%E5%B1%8F%E5%B9%95/" class="archive-article-date">
   	<time datetime="2022-06-21T02:52:43.930Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-06-21</time>
 </a>
         
@@ -176,9 +176,10 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="【Swift】自定义UIFont字号自适应屏幕"><a href="#【Swift】自定义UIFont字号自适应屏幕" class="headerlink" title="【Swift】自定义UIFont字号自适应屏幕"></a>【Swift】自定义UIFont字号自适应屏幕</h1><p><strong>为方便项目中统一调用不同的字号，及字号大小自适应屏幕，对UIFont进行类方法扩展</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">//</span><br><span class="line">//  UIFont+myFontExt.swift</span><br><span class="line">//  Comic</span><br><span class="line">//</span><br><span class="line">//  Created by LRS on 2022/4/17.</span><br><span class="line">//</span><br><span class="line"></span><br><span class="line">import UIKit</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">let SCREEN_WIDTH = UIScreen.main.bounds.width</span><br><span class="line">let SCREEN_HEIGHT = UIScreen.main.bounds.height</span><br><span class="line">///&lt; 适配，屏幕宽高适配比例，岭南以 iPhone6 模板设计</span><br><span class="line">let kAutoSizeScale_X = ((SCREEN_HEIGHT == 667.0) ? 1.0 : (SCREEN_WIDTH / 375.0))</span><br><span class="line">let kAutoSizeScale_Y = ((SCREEN_HEIGHT == 667.0) ? 1.0 : (SCREEN_HEIGHT / 667.0))</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> *floor 向下取整</span><br><span class="line"> *ceil  向上取整</span><br><span class="line"> ***/</span><br><span class="line">///&lt; 横向自适应拉伸</span><br><span class="line">func kAutoConvertWithScreenW_Value(_ value:CGFloat) -&gt; CGFloat &#123;</span><br><span class="line">    return floor(value * kAutoSizeScale_X)</span><br><span class="line">&#125;</span><br><span class="line">///&lt; 纵向向自适应拉伸</span><br><span class="line">func kAutoConvertWithScreenH_Value(_ value:CGFloat) -&gt; CGFloat &#123;</span><br><span class="line">    return floor(value * kAutoSizeScale_Y)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension UIFont &#123;</span><br><span class="line"></span><br><span class="line">    ///&lt; 自适配 字体大小</span><br><span class="line">   class func kAutoSystemFont(_ size:CGFloat) -&gt; UIFont &#123;</span><br><span class="line">        return .systemFont(ofSize: kAutoConvertWithScreenW_Value(size))</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ///&lt; 自适配 加粗 字体大小</span><br><span class="line">    class func kAutoBoldFont(_ size:CGFloat) -&gt; UIFont &#123;</span><br><span class="line">        return .boldSystemFont(ofSize: kAutoConvertWithScreenW_Value(size))</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ///&lt; 自适配 name 字体大小</span><br><span class="line">    class func kAutoNameFont(_ name:String, _ size:CGFloat) -&gt; UIFont &#123;</span><br><span class="line">        return UIFont(name: name, size: kAutoConvertWithScreenW_Value(size)) ?? kAutoSystemFont(size)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ///&lt; 自适应 12号字体</span><br><span class="line">    class var autoFont_12:UIFont&#123;</span><br><span class="line">        get&#123;</span><br><span class="line">            return kAutoSystemFont(12.0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ///&lt; 自适应 14号字体</span><br><span class="line">    class var autoFont_14:UIFont&#123;</span><br><span class="line">        get&#123;</span><br><span class="line">            return kAutoSystemFont(14.0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ///&lt; 自适应 16号字体</span><br><span class="line">    class var autoFont_16:UIFont&#123;</span><br><span class="line">        get&#123;</span><br><span class="line">            return kAutoSystemFont(16.0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ///&lt; 自适应 18号字体</span><br><span class="line">    class var autoFont_18:UIFont&#123;</span><br><span class="line">        get&#123;</span><br><span class="line">            return kAutoSystemFont(18.0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ///&lt; 自适应 20号字体</span><br><span class="line">    class var autoFont_20:UIFont&#123;</span><br><span class="line">        get&#123;</span><br><span class="line">            return kAutoSystemFont(20.0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">//</span><br><span class="line">//  UIFont+myFontExt.swift</span><br><span class="line">//  Comic</span><br><span class="line">//</span><br><span class="line">//  Created by LRS on 2022/4/17.</span><br><span class="line">//</span><br><span class="line"></span><br><span class="line">import UIKit</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">let SCREEN_WIDTH = UIScreen.main.bounds.width</span><br><span class="line">let SCREEN_HEIGHT = UIScreen.main.bounds.height</span><br><span class="line">///&lt; 适配，屏幕宽高适配比例，岭南以 iPhone6 模板设计</span><br><span class="line">let kAutoSizeScale_X = ((SCREEN_HEIGHT == 667.0) ? 1.0 : (SCREEN_WIDTH / 375.0))</span><br><span class="line">let kAutoSizeScale_Y = ((SCREEN_HEIGHT == 667.0) ? 1.0 : (SCREEN_HEIGHT / 667.0))</span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> *floor 向下取整</span><br><span class="line"> *ceil  向上取整</span><br><span class="line"> ***/</span><br><span class="line">///&lt; 横向自适应拉伸</span><br><span class="line">func kAutoConvertWithScreenW_Value(_ value:CGFloat) -&gt; CGFloat &#123;</span><br><span class="line">    return floor(value * kAutoSizeScale_X)</span><br><span class="line">&#125;</span><br><span class="line">///&lt; 纵向向自适应拉伸</span><br><span class="line">func kAutoConvertWithScreenH_Value(_ value:CGFloat) -&gt; CGFloat &#123;</span><br><span class="line">    return floor(value * kAutoSizeScale_Y)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">extension UIFont &#123;</span><br><span class="line"></span><br><span class="line">    ///&lt; 自适配 字体大小</span><br><span class="line">   class func kAutoSystemFont(_ size:CGFloat) -&gt; UIFont &#123;</span><br><span class="line">        return .systemFont(ofSize: kAutoConvertWithScreenW_Value(size))</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ///&lt; 自适配 加粗 字体大小</span><br><span class="line">    class func kAutoBoldFont(_ size:CGFloat) -&gt; UIFont &#123;</span><br><span class="line">        return .boldSystemFont(ofSize: kAutoConvertWithScreenW_Value(size))</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ///&lt; 自适配 name 字体大小</span><br><span class="line">    class func kAutoNameFont(_ name:String, _ size:CGFloat) -&gt; UIFont &#123;</span><br><span class="line">        return UIFont(name: name, size: kAutoConvertWithScreenW_Value(size)) ?? kAutoSystemFont(size)</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    ///&lt; 自适应 12号字体</span><br><span class="line">    class var autoFont_12:UIFont&#123;</span><br><span class="line">        get&#123;</span><br><span class="line">            return kAutoSystemFont(12.0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ///&lt; 自适应 14号字体</span><br><span class="line">    class var autoFont_14:UIFont&#123;</span><br><span class="line">        get&#123;</span><br><span class="line">            return kAutoSystemFont(14.0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ///&lt; 自适应 16号字体</span><br><span class="line">    class var autoFont_16:UIFont&#123;</span><br><span class="line">        get&#123;</span><br><span class="line">            return kAutoSystemFont(16.0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ///&lt; 自适应 18号字体</span><br><span class="line">    class var autoFont_18:UIFont&#123;</span><br><span class="line">        get&#123;</span><br><span class="line">            return kAutoSystemFont(18.0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ///&lt; 自适应 20号字体</span><br><span class="line">    class var autoFont_20:UIFont&#123;</span><br><span class="line">        get&#123;</span><br><span class="line">            return kAutoSystemFont(20.0)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
 <p>使用方法</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let btn = UIButton(type: .custom)</span><br><span class="line">//autoFont_14定义的是类属性直接类名UIFont调用就可以</span><br><span class="line">btn.titleLabel?.font = .autoFont_14</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">let titleLab = UILabel()</span><br><span class="line">//定义的是类方法直接类名UIFont调用就可以</span><br><span class="line">titleLab.font = .kAutoBoldFont(18)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let btn = UIButton(type: .custom)</span><br><span class="line">//autoFont_14定义的是类属性直接类名UIFont调用就可以</span><br><span class="line">btn.titleLabel?.font = .autoFont_14</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">let titleLab = UILabel()</span><br><span class="line">//定义的是类方法直接类名UIFont调用就可以</span><br><span class="line">titleLab.font = .kAutoBoldFont(18)</span><br></pre></td></tr></table></figure>
 
       
 
@@ -269,7 +270,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2022/06/21/Swift自定义UIFont字号自适应屏幕/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2022/06/21/Swift%E8%87%AA%E5%AE%9A%E4%B9%89UIFont%E5%AD%97%E5%8F%B7%E8%87%AA%E9%80%82%E5%BA%94%E5%B1%8F%E5%B9%95/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -283,7 +284,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2022/07/12/让你的Swift代码更Swift/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2022/07/12/%E8%AE%A9%E4%BD%A0%E7%9A%84Swift%E4%BB%A3%E7%A0%81%E6%9B%B4Swift/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -293,7 +294,7 @@
     </a>
   
   
-    <a href="/2022/05/19/高德地图API在web使用/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2022/05/19/%E9%AB%98%E5%BE%B7%E5%9C%B0%E5%9B%BEAPI%E5%9C%A8web%E4%BD%BF%E7%94%A8/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">高德地图API在web使用</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -337,7 +338,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -444,10 +445,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -456,7 +453,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -464,11 +461,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -488,19 +489,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

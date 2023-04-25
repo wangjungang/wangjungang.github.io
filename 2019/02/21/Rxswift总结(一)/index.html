@@ -9,17 +9,17 @@
   <title>Rxswift总结（一） | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面RxSwift 是 ReactiveX 家族的重要一员, ReactiveX 是 Reactive Extensions 的缩写，一般简写为Rx。 ReactiveX 官方给Rx的定义是，Rx是一个使用可观察数据流进行异步编程的编程接口。 ReactiveX结合了观察者模式、迭代器模式和函数式编程的精华。 RX模式 创建：Rx可以方便的创建事件流和数据流 组合：Rx使用查询式的操作符组合和">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Rxswift总结（一）">
-<meta property="og:url" content="http://yoursite.com/2019/02/21/Rxswift总结(一)/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/02/21/Rxswift%E6%80%BB%E7%BB%93(%E4%B8%80)/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面RxSwift 是 ReactiveX 家族的重要一员, ReactiveX 是 Reactive Extensions 的缩写，一般简写为Rx。 ReactiveX 官方给Rx的定义是，Rx是一个使用可观察数据流进行异步编程的编程接口。 ReactiveX结合了观察者模式、迭代器模式和函数式编程的精华。 RX模式 创建：Rx可以方便的创建事件流和数据流 组合：Rx使用查询式的操作符组合和">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-02-22T06:29:27.245Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-02-21T11:02:04.344Z">
+<meta property="article:modified_time" content="2019-02-22T06:29:27.245Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Rxswift总结（一）">
-<meta name="twitter:description" content="写在前面RxSwift 是 ReactiveX 家族的重要一员, ReactiveX 是 Reactive Extensions 的缩写，一般简写为Rx。 ReactiveX 官方给Rx的定义是，Rx是一个使用可观察数据流进行异步编程的编程接口。 ReactiveX结合了观察者模式、迭代器模式和函数式编程的精华。 RX模式 创建：Rx可以方便的创建事件流和数据流 组合：Rx使用查询式的操作符组合和">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/02/21/Rxswift总结(一)/" class="archive-article-date">
+        <a href="/2019/02/21/Rxswift%E6%80%BB%E7%BB%93(%E4%B8%80)/" class="archive-article-date">
   	<time datetime="2019-02-21T11:02:04.344Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-21</time>
 </a>
         
@@ -186,7 +186,7 @@
 <h2 id="简化代码"><a href="#简化代码" class="headerlink" title="简化代码"></a>简化代码</h2><ul>
 <li>函数式风格：对可观察数据流使用无副作用的输入输出函数，避免了程序里错综复杂的状态</li>
 <li>简化代码：Rx的操作符通通常可以将复杂的难题简化为很少的几行代码</li>
-<li>异步错误处理：传统的try/catch没办法处理异步计算，Rx提供了合适的错误处理机制</li>
+<li>异步错误处理：传统的try&#x2F;catch没办法处理异步计算，Rx提供了合适的错误处理机制</li>
 <li>轻松使用并发：Rx的Observables和Schedulers让开发者可以摆脱底层的线程同步和各种并发问题</li>
 </ul>
 <h2 id="为什么要使用"><a href="#为什么要使用" class="headerlink" title="为什么要使用"></a>为什么要使用</h2><p>我们编写的绝大部分代码都涉及到外部事件的响应。当一个用户操作控制的时候，我们需要写一个@IBAction来处理。我们需要观察通知来监测键盘如何更改位置。URL回话响应数据时，我们需要用闭包来执行。我们使用KVO来监听变量的改变。所有这些不同的系统都让我们的代码不必要的复杂。如果有一个一致统一的系统来处理这些呼叫／响应，那岂不是很好。RX就是这样一个系统。</p>
@@ -201,7 +201,7 @@
 </li>
 </ul>
 <p>如果一个Observable发出一个next事件Event.next(Element)，她可以继续发出更多的事件。当然如果发出一个error事件Event.error(ErrorType)或者一个完成事件Event.completed,Observable队列不会再给订阅者发送额外的事件。源代码里是一个递归枚举</p>
-<pre><code>public enum Event&lt;Element&gt; {
+<pre><code>public enum Event&lt;Element&gt; &#123;
 
     /// Next element is produced.
     case next(Element)
@@ -211,137 +211,158 @@
 
     /// Sequence completed successfully.
     case completed
-}
-</code></pre><h3 id="Observables-and-observers"><a href="#Observables-and-observers" class="headerlink" title="Observables and observers"></a>Observables and observers</h3><p>Observables不会执行订阅的闭包除非有一个订阅者。下面的例子中，Observable的订阅闭包不会执行，因为她并没有订阅者。她只是一个可被订阅者。</p>
-<pre><code>_ = Observable&lt;String&gt;.create { observerOfString -&gt; Disposable in
+&#125;
+</code></pre>
+<h3 id="Observables-and-observers"><a href="#Observables-and-observers" class="headerlink" title="Observables and observers"></a>Observables and observers</h3><p>Observables不会执行订阅的闭包除非有一个订阅者。下面的例子中，Observable的订阅闭包不会执行，因为她并没有订阅者。她只是一个可被订阅者。</p>
+<pre><code>_ = Observable&lt;String&gt;.create &#123; observerOfString -&gt; Disposable in
      print(&quot;This will never be printed&quot;)
      observerOfString.on(.next(&quot;😬&quot;))
      observerOfString.on(.completed)
      return Disposables.create
-  }
-</code></pre><p>下面这种情况，当调用subscribe(_:)方法了，闭包就会被执行了</p>
-<pre><code>_ = Observable&lt;String&gt;.create { observerOfString in
+  &#125;
+</code></pre>
+<p>下面这种情况，当调用subscribe(_:)方法了，闭包就会被执行了</p>
+<pre><code>_ = Observable&lt;String&gt;.create &#123; observerOfString in
          print(&quot;Observable created&quot;)
          observerOfString.on(.next(&quot;😉&quot;))
          observerOfString.on(.completed)
          return Disposables.create()
-     }
-     .subscribe { event in
+     &#125;
+     .subscribe &#123; event in
          print(event)
-}
-</code></pre><p>subscribe(_:)这个方法返回Disposable实例。这种类型以后会讨论。就是一个可以被释放的类型，需要释放。</p>
+&#125;
+</code></pre>
+<p>subscribe(_:)这个方法返回Disposable实例。这种类型以后会讨论。就是一个可以被释放的类型，需要释放。</p>
 <h2 id="构建和订阅Observables"><a href="#构建和订阅Observables" class="headerlink" title="构建和订阅Observables"></a>构建和订阅Observables</h2><h3 id="never"><a href="#never" class="headerlink" title="never"></a>never</h3><p>构建一个从不终止和发出任何事件的队列</p>
 <pre><code>let disposeBag = DisposeBag()
 let neverSequence = Observable&lt;String&gt;.never()
-
+    
 let neverSequenceSubscription = neverSequence
-     .subscribe { _ in
+     .subscribe &#123; _ in
           print(&quot;This will never be printed&quot;)
-}
+&#125;
 neverSequenceSubscription.disposed(by: disposeBag)
-</code></pre><h3 id="empty"><a href="#empty" class="headerlink" title="empty"></a>empty</h3><p>构建一个空的Observable队列，只发出完成事件</p>
+</code></pre>
+<h3 id="empty"><a href="#empty" class="headerlink" title="empty"></a>empty</h3><p>构建一个空的Observable队列，只发出完成事件</p>
 <pre><code>let disposeBag = DisposeBag()
  Observable&lt;Int&gt;.empty()
-     .subscribe { event in
+     .subscribe &#123; event in
          print(event)
-     }
+     &#125;
      .disposed(by: disposeBag)
-</code></pre><h3 id="just"><a href="#just" class="headerlink" title="just"></a>just</h3><p>构建一个只有一个元素的Observable队列</p>
+    
+</code></pre>
+<h3 id="just"><a href="#just" class="headerlink" title="just"></a>just</h3><p>构建一个只有一个元素的Observable队列</p>
 <pre><code>let disposeBag = DisposeBag()
 Observable.just(&quot;🔴&quot;)
-   .subscribe { event in
+   .subscribe &#123; event in
        print(event)
-    }
+    &#125;
     .disposed(by: disposeBag)
-</code></pre><h3 id="of"><a href="#of" class="headerlink" title="of"></a>of</h3><p>构建一个拥有固定数量元素的Observable序列</p>
+</code></pre>
+<h3 id="of"><a href="#of" class="headerlink" title="of"></a>of</h3><p>构建一个拥有固定数量元素的Observable序列</p>
 <pre><code>let disposeBag = DisposeBag()
-
+    
 Observable.of(&quot;🐶&quot;, &quot;🐱&quot;, &quot;🐭&quot;, &quot;🐹&quot;)
-    .subscribe(onNext: { element in
+    .subscribe(onNext: &#123; element in
         print(element)
-    })
+    &#125;)
     .disposed(by: disposeBag)
-</code></pre><p>subscribe(_:)方法接受事件参数，下面这个例子接受元素参数</p>
+   
+</code></pre>
+<p>subscribe(_:)方法接受事件参数，下面这个例子接受元素参数</p>
 <pre><code>someObservable.subscribe(
-    onNext: { print(&quot;Element:&quot;, $0) },
-    onError: { print(&quot;Error:&quot;, $0) },
-    onCompleted: { print(&quot;Completed&quot;) },
-    onDisposed: { print(&quot;Disposed&quot;) }
+    onNext: &#123; print(&quot;Element:&quot;, $0) &#125;,
+    onError: &#123; print(&quot;Error:&quot;, $0) &#125;,
+    onCompleted: &#123; print(&quot;Completed&quot;) &#125;,
+    onDisposed: &#123; print(&quot;Disposed&quot;) &#125;
 )
-</code></pre><h3 id="from"><a href="#from" class="headerlink" title="from"></a>from</h3><p>从序列中创建可观察到的序列，如数组、字典或集合。</p>
+</code></pre>
+<h3 id="from"><a href="#from" class="headerlink" title="from"></a>from</h3><p>从序列中创建可观察到的序列，如数组、字典或集合。</p>
 <pre><code>let disposeBag = DisposeBag()
-
+    
 Observable.from([&quot;🐶&quot;, &quot;🐱&quot;, &quot;🐭&quot;, &quot;🐹&quot;])
-    .subscribe(onNext: { print($0) })
+    .subscribe(onNext: &#123; print($0) &#125;)
     .disposed(by: disposeBag)
-</code></pre><h3 id="create"><a href="#create" class="headerlink" title="create"></a>create</h3><p>构建一个自定义的可观察序列</p>
+   
+</code></pre>
+<h3 id="create"><a href="#create" class="headerlink" title="create"></a>create</h3><p>构建一个自定义的可观察序列</p>
 <pre><code>let disposeBag = DisposeBag()
-  let myJust = { (element: String) -&gt; Observable&lt;String&gt; in
-      return Observable.create { observer in
+  let myJust = &#123; (element: String) -&gt; Observable&lt;String&gt; in
+      return Observable.create &#123; observer in
           observer.on(.next(element))
           observer.on(.completed)
           return Disposables.create()
-      }
-  }
+      &#125;
+  &#125;
  myJust(&quot;🔴&quot;)
-     .subscribe { print($0) }
+     .subscribe &#123; print($0) &#125;
      .disposed(by: disposeBag)
-</code></pre><h3 id="range"><a href="#range" class="headerlink" title="range"></a>range</h3><p>创建一个可观察序列，该序列释放一系列连续整数，然后终止</p>
+</code></pre>
+<h3 id="range"><a href="#range" class="headerlink" title="range"></a>range</h3><p>创建一个可观察序列，该序列释放一系列连续整数，然后终止</p>
 <pre><code>let disposeBag = DisposeBag()
  Observable.range(start: 1, count: 10)
-    .subscribe { print($0) }
+    .subscribe &#123; print($0) &#125;
     .disposed(by: disposeBag)
-</code></pre><h3 id="repeatElement"><a href="#repeatElement" class="headerlink" title="repeatElement"></a>repeatElement</h3><p>创建一个可观察到的序列，它无限地释放给定的元素</p>
+   
+</code></pre>
+<h3 id="repeatElement"><a href="#repeatElement" class="headerlink" title="repeatElement"></a>repeatElement</h3><p>创建一个可观察到的序列，它无限地释放给定的元素</p>
 <pre><code>let disposeBag = DisposeBag()
 Observable.repeatElement(&quot;🔴&quot;)
      .take(3)
-     .subscribe(onNext: { print($0) })
+     .subscribe(onNext: &#123; print($0) &#125;)
      .disposed(by: disposeBag)
-</code></pre><h3 id="generate"><a href="#generate" class="headerlink" title="generate"></a>generate</h3><p>创建一个可观察的序列，只要所提供的条件求值为true，就生成值。</p>
+</code></pre>
+<h3 id="generate"><a href="#generate" class="headerlink" title="generate"></a>generate</h3><p>创建一个可观察的序列，只要所提供的条件求值为true，就生成值。</p>
 <pre><code>let disposeBag = DisposeBag()
  Observable.generate(
         initialState: 0,
-        condition: { $0 &lt; 3 },
-        iterate: { $0 + 1 }
+        condition: &#123; $0 &lt; 3 &#125;,
+        iterate: &#123; $0 + 1 &#125;
     )
-    .subscribe(onNext: { print($0) })
+    .subscribe(onNext: &#123; print($0) &#125;)
     .disposed(by: disposeBag)
-</code></pre><h3 id="deferred"><a href="#deferred" class="headerlink" title="deferred"></a>deferred</h3><p>为每个订阅者创建一个新的可观察序列。</p>
+</code></pre>
+<h3 id="deferred"><a href="#deferred" class="headerlink" title="deferred"></a>deferred</h3><p>为每个订阅者创建一个新的可观察序列。</p>
 <pre><code>let disposeBag = DisposeBag()
 var count = 1
- let deferredSequence = Observable&lt;String&gt;.deferred {
+ let deferredSequence = Observable&lt;String&gt;.deferred &#123;
     print(&quot;Creating \(count)&quot;)
     count += 1
-
-    return Observable.create { observer in
+        
+    return Observable.create &#123; observer in
         print(&quot;Emitting...&quot;)
         observer.onNext(&quot;🐶&quot;)
         observer.onNext(&quot;🐱&quot;)
         observer.onNext(&quot;🐵&quot;)
         return Disposables.create()
-    }
-}
-
+    &#125;
+&#125;
+    
 deferredSequence
-    .subscribe(onNext: { print($0) })
+    .subscribe(onNext: &#123; print($0) &#125;)
     .disposed(by: disposeBag)
-
+    
 deferredSequence
-    .subscribe(onNext: { print($0) })
+    .subscribe(onNext: &#123; print($0) &#125;)
     .disposed(by: disposeBag)
-</code></pre><h3 id="error"><a href="#error" class="headerlink" title="error"></a>error</h3><p>创建一个没有任何元素的可观察序列，并立即以错误结束。</p>
-<pre><code>let disposeBag = DisposeBag()
-Observable&lt;Int&gt;.error(TestError.test)
-   .subscribe { print($0) }
-   .disposed(by: disposeBag)
-</code></pre><h3 id="doOn"><a href="#doOn" class="headerlink" title="doOn"></a>doOn</h3><p>为每个发出的事件调用副作用动作并返回（传递）原始事件。</p>
-<pre><code>let disposeBag = DisposeBag()
-
-Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&quot;)
-    .do(onNext: { print(&quot;Intercepted:&quot;, $0) }, onError: { print(&quot;Intercepted error:&quot;, $0) }, onCompleted: { print(&quot;Completed&quot;)  })
-    .subscribe(onNext: { print($0) })
+   
+</code></pre>
+<h3 id="error"><a href="#error" class="headerlink" title="error"></a>error</h3><p>创建一个没有任何元素的可观察序列，并立即以错误结束。</p>
+<pre><code> let disposeBag = DisposeBag()
+ Observable&lt;Int&gt;.error(TestError.test)
+    .subscribe &#123; print($0) &#125;
     .disposed(by: disposeBag)
 </code></pre>
+<h3 id="doOn"><a href="#doOn" class="headerlink" title="doOn"></a>doOn</h3><p>为每个发出的事件调用副作用动作并返回（传递）原始事件。</p>
+<pre><code>let disposeBag = DisposeBag()
+    
+Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&quot;)
+    .do(onNext: &#123; print(&quot;Intercepted:&quot;, $0) &#125;, onError: &#123; print(&quot;Intercepted error:&quot;, $0) &#125;, onCompleted: &#123; print(&quot;Completed&quot;)  &#125;)
+    .subscribe(onNext: &#123; print($0) &#125;)
+    .disposed(by: disposeBag)
+</code></pre>
+
       
 
       
@@ -431,7 +452,7 @@ Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&q
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/21/Rxswift总结(一)/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/21/Rxswift%E6%80%BB%E7%BB%93(%E4%B8%80)/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -445,7 +466,7 @@ Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&q
   
 <nav id="article-nav">
   
-    <a href="/2019/02/22/Rxswift总结（二）/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/02/22/Rxswift%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -455,7 +476,7 @@ Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&q
     </a>
   
   
-    <a href="/2019/02/21/好好看看 KVC && KVO/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/02/21/%E5%A5%BD%E5%A5%BD%E7%9C%8B%E7%9C%8B%20KVC%20&&%20KVO/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">好好看看 KVC &amp;&amp; KVO</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -499,7 +520,7 @@ Observable.of(&quot;🍎&quot;, &quot;🍐&quot;, &quot;🍊&quot;, &quot;🍋&q
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -606,10 +627,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -618,7 +635,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -626,11 +643,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -650,19 +671,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -9,17 +9,17 @@
   <title>iOS中NSNotification的套路 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="常用的不说了，说一下我目前遇到的tip 发送通知与响应通知都在一个线程这一点与KVO类似。NSNotification不能跨线程：即响应通知的action，默认是与postNotification在同一个线程的，若想在指定线程中执行响应通知的方法，可以使用带有block的addObserver方法，或者使用dispatch_async(xxx)。 如果需要跨线程，可以使用带有block的通知接口。">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="iOS中NSNotification的套路">
-<meta property="og:url" content="http://yoursite.com/2019/12/16/iOS中NSNotification的套路/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/12/16/iOS%E4%B8%ADNSNotification%E7%9A%84%E5%A5%97%E8%B7%AF/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="常用的不说了，说一下我目前遇到的tip 发送通知与响应通知都在一个线程这一点与KVO类似。NSNotification不能跨线程：即响应通知的action，默认是与postNotification在同一个线程的，若想在指定线程中执行响应通知的方法，可以使用带有block的addObserver方法，或者使用dispatch_async(xxx)。 如果需要跨线程，可以使用带有block的通知接口。">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-12-16T12:39:45.668Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-12-16T12:36:18.860Z">
+<meta property="article:modified_time" content="2019-12-16T12:39:45.668Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="iOS中NSNotification的套路">
-<meta name="twitter:description" content="常用的不说了，说一下我目前遇到的tip 发送通知与响应通知都在一个线程这一点与KVO类似。NSNotification不能跨线程：即响应通知的action，默认是与postNotification在同一个线程的，若想在指定线程中执行响应通知的方法，可以使用带有block的addObserver方法，或者使用dispatch_async(xxx)。 如果需要跨线程，可以使用带有block的通知接口。">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/12/16/iOS中NSNotification的套路/" class="archive-article-date">
+        <a href="/2019/12/16/iOS%E4%B8%ADNSNotification%E7%9A%84%E5%A5%97%E8%B7%AF/" class="archive-article-date">
   	<time datetime="2019-12-16T12:36:18.860Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-16</time>
 </a>
         
@@ -178,20 +178,22 @@
         <p>常用的不说了，说一下我目前遇到的tip</p>
 <h2 id="发送通知与响应通知都在一个线程"><a href="#发送通知与响应通知都在一个线程" class="headerlink" title="发送通知与响应通知都在一个线程"></a>发送通知与响应通知都在一个线程</h2><p>这一点与KVO类似。<br>NSNotification不能跨线程：即响应通知的action，默认是与postNotification在同一个线程的，若想在指定线程中执行响应通知的方法，可以使用带有block的addObserver方法，或者使用dispatch_async(xxx)。</p>
 <p>如果需要跨线程，可以使用带有block的通知接口。</p>
-<pre><code>dispatch_group_async(manager.completionGroup ?: url_session_manager_completion_group(), manager.completionQueue ?: dispatch_get_main_queue(), ^{
-            if (self.completionHandler) {
+<pre><code>dispatch_group_async(manager.completionGroup ?: url_session_manager_completion_group(), manager.completionQueue ?: dispatch_get_main_queue(), ^&#123;
+            if (self.completionHandler) &#123;
                 self.completionHandler(task.response, responseObject, error);
-            }
+            &#125;
 
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(dispatch_get_main_queue(), ^&#123;
                 [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingTaskDidCompleteNotification object:task userInfo:userInfo];
-            });
-        });
-</code></pre><p>为了保证在主线程发送通知。 这一点可以在一些网络请求数据到达时, 用于刷新界面。</p>
-<pre><code>dispatch_async(dispatch_get_main_queue(), ^{
+            &#125;);
+        &#125;);
+</code></pre>
+<p>为了保证在主线程发送通知。 这一点可以在一些网络请求数据到达时, 用于刷新界面。</p>
+<pre><code>dispatch_async(dispatch_get_main_queue(), ^&#123;
         [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationFilterMaterialRequestFinished object:self userInfo:nil];
-    });
-</code></pre><h2 id="在指定线程接收通知"><a href="#在指定线程接收通知" class="headerlink" title="在指定线程接收通知"></a>在指定线程接收通知</h2><ul>
+    &#125;);
+</code></pre>
+<h2 id="在指定线程接收通知"><a href="#在指定线程接收通知" class="headerlink" title="在指定线程接收通知"></a>在指定线程接收通知</h2><ul>
 <li><p>使用queue和block</p>
 </li>
 <li><p>使用mach port</p>
@@ -294,7 +296,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/12/16/iOS中NSNotification的套路/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/12/16/iOS%E4%B8%ADNSNotification%E7%9A%84%E5%A5%97%E8%B7%AF/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -308,7 +310,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2019/12/16/iOS奇思妙想之使用block替代通知/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/12/16/iOS%E5%A5%87%E6%80%9D%E5%A6%99%E6%83%B3%E4%B9%8B%E4%BD%BF%E7%94%A8block%E6%9B%BF%E4%BB%A3%E9%80%9A%E7%9F%A5/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -318,7 +320,7 @@
     </a>
   
   
-    <a href="/2019/11/29/使用RunLoop检测卡顿/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/11/29/%E4%BD%BF%E7%94%A8RunLoop%E6%A3%80%E6%B5%8B%E5%8D%A1%E9%A1%BF/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">使用RunLoop检测卡顿</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -362,7 +364,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -469,10 +471,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -481,7 +479,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -489,11 +487,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -513,19 +515,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Rxswift总结（二） | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面UILabel文字绑定到 UILabel  let label = UILabel()  label.frame = CGRect.init(x: 10, y: 110, width: 200, height: 40)  self.view.addSubview(label) //MARK: 值绑定 Observable.just(&amp;quot;Hello RxSwift&amp;quot;)">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="写在前面UILabel文字绑定到 UILabel  let label &#x3D; UILabel()  label.frame &#x3D; CGRect.init(x: 10, y: 110, width: 200, height: 40)  self.view.addSubview(label) &#x2F;&#x2F;MARK: 值绑定 Observable.just(&quot;Hello RxSwift&quot;)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Rxswift总结（二）">
-<meta property="og:url" content="http://yoursite.com/2019/02/22/Rxswift总结（二）/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/02/22/Rxswift%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面UILabel文字绑定到 UILabel  let label = UILabel()  label.frame = CGRect.init(x: 10, y: 110, width: 200, height: 40)  self.view.addSubview(label) //MARK: 值绑定 Observable.just(&amp;quot;Hello RxSwift&amp;quot;)">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-02-22T07:24:58.164Z">
+<meta property="og:description" content="写在前面UILabel文字绑定到 UILabel  let label &#x3D; UILabel()  label.frame &#x3D; CGRect.init(x: 10, y: 110, width: 200, height: 40)  self.view.addSubview(label) &#x2F;&#x2F;MARK: 值绑定 Observable.just(&quot;Hello RxSwift&quot;)">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-02-22T06:30:04.592Z">
+<meta property="article:modified_time" content="2019-02-22T07:24:58.164Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Rxswift总结（二）">
-<meta name="twitter:description" content="写在前面UILabel文字绑定到 UILabel  let label = UILabel()  label.frame = CGRect.init(x: 10, y: 110, width: 200, height: 40)  self.view.addSubview(label) //MARK: 值绑定 Observable.just(&amp;quot;Hello RxSwift&amp;quot;)">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/02/22/Rxswift总结（二）/" class="archive-article-date">
+        <a href="/2019/02/22/Rxswift%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/" class="archive-article-date">
   	<time datetime="2019-02-22T06:30:04.592Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
 </a>
         
@@ -183,57 +183,60 @@
 Observable.just(&quot;Hello RxSwift&quot;)
         .bind(to: label.rx.text)
         .disposed(by: DisposeBag())
-</code></pre><h3 id="UITextFiled"><a href="#UITextFiled" class="headerlink" title="UITextFiled"></a>UITextFiled</h3><p>监听单个 textField 内容的变化</p>
-<pre><code>lazy var textFiled: UITextField = {
+</code></pre>
+<h3 id="UITextFiled"><a href="#UITextFiled" class="headerlink" title="UITextFiled"></a>UITextFiled</h3><p>监听单个 textField 内容的变化</p>
+<pre><code>lazy var textFiled: UITextField = &#123;
     let textfiled = UITextField()
     textfiled.frame = CGRect.init(x: 30, y: 200, width: 100, height: 40)
     return textfiled
-}()
+&#125;()
 
 
 self.view.addSubview(self.textFiled)
-
+    
 // MARK:监听textFiled的变化
-
-        textFiled.rx.text.orEmpty.asObservable().subscribe(onNext: {
+    
+        textFiled.rx.text.orEmpty.asObservable().subscribe(onNext: &#123;
         print(&quot;你输入的是: \($0)&quot;)
-    }).disposed(by: DisposeBag())
-
-    textFiled.rx.text.orEmpty.changed.subscribe(onNext: {
+    &#125;).disposed(by: DisposeBag())
+   
+    textFiled.rx.text.orEmpty.changed.subscribe(onNext: &#123;
         print(&quot;你输入的是: \($0)&quot;)
-    }).disposed(by: DisposeBag())
-</code></pre><h3 id="UIButton"><a href="#UIButton" class="headerlink" title="UIButton"></a>UIButton</h3><pre><code>let disposeBag = DisposeBag()
-lazy var submitBtn: UIButton = {
+    &#125;).disposed(by: DisposeBag())
+</code></pre>
+<h3 id="UIButton"><a href="#UIButton" class="headerlink" title="UIButton"></a>UIButton</h3><pre><code>let disposeBag = DisposeBag()
+lazy var submitBtn: UIButton = &#123;
     let btn = UIButton.init()
     btn.frame = CGRect.init(x: 40, y: 270, width: 100, height: 50)
     btn.backgroundColor = UIColor.orange
     btn.setTitle(&quot;点击&quot;, for: UIControl.State.normal)
     btn.setTitleColor(UIColor.black, for: UIControl.State.normal)
     return btn
-}()
+&#125;()
 
 //按钮点击
    self.submitBtn.rx.tap
-        .subscribe(onNext: { [weak self] in
+        .subscribe(onNext: &#123; [weak self] in
             self?.showMessage(&quot;按钮被点击&quot;)
 
-        })
+        &#125;)
         .disposed(by: disposeBag)
-
+    
     self.submitBtn.rx.tap
-        .bind { [weak self] in
+        .bind &#123; [weak self] in
             self?.showMessage(&quot;按钮被点击&quot;)
-        }
+        &#125;
         .disposed(by: disposeBag)
-
+        
        //显示消息提示框
-func showMessage(_ text: String) {
+func showMessage(_ text: String) &#123;
     let alertController = UIAlertController(title: text, message: nil, preferredStyle: .alert)
     let cancelAction = UIAlertAction(title: &quot;确定&quot;, style: .cancel, handler: nil)
     alertController.addAction(cancelAction)
     self.present(alertController, animated: true, completion: nil)
-}     
+&#125;     
 </code></pre>
+
       
 
       
@@ -323,7 +326,7 @@ func showMessage(_ text: String) {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/22/Rxswift总结（二）/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/22/Rxswift%E6%80%BB%E7%BB%93%EF%BC%88%E4%BA%8C%EF%BC%89/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -347,7 +350,7 @@ func showMessage(_ text: String) {
     </a>
   
   
-    <a href="/2019/02/21/Rxswift总结(一)/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/02/21/Rxswift%E6%80%BB%E7%BB%93(%E4%B8%80)/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Rxswift总结（一）</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -391,7 +394,7 @@ func showMessage(_ text: String) {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -498,10 +501,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -510,7 +509,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -518,11 +517,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -542,19 +545,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

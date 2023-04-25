@@ -9,17 +9,17 @@
   <title>理解 Swift 中的元类型：.Type 与 .self | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="元类型元类型就是类型的类型。 比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="理解 Swift 中的元类型：.Type 与 .self">
-<meta property="og:url" content="http://yoursite.com/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/11/27/%E7%90%86%E8%A7%A3%20Swift%20%E4%B8%AD%E7%9A%84%E5%85%83%E7%B1%BB%E5%9E%8B%EF%BC%9A.Type%20%E4%B8%8E%20.self/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="元类型元类型就是类型的类型。 比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-27T05:53:43.698Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-11-27T05:47:47.375Z">
+<meta property="article:modified_time" content="2018-11-27T05:53:43.698Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="理解 Swift 中的元类型：.Type 与 .self">
-<meta name="twitter:description" content="元类型元类型就是类型的类型。 比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/" class="archive-article-date">
+        <a href="/2018/11/27/%E7%90%86%E8%A7%A3%20Swift%20%E4%B8%AD%E7%9A%84%E5%85%83%E7%B1%BB%E5%9E%8B%EF%BC%9A.Type%20%E4%B8%8E%20.self/" class="archive-article-date">
   	<time datetime="2018-11-27T05:47:47.375Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
 </a>
         
@@ -179,80 +179,95 @@
 <p>比如我们说 5 是 Int 类型，此时 5 是 Int 类型的一个值。但是如果我问 Int 类型占用多少内存空间，这个时候与具体某个值无关，而和类型的信息相关。如果要写一个函数，返回一个类型的实例内存空间大小。那么这个时候的参数是一个类型数据，这个类型数据可以是直接说明的比如是 Int 类型，也可以从一个值身上取，比如 5 这个值的类型。这里的类型数据，就是一个类型的类型，术语表述为元类型：metaType。</p>
 <h3 id="Type-与-self"><a href="#Type-与-self" class="headerlink" title=".Type 与 .self"></a>.Type 与 .self</h3><p>Swift 中的元类型用 .Type 表示。比如 Int.Type 就是 Int 的元类型。 类型与值有着不同的形式，就像 Int 与 5 的关系。元类型也是类似，.Type 是类型，类型的 .self 是元类型的值。</p>
 <pre><code>let intMetatype: Int.Type = Int.self
-</code></pre><p>可能大家平时对元类型使用的比较少，加上这两个形式有一些接近，一个元类型只有一个对应的值，所以使用的时候常常写错：</p>
-<pre><code>types.append(Int.Type)
-types.append(Int.self)
-</code></pre><p>如果分清了 Int.Type 是类型的名称，不是值就不会再弄错了。因为你肯定不会这么写：</p>
+</code></pre>
+<p>可能大家平时对元类型使用的比较少，加上这两个形式有一些接近，一个元类型只有一个对应的值，所以使用的时候常常写错：</p>
+<pre><code> types.append(Int.Type)
+ types.append(Int.self)
+ 
+</code></pre>
+<p>如果分清了 Int.Type 是类型的名称，不是值就不会再弄错了。因为你肯定不会这么写：</p>
 <pre><code>numbers.append(Int)
-</code></pre><h3 id="AnyClass"><a href="#AnyClass" class="headerlink" title="AnyClass"></a>AnyClass</h3><p>获得元类型后可以访问静态变量和静态方法。其实我们经常使用元类型，只是有时 Xcode 帮我们隐藏了这些细节。比如我们经常用的 tableView 的一个方法：</p>
+</code></pre>
+<h3 id="AnyClass"><a href="#AnyClass" class="headerlink" title="AnyClass"></a>AnyClass</h3><p>获得元类型后可以访问静态变量和静态方法。其实我们经常使用元类型，只是有时 Xcode 帮我们隐藏了这些细节。比如我们经常用的 tableView 的一个方法：</p>
 <pre><code>func register(AnyClass?, forCellReuseIdentifier: String)
 
 tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cell&quot;)
-</code></pre><p>这里的 AnyClass 其实就是一个元类型：</p>
+</code></pre>
+<p>这里的 AnyClass 其实就是一个元类型：</p>
 <pre><code>typealias AnyClass = AnyObject.Type
-</code></pre><p>通过上面的定义我们可以知道，AnyClass 就是一个任意类型元类型的别名。 当我们访问静态变量的时候其实也是通过元类型的访问的，只是 Xcode 帮我们省略了 .self。下面两个写法是等价的。如果可以不引起歧义，我想没人会愿意多写一个 self。</p>
+</code></pre>
+<p>通过上面的定义我们可以知道，AnyClass 就是一个任意类型元类型的别名。 当我们访问静态变量的时候其实也是通过元类型的访问的，只是 Xcode 帮我们省略了 .self。下面两个写法是等价的。如果可以不引起歧义，我想没人会愿意多写一个 self。</p>
 <pre><code>Int.max
 Int.self.max
-</code></pre><h3 id="type-of-vs-self"><a href="#type-of-vs-self" class="headerlink" title="type(of:) vs .self"></a>type(of:) vs .self</h3><p>前面提到通过 type(of:) 和 .self都可以获得元类型的值。那么这两种方式的区别是什么呢？</p>
+</code></pre>
+<h3 id="type-of-vs-self"><a href="#type-of-vs-self" class="headerlink" title="type(of:) vs .self"></a>type(of:) vs .self</h3><p>前面提到通过 type(of:) 和 .self都可以获得元类型的值。那么这两种方式的区别是什么呢？</p>
 <pre><code>let instanceMetaType: String.Type = type(of: &quot;string&quot;)
 let staicMetaType: String.Type = String.self
-</code></pre><p>.self 取到的是静态的元类型，声明的时候是什么类型就是什么类型。type(of:) 取的是运行时候的元类型，也就是这个实例 的类型。</p>
+</code></pre>
+<p>.self 取到的是静态的元类型，声明的时候是什么类型就是什么类型。type(of:) 取的是运行时候的元类型，也就是这个实例 的类型。</p>
 <pre><code>let myNum: Any = 1 
 type(of: myNum) // Int.type
-</code></pre><h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>很多人对 Protocol 的元类型容易理解错。Protocol 自身不是一个类型，只有当一个对象实现了 protocol 后才有了类型对象。所以 Protocol.self 不等于 Protocol.Type。如果你写下面的代码会得到一个错误：</p>
-<pre><code>protocol MyProtocol { }
+</code></pre>
+<h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>很多人对 Protocol 的元类型容易理解错。Protocol 自身不是一个类型，只有当一个对象实现了 protocol 后才有了类型对象。所以 Protocol.self 不等于 Protocol.Type。如果你写下面的代码会得到一个错误：</p>
+<pre><code>protocol MyProtocol &#123; &#125;
 let metatype: MyProtocol.Type = MyProtocol.self
-</code></pre><p>正确的理解是 MyProtocol.Type 也是一个有效的元类型，那么就需要是一个可承载的类型的元类型。所以改成这样就可以了：</p>
-<pre><code>struct MyType: MyProtocol { }
+</code></pre>
+<p>正确的理解是 MyProtocol.Type 也是一个有效的元类型，那么就需要是一个可承载的类型的元类型。所以改成这样就可以了：</p>
+<pre><code>struct MyType: MyProtocol &#123; &#125;
 let metatype: MyProtocol.Type = MyType.self 
-</code></pre><p>那么 Protocol.self 是什么类型呢？为了满足你的好奇心苹果为你造了一个类型：</p>
+</code></pre>
+<p>那么 Protocol.self 是什么类型呢？为了满足你的好奇心苹果为你造了一个类型：</p>
 <pre><code>let protMetatype: MyProtocol.Protocol = MyProtocol.self
-</code></pre><h2 id="一个实战"><a href="#一个实战" class="headerlink" title="一个实战"></a>一个实战</h2><p>为了让大家能够熟悉元类型的使用我举一个例子。 假设我们有两个 Cell 类，想要一个工厂方法可以根据类型初始化对象。下面是两个 Cell 类：</p>
-<pre><code>protocol ContentCell { }
+</code></pre>
+<h2 id="一个实战"><a href="#一个实战" class="headerlink" title="一个实战"></a>一个实战</h2><p>为了让大家能够熟悉元类型的使用我举一个例子。 假设我们有两个 Cell 类，想要一个工厂方法可以根据类型初始化对象。下面是两个 Cell 类：</p>
+<pre><code>protocol ContentCell &#123; &#125;
 
-class IntCell: UIView, ContentCell {
-    required init(value: Int) {
+class IntCell: UIView, ContentCell &#123;
+    required init(value: Int) &#123;
         super.init(frame: CGRect.zero)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
+    &#125;
+    
+    required init?(coder aDecoder: NSCoder) &#123;
         fatalError(&quot;init(coder:) has not been implemented&quot;)
-    }
-}
+    &#125;
+&#125;
 
-class StringCell: UIView, ContentCell {
-    required init(value: String) {
+class StringCell: UIView, ContentCell &#123;
+    required init(value: String) &#123;
         super.init(frame: CGRect.zero)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
+    &#125;
+    
+    required init?(coder aDecoder: NSCoder) &#123;
         fatalError(&quot;init(coder:) has not been implemented&quot;)
-    }
-}
-</code></pre><p>工厂方法实现是这样的</p>
-<pre><code>func createCell(type: ContentCell.Type) -&gt; ContentCell? {
-    if let intCell = type as? IntCell.Type {
+    &#125;
+&#125;
+</code></pre>
+<p>工厂方法实现是这样的</p>
+<pre><code>func createCell(type: ContentCell.Type) -&gt; ContentCell? &#123;
+    if let intCell = type as? IntCell.Type &#123;
         return intCell.init(value: 5)
-    } else if let stringCell = type as? StringCell.Type {
+    &#125; else if let stringCell = type as? StringCell.Type &#123;
         return stringCell.init(value: &quot;xx&quot;)
-    }
+    &#125;
     return nil
-}
+&#125;
 
 let intCell = createCell(type: IntCell.self)
-</code></pre><p>当然我们也可以使用类型推断，再结合泛型来使用：</p>
-<pre><code>func createCell&lt;T: ContentCell&gt;() -&gt; T? {
-    if let intCell = T.self as? IntCell.Type {
+</code></pre>
+<p>当然我们也可以使用类型推断，再结合泛型来使用：</p>
+<pre><code>func createCell&lt;T: ContentCell&gt;() -&gt; T? &#123;
+    if let intCell = T.self as? IntCell.Type &#123;
         return intCell.init(value: 5) as? T
-    } else if let stringCell = T.self as? StringCell.Type {
+    &#125; else if let stringCell = T.self as? StringCell.Type &#123;
         return stringCell.init(value: &quot;xx&quot;) as? T
-    }
+    &#125;
     return nil
-}
+&#125;
 
 // 现在就根据返回类型推断需要使用的元类型
 let stringCell: StringCell? = createCell()
 </code></pre>
+
       
 
       
@@ -342,7 +357,7 @@ let stringCell: StringCell? = createCell()
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/理解 Swift 中的元类型：.Type 与 .self/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/27/%E7%90%86%E8%A7%A3%20Swift%20%E4%B8%AD%E7%9A%84%E5%85%83%E7%B1%BB%E5%9E%8B%EF%BC%9A.Type%20%E4%B8%8E%20.self/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -356,7 +371,7 @@ let stringCell: StringCell? = createCell()
   
 <nav id="article-nav">
   
-    <a href="/2018/11/27/利用消息转发机制防止Crach/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/11/27/%E5%88%A9%E7%94%A8%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E6%9C%BA%E5%88%B6%E9%98%B2%E6%AD%A2Crach/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -366,7 +381,7 @@ let stringCell: StringCell? = createCell()
     </a>
   
   
-    <a href="/2018/11/27/Runloop等待条件满足再向下执行但不主卡线程/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/11/27/Runloop%E7%AD%89%E5%BE%85%E6%9D%A1%E4%BB%B6%E6%BB%A1%E8%B6%B3%E5%86%8D%E5%90%91%E4%B8%8B%E6%89%A7%E8%A1%8C%E4%BD%86%E4%B8%8D%E4%B8%BB%E5%8D%A1%E7%BA%BF%E7%A8%8B/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Runloop等待条件满足再向下执行但不主卡线程</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -410,7 +425,7 @@ let stringCell: StringCell? = createCell()
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -517,10 +532,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -529,7 +540,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -537,11 +548,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -561,19 +576,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>swift内存管理之weak与unowned | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。 weak日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。 weak var delegate: SomeDelegate?  lazy var someClosure: () -&amp;gt; Void">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。 weak日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。 weak var delegate: SomeDelegate?  lazy var someClosure: () -&gt; Void">
 <meta property="og:type" content="article">
 <meta property="og:title" content="swift内存管理之weak与unowned">
-<meta property="og:url" content="http://yoursite.com/2019/04/20/swift内存管理之weak与unowned/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/04/20/swift%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E4%B9%8Bweak%E4%B8%8Eunowned/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。 weak日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。 weak var delegate: SomeDelegate?  lazy var someClosure: () -&amp;gt; Void">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-20T14:51:34.995Z">
+<meta property="og:description" content="在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。 weak日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。 weak var delegate: SomeDelegate?  lazy var someClosure: () -&gt; Void">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-04-20T14:50:27.006Z">
+<meta property="article:modified_time" content="2019-04-20T14:51:34.995Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="swift内存管理之weak与unowned">
-<meta name="twitter:description" content="在用 Swift 做开发时，我们可以使用 weak 或是 unowned 打破类实例和闭包的强引用循环。今天我们来聊一聊 weak 和 unowned 的相同和不同之处。 weak日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。 weak var delegate: SomeDelegate?  lazy var someClosure: () -&amp;gt; Void">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/04/20/swift内存管理之weak与unowned/" class="archive-article-date">
+        <a href="/2019/04/20/swift%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E4%B9%8Bweak%E4%B8%8Eunowned/" class="archive-article-date">
   	<time datetime="2019-04-20T14:50:27.006Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-20</time>
 </a>
         
@@ -179,17 +179,19 @@
 <h2 id="weak"><a href="#weak" class="headerlink" title="weak"></a>weak</h2><p>日常开发中，我们经常会用 weak 来标记代理或者在闭包中使用它来避免引用循环。</p>
 <pre><code>weak var delegate: SomeDelegate?
 
-lazy var someClosure: () -&gt; Void = { [weak self] in
-    guard let self = self else { retrun }
+lazy var someClosure: () -&gt; Void = &#123; [weak self] in
+    guard let self = self else &#123; retrun &#125;
     self.balabala
-}
-</code></pre><p>当我们赋值给一个被标记 weak 的变量时，它的引用计数不会被改变。而且当这个弱引用变量所引用的对象被释放时，这个变量将被自动设为 nil。这也是弱引用必须被声明为 Optional 的原因。</p>
+&#125;
+</code></pre>
+<p>当我们赋值给一个被标记 weak 的变量时，它的引用计数不会被改变。而且当这个弱引用变量所引用的对象被释放时，这个变量将被自动设为 nil。这也是弱引用必须被声明为 Optional 的原因。</p>
 <h2 id="unowned"><a href="#unowned" class="headerlink" title="unowned"></a>unowned</h2><pre><code>unowned let someInstance: SomeClass
 
-lazy var someClosure: () -&gt; Void = { [unowned self] in
+lazy var someClosure: () -&gt; Void = &#123; [unowned self] in
     self.balabala
-}
-</code></pre><p>在使用 unowned 时，我们不需要将变量声明为 Optional。</p>
+&#125;
+</code></pre>
+<p>在使用 unowned 时，我们不需要将变量声明为 Optional。</p>
 <p>需要注意的是。对于被 unowned 标记的变量，即使它的原来引用已经被释放，它仍然会保持对被已经释放了的对象的一个 “无效的” 引用，它不是 Optional ，也不会被指向 nil。所以，当我们试图访问这样的 unowned 引用时，程序就会发生错误。</p>
 <p>根据苹果的官方文档的建议。当我们知道两个对象的生命周期并不相关，那么我们必须使用 weak。相反，非强引用对象拥有和强引用对象同样或者更长的生命周期的话，则应该使用 unowned。</p>
 <p>例如，ViewControler 对它的 SubView 的引用可以使用 unowned。因为 ViewControler 的生命周期一定比对它的 SubView 长。</p>
@@ -284,7 +286,7 @@ lazy var someClosure: () -&gt; Void = { [unowned self] in
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/20/swift内存管理之weak与unowned/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/20/swift%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E4%B9%8Bweak%E4%B8%8Eunowned/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -298,7 +300,7 @@ lazy var someClosure: () -&gt; Void = { [unowned self] in
   
 <nav id="article-nav">
   
-    <a href="/2019/04/20/Swift中Result类型的强大功能/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/04/20/Swift%E4%B8%ADResult%E7%B1%BB%E5%9E%8B%E7%9A%84%E5%BC%BA%E5%A4%A7%E5%8A%9F%E8%83%BD/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -308,7 +310,7 @@ lazy var someClosure: () -&gt; Void = { [unowned self] in
     </a>
   
   
-    <a href="/2019/04/20/swift中的枚举/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/04/20/swift%E4%B8%AD%E7%9A%84%E6%9E%9A%E4%B8%BE/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">swift中的枚举</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -352,7 +354,7 @@ lazy var someClosure: () -&gt; Void = { [unowned self] in
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -459,10 +461,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -471,7 +469,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -479,11 +477,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -503,19 +505,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -9,17 +9,17 @@
   <title>四种遍历方法你选哪个？ | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面编程中有多种方式对collection（NSArray、NSDictionary、NSSet）中的元素进行遍历，实际运用中，需要根据效率视情况而用 for 循环最基本的遍历方法，只能进行有序遍历，对于set，dictionary，需要先转换为array才能进行遍历 额外创建数组会增大开销，并且会多创建一个数组对象，它会保留collection中的所有元素对象。 使用NSEnumerator">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="四种遍历方法你选哪个？">
-<meta property="og:url" content="http://yoursite.com/2018/08/01/四种遍历方法你选哪个？/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/08/01/%E5%9B%9B%E7%A7%8D%E9%81%8D%E5%8E%86%E6%96%B9%E6%B3%95%E4%BD%A0%E9%80%89%E5%93%AA%E4%B8%AA%EF%BC%9F/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面编程中有多种方式对collection（NSArray、NSDictionary、NSSet）中的元素进行遍历，实际运用中，需要根据效率视情况而用 for 循环最基本的遍历方法，只能进行有序遍历，对于set，dictionary，需要先转换为array才能进行遍历 额外创建数组会增大开销，并且会多创建一个数组对象，它会保留collection中的所有元素对象。 使用NSEnumerator">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-08-01T06:59:35.653Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-08-01T03:30:50.111Z">
+<meta property="article:modified_time" content="2018-08-01T06:59:35.653Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="四种遍历方法你选哪个？">
-<meta name="twitter:description" content="写在前面编程中有多种方式对collection（NSArray、NSDictionary、NSSet）中的元素进行遍历，实际运用中，需要根据效率视情况而用 for 循环最基本的遍历方法，只能进行有序遍历，对于set，dictionary，需要先转换为array才能进行遍历 额外创建数组会增大开销，并且会多创建一个数组对象，它会保留collection中的所有元素对象。 使用NSEnumerator">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/08/01/四种遍历方法你选哪个？/" class="archive-article-date">
+        <a href="/2018/08/01/%E5%9B%9B%E7%A7%8D%E9%81%8D%E5%8E%86%E6%96%B9%E6%B3%95%E4%BD%A0%E9%80%89%E5%93%AA%E4%B8%AA%EF%BC%9F/" class="archive-article-date">
   	<time datetime="2018-08-01T03:30:50.111Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-01</time>
 </a>
         
@@ -179,31 +179,36 @@
 <h2 id="for-循环"><a href="#for-循环" class="headerlink" title="for 循环"></a>for 循环</h2><p>最基本的遍历方法，只能进行有序遍历，对于set，dictionary，需要先转换为array才能进行遍历</p>
 <p>额外创建数组会增大开销，并且会多创建一个数组对象，它会保留collection中的所有元素对象。</p>
 <h2 id="使用NSEnumerator-来遍历"><a href="#使用NSEnumerator-来遍历" class="headerlink" title="使用NSEnumerator 来遍历"></a>使用NSEnumerator 来遍历</h2><pre><code>NSArray *arr = @[@&quot;1&quot;, @&quot;2&quot;, @&quot;3&quot;];
-
+    
 NSEnumerator *enumerator = [arr objectEnumerator];
-
+    
 id obj;
-
-while ((obj = [enumerator nextObject]) != nil) {
+    
+while ((obj = [enumerator nextObject]) != nil) &#123;
    NSLog(@&quot;===%@&quot;, obj);
-}
-</code></pre><h2 id="快速遍历"><a href="#快速遍历" class="headerlink" title="快速遍历"></a>快速遍历</h2><pre><code>NSArray *arr = @[@&quot;1&quot;, @&quot;2&quot;, @&quot;3&quot;];
-
-for (id obj in arr) {
-
+&#125;
+</code></pre>
+<h2 id="快速遍历"><a href="#快速遍历" class="headerlink" title="快速遍历"></a>快速遍历</h2><pre><code>NSArray *arr = @[@&quot;1&quot;, @&quot;2&quot;, @&quot;3&quot;];
+    
+for (id obj in arr) &#123;
+    
    NSLog(@&quot;===%@&quot;, obj);
-}
-</code></pre><p>大幅简化了遍历所需的语法</p>
+&#125;
+</code></pre>
+<p>大幅简化了遍历所需的语法</p>
 <p>只要遵从了NSFastEnumeration协议，都可以使用快速遍历方法</p>
 <p>协议方法允许类实例同时返回多个对象，高效：</p>
-<pre><code>- (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained _Nullable [_Nonnull])buffer count:(NSUInteger)len;
-</code></pre><p>NSEnumerator也实现了NSFastEnumeration协议，反向遍历的时候，也需要调用reverseObjectEnumerator方法</p>
-<pre><code>for (id obj in [arr reverseObjectEnumerator]) { }
-</code></pre><p>元素下标也有额外的方法</p>
+<pre><code> - (NSUInteger)countByEnumeratingWithState:(NSFastEnumerationState *)state objects:(id __unsafe_unretained _Nullable [_Nonnull])buffer count:(NSUInteger)len;
+</code></pre>
+<p>NSEnumerator也实现了NSFastEnumeration协议，反向遍历的时候，也需要调用reverseObjectEnumerator方法</p>
+<pre><code> for (id obj in [arr reverseObjectEnumerator]) &#123; &#125;
+</code></pre>
+<p>元素下标也有额外的方法</p>
 <h2 id="基于块的遍历方式"><a href="#基于块的遍历方式" class="headerlink" title="基于块的遍历方式"></a>基于块的遍历方式</h2><pre><code>// opts 是枚举类型，NSEnumerationConcurrent 表示开启并发执行， NSEnumerationReverse 表示反向遍历
 // obj 元素对象， idx 对象下标， *stop 为YES时，结束遍历
 - (void)enumerateObjectsWithOptions:(NSEnumerationOptions)opts usingBlock:(void (^)(ObjectType obj, NSUInteger idx, BOOL *stop))block;
-</code></pre><p>遍历时，直接从块里获取更多信息</p>
+</code></pre>
+<p>遍历时，直接从块里获取更多信息</p>
 <p>当确定元素类型时，可以修改块的方法签名，避免进行类型转换操作。</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
 <li><p>遍历collection，最新、最先进的方式是“块枚举法”</p>
@@ -303,7 +308,7 @@ for (id obj in arr) {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/08/01/四种遍历方法你选哪个？/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/08/01/%E5%9B%9B%E7%A7%8D%E9%81%8D%E5%8E%86%E6%96%B9%E6%B3%95%E4%BD%A0%E9%80%89%E5%93%AA%E4%B8%AA%EF%BC%9F/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -317,7 +322,7 @@ for (id obj in arr) {
   
 <nav id="article-nav">
   
-    <a href="/2018/08/01/iOS开发之XLForm的使用/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/08/01/iOS%E5%BC%80%E5%8F%91%E4%B9%8BXLForm%E7%9A%84%E4%BD%BF%E7%94%A8/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -327,7 +332,7 @@ for (id obj in arr) {
     </a>
   
   
-    <a href="/2018/07/31/iOS中runtim的几种常用的方法/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/07/31/iOS%E4%B8%ADruntim%E7%9A%84%E5%87%A0%E7%A7%8D%E5%B8%B8%E7%94%A8%E7%9A%84%E6%96%B9%E6%B3%95/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iOS中runtime的几种常用的方法</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -371,7 +376,7 @@ for (id obj in arr) {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -478,10 +483,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -490,7 +491,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -498,11 +499,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -522,19 +527,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

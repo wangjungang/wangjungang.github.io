@@ -8,19 +8,19 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Swift通知，代理，闭包 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面今天探讨Swift中的通知，代理，闭包(Block)三种方式进行传值  闭包传值第一步 首先建立两个控制器  第一个控制器 ViewController.swift  import UIKit class ViewController: UIViewController { //创建一个label     //申明一个全局的label     var fistLab:UILabel = U">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="写在前面今天探讨Swift中的通知，代理，闭包(Block)三种方式进行传值  闭包传值第一步 首先建立两个控制器  第一个控制器 ViewController.swift  import UIKit class ViewController: UIViewController &amp;#123; &#x2F;&#x2F;创建一个label     &#x2F;&#x2F;申明一个全局的label     var fistLab:UILabe">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Swift通知，代理，闭包">
-<meta property="og:url" content="http://yoursite.com/2019/02/14/Swift通知，代理，闭包/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/02/14/Swift%E9%80%9A%E7%9F%A5%EF%BC%8C%E4%BB%A3%E7%90%86%EF%BC%8C%E9%97%AD%E5%8C%85/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面今天探讨Swift中的通知，代理，闭包(Block)三种方式进行传值  闭包传值第一步 首先建立两个控制器  第一个控制器 ViewController.swift  import UIKit class ViewController: UIViewController { //创建一个label     //申明一个全局的label     var fistLab:UILabel = U">
-<meta property="og:locale" content="default">
+<meta property="og:description" content="写在前面今天探讨Swift中的通知，代理，闭包(Block)三种方式进行传值  闭包传值第一步 首先建立两个控制器  第一个控制器 ViewController.swift  import UIKit class ViewController: UIViewController &amp;#123; &#x2F;&#x2F;创建一个label     &#x2F;&#x2F;申明一个全局的label     var fistLab:UILabe">
+<meta property="og:locale">
 <meta property="og:image" content="http://img.wangjungang.cn/WX20190214-180208@2x.png">
-<meta property="og:updated_time" content="2019-02-15T04:01:44.909Z">
+<meta property="article:published_time" content="2019-02-14T07:41:45.917Z">
+<meta property="article:modified_time" content="2019-02-15T04:01:44.909Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift通知，代理，闭包">
-<meta name="twitter:description" content="写在前面今天探讨Swift中的通知，代理，闭包(Block)三种方式进行传值  闭包传值第一步 首先建立两个控制器  第一个控制器 ViewController.swift  import UIKit class ViewController: UIViewController { //创建一个label     //申明一个全局的label     var fistLab:UILabel = U">
 <meta name="twitter:image" content="http://img.wangjungang.cn/WX20190214-180208@2x.png">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
@@ -39,7 +39,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -53,7 +53,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -62,7 +62,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -111,7 +111,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -142,7 +142,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -169,7 +169,7 @@
   
 
         
-        <a href="/2019/02/14/Swift通知，代理，闭包/" class="archive-article-date">
+        <a href="/2019/02/14/Swift%E9%80%9A%E7%9F%A5%EF%BC%8C%E4%BB%A3%E7%90%86%EF%BC%8C%E9%97%AD%E5%8C%85/" class="archive-article-date">
   	<time datetime="2019-02-14T07:41:45.917Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-14</time>
 </a>
         
@@ -181,7 +181,7 @@
 <h2 id="闭包传值"><a href="#闭包传值" class="headerlink" title="闭包传值"></a>闭包传值</h2><p>第一步 首先建立两个控制器 </p>
 <p>第一个控制器 ViewController.swift </p>
 <pre><code>import UIKit
-class ViewController: UIViewController {
+class ViewController: UIViewController &#123;
 //创建一个label
     //申明一个全局的label
     var fistLab:UILabel = UILabel()
@@ -189,20 +189,20 @@ class ViewController: UIViewController {
     var fistBut:UIButton = UIButton()
 
 
-    override func viewDidLoad() {
+    override func viewDidLoad() &#123;
         super.viewDidLoad()
         self.navigationController?.navigationBar.translucent = false
         //设置label,button的大小
         initLabAndBut()
 
-    }
-    override func didReceiveMemoryWarning() {
+    &#125;
+    override func didReceiveMemoryWarning() &#123;
         super.didReceiveMemoryWarning()
-    }
-}
+    &#125;
+&#125;
 
-extension ViewController{
-    func initLabAndBut(){
+extension ViewController&#123;
+    func initLabAndBut()&#123;
         fistLab = UILabel(frame: CGRectMake(50, 50, 300, 40))
         fistLab.backgroundColor = UIColor.redColor()
         view.addSubview(fistLab)
@@ -212,113 +212,122 @@ extension ViewController{
         fistBut.setTitle(&quot;点击我啊&quot;, forState: UIControlState.Normal)
         fistBut.addTarget(self, action: Selector(&quot;click&quot;), forControlEvents: UIControlEvents.TouchUpInside)
         view.addSubview(fistBut)
-    }
+    &#125;
 
-    func click(){
+    func click()&#123;
         let secV = SecondViewController()
-        secV.initWithMyPassValue { (vlaue) -&gt; Void in
+        secV.initWithMyPassValue &#123; (vlaue) -&gt; Void in
             self.fistLab.text = vlaue
-        }
+        &#125;
         self.navigationController?.pushViewController(secV, animated: true)
-    }
-}
-</code></pre><ul>
+    &#125;
+&#125;
+</code></pre>
+<ul>
 <li>secondViewconteroller.swift</li>
 </ul>
 <p>import UIKit</p>
-<pre><code>//定义一个闭包函数
-typealias SecondValueToFist = (vlaue: String)-&gt;Void
+<pre><code>    //定义一个闭包函数
+    typealias SecondValueToFist = (vlaue: String)-&gt;Void
 
-class SecondViewController: UIViewController {
-    //创建一个label
-    //申明一个全局的label
-    var fistLab:UITextField = UITextField()
-    //声明一个全局的button
-    var fistBut:UIButton = UIButton()
-    //定义闭包函数
-    var myValue:SecondValueToFist?//可以为nil
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        self.view.backgroundColor = UIColor.darkGrayColor()
-        initLabAndBut()
-}
-//在定义个传值函数
-func initWithMyPassValue(value:SecondValueToFist?){
-    myValue = value
-    }
+    class SecondViewController: UIViewController &#123;
+        //创建一个label
+        //申明一个全局的label
+        var fistLab:UITextField = UITextField()
+        //声明一个全局的button
+        var fistBut:UIButton = UIButton()
+        //定义闭包函数
+        var myValue:SecondValueToFist?//可以为nil
+        override func viewDidLoad() &#123;
+            super.viewDidLoad()
+            self.view.backgroundColor = UIColor.darkGrayColor()
+            initLabAndBut()
+    &#125;
+    //在定义个传值函数
+    func initWithMyPassValue(value:SecondValueToFist?)&#123;
+        myValue = value
+    	&#125;
+    
+    &#125;
+    extension SecondViewController&#123;
+        func initLabAndBut()&#123;
+            fistLab = UITextField(frame: CGRectMake(50, 50, 300, 40))
+            fistLab.backgroundColor = UIColor.redColor()
+            view.addSubview(fistLab)
 
-}
-extension SecondViewController{
-    func initLabAndBut(){
-        fistLab = UITextField(frame: CGRectMake(50, 50, 300, 40))
-        fistLab.backgroundColor = UIColor.redColor()
-        view.addSubview(fistLab)
+        fistBut = UIButton(frame: CGRectMake(100, 100, 200, 50))
+        fistBut.backgroundColor = UIColor.purpleColor()
+        fistBut.setTitle(&quot;点击我啊&quot;, forState: UIControlState.Normal)
+        fistBut.addTarget(self, action: Selector(&quot;click&quot;), forControlEvents: UIControlEvents.TouchUpInside)
+        view.addSubview(fistBut)
+    &#125;
 
-    fistBut = UIButton(frame: CGRectMake(100, 100, 200, 50))
-    fistBut.backgroundColor = UIColor.purpleColor()
-    fistBut.setTitle(&quot;点击我啊&quot;, forState: UIControlState.Normal)
-    fistBut.addTarget(self, action: Selector(&quot;click&quot;), forControlEvents: UIControlEvents.TouchUpInside)
-    view.addSubview(fistBut)
-}
-
-func click(){
-//闭包传值
-    if(myValue != nil){
-        myValue!(vlaue: fistLab.text!)
-    }
-              self.navigationController?.popToRootViewControllerAnimated(true)
-    }
-}
-</code></pre><p><img src="http://img.wangjungang.cn/WX20190214-180208@2x.png" alt=""></p>
+    func click()&#123;
+    //闭包传值
+        if(myValue != nil)&#123;
+            myValue!(vlaue: fistLab.text!)
+        &#125;
+                  self.navigationController?.popToRootViewControllerAnimated(true)
+    	&#125;
+    &#125;
+</code></pre>
+<p><img src="http://img.wangjungang.cn/WX20190214-180208@2x.png"></p>
 <h2 id="代理传值"><a href="#代理传值" class="headerlink" title="代理传值"></a>代理传值</h2><p>第一步 在第二个控制器里面制定协议</p>
 <pre><code>//定义一个代理
 
-protocol SecondViewControllerDelegate{
+protocol SecondViewControllerDelegate&#123;
     func SecToFistValue(value:String)
-}
-</code></pre><p>第二步 在第二个控制器定义一个全局的接受协议的变量</p>
-<pre><code>var delegate:SecondViewControllerDelegate?
-</code></pre><p>第三步 在第二个控制器的button点击时间里面调用协议方法</p>
-<pre><code>func click(){
-    if self.delegate != nil{
+&#125;
+</code></pre>
+<p>第二步 在第二个控制器定义一个全局的接受协议的变量</p>
+<pre><code> var delegate:SecondViewControllerDelegate?
+</code></pre>
+<p>第三步 在第二个控制器的button点击时间里面调用协议方法</p>
+<pre><code>func click()&#123;
+    if self.delegate != nil&#123;
         delegate?.SecToFistValue(fistLab.text!)
-    }    self.navigationController?.popToRootViewControllerAnimated(true)
-}
-</code></pre><p>第四步 在第一个控制器里进行指定代理，并实现代理的方法</p>
-<pre><code>func click(){
+    &#125;    self.navigationController?.popToRootViewControllerAnimated(true)
+&#125;
+</code></pre>
+<p>第四步 在第一个控制器里进行指定代理，并实现代理的方法</p>
+<pre><code>func click()&#123;
    let secV = SecondViewController()
    secV.delegate = self
       self.navigationController?.pushViewController(secV, animated: true)
- }
+ &#125;
  //实现代理方法
- func SecToFistValue(value: String) {
+ func SecToFistValue(value: String) &#123;
      self.fistLab.text = value
- }
-</code></pre><h2 id="通知传值"><a href="#通知传值" class="headerlink" title="通知传值"></a>通知传值</h2><p>第一步 在第二个控制器的button点击时间 发送消息</p>
-<pre><code>func click(){
+ &#125;
+</code></pre>
+<h2 id="通知传值"><a href="#通知传值" class="headerlink" title="通知传值"></a>通知传值</h2><p>第一步 在第二个控制器的button点击时间 发送消息</p>
+<pre><code>func click()&#123;
 
-        if self.delegate != nil{
+        if self.delegate != nil&#123;
             delegate?.SecToFistValue(fistLab.text!)
-        }
+        &#125;
         let dic:NSDictionary = NSDictionary()
         dic.setValue(fistLab.text, forKey: &quot;K1&quot;)
         NSNotificationCenter.defaultCenter().postNotificationName(&quot;abc&quot;, object: self, userInfo:dic as [NSObject : AnyObject])
        self.navigationController?.popToRootViewControllerAnimated(true)
-    }
-</code></pre><p>第二步 在第一个控制器里面进行通知的接受</p>
-<pre><code>func click(){
+    &#125;
+    
+</code></pre>
+<p>第二步 在第一个控制器里面进行通知的接受</p>
+<pre><code>func click()&#123;
         let secV = SecondViewController()
         secV.delegate = self
         self.navigationController?.pushViewController(secV, animated: true)
          NSNotificationCenter.defaultCenter().addObserver(self, selector: Selector(&quot;getInfo:&quot;), name: &quot;abc&quot;, object: nil)
 
-}
+&#125;
 
-@objc func getInfo(info: NSNotification){
+@objc func getInfo(info: NSNotification)&#123;
     let dic:NSDictionary = info.object! as! NSDictionary
     print(dic)
-}
+&#125;
 </code></pre>
+
       
 
       
@@ -408,7 +417,7 @@ protocol SecondViewControllerDelegate{
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/14/Swift通知，代理，闭包/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/14/Swift%E9%80%9A%E7%9F%A5%EF%BC%8C%E4%BB%A3%E7%90%86%EF%BC%8C%E9%97%AD%E5%8C%85/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -422,7 +431,7 @@ protocol SecondViewControllerDelegate{
   
 <nav id="article-nav">
   
-    <a href="/2019/02/15/精确还原UI稿多行文字间距/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/02/15/%E7%B2%BE%E7%A1%AE%E8%BF%98%E5%8E%9FUI%E7%A8%BF%E5%A4%9A%E8%A1%8C%E6%96%87%E5%AD%97%E9%97%B4%E8%B7%9D/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -432,7 +441,7 @@ protocol SecondViewControllerDelegate{
     </a>
   
   
-    <a href="/2019/02/14/Swift中的willSet与didSet/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/02/14/Swift%E4%B8%AD%E7%9A%84willSet%E4%B8%8EdidSet/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Swift中的willSet与didSet</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -476,7 +485,7 @@ protocol SecondViewControllerDelegate{
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -583,10 +592,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -595,7 +600,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -603,11 +608,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -627,19 +636,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>Swift中的高阶函数 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 // 计算字符串的长度 let stringArray = [&amp;quot;Objective-C&amp;quot;, &amp;quot;Swift&amp;quot;, &amp;quot;HTML&amp;quo">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 &#x2F;&#x2F; 计算字符串的长度 let stringArray &#x3D; [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&amp;quo">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Swift中的高阶函数">
-<meta property="og:url" content="http://yoursite.com/2019/04/15/Swift中的高阶函数/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/04/15/Swift%E4%B8%AD%E7%9A%84%E9%AB%98%E9%98%B6%E5%87%BD%E6%95%B0/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 // 计算字符串的长度 let stringArray = [&amp;quot;Objective-C&amp;quot;, &amp;quot;Swift&amp;quot;, &amp;quot;HTML&amp;quo">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-15T09:46:50.405Z">
+<meta property="og:description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 &#x2F;&#x2F; 计算字符串的长度 let stringArray &#x3D; [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&amp;quo">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-04-15T09:13:52.846Z">
+<meta property="article:modified_time" content="2019-04-15T09:46:50.405Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Swift中的高阶函数">
-<meta name="twitter:description" content="写在前面Swift相比于Objective-C又一个重要的优点，它对函数式编程提供了很好的支持，Swift提供了map、filter、reduce这三个高阶函数作为对容器的支持。 map可以对数组中的每一个元素做一次处理 // 计算字符串的长度 let stringArray = [&amp;quot;Objective-C&amp;quot;, &amp;quot;Swift&amp;quot;, &amp;quot;HTML&amp;quo">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/04/15/Swift中的高阶函数/" class="archive-article-date">
+        <a href="/2019/04/15/Swift%E4%B8%AD%E7%9A%84%E9%AB%98%E9%98%B6%E5%87%BD%E6%95%B0/" class="archive-article-date">
   	<time datetime="2019-04-15T09:13:52.846Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-04-15</time>
 </a>
         
@@ -179,85 +179,91 @@
 <h2 id="map"><a href="#map" class="headerlink" title="map"></a>map</h2><p>可以对数组中的每一个元素做一次处理</p>
 <pre><code>// 计算字符串的长度
 let stringArray = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&quot;, &quot;CSS&quot;, &quot;JavaScript&quot;]
-func stringCount(string: String) -&gt; Int {
+func stringCount(string: String) -&gt; Int &#123;
     return string.characters.count
-}
+&#125;
 stringArray.map(stringCount)
 
-stringArray.map({string -&gt; Int in
+stringArray.map(&#123;string -&gt; Int in
     return string.characters.count
-})
+&#125;)
 
 // $0代表数组中的每一个元素
-stringArray.map{
+stringArray.map&#123;
     return $0.characters.count
-}
-</code></pre><h2 id="flatMap与map不同之处："><a href="#flatMap与map不同之处：" class="headerlink" title="flatMap与map不同之处："></a>flatMap与map不同之处：</h2><h3 id="（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包"><a href="#（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包" class="headerlink" title="（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包"></a>（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包</h3><pre><code>let array = [&quot;Apple&quot;, &quot;Orange&quot;, &quot;Puple&quot;, &quot;&quot;]
+&#125;
+</code></pre>
+<h2 id="flatMap与map不同之处："><a href="#flatMap与map不同之处：" class="headerlink" title="flatMap与map不同之处："></a>flatMap与map不同之处：</h2><h3 id="（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包"><a href="#（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包" class="headerlink" title="（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包"></a>（1）flatMap返回后的数组中不存在nil，同时它会把Optional解包</h3><pre><code>let array = [&quot;Apple&quot;, &quot;Orange&quot;, &quot;Puple&quot;, &quot;&quot;]
 
-let arr1 = array.map { a -&gt; Int? in
+let arr1 = array.map &#123; a -&gt; Int? in
     let length = a.characters.count
-    guard length &gt; 0 else { return nil }
+    guard length &gt; 0 else &#123; return nil &#125;
     return length  
-}
-arr1 // [{some 5}, {some 6}, {some 5}, nil]
+&#125;
+arr1 // [&#123;some 5&#125;, &#123;some 6&#125;, &#123;some 5&#125;, nil]
 
-let arr2 = array.flatMap { a-&gt; Int? in
+let arr2 = array.flatMap &#123; a-&gt; Int? in
     let length = a.characters.count
-    guard length &gt; 0 else { return nil}
+    guard length &gt; 0 else &#123; return nil&#125;
     return length    
-}    
+&#125;    
 arr2 // [5, 6, 5]
-</code></pre><h3 id="flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组"><a href="#flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组" class="headerlink" title="flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组"></a>flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组</h3><pre><code>let array = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+</code></pre>
+<h3 id="flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组"><a href="#flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组" class="headerlink" title="flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组"></a>flatMap还能把数组中存有数组的数组（二维数组、N维数组）一同打开变成一个新的数组</h3><pre><code>let array = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 
-let arr1 = array.map{ $0 }
+let arr1 = array.map&#123; $0 &#125;
 arr1 // [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 
-let arr2 = array.flatMap{ $0 }
+let arr2 = array.flatMap&#123; $0 &#125;
 arr2 // [1, 2, 3, 4, 5, 6, 7, 8, 9]
-</code></pre><h3 id="flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积"><a href="#flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积" class="headerlink" title="flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积"></a>flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积</h3><pre><code>let fruits = [&quot;Apple&quot;, &quot;Orange&quot;, &quot;Puple&quot;]
+</code></pre>
+<h3 id="flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积"><a href="#flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积" class="headerlink" title="flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积"></a>flatMap也能把两个不同的数组合并成一个数组，这个合并的数组元素个数是前面两个数组元素个数的乘积</h3><pre><code>let fruits = [&quot;Apple&quot;, &quot;Orange&quot;, &quot;Puple&quot;]
 let counts = [2, 3, 5]
 
-let array = counts.flatMap { count in
-    fruits.map ({ fruit in
+let array = counts.flatMap &#123; count in
+    fruits.map (&#123; fruit in
          return fruit + &quot;  \(count)&quot;            
-    })   
-}
+    &#125;)   
+&#125;
 array // [&quot;Apple 2&quot;, &quot;Orange 2&quot;, &quot;Puple 2&quot;, &quot;Apple 3&quot;, &quot;Orange 3&quot;, &quot;Puple 3&quot;, &quot;Apple 5&quot;, &quot;Orange 5&quot;, &quot;Puple 5&quot;]
-</code></pre><h2 id="filer："><a href="#filer：" class="headerlink" title="filer："></a>filer：</h2><p>过滤，可以对数组中的元素按照某种规则进行一次过滤</p>
+</code></pre>
+<h2 id="filer："><a href="#filer：" class="headerlink" title="filer："></a>filer：</h2><p>过滤，可以对数组中的元素按照某种规则进行一次过滤</p>
 <pre><code>// 筛选出字符串的长度小于10的字符串
 let stringArray = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&quot;, &quot;CSS&quot;, &quot;JavaScript&quot;]
-func stringCountLess10(string: String) -&gt; Bool {
+func stringCountLess10(string: String) -&gt; Bool &#123;
     return string.characters.count &lt; 10
-}
+&#125;
 stringArray.filter(stringCountLess10)
 
-stringArray.filter({string -&gt; Bool in
+stringArray.filter(&#123;string -&gt; Bool in
     return string.characters.count &lt; 10
-})
+&#125;)
 
 // $0表示数组中的每一个元素
-stringArray.filter{
+stringArray.filter&#123;
     return $0.characters.count &lt; 10
-}
-</code></pre><h2 id="reduce："><a href="#reduce：" class="headerlink" title="reduce："></a>reduce：</h2><p>计算，可以对数组的元素进行计算</p>
+&#125;
+</code></pre>
+<h2 id="reduce："><a href="#reduce：" class="headerlink" title="reduce："></a>reduce：</h2><p>计算，可以对数组的元素进行计算</p>
 <pre><code>// 将数组中的每个字符串用‘、’拼接
 let stringArray = [&quot;Objective-C&quot;, &quot;Swift&quot;, &quot;HTML&quot;, &quot;CSS&quot;, &quot;JavaScript&quot;]
 
-func appendString(string1: String, string2: String) -&gt; String {
+func appendString(string1: String, string2: String) -&gt; String &#123;
     return string1 == &quot;&quot; ? string2 : string1 + &quot;、&quot; + string2
-}
+&#125;
 // reduce方法中的第一个参数是初始值
 stringArray.reduce(&quot;&quot;, appendString)
 
-stringArray.reduce(&quot;&quot;, {(string1, string2) -&gt; String in
+stringArray.reduce(&quot;&quot;, &#123;(string1, string2) -&gt; String in
     return string1 == &quot;&quot; ? string2 : string1 + &quot;、&quot; + string2
-})
+&#125;)
 
 // $0表示计算后的结果, $1表示数组中的每一个元素
-stringArray.reduce(&quot;&quot;, {
+stringArray.reduce(&quot;&quot;, &#123;
     return $0 == &quot;&quot; ? $1 : $0 + &quot;、&quot; + $1
-})
+&#125;)
 </code></pre>
+
       
 
       
@@ -347,7 +353,7 @@ stringArray.reduce(&quot;&quot;, {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/15/Swift中的高阶函数/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/04/15/Swift%E4%B8%AD%E7%9A%84%E9%AB%98%E9%98%B6%E5%87%BD%E6%95%B0/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -361,7 +367,7 @@ stringArray.reduce(&quot;&quot;, {
   
 <nav id="article-nav">
   
-    <a href="/2019/04/20/多类型Cell的tableView实现/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/04/20/%E5%A4%9A%E7%B1%BB%E5%9E%8BCell%E7%9A%84tableView%E5%AE%9E%E7%8E%B0/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -371,7 +377,7 @@ stringArray.reduce(&quot;&quot;, {
     </a>
   
   
-    <a href="/2019/04/15/Swift 中的 map 和 flatMap/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2019/04/15/Swift%20%E4%B8%AD%E7%9A%84%20map%20%E5%92%8C%20flatMap/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Swift 中的 map 和 flatMap</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -415,7 +421,7 @@ stringArray.reduce(&quot;&quot;, {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -522,10 +528,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -534,7 +536,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -542,11 +544,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -566,19 +572,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

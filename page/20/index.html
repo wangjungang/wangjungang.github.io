@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/20/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/16/适配iPhone XR/">适配iPhone XR</a>
+      <a class="article-title" href="/2018/09/16/%E9%80%82%E9%85%8DiPhone%20XR/">适配iPhone XR</a>
     </h1>
   
 
         
-        <a href="/2018/09/16/适配iPhone XR/" class="archive-article-date">
+        <a href="/2018/09/16/%E9%80%82%E9%85%8DiPhone%20XR/" class="archive-article-date">
   	<time datetime="2018-09-16T06:24:26.639Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-16</time>
 </a>
         
@@ -175,28 +175,29 @@
         <h3 id="快速适配"><a href="#快速适配" class="headerlink" title="快速适配"></a>快速适配</h3><p>先说结论，找设计师要2张启动图：</p>
 <p>iPhone XR：828px x 1792px</p>
 <p>iPhone XS Max: 1242px x 2688px</p>
-<h3 id="LaunchImage中只有iPhone-X-iPhone-XS"><a href="#LaunchImage中只有iPhone-X-iPhone-XS" class="headerlink" title="LaunchImage中只有iPhone X/iPhone XS"></a>LaunchImage中只有iPhone X/iPhone XS</h3><p>iPhone XR / XS Max 对老版本兼容请求</p>
-<p>如果没有设置iPhone XR/iPhone XS Max启动图但设置了iPhone X的启动图，iPhone XR / XS Max默认会走iPhone X 的尺寸<br>375ptx812pt，会对内容近乎于等比拉伸放到iPhone XR / XS Max屏幕内，如下图：</p>
-<p><img src="http://op1uxe89i.bkt.clouddn.com/WX20180916-143326@2x.png" alt=""></p>
-<h3 id="1-代码中判断是否是iPhone-X时需要注意"><a href="#1-代码中判断是否是iPhone-X时需要注意" class="headerlink" title="1. 代码中判断是否是iPhone X时需要注意"></a>1. 代码中判断是否是iPhone X时需要注意</h3><p>如果你以前是使用设备尺寸来判断iPhone X那就需要修改了，判断iPhone X主要是因为刘海的原因可能要做些特殊处理。鉴于iPhone X/XS/XR/XS Max底部都会有安全距离，所以可以利用safeAreaInsets.bottom &gt; 0.0来判断是否是iPhone X。</p>
+<h3 id="LaunchImage中只有iPhone-X-x2F-iPhone-XS"><a href="#LaunchImage中只有iPhone-X-x2F-iPhone-XS" class="headerlink" title="LaunchImage中只有iPhone X&#x2F;iPhone XS"></a>LaunchImage中只有iPhone X&#x2F;iPhone XS</h3><p>iPhone XR &#x2F; XS Max 对老版本兼容请求</p>
+<p>如果没有设置iPhone XR&#x2F;iPhone XS Max启动图但设置了iPhone X的启动图，iPhone XR &#x2F; XS Max默认会走iPhone X 的尺寸<br>375ptx812pt，会对内容近乎于等比拉伸放到iPhone XR &#x2F; XS Max屏幕内，如下图：</p>
+<p><img src="http://op1uxe89i.bkt.clouddn.com/WX20180916-143326@2x.png"></p>
+<h3 id="1-代码中判断是否是iPhone-X时需要注意"><a href="#1-代码中判断是否是iPhone-X时需要注意" class="headerlink" title="1. 代码中判断是否是iPhone X时需要注意"></a>1. 代码中判断是否是iPhone X时需要注意</h3><p>如果你以前是使用设备尺寸来判断iPhone X那就需要修改了，判断iPhone X主要是因为刘海的原因可能要做些特殊处理。鉴于iPhone X&#x2F;XS&#x2F;XR&#x2F;XS Max底部都会有安全距离，所以可以利用safeAreaInsets.bottom &gt; 0.0来判断是否是iPhone X。</p>
 <p>safeAreaInsets支持iOS11及以后。</p>
-<pre><code>static inline BOOL isIPhoneX() {
+<pre><code>static inline BOOL isIPhoneX() &#123;
     BOOL iPhoneX = NO;
-    if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) {
+    if (UIDevice.currentDevice.userInterfaceIdiom != UIUserInterfaceIdiomPhone) &#123;
         return iPhoneX;
-    }
-
-    if (@available(iOS 11.0, *)) {
+    &#125;
+    
+    if (@available(iOS 11.0, *)) &#123;
         UIWindow *mainWindow = [[[UIApplication sharedApplication] delegate] window];
-        if (mainWindow.safeAreaInsets.bottom &gt; 0.0) {
-
+        if (mainWindow.safeAreaInsets.bottom &gt; 0.0) &#123;
+            
             iPhoneX = YES;
-        }
-    }
-
+        &#125;
+    &#125;
+    
     return iPhoneX;
-}
+&#125;
 </code></pre>
+
       
 
       
@@ -219,7 +220,7 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/16/适配iPhone XR/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/16/%E9%80%82%E9%85%8DiPhone%20XR/">展开全文 >></a>
         </p>
       
 
@@ -256,12 +257,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/14/iOS分类(category),类扩展(extension)/">iOS分类(category),类扩展(extension)</a>
+      <a class="article-title" href="/2018/09/14/iOS%E5%88%86%E7%B1%BB(category),%E7%B1%BB%E6%89%A9%E5%B1%95(extension)/">iOS分类(category),类扩展(extension)</a>
     </h1>
   
 
         
-        <a href="/2018/09/14/iOS分类(category),类扩展(extension)/" class="archive-article-date">
+        <a href="/2018/09/14/iOS%E5%88%86%E7%B1%BB(category),%E7%B1%BB%E6%89%A9%E5%B1%95(extension)/" class="archive-article-date">
   	<time datetime="2018-09-14T08:30:59.916Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-14</time>
 </a>
         
@@ -274,24 +275,25 @@
 <h2 id="分类-category"><a href="#分类-category" class="headerlink" title="分类  category"></a>分类  category</h2><h3 id="概念："><a href="#概念：" class="headerlink" title="概念："></a>概念：</h3><p> 分类（Category）是OC中的特有语法，它是表示一个指向分类的结构体的指针。可以给某一个类扩充一些方法（不修改原来类的代码），原则上它只能增加方法，不能增加成员（实例）变量。具体原因看源码组成:</p>
 <p> category源码</p>
 <pre><code> typedef struct objc_category *Category;
-struct objc_category {
+struct objc_category &#123;
   char *category_name                          OBJC2_UNAVAILABLE; // 分类名
   char *class_name                             OBJC2_UNAVAILABLE; // 分类所属的类名
   struct objc_method_list *instance_methods    OBJC2_UNAVAILABLE; // 实例方法列表
   struct objc_method_list *class_methods       OBJC2_UNAVAILABLE; // 类方法列表
   struct objc_protocol_list *protocols         OBJC2_UNAVAILABLE; // 分类所实现的协议列表
-}
-</code></pre><p>通过上面我们可以发现，这个结构体主要包含了分类定义的实例方法与类方法，其中instance_methods 列表是 objc_class 中方法列表的一个子集，而class_methods列表是元类方法列表的一个子集。 但这个结构体里面</p>
+&#125;
+</code></pre>
+<p>通过上面我们可以发现，这个结构体主要包含了分类定义的实例方法与类方法，其中instance_methods 列表是 objc_class 中方法列表的一个子集，而class_methods列表是元类方法列表的一个子集。 但这个结构体里面</p>
 <p>根本没有属性列表， 根本没有属性列表， 根本没有属性列表。</p>
 <h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>1.分类是用于给原有类添加方法的,因为分类的结构体指针中，没有属性列表，只有方法列表。所以&lt; 原则上讲它只能添加方法, 不能添加属性(成员变量),实际上可以通过其它方式添加属性&gt; ;   </p>
-<p>2.分类中的可以写@property, 但不会生成setter/getter方法, 也不会生成实现以及私有的成员变量（编译时会报警告）; </p>
+<p>2.分类中的可以写@property, 但不会生成setter&#x2F;getter方法, 也不会生成实现以及私有的成员变量（编译时会报警告）; </p>
 <p>3.可以在分类中访问原有类中.h中的属性; </p>
 <p>4.如果分类中有和原有类同名的方法, 会优先调用分类中的方法, 就是说会忽略原有类的方法。所以同名方法调用的优先级为 分类 &gt; 本类 &gt; 父类。因此在开发中尽量不要覆盖原有类; </p>
 <p>5.如果多个分类中都有和原有类中同名的方法, 那么调用该方法的时候执行谁由编译器决定；编译器会执行最后一个参与编译的分类中的方法。</p>
 <h2 id="类扩展-extension"><a href="#类扩展-extension" class="headerlink" title="类扩展 extension"></a>类扩展 extension</h2><p>这个东西每天都要见，但是大多数人不在意它</p>
 <p>这是一个类的.m文件</p>
 <pre><code>#import &quot;ZDMessageViewController.h&quot;
-
+ 
 @interface ZDMessageViewController ()
 @property(nonatomic,strong) NSMutableArray *allDataMutableArray;
 @end
@@ -299,11 +301,12 @@ struct objc_category {
 
 @interface XXX ()
 //私有属性
-//私有方法（如果不实现，编译时会报警,Method definition for &apos;XXX&apos; not found）
+//私有方法（如果不实现，编译时会报警,Method definition for &#39;XXX&#39; not found）
 @end
-</code></pre><p>这个东西就叫做类扩展，可以为一个类添加一些私有的成员变量和方法，其方法也在.m中实现</p>
+</code></pre>
+<p>这个东西就叫做类扩展，可以为一个类添加一些私有的成员变量和方法，其方法也在.m中实现</p>
 <h2 id="分类与类扩展的区别："><a href="#分类与类扩展的区别：" class="headerlink" title="分类与类扩展的区别："></a>分类与类扩展的区别：</h2><p>1 类别中原则上智能增加方法</p>
-<p>能添加属性的问题只是通过runtime解决没有setter/getter的问题而已</p>
+<p>能添加属性的问题只是通过runtime解决没有setter&#x2F;getter的问题而已</p>
 <p>2 类扩展不仅可以增加方法，还可以增加实例变量（或者属性），只是该实例变量默认只是@private类型的（只能在自身类使用，不能再子类或者其他地方使用）</p>
 <p>3 类扩展中声明的方法没有被实现，编译器会报警，但是类别中声明的方法没有被实现，编译器不会有任何警告。这是因为类扩展是在编译阶段被添加到类中，而类别是在运行时添加到类中</p>
 <p>4 类扩展不能像类别那样拥有独立的实现部分 @implementaton 部分。也就是说，类扩展所声明的方法必须依托对应的类的实现部分来实现</p>
@@ -331,7 +334,7 @@ struct objc_category {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/14/iOS分类(category),类扩展(extension)/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/14/iOS%E5%88%86%E7%B1%BB(category),%E7%B1%BB%E6%89%A9%E5%B1%95(extension)/">展开全文 >></a>
         </p>
       
 
@@ -368,12 +371,12 @@ struct objc_category {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/13/关于分类的总结 /">关于分类的总结</a>
+      <a class="article-title" href="/2018/09/13/%E5%85%B3%E4%BA%8E%E5%88%86%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93%20/">关于分类的总结</a>
     </h1>
   
 
         
-        <a href="/2018/09/13/关于分类的总结 /" class="archive-article-date">
+        <a href="/2018/09/13/%E5%85%B3%E4%BA%8E%E5%88%86%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93%20/" class="archive-article-date">
   	<time datetime="2018-09-13T13:49:46.950Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
 </a>
         
@@ -409,7 +412,8 @@ struct objc_category {
    -  实例方法中可以访问成员变量
    -  实例方法中直接调用实例方法
    -  实例方法中也可以调用类方法(通过类名)
-</code></pre><p>4 运行时能增加成员变量么？能增加属性么？如果能，如何增加？如果不能，为什么？</p>
+</code></pre>
+<p>4 运行时能增加成员变量么？能增加属性么？如果能，如何增加？如果不能，为什么？</p>
 <p>Category中不能动态添加成员变量;</p>
 <p>在Objective-C提供的runtime函数中，确实有一个class_addIvar()函数用于给类添加成员变量，但是阅读过苹果的官方文档的人应该会看到：</p>
 <p>大概的意思说，这个函数只能在“构建一个类的过程中”调用。一旦完成类定义，就不能再添加成员变量了。经过编译的类在程序启动后就被runtime加载，没有机会调用addIvar。程序在运行时动态构建的类需要在调用objc_registerClassPair之后才可以被使用，同样没有机会再添加成员变量。</p>
@@ -437,7 +441,7 @@ struct objc_category {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/13/关于分类的总结 /">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/13/%E5%85%B3%E4%BA%8E%E5%88%86%E7%B1%BB%E7%9A%84%E6%80%BB%E7%BB%93%20/">展开全文 >></a>
         </p>
       
 
@@ -474,12 +478,12 @@ struct objc_category {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">类方法(class method)和实例方法(instance method)有什么区别？</a>
+      <a class="article-title" href="/2018/09/13/%E7%B1%BB%E6%96%B9%E6%B3%95(class%20method)%E5%92%8C%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95(instance%20method)%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F%20/">类方法(class method)和实例方法(instance method)有什么区别？</a>
     </h1>
   
 
         
-        <a href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /" class="archive-article-date">
+        <a href="/2018/09/13/%E7%B1%BB%E6%96%B9%E6%B3%95(class%20method)%E5%92%8C%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95(instance%20method)%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F%20/" class="archive-article-date">
   	<time datetime="2018-09-13T13:26:51.045Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
 </a>
         
@@ -515,7 +519,7 @@ struct objc_category {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/13/类方法(class method)和实例方法(instance method)有什么区别？ /">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/13/%E7%B1%BB%E6%96%B9%E6%B3%95(class%20method)%E5%92%8C%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95(instance%20method)%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F%20/">展开全文 >></a>
         </p>
       
 
@@ -552,12 +556,12 @@ struct objc_category {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步</a>
+      <a class="article-title" href="/2018/09/13/%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%BC%9A%E6%8A%A5unrecognized%20selector%E9%94%99%E8%AF%AF%EF%BC%9FiOS%E6%9C%89%E5%93%AA%E4%BA%9B%E6%9C%BA%E5%88%B6%E6%9D%A5%E9%81%BF%E5%85%8D%E8%B5%B0%E5%88%B0%E8%BF%99%E4%B8%80%E6%AD%A5/">什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步</a>
     </h1>
   
 
         
-        <a href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/" class="archive-article-date">
+        <a href="/2018/09/13/%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%BC%9A%E6%8A%A5unrecognized%20selector%E9%94%99%E8%AF%AF%EF%BC%9FiOS%E6%9C%89%E5%93%AA%E4%BA%9B%E6%9C%BA%E5%88%B6%E6%9D%A5%E9%81%BF%E5%85%8D%E8%B5%B0%E5%88%B0%E8%BF%99%E4%B8%80%E6%AD%A5/" class="archive-article-date">
   	<time datetime="2018-09-13T13:05:33.346Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-13</time>
 </a>
         
@@ -597,7 +601,7 @@ struct objc_category {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/13/什么时候会报unrecognized selector错误？iOS有哪些机制来避免走到这一步/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/13/%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E4%BC%9A%E6%8A%A5unrecognized%20selector%E9%94%99%E8%AF%AF%EF%BC%9FiOS%E6%9C%89%E5%93%AA%E4%BA%9B%E6%9C%BA%E5%88%B6%E6%9D%A5%E9%81%BF%E5%85%8D%E8%B5%B0%E5%88%B0%E8%BF%99%E4%B8%80%E6%AD%A5/">展开全文 >></a>
         </p>
       
 
@@ -634,12 +638,12 @@ struct objc_category {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/Runloop入门/">Runloop入门</a>
+      <a class="article-title" href="/2018/09/12/Runloop%E5%85%A5%E9%97%A8/">Runloop入门</a>
     </h1>
   
 
         
-        <a href="/2018/09/12/Runloop入门/" class="archive-article-date">
+        <a href="/2018/09/12/Runloop%E5%85%A5%E9%97%A8/" class="archive-article-date">
   	<time datetime="2018-09-12T15:05:09.896Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
 </a>
         
@@ -661,38 +665,43 @@ struct objc_category {
 <p>3.RunLoop在第一次获取时创建，在线程结束时销毁。（这就相当于 线程是一个类，RunLoop是类里的实例变量，这样便于理解）</p>
 <h3 id="获取RunLoop对象"><a href="#获取RunLoop对象" class="headerlink" title="获取RunLoop对象"></a>获取RunLoop对象</h3><h4 id="Foundation-1"><a href="#Foundation-1" class="headerlink" title="Foundation"></a>Foundation</h4><pre><code>[NSRunLoop currentRunLoop]; // 获得当前线程的RunLoop对象
 [NSRunLoop mainRunLoop]; // 获得主线程的RunLoop对象
-</code></pre><h4 id="Core-Foundation-1"><a href="#Core-Foundation-1" class="headerlink" title="Core Foundation"></a>Core Foundation</h4><pre><code>CFRunLoopGetCurrent(); // 获得当前线程的RunLoop对象
+</code></pre>
+<h4 id="Core-Foundation-1"><a href="#Core-Foundation-1" class="headerlink" title="Core Foundation"></a>Core Foundation</h4><pre><code>CFRunLoopGetCurrent(); // 获得当前线程的RunLoop对象
 CFRunLoopGetMain(); // 获得主线程的RunLoop对象 
-</code></pre><h3 id="RunLoop相关类"><a href="#RunLoop相关类" class="headerlink" title="RunLoop相关类"></a>RunLoop相关类</h3><p>在Core Foundation中有RunLoop的五个类</p>
+</code></pre>
+<h3 id="RunLoop相关类"><a href="#RunLoop相关类" class="headerlink" title="RunLoop相关类"></a>RunLoop相关类</h3><p>在Core Foundation中有RunLoop的五个类</p>
 <pre><code>CFRunLoopRef
 CFRunLoopModeRef
 CFRunLoopSourceRef
 CFRunLoopTimerRef
 CFRunLoopObserverRef
-</code></pre><p>由图中可以得出以下几点：</p>
+</code></pre>
+<p>由图中可以得出以下几点：</p>
 <p>1.CFRunLoopModeRef代表的是RunLoop的运行模式。</p>
-<p>2.一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。</p>
+<p>2.一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source&#x2F;Timer&#x2F;Observer。</p>
 <p>3.每次调用 RunLoop 的主函数时，只能指定其中一个 Mode，这个Mode被称作 CurrentMode。</p>
-<p>4.如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。</p>
+<p>4.如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source&#x2F;Timer&#x2F;Observer，让其互不影响。</p>
 <h3 id="CFRunLoopModeRef"><a href="#CFRunLoopModeRef" class="headerlink" title="CFRunLoopModeRef"></a>CFRunLoopModeRef</h3><p>系统默认注册了5个mode</p>
 <pre><code>kCFRunLoopDefaultMode //App的默认Mode，通常主线程是在这个Mode下运行
 UITrackingRunLoopMode //界面跟踪 Mode，用于 ScrollView 追踪触摸滑动，保证界面滑动时不受其他 Mode 影响
 UIInitializationRunLoopMode // 在刚启动 App 时第进入的第一个 Mode，启动完成后就不再使用
 GSEventReceiveRunLoopMode // 接受系统事件的内部 Mode，通常用不到
 kCFRunLoopCommonModes //这是一个占位用的Mode，不是一种真正的Mode
-</code></pre><h3 id="CFRunLoopSourseRef"><a href="#CFRunLoopSourseRef" class="headerlink" title="CFRunLoopSourseRef"></a>CFRunLoopSourseRef</h3><p>CFRunLoopSourseRef是事件源，分为两种</p>
+</code></pre>
+<h3 id="CFRunLoopSourseRef"><a href="#CFRunLoopSourseRef" class="headerlink" title="CFRunLoopSourseRef"></a>CFRunLoopSourseRef</h3><p>CFRunLoopSourseRef是事件源，分为两种</p>
 <p>sourse0：非基于port的 （port相当于是系统）<br>自己写的方法，响应</p>
 <p>sourse1：基于port的<br>系统提供的</p>
 <p>CFRunLoopObserverRef<br>CFRunLoopObserver是观察者，可以监听runLoop的状态改变<br>监听的状态如下：</p>
-<pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) { 
+<pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) &#123; 
 kCFRunLoopEntry = (1UL &lt;&lt; 0), //即将进入Runloop
 kCFRunLoopBeforeTimers = (1UL &lt;&lt; 1), //即将处理NSTimer 
 kCFRunLoopBeforeSources = (1UL &lt;&lt; 2), //即将处理Sources 
 kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5), //即将进入休眠 
 kCFRunLoopAfterWaiting = (1UL &lt;&lt; 6), //刚从休眠中唤醒 
 kCFRunLoopExit = (1UL &lt;&lt; 7), //即将退出runloop 
-kCFRunLoopAllActivities = 0x0FFFFFFFU //所有状态改变};
+kCFRunLoopAllActivities = 0x0FFFFFFFU //所有状态改变&#125;;
 </code></pre>
+
       
 
       
@@ -715,7 +724,7 @@ kCFRunLoopAllActivities = 0x0FFFFFFFU //所有状态改变};
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/Runloop入门/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/12/Runloop%E5%85%A5%E9%97%A8/">展开全文 >></a>
         </p>
       
 
@@ -752,12 +761,12 @@ kCFRunLoopAllActivities = 0x0FFFFFFFU //所有状态改变};
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/关于GCD的信号量/">关于GCD的信号量</a>
+      <a class="article-title" href="/2018/09/12/%E5%85%B3%E4%BA%8EGCD%E7%9A%84%E4%BF%A1%E5%8F%B7%E9%87%8F/">关于GCD的信号量</a>
     </h1>
   
 
         
-        <a href="/2018/09/12/关于GCD的信号量/" class="archive-article-date">
+        <a href="/2018/09/12/%E5%85%B3%E4%BA%8EGCD%E7%9A%84%E4%BF%A1%E5%8F%B7%E9%87%8F/" class="archive-article-date">
   	<time datetime="2018-09-12T14:54:10.618Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
 </a>
         
@@ -779,23 +788,27 @@ dispatch_semaphore_signal
 dispathc_semaphore_wait
 
 等待信号
-</code></pre><p>简单的介绍一下这三个函数，第一个函数有一个整形的参数，我们可以理解为信号的总量，dispatch_semaphore_signal是发送一个信号，自然会让信号总量加1，dispatch_semaphore_wait等待信号，当信号总量少于0的时候就会一直等待，否则就可以正常的执行，并让信号总量-1，根据这样的原理，我们便可以快速的创建一个并发控制来同步任务和有限资源访问控制。</p>
+</code></pre>
+<p>简单的介绍一下这三个函数，第一个函数有一个整形的参数，我们可以理解为信号的总量，dispatch_semaphore_signal是发送一个信号，自然会让信号总量加1，dispatch_semaphore_wait等待信号，当信号总量少于0的时候就会一直等待，否则就可以正常的执行，并让信号总量-1，根据这样的原理，我们便可以快速的创建一个并发控制来同步任务和有限资源访问控制。</p>
 <pre><code>　dispatch_group_t group = dispatch_group_create(); 
-dispatch_semaphore_t semaphore = dispatch_semaphore_create(10); 
-dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0); 
-for (int i = 0; i &lt; 100; i++) 
-{ 
-    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER); 
-    dispatch_group_async(group, queue, ^{ 
-        NSLog(@&quot;%i&quot;,i); 
-        sleep(2); 
-        dispatch_semaphore_signal(semaphore); 
-    }); 
-} 
-dispatch_group_wait(group, DISPATCH_TIME_FOREVER); 
-dispatch_release(group); 
-dispatch_release(semaphore); 
-</code></pre><p>简单的介绍一下这一段代码，创建了一个初使值为10的semaphore，每一次for循环都会创建一个新的线程，线程结束的时候会发送一个信号，线程创建之前会信号等待，所以当同时创建了10个线程之后，for循环就会阻塞，等待有线程结束之后会增加一个信号才继续执行，如此就形成了对并发的控制，如上就是一个并发数为10的一个线程队列。</p>
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(10); 
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0); 
+    for (int i = 0; i &lt; 100; i++) 
+    &#123; 
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER); 
+        dispatch_group_async(group, queue, ^&#123; 
+            NSLog(@&quot;%i&quot;,i); 
+            sleep(2); 
+            dispatch_semaphore_signal(semaphore); 
+        &#125;); 
+    &#125; 
+    dispatch_group_wait(group, DISPATCH_TIME_FOREVER); 
+    dispatch_release(group); 
+    dispatch_release(semaphore); 
+ 
+ 
+</code></pre>
+<p>简单的介绍一下这一段代码，创建了一个初使值为10的semaphore，每一次for循环都会创建一个新的线程，线程结束的时候会发送一个信号，线程创建之前会信号等待，所以当同时创建了10个线程之后，for循环就会阻塞，等待有线程结束之后会增加一个信号才继续执行，如此就形成了对并发的控制，如上就是一个并发数为10的一个线程队列。</p>
 
       
 
@@ -819,7 +832,7 @@ dispatch_release(semaphore);
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/关于GCD的信号量/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/12/%E5%85%B3%E4%BA%8EGCD%E7%9A%84%E4%BF%A1%E5%8F%B7%E9%87%8F/">展开全文 >></a>
         </p>
       
 
@@ -856,12 +869,12 @@ dispatch_release(semaphore);
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/iOS程序启动内部过程/">iOS程序启动内部过程</a>
+      <a class="article-title" href="/2018/09/12/iOS%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E5%86%85%E9%83%A8%E8%BF%87%E7%A8%8B/">iOS程序启动内部过程</a>
     </h1>
   
 
         
-        <a href="/2018/09/12/iOS程序启动内部过程/" class="archive-article-date">
+        <a href="/2018/09/12/iOS%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E5%86%85%E9%83%A8%E8%BF%87%E7%A8%8B/" class="archive-article-date">
   	<time datetime="2018-09-12T14:43:06.341Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
 </a>
         
@@ -904,16 +917,17 @@ dispatch_release(semaphore);
 </blockquote>
 <pre><code>//创建窗口对象
     self.window = [[UIWindow alloc]initWithFrame:[[UIScreen mainScreen]bounds]];
-
+    
     //创建主控制器对象（控制器的View是延时加载的，等到用到的时候再用loadView方法加载）
     self.HITViewController = [[UIViewController alloc]initWithNibName:@&quot;HITViewController&quot; bundle:nil];
-
+    
     //设置窗口的根控制器为该主控制器
     self.window.rootViewController = self.HITViewController;
-
+    
     //让窗口成为主窗口并可见
     [self.window makeKeyAndVisible];
-</code></pre><p>程序加载的顺序是先在程序中找storyboard，若果没有找到则找相应的xib，若是都没找到并且代理中没有手动添加代码，则默认用代码创建一个黑色的界面；</p>
+</code></pre>
+<p>程序加载的顺序是先在程序中找storyboard，若果没有找到则找相应的xib，若是都没找到并且代理中没有手动添加代码，则默认用代码创建一个黑色的界面；</p>
 
       
 
@@ -937,7 +951,7 @@ dispatch_release(semaphore);
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/iOS程序启动内部过程/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/12/iOS%E7%A8%8B%E5%BA%8F%E5%90%AF%E5%8A%A8%E5%86%85%E9%83%A8%E8%BF%87%E7%A8%8B/">展开全文 >></a>
         </p>
       
 
@@ -974,12 +988,12 @@ dispatch_release(semaphore);
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/12/关于TCP Socket http的一些东西/">关于TCP Sockte HTTP的一些东西</a>
+      <a class="article-title" href="/2018/09/12/%E5%85%B3%E4%BA%8ETCP%20Socket%20http%E7%9A%84%E4%B8%80%E4%BA%9B%E4%B8%9C%E8%A5%BF/">关于TCP Sockte HTTP的一些东西</a>
     </h1>
   
 
         
-        <a href="/2018/09/12/关于TCP Socket http的一些东西/" class="archive-article-date">
+        <a href="/2018/09/12/%E5%85%B3%E4%BA%8ETCP%20Socket%20http%E7%9A%84%E4%B8%80%E4%BA%9B%E4%B8%9C%E8%A5%BF/" class="archive-article-date">
   	<time datetime="2018-09-12T14:34:05.510Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-12</time>
 </a>
         
@@ -987,13 +1001,13 @@ dispatch_release(semaphore);
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>网络由下往上分为物理层、数据链路层、网络层、传输层、会话层、表示层和应用层。 通过初步的了解，我知道IP协议对应于网络层，TCP协议对应于传输层，而HTTP协议对应于应用层，三者从本质上来说没有可比性，socket则是对 TCP/IP协议的封装和应用(程序员层面上)。也可以说，TPC/IP协议是传输层协议，主要解决数据如何在网络中传输，而HTTP是应用层协议，主要 解决如何包装数据。</p>
-<p>  关于TCP/IP和HTTP协议的关系，网络有一段比较容易理解的介绍：“我们在传输数据时，可以只使用(传输层)TCP/IP协议，但是那样的话，如果 没有应用层，便无法识别数据内容。如果想要使传输的数据有意义，则必须使用到应用层协议。应用层协议有很多，比如HTTP、FTP、TELNET等，也可 以自己定义应用层协议。WEB使用HTTP协议作应用层协议，以封装HTTP文本信息，然后使用TCP/IP做传输层协议将它发到网络上。”</p>
-<p>   而我们平时说的最多的socket是什么呢，实际上socket是对TCP/IP协议的封装，Socket本身并不是协议，而是一个调用接口(API)。 通过Socket，我们才能使用TCP/IP协议。实际上，Socket跟TCP/IP协议没有必然的联系。Socket编程接口在设计的时候，就希望也 能适应其他的网络协议。所以说，Socket的出现只是使得程序员更方便地使用TCP/IP协议栈而已，是对TCP/IP协议的抽象，从而形成了我们知道 的一些最基本的函数接口，比如create、listen、connect、accept、send、read和write等等。网络有一段关于 socket和TCP/IP协议关系的说法比较容易理解：“TCP/IP只是一个协议栈，就像操作系统的运行机制一样，必须要具体实现，同时还要提供对外 的操作接口。这个就像操作系统会提供标准的编程接口，比如win32编程接口一样，TCP/IP也要提供可供程序员做网络开发所用的接口，这就是 Socket编程接口。”</p>
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>网络由下往上分为物理层、数据链路层、网络层、传输层、会话层、表示层和应用层。 通过初步的了解，我知道IP协议对应于网络层，TCP协议对应于传输层，而HTTP协议对应于应用层，三者从本质上来说没有可比性，socket则是对 TCP&#x2F;IP协议的封装和应用(程序员层面上)。也可以说，TPC&#x2F;IP协议是传输层协议，主要解决数据如何在网络中传输，而HTTP是应用层协议，主要 解决如何包装数据。</p>
+<p>  关于TCP&#x2F;IP和HTTP协议的关系，网络有一段比较容易理解的介绍：“我们在传输数据时，可以只使用(传输层)TCP&#x2F;IP协议，但是那样的话，如果 没有应用层，便无法识别数据内容。如果想要使传输的数据有意义，则必须使用到应用层协议。应用层协议有很多，比如HTTP、FTP、TELNET等，也可 以自己定义应用层协议。WEB使用HTTP协议作应用层协议，以封装HTTP文本信息，然后使用TCP&#x2F;IP做传输层协议将它发到网络上。”</p>
+<p>   而我们平时说的最多的socket是什么呢，实际上socket是对TCP&#x2F;IP协议的封装，Socket本身并不是协议，而是一个调用接口(API)。 通过Socket，我们才能使用TCP&#x2F;IP协议。实际上，Socket跟TCP&#x2F;IP协议没有必然的联系。Socket编程接口在设计的时候，就希望也 能适应其他的网络协议。所以说，Socket的出现只是使得程序员更方便地使用TCP&#x2F;IP协议栈而已，是对TCP&#x2F;IP协议的抽象，从而形成了我们知道 的一些最基本的函数接口，比如create、listen、connect、accept、send、read和write等等。网络有一段关于 socket和TCP&#x2F;IP协议关系的说法比较容易理解：“TCP&#x2F;IP只是一个协议栈，就像操作系统的运行机制一样，必须要具体实现，同时还要提供对外 的操作接口。这个就像操作系统会提供标准的编程接口，比如win32编程接口一样，TCP&#x2F;IP也要提供可供程序员做网络开发所用的接口，这就是 Socket编程接口。”</p>
 <h2 id="一些常见的问题的统计和总结"><a href="#一些常见的问题的统计和总结" class="headerlink" title="一些常见的问题的统计和总结"></a>一些常见的问题的统计和总结</h2><p>ps 感觉这些东西都被问烂了的节奏</p>
-<h3 id="一、什么是TCP连接的三次握手"><a href="#一、什么是TCP连接的三次握手" class="headerlink" title="一、什么是TCP连接的三次握手"></a>一、什么是TCP连接的三次握手</h3><p>   第一次握手：客户端发送syn包(syn=j)到服务器，并进入SYN_SEND状态，等待服务器确认;</p>
-<p>   第二次握手：服务器收到syn包，必须确认客户的SYN(ack=j+1)，同时自己也发送一个SYN包(syn=k)，即SYN+ACK包，此时服务器进入SYN_RECV状态;</p>
-<p>   第三次握手：客户端收到服务器的SYN+ACK包，向服务器发送确认包ACK(ack=k+1)，此包发送完毕，客户端和服务器进入ESTABLISHED状态，完成三次握手。</p>
+<h3 id="一、什么是TCP连接的三次握手"><a href="#一、什么是TCP连接的三次握手" class="headerlink" title="一、什么是TCP连接的三次握手"></a>一、什么是TCP连接的三次握手</h3><p>   第一次握手：客户端发送syn包(syn&#x3D;j)到服务器，并进入SYN_SEND状态，等待服务器确认;</p>
+<p>   第二次握手：服务器收到syn包，必须确认客户的SYN(ack&#x3D;j+1)，同时自己也发送一个SYN包(syn&#x3D;k)，即SYN+ACK包，此时服务器进入SYN_RECV状态;</p>
+<p>   第三次握手：客户端收到服务器的SYN+ACK包，向服务器发送确认包ACK(ack&#x3D;k+1)，此包发送完毕，客户端和服务器进入ESTABLISHED状态，完成三次握手。</p>
 <p>   握手过程中传送的包里不包含数据，三次握手完毕后，客户端与服务器才正式开始传送数据。</p>
 <p>   理想状态下，TCP连接一旦建立，在通信双方中的任何一方主动关闭连接之前，TCP 连接都将被一直保持下去。</p>
 <p>   断开连接时服务器和客户端均可以主动发起断开TCP连接的请求，断开过程需要经过“四次握手”(过程就不细写了，就是服务器和客户端交互，最终确定断开)。</p>
@@ -1027,7 +1041,7 @@ dispatch_release(semaphore);
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/12/关于TCP Socket http的一些东西/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/12/%E5%85%B3%E4%BA%8ETCP%20Socket%20http%E7%9A%84%E4%B8%80%E4%BA%9B%E4%B8%9C%E8%A5%BF/">展开全文 >></a>
         </p>
       
 
@@ -1064,12 +1078,12 @@ dispatch_release(semaphore);
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/09/08/UIBezierPath设置图片圆角/">UIBezierPath设置图片圆角</a>
+      <a class="article-title" href="/2018/09/08/UIBezierPath%E8%AE%BE%E7%BD%AE%E5%9B%BE%E7%89%87%E5%9C%86%E8%A7%92/">UIBezierPath设置图片圆角</a>
     </h1>
   
 
         
-        <a href="/2018/09/08/UIBezierPath设置图片圆角/" class="archive-article-date">
+        <a href="/2018/09/08/UIBezierPath%E8%AE%BE%E7%BD%AE%E5%9B%BE%E7%89%87%E5%9C%86%E8%A7%92/" class="archive-article-date">
   	<time datetime="2018-09-08T15:25:13.677Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-08</time>
 </a>
         
@@ -1079,14 +1093,15 @@ dispatch_release(semaphore);
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>一般我们都会通过Layer设置图片圆角，这种方法在iOS9以前可能会发生离屏渲染，</p>
 <p>比较消耗性能，比如当一个页面上有十几头像这样设置了圆角会明显感觉到卡顿。这种就是最常用的，也是最耗性能的。</p>
-<pre><code>imageView.layer.cornerRadius=20;
-imageView.layer.masksToBounds=YES;
-</code></pre><p>ios9.0之后对UIImageView的圆角设置做了优化，UIImageView这样设置圆角不会触发离屏渲染，ios9.0之前还是会触发离屏渲染。而UIButton还是都会触发离屏渲染。</p>
+<pre><code> imageView.layer.cornerRadius=20;
+ imageView.layer.masksToBounds=YES;
+</code></pre>
+<p>ios9.0之后对UIImageView的圆角设置做了优化，UIImageView这样设置圆角不会触发离屏渲染，ios9.0之前还是会触发离屏渲染。而UIButton还是都会触发离屏渲染。</p>
 <p>现在优化方案就是先把图片处理成圆角，处理后再渲染；</p>
 <pre><code>//1.先写一个切圆角的方法，方便调用
 
 - (void)setGraphicsCutRoundCornersWithView:(UIImageView *) imageview roundCornersSize:(CGFloat )cornersSize
-{
+&#123;
     //开始上下文
     UIGraphicsBeginImageContextWithOptions(imageview.bounds.size, NO, 0.0);
     [[UIBezierPath bezierPathWithRoundedRect:imageview.bounds cornerRadius:cornersSize] addClip];
@@ -1095,47 +1110,50 @@ imageView.layer.masksToBounds=YES;
     imageview.image = UIGraphicsGetImageFromCurrentImageContext();
     // 结束上下文
     UIGraphicsEndImageContext();
-}
+&#125;
 
-- (void)viewDidLoad {
+- (void)viewDidLoad &#123;
     [super viewDidLoad];
  UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
   [imageView setImage:[UIImage imageNamed:@&quot;aaa&quot;]];
   [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];//调用方法
-
+ 
  [self.view addSubview:imageView];
-}
-</code></pre><p>我上面的方法是加载的本地图片，如果是网络请求的，就不行了。。。我在AFNetworking里看了看不容易实现，因为他没有completed回调方法，所以我就用SD_WebImage实现了一下。</p>
-<pre><code>- (void)viewDidLoad {
+&#125;
+</code></pre>
+<p>我上面的方法是加载的本地图片，如果是网络请求的，就不行了。。。我在AFNetworking里看了看不容易实现，因为他没有completed回调方法，所以我就用SD_WebImage实现了一下。</p>
+<pre><code>- (void)viewDidLoad &#123;
     [super viewDidLoad];
  NSString *path=@&quot;http://pic.yesky.com/uploadImages/2015/211/46/Y9QRRQ94U8C3.jpg&quot;;
-
+ 
     UIImageView *imageView=[[UIImageView alloc]initWithFrame:CGRectMake(50, 50, 300, 500)];
-
-    [imageView sd_setImageWithURL:[NSURL URLWithString:path] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+  
+    [imageView sd_setImageWithURL:[NSURL URLWithString:path] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) &#123;
          [self setGraphicsCutRoundCornersWithView:imageView roundCornersSize:100];
-    }];
-
+    &#125;];
+  
      [self.view addSubview:imageView];
-
-}
-</code></pre><p>如果是普通视图，不包含图片，可通过如下方式处理： 把背景图设置成clearColor, layer 的背景color和要渲染的视图颜色一致，设置好角度，通过颜色差异来显示出圆角的效果； 关键是把masksToBounds设置NO,就是这个家伙消耗性能；</p>
+ 
+&#125;
+</code></pre>
+<p>如果是普通视图，不包含图片，可通过如下方式处理： 把背景图设置成clearColor, layer 的背景color和要渲染的视图颜色一致，设置好角度，通过颜色差异来显示出圆角的效果； 关键是把masksToBounds设置NO,就是这个家伙消耗性能；</p>
 <pre><code>   self.view.backgroundColor = [UIColor clearColor];
-
+    
 // Set view.layer.backgroundColor not view.backgroundColor otherwise the background is not masked to the rounded border.
 
     self.view.layer.backgroundColor = [UIColor whiteColor].CGColor;
-
+    
     self.view.layer.cornerRadius = 8;
-
+    
 // Huge change in performance by explicitly setting the below (even though default is supposedly NO)
     self.view.layer.masksToBounds = NO;   
-
+      
 // Performance improvement here depends on the size of your view
 
     self.view.layer.shouldRasterize = YES; 
     [self.view.layer setRasterizationScale:[UIScreen mainScreen].scale];
 </code></pre>
+
       
 
       
@@ -1158,7 +1176,7 @@ imageView.layer.masksToBounds=YES;
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2018/09/08/UIBezierPath设置图片圆角/">展开全文 >></a>
+          <a class="article-more-a" href="/2018/09/08/UIBezierPath%E8%AE%BE%E7%BD%AE%E5%9B%BE%E7%89%87%E5%9C%86%E8%A7%92/">展开全文 >></a>
         </p>
       
 
@@ -1190,7 +1208,7 @@ imageView.layer.masksToBounds=YES;
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/19/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><a class="page-number" href="/page/22/">22</a><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/21/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/19/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/18/">18</a><a class="page-number" href="/page/19/">19</a><span class="page-number current">20</span><a class="page-number" href="/page/21/">21</a><a class="page-number" href="/page/22/">22</a><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/21/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -1202,7 +1220,7 @@ imageView.layer.masksToBounds=YES;
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1309,10 +1327,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -1321,7 +1335,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1329,11 +1343,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1353,19 +1371,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

@@ -9,17 +9,17 @@
   <title>无限循环滚动的TableView | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面今天来看看如何实现一个可以无限循环的TableView 条条大路通罗马，个人分析下以下思路的可行性： 借鉴无限广告轮播的思路。可行性不高，主要是列表头部和尾部的衔接不够自然，而且快速滑动不够流畅。 使用TableView+3倍长度dataSource。可行性一般，在使用过程中滑动流畅，但是由于重复的数据源，可能导致在处理事件时需要特别对数据进行处理避免重复，另外此方法不能重用，总让有强迫症">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="无限循环滚动的TableView">
-<meta property="og:url" content="http://yoursite.com/2018/10/02/无限循环滚动的TableView/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/10/02/%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%9A%E5%8A%A8%E7%9A%84TableView/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面今天来看看如何实现一个可以无限循环的TableView 条条大路通罗马，个人分析下以下思路的可行性： 借鉴无限广告轮播的思路。可行性不高，主要是列表头部和尾部的衔接不够自然，而且快速滑动不够流畅。 使用TableView+3倍长度dataSource。可行性一般，在使用过程中滑动流畅，但是由于重复的数据源，可能导致在处理事件时需要特别对数据进行处理避免重复，另外此方法不能重用，总让有强迫症">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-10-03T06:45:36.727Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-10-02T14:37:33.938Z">
+<meta property="article:modified_time" content="2018-10-03T06:45:36.727Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="无限循环滚动的TableView">
-<meta name="twitter:description" content="写在前面今天来看看如何实现一个可以无限循环的TableView 条条大路通罗马，个人分析下以下思路的可行性： 借鉴无限广告轮播的思路。可行性不高，主要是列表头部和尾部的衔接不够自然，而且快速滑动不够流畅。 使用TableView+3倍长度dataSource。可行性一般，在使用过程中滑动流畅，但是由于重复的数据源，可能导致在处理事件时需要特别对数据进行处理避免重复，另外此方法不能重用，总让有强迫症">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/10/02/无限循环滚动的TableView/" class="archive-article-date">
+        <a href="/2018/10/02/%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%9A%E5%8A%A8%E7%9A%84TableView/" class="archive-article-date">
   	<time datetime="2018-10-02T14:37:33.938Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-02</time>
 </a>
         
@@ -183,98 +183,104 @@
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="我们通过创建TableView的子类，在子类中对dataSource进行处理。"><a href="#我们通过创建TableView的子类，在子类中对dataSource进行处理。" class="headerlink" title="我们通过创建TableView的子类，在子类中对dataSource进行处理。"></a>我们通过创建TableView的子类，在子类中对dataSource进行处理。</h3><p>如果直接将子类自身设为子类的dataSource，创建另外一个dataSource作为对外的delegate，将自身不处理的代理消息转发给对外的delegate，这样要求自身实现所有的代理方法，非常蛋疼。</p>
 <p>因此，我们创建一个拦截器，通过拦截器决定将消息发送到TableView子类内部或者是其dataSource，这样简洁又比较优雅（装逼）。</p>
 <p>注：使用此方法实现无限循环的TableView，需要对ObjC的消息转发有一定理解。</p>
-<h3 id="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"><a href="#1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置" class="headerlink" title="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"></a>1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置</h3><pre><code>- (void)layoutSubviews {
+<h3 id="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"><a href="#1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置" class="headerlink" title="1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置"></a>1、创建3倍长度dataSource，并在滑动到头部或者尾部时进行contentOffset的reset，显示到中间的位置</h3><pre><code>- (void)layoutSubviews &#123;
     [self resetContentOffsetIfNeeded];
     [super layoutSubviews];
-}
+&#125;
 
-- (void)resetContentOffsetIfNeeded {
+- (void)resetContentOffsetIfNeeded &#123;
     CGPoint contentOffset  = self.contentOffset;
     //头部
-    if (contentOffset.y &lt; 0.0) {
+    if (contentOffset.y &lt; 0.0) &#123;
         contentOffset.y = self.contentSize.height / 3.0;
-    }
+    &#125;
     //尾部
-    else if (contentOffset.y &gt;= (self.contentSize.height - self.bounds.size.height)) {
+    else if (contentOffset.y &gt;= (self.contentSize.height - self.bounds.size.height)) &#123;
         contentOffset.y = self.contentSize.height / 3.0 - self.bounds.size.height;
-    }
+    &#125;
     [self setContentOffset: contentOffset];
-}
-</code></pre><h3 id="2、创建一个拦截器"><a href="#2、创建一个拦截器" class="headerlink" title="2、创建一个拦截器"></a>2、创建一个拦截器</h3><pre><code>@interface SUTableViewInterceptor : NSObject
+&#125;
+</code></pre>
+<h3 id="2、创建一个拦截器"><a href="#2、创建一个拦截器" class="headerlink" title="2、创建一个拦截器"></a>2、创建一个拦截器</h3><pre><code>@interface SUTableViewInterceptor : NSObject
 
 @property (nonatomic, weak) id receiver;
 @property (nonatomic, weak) id middleMan;
 
 @end
-</code></pre><h3 id="3、将拦截器设置为TableView子类的dataSource"><a href="#3、将拦截器设置为TableView子类的dataSource" class="headerlink" title="3、将拦截器设置为TableView子类的dataSource"></a>3、将拦截器设置为TableView子类的dataSource</h3><pre><code>- (void)setDataSource:(id&lt;UITableViewDataSource&gt;)dataSource {
+</code></pre>
+<h3 id="3、将拦截器设置为TableView子类的dataSource"><a href="#3、将拦截器设置为TableView子类的dataSource" class="headerlink" title="3、将拦截器设置为TableView子类的dataSource"></a>3、将拦截器设置为TableView子类的dataSource</h3><pre><code>- (void)setDataSource:(id&lt;UITableViewDataSource&gt;)dataSource &#123;
     self.dataSourceInterceptor.receiver = dataSource;
     [super setDataSource:(id&lt;UITableViewDataSource&gt;)self.dataSourceInterceptor];
-}
+&#125;
 
-- (SUTableViewInterceptor *)dataSourceInterceptor {
-    if (!_dataSourceInterceptor) {
+- (SUTableViewInterceptor *)dataSourceInterceptor &#123;
+    if (!_dataSourceInterceptor) &#123;
         _dataSourceInterceptor = [[SUTableViewInterceptor alloc]init];
         _dataSourceInterceptor.middleMan = self;
-    }
+    &#125;
     return _dataSourceInterceptor;
-}
-</code></pre><h3 id="4、在子类中实现需要加工处理的代理方法"><a href="#4、在子类中实现需要加工处理的代理方法" class="headerlink" title="4、在子类中实现需要加工处理的代理方法"></a>4、在子类中实现需要加工处理的代理方法</h3><pre><code>- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section {
+&#125;
+</code></pre>
+<h3 id="4、在子类中实现需要加工处理的代理方法"><a href="#4、在子类中实现需要加工处理的代理方法" class="headerlink" title="4、在子类中实现需要加工处理的代理方法"></a>4、在子类中实现需要加工处理的代理方法</h3><pre><code>- (NSInteger)tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section &#123;
     self.actualRows = [self.dataSourceInterceptor.receiver tableView:tableView numberOfRowsInSection:section];
     return self.actualRows * 3;
-}
+&#125;
 
-- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell*)tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath &#123;
     NSIndexPath * actualIndexPath = [NSIndexPath indexPathForRow:indexPath.row % self.actualRows inSection:indexPath.section];
     return [self.dataSourceInterceptor.receiver tableView:tableView cellForRowAtIndexPath:actualIndexPath];
-}
-</code></pre><h3 id="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理"><a href="#5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理" class="headerlink" title="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)"></a>5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)</h3><pre><code>@implementation SUTableViewInterceptor
+&#125;
+</code></pre>
+<h3 id="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理"><a href="#5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理" class="headerlink" title="5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)"></a>5、在拦截器中转发消息（如果子类实现了代理方法，则转发给子类；如果子类没有实现，则转发给外部的代理)</h3><pre><code>@implementation SUTableViewInterceptor
 
 #pragma mark - forward &amp; response override
-- (id)forwardingTargetForSelector:(SEL)aSelector {
+- (id)forwardingTargetForSelector:(SEL)aSelector &#123;
     if ([self.middleMan respondsToSelector:aSelector]) return self.middleMan;
     if ([self.receiver respondsToSelector:aSelector]) return self.receiver;
     return [super forwardingTargetForSelector:aSelector];
-}
+&#125;
 
-- (BOOL)respondsToSelector:(SEL)aSelector {
+- (BOOL)respondsToSelector:(SEL)aSelector &#123;
     if ([self.middleMan respondsToSelector:aSelector]) return YES;
     if ([self.receiver respondsToSelector:aSelector]) return YES;
     return [super respondsToSelector:aSelector];
-}
+&#125;
 
 @end
-</code></pre><p>到此，自定义的TableView基本完成，整理一下思路，不难理解我们是通过拦截器将代理消息转发到子类内部，子类内部则通过外部代理提供的dataSource来拷贝成3份，来组成一个3倍于普通长度的TableView，并在其滑动时进行处理，形成可以无限循环滚动的效果。</p>
+</code></pre>
+<p>到此，自定义的TableView基本完成，整理一下思路，不难理解我们是通过拦截器将代理消息转发到子类内部，子类内部则通过外部代理提供的dataSource来拷贝成3份，来组成一个3倍于普通长度的TableView，并在其滑动时进行处理，形成可以无限循环滚动的效果。</p>
 <p>这样，在外部看起来，使用这个TableView和普通TableView没有什么不同，但是多了一个可以循环滚动的“属性”，当然，你也可以将其封装成可设置的属性，方便切换普通模式和循环滚动模式。</p>
 <p>下面，用这个TableView的子类来试着创建一个可以循环滚动的列表看看：</p>
-<pre><code>- (void)viewDidLoad {
+<pre><code>- (void)viewDidLoad &#123;
     [super viewDidLoad];
     [self.view addSubview:self.tableView];
-}
+&#125;
 
-- (UITableView *)tableView {
-    if(!_tableView) {
+- (UITableView *)tableView &#123;
+    if(!_tableView) &#123;
         _tableView = [[SUTableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
         _tableView.delegate = self;
         _tableView.dataSource = self;
         _tableView.showsVerticalScrollIndicator = NO;
         _tableView.rowHeight = 150.0;
         [_tableView registerNib:[UINib nibWithNibName:@&quot;LiveCell&quot; bundle:nil] forCellReuseIdentifier:liveCellID];
-    }
+    &#125;
     return _tableView;
-}
+&#125;
 
 #pragma mark - UITableViewDataSource
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section &#123;
     return 5;
-}
+&#125;
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath &#123;
     LiveCell * cell = [self.tableView dequeueReusableCellWithIdentifier:liveCellID];
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
     cell.descLabel.text = [NSString stringWithFormat:@&quot;第 %ld 个主播频道&quot;, indexPath.row + 1];
     return cell;
-}
-</code></pre><p>怎么样，强迫症是不是舒缓了，是不是轻松多了~~~</p>
+&#125;
+</code></pre>
+<p>怎么样，强迫症是不是舒缓了，是不是轻松多了~~~</p>
 
       
 
@@ -365,7 +371,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/10/02/无限循环滚动的TableView/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/10/02/%E6%97%A0%E9%99%90%E5%BE%AA%E7%8E%AF%E6%BB%9A%E5%8A%A8%E7%9A%84TableView/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -379,7 +385,7 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/10/13/iOS 和常见的离屏渲染Say Goodbye！/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/10/13/iOS%20%E5%92%8C%E5%B8%B8%E8%A7%81%E7%9A%84%E7%A6%BB%E5%B1%8F%E6%B8%B2%E6%9F%93Say%20Goodbye%EF%BC%81/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -389,7 +395,7 @@
     </a>
   
   
-    <a href="/2018/09/27/iOS高并发优化/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/09/27/iOS%E9%AB%98%E5%B9%B6%E5%8F%91%E4%BC%98%E5%8C%96/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iOS高并发优化</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -433,7 +439,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -540,10 +546,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -552,7 +554,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -560,11 +562,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -584,19 +590,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

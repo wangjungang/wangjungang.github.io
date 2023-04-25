@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>一些常见的跳转 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="跳转评论、详情  跳转到详情 NSString *str = [NSString stringWithFormat: @&amp;quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&amp;quot;, AppId]; UIApplication *app = [UIApplication sharedApplication]; NSURL *url = [NS">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="跳转评论、详情  跳转到详情 NSString *str &#x3D; [NSString stringWithFormat: @&quot;itms-apps:&#x2F;&#x2F;itunes.apple.com&#x2F;cn&#x2F;app&#x2F;id%@?mt&#x3D;8&quot;, AppId]; UIApplication *app &#x3D; [UIApplication sharedApplication]; NSURL *url &#x3D; [NS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="一些常见的跳转">
-<meta property="og:url" content="http://yoursite.com/2018/11/04/一些常见的跳转/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/11/04/%E4%B8%80%E4%BA%9B%E5%B8%B8%E8%A7%81%E7%9A%84%E8%B7%B3%E8%BD%AC/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="跳转评论、详情  跳转到详情 NSString *str = [NSString stringWithFormat: @&amp;quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&amp;quot;, AppId]; UIApplication *app = [UIApplication sharedApplication]; NSURL *url = [NS">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-04T15:22:25.419Z">
+<meta property="og:description" content="跳转评论、详情  跳转到详情 NSString *str &#x3D; [NSString stringWithFormat: @&quot;itms-apps:&#x2F;&#x2F;itunes.apple.com&#x2F;cn&#x2F;app&#x2F;id%@?mt&#x3D;8&quot;, AppId]; UIApplication *app &#x3D; [UIApplication sharedApplication]; NSURL *url &#x3D; [NS">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-11-04T15:18:17.304Z">
+<meta property="article:modified_time" content="2018-11-04T15:22:25.419Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="一些常见的跳转">
-<meta name="twitter:description" content="跳转评论、详情  跳转到详情 NSString *str = [NSString stringWithFormat: @&amp;quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&amp;quot;, AppId]; UIApplication *app = [UIApplication sharedApplication]; NSURL *url = [NS">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/11/04/一些常见的跳转/" class="archive-article-date">
+        <a href="/2018/11/04/%E4%B8%80%E4%BA%9B%E5%B8%B8%E8%A7%81%E7%9A%84%E8%B7%B3%E8%BD%AC/" class="archive-article-date">
   	<time datetime="2018-11-04T15:18:17.304Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
 </a>
         
@@ -182,59 +182,66 @@
 <pre><code>NSString *str = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&quot;, AppId];
 UIApplication *app = [UIApplication sharedApplication];
 NSURL *url = [NSURL URLWithString:str];
-if ([app canOpenURL:url]) {
+if ([app canOpenURL:url]) &#123;
     [app openURL:url];
-}
-</code></pre><p>跳转到评论</p>
+&#125;
+</code></pre>
+<p>跳转到评论</p>
 <pre><code>NSString *str = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&amp;id=%@&quot;, AppId];
 UIApplication *app = [UIApplication sharedApplication];
 NSURL *url = [NSURL URLWithString:str];
-if ([app canOpenURL:url]) {
+if ([app canOpenURL:url]) &#123;
      [app openURL:url];
-}
-</code></pre><ul>
+&#125;
+</code></pre>
+<ul>
 <li><p>弹出电话</p>
-<pre><code>@property (nonatomic, strong) UIWebView *webView;
-</code></pre></li>
-</ul>
-<pre><code>- (UIWebView *)webView
-{
-    if(!_webView)
-    {
-        _webView = [[UIWebView alloc] initWithFrame:CGRectZero];
-    }
-    return _webView;
-}
+<pre><code>  @property (nonatomic, strong) UIWebView *webView;
 
-// 客服电话
-[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@&quot;tel://%@&quot;, self.lbl_Telphone.text]]]];
-</code></pre><ul>
-<li>跳转QQ</li>
-</ul>
-<pre><code>NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@&quot;mqq://im/chat?chat_type=wpa&amp;uin=%@&amp;version=1&amp;src_type=web&quot;, self.qq]];
 
-[self.webView loadRequest:[NSURLRequest requestWithURL:url]];
-</code></pre><ul>
-<li>跳转微信</li>
-</ul>
-<pre><code>NSString *str =@&quot;weixin://qr/JnXv90fE6hqVrQOU9yA0&quot;;
-[self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:str]]];
-</code></pre><ul>
-<li>跳转到微信公众号</li>
+
+  - (UIWebView *)webView
+  &#123;
+      if(!_webView)
+      &#123;
+          _webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+      &#125;
+      return _webView;
+  &#125;
+  
+  // 客服电话
+  [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@&quot;tel://%@&quot;, self.lbl_Telphone.text]]]];
+</code></pre>
+</li>
+<li><p>跳转QQ</p>
+<pre><code>  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@&quot;mqq://im/chat?chat_type=wpa&amp;uin=%@&amp;version=1&amp;src_type=web&quot;, self.qq]];
+  
+  [self.webView loadRequest:[NSURLRequest requestWithURL:url]];
+  
+</code></pre>
+</li>
+<li><p>跳转微信</p>
+<pre><code>  NSString *str =@&quot;weixin://qr/JnXv90fE6hqVrQOU9yA0&quot;;
+  [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:str]]];
+</code></pre>
+</li>
+<li><p>跳转到微信公众号</p>
+</li>
 </ul>
 <p>注：跳转到微信公众号，首先需要到微信开发平台，绑定对应的公众号</p>
-<pre><code>if ([WXApi isWXAppInstalled]) {
+<pre><code>if ([WXApi isWXAppInstalled]) &#123;
      JumpToBizProfileReq *req = [[JumpToBizProfileReq alloc]init];
      req.username = @&quot;公众号原始ID&quot;;
       req.extMsg = @&quot;&quot;;
      req.profileType =0;
      [WXApi sendReq:req];
-} else {
+&#125; else &#123;
      UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
      [pasteboard setString:self.weChatID];
      [QQMMessage showSuccessMessage:@&quot;已复制公众号&quot;];
-}
+&#125;
 </code></pre>
+
       
 
       
@@ -324,7 +331,7 @@ if ([app canOpenURL:url]) {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/04/一些常见的跳转/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/04/%E4%B8%80%E4%BA%9B%E5%B8%B8%E8%A7%81%E7%9A%84%E8%B7%B3%E8%BD%AC/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -338,7 +345,7 @@ if ([app canOpenURL:url]) {
   
 <nav id="article-nav">
   
-    <a href="/2018/11/04/iOS 给系统日历添加事件/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/11/04/iOS%20%E7%BB%99%E7%B3%BB%E7%BB%9F%E6%97%A5%E5%8E%86%E6%B7%BB%E5%8A%A0%E4%BA%8B%E4%BB%B6/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -348,7 +355,7 @@ if ([app canOpenURL:url]) {
     </a>
   
   
-    <a href="/2018/11/04/一些小知识的总结/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/11/04/%E4%B8%80%E4%BA%9B%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%9A%84%E6%80%BB%E7%BB%93/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">一些小知识的总结</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -392,7 +399,7 @@ if ([app canOpenURL:url]) {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -499,10 +506,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -511,7 +514,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -519,11 +522,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -543,19 +550,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

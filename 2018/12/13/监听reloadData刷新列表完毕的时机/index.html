@@ -9,17 +9,17 @@
   <title>监听reloadData刷新列表完毕的时机 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面reloadData是一个异步方法，并不会等待UITableView或者UICollectionView（后面统称listView）真正刷新完毕后才执行后续代码，而是立即执行后续代码。我们执行reloadData的本意是刷新listView，随后会进入一系列的DataSource和Delegate回调，有些是和reloadData同步发生的，有些是异步发生的。  同步：numberOfSe">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="监听reloadData刷新列表完毕的时机">
-<meta property="og:url" content="http://yoursite.com/2018/12/13/监听reloadData刷新列表完毕的时机/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/12/13/%E7%9B%91%E5%90%ACreloadData%E5%88%B7%E6%96%B0%E5%88%97%E8%A1%A8%E5%AE%8C%E6%AF%95%E7%9A%84%E6%97%B6%E6%9C%BA/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面reloadData是一个异步方法，并不会等待UITableView或者UICollectionView（后面统称listView）真正刷新完毕后才执行后续代码，而是立即执行后续代码。我们执行reloadData的本意是刷新listView，随后会进入一系列的DataSource和Delegate回调，有些是和reloadData同步发生的，有些是异步发生的。  同步：numberOfSe">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-13T07:33:55.485Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-12-13T07:31:30.939Z">
+<meta property="article:modified_time" content="2018-12-13T07:33:55.485Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="监听reloadData刷新列表完毕的时机">
-<meta name="twitter:description" content="写在前面reloadData是一个异步方法，并不会等待UITableView或者UICollectionView（后面统称listView）真正刷新完毕后才执行后续代码，而是立即执行后续代码。我们执行reloadData的本意是刷新listView，随后会进入一系列的DataSource和Delegate回调，有些是和reloadData同步发生的，有些是异步发生的。  同步：numberOfSe">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/12/13/监听reloadData刷新列表完毕的时机/" class="archive-article-date">
+        <a href="/2018/12/13/%E7%9B%91%E5%90%ACreloadData%E5%88%B7%E6%96%B0%E5%88%97%E8%A1%A8%E5%AE%8C%E6%AF%95%E7%9A%84%E6%97%B6%E6%9C%BA/" class="archive-article-date">
   	<time datetime="2018-12-13T07:31:30.939Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
 </a>
         
@@ -186,72 +186,77 @@
 <h2 id="获取listView真正刷新完毕的时机的几种方法"><a href="#获取listView真正刷新完毕的时机的几种方法" class="headerlink" title="获取listView真正刷新完毕的时机的几种方法"></a>获取listView真正刷新完毕的时机的几种方法</h2><h3 id="方法1、通过layoutIfNeeded方法，强制重绘并等待完成。"><a href="#方法1、通过layoutIfNeeded方法，强制重绘并等待完成。" class="headerlink" title="方法1、通过layoutIfNeeded方法，强制重绘并等待完成。"></a>方法1、通过layoutIfNeeded方法，强制重绘并等待完成。</h3><pre><code>[self.collectionView reloadData];
 [self.collectionView layoutIfNeeded];
 // 刷新完成，执行后续需要执行的代码
-if ( self.didPlayIdx ) {
+if ( self.didPlayIdx ) &#123;
     MyCell* cell = (MyCell*)[self.collectionView cellForItemAtIndexPath:self.didPlayIdx];
-    if (cell) {
+    if (cell) &#123;
     [cell playWithPlayer:self.player];
-    }
-}
-</code></pre><h3 id="方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD-dispatch-main-queue中的任务，分别在休眠前和被唤醒后。设置listView-的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。"><a href="#方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD-dispatch-main-queue中的任务，分别在休眠前和被唤醒后。设置listView-的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。" class="headerlink" title="方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD dispatch main queue中的任务，分别在休眠前和被唤醒后。设置listView 的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。"></a>方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD dispatch main queue中的任务，分别在休眠前和被唤醒后。设置listView 的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。</h3><pre><code>[self.collectionView reloadData];  
-dispatch_async(dispatch_get_main_queue(), ^{  
+    &#125;
+&#125;
+</code></pre>
+<h3 id="方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD-dispatch-main-queue中的任务，分别在休眠前和被唤醒后。设置listView-的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。"><a href="#方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD-dispatch-main-queue中的任务，分别在休眠前和被唤醒后。设置listView-的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。" class="headerlink" title="方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD dispatch main queue中的任务，分别在休眠前和被唤醒后。设置listView 的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。"></a>方法2、reloadData方法会在主线程执行，通过GCD，使后续操作排队在reloadData后面执行。一次runloop有两个机会执行GCD dispatch main queue中的任务，分别在休眠前和被唤醒后。设置listView 的layoutIfNeeded为YES，在即将进入休眠时执行异步任务，重绘一次界面。</h3><pre><code>[self.collectionView reloadData];  
+dispatch_async(dispatch_get_main_queue(), ^&#123;  
     // 刷新完成，执行后续代码
-    if ( self.didPlayIdx ) {
+    if ( self.didPlayIdx ) &#123;
         MyCell* cell = (MyCell*)[self.collectionView cellForItemAtIndexPath:self.didPlayIdx];
-        if (cell) {
+        if (cell) &#123;
             [cell playWithPlayer:self.player];
-        }
-    }
-});
-</code></pre><p>知识点关联：GCD死锁、Runloop</p>
+        &#125;
+    &#125;
+&#125;);
+</code></pre>
+<p>知识点关联：GCD死锁、Runloop</p>
 <pre><code>// 发生死锁，永远不会执行任务2和3
 NSLog(@&quot;1&quot;);
-dispatch_sync(dispatch_get_main_queue(), ^{
+dispatch_sync(dispatch_get_main_queue(), ^&#123;
    NSLog(@&quot;2&quot;);
-});
+&#125;);
 NSLog(@&quot;3&quot;);
-</code></pre><h3 id="方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成-复杂，但可以更好的理解方法一"><a href="#方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成-复杂，但可以更好的理解方法一" class="headerlink" title="方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成(复杂，但可以更好的理解方法一)"></a>方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成(复杂，但可以更好的理解方法一)</h3><pre><code>#import &quot;MyTableView.h&quot;
+</code></pre>
+<h3 id="方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成-复杂，但可以更好的理解方法一"><a href="#方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成-复杂，但可以更好的理解方法一" class="headerlink" title="方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成(复杂，但可以更好的理解方法一)"></a>方法3、自定义UICollectionView、UITableView，layoutSubviews之后当作reloadData完成(复杂，但可以更好的理解方法一)</h3><pre><code>#import &quot;MyTableView.h&quot;
 
 @interface MyTableView()
 @property (nonatomic, copy) void (^reloadDataCompletionBlock)();
 @end
 
 @implementation MyTableView
-- (void)reloadDataWithCompletion:(void (^)())completionBlock {
+- (void)reloadDataWithCompletion:(void (^)())completionBlock &#123;
     self.reloadDataCompletionBlock = completionBlock;
     [super reloadData];
-}
-- (void)layoutSubviews {
+&#125;
+- (void)layoutSubviews &#123;
     [super layoutSubviews];
-    if (self.reloadDataCompletionBlock) {
+    if (self.reloadDataCompletionBlock) &#123;
         self.reloadDataCompletionBlock();
         self.reloadDataCompletionBlock = nil;
-    }
-}
+    &#125;
+&#125;
 @end
 
 // 调用的时候
-[self.tableView reloadDataWithCompletion:^{
+[self.tableView reloadDataWithCompletion:^&#123;
      NSLog(@&quot;完成刷新&quot;);
-}];
-</code></pre><h2 id="引申：更新UI放在主线程的原因"><a href="#引申：更新UI放在主线程的原因" class="headerlink" title="引申：更新UI放在主线程的原因"></a>引申：更新UI放在主线程的原因</h2><h3 id="原因一：安全-效率"><a href="#原因一：安全-效率" class="headerlink" title="原因一：安全+效率"></a>原因一：安全+效率</h3><p>因为UIKit框架不是线程安全的，当多个线程同时操作UI的时候，抢夺资源，导致崩溃，UI异常等问题。假如在两个线程中设置了同一张背景图片，很有可能就会由于背景图片被释放两次，使得程序崩溃。或者某一个线程中遍历找寻某个subView，然而在另一个线程中删除了该subView，那么就会造成错乱。apple有对大部分的绘图方法和诸如UIColor等类改写成线程安全可用，可还是建议将UI操作保证在主线程中。例如说，我们需要在子线程中读取一个image对象，使用接口[UIImage imageNamed:]，但imageNamed:实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取image，然后再切回子线程拿到这个image，这里我们必须使用sync。</p>
+&#125;];
+</code></pre>
+<h2 id="引申：更新UI放在主线程的原因"><a href="#引申：更新UI放在主线程的原因" class="headerlink" title="引申：更新UI放在主线程的原因"></a>引申：更新UI放在主线程的原因</h2><h3 id="原因一：安全-效率"><a href="#原因一：安全-效率" class="headerlink" title="原因一：安全+效率"></a>原因一：安全+效率</h3><p>因为UIKit框架不是线程安全的，当多个线程同时操作UI的时候，抢夺资源，导致崩溃，UI异常等问题。假如在两个线程中设置了同一张背景图片，很有可能就会由于背景图片被释放两次，使得程序崩溃。或者某一个线程中遍历找寻某个subView，然而在另一个线程中删除了该subView，那么就会造成错乱。apple有对大部分的绘图方法和诸如UIColor等类改写成线程安全可用，可还是建议将UI操作保证在主线程中。例如说，我们需要在子线程中读取一个image对象，使用接口[UIImage imageNamed:]，但imageNamed:实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取image，然后再切回子线程拿到这个image，这里我们必须使用sync。</p>
 <pre><code>__block UIImage *image;
-dispatch_sync_on_main_queue(^{
+dispatch_sync_on_main_queue(^&#123;
     image = [UIImage imageNamed:@&quot;Resource/img&quot;];
-});
+&#125;);
 attachment.image = image;
 
 // YYKit中提供了一个同步扔任务到主线程的安全方法：
 /**
  Submits a block for execution on a main queue and waits until the block completes.
 */
-static inline void dispatch_sync_on_main_queue(void (^block)()) {
-    if (pthread_main_np()) {
+static inline void dispatch_sync_on_main_queue(void (^block)()) &#123;
+    if (pthread_main_np()) &#123;
         block();
-    } else {
+    &#125; else &#123;
         dispatch_sync(dispatch_get_main_queue(), block);
-    }
-}
-</code></pre><h3 id="原因二：用户体验"><a href="#原因二：用户体验" class="headerlink" title="原因二：用户体验"></a>原因二：用户体验</h3><p>iOS中只有主线程才能立即刷新UI。在子线程中是不能够更新UI，我们看到的子线程能够更新UI的原因是，等到子线程执行完毕，自动进入了主线程去执行子线程中更新UI的代码。由于子线程执行时间非常短暂，让我们误以为子线程可以更新UI。如果子线程一直在运行，则无法更新UI，因为没有办法进入主线程。</p>
+    &#125;
+&#125;
+</code></pre>
+<h3 id="原因二：用户体验"><a href="#原因二：用户体验" class="headerlink" title="原因二：用户体验"></a>原因二：用户体验</h3><p>iOS中只有主线程才能立即刷新UI。在子线程中是不能够更新UI，我们看到的子线程能够更新UI的原因是，等到子线程执行完毕，自动进入了主线程去执行子线程中更新UI的代码。由于子线程执行时间非常短暂，让我们误以为子线程可以更新UI。如果子线程一直在运行，则无法更新UI，因为没有办法进入主线程。</p>
 
       
 
@@ -342,7 +347,7 @@ static inline void dispatch_sync_on_main_queue(void (^block)()) {
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/13/监听reloadData刷新列表完毕的时机/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/13/%E7%9B%91%E5%90%ACreloadData%E5%88%B7%E6%96%B0%E5%88%97%E8%A1%A8%E5%AE%8C%E6%AF%95%E7%9A%84%E6%97%B6%E6%9C%BA/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -356,7 +361,7 @@ static inline void dispatch_sync_on_main_queue(void (^block)()) {
   
 <nav id="article-nav">
   
-    <a href="/2018/12/13/如何安全使用dispatch_sync/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/12/13/%E5%A6%82%E4%BD%95%E5%AE%89%E5%85%A8%E4%BD%BF%E7%94%A8dispatch_sync/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -366,7 +371,7 @@ static inline void dispatch_sync_on_main_queue(void (^block)()) {
     </a>
   
   
-    <a href="/2018/12/13/Swift的时区处理/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/12/13/Swift%E7%9A%84%E6%97%B6%E5%8C%BA%E5%A4%84%E7%90%86/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">Swift的时区处理</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -410,7 +415,7 @@ static inline void dispatch_sync_on_main_queue(void (^block)()) {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -517,10 +522,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -529,7 +530,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -537,11 +538,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -561,19 +566,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

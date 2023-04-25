@@ -9,17 +9,17 @@
   <title>UITableView性能优化的一点感悟及计算UILabel高度的新方法 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面在使用过程中发现，我们App的首页在快速滑动时会出现掉帧，以及在上拉加载更多时会抖动，因为首页模块是以前的同事写的，很多代码已不适应当前的需求，所以产生了优化的想法，优化主要分为以下几个方面：  1.缓存cell高度（发现了一种计算Label高度的新方法）  2.优化cellForRow方法  3.图片加载优化  4.禁止tableView预估高度  5.删除无用数据处理逻辑   缓存ce">
-<meta name="keywords" content="Cocoapods">
 <meta property="og:type" content="article">
 <meta property="og:title" content="UITableView性能优化的一点感悟及计算UILabel高度的新方法">
-<meta property="og:url" content="http://yoursite.com/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/11/26/UITableView%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A1%E7%AE%97UILabel%E9%AB%98%E5%BA%A6%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面在使用过程中发现，我们App的首页在快速滑动时会出现掉帧，以及在上拉加载更多时会抖动，因为首页模块是以前的同事写的，很多代码已不适应当前的需求，所以产生了优化的想法，优化主要分为以下几个方面：  1.缓存cell高度（发现了一种计算Label高度的新方法）  2.优化cellForRow方法  3.图片加载优化  4.禁止tableView预估高度  5.删除无用数据处理逻辑   缓存ce">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-11-26T03:40:42.715Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-11-26T03:31:35.713Z">
+<meta property="article:modified_time" content="2018-11-26T03:40:42.715Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="Cocoapods">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="UITableView性能优化的一点感悟及计算UILabel高度的新方法">
-<meta name="twitter:description" content="写在前面在使用过程中发现，我们App的首页在快速滑动时会出现掉帧，以及在上拉加载更多时会抖动，因为首页模块是以前的同事写的，很多代码已不适应当前的需求，所以产生了优化的想法，优化主要分为以下几个方面：  1.缓存cell高度（发现了一种计算Label高度的新方法）  2.优化cellForRow方法  3.图片加载优化  4.禁止tableView预估高度  5.删除无用数据处理逻辑   缓存ce">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/" class="archive-article-date">
+        <a href="/2018/11/26/UITableView%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A1%E7%AE%97UILabel%E9%AB%98%E5%BA%A6%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/" class="archive-article-date">
   	<time datetime="2018-11-26T03:31:35.713Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-26</time>
 </a>
         
@@ -191,54 +191,58 @@
 <h2 id="缓存cell高度"><a href="#缓存cell高度" class="headerlink" title="缓存cell高度"></a>缓存cell高度</h2><p>在Feed流中，UITableViewCell的高度通常是变化的，需要根据返回的数据中的cell类型以及label的文字长度来计算高度，而在UITableView中func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell是一个高频调用的方法，为了减少CPU的计算，尽可能减少掉帧，所以需要将高度进行缓存，在我们的项目中，首页的数据是这样一个操作流程后台返回的JSON-&gt;FeedListModel-&gt;FeedsModel-&gt;各种cell的ViewModel(例如小图片的cell对应的model-SmallImageCellViewModel，大图片的cell对应的-BigImageCellViewModel)FeedListModel主要是包含了一些页码信息和FeedsModel数组FeedsModel储存着后台返回的cell所需的信息BigImageCellViewModel是cell对FeedsModel进行处理后得到cell所需的信息</p>
 <pre><code>优化以前，我们的高度是通过BigImageCellViewModel中计算属性height去获取的
 
-var height: CGFloat {
-   guard let title = title else { 
+var height: CGFloat &#123;
+   guard let title = title else &#123; 
          return ((UIScreen.mainWidth - 30) * 9)/16.0 + 62   
-         }
+         &#125;
 
    let constraintRect = CGSize(width: UIScreen.mainWidth - 30, height: 38.5)
-
+    
      let attributes = [NSAttributedStringKey.font: UIFont.boldSystemFont(ofSize: 16)]
-
+        
      let rect = title.boundingRect(with: constraintRect,                                 options: .usesLineFragmentOrigin,                                 attributes: attributes,                                 context: nil)  
-
-      if let type = itemType, type == ItemType.sohuVideo {    
+     
+      if let type = itemType, type == ItemType.sohuVideo &#123;    
          return ((UIScreen.mainWidth - 30) * 9)/16.0 + rect.height + 62  
-          }   
+          &#125;   
          return ((UIScreen.mainWidth - 30) * 9)/16.0 + rect.height + 62
-         }
-</code></pre><p>这样的话每次取值时，会需要通过计算然后返回height属性，所以一开始我也是把计算属性改成存储属性了，但是还是很耗时（后来才发现是因为高度是存在BigImageCellViewModel中的，而每次数据更新后，由于业务需要会对当前的列表数据重新遍历处理，生成新的BigImageCellViewModel，新的BigImageCellViewModel的高度自然是每次需要计算），在使用instruments分析时发现，在加载数据时，1s内有20%的时候是用于计算每个cell的高度，因为计算cell高度时需要根据model.title确定cell中的标题Label显示几行，从而确定Label的高度，进而算出cell的高度，而计算Label高度一般都是使用这个方法，</p>
+         &#125;
+</code></pre>
+<p>这样的话每次取值时，会需要通过计算然后返回height属性，所以一开始我也是把计算属性改成存储属性了，但是还是很耗时（后来才发现是因为高度是存在BigImageCellViewModel中的，而每次数据更新后，由于业务需要会对当前的列表数据重新遍历处理，生成新的BigImageCellViewModel，新的BigImageCellViewModel的高度自然是每次需要计算），在使用instruments分析时发现，在加载数据时，1s内有20%的时候是用于计算每个cell的高度，因为计算cell高度时需要根据model.title确定cell中的标题Label显示几行，从而确定Label的高度，进而算出cell的高度，而计算Label高度一般都是使用这个方法，</p>
 <pre><code>@available(iOS 7.0, *)   open func boundingRect(with size: CGSize, options: NSStringDrawingOptions = [], attributes: [NSAttributedString.Key : Any]? = nil, context: NSStringDrawingContext?) -&gt; CGRect
-</code></pre><p>因为即便是同一个字符串，字体大小一样，字体不同时，高度会不一定一样，这个方法会根据字符串和对应字体进行绘制计算后得到的高度，而且这个操作是在主线程进行的，所以会导致掉帧，然后我就网上查阅资料怎么优化这个方法，网上这方面的资料比较少因为这个方法的耗时本身是可接受范围以内的，只是我们的height没有真正缓存上导致这个方法测试时特别耗时，这种思路是思路一在子线程中调用这个方法，然后对height进行赋值，类似于这样：</p>
+</code></pre>
+<p>因为即便是同一个字符串，字体大小一样，字体不同时，高度会不一定一样，这个方法会根据字符串和对应字体进行绘制计算后得到的高度，而且这个操作是在主线程进行的，所以会导致掉帧，然后我就网上查阅资料怎么优化这个方法，网上这方面的资料比较少因为这个方法的耗时本身是可接受范围以内的，只是我们的height没有真正缓存上导致这个方法测试时特别耗时，这种思路是思路一在子线程中调用这个方法，然后对height进行赋值，类似于这样：</p>
 <h2 id="思路一-异步计算Label高度"><a href="#思路一-异步计算Label高度" class="headerlink" title="思路一 异步计算Label高度"></a>思路一 异步计算Label高度</h2><pre><code>var height：CGFloat = 70   
 
-let queue = DispatchQueue.global()   queue.async {       
+let queue = DispatchQueue.global()   queue.async &#123;       
 
-let labelRect = title.boundingRect(with: constraintRect,                                    options: .usesLineFragmentOrigin,                                     attributes: attributes,    
+let labelRect = title.boundingRect(with: constraintRect,	                                options: .usesLineFragmentOrigin,                                     attributes: attributes,    
                                                                     context: nil)      
-
+                                                                    
                                                                      height = labelRect.height + 50  
-                                                                      }
-</code></pre><p>就是通过先给height赋一个概率最大的值，然后通过异步计算后，得到一个准确值，再给height赋值上，但是在实际测试中发现，大部分cell取的是我们预设的高度默认值，这样在下次reloadData时，cell的高度会取算出来的值，然后会导致tableView的contentSize变化，视图抖动然后我就自己思考，其实我们的标题并不复杂，大部分是中文，其他是数字，标点符号，字母，然后我就测试了一下在UIFont.boldSystemFont(ofSize: 16)下，中文，数字，标点符号，字母的大小，然后测试发现中文 15pt 数字是8pt左右，主要的一些标点符号16pt 小写字母大概8pt，大写自贸银11pt，就想能不能通过对标题字符串进行遍历，判断字符的类型来计算标题的总宽度，之后再将总宽度除以标题的最大宽度得到行数，然后计算得出cell高度，代码如下：</p>
-<h2 id="思路二-计算Label高度的新方法-通过遍历字符串来计算高度"><a href="#思路二-计算Label高度的新方法-通过遍历字符串来计算高度" class="headerlink" title="思路二 计算Label高度的新方法 通过遍历字符串来计算高度"></a>思路二 计算Label高度的新方法 通过遍历字符串来计算高度</h2><pre><code>-(CGFloat)calculateTotalWidthInBold16 {   
+                                                                      &#125;
+</code></pre>
+<p>就是通过先给height赋一个概率最大的值，然后通过异步计算后，得到一个准确值，再给height赋值上，但是在实际测试中发现，大部分cell取的是我们预设的高度默认值，这样在下次reloadData时，cell的高度会取算出来的值，然后会导致tableView的contentSize变化，视图抖动然后我就自己思考，其实我们的标题并不复杂，大部分是中文，其他是数字，标点符号，字母，然后我就测试了一下在UIFont.boldSystemFont(ofSize: 16)下，中文，数字，标点符号，字母的大小，然后测试发现中文 15pt 数字是8pt左右，主要的一些标点符号16pt 小写字母大概8pt，大写自贸银11pt，就想能不能通过对标题字符串进行遍历，判断字符的类型来计算标题的总宽度，之后再将总宽度除以标题的最大宽度得到行数，然后计算得出cell高度，代码如下：</p>
+<h2 id="思路二-计算Label高度的新方法-通过遍历字符串来计算高度"><a href="#思路二-计算Label高度的新方法-通过遍历字符串来计算高度" class="headerlink" title="思路二 计算Label高度的新方法 通过遍历字符串来计算高度"></a>思路二 计算Label高度的新方法 通过遍历字符串来计算高度</h2><pre><code>-(CGFloat)calculateTotalWidthInBold16 &#123;   
 CGFloat totalWidth = 0;  
- for (int i = 0; i &lt; self.length; i++) {       
+ for (int i = 0; i &lt; self.length; i++) &#123;       
  unichar character  = [self characterAtIndex:i];       //中 占15pt 数字 占7 英文 a 8.2 A 10.1 B 10.6 ， ? 16.6pt       
- if ([[NSCharacterSet decimalDigitCharacterSet] characterIsMember:character]) {//数字           totalWidth += 8;       
- } else if ([[NSCharacterSet lowercaseLetterCharacterSet] characterIsMember:character]) {//小写字母           totalWidth += 10;       
- } else if ([[NSCharacterSet uppercaseLetterCharacterSet] characterIsMember:character]) {//大写字母           totalWidth += 12;       
- } else if ([[NSCharacterSet punctuationCharacterSet] characterIsMember:character]) {//标点符号           
+ if ([[NSCharacterSet decimalDigitCharacterSet] characterIsMember:character]) &#123;//数字           totalWidth += 8;       
+ &#125; else if ([[NSCharacterSet lowercaseLetterCharacterSet] characterIsMember:character]) &#123;//小写字母           totalWidth += 10;       
+ &#125; else if ([[NSCharacterSet uppercaseLetterCharacterSet] characterIsMember:character]) &#123;//大写字母           totalWidth += 12;       
+ &#125; else if ([[NSCharacterSet punctuationCharacterSet] characterIsMember:character]) &#123;//标点符号           
  totalWidth += 17;       
- } else if (character &gt;= 0x4E00 &amp;&amp; character &lt;= 0x9FA5) {           
+ &#125; else if (character &gt;= 0x4E00 &amp;&amp; character &lt;= 0x9FA5) &#123;           
  totalWidth += 15;       
- } else {           
+ &#125; else &#123;           
  totalWidth += 15;       
- }   
- }   
+ &#125;   
+ &#125;   
  return totalWidth + 5;
-
- }
-</code></pre><p>在不缓存高度的情况下，这个方法能够很快得计算出高度，让tableview达到平均55帧以上的帧率，但是缺点是需要对使用的字体下进行测试，在UIFont.boldSystemFont(ofSize: 16)字体下，中文是固定的15pt，但是数字，小写字母，大写字母的长度不是固定的，所以如果需要做到非常准确，需要对每个数字，字母在这个字体下的长度进行测试。在缓存高度的情况下，与boundingRect方法相比，这个方法也能够提高计算速度，只是收益不那么明显</p>
+ 
+ &#125;
+</code></pre>
+<p>在不缓存高度的情况下，这个方法能够很快得计算出高度，让tableview达到平均55帧以上的帧率，但是缺点是需要对使用的字体下进行测试，在UIFont.boldSystemFont(ofSize: 16)字体下，中文是固定的15pt，但是数字，小写字母，大写字母的长度不是固定的，所以如果需要做到非常准确，需要对每个数字，字母在这个字体下的长度进行测试。在缓存高度的情况下，与boundingRect方法相比，这个方法也能够提高计算速度，只是收益不那么明显</p>
 <h2 id="优化cellForRow方法"><a href="#优化cellForRow方法" class="headerlink" title="优化cellForRow方法"></a>优化cellForRow方法</h2><p>因为tableView的cellForRow方法也是一个调用频率特别高的方法，所以应该避免在cellForRow对cell进行约束修改，frame变化等操作，</p>
 <pre><code>default: //feed流           
 
@@ -247,23 +251,25 @@ let cellViewModel = viewModel.viewModels.value[indexPath.row]
 let cell = configFeedCell(tableView: tableView, cellViewModel: cellViewModel, indexPath: indexPath)//            cell.saHorizontalSpace = (15, 15)//           
 
  if viewModel.isInfrontOfFeedSpacAble(indexPath: indexPath) 
- {//            
+ &#123;//            
  cell.saSeparaptorLineStyle = .bottom//            
-
- } else if cellViewModel as? FeedSpacAble != nil {//                cell.saSeparaptorLineStyle = .bottom//            
- } else {//                
-
+ 
+ &#125; else if cellViewModel as? FeedSpacAble != nil &#123;//                cell.saSeparaptorLineStyle = .bottom//            
+ &#125; else &#123;//                
+ 
  cell.saSeparaptorLineStyle = .none//            
- }           
+ &#125;           
  return cell
-</code></pre><h2 id="图片加载优化"><a href="#图片加载优化" class="headerlink" title="图片加载优化"></a>图片加载优化</h2><p>主要使用charles进行抓包，看项目有没有加载比较大的图片，我们项目首页的三张图片的资讯使用的是大图，一张图片长达4M,所以我改成小图了</p>
+</code></pre>
+<h2 id="图片加载优化"><a href="#图片加载优化" class="headerlink" title="图片加载优化"></a>图片加载优化</h2><p>主要使用charles进行抓包，看项目有没有加载比较大的图片，我们项目首页的三张图片的资讯使用的是大图，一张图片长达4M,所以我改成小图了</p>
 <h2 id="禁止tableView预估高度"><a href="#禁止tableView预估高度" class="headerlink" title="禁止tableView预估高度"></a>禁止tableView预估高度</h2><p>因为tableView会根据estimatedRowHeight*行数来计算contentSize，并且在滑动时进行修正，所以会发生抖动，所以可以通过以下代码，禁用预估高度，因为iOS11以后预估高度的值不为0，所以需要显式赋值为0</p>
 <pre><code>tableView.estimatedRowHeight = 0
 
 tableView.estimatedSectionHeaderHeight = 0  
 
 tableView.estimatedSectionFooterHeight = 0
-</code></pre><h2 id="删除无用数据处理逻辑"><a href="#删除无用数据处理逻辑" class="headerlink" title="删除无用数据处理逻辑"></a>删除无用数据处理逻辑</h2><p>主要注释了代码中没有用的数据处理逻辑</p>
+</code></pre>
+<h2 id="删除无用数据处理逻辑"><a href="#删除无用数据处理逻辑" class="headerlink" title="删除无用数据处理逻辑"></a>删除无用数据处理逻辑</h2><p>主要注释了代码中没有用的数据处理逻辑</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以上其实只是针对我们项目一些比较基本的优化的地方，当然还有很多地方可以进行优化，例如将cell中view的布局进行缓存，减少不必要的计算，还有将一些Label通过异步渲染的方式绘制在cell中，减少view的层级，将一部分渲染的工作放在子线程中，但是这样会对我们的项目改动过大，所以暂时没有采用</p>
 
       
@@ -355,7 +361,7 @@ tableView.estimatedSectionFooterHeight = 0
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/26/UITableView性能优化的一点感悟及计算UILabel高度的新方法/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/26/UITableView%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E7%9A%84%E4%B8%80%E7%82%B9%E6%84%9F%E6%82%9F%E5%8F%8A%E8%AE%A1%E7%AE%97UILabel%E9%AB%98%E5%BA%A6%E7%9A%84%E6%96%B0%E6%96%B9%E6%B3%95/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -369,7 +375,7 @@ tableView.estimatedSectionFooterHeight = 0
   
 <nav id="article-nav">
   
-    <a href="/2018/11/26/详解AFNetworking的HTTPS模块/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/11/26/%E8%AF%A6%E8%A7%A3AFNetworking%E7%9A%84HTTPS%E6%A8%A1%E5%9D%97/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -379,7 +385,7 @@ tableView.estimatedSectionFooterHeight = 0
     </a>
   
   
-    <a href="/2018/11/26/iOS 对象数组的深拷贝(NSCoding协议)/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/11/26/iOS%20%E5%AF%B9%E8%B1%A1%E6%95%B0%E7%BB%84%E7%9A%84%E6%B7%B1%E6%8B%B7%E8%B4%9D(NSCoding%E5%8D%8F%E8%AE%AE)/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">iOS 对象数组的深拷贝(NSCoding协议)</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -423,7 +429,7 @@ tableView.estimatedSectionFooterHeight = 0
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -530,10 +536,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -542,7 +544,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -550,11 +552,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -574,19 +580,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

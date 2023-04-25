@@ -9,17 +9,17 @@
   <title>autorelease的理解 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="写在前面在ARC模式下，因为系统帮我们管理内存，所以很少关注到autorelease自动释放池。系统其实是通过autorelease来管理我们申请的内存（创建对象），在一次runLoop后，会进行一次autorelease的处理，释放掉申请的内存。程序运行过程中，会产生很多autorelease，系统是通过一个栈来管理它们。 虽然，很多事情都是系统帮我们做了，那有时候还是需要我们自己善用autor">
-<meta name="keywords" content="iOS">
 <meta property="og:type" content="article">
 <meta property="og:title" content="autorelease的理解">
-<meta property="og:url" content="http://yoursite.com/2018/12/18/autorelease的理解/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/12/18/autorelease%E7%9A%84%E7%90%86%E8%A7%A3/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="写在前面在ARC模式下，因为系统帮我们管理内存，所以很少关注到autorelease自动释放池。系统其实是通过autorelease来管理我们申请的内存（创建对象），在一次runLoop后，会进行一次autorelease的处理，释放掉申请的内存。程序运行过程中，会产生很多autorelease，系统是通过一个栈来管理它们。 虽然，很多事情都是系统帮我们做了，那有时候还是需要我们自己善用autor">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2018-12-18T03:02:02.842Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2018-12-18T02:31:21.613Z">
+<meta property="article:modified_time" content="2018-12-18T03:02:02.842Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="autorelease的理解">
-<meta name="twitter:description" content="写在前面在ARC模式下，因为系统帮我们管理内存，所以很少关注到autorelease自动释放池。系统其实是通过autorelease来管理我们申请的内存（创建对象），在一次runLoop后，会进行一次autorelease的处理，释放掉申请的内存。程序运行过程中，会产生很多autorelease，系统是通过一个栈来管理它们。 虽然，很多事情都是系统帮我们做了，那有时候还是需要我们自己善用autor">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2018/12/18/autorelease的理解/" class="archive-article-date">
+        <a href="/2018/12/18/autorelease%E7%9A%84%E7%90%86%E8%A7%A3/" class="archive-article-date">
   	<time datetime="2018-12-18T02:31:21.613Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-18</time>
 </a>
         
@@ -181,73 +181,78 @@
 <p>2、线程需要长期运行并且有可能产生大量autoreleased对象, 你应该使用autorelease pool blocks。</p>
 <p>3、长期在后台中运行的任务, 方法。</p>
 <h3 id="一切从一个例子开始吧："><a href="#一切从一个例子开始吧：" class="headerlink" title="一切从一个例子开始吧："></a>一切从一个例子开始吧：</h3><pre><code>__weak id wsPtr;
-    {
+    &#123;
         NSObject *obj = [[NSObject alloc] init];
         wsPtr = obj;
         NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-    }
+    &#125;
     NSLog(@&quot;2&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-</code></pre><p>结果为</p>
+</code></pre>
+<p>结果为</p>
 <pre><code>2018-09-21 14:05:00.154692+0800 SummaryTest[1333:1156186] 1&gt;&gt;&gt;&gt;&gt;&gt;NSObject
 2018-09-21 14:05:00.154904+0800 SummaryTest[1333:1156186] 2&gt;&gt;&gt;&gt;&gt;&gt;(null)
-</code></pre><p>这结果，大家都不会觉得奇怪，出了作用范围嘛，obj对象已经释放了，所以后面访问到为nil。</p>
+</code></pre>
+<p>这结果，大家都不会觉得奇怪，出了作用范围嘛，obj对象已经释放了，所以后面访问到为nil。</p>
 <p>改为如下情况呢：</p>
 <pre><code>__weak id wsPtr;
-    {
+    &#123;
         __autoreleasing NSObject *obj = [[NSObject alloc] init];
         wsPtr = obj;
         NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-    }
+    &#125;
     NSLog(@&quot;2&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-</code></pre><p>结果为</p>
+</code></pre>
+<p>结果为</p>
 <pre><code>2018-09-21 14:14:05.920146+0800 SummaryTest[1336:1157313] 1&gt;&gt;&gt;&gt;&gt;&gt;NSObject
 2018-09-21 14:14:05.920369+0800 SummaryTest[1336:1157313] 2&gt;&gt;&gt;&gt;&gt;&gt;NSObject
-</code></pre><p>结果是，在括号外部，生成的obj还是没有释放。这就是autoreleasePool对它的影响。虽然autorelease是系统控制，我们不好把控它的结束时间。但可以肯定，在一个函数内部，它不会释放的，所以，放到释放池的对象，在整个函数内部是有效的。那么问题来了，什么时候的对象才归autoreleasePool管理，为什么第一次申请的obj，没放到autoreleasePool中呢。</p>
+</code></pre>
+<p>结果是，在括号外部，生成的obj还是没有释放。这就是autoreleasePool对它的影响。虽然autorelease是系统控制，我们不好把控它的结束时间。但可以肯定，在一个函数内部，它不会释放的，所以，放到释放池的对象，在整个函数内部是有效的。那么问题来了，什么时候的对象才归autoreleasePool管理，为什么第一次申请的obj，没放到autoreleasePool中呢。</p>
 <p>在以下情况，会注册到autoreleasePool中：</p>
 <ul>
 <li><p>1、__autoreleasing修饰的对象，如上所述。</p>
 </li>
-<li><p>2、非自己生成并持有的对象。明显点的，就是通过一个函数返回的对象。使用alloc/new/copy/mutableCopy以外的方法来取得的对象。这就解释了，上面第一个例子的obj为什么没被autoreleasePool管理。</p>
+<li><p>2、非自己生成并持有的对象。明显点的，就是通过一个函数返回的对象。使用alloc&#x2F;new&#x2F;copy&#x2F;mutableCopy以外的方法来取得的对象。这就解释了，上面第一个例子的obj为什么没被autoreleasePool管理。</p>
 <ul>
-<li>(void)testAutorelease<br>{<br>  __weak id wsPtr;<br>  {<pre><code>NSObject *obj = [self gainObj];
-wsPtr = obj;
-NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
-</code></pre>  }<br>  NSLog(@”2&gt;&gt;&gt;&gt;&gt;&gt;%@”,[wsPtr class]);<br>}</li>
-<li>(NSObject *)gainObj<br>{<br>  return [[NSObject alloc] init];<br>}</li>
+<li>(void)testAutorelease<br>  {<br>  __weak id wsPtr;<br>  {<br>  NSObject *obj &#x3D; [self gainObj];<br>  wsPtr &#x3D; obj;<br>  NSLog(@”1&gt;&gt;&gt;&gt;&gt;&gt;%@”,[wsPtr class]);<br>  }<br>  NSLog(@”2&gt;&gt;&gt;&gt;&gt;&gt;%@”,[wsPtr class]);<br>  }</li>
+<li>(NSObject *)gainObj<br>  {<br>  return [[NSObject alloc] init];<br>  }</li>
 </ul>
 </li>
 </ul>
 <p>结果是，obj注册到autoreleasepool中，括号外也可以访问对象。</p>
 <ul>
 <li><p>3、id的指针或对象的指针会默认加上__autoreleasing修饰符。如一些函数：</p>
-<pre><code>- (BOOL)performOperationWithError:(NSError **)error;
-</code></pre></li>
+<pre><code>  - (BOOL)performOperationWithError:(NSError **)error;
+</code></pre>
+</li>
 </ul>
 <h3 id="二、一些特殊情况"><a href="#二、一些特殊情况" class="headerlink" title="二、一些特殊情况"></a>二、一些特殊情况</h3><p>一切都按我的推理进行着，切出现了一个奇葩的情况：</p>
 <pre><code>__weak id reference;
 - (void)testAutorelease
-{
+&#123;
     NSString *myStr = [NSString stringWithFormat:@&quot;asdd&quot;];
     reference = myStr;
     NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,reference);
-}
+&#125;
 - (void)touchesBegan:(NSSet&lt;UITouch *&gt; *)touches withEvent:(UIEvent *)event
-{
+&#123;
     NSLog(@&quot;2&gt;&gt;&gt;&gt;%@&quot;,reference);
-}
-</code></pre><p>我想测试，出了函数域，什么时候就会释放，所以加了个点击事件。结果是，不管什么时候点击，都可以访问到对象。然后我就一脸蒙蔽了。我又测试了NSObject、NSArray，都不会出现上面的情况。难道是NSString特有的性质，在view期间都不释放，最后随view一起释放。</p>
+&#125;
+</code></pre>
+<p>我想测试，出了函数域，什么时候就会释放，所以加了个点击事件。结果是，不管什么时候点击，都可以访问到对象。然后我就一脸蒙蔽了。我又测试了NSObject、NSArray，都不会出现上面的情况。难道是NSString特有的性质，在view期间都不释放，最后随view一起释放。</p>
 <pre><code>NSString *myStr = [NSString stringWithFormat:@&quot;assdfdsfdsfddd&quot;];
-</code></pre><p>把字符串加长一点，竟然会释放了。真是奇葩。看看它们的地址吧：</p>
+</code></pre>
+<p>把字符串加长一点，竟然会释放了。真是奇葩。看看它们的地址吧：</p>
 <pre><code>- (void)testAutorelease
-{
+&#123;
     NSString *myStr1 = [NSString stringWithFormat:@&quot;assdfdsfdsfddd&quot;];
     NSString *myStr2 = [NSString stringWithFormat:@&quot;ass&quot;];
     reference = myStr1;
     NSLog(@&quot;str1=%p  str2=%p&quot;,myStr1,myStr2);
-}
+&#125;
 
 2018-09-21 15:23:07.671661+0800 SummaryTest[1367:1168589] str1=0x1700373a0  str2=0xa000000007373613
-</code></pre><p>比较长的NSString存于堆区，较短的NSString感觉像是存于数据区，所以性质不一样吧，不懂。记住NSString特殊一点就可以了。</p>
+</code></pre>
+<p>比较长的NSString存于堆区，较短的NSString感觉像是存于数据区，所以性质不一样吧，不懂。记住NSString特殊一点就可以了。</p>
 
       
 
@@ -338,7 +343,7 @@ NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/18/autorelease的理解/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/12/18/autorelease%E7%9A%84%E7%90%86%E8%A7%A3/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -352,7 +357,7 @@ NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
   
 <nav id="article-nav">
   
-    <a href="/2018/12/18/flutter框架概述/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/12/18/flutter%E6%A1%86%E6%9E%B6%E6%A6%82%E8%BF%B0/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -362,7 +367,7 @@ NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
     </a>
   
   
-    <a href="/2018/12/17/swift Notification通知的使用/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2018/12/17/swift%20Notification%E9%80%9A%E7%9F%A5%E7%9A%84%E4%BD%BF%E7%94%A8/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">swift Notification通知的使用</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -406,7 +411,7 @@ NSLog(@&quot;1&gt;&gt;&gt;&gt;&gt;&gt;%@&quot;,[wsPtr class]);
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -513,10 +518,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -525,7 +526,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -533,11 +534,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -557,19 +562,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

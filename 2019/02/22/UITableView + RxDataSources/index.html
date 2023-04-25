@@ -8,18 +8,18 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>UITableView + RxDataSources | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="写在前面官方介绍 UITableView and UICollectionView Data Sources for RxSwift (sections, animated updates, editing ...) 特点  1、RxDataSource 的本质就是使用 RxSwift 对 UITableView 和 UICollectionView 的数据源做了一层包装。使用它可以大大减少我们的">
-<meta name="keywords" content="iOS">
+  <meta name="description" content="写在前面官方介绍 UITableView and UICollectionView Data Sources for RxSwift (sections, animated updates, editing ...)  特点  1、RxDataSource 的本质就是使用 RxSwift 对 UITableView 和 UICollectionView 的数据源做了一层包装。使用它可以大大减少我们">
 <meta property="og:type" content="article">
 <meta property="og:title" content="UITableView + RxDataSources">
-<meta property="og:url" content="http://yoursite.com/2019/02/22/UITableView + RxDataSources/index.html">
+<meta property="og:url" content="http://yoursite.com/2019/02/22/UITableView%20+%20RxDataSources/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:description" content="写在前面官方介绍 UITableView and UICollectionView Data Sources for RxSwift (sections, animated updates, editing ...) 特点  1、RxDataSource 的本质就是使用 RxSwift 对 UITableView 和 UICollectionView 的数据源做了一层包装。使用它可以大大减少我们的">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-02-22T07:36:05.106Z">
+<meta property="og:description" content="写在前面官方介绍 UITableView and UICollectionView Data Sources for RxSwift (sections, animated updates, editing ...)  特点  1、RxDataSource 的本质就是使用 RxSwift 对 UITableView 和 UICollectionView 的数据源做了一层包装。使用它可以大大减少我们">
+<meta property="og:locale">
+<meta property="article:published_time" content="2019-02-22T07:32:54.645Z">
+<meta property="article:modified_time" content="2019-02-22T07:36:05.106Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="iOS">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="UITableView + RxDataSources">
-<meta name="twitter:description" content="写在前面官方介绍 UITableView and UICollectionView Data Sources for RxSwift (sections, animated updates, editing ...) 特点  1、RxDataSource 的本质就是使用 RxSwift 对 UITableView 和 UICollectionView 的数据源做了一层包装。使用它可以大大减少我们的">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2019/02/22/UITableView + RxDataSources/" class="archive-article-date">
+        <a href="/2019/02/22/UITableView%20+%20RxDataSources/" class="archive-article-date">
   	<time datetime="2019-02-22T07:32:54.645Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-02-22</time>
 </a>
         
@@ -177,7 +177,8 @@
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>官方介绍</p>
 <pre><code>UITableView and UICollectionView Data Sources for RxSwift (sections, animated updates, editing ...)
-</code></pre><p>特点</p>
+</code></pre>
+<p>特点</p>
 <ul>
 <li><p>1、RxDataSource 的本质就是使用 RxSwift 对 UITableView 和 UICollectionView 的数据源做了一层包装。使用它可以大大减少我们的工作量</p>
 </li>
@@ -186,11 +187,14 @@
 </ul>
 <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
 <li><p>CocoaPods</p>
-<pre><code>pod &apos;RxDataSources&apos;
-</code></pre></li>
+<pre><code>  pod &#39;RxDataSources&#39;
+  
+</code></pre>
+</li>
 <li><p>Carthage</p>
-<pre><code>github &quot;RxSwiftCommunity/RxDataSources&quot;
-</code></pre></li>
+<pre><code>  github &quot;RxSwiftCommunity/RxDataSources&quot;
+</code></pre>
+</li>
 </ul>
 <h2 id="单分区-TableView"><a href="#单分区-TableView" class="headerlink" title="单分区 TableView"></a>单分区 TableView</h2><h3 id="方式一：使用自带的Section"><a href="#方式一：使用自带的Section" class="headerlink" title="方式一：使用自带的Section"></a>方式一：使用自带的Section</h3><pre><code>// 创建表格
 tableView = UITableView(frame: view.bounds, style: .plain)
@@ -207,34 +211,35 @@ let items = Observable.just([
     ])
 
 // 创建数据源
-let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;(configureCell: {
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;(configureCell: &#123;
     (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
     cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
     return cell
-})
+&#125;)
 
 // 数据绑定
 items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-</code></pre><h3 id="方式二：使用自定义的Section"><a href="#方式二：使用自定义的Section" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><p>自定义 SectionModel</p>
-<pre><code>struct XMSessionModel {
+</code></pre>
+<h3 id="方式二：使用自定义的Section"><a href="#方式二：使用自定义的Section" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><p>自定义 SectionModel</p>
+<pre><code>struct XMSessionModel &#123;
     var header: String
     var items: [Item]
-}
+&#125;
 
-extension XMSessionModel: AnimatableSectionModelType {
-
+extension XMSessionModel: AnimatableSectionModelType &#123;
+    
     typealias Item = String
-
-    var identity: String {
+    
+    var identity: String &#123;
         return header
-    }
-
-    init(original: XMSessionModel, items: [Item]) {
+    &#125;
+    
+    init(original: XMSessionModel, items: [Item]) &#123;
         self = original
         self.items = items
-    }
-}
+    &#125;
+&#125;
 
 // 创建表格
 tableView = UITableView(frame: view.bounds, style: .plain)
@@ -251,16 +256,17 @@ let sections = Observable.just([
     ])
 
 // 创建数据源
-let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: {
+let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: &#123;
     (dataSource, tableView, indexPath, item) -&gt; UITableViewCell in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;) ?? UITableViewCell(style: .default, reuseIdentifier: &quot;cellID&quot;)
     cell.textLabel?.text = &quot;\(indexPath.row): \(item)&quot;
     return cell
-})
+&#125;)
 
 // 数据绑定
 sections.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-</code></pre><h2 id="多分区的-TableView"><a href="#多分区的-TableView" class="headerlink" title="多分区的 TableView"></a>多分区的 TableView</h2><h3 id="方式一：使用自带的Section-1"><a href="#方式一：使用自带的Section-1" class="headerlink" title="方式一：使用自带的Section"></a>方式一：使用自带的Section</h3><pre><code>// 创建表格
+</code></pre>
+<h2 id="多分区的-TableView"><a href="#多分区的-TableView" class="headerlink" title="多分区的 TableView"></a>多分区的 TableView</h2><h3 id="方式一：使用自带的Section-1"><a href="#方式一：使用自带的Section-1" class="headerlink" title="方式一：使用自带的Section"></a>方式一：使用自带的Section</h3><pre><code>// 创建表格
 tableView = UITableView(frame: view.bounds, style: .plain)
 // 注册单元格
 tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
@@ -278,26 +284,27 @@ let items = Observable.just([
     ])
 
 // 创建数据源
-let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;( configureCell: {
+let dataSource = RxTableViewSectionedReloadDataSource&lt;SectionModel&lt;String, String&gt;&gt;( configureCell: &#123;
     (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
     cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
     return cell
-})
+&#125;)
 
 // 设置分区头标题
-dataSource.titleForHeaderInSection = { dataSource, index in
+dataSource.titleForHeaderInSection = &#123; dataSource, index in
     return dataSource.sectionModels[index].model
-}
+&#125;
 
 // 设置分区尾部标题
-dataSource.titleForFooterInSection = { dataSource, index in
+dataSource.titleForFooterInSection = &#123; dataSource, index in
     return &quot;footer&quot;
-}
+&#125;
 
 // 数据绑定
 items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
-</code></pre><h3 id="方式二：使用自定义的Section-1"><a href="#方式二：使用自定义的Section-1" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><pre><code>// 创建表格
+</code></pre>
+<h3 id="方式二：使用自定义的Section-1"><a href="#方式二：使用自定义的Section-1" class="headerlink" title="方式二：使用自定义的Section"></a>方式二：使用自定义的Section</h3><pre><code>// 创建表格
 tableView = UITableView(frame: view.bounds, style: .plain)
 // 注册单元格
 tableView.register(UITableViewCell.self, forCellReuseIdentifier: &quot;cellID&quot;)
@@ -315,26 +322,27 @@ let items = Observable.just([
     ])
 
 // 创建数据源
-let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: {
+let dataSource = RxTableViewSectionedReloadDataSource&lt;XMSessionModel&gt;( configureCell: &#123;
     (dataSource, tableView, indexPath, element) -&gt; UITableViewCell in
     let cell = tableView.dequeueReusableCell(withIdentifier: &quot;cellID&quot;)!
     cell.textLabel?.text = &quot;\(indexPath.row): \(element)&quot;
     return cell
-})
+&#125;)
 
 // 设置分区头标题
-dataSource.titleForHeaderInSection = { dataSource, index in
+dataSource.titleForHeaderInSection = &#123; dataSource, index in
     return dataSource.sectionModels[index].header
-}
+&#125;
 
 // 设置分区尾部标题
-dataSource.titleForFooterInSection = { dataSource, index in
+dataSource.titleForFooterInSection = &#123; dataSource, index in
     return &quot;footer&quot;
-}
+&#125;
 
 // 数据绑定
 items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeBag)
 </code></pre>
+
       
 
       
@@ -424,7 +432,7 @@ items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeB
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/22/UITableView + RxDataSources/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/02/22/UITableView%20+%20RxDataSources/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -438,7 +446,7 @@ items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeB
   
 <nav id="article-nav">
   
-    <a href="/2019/02/22/UITableView + Refresh/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2019/02/22/UITableView%20+%20Refresh/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -492,7 +500,7 @@ items.bind(to: tableView.rx.items(dataSource: dataSource)).disposed(by: disposeB
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -599,10 +607,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -611,7 +615,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -619,11 +623,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -643,19 +651,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

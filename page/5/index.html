@@ -12,9 +12,9 @@
 <meta property="og:title" content="Blog">
 <meta property="og:url" content="http://yoursite.com/page/5/index.html">
 <meta property="og:site_name" content="Blog">
-<meta property="og:locale" content="default">
+<meta property="og:locale">
+<meta property="article:author" content="wangjungang">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Blog">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -32,7 +32,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -46,7 +46,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -55,7 +55,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -104,7 +104,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -135,7 +135,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -159,12 +159,12 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/04/史上最强无痕埋点/">史上最强无痕埋点</a>
+      <a class="article-title" href="/2020/03/04/%E5%8F%B2%E4%B8%8A%E6%9C%80%E5%BC%BA%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/">史上最强无痕埋点</a>
     </h1>
   
 
         
-        <a href="/2020/03/04/史上最强无痕埋点/" class="archive-article-date">
+        <a href="/2020/03/04/%E5%8F%B2%E4%B8%8A%E6%9C%80%E5%BC%BA%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/" class="archive-article-date">
   	<time datetime="2020-03-04T03:01:34.334Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-04</time>
 </a>
         
@@ -211,21 +211,21 @@
 <p>为了给所有类方便地 hook，我们可以给 NSObject 添加个 Category，名字叫做 NSObject+MethodSwizzling</p>
 <pre><code>#pragma mark - public Method
 + (void)lbp_swizzleMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector
-{
+&#123;
     class_swizzleInstanceMethod(self, originalSelector, swizzledSelector);
-}
+&#125;
 
 + (void)lbp_swizzleClassMethod:(SEL)originalSelector swizzledSelector:(SEL)swizzledSelector
-{
+&#123;
     //类方法实际上是储存在类对象的类(即元类)中，即类方法相当于元类的实例方法,所以只需要把元类传入，其他逻辑和交互实例方法一样。
     Class class2 = object_getClass(self);
     class_swizzleInstanceMethod(class2, originalSelector, swizzledSelector);
-}
+&#125;
 
 #pragma mark - private method
 
 void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSEL)
-{
+&#123;
     /*
      Class class = [self class];
      //原有方法
@@ -236,27 +236,28 @@ void class_swizzleInstanceMethod(Class class, SEL originalSEL, SEL replacementSE
      BOOL didAddMethod = class_addMethod(class,originalSelector,
      method_getImplementation(swizzledMethod),
      method_getTypeEncoding(swizzledMethod));
-     if (didAddMethod) {//添加成功：表明源SEL没有实现IMP，将源SEL的IMP替换到交换SEL的IMP
+     if (didAddMethod) &#123;//添加成功：表明源SEL没有实现IMP，将源SEL的IMP替换到交换SEL的IMP
      class_replaceMethod(class,swizzledSelector,
      method_getImplementation(originalMethod),
      method_getTypeEncoding(originalMethod));
-     } else {//添加失败：表明源SEL已经有IMP，直接将两个SEL的IMP交换即可
+     &#125; else &#123;//添加失败：表明源SEL已经有IMP，直接将两个SEL的IMP交换即可
      method_exchangeImplementations(originalMethod, swizzledMethod);
-     }
+     &#125;
      */
-
+    
     Method originMethod = class_getInstanceMethod(class, originalSEL);
     Method replaceMethod = class_getInstanceMethod(class, replacementSEL);
-
+    
     if(class_addMethod(class, originalSEL, method_getImplementation(replaceMethod),method_getTypeEncoding(replaceMethod)))
-    {
+    &#123;
         class_replaceMethod(class,replacementSEL, method_getImplementation(originMethod), method_getTypeEncoding(originMethod));
-    }else {
+    &#125;else &#123;
         method_exchangeImplementations(originMethod, replaceMethod);
-    }
-}
-</code></pre><h3 id="3-全量收集"><a href="#3-全量收集" class="headerlink" title="3. 全量收集"></a>3. 全量收集</h3><p>我们会想到 hook AppDelegate 代理方法、UIViewController 生命周期方法、按钮点击事件、手势事件、各种系统控件的点击回调方法、应用状态切换等等。</p>
-<p><img src="http://img.wangjungang.cn/sUK3kh.png" alt=""></p>
+    &#125;
+&#125;
+</code></pre>
+<h3 id="3-全量收集"><a href="#3-全量收集" class="headerlink" title="3. 全量收集"></a>3. 全量收集</h3><p>我们会想到 hook AppDelegate 代理方法、UIViewController 生命周期方法、按钮点击事件、手势事件、各种系统控件的点击回调方法、应用状态切换等等。</p>
+<p><img src="http://img.wangjungang.cn/sUK3kh.png"></p>
 <p>以统计页面的打开时间和统计页面的打开、关闭的需求为例，我们对 UIViewController 进行 hook</p>
 <pre><code>static char *lbp_viewController_open_time = &quot;lbp_viewController_open_time&quot;;
 static char *lbp_viewController_close_time = &quot;lbp_viewController_close_time&quot;;
@@ -264,90 +265,91 @@ static char *lbp_viewController_close_time = &quot;lbp_viewController_close_time
 @implementation UIViewController (lbpka)
 
 // load 方法里面添加 dispatch_once 是为了防止手动调用 load 方法。
-+ (void)load {
++ (void)load &#123;
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
-        @autoreleasepool {
+    dispatch_once(&amp;onceToken, ^&#123;
+        @autoreleasepool &#123;
             [[self class] lbp_swizzleMethod:@selector(viewWillAppear:) swizzledSelector:@selector(lbp_viewWillAppear:)];
             [[self class] lbp_swizzleMethod:@selector(viewWillDisappear:) swizzledSelector:@selector(lbp_viewWillDisappear:)];
 
 
-        }
-    });
-}
+        &#125;
+    &#125;);
+&#125;
 
 
 #pragma mark - add prop
 
-- (void)setOpenTime:(NSDate *)openTime {
+- (void)setOpenTime:(NSDate *)openTime &#123;
     objc_setAssociatedObject(self,&amp;lbp_viewController_open_time, openTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
+&#125;
 
-- (NSDate *)getOpenTime{
+- (NSDate *)getOpenTime&#123;
     return objc_getAssociatedObject(self, &amp;lbp_viewController_open_time);
-}
+&#125;
 
-- (void)setCloseTime:(NSDate *)closeTime {
+- (void)setCloseTime:(NSDate *)closeTime &#123;
     objc_setAssociatedObject(self,&amp;lbp_viewController_close_time, closeTime, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
+&#125;
 
-- (NSDate *)getCloseTime{
+- (NSDate *)getCloseTime&#123;
     return objc_getAssociatedObject(self, &amp;lbp_viewController_close_time);
-}
+&#125;
 
-- (void)lbp_viewWillAppear:(BOOL)animated {
+- (void)lbp_viewWillAppear:(BOOL)animated &#123;
 
     NSString *className = NSStringFromClass([self class]);
     NSString *refer = [NSString string];
     //TODO:TODO 是否只埋本地有url的page
-    if ([self getPageUrl:className]) {
+    if ([self getPageUrl:className]) &#123;
         //设置打开时间
        [self setOpenTime:[NSDate dateWithTimeIntervalSinceNow:0]];
-        if (self.navigationController) {
-            if (self.navigationController.viewControllers.count &gt;=2) {
+        if (self.navigationController) &#123;
+            if (self.navigationController.viewControllers.count &gt;=2) &#123;
                 //获取当前vc 栈中 上一个VC
                 UIViewController *referVC =  self.navigationController.viewControllers[self.navigationController.viewControllers.count-2];
                 refer = [self getPageUrl:NSStringFromClass([referVC class])];
-            }
-        }
-        if (!refer || refer.length == 0) {
+            &#125;
+        &#125;
+        if (!refer || refer.length == 0) &#123;
             refer = @&quot;unknown&quot;;
-        }
+        &#125;
         [UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];
-    }
-
+    &#125;
+   
     [self lbp_viewWillAppear:animated];
-}
+&#125;
 
-- (void)lbp_viewWillDisappear:(BOOL)animated {
+- (void)lbp_viewWillDisappear:(BOOL)animated &#123;
     NSString *className = NSStringFromClass([self class]);
-    if ([self getPageUrl:className]) {
+    if ([self getPageUrl:className]) &#123;
         [self setCloseTime:[NSDate dateWithTimeIntervalSinceNow:0]];
         [UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];
-    }
+    &#125;
     [self lbp_viewWillDisappear:animated];
-}
+&#125;
 
 #pragma mark - private method
 
-- (NSString *)p_calculationTimeSpend {
-
-    if (![self getOpenTime] || ![self getCloseTime]) {
+- (NSString *)p_calculationTimeSpend &#123;
+    
+    if (![self getOpenTime] || ![self getCloseTime]) &#123;
         return @&quot;unknown&quot;;
-    }
+    &#125;
     NSTimeInterval aTimer = [[self getCloseTime] timeIntervalSinceDate:[self getOpenTime]];
-
+    
     int hour = (int)(aTimer/3600);
-
+    
     int minute = (int)(aTimer - hour*3600)/60;
-
+    
     int second = aTimer - hour*3600 - minute*60;
-
+    
     return [NSString stringWithFormat:@&quot;%d&quot;,second];
-}
+&#125;
 
 @end
-</code></pre><h3 id="4-如何唯一标识一个控件元素"><a href="#4-如何唯一标识一个控件元素" class="headerlink" title="4. 如何唯一标识一个控件元素"></a>4. 如何唯一标识一个控件元素</h3><p>xpath 是移动端定义可操作区域的唯一标识。既然想通过一个字符串标识前端系统中可操作的控件，那么 xpath 需要2个指标：</p>
+</code></pre>
+<h3 id="4-如何唯一标识一个控件元素"><a href="#4-如何唯一标识一个控件元素" class="headerlink" title="4. 如何唯一标识一个控件元素"></a>4. 如何唯一标识一个控件元素</h3><p>xpath 是移动端定义可操作区域的唯一标识。既然想通过一个字符串标识前端系统中可操作的控件，那么 xpath 需要2个指标：</p>
 <ul>
 <li>唯一性：在同一系统中不存在不同控件有着相同的 xpath</li>
 <li>稳定性：不同版本的系统中，在页面结构没有变动的情况下，不同版本的相同页面，相同的控件的 xpath 需要保持一致。</li>
@@ -355,8 +357,8 @@ static char *lbp_viewController_close_time = &quot;lbp_viewController_close_time
 <p>我们想到 Naive、H5 页面等系统渲染的时候都是以树形结构去绘制和渲染，所以我们以当前的 View 到系统的根元素之间的所有关键点（UIViewController、UIView、UIView容器（UITableView、UICollectionView等）、UIButton…）串联起来这样就唯一定位了控件元素。</p>
 <p>为了精确定位元素节点，参看下图</p>
 <p>假设一个 UIView 中有三个子 view，先后顺序是：label、button1、button2，那么深度依次为： 0、1、2。假如用户做了某些操作将 label1 从父 view 中被移除了。此时 UIView 只有 2 个子view：button1、button2，而且深度变为了：0、1。</p>
-<p><img src="http://img.wangjungang.cn/7tIkuC.png" alt=""></p>
-<p>可以看出仅仅由于其中某个子 view  的改变，却导致其它子 view 的深度都发生了变化。因此，在设计的时候需要注意，在新增/移除某一 view 时，尽量减少对已有 view 的深度的影响，调整了对节点的深度的计算方式：采用当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值。</p>
+<p><img src="http://img.wangjungang.cn/7tIkuC.png"></p>
+<p>可以看出仅仅由于其中某个子 view  的改变，却导致其它子 view 的深度都发生了变化。因此，在设计的时候需要注意，在新增&#x2F;移除某一 view 时，尽量减少对已有 view 的深度的影响，调整了对节点的深度的计算方式：采用当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值。</p>
 <p>我们再看一下上面的这个例子，最初 label、button1、button2 的深度依次是：0、0、1。在 label 被移除后，button1、button2 的深度依次为：0、1。可以看出，在这个例子中，label 的移除并未对 button1、button2 的深度造成影响，这种调整后的计算方式在一定程度上增强了 xpath 的抗干扰性。</p>
 <p>另外，调整后的深度的计算方式是依赖于各节点的类型的，因此，此时必须要将各节点的名称放到viewPath中，而不再是仅仅为了增加可读性。</p>
 <p>在标识控件元素的层级时，需要知道「当前 view 位于其父 view 中的所有 与当前 view 同类型 子view 中的索引值」。参看上图，如果不是同类型的话，则唯一性得不到保证。</p>
@@ -368,35 +370,35 @@ static char *lbp_viewController_close_time = &quot;lbp_viewController_close_time
 <p>对当前的控件元素的父视图的全部子视图进行遍历，如果存在和当前的控件元素同类型的控件，那么需要判断当前控件元素在同类型控件元素中的所处的位置，那么则可以唯一定位。举例：GoodsCell-3.GoodsTableView.GoodsViewController.xxApp</p>
 <pre><code>//UIResponder分类
 - (NSString *)lbp_identifierKa
-{
-//    if (self.xq_identifier_ka == nil) {
-        if ([self isKindOfClass:[UIView class]]) {
+&#123;
+//    if (self.xq_identifier_ka == nil) &#123;
+        if ([self isKindOfClass:[UIView class]]) &#123;
             UIView *view = (id)self;
             NSString *sameViewTreeNode = [view obtainSameSuperViewSameClassViewTreeIndexPath];
             NSMutableString *str = [NSMutableString string];
             //特殊的 加减购 因为带有spm但是要区分加减 需要带TreeNode
             NSString *className = [NSString stringWithUTF8String:object_getClassName(view)];
-            if (!view.accessibilityIdentifier || [className isEqualToString:@&quot;lbpButton&quot;]) {
+            if (!view.accessibilityIdentifier || [className isEqualToString:@&quot;lbpButton&quot;]) &#123;
                 [str appendString:sameViewTreeNode];
                 [str appendString:@&quot;,&quot;];
-            }
-            while (view.nextResponder) {
+            &#125;
+            while (view.nextResponder) &#123;
                 [str appendFormat:@&quot;%@,&quot;, NSStringFromClass(view.class)];
-                if ([view.class isSubclassOfClass:[UIViewController class]]) {
+                if ([view.class isSubclassOfClass:[UIViewController class]]) &#123;
                     break;
-                }
+                &#125;
                 view = (id)view.nextResponder;
-            }
+            &#125;
             self.xq_identifier_ka = [self md5String:[NSString stringWithFormat:@&quot;%@&quot;,str]];
             //            self.xq_identifier_ka = [NSString stringWithFormat:@&quot;%@&quot;,str];
-        }
-//    }
+        &#125;
+//    &#125;
     return self.xq_identifier_ka;
-}
+&#125;
 
 // UIView 分类
 - (NSString *)obtainSameSuperViewSameClassViewTreeIndexPat
-{    
+&#123;    
     NSString *classStr = NSStringFromClass([self class]);
     //cell的子view
     //UITableView 特殊的superview (UITableViewContentView)
@@ -405,45 +407,46 @@ static char *lbp_viewController_close_time = &quot;lbp_viewController_close_time
     ([classStr isEqualToString:@&quot;UITableViewCellContentView&quot;]) ||
     ([[self.superview class] isKindOfClass:[UITableViewCell class]])||
     ([[self.superview class] isKindOfClass:[UICollectionViewCell class]]);
-    if (shouldUseSuperView) {
+    if (shouldUseSuperView) &#123;
         return [self obtainIndexPathByView:self.superview];
-    }else {
+    &#125;else &#123;
         return [self obtainIndexPathByView:self];
-    }
-}
+    &#125;
+&#125;
 
 - (NSString *)obtainIndexPathByView:(UIView *)view
-{    
+&#123;    
     NSInteger viewTreeNodeDepth = NSIntegerMin;
     NSInteger sameViewTreeNodeDepth = NSIntegerMin;
-
+    
     NSString *classStr = NSStringFromClass([view class]);
-
+   
     NSMutableArray *sameClassArr = [[NSMutableArray alloc]init];
     //所处父view的全部subviews根节点深度
-    for (NSInteger index =0; index &lt; view.superview.subviews.count; index ++) {
+    for (NSInteger index =0; index &lt; view.superview.subviews.count; index ++) &#123;
         //同类型
-        if  ([classStr isEqualToString:NSStringFromClass([view.superview.subviews[index] class])]){
+        if  ([classStr isEqualToString:NSStringFromClass([view.superview.subviews[index] class])])&#123;
             [sameClassArr addObject:view.superview.subviews[index]];
-        }
-        if (view == view.superview.subviews[index]) {
+        &#125;
+        if (view == view.superview.subviews[index]) &#123;
             viewTreeNodeDepth = index;
             break;
-        }
-    }
+        &#125;
+    &#125;
     //所处父view的同类型subviews根节点深度
-    for (NSInteger index =0; index &lt; sameClassArr.count; index ++) {
-        if (view == sameClassArr[index]) {
+    for (NSInteger index =0; index &lt; sameClassArr.count; index ++) &#123;
+        if (view == sameClassArr[index]) &#123;
             sameViewTreeNodeDepth = index;
             break;
-        }
-    }
+        &#125;
+    &#125;
     return [NSString stringWithFormat:@&quot;%ld&quot;,sameViewTreeNodeDepth];
-
-}
-</code></pre><p><img src="http://img.wangjungang.cn/kAHDPo.png" alt=""></p>
+    
+&#125;
+</code></pre>
+<p><img src="http://img.wangjungang.cn/kAHDPo.png"></p>
 <h3 id="6-同类型的view，但是点击的意义却不一样。如何唯一标识？"><a href="#6-同类型的view，但是点击的意义却不一样。如何唯一标识？" class="headerlink" title="6. 同类型的view，但是点击的意义却不一样。如何唯一标识？"></a>6. 同类型的view，但是点击的意义却不一样。如何唯一标识？</h3><p>问题5说明的是在一个界面上有多个不同的 view，他们的类型是同一种（CycleBannerView，但是数据源不一样，那么当数据源长度大于1的时候会轮播，下面会展示 UIPageControl。如果数据源是1个，那么就不会轮播和展示 UIPageControl）。情况6是同一种类型的 View，但是根据展示的内容不一样，点击的意义也不一样。也就是运营需要去知道用户到底点击的是哪一个。如下图所示，「立即抢购」和「分享赚佣金」是同一种类型的 View，但是点击意义不一样，需要我们需要唯一标识出来。之前的方法通过 “viewPath 配合同类型的 view 去加索引值“ 的方式还是没有办法唯一标识出来。所以想到一个方案，给 NSObject 添加一个分类，在分类里面添加一个协议。让需要复用但需要唯一标识的 view 去实现协议方法，因为是给 NSObject 分类添加的协议，所以 view 不需要去指定遵循。</p>
-<p><img src="http://img.wangjungang.cn/74bO8A.jpg" alt=""></p>
+<p><img src="http://img.wangjungang.cn/74bO8A.jpg"></p>
 <p>关键步骤：</p>
 <ul>
 <li><p>添加 NSObject 的 Category。在分类里面声明唯一标识的协议</p>
@@ -470,14 +473,17 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
-
+    
 //NSObject+UniqueIdentify.m
 #import &quot;NSObject+UniqueIdentify.h&quot;
 
 @implementation NSObject (UniqueIdentify)
 
 @end
-</code></pre><hr>
+
+    
+</code></pre>
+<hr>
 <pre><code>//MallTGoodTagView.h
 
 extern NSString * _Nonnull const ImmediateyPurchase;
@@ -488,40 +494,44 @@ NSString *const ImmediateyPurchase = @&quot;立即抢购&quot;;
 NSString *const ShareToAward = @&quot;分享赚佣金&quot;;
 
 - (NSString *)setUniqueIdentifier
-{
-    if (self.tagString) {
+&#123;
+    if (self.tagString) &#123;
         return self.tagString;
-    } else {
+    &#125; else &#123;
         return NSStringFromClass([self class]);
-    }
-}
-</code></pre><hr>
-<p><img src="http://img.wangjungang.cn/SDd8wH.jpg" alt=""></p>
-<p><img src="http://img.wangjungang.cn/JbHICW.jpg" alt=""></p>
+    &#125;
+&#125;
+</code></pre>
+<hr>
+<p><img src="http://img.wangjungang.cn/SDd8wH.jpg"></p>
+<p><img src="http://img.wangjungang.cn/JbHICW.jpg"></p>
 <h3 id="7-数据如何处理"><a href="#7-数据如何处理" class="headerlink" title="7. 数据如何处理"></a>7. 数据如何处理</h3><h4 id="A-如何处理业务数据"><a href="#A-如何处理业务数据" class="headerlink" title="A. 如何处理业务数据"></a>A. 如何处理业务数据</h4><p>利用系统提供的 accessibilityIdentifier 官方给出的解释是标识用户界面元素的字符串</p>
 <pre><code>/*
 A string that identifies the user interface element.
 default == nil
 */
 @property(nullable, nonatomic, copy) NSString *accessibilityIdentifier NS_AVAILABLE_IOS(5_0);
-</code></pre><p>服务端下发唯一标识</p>
+</code></pre>
+<p>服务端下发唯一标识</p>
 <p>接口获取的数据，里面有当前元素的唯一标识。比如在 UITableView 的界面去请求接口拿到数据，那么在在获取到的数据源里面会有一个字段，专门用来存储动态化的经常变动的业务数据。</p>
 <pre><code>cell.accessibilityIdentifier = [[[SDGGoodsCategoryServices sharedInstance].categories[indexPath.section] children][indexPath.row].spmContent yy_modelToJSONString];
-</code></pre><h4 id="B-基础数据"><a href="#B-基础数据" class="headerlink" title="B.基础数据"></a>B.基础数据</h4><p>设计上分为2个 pod 库，一个是 TriggerKit（专门用来 hook 机会需要的所有事件，页面停留时间、页面标识、view标识），另一个是 Appmonitor（专门用来提供基础数据、埋点数据的维护、上传机制）。所以在 Appmonitor 里面有个类叫做 UserTrackDataCenter 的类，专门提供一些基础数据（系统版本、操作系统、地理位置、网络等信息）。</p>
+</code></pre>
+<h4 id="B-基础数据"><a href="#B-基础数据" class="headerlink" title="B.基础数据"></a>B.基础数据</h4><p>设计上分为2个 pod 库，一个是 TriggerKit（专门用来 hook 机会需要的所有事件，页面停留时间、页面标识、view标识），另一个是 Appmonitor（专门用来提供基础数据、埋点数据的维护、上传机制）。所以在 Appmonitor 里面有个类叫做 UserTrackDataCenter 的类，专门提供一些基础数据（系统版本、操作系统、地理位置、网络等信息）。</p>
 <p>对外暴露出一些方法，用来将埋点数据交给 Appmonitor 去维护埋点数据，达到合适的“机制”再去上传埋点数据到服务端。</p>
-<pre><code>+ (void)clickEventUuid:(NSString *)uuid otherParam:(NSDictionary *)otherParam spmContent:(NSDictionary *)spmContent {
-    if (uuid) {
+<pre><code>+ (void)clickEventUuid:(NSString *)uuid otherParam:(NSDictionary *)otherParam spmContent:(NSDictionary *)spmContent &#123;
+    if (uuid) &#123;
         NSMutableDictionary *params = [[NSMutableDictionary alloc] initWithDictionary:otherParam];
         params[SDGStatisticEventtagKey] = @&quot;clickMonitorV1&quot;;
         NSMutableDictionary *valueDict = [[NSMutableDictionary alloc] initWithDictionary:spmContent];
         valueDict[@&quot;xpath&quot;] = uuid?:@&quot;&quot;;
-        params[SDGStatisticEventtagValue] = valueDict?:@{};
+        params[SDGStatisticEventtagValue] = valueDict?:@&#123;&#125;;
         [[AppMonotior shareInstance] traceEvent:[AMStatisticEvent eventWithInfo:params]];
-    }
-}
-</code></pre><p>###8. 数据的上报<br>数据通过上面的办法收集完了，那么如何及时、高效的上传到后端，给运营分析、处理呢？</p>
+    &#125;
+&#125;
+</code></pre>
+<p>###8. 数据的上报<br>数据通过上面的办法收集完了，那么如何及时、高效的上传到后端，给运营分析、处理呢？</p>
 <p>App 运行期间用户会点击非常多的数据，如果实时上传的话对于网络的利用率较低，所以需要考虑一个机制去控制用户产生的埋点数据的上传。</p>
-<p>思路是这样的。对外部暴露出一个接口，用来将产生的数据往数据中心存储。用户产生的数据会先保存到 AppMonitor 的内存中去，设置一个临界值（memoryEventMax = 50），如果存储的值达到设置的临界值 memoryEventMax，那么将内存中的数据写入文件系统，以 zip 的形式保存下来，然后上传到埋点系统。如果没有达到临界值但是存在一些 App 状态切换的情况，这时候需要及时保存数据到持久化。当下次打开 App 就去从本地持久化的地方读取是否有未上传的数据，如果有就上传日志信息，成功后删除本地的日志压缩包。</p>
+<p>思路是这样的。对外部暴露出一个接口，用来将产生的数据往数据中心存储。用户产生的数据会先保存到 AppMonitor 的内存中去，设置一个临界值（memoryEventMax &#x3D; 50），如果存储的值达到设置的临界值 memoryEventMax，那么将内存中的数据写入文件系统，以 zip 的形式保存下来，然后上传到埋点系统。如果没有达到临界值但是存在一些 App 状态切换的情况，这时候需要及时保存数据到持久化。当下次打开 App 就去从本地持久化的地方读取是否有未上传的数据，如果有就上传日志信息，成功后删除本地的日志压缩包。</p>
 <p>App 应用状态的切换策略如下：</p>
 <ul>
 <li>didFinishLaunchWithOptions:内存日志信息写入硬盘</li>
@@ -532,87 +542,89 @@ default == nil
 <p>下面的代码是 App 埋点数据的保存与上传</p>
 <pre><code>// 将App日志信息写入到内存中。当内存中的数量到达一定规模（超过设置的内存中存储的数量）的时候就将内存中的日志存储到文件信息中
 - (void)joinEvent:(NSDictionary *)dictionary
-{
-    if (dictionary) {
+&#123;
+    if (dictionary) &#123;
         NSDictionary *tmp = [self createDicWithEvent:dictionary];
-        if (!s_memoryArray) {
+        if (!s_memoryArray) &#123;
             s_memoryArray = [NSMutableArray array];
-        }
+        &#125;
         [s_memoryArray addObject:tmp];
-        if ([s_memoryArray count] &gt;= s_flushNum) {
-            [self writeEventLogsInFilesCompletion:^{
+        if ([s_memoryArray count] &gt;= s_flushNum) &#123;
+            [self writeEventLogsInFilesCompletion:^&#123;
                 [self startUploadLogFile];
-            }];
-        }
-    }
-}
+            &#125;];
+        &#125;
+    &#125;
+&#125;
 
 // 外界调用的数据传递入口（App埋点统计）
 - (void)traceEvent:(AMStatisticEvent *)event
-{
+&#123;
     // 线程锁,防止多处调用产生并发问题
-    @synchronized (self) {
-        if (event &amp;&amp; event.userInfo) {
+    @synchronized (self) &#123;
+        if (event &amp;&amp; event.userInfo) &#123;
             [self joinEvent:event.userInfo];
-        }
-    }
-}
+        &#125;
+    &#125;
+&#125;
 
 // 将内存中的数据写入到文件中，持久化存储
 - (void)writeEventLogsInFilesCompletion:(void(^)(void))completionBlock
-{
+&#123;
     NSArray *tmp = nil;
-    @synchronized (self) {
+    @synchronized (self) &#123;
         tmp = s_memoryArray;
         s_memoryArray = nil;
-    }
-    if (tmp) {
+    &#125;
+    if (tmp) &#123;
         __weak typeof(self) weakSelf = self;
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;
             NSString *jsonFilePath = [weakSelf createTraceJsonFile];
-            if ([weakSelf writeArr:tmp toFilePath:jsonFilePath]) {
+            if ([weakSelf writeArr:tmp toFilePath:jsonFilePath]) &#123;
                 NSString *zipedFilePath = [weakSelf zipJsonFile:jsonFilePath];
-                if (zipedFilePath) {
+                if (zipedFilePath) &#123;
                     [AppMonotior clearCacheFile:jsonFilePath];
-                    if (completionBlock) {
+                    if (completionBlock) &#123;
                         completionBlock();
-                    }
-                }
-            }
-        });
-    }
-}
+                    &#125;
+                &#125;
+            &#125;
+        &#125;);
+    &#125;
+&#125;
 
 // 从App埋点统计压缩包文件夹中的每个压缩包文件上传服务端，成功后就删除本地的日志压缩包
 - (void)startUploadLogFile
-{
+&#123;
     NSArray *fList = [self listFilesAtPath:[self eventJsonPath]];
-    if (!fList || [fList count] == 0) {
+    if (!fList || [fList count] == 0) &#123;
         return;
-    }
-    [fList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        if (![obj hasSuffix:@&quot;.zip&quot;]) {
+    &#125;
+    [fList enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) &#123;
+        if (![obj hasSuffix:@&quot;.zip&quot;]) &#123;
             return;
-        }
-
+        &#125;
+        
         NSString *zipedPath = obj;
         unsigned long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:zipedPath error:nil] fileSize];
-        if (!fileSize || fileSize &lt; 1) {
+        if (!fileSize || fileSize &lt; 1) &#123;
             return;
-        }
+        &#125;
         // 调用接口上传埋点数据
-        [self uploadZipFileWithPath:zipedPath completion:^(NSString *completionResult) {
-            if ([completionResult isEqual:@&quot;OK&quot;]) {
+        [self uploadZipFileWithPath:zipedPath completion:^(NSString *completionResult) &#123;
+            if ([completionResult isEqual:@&quot;OK&quot;]) &#123;
                 [AppMonotior clearCacheFile:zipedPath];
-            }
-        }];
-    }];
-}
-</code></pre><p>使用的时候就是在 hook 系统事件的时候，去调用统计页面上传数据</p>
+            &#125;
+        &#125;];
+    &#125;];
+&#125;
+</code></pre>
+<p>使用的时候就是在 hook 系统事件的时候，去调用统计页面上传数据</p>
 <pre><code>//UIViewController
-[UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];    // 页面出现
-[UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];    //页面消失
-</code></pre><p>总结下来关键步骤：</p>
+[UserTrackDataCenter openPage:[self getPageUrl:className] fromPage:refer];	// 页面出现
+[UserTrackDataCenter leavePage:[self getPageUrl:className] spendTime:[self p_calculationTimeSpend]];	//页面消失
+</code></pre>
+<p>总结下来关键步骤：</p>
 <ul>
 <li>hook 系统的各种事件（UIResponder、UITableView、UICollectionView代理事件、UIControl事件、UITapGestureRecognizers）、hook 应用程序、控制器生命周期。在做本来的逻辑之前添加额外的监控代码</li>
 <li>对于点击的元素按照视图树生成对应的唯一标识（addCartButton.GoodsView.GoodsViewController） 的 md5 值</li>
@@ -643,7 +655,7 @@ default == nil
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/04/史上最强无痕埋点/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/03/04/%E5%8F%B2%E4%B8%8A%E6%9C%80%E5%BC%BA%E6%97%A0%E7%97%95%E5%9F%8B%E7%82%B9/">展开全文 >></a>
         </p>
       
 
@@ -680,12 +692,12 @@ default == nil
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/04/规范化团队 git 提交信息/">规范化团队 git 提交信息</a>
+      <a class="article-title" href="/2020/03/04/%E8%A7%84%E8%8C%83%E5%8C%96%E5%9B%A2%E9%98%9F%20git%20%E6%8F%90%E4%BA%A4%E4%BF%A1%E6%81%AF/">规范化团队 git 提交信息</a>
     </h1>
   
 
         
-        <a href="/2020/03/04/规范化团队 git 提交信息/" class="archive-article-date">
+        <a href="/2020/03/04/%E8%A7%84%E8%8C%83%E5%8C%96%E5%9B%A2%E9%98%9F%20git%20%E6%8F%90%E4%BA%A4%E4%BF%A1%E6%81%AF/" class="archive-article-date">
   	<time datetime="2020-03-04T02:44:34.905Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-04</time>
 </a>
         
@@ -693,7 +705,7 @@ default == nil
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><img src="http://img.wangjungang.cn/Nent9Z.png" alt=""><br>同一个工程项目，为了方便管理，git 的 commit 信息最好按照一定的格式规范，以便在需要的时候方便使用。什么是方便的时候，比如出现了一个线上 bug，所以需要回滚操作，知道了提交信息可以方便的定位问题。代码 review 的时候也知道了该次 commit 干了什么，所以 commit 标准化好处很多，不再举例。</p>
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><img src="http://img.wangjungang.cn/Nent9Z.png"><br>同一个工程项目，为了方便管理，git 的 commit 信息最好按照一定的格式规范，以便在需要的时候方便使用。什么是方便的时候，比如出现了一个线上 bug，所以需要回滚操作，知道了提交信息可以方便的定位问题。代码 review 的时候也知道了该次 commit 干了什么，所以 commit 标准化好处很多，不再举例。</p>
 <h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>可以马上想到的是利用 shell 结合 git hook 实现在 git commit 阶段检查输入是否符合规范。符合就通过，不符合就终止，并给出提示信息。</p>
 <h3 id="规范是什么"><a href="#规范是什么" class="headerlink" title="规范是什么"></a>规范是什么</h3><p>常见的分类有下面几种：</p>
 <ul>
@@ -715,62 +727,64 @@ default == nil
 <p>怎么用</p>
 <ul>
 <li>初始化一个 node 项目：npm init -y</li>
-<li>安装所需依赖。npm install –save-dev @commitlint/config-conventional @commitlint/cli husky</li>
+<li>安装所需依赖。npm install –save-dev @commitlint&#x2F;config-conventional @commitlint&#x2F;cli husky</li>
 <li>在工程根目录下新建配置文件，名称为 commitlint.config.js。</li>
 <li>在 commitlint.config.js 中添加配置信息</li>
 </ul>
 <hr>
 <pre><code>const types = [
-  &apos;build&apos;, 
-  &apos;ci&apos;, 
-  &apos;chore&apos;,
-  &apos;docs&apos;, 
-  &apos;feat&apos;, 
-  &apos;fix&apos;, 
-  &apos;pref&apos;, 
-  &apos;refactor&apos;, 
-  &apos;revert&apos;, 
-  &apos;style&apos;, 
-  &apos;test&apos;
+  &#39;build&#39;, 
+  &#39;ci&#39;, 
+  &#39;chore&#39;,
+  &#39;docs&#39;, 
+  &#39;feat&#39;, 
+  &#39;fix&#39;, 
+  &#39;pref&#39;, 
+  &#39;refactor&#39;, 
+  &#39;revert&#39;, 
+  &#39;style&#39;, 
+  &#39;test&#39;
 ];
 
-typeEnum = {
-  rules: {
-    &apos;type-enum&apos;: [2, &apos;always&apos;, types]
-  },
+typeEnum = &#123;
+  rules: &#123;
+    &#39;type-enum&#39;: [2, &#39;always&#39;, types]
+  &#125;,
   value: () =&gt; types
-}
+&#125;
 
-module.exports = {
+module.exports = &#123;
     extends: [
       &quot;@commitlint/config-conventional&quot;
     ],
-    rules: {
-      &apos;type-case&apos;: [0],
-      &apos;type-empty&apos;: [0],
-      &apos;scope-empty&apos;: [0],
-      &apos;scope-case&apos;: [0],
-      &apos;subject-full-stop&apos;: [0, &apos;never&apos;],
-      &apos;subject-case&apos;: [0, &apos;never&apos;],
-      &apos;header-max-length&apos;: [0, &apos;always&apos;, 72],
-      &apos;type-enum&apos;: typeEnum.rules[&apos;type-enum&apos;]
-    }
-  };
-</code></pre><p>在 package.json 文件中添加以下代码，代码层级跟 devDependencies 同级。</p>
-<pre><code>&quot;husky&quot;: {
-    &quot;hooks&quot;: {
-        &quot;pre-commit&quot;: &quot;echo &apos;哈喽，小伙伴们，在这里可以做测试相关的逻辑哦，一般结合公司的 ci&apos;&quot;,
+    rules: &#123;
+      &#39;type-case&#39;: [0],
+      &#39;type-empty&#39;: [0],
+      &#39;scope-empty&#39;: [0],
+      &#39;scope-case&#39;: [0],
+      &#39;subject-full-stop&#39;: [0, &#39;never&#39;],
+      &#39;subject-case&#39;: [0, &#39;never&#39;],
+      &#39;header-max-length&#39;: [0, &#39;always&#39;, 72],
+      &#39;type-enum&#39;: typeEnum.rules[&#39;type-enum&#39;]
+    &#125;
+  &#125;;
+</code></pre>
+<p>在 package.json 文件中添加以下代码，代码层级跟 devDependencies 同级。</p>
+<pre><code>&quot;husky&quot;: &#123;
+    &quot;hooks&quot;: &#123;
+        &quot;pre-commit&quot;: &quot;echo &#39;哈喽，小伙伴们，在这里可以做测试相关的逻辑哦，一般结合公司的 ci&#39;&quot;,
         &quot;commit-msg&quot;: &quot;commitlint -E HUSKY_GIT_PARAMS&quot;,
         &quot;pre-push&quot;: &quot;echo 提交代码前需要先进行单元测试 &amp;&amp; 可以做测试相关&quot;
-    }
-}
-</code></pre><p>上面的流程配置完成，当你在提交 commit 信息的输入的内容，如果不符合 <type>: <subject> 规则，会终止并给出提示信息。</subject></type></p>
+    &#125;
+&#125;
+</code></pre>
+<p>上面的流程配置完成，当你在提交 commit 信息的输入的内容，如果不符合 <type>: <subject> 规则，会终止并给出提示信息。</p>
 <p>type 就是上面的种类；subject 就是需要提交的文字概括。比如：feature：增加摇一摇推荐酒店功能。</p>
 <p>小说明：如果某次提交想禁用 husky，可以添加参数 –no-verify。git commit –no-verify -m “xxx”</p>
 <p>贴个效果图</p>
-<p><img src="http://img.wangjungang.cn/I33Toj.png" alt=""></p>
-<h3 id="流程说明"><a href="#流程说明" class="headerlink" title="流程说明"></a>流程说明</h3><p>安装包 husky 的时候，会在目录 .git/hooks/ 下生成一堆 shell 脚本，负责 git 的 hook。</p>
-<p>“commit-msg”: “commitlint -E HUSKY_GIT_PARAMS” 这个配置告诉 git hooks，当执行 git commit -m 的时候触发 commit-msg 钩子，并通知 husky，从而执行 commitlint -E HUSKY_GIT_PARAMS，实际上执行的是 ./node_modules/husky/bin/run.js，读取 commitlint.config.js 里的配置，然后对我们 commit -m 里的字符串校验，如不通过则输出错误信息并终止。</p>
+<p><img src="http://img.wangjungang.cn/I33Toj.png"></p>
+<h3 id="流程说明"><a href="#流程说明" class="headerlink" title="流程说明"></a>流程说明</h3><p>安装包 husky 的时候，会在目录 .git&#x2F;hooks&#x2F; 下生成一堆 shell 脚本，负责 git 的 hook。</p>
+<p>“commit-msg”: “commitlint -E HUSKY_GIT_PARAMS” 这个配置告诉 git hooks，当执行 git commit -m 的时候触发 commit-msg 钩子，并通知 husky，从而执行 commitlint -E HUSKY_GIT_PARAMS，实际上执行的是 .&#x2F;node_modules&#x2F;husky&#x2F;bin&#x2F;run.js，读取 commitlint.config.js 里的配置，然后对我们 commit -m 里的字符串校验，如不通过则输出错误信息并终止。</p>
 <h2 id="拓展篇"><a href="#拓展篇" class="headerlink" title="拓展篇"></a>拓展篇</h2><p>git commit 的几个钩子，也暴露出来了，所以可以结合时机做一些额外的逻辑。</p>
 <ul>
 <li>pre-commit：在 git commit 之前触发</li>
@@ -801,7 +815,7 @@ module.exports = {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/04/规范化团队 git 提交信息/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/03/04/%E8%A7%84%E8%8C%83%E5%8C%96%E5%9B%A2%E9%98%9F%20git%20%E6%8F%90%E4%BA%A4%E4%BF%A1%E6%81%AF/">展开全文 >></a>
         </p>
       
 
@@ -838,12 +852,12 @@ module.exports = {
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/01/YYModel,MJExtension,JSONModel对比/">YYModel,MJExtension,JSONModel对比</a>
+      <a class="article-title" href="/2020/03/01/YYModel,MJExtension,JSONModel%E5%AF%B9%E6%AF%94/">YYModel,MJExtension,JSONModel对比</a>
     </h1>
   
 
         
-        <a href="/2020/03/01/YYModel,MJExtension,JSONModel对比/" class="archive-article-date">
+        <a href="/2020/03/01/YYModel,MJExtension,JSONModel%E5%AF%B9%E6%AF%94/" class="archive-article-date">
   	<time datetime="2020-03-01T03:24:09.051Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-01</time>
 </a>
         
@@ -853,53 +867,64 @@ module.exports = {
       
         <h3 id="使用区别"><a href="#使用区别" class="headerlink" title="使用区别"></a>使用区别</h3><pre><code>JSONModel要求所有模型类必须继承自JSONModel基类
 YYModel和MJExtension不需要你的模型类继承任何特殊基类，毫无污染，毫无侵入性
-</code></pre><h3 id="量级上"><a href="#量级上" class="headerlink" title="量级上"></a>量级上</h3><pre><code>YYModel和MJExtension都是超轻量级框架
+</code></pre>
+<h3 id="量级上"><a href="#量级上" class="headerlink" title="量级上"></a>量级上</h3><pre><code>YYModel和MJExtension都是超轻量级框架
 YYModel是一个更轻量级高性能 iOS/OSX 模型转换框架,模型转换性能接近手写解析代码,比MJExtension和JSONModel性能更高.
-</code></pre><h3 id="字典和模型之间互相转换"><a href="#字典和模型之间互相转换" class="headerlink" title="字典和模型之间互相转换"></a>字典和模型之间互相转换</h3><p>MJExtension支持:<br>Plist –&gt; Model Array</p>
+</code></pre>
+<h3 id="字典和模型之间互相转换"><a href="#字典和模型之间互相转换" class="headerlink" title="字典和模型之间互相转换"></a>字典和模型之间互相转换</h3><p>MJExtension支持:<br>Plist –&gt; Model Array</p>
 <pre><code>1
 模型数组 = [模型类名 objectArrayWithFilename:@&quot;文件名.plist&quot;];
-</code></pre><p>JSON Array –&gt; Model Array</p>
+</code></pre>
+<p>JSON Array –&gt; Model Array</p>
 <pre><code>1
 NSArray *modelArray = [模型类名 objectArrayWithKeyValuesArray:字段数组];
-</code></pre><p>JSONString –&gt; Model Array</p>
+</code></pre>
+<p>JSONString –&gt; Model Array</p>
 <p>Model Array –&gt; JSON Array</p>
 <p>YYModel没有看到对字典数组和模型数组相互转换的支持</p>
 <h3 id="容器类属性"><a href="#容器类属性" class="headerlink" title="容器类属性"></a>容器类属性</h3><p>YYModel需要在 @implementation 和 @end之间 写上</p>
-<pre><code>+ (NSDictionary *)modelContainerPropertyGenericClass {
-    return @{@&quot;arrayName&quot; : [模型类名 class]};
-}
-</code></pre><p>MJExtension需要在 @implementation 和 @end之间 写上</p>
-<pre><code>+ (NSDictionary *)objectClassInArray {
-    return @{@&quot;arrayName&quot; : [模型类名 class]};
-}
-</code></pre><p>MJExtension可以配合ESJsonFormat模型插件使用,插件自动实现容器方法.YYModel也可以配合ESJsonFormat模型插件使用,需要修改容器实现的方法名.</p>
+<pre><code>+ (NSDictionary *)modelContainerPropertyGenericClass &#123;
+    return @&#123;@&quot;arrayName&quot; : [模型类名 class]&#125;;
+&#125;
+</code></pre>
+<p>MJExtension需要在 @implementation 和 @end之间 写上</p>
+<pre><code>+ (NSDictionary *)objectClassInArray &#123;
+    return @&#123;@&quot;arrayName&quot; : [模型类名 class]&#125;;
+&#125;
+</code></pre>
+<p>MJExtension可以配合ESJsonFormat模型插件使用,插件自动实现容器方法.YYModel也可以配合ESJsonFormat模型插件使用,需要修改容器实现的方法名.</p>
 <p>JSONModel是最简单的,只需要参照以下写法即可</p>
 <pre><code>@property (nonatomic) NSArray &lt;ProductModel&gt; *products;
-</code></pre><h3 id="归档和解档"><a href="#归档和解档" class="headerlink" title="归档和解档"></a>归档和解档</h3><p>三者性能相当<br>MJExtension只需要一行代码调用写好的宏MJExtensionCodingImplementation就可以实现<br>YYModel需要遵守NSCoding协议,并重写下面方法</p>
-<pre><code>- (void)encodeWithCoder:(NSCoder *)aCoder { [self yy_modelEncodeWithCoder:aCoder]; }
-- (id)initWithCoder:(NSCoder *)aDecoder { self = [super init]; return [self yy_modelInitWithCoder:aDecoder]; }
-</code></pre><h3 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h3><p>MJExtension只需要在@implementation 和 @end之间写上宏MJLogAllIvrs,就能解决调试时，打印模型，只打印出内存地址的问题<br>YYModel需要重写description方法</p>
-<pre><code>- (NSString *)description { return [self yy_modelDescription]; }
-</code></pre><h3 id="模型中的属性名和字典中的key不相同-或者需要多级映射"><a href="#模型中的属性名和字典中的key不相同-或者需要多级映射" class="headerlink" title="模型中的属性名和字典中的key不相同(或者需要多级映射)"></a>模型中的属性名和字典中的key不相同(或者需要多级映射)</h3><p>YYModel需要在 @implementation 和 @end之间 写上</p>
-<pre><code>+ (NSDictionary *)modelCustomPropertyMapper {
-    return @{@&quot;name&quot; : @&quot;n&quot;,
+</code></pre>
+<h3 id="归档和解档"><a href="#归档和解档" class="headerlink" title="归档和解档"></a>归档和解档</h3><p>三者性能相当<br>MJExtension只需要一行代码调用写好的宏MJExtensionCodingImplementation就可以实现<br>YYModel需要遵守NSCoding协议,并重写下面方法</p>
+<pre><code>- (void)encodeWithCoder:(NSCoder *)aCoder &#123; [self yy_modelEncodeWithCoder:aCoder]; &#125;
+- (id)initWithCoder:(NSCoder *)aDecoder &#123; self = [super init]; return [self yy_modelInitWithCoder:aDecoder]; &#125;
+</code></pre>
+<h3 id="日志"><a href="#日志" class="headerlink" title="日志"></a>日志</h3><p>MJExtension只需要在@implementation 和 @end之间写上宏MJLogAllIvrs,就能解决调试时，打印模型，只打印出内存地址的问题<br>YYModel需要重写description方法</p>
+<pre><code>- (NSString *)description &#123; return [self yy_modelDescription]; &#125;
+</code></pre>
+<h3 id="模型中的属性名和字典中的key不相同-或者需要多级映射"><a href="#模型中的属性名和字典中的key不相同-或者需要多级映射" class="headerlink" title="模型中的属性名和字典中的key不相同(或者需要多级映射)"></a>模型中的属性名和字典中的key不相同(或者需要多级映射)</h3><p>YYModel需要在 @implementation 和 @end之间 写上</p>
+<pre><code>+ (NSDictionary *)modelCustomPropertyMapper &#123;
+    return @&#123;@&quot;name&quot; : @&quot;n&quot;,
              @&quot;page&quot; : @&quot;p&quot;,
              @&quot;desc&quot; : @&quot;ext.desc&quot;,
              @&quot;bookID&quot; : @[@&quot;id&quot;,@&quot;ID&quot;,@&quot;book_id&quot;]
-             };
-}
-</code></pre><p>MJExtension需要在转换代码之前实现</p>
-<pre><code>[Student mj_setupReplacedKeyFromPropertyName:^NSDictionary *{
-    return @{
+             &#125;;
+&#125;
+</code></pre>
+<p>MJExtension需要在转换代码之前实现</p>
+<pre><code>[Student mj_setupReplacedKeyFromPropertyName:^NSDictionary *&#123;
+    return @&#123;
                @&quot;ID&quot; : @&quot;id&quot;,
                @&quot;desc&quot; : @&quot;desciption&quot;,
                @&quot;oldName&quot; : @&quot;name.oldName&quot;,
                @&quot;nowName&quot; : @&quot;name.newName&quot;,
                @&quot;nameChangedTime&quot; : @&quot;name.info[1].nameChangedTime&quot;,
                @&quot;bag&quot; : @&quot;other.bag&quot;
-           };
-}];
+           &#125;;
+&#125;];
 </code></pre>
+
       
 
       
@@ -922,7 +947,7 @@ NSArray *modelArray = [模型类名 objectArrayWithKeyValuesArray:字段数组];
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/01/YYModel,MJExtension,JSONModel对比/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/03/01/YYModel,MJExtension,JSONModel%E5%AF%B9%E6%AF%94/">展开全文 >></a>
         </p>
       
 
@@ -959,12 +984,12 @@ NSArray *modelArray = [模型类名 objectArrayWithKeyValuesArray:字段数组];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/02/23/那些年，用swift踩过的坑/">那些年，用swift踩过的坑</a>
+      <a class="article-title" href="/2020/02/23/%E9%82%A3%E4%BA%9B%E5%B9%B4%EF%BC%8C%E7%94%A8swift%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91/">那些年，用swift踩过的坑</a>
     </h1>
   
 
         
-        <a href="/2020/02/23/那些年，用swift踩过的坑/" class="archive-article-date">
+        <a href="/2020/02/23/%E9%82%A3%E4%BA%9B%E5%B9%B4%EF%BC%8C%E7%94%A8swift%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91/" class="archive-article-date">
   	<time datetime="2020-02-22T16:45:56.211Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-02-23</time>
 </a>
         
@@ -975,7 +1000,7 @@ NSArray *modelArray = [模型类名 objectArrayWithKeyValuesArray:字段数组];
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>总结了笔者日常使用 Swift 的一些小 Tips。</p>
 <h2 id="Safe-amp-Fast"><a href="#Safe-amp-Fast" class="headerlink" title="Safe&amp; Fast"></a>Safe&amp; Fast</h2><h3 id="1-能用-let，尽量不用-var"><a href="#1-能用-let，尽量不用-var" class="headerlink" title="1. 能用 let，尽量不用 var"></a>1. 能用 let，尽量不用 var</h3><p>ObjC 的 Foundation 层几乎都是继承 NSObject 实现的，平时都在操作指针，所以要区分 Mutable 和 Imutable 的设计，比如 NSString 和 NSMutableString。</p>
 <p>Swift 使用了 let 和 var 关键字直接用于区分是否可变。可变会更容易出错，所以尽量采用不可变设计，等到需要改变才改为 var 吧。</p>
-<h3 id="2-尽量不用-！"><a href="#2-尽量不用-！" class="headerlink" title="2. 尽量不用 ！"></a>2. 尽量不用 ！</h3><p>！遇到 nil 时会 crash（包括 as! 进行强制转换）。可以使用 if let/guard let/case let 配合 as? 将可选值消化掉。可能返回 nil 的 API，为什么要自己骗自己呢？</p>
+<h3 id="2-尽量不用-！"><a href="#2-尽量不用-！" class="headerlink" title="2. 尽量不用 ！"></a>2. 尽量不用 ！</h3><p>！遇到 nil 时会 crash（包括 as! 进行强制转换）。可以使用 if let&#x2F;guard let&#x2F;case let 配合 as? 将可选值消化掉。可能返回 nil 的 API，为什么要自己骗自己呢？</p>
 <p>当遇到 ObjC 代码暴露给 Swift 使用时，给接口 .h 文件加上 NS_ASSUME_NONNULL_BEGIN 和 NS_ASSUME_NONNULL_END 并检查接口参数是否可以为 nil 吧。</p>
 <h3 id="3-多定义-struct，少定义-class"><a href="#3-多定义-struct，少定义-class" class="headerlink" title="3. 多定义 struct，少定义 class"></a>3. 多定义 struct，少定义 class</h3><p>struct 是值类型，class 是引用类型。类类型分配在堆区，默认浅拷贝，容易被不经意间被改变，而值类型分配在栈区，默认深拷贝。并且 Swift 还有写时复制（copy on write）。</p>
 <p>即使是使用 class 时，也仅在必要时（如桥接到 ObjC，使用 Runtime 一些特性）继承自 NSObject。</p>
@@ -983,19 +1008,20 @@ NSArray *modelArray = [模型类名 objectArrayWithKeyValuesArray:字段数组];
 <p>还有用 print 代替 NSLog。</p>
 <h3 id="5-优先使用内置高阶函数"><a href="#5-优先使用内置高阶函数" class="headerlink" title="5. 优先使用内置高阶函数"></a>5. 优先使用内置高阶函数</h3><p>forEach，map，compactMap，flatMap，zip，reduce 是好帮手，代替一些使用变量并在循环中处理的例子吧。用上高阶函数，不仅代码更清晰，还能将状态控制在更小的作用域内。</p>
 <h3 id="6-使用-try-catch-捕获错误"><a href="#6-使用-try-catch-捕获错误" class="headerlink" title="6. 使用 try catch 捕获错误"></a>6. 使用 try catch 捕获错误</h3><p>和 ObjC 基本都在函数的回调中返回 NSError 不一样，Swift 函数可以使用 throw 关键字抛出错误。</p>
-<pre><code>func test() throws {
+<pre><code>func test() throws &#123;
      //... 
-}
+&#125;
 
-do {
+do &#123;
   try test()
-} catch {
+&#125; catch &#123;
   print(error)
-}
+&#125;
 
 // 如果对错误不敏感
 try? test()
-</code></pre><h3 id="7-对-String-判空时优先采用-isEmpty"><a href="#7-对-String-判空时优先采用-isEmpty" class="headerlink" title="7. 对 String 判空时优先采用 isEmpty"></a>7. 对 String 判空时优先采用 isEmpty</h3><p>Swift 里面的 String 的 index 和 count 不是一一对应的（兼容 Unicode），所以 stirng.count == 0 的效率不如 string.isEmpty。</p>
+</code></pre>
+<h3 id="7-对-String-判空时优先采用-isEmpty"><a href="#7-对-String-判空时优先采用-isEmpty" class="headerlink" title="7. 对 String 判空时优先采用 isEmpty"></a>7. 对 String 判空时优先采用 isEmpty</h3><p>Swift 里面的 String 的 index 和 count 不是一一对应的（兼容 Unicode），所以 stirng.count &#x3D;&#x3D; 0 的效率不如 string.isEmpty。</p>
 <h2 id="Clean-Code"><a href="#Clean-Code" class="headerlink" title="Clean Code"></a>Clean Code</h2><h3 id="8-文件名字去掉前缀"><a href="#8-文件名字去掉前缀" class="headerlink" title="8. 文件名字去掉前缀"></a>8. 文件名字去掉前缀</h3><p>Swift 有着 framework 级别的命名空间，所以命名重复时可以通过 framework 名确定，不用担心重复命名问题。</p>
 <p>尽量只有在需要桥接给 ObjC 时，才使用 @objc(前缀 + 类名) 进行别名声明。</p>
 <h3 id="9-省略-self"><a href="#9-省略-self" class="headerlink" title="9. 省略 self"></a>9. 省略 self</h3><p>对应访问成员变量，方法时，都不用像 ObjC 那些写 self 了。</p>
@@ -1010,66 +1036,75 @@ let flag = false
 view.contentMode = UIView.ContentMode.center
 // better
 view.contentMode = .center
-</code></pre><h3 id="12-使用默认形参，简化接口设计"><a href="#12-使用默认形参，简化接口设计" class="headerlink" title="12. 使用默认形参，简化接口设计"></a>12. 使用默认形参，简化接口设计</h3><p>在设计接口时，不再需要为每一个形参是否需要而编写一个方法了，减少方法数吧。</p>
+</code></pre>
+<h3 id="12-使用默认形参，简化接口设计"><a href="#12-使用默认形参，简化接口设计" class="headerlink" title="12. 使用默认形参，简化接口设计"></a>12. 使用默认形参，简化接口设计</h3><p>在设计接口时，不再需要为每一个形参是否需要而编写一个方法了，减少方法数吧。</p>
 <pre><code>// not bad
-func test() {
+func test() &#123;
     //...
-}
+&#125;
 
-func test(param1:String) {
+func test(param1:String) &#123;
     //...
-}
+&#125;
 
-func test(param2:String) {
+func test(param2:String) &#123;
     //...
-}
+&#125;
 
 // better
-func test(param1:String = &quot;&quot;, param2:String = &quot;&quot;) {
+func test(param1:String = &quot;&quot;, param2:String = &quot;&quot;) &#123;
     //...
-}
-</code></pre><h3 id="13-使用-表示不使用的返回值"><a href="#13-使用-表示不使用的返回值" class="headerlink" title="13. 使用 _ 表示不使用的返回值"></a>13. 使用 _ 表示不使用的返回值</h3><pre><code>var a = [0]
+&#125;
+</code></pre>
+<h3 id="13-使用-表示不使用的返回值"><a href="#13-使用-表示不使用的返回值" class="headerlink" title="13. 使用 _ 表示不使用的返回值"></a>13. 使用 _ 表示不使用的返回值</h3><pre><code>var a = [0]
 let _ = a.removeLast()
 
-[0].forEach{ _ in print(&quot;hh&quot;)}
-</code></pre><p>而对于自己设计的接口，如果返回值无关紧要，只是附加功能的话，可以使用 @discardableResult 进行标注。</p>
-<h3 id="14-使用-来定义和关键字重名的方法和属性"><a href="#14-使用-来定义和关键字重名的方法和属性" class="headerlink" title="14. 使用  来定义和关键字重名的方法和属性"></a>14. 使用 <code></code> 来定义和关键字重名的方法和属性</h3><p>比如系统有个 default 关键字，而你也希望使用这个命名时就能派上用场</p>
+[0].forEach&#123; _ in print(&quot;hh&quot;)&#125;
+</code></pre>
+<p>而对于自己设计的接口，如果返回值无关紧要，只是附加功能的话，可以使用 @discardableResult 进行标注。</p>
+<h3 id="14-使用-96-96-来定义和关键字重名的方法和属性"><a href="#14-使用-96-96-来定义和关键字重名的方法和属性" class="headerlink" title="14. 使用 &#96;&#96; 来定义和关键字重名的方法和属性"></a>14. 使用 &#96;&#96; 来定义和关键字重名的方法和属性</h3><p>比如系统有个 default 关键字，而你也希望使用这个命名时就能派上用场</p>
 <pre><code>let `default` = A()
 
-func `default`() {}
-</code></pre><h3 id="15-Strong-Weak-Dance-很简单"><a href="#15-Strong-Weak-Dance-很简单" class="headerlink" title="15. Strong-Weak Dance 很简单"></a>15. Strong-Weak Dance 很简单</h3><p>比起 ObjC 里需要每次需要写</p>
+func `default`() &#123;&#125;
+</code></pre>
+<h3 id="15-Strong-Weak-Dance-很简单"><a href="#15-Strong-Weak-Dance-很简单" class="headerlink" title="15. Strong-Weak Dance 很简单"></a>15. Strong-Weak Dance 很简单</h3><p>比起 ObjC 里需要每次需要写</p>
 <pre><code>__weak typeof(self) weak_self = self;
 __typeof__(self) strong_self = weak_self;
-</code></pre><p>尽管很多人会采用宏来简化，但重复的宏定义又会冲突，且 ObjC 没有访问权限关键字。</p>
+</code></pre>
+<p>尽管很多人会采用宏来简化，但重复的宏定义又会冲突，且 ObjC 没有访问权限关键字。</p>
 <p>Swift 在闭包中可以使用 weak 和 unowned 指定闭包对值的捕获，配合 guard 就可以实现同样的功能。</p>
-<pre><code>test(){ [weak self] in 
-        guard let self = self else { return }
+<pre><code>test()&#123; [weak self] in 
+        guard let self = self else &#123; return &#125;
     // self is strong without retain cycle
-}
-</code></pre><h3 id="16-类型嵌套"><a href="#16-类型嵌套" class="headerlink" title="16. 类型嵌套"></a>16. 类型嵌套</h3><p>类型嵌套用于在类型里定义类型，让类型的命名空间的精细化程度更高。</p>
-<pre><code>struct GameService {
-    enum APIError {
-        enum ResultError {
+&#125;
+</code></pre>
+<h3 id="16-类型嵌套"><a href="#16-类型嵌套" class="headerlink" title="16. 类型嵌套"></a>16. 类型嵌套</h3><p>类型嵌套用于在类型里定义类型，让类型的命名空间的精细化程度更高。</p>
+<pre><code>struct GameService &#123;
+    enum APIError &#123;
+        enum ResultError &#123;
             case noResult
-        }
-    }
-      // use APIError
-}
+        &#125;
+    &#125;
+  	// use APIError
+&#125;
 // use GameService.APIError
-</code></pre><h3 id="17-func-嵌套"><a href="#17-func-嵌套" class="headerlink" title="17. func 嵌套"></a>17. func 嵌套</h3><p>有时候某一块逻辑只需要在方法内复用或者做逻辑分割，可以在方法内定义方法，这样访问域会更清晰。</p>
-<pre><code>func big(){
-    func small() {
+</code></pre>
+<h3 id="17-func-嵌套"><a href="#17-func-嵌套" class="headerlink" title="17. func 嵌套"></a>17. func 嵌套</h3><p>有时候某一块逻辑只需要在方法内复用或者做逻辑分割，可以在方法内定义方法，这样访问域会更清晰。</p>
+<pre><code>func big()&#123;
+    func small() &#123;
     //...
-  }
+  &#125;
   small()
-}
-</code></pre><h3 id="18-使用闭包做初始化"><a href="#18-使用闭包做初始化" class="headerlink" title="18. 使用闭包做初始化"></a>18. 使用闭包做初始化</h3><p>有时候初始化时一个对象时还需要赋值其中的一些属性，这个时候就可以使用闭包代码块的整合。</p>
-<pre><code>let someView: UIView = {
+&#125;
+</code></pre>
+<h3 id="18-使用闭包做初始化"><a href="#18-使用闭包做初始化" class="headerlink" title="18. 使用闭包做初始化"></a>18. 使用闭包做初始化</h3><p>有时候初始化时一个对象时还需要赋值其中的一些属性，这个时候就可以使用闭包代码块的整合。</p>
+<pre><code>let someView: UIView = &#123;
     let view = UIView(frame:.zero)
   view.backgroundColor = .red
   return view
-}()
-</code></pre><h3 id="19-使用更简洁的函数实参和形参"><a href="#19-使用更简洁的函数实参和形参" class="headerlink" title="19. 使用更简洁的函数实参和形参"></a>19. 使用更简洁的函数实参和形参</h3><p>和 ObjC 不同，有形参实参的 Swift，可以在调用和编写的时候都有更合适简洁的表达。</p>
+&#125;()
+</code></pre>
+<h3 id="19-使用更简洁的函数实参和形参"><a href="#19-使用更简洁的函数实参和形参" class="headerlink" title="19. 使用更简洁的函数实参和形参"></a>19. 使用更简洁的函数实参和形参</h3><p>和 ObjC 不同，有形参实参的 Swift，可以在调用和编写的时候都有更合适简洁的表达。</p>
 <pre><code>// not bad
 func updateWithView(view:UIView)
 updateWithView(view:viewA)
@@ -1083,84 +1118,97 @@ didSelectAtIndex(index:2)
 // better
 func didSelect(at index:Int)
 didSelect(at:2)
-</code></pre><h3 id="20-Enum-用于命名空间声明"><a href="#20-Enum-用于命名空间声明" class="headerlink" title="20. Enum 用于命名空间声明"></a>20. Enum 用于命名空间声明</h3><p>定义一些常量时，用命名空间做隔离是最好的，Swift 的 Enum 比较适合用于命名空间的定义，能嵌套，且不存在初始化方法不会被用于其他作用。</p>
-<pre><code>enum Event {
-    enum Name {
+</code></pre>
+<h3 id="20-Enum-用于命名空间声明"><a href="#20-Enum-用于命名空间声明" class="headerlink" title="20. Enum 用于命名空间声明"></a>20. Enum 用于命名空间声明</h3><p>定义一些常量时，用命名空间做隔离是最好的，Swift 的 Enum 比较适合用于命名空间的定义，能嵌套，且不存在初始化方法不会被用于其他作用。</p>
+<pre><code>enum Event &#123;
+    enum Name &#123;
         static let login = &quot;event.name.login&quot;
-    }
-}
+    &#125;
+&#125;
 
 // use 
 Event.Name.login
 // not allow
 Event()
-</code></pre><h3 id="21-使用-返回默认值"><a href="#21-使用-返回默认值" class="headerlink" title="21. 使用 ?? 返回默认值"></a>21. 使用 ?? 返回默认值</h3><pre><code>// not bad
+</code></pre>
+<h3 id="21-使用-返回默认值"><a href="#21-使用-返回默认值" class="headerlink" title="21. 使用 ?? 返回默认值"></a>21. 使用 ?? 返回默认值</h3><pre><code>// not bad
 var name:String?
-if let aName = dic[&quot;name&quot;] as? String {
+if let aName = dic[&quot;name&quot;] as? String &#123;
     name = aName
-} else {
+&#125; else &#123;
   name = &quot;&quot;
-}
+&#125;
 
 // better
 let name = dic[&quot;name&quot;] as? String ?? &quot;&quot;
-</code></pre><h3 id="22-使用字符串插值"><a href="#22-使用字符串插值" class="headerlink" title="22. 使用字符串插值"></a>22. 使用字符串插值</h3><p>除了常规的字符串插值，Swift5 还增加了更强大可自定义的字符串插值系统</p>
+</code></pre>
+<h3 id="22-使用字符串插值"><a href="#22-使用字符串插值" class="headerlink" title="22. 使用字符串插值"></a>22. 使用字符串插值</h3><p>除了常规的字符串插值，Swift5 还增加了更强大可自定义的字符串插值系统</p>
 <pre><code>let a = 2
 print(&quot;\(a) is 2&quot;)
-</code></pre><h2 id="Syntactic-sugar"><a href="#Syntactic-sugar" class="headerlink" title="Syntactic sugar"></a>Syntactic sugar</h2><h3 id="23-更-POP（Protocol-Oriented-Programming，面向协议编程）"><a href="#23-更-POP（Protocol-Oriented-Programming，面向协议编程）" class="headerlink" title="23. 更 POP（Protocol Oriented Programming，面向协议编程）"></a>23. 更 POP（Protocol Oriented Programming，面向协议编程）</h3><p>Swift 在设计上，为协议做了很多强大的功能。Swift 标准库里大量的方法和类都使用了协议进行抽象。在编写代码时优先考虑使用协议进行逻辑的抽象</p>
+</code></pre>
+<h2 id="Syntactic-sugar"><a href="#Syntactic-sugar" class="headerlink" title="Syntactic sugar"></a>Syntactic sugar</h2><h3 id="23-更-POP（Protocol-Oriented-Programming，面向协议编程）"><a href="#23-更-POP（Protocol-Oriented-Programming，面向协议编程）" class="headerlink" title="23. 更 POP（Protocol Oriented Programming，面向协议编程）"></a>23. 更 POP（Protocol Oriented Programming，面向协议编程）</h3><p>Swift 在设计上，为协议做了很多强大的功能。Swift 标准库里大量的方法和类都使用了协议进行抽象。在编写代码时优先考虑使用协议进行逻辑的抽象</p>
 <h3 id="24-优先使用-guard"><a href="#24-优先使用-guard" class="headerlink" title="24. 优先使用 guard"></a>24. 优先使用 guard</h3><p>guard 是 if 的反义词，可以提前将异常情况 return。配合 guard let 使用，可以在正常分支下使用正确的条件。</p>
-<pre><code>guard let a = a as? String else { return }
+<pre><code>guard let a = a as? String else &#123; return &#125;
 // 下面的 a 就是 string 并且 non-nil 的了
-</code></pre><h3 id="25-尝试元组"><a href="#25-尝试元组" class="headerlink" title="25. 尝试元组"></a>25. 尝试元组</h3><p>元组（Tuple）是个包含多个值的简单对象，使用元组，可以简单的用来函数返回多参数，也可以在集合类型中存取一对对的值。</p>
+</code></pre>
+<h3 id="25-尝试元组"><a href="#25-尝试元组" class="headerlink" title="25. 尝试元组"></a>25. 尝试元组</h3><p>元组（Tuple）是个包含多个值的简单对象，使用元组，可以简单的用来函数返回多参数，也可以在集合类型中存取一对对的值。</p>
 <pre><code>typealias Pair&lt;T&gt; = (T, T)
 
 let pair = Pair(1, 2)
-</code></pre><h3 id="26-尝试范型"><a href="#26-尝试范型" class="headerlink" title="26. 尝试范型"></a>26. 尝试范型</h3><p>比起 ObjC 仅支持在集合类型里使用轻量级范型，Swift 的范型更强大，除了集合，还支持类、枚举、协议（Associate Type）。</p>
-<pre><code>protocol View {
+</code></pre>
+<h3 id="26-尝试范型"><a href="#26-尝试范型" class="headerlink" title="26. 尝试范型"></a>26. 尝试范型</h3><p>比起 ObjC 仅支持在集合类型里使用轻量级范型，Swift 的范型更强大，除了集合，还支持类、枚举、协议（Associate Type）。</p>
+<pre><code>protocol View &#123;
     associatedtype Model
-
+    
     func update(model:Model)
-}
-</code></pre><h3 id="27-尝试枚举"><a href="#27-尝试枚举" class="headerlink" title="27. 尝试枚举"></a>27. 尝试枚举</h3><p>比起 ObjC 那和 C 语言差不多的枚举，Swift 的枚举更强大。Swift 的枚举不一定需要 Int 作为枚举的原始值，可以不需要原始值，也可以使用 String、Float、Boolean 作为原始值。能在枚举值上关联值，实现很多有趣的功能（Rx，Promise 的状态机）。能给枚举编写函数，能给枚举增加 Extension。</p>
-<pre><code>enum State&lt;Value&gt; {
+&#125;
+</code></pre>
+<h3 id="27-尝试枚举"><a href="#27-尝试枚举" class="headerlink" title="27. 尝试枚举"></a>27. 尝试枚举</h3><p>比起 ObjC 那和 C 语言差不多的枚举，Swift 的枚举更强大。Swift 的枚举不一定需要 Int 作为枚举的原始值，可以不需要原始值，也可以使用 String、Float、Boolean 作为原始值。能在枚举值上关联值，实现很多有趣的功能（Rx，Promise 的状态机）。能给枚举编写函数，能给枚举增加 Extension。</p>
+<pre><code>enum State&lt;Value&gt; &#123;
     case pending
     case fulfill(value:Value)
     case reject(reason:Error)
-    mutating func update(to state:State){
-        guard case .pending = self else {
+    mutating func update(to state:State)&#123;
+        guard case .pending = self else &#123;
             return
-        }
+        &#125;
         self = state
-    }
-}
-</code></pre><h3 id="28-尝试-Extension"><a href="#28-尝试-Extension" class="headerlink" title="28. 尝试 Extension"></a>28. 尝试 Extension</h3><p>和 ObjC 的 Categories 类似，拓展可以添加类的方法。Swift 的 Extension 还能拓展值类型，枚举的方法，且不需要新建文件编写和支持权限访问关键字。通过 Extension，还能给 Protocol 增加默认实现。也能在 Extension 中遵循协议，让方法划分更加清晰。</p>
-<pre><code>fileprivate extension Date {
-    var toString: String {
+    &#125;
+&#125;
+</code></pre>
+<h3 id="28-尝试-Extension"><a href="#28-尝试-Extension" class="headerlink" title="28. 尝试 Extension"></a>28. 尝试 Extension</h3><p>和 ObjC 的 Categories 类似，拓展可以添加类的方法。Swift 的 Extension 还能拓展值类型，枚举的方法，且不需要新建文件编写和支持权限访问关键字。通过 Extension，还能给 Protocol 增加默认实现。也能在 Extension 中遵循协议，让方法划分更加清晰。</p>
+<pre><code>fileprivate extension Date &#123;
+    var toString: String &#123;
         //...
-    }
-}
+    &#125;
+&#125;
 
 Date().toString
-</code></pre><h3 id="29-lazy-关键字"><a href="#29-lazy-关键字" class="headerlink" title="29. lazy 关键字"></a>29. lazy 关键字</h3><p>懒加载不需要像 ObjC 一样重写 getter 方法，并判空了，在属性前面加上 lazy 关键字就可以实现了。</p>
+</code></pre>
+<h3 id="29-lazy-关键字"><a href="#29-lazy-关键字" class="headerlink" title="29. lazy 关键字"></a>29. lazy 关键字</h3><p>懒加载不需要像 ObjC 一样重写 getter 方法，并判空了，在属性前面加上 lazy 关键字就可以实现了。</p>
 <pre><code>lazy var view = UIView(frame:.zero)
-</code></pre><h3 id="30-where-关键字"><a href="#30-where-关键字" class="headerlink" title="30. where 关键字"></a>30. where 关键字</h3><p>where 关键字可以对范围进行限定</p>
+</code></pre>
+<h3 id="30-where-关键字"><a href="#30-where-关键字" class="headerlink" title="30. where 关键字"></a>30. where 关键字</h3><p>where 关键字可以对范围进行限定</p>
 <h3 id="31-typealias-关键字"><a href="#31-typealias-关键字" class="headerlink" title="31. typealias 关键字"></a>31. typealias 关键字</h3><p>typealias 可以用来命名闭包类型、协议类型、范型类型，还支持组合</p>
 <pre><code>typealias NewName&lt;D&gt; = ClassA&lt;D&gt;&amp;ProtocolA&amp;ProtocolB
-</code></pre><h3 id="32-Result-类型"><a href="#32-Result-类型" class="headerlink" title="32. Result 类型"></a>32. Result 类型</h3><p>Result 是一个枚举类型，包含成功或者失败的枚举值，并持有相应成功或者失败的值，通过范型确定类型信息。因为成功和失败是互斥的，这样就可以避免多个可选参数返回。</p>
+</code></pre>
+<h3 id="32-Result-类型"><a href="#32-Result-类型" class="headerlink" title="32. Result 类型"></a>32. Result 类型</h3><p>Result 是一个枚举类型，包含成功或者失败的枚举值，并持有相应成功或者失败的值，通过范型确定类型信息。因为成功和失败是互斥的，这样就可以避免多个可选参数返回。</p>
 <p>比如对网络请求回调进行改造：</p>
-<pre><code>URLSession.shared.dataTask(with: request) { result in
-    switch result {
+<pre><code>URLSession.shared.dataTask(with: request) &#123; result in
+    switch result &#123;
     case .success(let (data, _)):
         handle(data: data)
     case .failure(let error):
         handle(error: error)
-    }
-}
-</code></pre><h3 id="33-KVO"><a href="#33-KVO" class="headerlink" title="33. KVO"></a>33. KVO</h3><p>在 ObjC 中，开发者更习惯用类似 FBKVOController 等第三方库进行 KVO 的监听，那是因为原生的写法太难用了。Swift 为 KVO 增加了闭包的 API，更简洁好用。</p>
-<pre><code>scrollObserver = observe(\.scrollView!.contentOffset, options: [.new], changeHandler: { object, change in
+    &#125;
+&#125;
+</code></pre>
+<h3 id="33-KVO"><a href="#33-KVO" class="headerlink" title="33. KVO"></a>33. KVO</h3><p>在 ObjC 中，开发者更习惯用类似 FBKVOController 等第三方库进行 KVO 的监听，那是因为原生的写法太难用了。Swift 为 KVO 增加了闭包的 API，更简洁好用。</p>
+<pre><code>scrollObserver = observe(\.scrollView!.contentOffset, options: [.new], changeHandler: &#123; object, change in
      //...
-})
-</code></pre><p>同理，Swift 的 GCD API 也是专门经过 Swift 化的，也更加简洁好用</p>
+&#125;)
+</code></pre>
+<p>同理，Swift 的 GCD API 也是专门经过 Swift 化的，也更加简洁好用</p>
 <h3 id="34-Codable"><a href="#34-Codable" class="headerlink" title="34. Codable"></a>34. Codable</h3><p>在 Swift4 加入 Codable 协议后，JSON 等通用结构转模型，终于有了原生的支持</p>
 <h3 id="35-SwiftUI-amp-Combine"><a href="#35-SwiftUI-amp-Combine" class="headerlink" title="35. SwiftUI&amp;Combine"></a>35. SwiftUI&amp;Combine</h3><p>在 WWDC19 推出的 Swift Only 的库，SwiftUI 有着类似 React 的声明式 UI 开发框架，配合实时调试，在 Demo 和简单页面，跨 Apple 平台应用适配时有一定优势。而 Combine 时类似 RxSwift 的响应式编程框架，能使事件流更统一。</p>
 
@@ -1186,7 +1234,7 @@ Date().toString
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2020/02/23/那些年，用swift踩过的坑/">展开全文 >></a>
+          <a class="article-more-a" href="/2020/02/23/%E9%82%A3%E4%BA%9B%E5%B9%B4%EF%BC%8C%E7%94%A8swift%E8%B8%A9%E8%BF%87%E7%9A%84%E5%9D%91/">展开全文 >></a>
         </p>
       
 
@@ -1223,12 +1271,12 @@ Date().toString
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/12/16/iOS奇思妙想之使用block替代通知/">iOS奇思妙想之使用block替代通知</a>
+      <a class="article-title" href="/2019/12/16/iOS%E5%A5%87%E6%80%9D%E5%A6%99%E6%83%B3%E4%B9%8B%E4%BD%BF%E7%94%A8block%E6%9B%BF%E4%BB%A3%E9%80%9A%E7%9F%A5/">iOS奇思妙想之使用block替代通知</a>
     </h1>
   
 
         
-        <a href="/2019/12/16/iOS奇思妙想之使用block替代通知/" class="archive-article-date">
+        <a href="/2019/12/16/iOS%E5%A5%87%E6%80%9D%E5%A6%99%E6%83%B3%E4%B9%8B%E4%BD%BF%E7%94%A8block%E6%9B%BF%E4%BB%A3%E9%80%9A%E7%9F%A5/" class="archive-article-date">
   	<time datetime="2019-12-16T12:44:27.347Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-16</time>
 </a>
         
@@ -1245,11 +1293,11 @@ Date().toString
 <h3 id="5-多线程安全"><a href="#5-多线程安全" class="headerlink" title="5.多线程安全"></a>5.多线程安全</h3><p>这里采用GCD信号量来保证线程安全</p>
 <h3 id="6-block循环引用"><a href="#6-block循环引用" class="headerlink" title="6.block循环引用"></a>6.block循环引用</h3><p>对于block循环引用，这里采用回调观察者替代self，保证不会循环引用</p>
 <h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><p>CLActionManager.h实现代码</p>
-<pre><code>typedef NS_ENUM(NSUInteger, CLActionType) {
+<pre><code>typedef NS_ENUM(NSUInteger, CLActionType) &#123;
     CLActionColorChange,///&lt;颜色变化
     CLActionTextChange,///&lt;文字变化
     CLActionImageChange,///&lt;图片变化
-};
+&#125;;
 
 
 @interface CLActionManager : NSObject
@@ -1260,7 +1308,7 @@ Date().toString
 
 /**
  根据类型添加观察者
-
+ 
  @param observer 观察者
  @param actionType 响应类型
  @param block 数据回掉
@@ -1269,7 +1317,7 @@ Date().toString
 
 /**
  根据类型调用
-
+ 
  @param dictionary 数据
  @param actionType 响应类型
  */
@@ -1295,7 +1343,8 @@ Date().toString
  @param identifier 标识符
  */
 + (void)actionWithDictionary:(NSDictionary *)dictionary identifier:(NSString *)identifier;
-</code></pre><p>CLActionManager.m实现代码</p>
+</code></pre>
+<p>CLActionManager.m实现代码</p>
 <pre><code>#import &quot;CLActionManager.h&quot;
 #import &lt;objc/message.h&gt;
 
@@ -1312,21 +1361,21 @@ Date().toString
 //第1步: 存储唯一实例
 static CLActionManager *_manager = nil;
 //第2步: 分配内存空间时都会调用这个方法. 保证分配内存alloc时都相同.
-+ (id)allocWithZone:(struct _NSZone __unused*)zone {
++ (id)allocWithZone:(struct _NSZone __unused*)zone &#123;
     return [self sharedManager];
-}
+&#125;
 //第3步: 保证init初始化时都相同
-+ (instancetype)sharedManager {
++ (instancetype)sharedManager &#123;
     //调用dispatch_once保证在多线程中也只被实例化一次
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
+    dispatch_once(&amp;onceToken, ^&#123;
         _manager = [[super allocWithZone:NULL] init];
-    });
+    &#125;);
     return _manager;
-}
-- (id)init {
+&#125;
+- (id)init &#123;
     static dispatch_once_t onceToken;
-    dispatch_once(&amp;onceToken, ^{
+    dispatch_once(&amp;onceToken, ^&#123;
         _manager = [super init];
         //弱引用value，强引用key
         self.observerMapTable = [NSMapTable mapTableWithKeyOptions:NSMapTableStrongMemory valueOptions:NSMapTableWeakMemory];
@@ -1335,19 +1384,19 @@ static CLActionManager *_manager = nil;
         //信号
         self.semaphore = dispatch_semaphore_create(0);
         dispatch_semaphore_signal(self.semaphore);
-    });
+    &#125;);
     return _manager;
-}
+&#125;
 //第4步: 保证copy时都相同
-- (id)copyWithZone:(NSZone __unused*)zone {
+- (id)copyWithZone:(NSZone __unused*)zone &#123;
     return _manager;
-}
+&#125;
 //第五步: 保证mutableCopy时相同
-- (id)mutableCopyWithZone:(NSZone __unused*)zone {
+- (id)mutableCopyWithZone:(NSZone __unused*)zone &#123;
     return _manager;
-}
+&#125;
 
-+ (void)addObserver:(id)observer actionType:(CLActionType)actionType mainThread:(BOOL)mainThread block:(void(^)(id observer, NSDictionary *dictionary))block {
++ (void)addObserver:(id)observer actionType:(CLActionType)actionType mainThread:(BOOL)mainThread block:(void(^)(id observer, NSDictionary *dictionary))block &#123;
     //增加信号保证线程安全
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     //内存地址+key，使用内存地址保证一个对象只监听一次，key保证是同一类型
@@ -1362,9 +1411,9 @@ static CLActionManager *_manager = nil;
     //动态设置是否主线程
     objc_setAssociatedObject(observer, CFBridgingRetain(actionMainThread), [NSNumber numberWithBool:mainThread], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
+&#125;
 
-+ (void)actionWithDictionary:(NSDictionary *)dictionary actionType:(CLActionType)actionType {
++ (void)actionWithDictionary:(NSDictionary *)dictionary actionType:(CLActionType)actionType &#123;
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     //key数组
     NSArray&lt;NSString *&gt; *keyArray = [[[CLActionManager sharedManager].observerMapTable keyEnumerator] allObjects];
@@ -1373,7 +1422,7 @@ static CLActionManager *_manager = nil;
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@&quot;SELF ENDSWITH %@&quot;,identifier];
     NSArray&lt;NSString *&gt; *array = [keyArray filteredArrayUsingPredicate:predicate];
     //遍历查找所有key
-    for (NSString *key in array) {
+    for (NSString *key in array) &#123;
         NSString *actionBlock = [[CLActionManager sharedManager].blockKeyMapTable objectForKey:key];
         NSString *actionMainThread = [[CLActionManager sharedManager].mainThreadKeyMapTable objectForKey:key];
         //找出对应类型的观察者
@@ -1382,26 +1431,26 @@ static CLActionManager *_manager = nil;
         void(^block)(id observer, NSDictionary *dictionary) = objc_getAssociatedObject(observer, CFBridgingRetain(actionBlock));
         BOOL mainThread = [(NSNumber *)objc_getAssociatedObject(observer, CFBridgingRetain(actionMainThread)) boolValue];
         //block存在并且是对应方法添加，调用block
-        if (block) {
-            if (mainThread) {
+        if (block) &#123;
+            if (mainThread) &#123;
                 //主线程
-                dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_main_queue(), ^&#123;
                     block(observer, dictionary);
-                });
-            }else {
+                &#125;);
+            &#125;else &#123;
                 //子线程
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;
                     block(observer, dictionary);
-                });
-            }
-        }
-    }
+                &#125;);
+            &#125;
+        &#125;
+    &#125;
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
+&#125;
 
-+ (NSString *)keyWithActionType:(CLActionType)actionType {
++ (NSString *)keyWithActionType:(CLActionType)actionType &#123;
     NSString *key;
-    switch (actionType) {
+    switch (actionType) &#123;
         case CLActionTextChange:
             key = @&quot;CLActionTextChange&quot;;
             break;
@@ -1411,11 +1460,11 @@ static CLActionManager *_manager = nil;
         case CLActionImageChange:
             key = @&quot;CLActionImageChange&quot;;
             break;
-    }
+    &#125;
     return key;
-}
+&#125;
 
-+ (void)addObserver:(id)observer identifier:(NSString *)identifier mainThread:(BOOL)mainThread block:(void(^)(id observer, NSDictionary *dictionary))block {
++ (void)addObserver:(id)observer identifier:(NSString *)identifier mainThread:(BOOL)mainThread block:(void(^)(id observer, NSDictionary *dictionary))block &#123;
     //增加信号保证线程安全
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     //内存地址+key，使用内存地址保证一个对象只监听一次，key保证是同一类型
@@ -1430,9 +1479,9 @@ static CLActionManager *_manager = nil;
     //动态设置是否主线程
     objc_setAssociatedObject(observer, CFBridgingRetain(actionMainThread), [NSNumber numberWithBool:mainThread], OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
+&#125;
 
-+ (void)actionWithDictionary:(NSDictionary *)dictionary identifier:(NSString *)identifier {
++ (void)actionWithDictionary:(NSDictionary *)dictionary identifier:(NSString *)identifier &#123;
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     //key数组
     NSArray&lt;NSString *&gt; *keyArray = [[[CLActionManager sharedManager].observerMapTable keyEnumerator] allObjects];
@@ -1440,7 +1489,7 @@ static CLActionManager *_manager = nil;
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@&quot;SELF ENDSWITH %@&quot;,[identifier stringByAppendingString:@&quot;-0&quot;]];
     NSArray&lt;NSString *&gt; *array = [keyArray filteredArrayUsingPredicate:predicate];
     //遍历查找所有key
-    for (NSString *key in array) {
+    for (NSString *key in array) &#123;
         NSString *actionBlock = [[CLActionManager sharedManager].blockKeyMapTable objectForKey:key];
         NSString *actionMainThread = [[CLActionManager sharedManager].mainThreadKeyMapTable objectForKey:key];
         //找出对应类型的观察者
@@ -1449,56 +1498,58 @@ static CLActionManager *_manager = nil;
         void(^block)(id observer, NSDictionary *dictionary) = objc_getAssociatedObject(observer, CFBridgingRetain(actionBlock));
         BOOL mainThread = [(NSNumber *)objc_getAssociatedObject(observer, CFBridgingRetain(actionMainThread)) boolValue];
         //block存在并且是对应方法添加，调用block
-        if (block) {
-            if (mainThread) {
+        if (block) &#123;
+            if (mainThread) &#123;
                 //主线程
-                dispatch_async(dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_main_queue(), ^&#123;
                     block(observer, dictionary);
-                });
-            }else {
+                &#125;);
+            &#125;else &#123;
                 //子线程
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;
                     block(observer, dictionary);
-                });
-            }
-        }
-    }
+                &#125;);
+            &#125;
+        &#125;
+    &#125;
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
+&#125;
 
 @end
-</code></pre><h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><p>###1.添加监听</p>
-<pre><code>根据不同的观察者和监听类型动态生成Key，使用NSMapTable将对应Key和观察者设置的属性储存。+ (void)addObserver:(id)observer type:(CLActionType)type mainThread:(BOOL)mainThread actionBlock:(void(^)(id observer, NSDictionary *dictionary))actionBlock {
+</code></pre>
+<h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><p>###1.添加监听</p>
+<pre><code>根据不同的观察者和监听类型动态生成Key，使用NSMapTable将对应Key和观察者设置的属性储存。+ (void)addObserver:(id)observer type:(CLActionType)type mainThread:(BOOL)mainThread actionBlock:(void(^)(id observer, NSDictionary *dictionary))actionBlock &#123;
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     NSString *key = [NSString stringWithFormat:@&quot;%@-%@&quot;,[NSString stringWithFormat:@&quot;%p&quot;,observer], [[self keyWithActionType:type] stringByAppendingString:@&quot;-1&quot;]];
     NSString *actionBlockKey = [key stringByAppendingString:@&quot;-CLActionBlock-1&quot;];
     NSString *actionMainThreadKey = [key stringByAppendingString:@&quot;-CLActionMainThread-1&quot;];
 
     NSMutableDictionary *blockDictionary = [[CLActionManager sharedManager].blockDictionaryMapTable objectForKey:observer];
-    if (!blockDictionary) {
+    if (!blockDictionary) &#123;
         blockDictionary = [NSMutableDictionary dictionary];
-    }
+    &#125;
     [blockDictionary setObject:actionBlock forKey:actionBlockKey];
 
     NSMutableDictionary *mainThreadDictionary = [[CLActionManager sharedManager].mainThreadDictionaryMapTable objectForKey:observer];
-    if (!mainThreadDictionary) {
+    if (!mainThreadDictionary) &#123;
         mainThreadDictionary = [NSMutableDictionary dictionary];
-    }
+    &#125;
     [mainThreadDictionary setObject:[NSNumber numberWithBool:mainThread] forKey:actionMainThreadKey];
 
     [[CLActionManager sharedManager].observerMapTable setObject:observer forKey:key];
     [[CLActionManager sharedManager].blockDictionaryMapTable setObject:blockDictionary forKey:observer];
     [[CLActionManager sharedManager].mainThreadDictionaryMapTable setObject:mainThreadDictionary forKey:observer];
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
-</code></pre><h3 id="2-发送通知"><a href="#2-发送通知" class="headerlink" title="2.发送通知"></a>2.发送通知</h3><p>根据观察者和监听类型动态生成Key，然后找出对应观察者的属性，然后一一调用。</p>
-<pre><code>+ (void)postType:(CLActionType)type dictionary:(NSDictionary *)dictionary {
+&#125;
+</code></pre>
+<h3 id="2-发送通知"><a href="#2-发送通知" class="headerlink" title="2.发送通知"></a>2.发送通知</h3><p>根据观察者和监听类型动态生成Key，然后找出对应观察者的属性，然后一一调用。</p>
+<pre><code>+ (void)postType:(CLActionType)type dictionary:(NSDictionary *)dictionary &#123;
     dispatch_semaphore_wait([CLActionManager sharedManager].semaphore, DISPATCH_TIME_FOREVER);
     NSArray&lt;NSString *&gt; *keyArray = [[[CLActionManager sharedManager].observerMapTable keyEnumerator] allObjects];
     NSString *identifier = [[self keyWithActionType:type] stringByAppendingString:@&quot;-1&quot;];
     NSPredicate *predicate = [NSPredicate predicateWithFormat:@&quot;SELF ENDSWITH %@&quot;,identifier];
     NSArray&lt;NSString *&gt; *array = [keyArray filteredArrayUsingPredicate:predicate];
-    for (NSString *key in array) {
+    for (NSString *key in array) &#123;
         NSString *actionBlockKey = [key stringByAppendingString:@&quot;-CLActionBlock-1&quot;];
         NSString *actionMainThreadKey = [key stringByAppendingString:@&quot;-CLActionMainThread-1&quot;];
         id observer = [[CLActionManager sharedManager].observerMapTable objectForKey:key];
@@ -1506,22 +1557,23 @@ static CLActionManager *_manager = nil;
         NSMutableDictionary *mainThreadDictionary = [[CLActionManager sharedManager].mainThreadDictionaryMapTable objectForKey:observer];
         void(^block)(id observer, NSDictionary *dictionary) = [blockDictionary objectForKey:actionBlockKey];
         BOOL mainThread = [[mainThreadDictionary objectForKey:actionMainThreadKey] boolValue];
-        if (block) {
-            if (mainThread) {
-                dispatch_async(dispatch_get_main_queue(), ^{
+        if (block) &#123;
+            if (mainThread) &#123;
+                dispatch_async(dispatch_get_main_queue(), ^&#123;
                     block(observer, dictionary);
-                });
-            }else {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                &#125;);
+            &#125;else &#123;
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;
                     block(observer, dictionary);
-                });
-            }
-        }
-    }
+                &#125;);
+            &#125;
+        &#125;
+    &#125;
     dispatch_semaphore_signal([CLActionManager sharedManager].semaphore);
-}
-</code></pre><p>###3.使用协议的方式来分发事件<br>这里为了使用方便，采取了Block回调的方式来监听，但是我们也可以考虑协议分发的方式来实现，每个观察者遵守Action协议，发送通知的时候我们就可以找出对应观察者，调用协议中的方法来达到事件分发的目的。</p>
-<p><a href="https://github.com/wangjungang/CLActionManager" target="_blank" rel="noopener">demo</a></p>
+&#125;
+</code></pre>
+<p>###3.使用协议的方式来分发事件<br>这里为了使用方便，采取了Block回调的方式来监听，但是我们也可以考虑协议分发的方式来实现，每个观察者遵守Action协议，发送通知的时候我们就可以找出对应观察者，调用协议中的方法来达到事件分发的目的。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/wangjungang/CLActionManager">demo</a></p>
 
       
 
@@ -1545,7 +1597,7 @@ static CLActionManager *_manager = nil;
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/12/16/iOS奇思妙想之使用block替代通知/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/12/16/iOS%E5%A5%87%E6%80%9D%E5%A6%99%E6%83%B3%E4%B9%8B%E4%BD%BF%E7%94%A8block%E6%9B%BF%E4%BB%A3%E9%80%9A%E7%9F%A5/">展开全文 >></a>
         </p>
       
 
@@ -1582,12 +1634,12 @@ static CLActionManager *_manager = nil;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/12/16/iOS中NSNotification的套路/">iOS中NSNotification的套路</a>
+      <a class="article-title" href="/2019/12/16/iOS%E4%B8%ADNSNotification%E7%9A%84%E5%A5%97%E8%B7%AF/">iOS中NSNotification的套路</a>
     </h1>
   
 
         
-        <a href="/2019/12/16/iOS中NSNotification的套路/" class="archive-article-date">
+        <a href="/2019/12/16/iOS%E4%B8%ADNSNotification%E7%9A%84%E5%A5%97%E8%B7%AF/" class="archive-article-date">
   	<time datetime="2019-12-16T12:36:18.860Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-12-16</time>
 </a>
         
@@ -1598,20 +1650,22 @@ static CLActionManager *_manager = nil;
         <p>常用的不说了，说一下我目前遇到的tip</p>
 <h2 id="发送通知与响应通知都在一个线程"><a href="#发送通知与响应通知都在一个线程" class="headerlink" title="发送通知与响应通知都在一个线程"></a>发送通知与响应通知都在一个线程</h2><p>这一点与KVO类似。<br>NSNotification不能跨线程：即响应通知的action，默认是与postNotification在同一个线程的，若想在指定线程中执行响应通知的方法，可以使用带有block的addObserver方法，或者使用dispatch_async(xxx)。</p>
 <p>如果需要跨线程，可以使用带有block的通知接口。</p>
-<pre><code>dispatch_group_async(manager.completionGroup ?: url_session_manager_completion_group(), manager.completionQueue ?: dispatch_get_main_queue(), ^{
-            if (self.completionHandler) {
+<pre><code>dispatch_group_async(manager.completionGroup ?: url_session_manager_completion_group(), manager.completionQueue ?: dispatch_get_main_queue(), ^&#123;
+            if (self.completionHandler) &#123;
                 self.completionHandler(task.response, responseObject, error);
-            }
+            &#125;
 
-            dispatch_async(dispatch_get_main_queue(), ^{
+            dispatch_async(dispatch_get_main_queue(), ^&#123;
                 [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingTaskDidCompleteNotification object:task userInfo:userInfo];
-            });
-        });
-</code></pre><p>为了保证在主线程发送通知。 这一点可以在一些网络请求数据到达时, 用于刷新界面。</p>
-<pre><code>dispatch_async(dispatch_get_main_queue(), ^{
+            &#125;);
+        &#125;);
+</code></pre>
+<p>为了保证在主线程发送通知。 这一点可以在一些网络请求数据到达时, 用于刷新界面。</p>
+<pre><code>dispatch_async(dispatch_get_main_queue(), ^&#123;
         [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationFilterMaterialRequestFinished object:self userInfo:nil];
-    });
-</code></pre><h2 id="在指定线程接收通知"><a href="#在指定线程接收通知" class="headerlink" title="在指定线程接收通知"></a>在指定线程接收通知</h2><ul>
+    &#125;);
+</code></pre>
+<h2 id="在指定线程接收通知"><a href="#在指定线程接收通知" class="headerlink" title="在指定线程接收通知"></a>在指定线程接收通知</h2><ul>
 <li><p>使用queue和block</p>
 </li>
 <li><p>使用mach port</p>
@@ -1647,7 +1701,7 @@ static CLActionManager *_manager = nil;
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/12/16/iOS中NSNotification的套路/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/12/16/iOS%E4%B8%ADNSNotification%E7%9A%84%E5%A5%97%E8%B7%AF/">展开全文 >></a>
         </p>
       
 
@@ -1684,12 +1738,12 @@ static CLActionManager *_manager = nil;
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/11/29/使用RunLoop检测卡顿/">使用RunLoop检测卡顿</a>
+      <a class="article-title" href="/2019/11/29/%E4%BD%BF%E7%94%A8RunLoop%E6%A3%80%E6%B5%8B%E5%8D%A1%E9%A1%BF/">使用RunLoop检测卡顿</a>
     </h1>
   
 
         
-        <a href="/2019/11/29/使用RunLoop检测卡顿/" class="archive-article-date">
+        <a href="/2019/11/29/%E4%BD%BF%E7%94%A8RunLoop%E6%A3%80%E6%B5%8B%E5%8D%A1%E9%A1%BF/" class="archive-article-date">
   	<time datetime="2019-11-29T09:43:43.644Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
 </a>
         
@@ -1714,7 +1768,8 @@ if (currentMode-&gt;_observerMask &amp; kCFRunLoopEntry )
     __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopEntry);
 //进入 loop
 result = __CFRunLoopRun(rl, currentMode, seconds, returnAfterSourceHandled, previousMode);
-</code></pre><h3 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h3><p>开启一个do while来保活线程。通知Observers:RunLoop会触发Timer回调、Source0回调，接着执行加入block。代码如下：</p>
+</code></pre>
+<h3 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h3><p>开启一个do while来保活线程。通知Observers:RunLoop会触发Timer回调、Source0回调，接着执行加入block。代码如下：</p>
 <pre><code>// 通知 Observers RunLoop 会触发 Timer 回调
 if (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeTimers)
     __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeTimers);
@@ -1723,17 +1778,20 @@ if (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeSources)
     __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeSources);
 // 执行 block
 __CFRunLoopDoBlocks(runloop, currentMode);
-</code></pre><p>接下来，触发Sourece0回调，如果有Source1是ready状态的话，就会跳转到handle_msg去处理消息。代码如下：</p>
-<pre><code>if (MACH_PORT_NULL != dispatchPort ) {
+</code></pre>
+<p>接下来，触发Sourece0回调，如果有Source1是ready状态的话，就会跳转到handle_msg去处理消息。代码如下：</p>
+<pre><code>if (MACH_PORT_NULL != dispatchPort ) &#123;
     Boolean hasMsg = __CFRunLoopServiceMachPort(dispatchPort, &amp;msg)
     if (hasMsg) goto handle_msg;
-}
-</code></pre><h3 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h3><p>回调触发后，通知到Observers:RunLoop的线程将进入休眠(sleep)状态，代码如下：</p>
+&#125;
+</code></pre>
+<h3 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h3><p>回调触发后，通知到Observers:RunLoop的线程将进入休眠(sleep)状态，代码如下：</p>
 <pre><code>Boolean poll = sourceHandledThisLoop || (0ULL == timeout_context-&gt;termTSR);
-if (!poll &amp;&amp; (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeWaiting)) {
+if (!poll &amp;&amp; (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeWaiting)) &#123;
     __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeWaiting);
-}
-</code></pre><h3 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h3><p>进入休眠后，会等待mach_port的消息，以再次唤醒。只有在下面四个事件出现才会被再次唤醒：</p>
+&#125;
+</code></pre>
+<h3 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h3><p>进入休眠后，会等待mach_port的消息，以再次唤醒。只有在下面四个事件出现才会被再次唤醒：</p>
 <ul>
 <li>基于port的Source事件；</li>
 <li>Timer时间到；</li>
@@ -1741,21 +1799,24 @@ if (!poll &amp;&amp; (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeWaitin
 <li>被调用者唤醒。</li>
 </ul>
 <p>等待唤醒的代码如下：</p>
-<pre><code>do {
-    __CFRunLoopServiceMachPort(waitSet, &amp;msg, sizeof(msg_buffer), &amp;livePort) {
+<pre><code>do &#123;
+    __CFRunLoopServiceMachPort(waitSet, &amp;msg, sizeof(msg_buffer), &amp;livePort) &#123;
         // 基于 port 的 Source 事件、调用者唤醒
-        if (modeQueuePort != MACH_PORT_NULL &amp;&amp; livePort == modeQueuePort) {
+        if (modeQueuePort != MACH_PORT_NULL &amp;&amp; livePort == modeQueuePort) &#123;
             break;
-        }
+        &#125;
         // Timer 时间到、RunLoop 超时
-        if (currentMode-&gt;_timerFired) {
+        if (currentMode-&gt;_timerFired) &#123;
             break;
-        }
-} while (1);
-</code></pre><h3 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h3><p>唤醒时通知Observer:RunLoop的线程刚刚被唤醒了。代码如下：</p>
+        &#125;
+&#125; while (1);
+</code></pre>
+<h3 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h3><p>唤醒时通知Observer:RunLoop的线程刚刚被唤醒了。代码如下：</p>
 <pre><code>if (!poll &amp;&amp; (currentMode-&gt;_observerMask &amp; kCFRunLoopAfterWaiting))
     __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopAfterWaiting);
-</code></pre><h3 id="第六步"><a href="#第六步" class="headerlink" title="第六步"></a>第六步</h3><p>RunLoop被唤醒后就要进行处理消息了：</p>
+    
+</code></pre>
+<h3 id="第六步"><a href="#第六步" class="headerlink" title="第六步"></a>第六步</h3><p>RunLoop被唤醒后就要进行处理消息了：</p>
 <ul>
 <li>如果是Timer时间到的话，就触发Timer的回调；</li>
 <li>如果是dispatch的话，就执行block；</li>
@@ -1764,39 +1825,41 @@ if (!poll &amp;&amp; (currentMode-&gt;_observerMask &amp; kCFRunLoopBeforeWaitin
 <p>消息执行完后，就执行加到loop里的block。代码如下：</p>
 <pre><code>handle_msg:
 // 如果 Timer 时间到，就触发 Timer 回调
-if (msg-is-timer) {
+if (msg-is-timer) &#123;
     __CFRunLoopDoTimers(runloop, currentMode, mach_absolute_time())
-} 
+&#125; 
 // 如果 dispatch 就执行 block
-else if (msg_is_dispatch) {
+else if (msg_is_dispatch) &#123;
     __CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE__(msg);
-} 
+&#125; 
 
 // Source1 事件的话，就处理这个事件
-else {
+else &#123;
     CFRunLoopSourceRef source1 = __CFRunLoopModeFindSourceForMachPort(runloop, currentMode, livePort);
     sourceHandledThisLoop = __CFRunLoopDoSource1(runloop, currentMode, source1, msg);
-    if (sourceHandledThisLoop) {
+    if (sourceHandledThisLoop) &#123;
         mach_msg(reply, MACH_SEND_MSG, reply);
-    }
-}
-</code></pre><h3 id="第七步"><a href="#第七步" class="headerlink" title="第七步"></a>第七步</h3><p>根据当前RunLoop的状态来判断是否需要走下一个loop。当被外部强制停止或loop超时，就不再继续下一个loop了，否则继续走下一个loop。代码如下：</p>
-<pre><code>if (sourceHandledThisLoop &amp;&amp; stopAfterHandle) {
+    &#125;
+&#125;
+</code></pre>
+<h3 id="第七步"><a href="#第七步" class="headerlink" title="第七步"></a>第七步</h3><p>根据当前RunLoop的状态来判断是否需要走下一个loop。当被外部强制停止或loop超时，就不再继续下一个loop了，否则继续走下一个loop。代码如下：</p>
+<pre><code>if (sourceHandledThisLoop &amp;&amp; stopAfterHandle) &#123;
      // 事件已处理完
     retVal = kCFRunLoopRunHandledSource;
-} else if (timeout) {
+&#125; else if (timeout) &#123;
     // 超时
     retVal = kCFRunLoopRunTimedOut;
-} else if (__CFRunLoopIsStopped(runloop)) {
+&#125; else if (__CFRunLoopIsStopped(runloop)) &#123;
     // 外部调用者强制停止
     retVal = kCFRunLoopRunStopped;
-} else if (__CFRunLoopModeIsEmpty(runloop, currentMode)) {
+&#125; else if (__CFRunLoopModeIsEmpty(runloop, currentMode)) &#123;
     // mode 为空，RunLoop 结束
     retVal = kCFRunLoopRunFinished;
-}
-</code></pre><p>整个RunLoop的过程，可以总结为如下所示的一张图片。</p>
-<p><img src="http://img.wangjungang.cn/desZ5x.jpg" alt=""></p>
-<h2 id="RunLoop的六个状态"><a href="#RunLoop的六个状态" class="headerlink" title="RunLoop的六个状态"></a>RunLoop的六个状态</h2><pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
+&#125;
+</code></pre>
+<p>整个RunLoop的过程，可以总结为如下所示的一张图片。</p>
+<p><img src="http://img.wangjungang.cn/desZ5x.jpg"></p>
+<h2 id="RunLoop的六个状态"><a href="#RunLoop的六个状态" class="headerlink" title="RunLoop的六个状态"></a>RunLoop的六个状态</h2><pre><code>typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) &#123;
     kCFRunLoopEntry , // 进入 loop
     kCFRunLoopBeforeTimers , // 触发 Timer 回调
     kCFRunLoopBeforeSources , // 触发 Source0 回调
@@ -1804,37 +1867,40 @@ else {
     kCFRunLoopAfterWaiting ), // 接收 mach_port 消息
     kCFRunLoopExit , // 退出 loop
     kCFRunLoopAllActivities  // loop 所有状态改变
-}
-</code></pre><p>如果RunLoop的线程，进入睡眠前方法的执行时间过长而导致无法进入睡眠，或者线程唤醒后接受消息时间过长而无法进入下一步的话，就可以认为是线程受阻了。如果这个线程是主线程的话，表现就是出现卡顿。</p>
+&#125;
+</code></pre>
+<p>如果RunLoop的线程，进入睡眠前方法的执行时间过长而导致无法进入睡眠，或者线程唤醒后接受消息时间过长而无法进入下一步的话，就可以认为是线程受阻了。如果这个线程是主线程的话，表现就是出现卡顿。</p>
 <p>所以，如果我们要利用RunLoop原理来监控卡顿的话，就要关注这两个阶段。RunLoop在进入睡眠之前和唤醒后的两个loop状态定义的值，分别是kCFRunLoopBeforeSource和kCFRunLoopAfterWaiting，也就是要触发Source0回调和接受mac_port消息两个状态。</p>
 <h2 id="如何检查卡顿？"><a href="#如何检查卡顿？" class="headerlink" title="如何检查卡顿？"></a>如何检查卡顿？</h2><p>首先需要创建一个CFRunLoopObserverContext观察者，代码如下:</p>
-<pre><code>CFRunLoopObserverContext context = {0,(__bridge void*)self,NULL,NULL};
+<pre><code>CFRunLoopObserverContext context = &#123;0,(__bridge void*)self,NULL,NULL&#125;;
 runLoopObserver = CFRunLoopObserverCreate(kCFAllocatorDefault,kCFRunLoopAllActivities,YES,0,&amp;runLoopObserverCallBack,&amp;context);
-</code></pre><p>将创建好的观察者runLoopObserver添加到主线程RunLoop的common模式下观察，然后，创建一个持续的子线程专门用来监控主线程的RunLoop状态。</p>
+</code></pre>
+<p>将创建好的观察者runLoopObserver添加到主线程RunLoop的common模式下观察，然后，创建一个持续的子线程专门用来监控主线程的RunLoop状态。</p>
 <p>一旦发现进入睡眠前的kCFRunLoopBeforeSources状态，或者唤醒后的状态kCFRunLoopAfterWaiting，在设置的时间阈值内一直没有变化，即可认定为卡顿。</p>
 <p>开启子线程监控的代码如下：</p>
 <pre><code>//创建子线程监控
-dispatch_async(dispatch_get_global_queue(0, 0), ^{
+dispatch_async(dispatch_get_global_queue(0, 0), ^&#123;
     //子线程开启一个持续的 loop 用来进行监控
-    while (YES) {
+    while (YES) &#123;
         //semaphoreWait 信号等待的时间
         long semaphoreWait = dispatch_semaphore_wait(dispatchSemaphore, dispatch_time(DISPATCH_TIME_NOW, 3 * NSEC_PER_SEC));
-        if (semaphoreWait != 0) {
-            if (!runLoopObserver) {
+        if (semaphoreWait != 0) &#123;
+            if (!runLoopObserver) &#123;
                 timeoutCount = 0;
                 dispatchSemaphore = 0;
                 runLoopActivity = 0;
                 return;
-            }
+            &#125;
             //BeforeSources 和 AfterWaiting 这两个状态能够检测到是否卡顿
-            if (runLoopActivity == kCFRunLoopBeforeSources || runLoopActivity == kCFRunLoopAfterWaiting) {
+            if (runLoopActivity == kCFRunLoopBeforeSources || runLoopActivity == kCFRunLoopAfterWaiting) &#123;
                 //将堆栈信息上报服务器的代码放到这里
-            } //end activity
-        }// end semaphore wait
+            &#125; //end activity
+        &#125;// end semaphore wait
         timeoutCount = 0;
-    }// end while
-});
+    &#125;// end while
+&#125;);
 </code></pre>
+
       
 
       
@@ -1857,7 +1923,7 @@ dispatch_async(dispatch_get_global_queue(0, 0), ^{
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/11/29/使用RunLoop检测卡顿/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/11/29/%E4%BD%BF%E7%94%A8RunLoop%E6%A3%80%E6%B5%8B%E5%8D%A1%E9%A1%BF/">展开全文 >></a>
         </p>
       
 
@@ -1894,12 +1960,12 @@ dispatch_async(dispatch_get_global_queue(0, 0), ^{
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/11/29/iOS之runloop优化tableView的实现/">iOS之runloop优化tableView的实现</a>
+      <a class="article-title" href="/2019/11/29/iOS%E4%B9%8Brunloop%E4%BC%98%E5%8C%96tableView%E7%9A%84%E5%AE%9E%E7%8E%B0/">iOS之runloop优化tableView的实现</a>
     </h1>
   
 
         
-        <a href="/2019/11/29/iOS之runloop优化tableView的实现/" class="archive-article-date">
+        <a href="/2019/11/29/iOS%E4%B9%8Brunloop%E4%BC%98%E5%8C%96tableView%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="archive-article-date">
   	<time datetime="2019-11-29T08:44:41.403Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
 </a>
         
@@ -1918,71 +1984,73 @@ dispatch_async(dispatch_get_global_queue(0, 0), ^{
 <p>从网络加载高清大图到UITableViewCell上，而且每个Cell上面加载多张图片，当cell数量过多的时候，我们需要保持流畅度和加载速度。</p>
 <h4 id="通过runloop优化TableView"><a href="#通过runloop优化TableView" class="headerlink" title="通过runloop优化TableView"></a>通过runloop优化TableView</h4><p>整体来讲：在cellforRow方法里，以block代码块的方式把任务存储到数组中，注册runloop的观察者，完成回调方法，执行block任务，从数组中删除执行后的任务，保持runloop不休眠。<br>步骤：</p>
 <ul>
-<li>1、获取当前主线程的 runloop</li>
-</ul>
-<pre><code>  //获取当前RunLoop
-//swift实现
-  let runLoop: CFRunLoop = CFRunLoopGetCurrent()
+<li><p>1、获取当前主线程的 runloop</p>
+<pre><code>    //获取当前RunLoop
+  //swift实现
+    let runLoop: CFRunLoop = CFRunLoopGetCurrent()
+  
 
-
-  //获取当前RunLoop
-// oc实现
- CFRunLoopRef runloop = CFRunLoopGetCurrent();
-</code></pre><ul>
-<li>2、创建观察者 CFRunLoopObserverRef ， 来监听 runloop</li>
+    //获取当前RunLoop
+  // oc实现
+   CFRunLoopRef runloop = CFRunLoopGetCurrent();
+</code></pre>
+</li>
+<li><p>2、创建观察者 CFRunLoopObserverRef ， 来监听 runloop</p>
+</li>
 </ul>
 <p>创建观察者用到的核心函数就是<br>CFRunLoopObserverCreate：</p>
-<pre><code>// allocator：该参数为对象内存分配器，一般使用默认的分配器kCFAllocatorDefault。
-// activities：要监听runloop的状态
-/*
-typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) {
-        kCFRunLoopEntry         = (1UL &lt;&lt; 0), // 即将进入Loop
-        kCFRunLoopBeforeTimers  = (1UL &lt;&lt; 1), // 即将处理 Timer
-        kCFRunLoopBeforeSources = (1UL &lt;&lt; 2), // 即将处理 Source
-        kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5), // 即将进入休眠
-        kCFRunLoopAfterWaiting  = (1UL &lt;&lt; 6), // 刚从休眠中唤醒
-        kCFRunLoopExit          = (1UL &lt;&lt; 7), // 即将退出Loop
-        kCFRunLoopAllActivities = 0x0FFFFFFFU // 所有事件
-    };
-*/
-// repeats：是否重复监听
-//   order：观察者优先级，当Run Loop中有多个观察者监听同一个运行状态时，根据该优先级判断，0为最高优先级别。
-// callout：观察者的回调函数，在Core Foundation框架中用CFRunLoopObserverCallBack重定义了回调函数的闭包。
-// context：观察者的上下文。
-CF_EXPORT CFRunLoopObserverRef CFRunLoopObserverCreate(CFAllocatorRef allocator,
-                                                       CFOptionFlags activities,
-                                                       Boolean repeats,
-                                                       CFIndex order,
-                                                       CFRunLoopObserverCallBack callout,
-                                                       CFRunLoopObserverContext *context);
-</code></pre><p>2-1、创建观察者</p>
+<pre><code>    // allocator：该参数为对象内存分配器，一般使用默认的分配器kCFAllocatorDefault。
+    // activities：要监听runloop的状态
+    /*
+    typedef CF_OPTIONS(CFOptionFlags, CFRunLoopActivity) &#123;
+            kCFRunLoopEntry         = (1UL &lt;&lt; 0), // 即将进入Loop
+            kCFRunLoopBeforeTimers  = (1UL &lt;&lt; 1), // 即将处理 Timer
+            kCFRunLoopBeforeSources = (1UL &lt;&lt; 2), // 即将处理 Source
+            kCFRunLoopBeforeWaiting = (1UL &lt;&lt; 5), // 即将进入休眠
+            kCFRunLoopAfterWaiting  = (1UL &lt;&lt; 6), // 刚从休眠中唤醒
+            kCFRunLoopExit          = (1UL &lt;&lt; 7), // 即将退出Loop
+            kCFRunLoopAllActivities = 0x0FFFFFFFU // 所有事件
+        &#125;;
+    */
+    // repeats：是否重复监听
+    //   order：观察者优先级，当Run Loop中有多个观察者监听同一个运行状态时，根据该优先级判断，0为最高优先级别。
+    // callout：观察者的回调函数，在Core Foundation框架中用CFRunLoopObserverCallBack重定义了回调函数的闭包。
+    // context：观察者的上下文。
+    CF_EXPORT CFRunLoopObserverRef CFRunLoopObserverCreate(CFAllocatorRef allocator,
+                                                           CFOptionFlags activities,
+                                                           Boolean repeats,
+                                                           CFIndex order,
+                                                           CFRunLoopObserverCallBack callout,
+                                                           CFRunLoopObserverContext *context);
+</code></pre>
+<p>2-1、创建观察者</p>
 <pre><code>    //  1.定义上下文
         //runloop观察者上下文， 为下面创建观察者准备，只有创建上下文才能在回调了拿到self对象，才能进行我们的逻辑操作. 这是一个结构体。
-
+    
         /**
-
-         typedef struct {
-
+    
+         typedef struct &#123;
+    
          CFIndex version;
-
+    
          void * info;
-
+    
          const void *(*retain)(const void *info);
-
+    
          void (*release)(const void *info);
-
+    
          CFStringRef (*copyDescription)(const void *info);
-
-         } CFRunLoopObserverContext;
-
+    
+         &#125; CFRunLoopObserverContext;
+    
          **/
-    CFRunLoopObserverContext context = {
+    CFRunLoopObserverContext context = &#123;
         0,
         (__bridge void *)(self),
         &amp;CFRetain,
         &amp;CFRelease,
         NULL
-    };
+    &#125;;
     //  2.定义观察者
     static CFRunLoopObserverRef defaultModeObserver;
     //  3.创建观察者
@@ -2004,123 +2072,130 @@ CF_EXPORT CFRunLoopObserverRef CFRunLoopObserverCreate(CFAllocatorRef allocator,
 2-2、实现 callBack 函数，只要检测到对应的runloop状态，该函数就会得到响应。
 
 //回调函数
-static void callBack(CFRunLoopObserverRef observer, CFRunLoopActivity activity, void *info) {
-
+static void callBack(CFRunLoopObserverRef observer, CFRunLoopActivity activity, void *info) &#123;
+    
     ViewController *vc = (__bridge ViewController *)info;
-
+    
     //无任务  退出
     if (vc.tasksArr.count == 0) return;
-
+    
     //从数组中取出任务
     runloopBlock block = [vc.tasksArr firstObject];
-
+    
     //执行任务
-    if (block) {
+    if (block) &#123;
         block();
-    }
-
+    &#125;
+    
     //执行完任务之后移除任务
     [vc.tasksArr removeObjectAtIndex:0];
-
-}
-</code></pre><p>–</p>
+    
+&#125;
+</code></pre>
+<p>–</p>
 <pre><code>///回调函数
-    func observerCallbackFunc() -&gt; CFRunLoopObserverCallBack {
-        return {(observer, activity, context) -&gt; Void in
-            if context == nil {//如果没有取到  直接返回
+    func observerCallbackFunc() -&gt; CFRunLoopObserverCallBack &#123;
+        return &#123;(observer, activity, context) -&gt; Void in
+            if context == nil &#123;//如果没有取到  直接返回
                 return
-            }
+            &#125;
             // 崩溃的与原因不在这里  isFromADGuide 的问题 不应该取反
             //取出上下文 就是当前的vc
             let vc = unsafeBitCast(context, to: XXXFinancialFroductListVC.self)
             //取出任务
-            if let unit = vc.tasksArr.first, let indexP = vc.tasksIndexPathArr.first {
+            if let unit = vc.tasksArr.first, let indexP = vc.tasksIndexPathArr.first &#123;
                 var result = false
-                while (result == false &amp;&amp; !vc.tasksArr.isEmpty &amp;&amp; !vc.tasksIndexPathArr.isEmpty){
+                while (result == false &amp;&amp; !vc.tasksArr.isEmpty &amp;&amp; !vc.tasksIndexPathArr.isEmpty)&#123;
                     //执行任务
                     result = unit(indexP);
                     //干掉第一个任务
                     _ = vc.tasksArr.remove(at: 0)
                     _ = vc.tasksIndexPathArr.remove(at: 0)
-                }
-            }
-        }
-</code></pre><p>2-3、从上面的函数实现中我们看到了block、arr等对象，下面解析下</p>
+                &#125;
+            &#125;
+        &#125;
+</code></pre>
+<p>2-3、从上面的函数实现中我们看到了block、arr等对象，下面解析下</p>
 <pre><code>//使用 Array 来存储需要执行的任务
-- (NSMutableArray *)tasksArr {
-    if (!_tasksArr) {
+- (NSMutableArray *)tasksArr &#123;
+    if (!_tasksArr) &#123;
         _tasksArr = [NSMutableArray array];
-    }
+    &#125;
     return _tasksArr;
-}
+&#125;
 // maxTaskCount 来表示最大任务数，优化项目
 @property (nonatomic, assign) NSUInteger maxTaskCount;
 ...
 // 当超出最大任务数时，以前的老任务将从数组中移除
 self.maxTaskCount = 50;
-</code></pre><hr>
+</code></pre>
+<hr>
 <pre><code>    //任务数组
 var tasksArr: [RunloopBlock] = []
 //任务对应indexPath数组
 var tasksIndexPathArr: [IndexPath] = []
  //最大任务 10
 let maxQueueLength = 10
-</code></pre><h4 id="使用-block代码块-来包装一个个将要执行的任务，便于-callBack-函数中分开执行任务，减少同时执行对系统资源的消耗。"><a href="#使用-block代码块-来包装一个个将要执行的任务，便于-callBack-函数中分开执行任务，减少同时执行对系统资源的消耗。" class="headerlink" title="使用 block代码块 来包装一个个将要执行的任务，便于 callBack 函数中分开执行任务，减少同时执行对系统资源的消耗。"></a>使用 block代码块 来包装一个个将要执行的任务，便于 callBack 函数中分开执行任务，减少同时执行对系统资源的消耗。</h4><pre><code>//1. 定义一个任务block
+</code></pre>
+<h4 id="使用-block代码块-来包装一个个将要执行的任务，便于-callBack-函数中分开执行任务，减少同时执行对系统资源的消耗。"><a href="#使用-block代码块-来包装一个个将要执行的任务，便于-callBack-函数中分开执行任务，减少同时执行对系统资源的消耗。" class="headerlink" title="使用 block代码块 来包装一个个将要执行的任务，便于 callBack 函数中分开执行任务，减少同时执行对系统资源的消耗。"></a>使用 block代码块 来包装一个个将要执行的任务，便于 callBack 函数中分开执行任务，减少同时执行对系统资源的消耗。</h4><pre><code>//1. 定义一个任务block
 typedef void(^runloopBlock)();
 //2. 定义一个添加任务的方法，将任务装在数组中
-- (void)addTasks:(runloopBlock)task {
+- (void)addTasks:(runloopBlock)task &#123;
     //保存新任务
     [self.tasksArr addObject:task];
     //如果超出最大任务数 丢弃之前的任务
-    if (self.tasksArr.count &gt; _maxTaskCount) {
+    if (self.tasksArr.count &gt; _maxTaskCount) &#123;
         [self.tasksArr removeObjectAtIndex:0];
-    }
-}
+    &#125;
+&#125;
 //3. 将任务添加到代码块中
 // 耗时操作放在任务中
-[self addTasks:^{
+[self addTasks:^&#123;
     UIImageView *img1 = [[UIImageView alloc] initWithFrame:CGRectMake(kBorder_W,
                                                                       kBorder_W,
                                                                       width,
                                                                       kCell_H-kBorder_W)];
     img1.image = [UIImage imageNamed:@&quot;Blue Pond.jpg&quot;];
     [cell addSubview:img1];
-}];
-</code></pre><hr>
+&#125;];
+</code></pre>
+<hr>
 <pre><code>//定义blcok
 typealias RunloopBlock = ((IndexPath) -&gt; Bool)
 private let cellID = &quot;XXXFinancialFroductListVCCell&quot;
 
-   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell {
+   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -&gt; UITableViewCell &#123;
         let cell: XXXFinancialProductCell = tableView.dequeueReusableCell(withIdentifier: cellID) as! XXXFinancialProductCell
-        self.addTask(indexPath) { (indexP) -&gt; Bool in
+        self.addTask(indexPath) &#123; (indexP) -&gt; Bool in
             cell.kaDunHandler(self.pageManager.dataArr, tableView, indexP)
             return true
-        }
+        &#125;
         return cell
-    }
+    &#125;
 
    //添加新的任务的方法!
-    func addTask(_ indexP: IndexPath, unit: @escaping RunloopBlock) {
+    func addTask(_ indexP: IndexPath, unit: @escaping RunloopBlock) &#123;
         self.tasksArr.append(unit)
         self.tasksIndexPathArr.append(indexP)
         //判断一下 保证没有来得及显示的cell不会绘制
-        if self.tasksArr.count &gt; self.maxQueueLength {
+        if self.tasksArr.count &gt; self.maxQueueLength &#123;
             _ = self.tasksArr.remove(at: 0)
             _ = self.tasksIndexPathArr.remove(at: 0)
-        }
-    }
-</code></pre><h4 id="使-runloop-不进入休眠状态。"><a href="#使-runloop-不进入休眠状态。" class="headerlink" title="使 runloop 不进入休眠状态。"></a>使 runloop 不进入休眠状态。</h4><p>runloop 在加载完 cell 时没有其他事情做了，为了节省资源消耗，就进入了休眠状态，等待有任务时再次被唤醒。在我们观察者的 callBack 函数中任务被一个个取出执行，还没有执行完，runloop 就切换状态了（休眠了）， callBack 函数不再响应。导致出现上面的情况。</p>
+        &#125;
+    &#125;
+</code></pre>
+<h4 id="使-runloop-不进入休眠状态。"><a href="#使-runloop-不进入休眠状态。" class="headerlink" title="使 runloop 不进入休眠状态。"></a>使 runloop 不进入休眠状态。</h4><p>runloop 在加载完 cell 时没有其他事情做了，为了节省资源消耗，就进入了休眠状态，等待有任务时再次被唤醒。在我们观察者的 callBack 函数中任务被一个个取出执行，还没有执行完，runloop 就切换状态了（休眠了）， callBack 函数不再响应。导致出现上面的情况。</p>
 <p>解决方法：</p>
 <pre><code>//创建定时器 (保证runloop回调函数一直在执行)
 CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self
                                                          selector:@selector(notDoSomething)];
 [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
 
-- (void)notDoSomething {
+- (void)notDoSomething &#123;
     // 不做事情,就是为了让 callBack() 函数一直相应
-}
-</code></pre><hr>
+&#125;
+</code></pre>
+<hr>
 <pre><code>//定时器，保证runloop一直处于循环中
 @property (nonatomic, weak) NSTimer *timer;
 
@@ -2128,8 +2203,9 @@ CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self
 self.timer = [NSTimer scheduledTimerWithTimeInterval:0.001 target:self selector:@selector(setRunLoop) userInfo:nil repeats:YES];
 
 //此方法主要是利用计时器事件保持runloop处于循环中，什么都不干，APP性能影响并不大。但cpu增加负担
--(void)setRunLoop{}
+-(void)setRunLoop&#123;&#125;
 </code></pre>
+
       
 
       
@@ -2152,7 +2228,7 @@ self.timer = [NSTimer scheduledTimerWithTimeInterval:0.001 target:self selector:
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/11/29/iOS之runloop优化tableView的实现/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/11/29/iOS%E4%B9%8Brunloop%E4%BC%98%E5%8C%96tableView%E7%9A%84%E5%AE%9E%E7%8E%B0/">展开全文 >></a>
         </p>
       
 
@@ -2189,12 +2265,12 @@ self.timer = [NSTimer scheduledTimerWithTimeInterval:0.001 target:self selector:
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/">Xcode11 新建工程中的SceneDelegate</a>
+      <a class="article-title" href="/2019/11/29/Xcode11%20%E6%96%B0%E5%BB%BA%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84SceneDelegate/">Xcode11 新建工程中的SceneDelegate</a>
     </h1>
   
 
         
-        <a href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/" class="archive-article-date">
+        <a href="/2019/11/29/Xcode11%20%E6%96%B0%E5%BB%BA%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84SceneDelegate/" class="archive-article-date">
   	<time datetime="2019-11-29T08:13:08.143Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-11-29</time>
 </a>
         
@@ -2203,8 +2279,8 @@ self.timer = [NSTimer scheduledTimerWithTimeInterval:0.001 target:self selector:
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>Xcode 11 建新工程默认会创建通过 UIScene 管理多个 UIWindow 的应用，工程中除了 AppDelegate 外还会有一个 SceneDelegate，这是为了实现iPadOS支持多窗口的结果。AppDelegate.h不再有window属性，window属性被定义在了SceneDelegate.h中，AppDelegate中有新增的关于scene的代理方法，SceneDelegate中也有相应的代理方法。因此，当我们用Xcode11针对不同版本的iOS开发应用时，就要做一些适配。</p>
-<h2 id="样式"><a href="#样式" class="headerlink" title="样式"></a>样式</h2><p><img src="http://img.wangjungang.cn/MCTA26.jpg" alt=""></p>
-<p><img src="http://img.wangjungang.cn/eI9CO0.jpg" alt=""></p>
+<h2 id="样式"><a href="#样式" class="headerlink" title="样式"></a>样式</h2><p><img src="http://img.wangjungang.cn/MCTA26.jpg"></p>
+<p><img src="http://img.wangjungang.cn/eI9CO0.jpg"></p>
 <p>AppDelegate.h中多了两个默认的代理方法：</p>
 <pre><code>#pragma mark - UISceneSession lifecycle
 
@@ -2219,104 +2295,108 @@ Delegate Class Name:  与哪个Scene代理对象关联;
 StoryBoard name: 这个Scene使用的哪个storyboard。
 注意：代理方法中调用的是配置名为Default Configuration的Scene，则系统就会自动去调用SceneDelegate这个类。这样SceneDelegate和AppDelegate产生了关联。
 */
-- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options &#123;
     // Called when a new scene session is being created.
     // Use this method to select a configuration to create the new scene with.
     return [[UISceneConfiguration alloc] initWithName:@&quot;Default Configuration&quot; sessionRole:connectingSceneSession.role];
-}
+&#125;
 
 // 在分屏中关闭其中一个或多个scene时候回调用
-- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet&lt;UISceneSession *&gt; *)sceneSessions {
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet&lt;UISceneSession *&gt; *)sceneSessions &#123;
     // Called when the user discards a scene session.
     // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
     // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
-}
-</code></pre><p>SceneDelegate.m中的默认代理方法如下：</p>
-<pre><code>- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
+&#125;
+</code></pre>
+<p>SceneDelegate.m中的默认代理方法如下：</p>
+<pre><code>- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions &#123;
     // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
     // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
     // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-}
+&#125;
 
-- (void)sceneDidDisconnect:(UIScene *)scene {
+- (void)sceneDidDisconnect:(UIScene *)scene &#123;
     // Called as the scene is being released by the system.
     // This occurs shortly after the scene enters the background, or when its session is discarded.
     // Release any resources associated with this scene that can be re-created the next time the scene connects.
     // The scene may re-connect later, as its session was not neccessarily discarded (see `application:didDiscardSceneSessions` instead).
-}
+&#125;
 
-- (void)sceneDidBecomeActive:(UIScene *)scene {
+- (void)sceneDidBecomeActive:(UIScene *)scene &#123;
     // Called when the scene has moved from an inactive state to an active state.
     // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-}
+&#125;
 
-- (void)sceneWillResignActive:(UIScene *)scene {
+- (void)sceneWillResignActive:(UIScene *)scene &#123;
     // Called when the scene will move from an active state to an inactive state.
     // This may occur due to temporary interruptions (ex. an incoming phone call).
-}
+&#125;
 
-- (void)sceneWillEnterForeground:(UIScene *)scene {
+- (void)sceneWillEnterForeground:(UIScene *)scene &#123;
     // Called as the scene transitions from the background to the foreground.
     // Use this method to undo the changes made on entering the background.
-}
+&#125;
 
-- (void)sceneDidEnterBackground:(UIScene *)scene {
+- (void)sceneDidEnterBackground:(UIScene *)scene &#123;
     // Called as the scene transitions from the foreground to the background.
     // Use this method to save data, release shared resources, and store enough scene-specific state information
     // to restore the scene back to its current state.
-}
-</code></pre><h2 id="1-不需要多窗口（multiple-windows）"><a href="#1-不需要多窗口（multiple-windows）" class="headerlink" title="1. 不需要多窗口（multiple windows）"></a>1. 不需要多窗口（multiple windows）</h2><p>如果需要支持iOS 13 及之前多个版本的iOS，且又不需要多个窗口的功能，可以<strong><em>删除项目info.plist文件中的Application Scene Manifest的配置数据</em></strong>，AppDelegate中关于Scene的代理方法、SceneDelegate的类是否删除都可以。<br>如果使用纯代码来实现显示界面，需要在AppDelegate.h中手动添加window属性，添加以下代码即可：</p>
-<pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-
+&#125;
+</code></pre>
+<h2 id="1-不需要多窗口（multiple-windows）"><a href="#1-不需要多窗口（multiple-windows）" class="headerlink" title="1. 不需要多窗口（multiple windows）"></a>1. 不需要多窗口（multiple windows）</h2><p>如果需要支持iOS 13 及之前多个版本的iOS，且又不需要多个窗口的功能，可以<em><strong>删除项目info.plist文件中的Application Scene Manifest的配置数据</strong></em>，AppDelegate中关于Scene的代理方法、SceneDelegate的类是否删除都可以。<br>如果使用纯代码来实现显示界面，需要在AppDelegate.h中手动添加window属性，添加以下代码即可：</p>
+<pre><code>- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;
+  
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     [self.window setBackgroundColor:[UIColor whiteColor]];
-
+    
     ViewController *con = [[ViewController alloc] init];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
     [self.window setRootViewController:nav];
     [self.window makeKeyAndVisible];
     return YES;
-}
-</code></pre><h2 id="2-支持多窗口"><a href="#2-支持多窗口" class="headerlink" title="2. 支持多窗口"></a>2. 支持多窗口</h2><p>iOS 13项目info.plist中的配置项Application Scene Manifest是针对iPad multiple windows功能推出的。在保留Application Scene Manifest配置项不予删除时（其中，项目是否支持多窗口功能是个可勾选项），AppDelegate的生命周期方法不再起作用，需要在SceneDelegate中使用UIScene提供的生命周期方法，并且需要针对 iOS 13 需要在Scene中配置和 iOS 13 以下在AppDelegate中做两套配置。<br>下面是纯代码实现界面显示的代码：</p>
+&#125;
+</code></pre>
+<h2 id="2-支持多窗口"><a href="#2-支持多窗口" class="headerlink" title="2. 支持多窗口"></a>2. 支持多窗口</h2><p>iOS 13项目info.plist中的配置项Application Scene Manifest是针对iPad multiple windows功能推出的。在保留Application Scene Manifest配置项不予删除时（其中，项目是否支持多窗口功能是个可勾选项），AppDelegate的生命周期方法不再起作用，需要在SceneDelegate中使用UIScene提供的生命周期方法，并且需要针对 iOS 13 需要在Scene中配置和 iOS 13 以下在AppDelegate中做两套配置。<br>下面是纯代码实现界面显示的代码：</p>
 <pre><code>//// AppDelegate.m中
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions &#123;
     // Override point for customization after application launch.
+    
+    if (@available(iOS 13.0, *)) &#123;
 
-    if (@available(iOS 13.0, *)) {
-
-    } else {
+    &#125; else &#123;
         self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         [self.window setBackgroundColor:[UIColor whiteColor]];
-
+        
         ViewController *con = [[ViewController alloc] init];
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
         [self.window setRootViewController:nav];
         [self.window makeKeyAndVisible];
-    }
+    &#125;
     return YES;
-}
+&#125;
 
 
 //// SceneDelegate.m中
 
-- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions {
-
+- (void)scene:(UIScene *)scene willConnectToSession:(UISceneSession *)session options:(UISceneConnectionOptions *)connectionOptions &#123;
+    
     //在这里手动创建新的window
-    if (@available(iOS 13.0, *)) {
+    if (@available(iOS 13.0, *)) &#123;
         UIWindowScene *windowScene = (UIWindowScene *)scene;
         self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
         [self.window setWindowScene:windowScene];
         [self.window setBackgroundColor:[UIColor whiteColor]];
-
+        
         ViewController *con = [[ViewController alloc] init];
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:con];
         [self.window setRootViewController:nav];
         [self.window makeKeyAndVisible];
-    }
-}
-</code></pre><p>注意：如果不使用storyboard，需要将配置中的storyboard项删除：</p>
-<p><img src="http://img.wangjungang.cn/UbOrNC.jpg" alt=""></p>
+    &#125;
+&#125;
+</code></pre>
+<p>注意：如果不使用storyboard，需要将配置中的storyboard项删除：</p>
+<p><img src="http://img.wangjungang.cn/UbOrNC.jpg"></p>
 
       
 
@@ -2340,7 +2420,7 @@ StoryBoard name: 这个Scene使用的哪个storyboard。
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/11/29/Xcode11 新建工程中的SceneDelegate/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/11/29/Xcode11%20%E6%96%B0%E5%BB%BA%E5%B7%A5%E7%A8%8B%E4%B8%AD%E7%9A%84SceneDelegate/">展开全文 >></a>
         </p>
       
 
@@ -2377,12 +2457,12 @@ StoryBoard name: 这个Scene使用的哪个storyboard。
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/">RxSwift + MJRefresh 自动管理刷新状态</a>
+      <a class="article-title" href="/2019/09/26/RxSwift%20+%20MJRefresh%20%E8%87%AA%E5%8A%A8%E7%AE%A1%E7%90%86%E5%88%B7%E6%96%B0%E7%8A%B6%E6%80%81/">RxSwift + MJRefresh 自动管理刷新状态</a>
     </h1>
   
 
         
-        <a href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/" class="archive-article-date">
+        <a href="/2019/09/26/RxSwift%20+%20MJRefresh%20%E8%87%AA%E5%8A%A8%E7%AE%A1%E7%90%86%E5%88%B7%E6%96%B0%E7%8A%B6%E6%80%81/" class="archive-article-date">
   	<time datetime="2019-09-26T02:29:03.451Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-09-26</time>
 </a>
         
@@ -2393,7 +2473,7 @@ StoryBoard name: 这个Scene使用的哪个storyboard。
         <h2 id="枚举"><a href="#枚举" class="headerlink" title="枚举"></a>枚举</h2><p>首先定义一个有关刷新状态的枚举类型：</p>
 <pre><code>/// 可按照自己的需求添加，由于我没有用到 mj_footer.beginRefreshing()，
 /// 所以没有定义相关的枚举。
-enum RefreshStatus {
+enum RefreshStatus &#123;
     case none
     case beingHeaderRefresh
     case endHeaderRefresh
@@ -2404,22 +2484,23 @@ enum RefreshStatus {
     //  - 然后判断没有更多数据就调用 `endRefreshingWithNoMoreData()`
     //    否则 `endRefreshing()`
     case footerStatus(isHidden: Bool, isNoMoreData: Bool)
-}
-</code></pre><p>无需过多纠结，后面会演示枚举如何使用。</p>
+&#125;
+</code></pre>
+<p>无需过多纠结，后面会演示枚举如何使用。</p>
 <h2 id="BehaviorSubject"><a href="#BehaviorSubject" class="headerlink" title="BehaviorSubject"></a>BehaviorSubject</h2><p> 接下来要介绍一个跟 RxSwift 有关的一个类型 BehaviorSubject，我们会在文章用到它。</p>
 <p>  BehaviorSubject 向所有订阅者发布事件，并向新的订阅者提供最近（或最初）的值。</p>
 <p>  怎么理解？来看看代码：<br>  <br>      func addObserver(_ id: String) -&gt; Disposable {<br>        return subscribe { print(“Subscription:”, id, “Event:”, $0) }<br>    }</p>
 <pre><code>let disposeBag = DisposeBag()
 let subject = BehaviorSubject(value: &quot;🔴&quot;)
-
+ 
 subject.addObserver(&quot;1&quot;).disposed(by: disposeBag)
 subject.onNext(&quot;🐶&quot;)
 subject.onNext(&quot;🐱&quot;)
-
+ 
 subject.addObserver(&quot;2&quot;).disposed(by: disposeBag)
 subject.onNext(&quot;🅰️&quot;)
 subject.onNext(&quot;🅱️&quot;)
-
+ 
 /**
 Subscription: 1 Event: next(🔴)
 Subscription: 1 Event: next(🐶)
@@ -2434,68 +2515,72 @@ Subscription: 2 Event: next(🍐)
 Subscription: 1 Event: next(🍊)
 Subscription: 2 Event: next(🍊)
 */
-</code></pre><p>总结一下：BehaviorSubject 从上至下接收它发出的最新（原始值也属于发出的事件元素）值。并向新的订阅者提供最新值，所以这里我们 订阅2号 会接收到前面发出的最新元素，稍后才是 订阅2号 自己发出的元素事件。</p>
-<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p> 好了，下面我们就用上面学到的所有知识来写一个自动管理刷新状态案例。<br> 假设有这样一个需求：<br>  <br>  <br>    // ViewController.swift</p>
+</code></pre>
+<p>总结一下：BehaviorSubject 从上至下接收它发出的最新（原始值也属于发出的事件元素）值。并向新的订阅者提供最新值，所以这里我们 订阅2号 会接收到前面发出的最新元素，稍后才是 订阅2号 自己发出的元素事件。</p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p> 好了，下面我们就用上面学到的所有知识来写一个自动管理刷新状态案例。<br> 假设有这样一个需求：<br>  <br>  <br>    &#x2F;&#x2F; ViewController.swift</p>
 <pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
 // 不传参数则不创建。自动管理刷新状态。
-viewModel.refreshStatusBind(to: tableView, {
+viewModel.refreshStatusBind(to: tableView, &#123;
     // 处理头部刷新。
-}) {
+&#125;) &#123;
     // 处理尾部刷新。
-}.disposed(by: bag)
-</code></pre><p>如何做到这一点？看到方法是从 viewModel 里面调出来的，那我们就去 viewModel 里面看一看究竟。</p>
-<pre><code>class ViewModel: Refreshable {
-
+&#125;.disposed(by: bag)
+</code></pre>
+<p>如何做到这一点？看到方法是从 viewModel 里面调出来的，那我们就去 viewModel 里面看一看究竟。</p>
+<pre><code>class ViewModel: Refreshable &#123;
+ 
     lazy var list = Variable&lt;[MnlDakaCommentModel]&gt;([])
     let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
     let reload = PublishSubject&lt;Bool&gt;()
     let bag = DisposeBag()
-
-    init() {
-        reload.subscribe(onNext: { [weak self] (isDown) in
-            guard let `self` = self else {
+    
+    init() &#123;
+        reload.subscribe(onNext: &#123; [weak self] (isDown) in
+            guard let `self` = self else &#123;
                 return
-            }
+            &#125;
             // 发送请求
-            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
+            MnlAssetLoader.load(.dakaComment(params: self.params)) &#123; (result) in 
                 let list = result.value?[&quot;list&quot;].arrayObject
                 let models = decode([MnlDakaCommentModel].self, from: list) ?? []
-            }
-        }
-    }
-}
-</code></pre><p> 这里你就知道了吧？任何实现 Refreshable 必须实现 refreshStatus 属性，如果你足够眼尖应该看到，上面的 ViewModel 同样定义一个类型一样 refreshStatus 属性，为的就是实现协议中规定的属性。</p>
+            &#125;
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p> 这里你就知道了吧？任何实现 Refreshable 必须实现 refreshStatus 属性，如果你足够眼尖应该看到，上面的 ViewModel 同样定义一个类型一样 refreshStatus 属性，为的就是实现协议中规定的属性。</p>
 <p>  好了，有个这个属性之后，我们就可以愉快的管理刷新状态了，比如想让它结束刷新，我们可以拿到 refreshStatus 属性，比如在 ViewModel 里，我们可以这样：</p>
 <pre><code>// 发送请求
-MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in 
+MnlAssetLoader.load(.dakaComment(params: self.params)) &#123; (result) in 
     let list = result.value?[&quot;list&quot;].arrayObject
     let models = decode([MnlDakaCommentModel].self, from: list) ?? []
     // 请求完成需要结束刷新：
     // refreshStatus.onNext(.endFooterRefresh)
     // 或者判断没有更多数据时：
     // refreshStatus.onNext(isHidden: false, isNoMoreData: true)
-}
-</code></pre><p> 这时你肯定问了，凭什么我这样发送消息就可以管理刷新状态了？你逗我呢？之前讲 BehaviorSubject 的时候不是有讲到订阅 (subscribe) 吗？既然这里发送消息了，肯定会在接收到发出的元素的时候做了什么处理吧？</p>
+&#125;
+</code></pre>
+<p> 这时你肯定问了，凭什么我这样发送消息就可以管理刷新状态了？你逗我呢？之前讲 BehaviorSubject 的时候不是有讲到订阅 (subscribe) 吗？既然这里发送消息了，肯定会在接收到发出的元素的时候做了什么处理吧？</p>
 <p>  问得好！问得非常好！问得太————好了。好吧，我老实交代，就来说下接收到元素时我都做了什么？<br>  <br>      extension Refreshable {</p>
-<pre><code>    func refreshStatusBind(to scrollView: UIScrollView, _ header: (() -&gt; Void)? = nil, _ footer: (() -&gt; Void)? = nil) -&gt; Disposable {
-
-        if header != nil {
-            scrollView.mj_header = MJRefreshNormalHeader {
+<pre><code>    func refreshStatusBind(to scrollView: UIScrollView, _ header: (() -&gt; Void)? = nil, _ footer: (() -&gt; Void)? = nil) -&gt; Disposable &#123;
+        
+        if header != nil &#123;
+            scrollView.mj_header = MJRefreshNormalHeader &#123;
                 // 处理头部方法时结束尾部刷新。
                 scrollView.mj_footer?.endRefreshing()
                 header?()
-            }
-        }
-        if footer != nil {
-            scrollView.mj_footer = MJRefreshAutoNormalFooter {
+            &#125;
+        &#125;
+        if footer != nil &#123;
+            scrollView.mj_footer = MJRefreshAutoNormalFooter &#123;
                 // 处理尾部方法时结束头部刷新。
                 scrollView.mj_header?.endRefreshing()
                 footer?()
-            }
-        }
-
-        return refreshStatus.subscribe(onNext: { (status) in
-            switch status {
+            &#125;
+        &#125;
+        
+        return refreshStatus.subscribe(onNext: &#123; (status) in
+            switch status &#123;
             case .none:
                 // 未发生任何状态事件时隐藏尾部。
                 scrollView.mj_footer?.isHidden = true
@@ -2515,85 +2600,89 @@ MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in
                 // 处理尾部状态时，如果之前正在刷新头部，则结束刷新，
                 // 至此，我们无需写判断结束头部刷新的代码，在这里自动处理。
                 scrollView.mj_header?.endRefreshing()
-                if isNone {
+                if isNone &#123;
                     scrollView.mj_footer?.endRefreshingWithNoMoreData()
-                }else {
+                &#125;else &#123;
                     scrollView.mj_footer?.endRefreshing()
-                }
-            }
-        })
-    }
-}
-</code></pre><p>给 Refreshable 加一个扩展，我们先来看方法的第一部分：创建头部和尾部刷新控件。这段代码很容易看懂，结合前面放在 ViewController.swift 里的代码：</p>
+                &#125;
+            &#125;
+        &#125;)
+    &#125;
+&#125;
+</code></pre>
+<p>给 Refreshable 加一个扩展，我们先来看方法的第一部分：创建头部和尾部刷新控件。这段代码很容易看懂，结合前面放在 ViewController.swift 里的代码：</p>
 <pre><code>// 两个闭包的参数默认为 nil，根据参数自动创建 mj_header 或 mj_footer，
 // 不传参数则不创建。自动管理刷新状态。
-viewModel.refreshStatusBind(to: tableView, {
+viewModel.refreshStatusBind(to: tableView, &#123;
     // 处理头部刷新。
-}) {
+&#125;) &#123;
     // 处理尾部刷新。
-}.disposed(by: bag)
-</code></pre><p> 无非就是传闭包参数的时候创建对应的刷新控件，并把传进去的闭包作为控件的刷新事件。因为我已经把 UIScrollView 作为参数传进来了，所以可以直接拿到它创建刷新控件。</p>
+&#125;.disposed(by: bag)
+</code></pre>
+<p> 无非就是传闭包参数的时候创建对应的刷新控件，并把传进去的闭包作为控件的刷新事件。因为我已经把 UIScrollView 作为参数传进来了，所以可以直接拿到它创建刷新控件。</p>
 <p>  在到第二部分，这就是一个真正监听状态改变的部分了，是根据发出的消息做出改变的反应。这样，我们在 ViewModel 里发送消息，这里就能接收到并作出对应的改变。
   </p>
 <h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><h3 id="ViewController-swift"><a href="#ViewController-swift" class="headerlink" title="ViewController.swift"></a>ViewController.swift</h3><pre><code>import UIKit
 import RxSwift
-
-class ViewController: UITableViewController {
-
+ 
+class ViewController: UITableViewController &#123;
+ 
     lazy var viewModel = ViewModel()
     let bag = DisposeBag()
-
-    override func viewDidLoad() {
+ 
+    override func viewDidLoad() &#123;
         super.viewDidLoad()
-
+        
         /// 创建刷新控件。
-        viewModel.refreshStatusBind(to: tableView, { [weak self] in
+        viewModel.refreshStatusBind(to: tableView, &#123; [weak self] in
             // 处理头部刷新。
             self?.viewModel.reload.onNext(false)
-        }) { [weak self] in
+        &#125;) &#123; [weak self] in
             // 处理尾部刷新。
             self?.viewModel.reload.onNext(true)
-        }.disposed(by: bag)
-
+        &#125;.disposed(by: bag)
+        
         // 给 viewModel 中的 reload 发送消息，让其请求数据。
         // 参数 Bool 表示是否上拉。
         viewModel.reload.onNext(false)
-    }
-}
-</code></pre><h3 id="ViewModel-swift"><a href="#ViewModel-swift" class="headerlink" title="ViewModel.swift"></a>ViewModel.swift</h3><pre><code>import UIKit
+    &#125;
+&#125;
+</code></pre>
+<h3 id="ViewModel-swift"><a href="#ViewModel-swift" class="headerlink" title="ViewModel.swift"></a>ViewModel.swift</h3><pre><code>import UIKit
 import RxSwift
-
-class ViewModel: Refreshable {
-
+ 
+class ViewModel: Refreshable &#123;
+ 
     lazy var list = Variable&lt;[Model]&gt;([])
     let refreshStatus = BehaviorSubject(value: RefreshStatus.none)
     let reload = PublishSubject&lt;Bool&gt;()
     let bag = DisposeBag()
-
-    init() {
-        reload.subscribe(onNext: { [weak self] (isReload) in
-
-            guard let `self` = self else {
+ 
+    init() &#123;
+        reload.subscribe(onNext: &#123; [weak self] (isReload) in
+        
+            guard let `self` = self else &#123;
                 return
-            }
-
-            MnlAssetLoader.load(.dakaComment(params: self.params)) { (result) in
-
+            &#125;
+            
+            MnlAssetLoader.load(.dakaComment(params: self.params)) &#123; (result) in
+            
                 let list = result.value?[&quot;list&quot;].arrayObject
                 let models = decode([MnlDakaCommentModel].self, from: list) ?? []
-
+                
                 self.list.value = isReload ? models : self.list.value + models
-
+                
                 let count = result.value?[&quot;count&quot;].int ?? 0
                 // 发送刷新状态给订阅者，让其作出改变。
                 // 如果列表个数和总数相等，则判断它为没有更多数据。
                 self.refreshStatus.onNext(.footerStatus(isHidden: self.list.value.isEmpty,
                                                         isNoMoreData: self.list.value.count == count))
-            }
-        }).disposed(by: bag)
-    }
-}
+            &#125;
+        &#125;).disposed(by: bag)
+    &#125;
+&#125;
 </code></pre>
+
       
 
       
@@ -2616,7 +2705,7 @@ class ViewModel: Refreshable {
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2019/09/26/RxSwift + MJRefresh 自动管理刷新状态/">展开全文 >></a>
+          <a class="article-more-a" href="/2019/09/26/RxSwift%20+%20MJRefresh%20%E8%87%AA%E5%8A%A8%E7%AE%A1%E7%90%86%E5%88%B7%E6%96%B0%E7%8A%B6%E6%80%81/">展开全文 >></a>
         </p>
       
 
@@ -2648,7 +2737,7 @@ class ViewModel: Refreshable {
   
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/4/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/6/">Next &amp;raquo;</a>
     </nav>
   
 
@@ -2660,7 +2749,7 @@ class ViewModel: Refreshable {
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -2767,10 +2856,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -2779,7 +2864,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2787,11 +2872,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2811,19 +2900,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">

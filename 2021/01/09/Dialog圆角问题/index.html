@@ -9,17 +9,17 @@
   <title>Dialog圆角问题 | Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Dialog圆角无效问题 同样是setBackgroundDrawableResource或setBackgroundDrawable无效的问题; 共分两种情形, 一是有标题的Dialog, 另一种是无标题的Dialog 原因Dialog设置背景实质上用的是Dialog.setContentView方法, 而Android系统提供的Dialog本身是有标题的布局空间的, 当通过Window设置把标">
-<meta name="keywords" content="Android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Dialog圆角问题">
-<meta property="og:url" content="http://yoursite.com/2021/01/09/Dialog圆角问题/index.html">
+<meta property="og:url" content="http://yoursite.com/2021/01/09/Dialog%E5%9C%86%E8%A7%92%E9%97%AE%E9%A2%98/index.html">
 <meta property="og:site_name" content="Blog">
 <meta property="og:description" content="Dialog圆角无效问题 同样是setBackgroundDrawableResource或setBackgroundDrawable无效的问题; 共分两种情形, 一是有标题的Dialog, 另一种是无标题的Dialog 原因Dialog设置背景实质上用的是Dialog.setContentView方法, 而Android系统提供的Dialog本身是有标题的布局空间的, 当通过Window设置把标">
-<meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2021-01-09T11:47:36.914Z">
+<meta property="og:locale">
+<meta property="article:published_time" content="2021-01-09T11:45:01.669Z">
+<meta property="article:modified_time" content="2021-01-09T11:47:36.914Z">
+<meta property="article:author" content="wangjungang">
+<meta property="article:tag" content="Android">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Dialog圆角问题">
-<meta name="twitter:description" content="Dialog圆角无效问题 同样是setBackgroundDrawableResource或setBackgroundDrawable无效的问题; 共分两种情形, 一是有标题的Dialog, 另一种是无标题的Dialog 原因Dialog设置背景实质上用的是Dialog.setContentView方法, 而Android系统提供的Dialog本身是有标题的布局空间的, 当通过Window设置把标">
   
     <link rel="alternative" href="/atom.xml" title="Blog" type="application/atom+xml">
   
@@ -37,7 +37,7 @@
 
   
 
-</head>
+<meta name="generator" content="Hexo 6.3.0"></head>
 
 <body>
   <div id="container" q-class="show:isCtnShow">
@@ -51,7 +51,7 @@
 			<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 		</a>
 		<hgroup>
-		  <h1 class="header-author"><a href="/">wangjungang</a></h1>
+		  <h1 class="header-author"><a href="/"></a></h1>
 		</hgroup>
 		
 
@@ -60,7 +60,7 @@
 			
 				<li><a href="/">主页</a></li>
 	        
-				<li><a href="/tags/随笔/">随笔</a></li>
+				<li><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 	        
 			</ul>
 		</nav>
@@ -109,7 +109,7 @@
 				<img src="http://img.wangjungang.cn/IMG_1209.jpg" class="js-avatar">
 			</div>
 			<hgroup>
-			  <h1 class="header-author js-header-author">wangjungang</h1>
+			  <h1 class="header-author js-header-author"></h1>
 			</hgroup>
 			
 			
@@ -140,7 +140,7 @@
 				
 					<li style="width: 50%"><a href="/">主页</a></li>
 		        
-					<li style="width: 50%"><a href="/tags/随笔/">随笔</a></li>
+					<li style="width: 50%"><a href="/tags/%E9%9A%8F%E7%AC%94/">随笔</a></li>
 		        
 				</ul>
 			</nav>
@@ -167,7 +167,7 @@
   
 
         
-        <a href="/2021/01/09/Dialog圆角问题/" class="archive-article-date">
+        <a href="/2021/01/09/Dialog%E5%9C%86%E8%A7%92%E9%97%AE%E9%A2%98/" class="archive-article-date">
   	<time datetime="2021-01-09T11:45:01.669Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-01-09</time>
 </a>
         
@@ -179,20 +179,24 @@
 <p>同样是setBackgroundDrawableResource或setBackgroundDrawable无效的问题; 共分两种情形, 一是有标题的Dialog, 另一种是无标题的Dialog</p>
 <h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>Dialog设置背景实质上用的是Dialog.setContentView方法, 而Android系统提供的Dialog本身是有标题的布局空间的, 当通过Window设置把标题隐藏掉后, 无标题下做个圆角是给剩下的FrameLayout做圆角, 这样就很好理解了。</p>
 <h2 id="控制Dialog标题显示隐藏的方式"><a href="#控制Dialog标题显示隐藏的方式" class="headerlink" title="控制Dialog标题显示隐藏的方式"></a>控制Dialog标题显示隐藏的方式</h2><pre><code>requestWindowFeature(Window.FEATURE_NO_TITLE)
-</code></pre><p>or</p>
+</code></pre>
+<p>or</p>
 <pre><code>&lt;style name=&quot;AndoDialog&quot;&gt;
         &lt;item name=&quot;android:windowNoTitle&quot;&gt;false&lt;/item&gt;&lt;!--false 有标题 true无标题--&gt;
 &lt;/style&gt;
-</code></pre><h3 id="有标题"><a href="#有标题" class="headerlink" title="有标题"></a>有标题</h3><p>直接设置window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom)即可, 并不是一些博客中所说的如下配置:</p>
+</code></pre>
+<h3 id="有标题"><a href="#有标题" class="headerlink" title="有标题"></a>有标题</h3><p>直接设置window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom)即可, 并不是一些博客中所说的如下配置:</p>
 <pre><code>//没用
 window.setBackgroundDrawableResource(android.R.color.transparent)
 window.decorView.setPadding(0, 0, 0, 0)
-</code></pre><h3 id="无标题"><a href="#无标题" class="headerlink" title="无标题"></a>无标题</h3><p>无标题处理圆角问题, 就是给FrameLayout做圆角</p>
-<p>无标题时 window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom) 设置不生效, 需要对Dialog的布局文件进行调整。 如底部弹窗左上角和右上角是圆角, 设置圆角背景的同时加上paddingXXX属性,数值与<br>drawable中android:xxxRadius=”10dp”相等。</p>
+</code></pre>
+<h3 id="无标题"><a href="#无标题" class="headerlink" title="无标题"></a>无标题</h3><p>无标题处理圆角问题, 就是给FrameLayout做圆角</p>
+<p>无标题时 window.setBackgroundDrawableResource(R.drawable.rectangle_ando_dialog_bottom) 设置不生效, 需要对Dialog的布局文件进行调整。 如底部弹窗左上角和右上角是圆角, 设置圆角背景的同时加上paddingXXX属性,数值与<br>drawable中android:xxxRadius&#x3D;”10dp”相等。</p>
 <pre><code>//Dialog顶层布局中
 android:paddingTop=&quot;10&quot;
 android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
-</code></pre><h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><p>rectangle_ando_dialog_bottom.xml</p>
+</code></pre>
+<h2 id="附"><a href="#附" class="headerlink" title="附"></a>附</h2><p>rectangle_ando_dialog_bottom.xml</p>
 <pre><code> &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
     android:shape=&quot;rectangle&quot;&gt;
@@ -203,6 +207,7 @@ android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
     &lt;solid android:color=&quot;@color/color_ando_dialog_white&quot; /&gt;
 &lt;/shape&gt;
 </code></pre>
+
       
 
       
@@ -292,7 +297,7 @@ android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/01/09/Dialog圆角问题/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2021/01/09/Dialog%E5%9C%86%E8%A7%92%E9%97%AE%E9%A2%98/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -306,7 +311,7 @@ android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
   
 <nav id="article-nav">
   
-    <a href="/2021/03/11/Java多线程常用方法分析/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2021/03/11/Java%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E5%88%86%E6%9E%90/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
@@ -316,7 +321,7 @@ android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
     </a>
   
   
-    <a href="/2021/01/09/用100行代码构建一个多样式RecyclerView适配器/" id="article-nav-older" class="article-nav-link-wrap">
+    <a href="/2021/01/09/%E7%94%A8100%E8%A1%8C%E4%BB%A3%E7%A0%81%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%A4%9A%E6%A0%B7%E5%BC%8FRecyclerView%E9%80%82%E9%85%8D%E5%99%A8/" id="article-nav-older" class="article-nav-link-wrap">
       <div class="article-nav-title">用100行代码构建一个多样式RecyclerView适配器</div>
       <i class="icon-circle-right"></i>
     </a>
@@ -360,7 +365,7 @@ android:background=&quot;@drawable/rectangle_ando_dialog_bottom&quot;
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2022 wangjungang
+    		&copy; 2023 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -467,10 +472,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">Git</a>
               </li>
              
@@ -479,7 +480,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -487,11 +488,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
+                <a href="javascript:void(0)" class="js-tag color1">MySql</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -511,19 +516,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">java</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">小程序</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
