@@ -152,6 +152,88 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-hexo版本升级" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2023/04/25/hexo%E7%89%88%E6%9C%AC%E5%8D%87%E7%BA%A7/">hexo版本升级</a>
+    </h1>
+  
+
+        
+        <a href="/2023/04/25/hexo%E7%89%88%E6%9C%AC%E5%8D%87%E7%BA%A7/" class="archive-article-date">
+  	<time datetime="2023-04-25T02:33:29.851Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-04-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Hexo 升级比较简单，老方法 <code>npm-check</code>、<code>npm-upgrade</code>、<code>npm-update</code> 一键三连。按以下顺序逐步执行完成后，Hexo 版本及系统插件均会升级到最新。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">//以下指令均在Hexo目录下操作，先定位到Hexo目录</span><br><span class="line">//查看当前版本，判断是否需要升级</span><br><span class="line">&gt; hexo version</span><br><span class="line"></span><br><span class="line">//全局升级hexo-cli</span><br><span class="line">&gt; npm i hexo-cli -g</span><br><span class="line"></span><br><span class="line">//再次查看版本，看hexo-cli是否升级成功</span><br><span class="line">&gt; hexo version</span><br><span class="line"></span><br><span class="line">//安装npm-check，若已安装可以跳过</span><br><span class="line">&gt; npm install -g npm-check</span><br><span class="line"></span><br><span class="line">//检查系统插件是否需要升级</span><br><span class="line">&gt; npm-check</span><br><span class="line"></span><br><span class="line">//安装npm-upgrade，若已安装可以跳过</span><br><span class="line">&gt; npm install -g npm-upgrade</span><br><span class="line"></span><br><span class="line">//更新package.json</span><br><span class="line">&gt; npm-upgrade</span><br><span class="line"></span><br><span class="line">//更新全局插件</span><br><span class="line">&gt; npm update -g</span><br><span class="line"></span><br><span class="line">//更新系统插件</span><br><span class="line">&gt; npm update --save</span><br><span class="line"></span><br><span class="line">//再次查看版本，判断是否升级成功</span><br><span class="line">&gt; hexo version</span><br></pre></td></tr></table></figure>
+
+<p>也可以用可以用 <code>ncu -u</code> 一把梭</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ npm install npm-check-updates -g</span><br><span class="line">$ ncu</span><br><span class="line">Checking /Users/tommy/blog/package.json</span><br><span class="line">[====================] 16/16 100%</span><br><span class="line"></span><br><span class="line"> hexo                    ^4.2.0  →  ^5.0.0</span><br><span class="line"> hexo-generator-sitemap  ^2.0.0  →  ^2.1.0</span><br><span class="line"></span><br><span class="line">Run ncu -u to upgrade package.json</span><br><span class="line">$ ncu -u</span><br><span class="line">Upgrading /Users/tommy/blog/package.json</span><br><span class="line">[====================] 16/16 100%</span><br><span class="line"></span><br><span class="line"> hexo                    ^4.2.0  →  ^5.0.0</span><br><span class="line"> hexo-generator-sitemap  ^2.0.0  →  ^2.1.0</span><br><span class="line"></span><br><span class="line">Run npm install to install new versions.</span><br></pre></td></tr></table></figure>
+
+<p>简单如此，就把 <code>package.json</code> 文件给更新了，果然是一把梭啊，爽～～～</p>
+<p>对于强迫症的我，习惯性删除重来是必须的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">hexo</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2023/04/25/hexo%E7%89%88%E6%9C%AC%E5%8D%87%E7%BA%A7/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-让你的Swift代码更Swift" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1033,164 +1115,6 @@ Page(&#123;
 
 
   
-    <article id="post-iOS15-适配要点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2022/03/31/iOS15-%E9%80%82%E9%85%8D%E8%A6%81%E7%82%B9/">iOS15-适配要点</a>
-    </h1>
-  
-
-        
-        <a href="/2022/03/31/iOS15-%E9%80%82%E9%85%8D%E8%A6%81%E7%82%B9/" class="archive-article-date">
-  	<time datetime="2022-03-31T01:51:39.354Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>增加UISheetPresentationController，通过它可以控制 Modal 出来的 UIViewController 的显示大小，且可以通过拖拽手势在不同大小之间进行切换。只需要在跳转的目标 UIViewController 做如下处理：</p>
-<pre><code>if let presentationController = presentationController as? UISheetPresentationController &#123;
-       // 显示时支持的尺寸
-       presentationController.detents = [.medium(), .large()]
-       // 显示一个指示器表示可以拖拽调整大小
-       presentationController.prefersGrabberVisible = true
-&#125;
-</code></pre>
-<p>UIButton支持更多配置。UIButton.Configuration是一个新的结构体，它指定按钮及其内容的外观和行为。它有许多与按钮外观和内容相关的属性，如cornerStyle、baseForegroundColor、baseBackgroundColor、buttonSize、title、image、subtitle、titlePadding、imagePadding、contentInsets、imagePlacement等。</p>
-<pre><code>// Plain
-let plain = UIButton(configuration: .plain(), primaryAction: nil)
-plain.setTitle(&quot;Plain&quot;, for: .normal)
-// Gray
-let gray = UIButton(configuration: .gray(), primaryAction: nil)
-gray.setTitle(&quot;Gray&quot;, for: .normal)
-// Tinted
-let tinted = UIButton(configuration: .tinted(), primaryAction: nil)
-tinted.setTitle(&quot;Tinted&quot;, for: .normal)
-// Filled
-let filled = UIButton(configuration: .filled(), primaryAction: nil)
-filled.setTitle(&quot;Filled&quot;, for: .normal) 
-</code></pre>
-<p>推出CLLocationButton用于一次性定位授权，该内容内置于CoreLocationUI模块，但如果需要获取定位的详细信息仍然需要借助于CoreLocation。</p>
-<pre><code>let locationButton = CLLocationButton()
-// 文字
-locationButton.label = .currentLocation
-locationButton.fontSize = 20
-// 图标
-locationButton.icon = .arrowFilled
-// 圆角
-locationButton.cornerRadius = 10
-// tint
-locationButton.tintColor = UIColor.systemPink
-// 背景色
-locationButton.backgroundColor = UIColor.systemGreen
-// 点击事件，应该在在其中发起定位请求
-locationButton.addTarget(self, action: #selector(getCurrentLocation), for: .touchUpInside)
-</code></pre>
-<p>URLSession 推出支持 async&#x2F;await 的 API，包括获取数据、上传与下载。</p>
-<pre><code>let session = URLSession.shared
-// 加载数据
-let (data, response) = try await session.data(from: url)
-// 下载
-let (localURL, _) = try await session.download(from: url)
-// 上传
-let (_, response) = try await session.upload(for: request, from: data)
-</code></pre>
-<p>系统图片支持多个层，支持多种渲染模式。</p>
-<pre><code>// hierarchicalColor：多层渲染，透明度不同
-let config = UIImage.SymbolConfiguration(hierarchicalColor: .systemRed)
-let image = UIImage(systemName: &quot;square.stack.3d.down.right.fill&quot;, withConfiguration: config)
-// paletteColors：多层渲染，设置不同风格
-let config2 = UIImage.SymbolConfiguration(paletteColors: [.systemRed, .systemGreen, .systemBlue])
-let image2 = UIImage(systemName: &quot;person.3.sequence.fill&quot;, withConfiguration: config2)
-</code></pre>
-<p>UINavigationBar、UIToolbar 和 UITabBar 设置颜色，需要使用 UIBarAppearance APIs。</p>
-<pre><code>// UINavigationBar
-let navigationBarAppearance = UINavigationBarAppearance()
-navigationBarAppearance.backgroundColor = .red
-navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
-navigationController?.navigationBar.standardAppearance = navigationBarAppearance
-// UIToolbar
-let toolBarAppearance = UIToolbarAppearance()
-toolBarAppearance.backgroundColor = .blue
-navigationController?.toolbar.scrollEdgeAppearance = toolBarAppearance
-navigationController?.toolbar.standardAppearance = toolBarAppearance
-// UITabBar
-let tabBarAppearance = UITabBarAppearance()
-toolBarAppearance.backgroundColor = .purple
-tabBarController?.tabBar.scrollEdgeAppearance = tabBarAppearance
-tabBarController?.tabBar.standardAppearance = tabBarAppearance
-</code></pre>
-<p>UITableView 新增了属性 sectionHeaderTopPadding，会给每一个section 的 header 增加一个默认高度。</p>
-<pre><code>tableView.sectionHeaderTopPadding = 0
-</code></pre>
-<p>UIImage 新增了几个调整尺寸的方法。</p>
-<pre><code>// preparingThumbnail
-UIImage(named: &quot;sv.png&quot;)?.preparingThumbnail(of: CGSize(width: 200, height: 100))
-// prepareThumbnail，闭包中直接获取调整后的UIImage
-UIImage(named: &quot;sv.png&quot;)?.prepareThumbnail(of: CGSize(width: 200, height: 100)) &#123; image in
-        // 需要回到主线程更新UI
-&#125;
-// byPreparingThumbnail
-await UIImage(named: &quot;sv.png&quot;)?.byPreparingThumbnail(ofSize: CGSize(width: 100, height: 100))
-</code></pre>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2022/03/31/iOS15-%E9%80%82%E9%85%8D%E8%A6%81%E7%82%B9/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
@@ -1296,11 +1220,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1316,11 +1240,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1352,6 +1276,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
@@ -1360,15 +1288,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">

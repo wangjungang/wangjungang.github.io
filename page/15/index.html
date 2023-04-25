@@ -152,6 +152,104 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-轮子阅读之SDAutoLayout" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/12/15/%E8%BD%AE%E5%AD%90%E9%98%85%E8%AF%BB%E4%B9%8BSDAutoLayout/">轮子阅读之SDAutoLayout</a>
+    </h1>
+  
+
+        
+        <a href="/2018/12/15/%E8%BD%AE%E5%AD%90%E9%98%85%E8%AF%BB%E4%B9%8BSDAutoLayout/" class="archive-article-date">
+  	<time datetime="2018-12-15T13:53:49.350Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-15</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>几乎在我们所有的iOS App 项目中我们都为了开发方便，为了Deadline都会在我们的项目中使用一些别人造好的轮子。使用这些轮子一般都很简单，但是我们也要好好学习别人造的这些轮子背后的原因，大神们为什么要这么造？阅读大神们的代码来理解他们的造这些轮子的思想与方法对我们能力的提示也会有很大帮助。这篇文章就简单写一下我阅读SDAutoLayout这个自动布局开源库的源码之后的理解吧。</p>
+<h2 id="代码阅读"><a href="#代码阅读" class="headerlink" title="代码阅读"></a>代码阅读</h2><pre><code>UILabel *titleLabel = [[UILabel alloc]init];
+titleLabel.text = @&quot;test string&quot;;
+[self.view addSubview:titleLabel];
+titleLabel.sd_layout
+             .leftSpaceToView(self.view,20)
+             .topSpaceToView(self.view,100)
+             .rightSpaceToView(self.view,20)
+             .heightIs(20);
+</code></pre>
+<p>上面这段代码就是就是用SDAutoLayout对一个Label进行适配不同屏幕的简单例子。很简单、很暴力，并且是我们用起来很方便的链式调用方式。我们进行断点调试进入到SDAutoLayout的源代码中。</p>
+<p>首先执行sd_layout这个方法，这个方法的作用就是创建并初始化一些参数返回SDAutoLayoutModel这个对象的实例，然后就真正的开始进行自动布局的代码。</p>
+<p>接下来查看leftSpaceToView()这个方法会看到这个方法是一个懒加载的方法，在懒加载的方法中会执行这个方法marginToViewblockWithKey，这个方法很有意思，其中的key与SDAutoLayoutModel的私有属性left相同。</p>
+<p>进入到这个方法就可以看到返回值为一个block，而且在block中会通过KVC的方式设置SDAutoLayoutModel实例的属性（与这个方法的key名字相同）的value为SDAutoLayoutModelItem的实例对象，仔细发现SDAutoLayoutModel实例的私有属性的类型就是SDAutoLayoutModelItem。咋下面中我们也可到作者提供了这些属性的set方法，我们刚学KVC的时候大家都知道，KVC的机制是首先从调用setter方法，找不到setter方法就查找对象是否存在属性等的直到找不到任何相关的就会报错。我们查看这些setter方法就可以看到这写setter方法就是设置当前view的frame的属性。</p>
+<p>到这个时候我们就明白了这个第三方库的核心还是设置view的frame来进行适配。但是还有一点不同，在这个方法中还使用了黑魔法(runtime)Method Swizzing，在load方法中替换了layoutSubViews。因为在iOS中设置view的frame就会自动调用layoutSubViews这个方法，下面是会调用layoutSubViews方法的情况：</p>
+<pre><code>1. 直接调用setLayoutSubviews。（这个在上面苹果官方文档里有说明）
+2. addSubview的时候。
+3. 当view的frame发生改变的时候。
+4. 滑动UIScrollView的时候。
+5. 旋转Screen会触发父UIView上的layoutSubviews事件。
+6. 改变一个UIView大小的时候也会触发父UIView上的layoutSubviews事件。
+</code></pre>
+<p>在替换的sd_layoutSubviews中执行了sd_layoutSubviewsHandle这个方法，这个方法就是针对不同的view及情况进行宽度、高度等属性进行计算，并且会缓存tableViewCell的高度等。</p>
+<p>接下来的topSpaceToView、rightSpaceToView、heightIs等方法跟leftSpaceToView方法类似，大同小异，我就不做一一解释了。</p>
+<p>总结一下这个开源库的原理就是通过KVC、链式调用、Runtime的Method Swizzing等技术创造的轮子。这个库还提供了一些其他功能，我们平时开发使用起来还是很简单方便的，能很大程度上提高我们的开发效率。工作之余可以多学学作者怎么使用这些技术创造轮子以及为什么这样写也是一件很有趣的事情。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/12/15/%E8%BD%AE%E5%AD%90%E9%98%85%E8%AF%BB%E4%B9%8BSDAutoLayout/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-日历的提醒添加" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -3515,161 +3613,6 @@ GET /rest/api/deleteArticles?id=1 --&gt; DELETE /blog/Articles/1  删除一篇�
 
 
   
-    <article id="post-如何安全使用dispatch_sync" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/13/%E5%A6%82%E4%BD%95%E5%AE%89%E5%85%A8%E4%BD%BF%E7%94%A8dispatch_sync/">如何安全使用dispatch_sync</a>
-    </h1>
-  
-
-        
-        <a href="/2018/12/13/%E5%A6%82%E4%BD%95%E5%AE%89%E5%85%A8%E4%BD%BF%E7%94%A8dispatch_sync/" class="archive-article-date">
-  	<time datetime="2018-12-13T07:47:16.816Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-12-13</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>iOS开发者在与线程打交道的方式中，使用最多的应该就是GCD框架了，没有之一。GCD将繁琐的线程抽象为了一个个队列，让开发者极易理解和使用。但其实队列的底层，依然是利用线程实现的，同样会有死锁的问题。本文将探讨如何规避disptach_sync接口引入的死锁问题。</p>
-<h2 id="GCD基础"><a href="#GCD基础" class="headerlink" title="GCD基础"></a>GCD基础</h2><p>GCD最基础的两个接口</p>
-<pre><code>dispatch_sync(dispatch_queue_t queue, dispatch_block_t block);
-dispatch_async(dispatch_queue_t queue, dispatch_block_t block);
-</code></pre>
-<p>第一个参数queue为队列对象，第二个参数block为block对象。这两个接口可以将任务block扔到队列queue中去执行。</p>
-<p>开发者使用最频繁的，就是在子线程环境下，需要做UI更新时，我们可以将任务扔到主线程去执行，</p>
-<pre><code>dispatch_sync(dispatch_get_main_queue(), block);
-dispatch_async(dispatch_get_main_queue(), block);
-</code></pre>
-<p>而dispatch_sync(dispatch_get_main_queue(), block)有可能引入死锁的问题。</p>
-<h3 id="async-VS-sync"><a href="#async-VS-sync" class="headerlink" title="async VS. sync"></a>async VS. sync</h3><p>disptach_async是异步扔一个block到queue中，即扔完我就不管了，继续执行我的下一行代码。实际上当下一行代码执行时，这个block还未执行，只是入了队列queue，queue会排队来执行这个block。</p>
-<p>而disptach_sync则是同步扔一个block到queue中，即扔了我就等着，等到queue排队把这个block执行完了之后，才继续执行下一行代码。</p>
-<h2 id="为什么要使用sync"><a href="#为什么要使用sync" class="headerlink" title="为什么要使用sync"></a>为什么要使用sync</h2><p>disptach_sync主要用于代码上下文对时序有强要求的场景。简单点说，就是下一行代码的执行，依赖于上一行代码的结果。例如说，我们需要在子线程中读取一个image对象，使用接口[UIImage imageNamed:]，但imageNamed:实际上在iOS9以后才是线程安全的，iOS9之前都需要在主线程获取。所以，我们需要从子线程切换到主线程获取image，然后再切回子线程拿到这个image，</p>
-<pre><code>// ...currently in a subthread
-__block UIImage *image;
-dispatch_sync_on_main_queue(^&#123;
-    image = [UIImage imageNamed:@&quot;Resource/img&quot;];
-&#125;);
-attachment.image = image;
-</code></pre>
-<p>这里我们必须使用sync。</p>
-<h2 id="为什么会死锁"><a href="#为什么会死锁" class="headerlink" title="为什么会死锁"></a>为什么会死锁</h2><p>假设当前我们的代码正在queue0中执行。然后我们调用disptach_sync将一个任务block1扔到queue0中执行，</p>
-<pre><code>// ... currently in queue0 or queue0&#39;s corresponding thread.
-dispatch_sync(queue0, block1);
-</code></pre>
-<p>这时，dispatch_sync将等待queue0排队执行完block1，然后才能继续执行下一行代码。But，当前代码执行的环境也是queue0。假设当前执行的任务为block0。也就是说，block0在执行到一半时，需要等到自己的下一个任务block1执行完，自己才能继续执行。而block1排队在后面，需要等block0执行完才能执行。这时死锁就产生了，block0和block1互相等待执行，当前线程就卡死在dispatch_sync这行代码处。</p>
-<p>我们发现的卡死问题，一般都是主线程死锁。一种较为常见的情况是，本身就已经在主线程了，还同步向主线程扔了一个任务：</p>
-<pre><code>// ... currently in the main thread
-dispatch_sync(dispatch_get_main_queue(), block);
-</code></pre>
-<h2 id="安全方式"><a href="#安全方式" class="headerlink" title="安全方式"></a>安全方式</h2><p>YYKit中提供了一个同步扔任务到主线程的安全方法：</p>
-<pre><code>/**
- Submits a block for execution on a main queue and waits until the block completes.
-*/
-static inline void dispatch_sync_on_main_queue(void (^block)()) &#123;
-    if (pthread_main_np()) &#123;
-        block();
-    &#125; else &#123;
-        dispatch_sync(dispatch_get_main_queue(), block);
-    &#125;
-&#125;
-</code></pre>
-<p>其方式就是在扔任务给主线程之前，先检查当前线程是否已经是主线程，如果是，就不用调用GCD的队列调度接口dispatch_sync了，直接执行即可；如果不是主线程，那么调用GCD的dispatch_sync也不会卡死。</p>
-<p>但事实上并不是这样的，dispatch_sync_on_main_queue也可能会卡死，这个安全接口并不安全。这个接口只能保证两个block之间不因互相等待而死锁。多于两个block的互相依赖就束手无策了。</p>
-<p>举个例子，假设queue0是一个子线程的队列：</p>
-<pre><code>/* block0 */
-// ... currently in the main thread.
-dispatch_sync(queue0, ^&#123;
-    /* block1 */
-    // ... currently in queue0&#39;s corresponding subthread.
-    dispatch_sync_on_main_queue(^&#123;
-        /* block2 */
-    &#125;);
-&#125;);
-</code></pre>
-<p>在上述代码中，block0正在主线程中执行，并且同步等待子线程执行完block1。block1又同步等待主线程执行完block2。而当前主线程正在执行block0，即block2的执行需要等到block0执行完。这样就成了block0–&gt;block1–&gt;block2–&gt;block0…这样一个循环等待，即死锁。由于block1的环境是子线程，所以安全API的线程判断不起任何作用。</p>
-<p>另举一个例子：</p>
-<pre><code>/* block0 */
-// ... currently in the main thread.
-[[NSNotificationCenter defaultCenter] postNotificationName:@&quot;aNotification&quot; object:nil];
-
-// ... in another context
-[[NSNotificationCenter defaultCenter] addObserverForName:@&quot;aNotification&quot;
-                                                  object:nil
-                                                   queue:queue0
-                                              usingBlock:^(NSNotification * _Nonnull note) &#123;
-                                                  /* block1 */
-                                                  // ... currently in queue0&#39;s corresponding subthread.
-                                                  dispatch_sync_on_main_queue(^&#123;
-                                                      /* block2 */
-                                                  &#125;);
-                                              &#125;];
-                                              
-                                              
-</code></pre>
-<p>由于通知NSNotification的执行是同步的，这里会出现和上一例一样的死锁情况：block0–&gt;block1–&gt;block2–&gt;block0…</p>
-<h2 id="如何定位死锁问题"><a href="#如何定位死锁问题" class="headerlink" title="如何定位死锁问题"></a>如何定位死锁问题</h2><p>1.死锁监测和堆栈上报机制</p>
-<p>要定位死锁的问题，我们需要知道在哪一行代码上死锁了，以及为什么会出现死锁。通常只要知道哪一行代码死锁了，我们就能通过代码分析出问题所在了。所以，如果死锁的时候，我们能够把堆栈上报上来，就能知道哪一行代码死锁了。这里需要有完善的死锁监测和堆栈上报机制。</p>
-<p>2.打印日志</p>
-<p>如果暂时没有人力或者技术支撑你去搭建完善的死锁监测和堆栈上报机制，那么你可以做一件简单的事情以协助你定位问题，那就是打印日志。在dispatch_sync或者加锁之前，打印一条日志。这样在用户反馈问题，或者测试重现问题的时候，提取日志便可分析出卡死的代码处。</p>
-<h2 id="如何安全使用dispatch-sync"><a href="#如何安全使用dispatch-sync" class="headerlink" title="如何安全使用dispatch_sync"></a>如何安全使用dispatch_sync</h2><p>答案是，尽量不要使用。没有哪一个接口是可以保证绝对安全的。必须要使用dispatch_sync的时候，尽量使用dispatch_sync_on_main_queue这个API。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/12/13/%E5%A6%82%E4%BD%95%E5%AE%89%E5%85%A8%E4%BD%BF%E7%94%A8dispatch_sync/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/14/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><span class="page-number current">15</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/16/">Next &amp;raquo;</a>
@@ -3775,11 +3718,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3795,11 +3738,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -3831,6 +3774,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
@@ -3839,15 +3786,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">

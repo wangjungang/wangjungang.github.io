@@ -152,6 +152,164 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-iOS15-适配要点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/03/31/iOS15-%E9%80%82%E9%85%8D%E8%A6%81%E7%82%B9/">iOS15-适配要点</a>
+    </h1>
+  
+
+        
+        <a href="/2022/03/31/iOS15-%E9%80%82%E9%85%8D%E8%A6%81%E7%82%B9/" class="archive-article-date">
+  	<time datetime="2022-03-31T01:51:39.354Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>增加UISheetPresentationController，通过它可以控制 Modal 出来的 UIViewController 的显示大小，且可以通过拖拽手势在不同大小之间进行切换。只需要在跳转的目标 UIViewController 做如下处理：</p>
+<pre><code>if let presentationController = presentationController as? UISheetPresentationController &#123;
+       // 显示时支持的尺寸
+       presentationController.detents = [.medium(), .large()]
+       // 显示一个指示器表示可以拖拽调整大小
+       presentationController.prefersGrabberVisible = true
+&#125;
+</code></pre>
+<p>UIButton支持更多配置。UIButton.Configuration是一个新的结构体，它指定按钮及其内容的外观和行为。它有许多与按钮外观和内容相关的属性，如cornerStyle、baseForegroundColor、baseBackgroundColor、buttonSize、title、image、subtitle、titlePadding、imagePadding、contentInsets、imagePlacement等。</p>
+<pre><code>// Plain
+let plain = UIButton(configuration: .plain(), primaryAction: nil)
+plain.setTitle(&quot;Plain&quot;, for: .normal)
+// Gray
+let gray = UIButton(configuration: .gray(), primaryAction: nil)
+gray.setTitle(&quot;Gray&quot;, for: .normal)
+// Tinted
+let tinted = UIButton(configuration: .tinted(), primaryAction: nil)
+tinted.setTitle(&quot;Tinted&quot;, for: .normal)
+// Filled
+let filled = UIButton(configuration: .filled(), primaryAction: nil)
+filled.setTitle(&quot;Filled&quot;, for: .normal) 
+</code></pre>
+<p>推出CLLocationButton用于一次性定位授权，该内容内置于CoreLocationUI模块，但如果需要获取定位的详细信息仍然需要借助于CoreLocation。</p>
+<pre><code>let locationButton = CLLocationButton()
+// 文字
+locationButton.label = .currentLocation
+locationButton.fontSize = 20
+// 图标
+locationButton.icon = .arrowFilled
+// 圆角
+locationButton.cornerRadius = 10
+// tint
+locationButton.tintColor = UIColor.systemPink
+// 背景色
+locationButton.backgroundColor = UIColor.systemGreen
+// 点击事件，应该在在其中发起定位请求
+locationButton.addTarget(self, action: #selector(getCurrentLocation), for: .touchUpInside)
+</code></pre>
+<p>URLSession 推出支持 async&#x2F;await 的 API，包括获取数据、上传与下载。</p>
+<pre><code>let session = URLSession.shared
+// 加载数据
+let (data, response) = try await session.data(from: url)
+// 下载
+let (localURL, _) = try await session.download(from: url)
+// 上传
+let (_, response) = try await session.upload(for: request, from: data)
+</code></pre>
+<p>系统图片支持多个层，支持多种渲染模式。</p>
+<pre><code>// hierarchicalColor：多层渲染，透明度不同
+let config = UIImage.SymbolConfiguration(hierarchicalColor: .systemRed)
+let image = UIImage(systemName: &quot;square.stack.3d.down.right.fill&quot;, withConfiguration: config)
+// paletteColors：多层渲染，设置不同风格
+let config2 = UIImage.SymbolConfiguration(paletteColors: [.systemRed, .systemGreen, .systemBlue])
+let image2 = UIImage(systemName: &quot;person.3.sequence.fill&quot;, withConfiguration: config2)
+</code></pre>
+<p>UINavigationBar、UIToolbar 和 UITabBar 设置颜色，需要使用 UIBarAppearance APIs。</p>
+<pre><code>// UINavigationBar
+let navigationBarAppearance = UINavigationBarAppearance()
+navigationBarAppearance.backgroundColor = .red
+navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
+navigationController?.navigationBar.standardAppearance = navigationBarAppearance
+// UIToolbar
+let toolBarAppearance = UIToolbarAppearance()
+toolBarAppearance.backgroundColor = .blue
+navigationController?.toolbar.scrollEdgeAppearance = toolBarAppearance
+navigationController?.toolbar.standardAppearance = toolBarAppearance
+// UITabBar
+let tabBarAppearance = UITabBarAppearance()
+toolBarAppearance.backgroundColor = .purple
+tabBarController?.tabBar.scrollEdgeAppearance = tabBarAppearance
+tabBarController?.tabBar.standardAppearance = tabBarAppearance
+</code></pre>
+<p>UITableView 新增了属性 sectionHeaderTopPadding，会给每一个section 的 header 增加一个默认高度。</p>
+<pre><code>tableView.sectionHeaderTopPadding = 0
+</code></pre>
+<p>UIImage 新增了几个调整尺寸的方法。</p>
+<pre><code>// preparingThumbnail
+UIImage(named: &quot;sv.png&quot;)?.preparingThumbnail(of: CGSize(width: 200, height: 100))
+// prepareThumbnail，闭包中直接获取调整后的UIImage
+UIImage(named: &quot;sv.png&quot;)?.prepareThumbnail(of: CGSize(width: 200, height: 100)) &#123; image in
+        // 需要回到主线程更新UI
+&#125;
+// byPreparingThumbnail
+await UIImage(named: &quot;sv.png&quot;)?.byPreparingThumbnail(ofSize: CGSize(width: 100, height: 100))
+</code></pre>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/03/31/iOS15-%E9%80%82%E9%85%8D%E8%A6%81%E7%82%B9/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-优雅的动态删除第三方SDK的权限" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1702,96 +1860,6 @@ let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
 
 
   
-    <article id="post-iOS导出ipa包的时，四个选项的作用" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/03/16/iOS%E5%AF%BC%E5%87%BAipa%E5%8C%85%E7%9A%84%E6%97%B6%EF%BC%8C%E5%9B%9B%E4%B8%AA%E9%80%89%E9%A1%B9%E7%9A%84%E4%BD%9C%E7%94%A8/">iOS导出ipa包的时，四个选项的作用</a>
-    </h1>
-  
-
-        
-        <a href="/2021/03/16/iOS%E5%AF%BC%E5%87%BAipa%E5%8C%85%E7%9A%84%E6%97%B6%EF%BC%8C%E5%9B%9B%E4%B8%AA%E9%80%89%E9%A1%B9%E7%9A%84%E4%BD%9C%E7%94%A8/" class="archive-article-date">
-  	<time datetime="2021-03-16T03:13:05.390Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-03-16</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="https://upload-images.jianshu.io/upload_images/855108-4e72f6ef2b0a6d78.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/585/format/webp"></p>
-<h4 id="如图-在-iOS-导出-ipa包的时候-会有四个选项，这四个选项的作用如下："><a href="#如图-在-iOS-导出-ipa包的时候-会有四个选项，这四个选项的作用如下：" class="headerlink" title="如图 在 iOS 导出 ipa包的时候 会有四个选项，这四个选项的作用如下："></a>如图 在 iOS 导出 ipa包的时候 会有四个选项，这四个选项的作用如下：</h4><ol>
-<li>Save for iOS App Store Deployment</li>
-</ol>
-<p>保存到本地 准备上传App Store 或者在越狱的iOS设备上使用</p>
-<ol start="2">
-<li>Save for Ad Hoc Deployment</li>
-</ol>
-<p>保存到本地 准备在账号添加的可使用设备上使用（具体为在开发者账户下添加可用设备的udid），该app包是发布证书编译的。</p>
-<ol start="3">
-<li>Save for Enterprise Deployment</li>
-</ol>
-<p>这种主要针对企业级账户下 准备本地服务器分发的app</p>
-<ol start="4">
-<li>Save for Development Deployment</li>
-</ol>
-<p>针对内部测试使用，主要给开发者的设备(具体也为在开发者账户下添加可用设备的udid)。该app包是开发证书编译的。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/03/16/iOS%E5%AF%BC%E5%87%BAipa%E5%8C%85%E7%9A%84%E6%97%B6%EF%BC%8C%E5%9B%9B%E4%B8%AA%E9%80%89%E9%A1%B9%E7%9A%84%E4%BD%9C%E7%94%A8/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
@@ -1897,11 +1965,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1917,11 +1985,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1953,6 +2021,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
@@ -1961,15 +2033,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">

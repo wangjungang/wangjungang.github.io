@@ -152,6 +152,253 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-分布式唯一ID的生成方式" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/05/20/%E5%88%86%E5%B8%83%E5%BC%8F%E5%94%AF%E4%B8%80ID%E7%9A%84%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F/">分布式唯一ID的生成方式</a>
+    </h1>
+  
+
+        
+        <a href="/2020/05/20/%E5%88%86%E5%B8%83%E5%BC%8F%E5%94%AF%E4%B8%80ID%E7%9A%84%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F/" class="archive-article-date">
+  	<time datetime="2020-05-20T11:00:49.616Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-05-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p><img src="http://img.wangjungang.cn/uPic/rIgRfg.jpg"></p>
+<p>在互联网的业务系统中，涉及到各种各样的ID，如在支付系统中就会有支付ID、退款ID等。那一般生成ID都有哪些解决方案呢？特别是在复杂的分布式系统业务场景中，我们应该采用哪种适合自己的解决方案是十分重要的。下面我们一一来列举一下，不一定全部适合，这些解决方案仅供你参考，或许对你有用。</p>
+<h2 id="分布式ID的特性"><a href="#分布式ID的特性" class="headerlink" title="分布式ID的特性"></a>分布式ID的特性</h2><ul>
+<li>唯一性：确保生成的ID是全网唯一的。</li>
+<li>有序递增性：确保生成的ID是对于某个用户或者业务是按一定的数字有序递增的。</li>
+<li>高可用性：确保任何时候都能正确的生成ID。</li>
+<li>带时间：ID里面包含时间，一眼扫过去就知道哪天的交易。</li>
+</ul>
+<h2 id="分布式ID的生成方案"><a href="#分布式ID的生成方案" class="headerlink" title="分布式ID的生成方案"></a>分布式ID的生成方案</h2><h3 id="1-UUID"><a href="#1-UUID" class="headerlink" title="1. UUID"></a>1. UUID</h3><p>算法的核心思想是结合机器的网卡、当地时间、一个随记数来生成UUID。</p>
+<ul>
+<li>优点：本地生成，生成简单，性能好，没有高可用风险</li>
+<li>缺点：长度过长，存储冗余，且无序不可读，查询效率低</li>
+</ul>
+<h3 id="2-数据库自增ID"><a href="#2-数据库自增ID" class="headerlink" title="2.数据库自增ID"></a>2.数据库自增ID</h3><p>使用数据库的id自增策略，如 MySQL 的 auto_increment。并且可以使用两台数据库分别设置不同步长，生成不重复ID的策略来实现高可用。</p>
+<ul>
+<li>优点：数据库生成的ID绝对有序，高可用实现方式简单</li>
+<li>缺点：需要独立部署数据库实例，成本高，有性能瓶颈</li>
+</ul>
+<h3 id="3-批量生成ID"><a href="#3-批量生成ID" class="headerlink" title="3.批量生成ID"></a>3.批量生成ID</h3><p>一次按需批量生成多个ID，每次生成都需要访问数据库，将数据库修改为最大的ID值，并在内存中记录当前值及最大值。</p>
+<ul>
+<li>优点：避免了每次生成ID都要访问数据库并带来压力，提高性能</li>
+<li>缺点：属于本地生成策略，存在单点故障，服务重启造成ID不连续</li>
+</ul>
+<h3 id="4-Redis生成ID"><a href="#4-Redis生成ID" class="headerlink" title="4. Redis生成ID"></a>4. Redis生成ID</h3><p>Redis的所有命令操作都是单线程的，本身提供像 incr 和 increby 这样的自增原子命令，所以能保证生成的 ID 肯定是唯一有序的。</p>
+<ul>
+<li><p>优点：不依赖于数据库，灵活方便，且性能优于数据库；数字ID天然排序，对分页或者需要排序的结果很有帮助。</p>
+</li>
+<li><p>缺点：如果系统中没有Redis，还需要引入新的组件，增加系统复杂度；需要编码和配置的工作量比较大。</p>
+</li>
+</ul>
+<p>考虑到单节点的性能瓶颈，可以使用 Redis 集群来获取更高的吞吐量。假如一个集群中有5台 Redis。可以初始化每台 Redis 的值分别是1, 2, 3, 4, 5，然后步长都是 5。各个 Redis 生成的 ID 为：</p>
+<pre><code>A：1, 6, 11, 16, 21
+B：2, 7, 12, 17, 22
+C：3, 8, 13, 18, 23
+D：4, 9, 14, 19, 24
+E：5, 10, 15, 20, 25
+</code></pre>
+<p>随便负载到哪个机确定好，未来很难做修改。步长和初始值一定需要事先确定。使用 Redis 集群也可以方式单点故障的问题。</p>
+<p>另外，比较适合使用 Redis 来生成每天从0开始的流水号。比如订单号 &#x3D; 日期 + 当日自增长号。可以每天在 Redis 中生成一个 Key ，使用 INCR 进行累加。</p>
+<h3 id="5-Twitter的snowflake算法"><a href="#5-Twitter的snowflake算法" class="headerlink" title="5. Twitter的snowflake算法"></a>5. Twitter的snowflake算法</h3><p>Twitter 利用 zookeeper 实现了一个全局ID生成的服务 Snowflake：</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/twitter-archive/snowflake">github</a></p>
+<p><img src="http://img.wangjungang.cn/uPic/UVO1uU.jpg"></p>
+<p>如上图的所示，Twitter 的 Snowflake 算法由下面几部分组成：</p>
+<h4 id="1位符号位："><a href="#1位符号位：" class="headerlink" title="1位符号位："></a>1位符号位：</h4><p>由于 long 类型在 java 中带符号的，最高位为符号位，正数为 0，负数为 1，且实际系统中所使用的ID一般都是正数，所以最高位为 0。</p>
+<h4 id="41位时间戳（毫秒级）："><a href="#41位时间戳（毫秒级）：" class="headerlink" title="41位时间戳（毫秒级）："></a>41位时间戳（毫秒级）：</h4><p>需要注意的是此处的 41 位时间戳并非存储当前时间的时间戳，而是存储时间戳的差值（当前时间戳 - 起始时间戳），这里的起始时间戳一般是ID生成器开始使用的时间戳，由程序来指定，所以41位毫秒时间戳最多可以使用 (1 &lt;&lt; 41) &#x2F; (1000x60x60x24x365) &#x3D; 69年。</p>
+<h4 id="10位数据机器位："><a href="#10位数据机器位：" class="headerlink" title="10位数据机器位："></a>10位数据机器位：</h4><p>包括5位数据标识位和5位机器标识位，这10位决定了分布式系统中最多可以部署 1 &lt;&lt; 10 &#x3D; 1024 s个节点。超过这个数量，生成的ID就有可能会冲突。</p>
+<h4 id="12位毫秒内的序列："><a href="#12位毫秒内的序列：" class="headerlink" title="12位毫秒内的序列："></a>12位毫秒内的序列：</h4><p>这 12 位计数支持每个节点每毫秒（同一台机器，同一时刻）最多生成 1 &lt;&lt; 12 &#x3D; 4096个ID</p>
+<p>加起来刚好64位，为一个Long型。</p>
+<ul>
+<li>优点：高性能，低延迟，按时间有序，一般不会造成ID碰撞</li>
+<li>缺点：需要独立的开发和部署，依赖于机器的时钟</li>
+</ul>
+<h3 id="简单实现"><a href="#简单实现" class="headerlink" title="简单实现"></a>简单实现</h3><pre><code>public class IdWorker &#123;
+    /**
+     * 起始时间戳 2017-04-01
+     */
+    private final long epoch = 1491004800000L;
+    /**
+     * 机器ID所占的位数
+     */
+    private final long workerIdBits = 5L;
+    /**
+     * 数据标识ID所占的位数
+     */
+    private final long dataCenterIdBits = 5L;
+    /**
+     * 支持的最大机器ID,结果是31
+     */
+    private final long maxWorkerId = ~(-1L &lt;&lt; workerIdBits);
+    /**
+     * 支持的最大数据标识ID,结果是31
+     */
+    private final long maxDataCenterId = ~(-1 &lt;&lt; dataCenterIdBits);
+    /**
+     * 毫秒内序列在id中所占的位数
+     */
+    private final long sequenceBits = 12L;
+    /**
+     * 机器ID向左移12位
+     */
+    private final long workerIdShift = sequenceBits;
+    /**
+     * 数据标识ID向左移17(12+5)位
+     */
+    private final long dataCenterIdShift = sequenceBits + workerIdBits;
+    /**
+     * 时间戳向左移22(12+5+5)位
+     */
+    private final long timestampShift = sequenceBits + workerIdBits + dataCenterIdBits;
+    /**
+     * 生成序列的掩码，这里为4095 (0b111111111111=0xfff=4095)
+     */
+    private final long sequenceMask = ~(-1L &lt;&lt; sequenceBits);
+    /**
+     * 数据标识ID（0～31）
+     */
+    private long dataCenterId;
+    /**
+     * 机器ID（0～31）
+     */
+    private long workerId;
+    /**
+     * 毫秒内序列（0～4095）
+     */
+    private long sequence;
+    /**
+     * 上次生成ID的时间戳
+     */
+    private long lastTimestamp = -1L;
+
+    public IdWorker(long dataCenterId, long workerId) &#123;
+        if (dataCenterId &gt; maxDataCenterId || dataCenterId &lt; 0) &#123;
+            throw new IllegalArgumentException(String.format(&quot;dataCenterId can&#39;t be greater than %d or less than 0&quot;, maxDataCenterId));
+        &#125;
+        if (workerId &gt; maxWorkerId || workerId &lt; 0) &#123;
+            throw new IllegalArgumentException(String.format(&quot;worker Id can&#39;t be greater than %d or less than 0&quot;, maxWorkerId));
+        &#125;
+        this.dataCenterId = dataCenterId;
+        this.workerId = workerId;
+    &#125;
+
+    /**
+     * 获得下一个ID (该方法是线程安全的)
+     * @return snowflakeId
+     */
+    public synchronized long nextId() &#123;
+        long timestamp = timeGen();
+        //如果当前时间小于上一次ID生成的时间戳,说明系统时钟回退过,这个时候应当抛出异常
+        if (timestamp &lt; lastTimestamp) &#123;
+            throw new RuntimeException(String.format(&quot;Clock moved backwards.  Refusing to generate id for %d milliseconds&quot;, lastTimestamp - timestamp));
+        &#125;
+        //如果是同一时间生成的，则进行毫秒内序列
+        if (timestamp == lastTimestamp) &#123;
+            sequence = (sequence + 1) &amp; sequenceMask;
+            //毫秒内序列溢出
+            if (sequence == 0) &#123;
+                //阻塞到下一个毫秒,获得新的时间戳
+                timestamp = nextMillis(lastTimestamp);
+            &#125;
+        &#125; else &#123;//时间戳改变，毫秒内序列重置
+            sequence = 0L;
+        &#125;
+        lastTimestamp = timestamp;
+        //移位并通过按位或运算拼到一起组成64位的ID
+        return ((timestamp - epoch) &lt;&lt; timestampShift) |
+                (dataCenterId &lt;&lt; dataCenterIdShift) |
+                (workerId &lt;&lt; workerIdShift) |
+                sequence;
+    &#125;
+
+    /**
+     * 返回以毫秒为单位的当前时间
+     * @return 当前时间(毫秒)
+     */
+    protected long timeGen() &#123;
+        return System.currentTimeMillis();
+    &#125;
+
+    /**
+     * 阻塞到下一个毫秒，直到获得新的时间戳
+     * @param lastTimestamp 上次生成ID的时间截
+     * @return 当前时间戳
+     */
+    protected long nextMillis(long lastTimestamp) &#123;
+        long timestamp = timeGen();
+        while (timestamp &lt;= lastTimestamp) &#123;
+            timestamp = lastTimestamp;
+        &#125;
+        return timestamp;
+    &#125; 
+&#125;
+</code></pre>
+<h3 id="6-百度UidGenerator"><a href="#6-百度UidGenerator" class="headerlink" title="6. 百度UidGenerator"></a>6. 百度UidGenerator</h3><p>UidGenerator是百度开源的分布式ID生成器，基于于snowflake算法的实现</p>
+<h3 id="7-美团Leaf"><a href="#7-美团Leaf" class="headerlink" title="7. 美团Leaf"></a>7. 美团Leaf</h3><p>Leaf 是美团开源的分布式ID生成器，能保证全局唯一性、趋势递增、单调递增、信息安全，里面也提到了几种分布式方案的对比，但也需要依赖关系数据库、Zookeeper等中间件。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">mysql</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/05/20/%E5%88%86%E5%B8%83%E5%BC%8F%E5%94%AF%E4%B8%80ID%E7%9A%84%E7%94%9F%E6%88%90%E6%96%B9%E5%BC%8F/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-MySQL 快速创建千万级测试数据" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2345,204 +2592,6 @@ dispatch_async(serialQueue, ^&#123;
 
 
   
-    <article id="post-Git的各种撤销" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/06/Git%E7%9A%84%E5%90%84%E7%A7%8D%E6%92%A4%E9%94%80/">Git的各种撤销</a>
-    </h1>
-  
-
-        
-        <a href="/2020/03/06/Git%E7%9A%84%E5%90%84%E7%A7%8D%E6%92%A4%E9%94%80/" class="archive-article-date">
-  	<time datetime="2020-03-06T03:19:08.853Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-06</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="Git各种撤销操作"><a href="#Git各种撤销操作" class="headerlink" title="Git各种撤销操作"></a>Git各种撤销操作</h3><hr>
-<h4 id="1-git-checkout-–-file"><a href="#1-git-checkout-–-file" class="headerlink" title="1,  git checkout – file"></a>1,  git checkout – file</h4><p>可以撤销add和commit之后的文件</p>
-<pre><code>git checkout -- a.txt
-</code></pre>
-<h4 id="2-git-checkout-branch-a-txt"><a href="#2-git-checkout-branch-a-txt" class="headerlink" title="2,  git checkout branch a.txt"></a>2,  git checkout branch a.txt</h4><p>用另外一个分支的文件替换当前分支的文件</p>
-<pre><code>git checkout master a.txt
-</code></pre>
-<h4 id="3-git-rm-a-txt"><a href="#3-git-rm-a-txt" class="headerlink" title="3, git rm a.txt"></a>3, git rm a.txt</h4><p>直接删除某个文件</p>
-<pre><code>git rm a.txt
-git commit -m &quot;del a.txt&quot;
-</code></pre>
-<h4 id="4，-git-reset-–soft-–mixed-–hard"><a href="#4，-git-reset-–soft-–mixed-–hard" class="headerlink" title="4， git reset –soft|–mixed|–hard "></a>4， git reset –soft|–mixed|–hard <commit_id></h4><p>回退到某一个提交</p>
-<p>1.第一种情况：还没有push，只是在本地commit</p>
-<pre><code>这里的&lt;commit_id&gt;就是每次commit的SHA-1，可以在log里查看到
---mixed    会保留源码,只是将git commit和index 信息回退到了某个版本.
---soft   保留源码,只回退到commit信息到某个版本.不涉及index的回退,如果还需要提交,直接commit即可.
---hard    源码也会回退到某个版本,commit和index 都会回退到某个版本.(注意,这种方式是改变本地代码仓库源码)
-</code></pre>
-<p>简单总结一下，其实就是–soft 、–mixed以及–hard是三个恢复等级。使用–soft就仅仅将头指针恢复，已经add的缓存以及工作空间的所有东西都不变。如果使用–mixed，就将头恢复掉，已经add的缓存也会丢失掉，工作空间的代码什么的是不变的。如果使用–hard，那么一切就全都恢复了，头变，aad的缓存消失，代码什么的也恢复到以前状态。</p>
-<pre><code>git log
-// 如果没有你想要的就在冒号状态下一直回车，退出是在冒号下输入q
-git reset --hard f185d0ec
-git push -f
-// 强制提交
-
-// 如果又后悔了，想回到最新的
-git reflog
-// 重复上边的步骤
-    
-</code></pre>
-<p>2.commit push 代码已经更新到远程仓库</p>
-<pre><code>git revert &lt;commit_id&gt;
-git push -f
-</code></pre>
-<p>revert 之后你的本地代码会回滚到指定的历史版本,这时你再 git push 既可以把线上的代码更新。<br>注意：git revert是用一次新的commit来回滚之前的commit，git reset是直接删除指定的commit，看似达到的效果是一样的,其实完全不同。</p>
-<p>第一:上面我们说的如果你已经push到线上代码库, reset 删除指定commit以后,你git push可能导致一大堆冲突.但是revert 并不会.</p>
-<p>第二:如果在日后现有分支和历史分支需要合并的时候,reset 恢复部分的代码依然会出现在历史分支里.但是revert 方向提交的commit 并不会出现在历史分支里.</p>
-<p>第三:reset 是在正常的commit历史中,删除了指定的commit,这时 HEAD 是向后移动了,而 revert 是在正常的commit历史中再commit一次,只不过是反向提交,他的 HEAD 是一直向前的.</p>
-<h4 id="5-git-reset-HEAD-1"><a href="#5-git-reset-HEAD-1" class="headerlink" title="5, git reset HEAD~1"></a>5, git reset HEAD~1</h4><p>按提交步骤回退,~后边的数字是回退几次命令<br>(假如merge了一个其他的分支并提交）</p>
-<pre><code>git merge branch2
-git push
-
-// 现在要撤回
-
-git reset HEAD~1
-git checkout .
-// 如果只是个别文件可以git checkout aa.txt bb.txt
-git push -f
-        
-</code></pre>
-<h4 id="6-git-rebase-–onto-baseBranch-from-to"><a href="#6-git-rebase-–onto-baseBranch-from-to" class="headerlink" title="6, git rebase –onto baseBranch from to"></a>6, git rebase –onto baseBranch from to</h4><p>删除中间的某次commit</p>
-<p>我们先提交几次记录</p>
-<pre><code>git log
-</code></pre>
-<p>我们会看到如下信息</p>
-<pre><code>commit aa1f22523b7c27c692a59588a72d396a97ae04be (HEAD -&gt; branch2)
-Author:
-Date:   Tue Jul 10 21:34:55 2018 +0800
-
-    4
-
-commit cb10df56ea102a558c24625e4ebbb296e0b9d1e8
-Author:
-Date:   Tue Jul 10 21:34:38 2018 +0800
-
-    3
-
-commit 6407cefa0631920cfe8e12bfebc5f1f72c373b07
-Author
-Date:   Tue Jul 10 21:34:24 2018 +0800
-
-    2
-
-commit 3427ac34d38fb6bb06cfd222896e7e3a7a837219
-Author:
-Date:   Tue Jul 10 21:34:10 2018 +0800
-</code></pre>
-<p>我们要删掉3的那次commit，我所在的分支是branch2，–onto后边第一个参数是base，也就是要删掉的commit的上一个commit，</p>
-<p>第二个参数是我们要拼接的commit起始位置，第三个是结束位置</p>
-<p>~表示分支的上一次或者上几次commit</p>
-<pre><code>git rebase --onto branch2~3 branch2~1 branch2
-
-执行完会发现冲突，这时候删掉第3次commit的代码，解决完冲突，然后恢复到最后一次commit
-git add .
-git rebase --continue
-        
-</code></pre>
-<p>再git log，会发现，第三次commit已经没有了</p>
-<pre><code>commit 20586673a513c53709f1e75f786e501c62d6537d (HEAD -&gt; branch2)
-Author: 
-Date:   Tue Jul 10 21:34:55 2018 +0800
-
-    4
-
-commit 6407cefa0631920cfe8e12bfebc5f1f72c373b07
-Author: 
-Date:   Tue Jul 10 21:34:24 2018 +0800
-
-    2
-
-commit 3427ac34d38fb6bb06cfd222896e7e3a7a837219
-Author: 
-Date:   Tue Jul 10 21:34:10 2018 +0800
-
-    1
-    
-</code></pre>
-<h4 id="7，git-commit-–amend"><a href="#7，git-commit-–amend" class="headerlink" title="7，git commit –amend"></a>7，git commit –amend</h4><pre><code>git commit --amend
-</code></pre>
-<p>此时处于vim状态，按c开始编辑，修改完按esc退出编辑，连续按两次大写Z，退出</p>
-<p>修改之前几次的<br>比如要修改的commit是倒数第三条，使用下述命令：</p>
-<pre><code>git rebase -i HEAD~3
-把pick改为edit
-然后 :wq
-git commit --amend
-退出保存 :wq，然后回到正常状态
-git rebase --continue
-git push -f 推送到服务端
-</code></pre>
-<h4 id="8-git-merge-–squash-branch"><a href="#8-git-merge-–squash-branch" class="headerlink" title="8, git merge –squash branch"></a>8, git merge –squash branch</h4><p>合并的时候不想携带分支的commit信息，合并到master的时候只会留下一条信息</p>
-<pre><code>    git merge --squash branch
-    git add .
- 	git commit -m &quot;merge branch&quot;
-    git push
-</code></pre>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Git</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/06/Git%E7%9A%84%E5%90%84%E7%A7%8D%E6%92%A4%E9%94%80/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/5/">Next &amp;raquo;</a>
@@ -2648,11 +2697,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2668,11 +2717,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
+                <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -2704,6 +2753,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">hexo</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">MAC OS</a>
               </li>
              
@@ -2712,15 +2765,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">小程序</a>
               </li>
              
               <li class="article-tag-list-item">
