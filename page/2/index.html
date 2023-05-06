@@ -152,6 +152,180 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-小程序中页面传参" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/03/31/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%B8%AD%E9%A1%B5%E9%9D%A2%E4%BC%A0%E5%8F%82/">小程序中页面传参</a>
+    </h1>
+  
+
+        
+        <a href="/2022/03/31/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%B8%AD%E9%A1%B5%E9%9D%A2%E4%BC%A0%E5%8F%82/" class="archive-article-date">
+  	<time datetime="2022-03-31T01:56:21.502Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-31</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>主要有以下几种方式</p>
+<p>url传参</p>
+<ul>
+<li><p>事件通道 EventChannel</p>
+</li>
+<li><p>本地存储</p>
+</li>
+<li><p>应用全局变量</p>
+</li>
+<li><p>公共变量</p>
+</li>
+</ul>
+<h2 id="url传参"><a href="#url传参" class="headerlink" title="url传参"></a>url传参</h2><p>方式和web中的方式一致。</p>
+<h3 id="index1-页面"><a href="#index1-页面" class="headerlink" title="index1 页面"></a>index1 页面</h3><pre><code>&lt;navigator url=&quot;/pages/index2/index2?name=海贼王&quot;&gt;页面2&lt;/navigator&gt;
+</code></pre>
+<p> 或者</p>
+<pre><code> wx.navigateTo(&#123;
+  url: &quot;/pages/index2/index2?name=海贼王&quot;
+&#125;)
+</code></pre>
+<h3 id="index2-页面"><a href="#index2-页面" class="headerlink" title="index2 页面"></a>index2 页面</h3><pre><code>  onLoad: function (options) &#123;
+    console.log(options);// &#123; name : 海贼王&#125;
+  &#125;,
+</code></pre>
+<p>需要注意的是，如果 index2 是tabbar页面，那么无法在onLoad中获取页面参数</p>
+<h2 id="事件通道-EventChannel"><a href="#事件通道-EventChannel" class="headerlink" title="事件通道 EventChannel"></a>事件通道 EventChannel</h2><p>如果一个页面由另一个页面通过 wx.navigateTo 打开，这两个页面间将建立一条数据通道：</p>
+<ul>
+<li>被打开的页面可以通过 this.getOpenerEventChannel() 方法来获得一个 EventChannel 对象；</li>
+<li>wx.navigateTo 的 success 回调中也包含一个 EventChannel 对象。</li>
+</ul>
+<p>这两个 EventChannel 对象间可以使用 emit 和 on 方法相互发送、监听事件。</p>
+<h3 id="index1-wxml"><a href="#index1-wxml" class="headerlink" title="index1.wxml"></a>index1.wxml</h3><pre><code>&lt;view&gt;
+  来自于页面2 传递的数据: &#123;&#123;msg&#125;&#125;
+&lt;/view&gt;
+</code></pre>
+<h3 id="index1-js"><a href="#index1-js" class="headerlink" title="index1.js"></a>index1.js</h3><pre><code>Page(&#123;
+  data: &#123;
+    msg: &quot;&quot;
+  &#125;,
+  onLoad: function () &#123;
+    // 1 跳转到页面2
+    wx.navigateTo(&#123;
+      url: &quot;/pages/index2/index2&quot;,
+      // 2 在成功的回调函数中获取事件通道对象
+      success: (&#123; eventChannel &#125;) =&gt; &#123;
+        // 3 监听自定义事件
+        eventChannel.on(&quot;data&quot;, (e) =&gt; &#123;
+          // 4 获取页面2传递过来的数据 设置到 data中
+          this.setData(&#123;
+            msg: e.name
+          &#125;)
+        &#125;)
+      &#125;
+    &#125;);
+  &#125;,
+&#125;)
+</code></pre>
+<h3 id="index2-js"><a href="#index2-js" class="headerlink" title="index2.js"></a>index2.js</h3><pre><code>Page(&#123;
+  onLoad: function () &#123;
+    // 被使用 wx.navigatorTo打开的页面获取获取到一个事件通道对象
+    const EventChannel = this.getOpenerEventChannel();
+    // 触发事件和传递参数到 页面1中
+    EventChannel.emit(&quot;data&quot;, &#123; name: &#39;海贼王&#39; &#125;);
+  &#125;
+&#125;)
+</code></pre>
+<h2 id="本地存储"><a href="#本地存储" class="headerlink" title="本地存储"></a>本地存储</h2><p>小程序中的本地存储用法类似web中，可以实现在整个应用中获取数据和存储数据</p>
+<h3 id="index1-js-1"><a href="#index1-js-1" class="headerlink" title="index1.js"></a>index1.js</h3><pre><code>wx.setStorageSync(&#39;data&#39;, &#123;name:&#39;海贼王&#39;&#125;);// 可以直接存任意类型的数据
+</code></pre>
+<h3 id="index2-js-1"><a href="#index2-js-1" class="headerlink" title="index2.js"></a>index2.js</h3><pre><code>wx.getStorageSync(&#39;data&#39;);// 获取
+</code></pre>
+<h2 id="应用全局变量"><a href="#应用全局变量" class="headerlink" title="应用全局变量"></a>应用全局变量</h2><p>不同的页面都是处于一个共同的应用当中的，这个应用可以理解为 app.js</p>
+<h3 id="app-js"><a href="#app-js" class="headerlink" title="app.js"></a>app.js</h3><p>在这里可以定义公共数据</p>
+<pre><code>App(&#123;
+  myData: &#123;
+    name: &quot;悟空&quot;
+  &#125;
+&#125;)
+</code></pre>
+<h3 id="index1-js-2"><a href="#index1-js-2" class="headerlink" title="index1.js"></a>index1.js</h3><p>页面中可以通过 getApp 来获取</p>
+<pre><code>let app = getApp();
+console.log(app.myData);
+</code></pre>
+<p>当然也可以直接修改</p>
+<pre><code>let app = getApp();
+app.myData.name=&quot;八戒&quot;;
+</code></pre>
+<h2 id="公共变量"><a href="#公共变量" class="headerlink" title="公共变量"></a>公共变量</h2><p>单独定义一个独立的js文件，把数据存储进去，即可</p>
+<h3 id="common-js"><a href="#common-js" class="headerlink" title="common.js"></a>common.js</h3><pre><code>const data = &#123;
+  name: &quot;海贼王&quot;
+&#125;;
+
+module.exports = data;
+</code></pre>
+<h3 id="index1-js-3"><a href="#index1-js-3" class="headerlink" title="index1.js"></a>index1.js</h3><pre><code>const data = require(&quot;../../common&quot;);
+Page(&#123;
+  onLoad: function () &#123;
+    console.log(data);
+  &#125;,
+&#125;)
+</code></pre>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">小程序</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/03/31/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%B8%AD%E9%A1%B5%E9%9D%A2%E4%BC%A0%E5%8F%82/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-iOS15-适配要点" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1719,147 +1893,6 @@ private:
 
 
   
-    <article id="post-基石库-R.swift" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/06/07/%E5%9F%BA%E7%9F%B3%E5%BA%93-R.swift/">基石库——R.swift</a>
-    </h1>
-  
-
-        
-        <a href="/2021/06/07/%E5%9F%BA%E7%9F%B3%E5%BA%93-R.swift/" class="archive-article-date">
-  	<time datetime="2021-06-07T05:22:28.661Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-06-07</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="何为基石库？"><a href="#何为基石库？" class="headerlink" title="何为基石库？"></a>何为基石库？</h2><p>做一个App无外乎两大要素：</p>
-<ul>
-<li><p>获取数据</p>
-</li>
-<li><p>通过数据驱动页面</p>
-</li>
-</ul>
-<p>也许你的App没有网络请求或者网络请求少，你可以不需要Alamofire。<br>也许你的App的UI不是特别复杂，简单的xib和storyboard就可以胜任。<br>但是在当下一个App中，图片资源、字符串资源等，作为一个App开发者，你是不得不用的。<br>举个栗子，传统的获取一个image资源我们都是这么写：</p>
-<pre><code>let image = UImage(named: &quot;saber&quot;)
-</code></pre>
-<p>这么写的最大弊端就是saber这是一个字符串硬编码，靠的的是纯手工敲打，一旦出错，界面就会出现异常。</p>
-<p>在开发中，需要尽量避免这种硬编码，如何高效将这种硬编码的表达方式更换为高效安全的方式，就由本次的主角出场了–R.swift。</p>
-<p>统和所有的资源，以现代化的方式引用资源，项目中使用它，虽然不会让你的App上升一个层次，不过却给你的编码极度舒适。</p>
-<pre><code>let image = R.image.saber()
-</code></pre>
-<p>同样是Ex咖喱棒，味道却完全不同，哈哈。</p>
-<p>基石库就是那些你无法避免不得不用的库，而R.swift恰恰就是。</p>
-<h2 id="R-swift"><a href="#R-swift" class="headerlink" title="R.swift"></a>R.swift</h2><p>何为R，即Resource的缩写，我们先看看官方给出的一些例子：</p>
-<p>使用R.swift函数前：</p>
-<pre><code>let icon = UIImage(named: &quot;settings-icon&quot;)
-let font = UIFont(name: &quot;San Francisco&quot;, size: 42)
-let color = UIColor(named: &quot;indicator highlight&quot;)
-let viewController = CustomViewController(nibName: &quot;CustomView&quot;, bundle: nil)
-let string = String(format: NSLocalizedString(&quot;welcome.withName&quot;, comment: &quot;&quot;), locale: NSLocale.current, &quot;Arthur Dent&quot;)
-</code></pre>
-<p>使用R.swift函数后：</p>
-<pre><code>let icon = R.image.settingsIcon()
-let font = R.font.sanFrancisco(size: 42)
-let color = R.color.indicatorHighlight()
-let viewController = CustomViewController(nib: R.nib.customView)
-let string = R.string.localizable.welcomeWithName(&quot;Arthur Dent&quot;)
-</code></pre>
-<p>所有的资源都函数化后，编写过程想出错都难，特别需要注意的是最后一个涉及国际化的函数R.string.localizable.welcomeWithName(“Arthur Dent”)，Arthur Dent这个字符串需要自己具体制定，可以通过在做国际化时，通过info.strings进行处理。</p>
-<p>R.swift目前支持下面这些资源文件管理：</p>
-<ul>
-<li>Images</li>
-<li>Fonts</li>
-<li>Resource files</li>
-<li>Colors</li>
-<li>Localized strings</li>
-<li>Storyboards</li>
-<li>Segues</li>
-<li>Nibs</li>
-<li>Reusable cells</li>
-</ul>
-<p>基本上覆盖了绝大多数的App中的资源管理。</p>
-<h2 id="安装和使用"><a href="#安装和使用" class="headerlink" title="安装和使用"></a>安装和使用</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>R.swift使用其他特别舒服，不过它的安装确实比其他的第三方库稍微麻烦一点，正所谓工欲善其事必先利其器，这一点麻烦是值得的。</p>
-<p>1.添加’R.swift’ 在工程的Podfile文件中，并运行pod install。 2.如下图所示。添加脚本：</p>
-<p><img src="http://img.wangjungang.cn/uPic/U1H1D4.jpg"></p>
-<p>3.如下图所示，移动脚本的位置，让它在Compile Sources phase和Check Pods Manifest.lock之间：</p>
-<p><img src="http://img.wangjungang.cn/uPic/EqieCU.jpg"></p>
-<p>4.添加脚本：</p>
-<p><img src="http://img.wangjungang.cn/uPic/BIkAYB.jpg"></p>
-<p>在shell，下面这一栏添加</p>
-<pre><code>&quot;$PODS_ROOT/R.swift/rswift&quot; generate &quot;$SRCROOT/R.generated.swift&quot;
-</code></pre>
-<p>在input Files通过+号添加</p>
-<pre><code>$TEMP_DIR/rswift-lastrun
-</code></pre>
-<p>在Output Files通过+号添加</p>
-<pre><code>$SRCROOT/R.generated.swift
-</code></pre>
-<p>5.运行添加R.generated.swift：</p>
-<p>完成第4步后，进行command + B编译，然后在工程的根目录下面会找到R.generated.swift文件：<br><img src="http://img.wangjungang.cn/uPic/axDe8k.jpg"></p>
-<p>将这个文件拖入到工程中，并且不要勾选Copy items if needed</p>
-<p><img src="http://img.wangjungang.cn/uPic/92gr2O.jpg"></p>
-<p>这样，R.swift就安装完成啦。</p>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>每一次添加了新的资源文件，就运行一次command + B一次，这样R.generated.swift文件就将新加入的资源文件更新，使用使用的时候只用通过R.来进行引用了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Swift</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/06/07/%E5%9F%BA%E7%9F%B3%E5%BA%93-R.swift/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
@@ -1965,11 +1998,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1985,6 +2018,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
@@ -1997,15 +2034,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">

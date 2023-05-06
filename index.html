@@ -152,6 +152,105 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-小程序加载pdf等文件" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2023/05/06/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%8A%A0%E8%BD%BDpdf%E7%AD%89%E6%96%87%E4%BB%B6/">小程序加载pdf等文件</a>
+    </h1>
+  
+
+        
+        <a href="/2023/05/06/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%8A%A0%E8%BD%BDpdf%E7%AD%89%E6%96%87%E4%BB%B6/" class="archive-article-date">
+  	<time datetime="2023-05-06T09:10:07.609Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2023-05-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>微信官方提供了相关的 API 来预览常见文件，目前支持如下格式的文件</p>
+<p><img src="https://img2020.cnblogs.com/blog/1725797/202108/1725797-20210830213117341-948107402.png"></p>
+<p>总结一下就是先用 <code>wx.downloadFile</code> API 把文件下载下来，再用 <code>wx.openDocument</code> API 把它打开</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/api/network/download/wx.downloadFile.html">wx.downloadFile</a>：下载文件到本地</li>
+<li><a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/api/file/wx.openDocument.html">wx.openDocument</a>：新开页面打开本地文档</li>
+</ul>
+<h3 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h3><p><strong>wx.downloadFile API 单次下载允许的最大文件为 200MB</strong></p>
+<ul>
+<li><p><a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html">网络-使用说明</a>（<u>域名只支持&amp;nbsp;<code>https</code>&amp;nbsp;(<a rel="noopener noopener" target="_blank" href="https://developers.weixin.qq.com/miniprogram/dev/api/network/upload/wx.uploadFile.html">wx.uploadFile</a>、<a rel="noopener noopener" target="_blank" href="https://developers.weixin.qq.com/miniprogram/dev/api/network/download/wx.downloadFile.html">wx.downloadFile</a>) 和&amp;nbsp;<code>wss</code>&amp;nbsp;(<a rel="noopener noopener" target="_blank" href="https://developers.weixin.qq.com/miniprogram/dev/api/network/websocket/wx.connectSocket.html">wx.connectSocket</a>) 协议</u>）</p>
+</li>
+<li><p>可以结合 <a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/api/network/download/DownloadTask.html">DownloadTask</a> 相关 API 实现下载进度展示</p>
+</li>
+</ul>
+<p><strong>需要在小程序后台配置 downloadFile 合法域名才能下载文件</strong></p>
+<p><img src="https://img2020.cnblogs.com/blog/1725797/202108/1725797-20210830213109232-1889103392.png"></p>
+<h2 id="实现代码"><a href="#实现代码" class="headerlink" title="实现代码"></a>实现代码</h2><p>以预览 PDF 文件为例</p>
+<ul>
+<li>下载文件需要一个等待过程，所以加上加载提示很有必要</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">const util = require(&#x27;../../utils/util&#x27;) // 引入封装过的加载提示</span><br><span class="line"></span><br><span class="line">Page(&#123;</span><br><span class="line">    // 预览文件</span><br><span class="line">    previewFile(fileLink) &#123;</span><br><span class="line">        if(!fileLink) &#123;</span><br><span class="line">            return false</span><br><span class="line">        &#125;</span><br><span class="line">        util.showLoading()</span><br><span class="line">      </span><br><span class="line">        // 单次下载允许的最大文件为 200MB</span><br><span class="line">        wx.downloadFile(&#123;</span><br><span class="line">            url: fileLink, // 地址已打码，自己换个其他的地址（&quot;https://www.xxxxx.com/file/测试通知.pdf&quot;）</span><br><span class="line">            success: function (res) &#123;</span><br><span class="line">                console.log(res, &quot;wx.downloadFile success res&quot;)</span><br><span class="line">                if(res.statusCode != 200) &#123;</span><br><span class="line">                    util.hideLoadingWithErrorTips()</span><br><span class="line">                    return false</span><br><span class="line">                &#125;</span><br><span class="line">                var Path = res.tempFilePath //返回的文件临时地址，用于后面打开本地预览所用</span><br><span class="line">                wx.openDocument(&#123;</span><br><span class="line">                    filePath: Path,</span><br><span class="line">                    showMenu: true,</span><br><span class="line">                    success: function (res) &#123;</span><br><span class="line">                        console.log(&#x27;打开成功&#x27;);</span><br><span class="line">                        util.hideLoading()</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;,</span><br><span class="line">            fail: function (err) &#123;</span><br><span class="line">                console.log(err, &quot;wx.downloadFile fail err&quot;);</span><br><span class="line">                util.hideLoadingWithErrorTips()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">      </span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">/* 加载动画相关 */</span><br><span class="line">const showLoading = (tips = &#x27;加载中...&#x27;) =&gt; &#123;</span><br><span class="line">  wx.showNavigationBarLoading()</span><br><span class="line">  wx.showLoading(&#123;</span><br><span class="line">    title: tips,</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const hideLoading = () =&gt; &#123;</span><br><span class="line">  wx.hideLoading()</span><br><span class="line">  wx.hideNavigationBarLoading()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">const hideLoadingWithErrorTips = (err = &#x27;加载失败...&#x27;) =&gt; &#123;</span><br><span class="line">  hideLoading()</span><br><span class="line">  wx.showToast(&#123;</span><br><span class="line">    title: err,</span><br><span class="line">    icon: &#x27;error&#x27;,</span><br><span class="line">    duration: 2000</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module.exports = &#123;</span><br><span class="line">  showLoading: showLoading,</span><br><span class="line">  hideLoading: hideLoading,</span><br><span class="line">  hideLoadingWithErrorTips: hideLoadingWithErrorTips,</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>每次点击都要重新下载文件很不友好，可以考虑把文件地址存下来，如果下过了就直接打开</p>
+<h3 id="个人扩展思路："><a href="#个人扩展思路：" class="headerlink" title="个人扩展思路："></a>个人扩展思路：</h3><p>第一次点击调用 wx.downloadFile 将返回的文件本地地址存到 localStorage 缓存里，每次点击前去 localStorage 里看一下有没有这条数据的本地地址，有的话就直接调用 wx.openDocument 打开，打开失败函数里判断下是不是本地文件已经清理掉了，清理掉了就重新下载再打开</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">小程序</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2023/05/06/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%8A%A0%E8%BD%BDpdf%E7%AD%89%E6%96%87%E4%BB%B6/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-hexo版本升级" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -950,180 +1049,6 @@
 
 
   
-    <article id="post-小程序中页面传参" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2022/03/31/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%B8%AD%E9%A1%B5%E9%9D%A2%E4%BC%A0%E5%8F%82/">小程序中页面传参</a>
-    </h1>
-  
-
-        
-        <a href="/2022/03/31/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%B8%AD%E9%A1%B5%E9%9D%A2%E4%BC%A0%E5%8F%82/" class="archive-article-date">
-  	<time datetime="2022-03-31T01:56:21.502Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-31</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>主要有以下几种方式</p>
-<p>url传参</p>
-<ul>
-<li><p>事件通道 EventChannel</p>
-</li>
-<li><p>本地存储</p>
-</li>
-<li><p>应用全局变量</p>
-</li>
-<li><p>公共变量</p>
-</li>
-</ul>
-<h2 id="url传参"><a href="#url传参" class="headerlink" title="url传参"></a>url传参</h2><p>方式和web中的方式一致。</p>
-<h3 id="index1-页面"><a href="#index1-页面" class="headerlink" title="index1 页面"></a>index1 页面</h3><pre><code>&lt;navigator url=&quot;/pages/index2/index2?name=海贼王&quot;&gt;页面2&lt;/navigator&gt;
-</code></pre>
-<p> 或者</p>
-<pre><code> wx.navigateTo(&#123;
-  url: &quot;/pages/index2/index2?name=海贼王&quot;
-&#125;)
-</code></pre>
-<h3 id="index2-页面"><a href="#index2-页面" class="headerlink" title="index2 页面"></a>index2 页面</h3><pre><code>  onLoad: function (options) &#123;
-    console.log(options);// &#123; name : 海贼王&#125;
-  &#125;,
-</code></pre>
-<p>需要注意的是，如果 index2 是tabbar页面，那么无法在onLoad中获取页面参数</p>
-<h2 id="事件通道-EventChannel"><a href="#事件通道-EventChannel" class="headerlink" title="事件通道 EventChannel"></a>事件通道 EventChannel</h2><p>如果一个页面由另一个页面通过 wx.navigateTo 打开，这两个页面间将建立一条数据通道：</p>
-<ul>
-<li>被打开的页面可以通过 this.getOpenerEventChannel() 方法来获得一个 EventChannel 对象；</li>
-<li>wx.navigateTo 的 success 回调中也包含一个 EventChannel 对象。</li>
-</ul>
-<p>这两个 EventChannel 对象间可以使用 emit 和 on 方法相互发送、监听事件。</p>
-<h3 id="index1-wxml"><a href="#index1-wxml" class="headerlink" title="index1.wxml"></a>index1.wxml</h3><pre><code>&lt;view&gt;
-  来自于页面2 传递的数据: &#123;&#123;msg&#125;&#125;
-&lt;/view&gt;
-</code></pre>
-<h3 id="index1-js"><a href="#index1-js" class="headerlink" title="index1.js"></a>index1.js</h3><pre><code>Page(&#123;
-  data: &#123;
-    msg: &quot;&quot;
-  &#125;,
-  onLoad: function () &#123;
-    // 1 跳转到页面2
-    wx.navigateTo(&#123;
-      url: &quot;/pages/index2/index2&quot;,
-      // 2 在成功的回调函数中获取事件通道对象
-      success: (&#123; eventChannel &#125;) =&gt; &#123;
-        // 3 监听自定义事件
-        eventChannel.on(&quot;data&quot;, (e) =&gt; &#123;
-          // 4 获取页面2传递过来的数据 设置到 data中
-          this.setData(&#123;
-            msg: e.name
-          &#125;)
-        &#125;)
-      &#125;
-    &#125;);
-  &#125;,
-&#125;)
-</code></pre>
-<h3 id="index2-js"><a href="#index2-js" class="headerlink" title="index2.js"></a>index2.js</h3><pre><code>Page(&#123;
-  onLoad: function () &#123;
-    // 被使用 wx.navigatorTo打开的页面获取获取到一个事件通道对象
-    const EventChannel = this.getOpenerEventChannel();
-    // 触发事件和传递参数到 页面1中
-    EventChannel.emit(&quot;data&quot;, &#123; name: &#39;海贼王&#39; &#125;);
-  &#125;
-&#125;)
-</code></pre>
-<h2 id="本地存储"><a href="#本地存储" class="headerlink" title="本地存储"></a>本地存储</h2><p>小程序中的本地存储用法类似web中，可以实现在整个应用中获取数据和存储数据</p>
-<h3 id="index1-js-1"><a href="#index1-js-1" class="headerlink" title="index1.js"></a>index1.js</h3><pre><code>wx.setStorageSync(&#39;data&#39;, &#123;name:&#39;海贼王&#39;&#125;);// 可以直接存任意类型的数据
-</code></pre>
-<h3 id="index2-js-1"><a href="#index2-js-1" class="headerlink" title="index2.js"></a>index2.js</h3><pre><code>wx.getStorageSync(&#39;data&#39;);// 获取
-</code></pre>
-<h2 id="应用全局变量"><a href="#应用全局变量" class="headerlink" title="应用全局变量"></a>应用全局变量</h2><p>不同的页面都是处于一个共同的应用当中的，这个应用可以理解为 app.js</p>
-<h3 id="app-js"><a href="#app-js" class="headerlink" title="app.js"></a>app.js</h3><p>在这里可以定义公共数据</p>
-<pre><code>App(&#123;
-  myData: &#123;
-    name: &quot;悟空&quot;
-  &#125;
-&#125;)
-</code></pre>
-<h3 id="index1-js-2"><a href="#index1-js-2" class="headerlink" title="index1.js"></a>index1.js</h3><p>页面中可以通过 getApp 来获取</p>
-<pre><code>let app = getApp();
-console.log(app.myData);
-</code></pre>
-<p>当然也可以直接修改</p>
-<pre><code>let app = getApp();
-app.myData.name=&quot;八戒&quot;;
-</code></pre>
-<h2 id="公共变量"><a href="#公共变量" class="headerlink" title="公共变量"></a>公共变量</h2><p>单独定义一个独立的js文件，把数据存储进去，即可</p>
-<h3 id="common-js"><a href="#common-js" class="headerlink" title="common.js"></a>common.js</h3><pre><code>const data = &#123;
-  name: &quot;海贼王&quot;
-&#125;;
-
-module.exports = data;
-</code></pre>
-<h3 id="index1-js-3"><a href="#index1-js-3" class="headerlink" title="index1.js"></a>index1.js</h3><pre><code>const data = require(&quot;../../common&quot;);
-Page(&#123;
-  onLoad: function () &#123;
-    console.log(data);
-  &#125;,
-&#125;)
-</code></pre>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">小程序</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2022/03/31/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E4%B8%AD%E9%A1%B5%E9%9D%A2%E4%BC%A0%E5%8F%82/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
@@ -1229,11 +1154,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Android</a>
+                <a href="javascript:void(0)" class="js-tag color5">Java</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Java</a>
+                <a href="javascript:void(0)" class="js-tag color3">Android</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -1249,6 +1174,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">git</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Hexo</a>
               </li>
              
@@ -1261,15 +1190,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">swift</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">git</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">RxSwift</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">swift</a>
               </li>
              
               <li class="article-tag-list-item">
