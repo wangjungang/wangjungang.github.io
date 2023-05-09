@@ -152,6 +152,109 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-如何决定使用HashMap还是TreeMap" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/12/10/%E5%A6%82%E4%BD%95%E5%86%B3%E5%AE%9A%E4%BD%BF%E7%94%A8HashMap%E8%BF%98%E6%98%AFTreeMap/">如何决定使用HashMap还是TreeMap？</a>
+    </h1>
+  
+
+        
+        <a href="/2020/12/10/%E5%A6%82%E4%BD%95%E5%86%B3%E5%AE%9A%E4%BD%BF%E7%94%A8HashMap%E8%BF%98%E6%98%AFTreeMap/" class="archive-article-date">
+  	<time datetime="2020-12-10T05:15:18.436Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-12-10</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>TreeMap&lt;K,V&gt;的Key值是要求实现java.lang.Comparable，所以迭代的时候TreeMap默认是按照Key值升序排序的；TreeMap的实现是基于红黑树结构。适用于按自然顺序或自定义顺序遍历键（key）。</p>
+<p>HashMap&lt;K,V&gt;的Key值实现散列hashCode()，分布是散列的、均匀的，不支持排序；数据结构主要是桶(数组)，链表或红黑树。适用于在Map中插入、删除和定位元素。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>如果你需要得到一个有序的结果时就应该使用TreeMap（因为HashMap中元素的排列顺序是不固定的）。除此之外，由于HashMap有更好的性能，所以大多不需要排序的时候我们会使用HashMap。</p>
+<h2 id="拓展"><a href="#拓展" class="headerlink" title="拓展"></a>拓展</h2><h3 id="1、HashMap-和-TreeMap-的实现"><a href="#1、HashMap-和-TreeMap-的实现" class="headerlink" title="1、HashMap 和 TreeMap 的实现"></a>1、HashMap 和 TreeMap 的实现</h3><p>HashMap：基于哈希表实现。使用HashMap要求添加的键类明确定义了hashCode()和equals()[可以重写hashCode()和equals()]，为了优化HashMap空间的使用，您可以调优初始容量和负载因子。</p>
+<ul>
+<li><p>HashMap(): 构建一个空的哈希映像</p>
+</li>
+<li><p>HashMap(Map m): 构建一个哈希映像，并且添加映像m的所有映射</p>
+</li>
+<li><p>HashMap(int initialCapacity): 构建一个拥有特定容量的空的哈希映像</p>
+</li>
+<li><p>HashMap(int initialCapacity, float loadFactor): 构建一个拥有特定容量和加载因子的空的哈希映像</p>
+</li>
+<li><p>TreeMap：基于红黑树实现。TreeMap没有调优选项，因为该树总处于平衡状态。</p>
+</li>
+<li><p>TreeMap()：构建一个空的映像树</p>
+</li>
+<li><p>TreeMap(Map m): 构建一个映像树，并且添加映像m中所有元素</p>
+</li>
+<li><p>TreeMap(Comparator c): 构建一个映像树，并且使用特定的比较器对关键字进行排序</p>
+</li>
+<li><p>TreeMap(SortedMap s): 构建一个映像树，添加映像树s中所有映射，并且使用与有序映像s相同的比较器排序</p>
+</li>
+</ul>
+<p>###2、HashMap 和 TreeMap 都是非线程安全<br>HashMap继承AbstractMap抽象类，TreeMap继承自SortedMap接口。<br>AbstractMap抽象类：覆盖了equals()和hashCode()方法以确保两个相等映射返回相同的哈希码。如果两个映射大小相等、包含同样的键且每个键在这两个映射中对应的值都相同，则这两个映射相等。映射的哈希码是映射元素哈希码的总和，其中每个元素是Map.Entry接口的一个实现。因此，不论映射内部顺序如何，两个相等映射会报告相同的哈希码。</p>
+<p>SortedMap接口：它用来保持键的有序顺序。SortedMap接口为映像的视图(子集)，包括两个端点提供了访问方法。除了排序是作用于映射的键以外，处理SortedMap和处理SortedSet一样。添加到SortedMap实现类的元素必须实现Comparable接口，否则您必须给它的构造函数提供一个Comparator接口的实现。TreeMap类是它的唯一一个实现。</p>
+<p>###3、TreeMap中默认是按照升序进行排序的，如何让他降序<br>通过自定义的比较器来实现<br>定义一个比较器类，实现Comparator接口，重写compare方法，有两个参数，这两个参数通过调用compareTo进行比较，而compareTo默认规则是：</p>
+<p>如果参数字符串等于此字符串，则返回 0 值；</p>
+<p>如果此字符串小于字符串参数，则返回一个小于 0 的值；</p>
+<p>如果此字符串大于字符串参数，则返回一个大于 0 的值。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">Java</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2020/12/10/%E5%A6%82%E4%BD%95%E5%86%B3%E5%AE%9A%E4%BD%BF%E7%94%A8HashMap%E8%BF%98%E6%98%AFTreeMap/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-ButterKnife被弃用，ViewBinding才是findView的未来？" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2425,365 +2528,6 @@ class XXManager &#123;
 
 
   
-    <article id="post- Swift面向协议编程" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/08/%20Swift%E9%9D%A2%E5%90%91%E5%8D%8F%E8%AE%AE%E7%BC%96%E7%A8%8B/">Swift面向协议编程</a>
-    </h1>
-  
-
-        
-        <a href="/2020/03/08/%20Swift%E9%9D%A2%E5%90%91%E5%8D%8F%E8%AE%AE%E7%BC%96%E7%A8%8B/" class="archive-article-date">
-  	<time datetime="2020-03-08T08:56:29.896Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2020-03-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="一、OOP与POP"><a href="#一、OOP与POP" class="headerlink" title="一、OOP与POP"></a>一、OOP与POP</h2><p>面向对象程序设计(Object Oriented Programming) 其本质是以建立模型体现出来的抽象思维过程和面向对象的方法。模型是用来反映现实世界中事物特征的。任何一个模型都不可能反映客观事物的一切具体特征，只能对事物特征和变化规律的一种抽象，且在它所涉及的范围内更普遍、更集中、更深刻地描述客体的特征。通过建立模型而达到的抽象是人们对客体认识的深化</p>
-<p>正是因为化零为整的功效，方便储存数据然后传输！ 面向对象的设计，在众多语言里面被采用！OC - Swift 主流方式也是 OOP. 这个相比大家已经非常熟悉了，这里也不再啰嗦。今天的主角是 POP (Protocol Oriented Programming) 一 面向协议编程</p>
-<h3 id="面向对象的困境"><a href="#面向对象的困境" class="headerlink" title="面向对象的困境"></a>面向对象的困境</h3><ul>
-<li>横切关注点</li>
-<li>动态派发安全性</li>
-<li>菱形缺陷</li>
-</ul>
-<h2 id="二、POP-面向协议编程"><a href="#二、POP-面向协议编程" class="headerlink" title="二、POP 面向协议编程"></a>二、POP 面向协议编程</h2><p>面向协议编程的思维，在 Swift开发中非常非常重要！可以说如果你用好了 POP 那么你的项目绝对逼格不是一个level 下面我们通过解决 OOP 问题的思路展开分析</p>
-<h3 id="POP-解决横切关注点"><a href="#POP-解决横切关注点" class="headerlink" title="POP 解决横切关注点"></a>POP 解决横切关注点</h3><p>横切关注点(Cross-Cutting Concerns) 那就是我们很难在不同继承关系的类里共用代码! 现在我们通过面向协议的方式，任何遵循协议的，都可以默认添加 name属性以及sayHello()方法！</p>
-<pre><code>protocol LGProtocl &#123;
-    /// 协议属性
-    var name: String &#123;get&#125;
-    /// 协议方法
-    func sayHello()
-&#125;
-</code></pre>
-<ul>
-<li><p>但是这里还有一个问题：缺乏实现！如果这样提供声明，我还需要在每一个类里面实现，有很多时候其实这些方法都是共有，不需要太多特定实现</p>
-</li>
-<li><p>幸好在 WWDC 2015 和 Swift 2 发布时，Apple 为协议引入了一个新特性一 协议扩展 它为 Swift 语言带来了一次革命性的变化。</p>
-<pre><code>  protocol LGProtocl &#123;
-      /// 协议属性
-      var name: String &#123;get&#125;
-      /// 协议方法
-      func sayHello()
-  &#125;
-</code></pre>
-</li>
-<li><p>但是这里还有一个问题：缺乏实现！如果这样提供声明，我还需要在每一个类里面实现，有很多时候其实这些方法都是共有，不需要太多特定实现</p>
-</li>
-<li><p>幸好在 WWDC 2015 和 Swift 2 发布时，Apple 为协议引入了一个新特性一 协议扩展 它为 Swift 语言带来了一次革命性的变化。</p>
-<pre><code>  struct LGTeacher: LGProtocl&#123;
-      var name: String
-      func sayHello() &#123;
-          print(&quot;你好&quot;)
-      &#125;
-  &#125;
-</code></pre>
-</li>
-<li><p>通过协议定义，提供实现的入口，遵循协议的类型需要对其进行实现</p>
-</li>
-<li><p>协议扩展，为入口提供默认实现。根据入口提供额外实现</p>
-</li>
-</ul>
-<p>这样的操作有什么作用了？ 一 万物皆 lg</p>
-<pre><code>    // 声明协议
-    extension LGCompatible &#123;
-        /// Reactive extensions.
-        public static var lg: LGRxSwift.Reactive&lt;Self&gt;.Type
-        /// Reactive extensions.
-        public var lg: LGRxSwift.Reactive&lt;Self&gt;
-    &#125;
-    // NSObject 实现
-    extension NSObject : LGCompatible &#123; &#125;
-    
-</code></pre>
-<ul>
-<li>这样完美实现了万物皆lg的特性</li>
-<li>然后通过 LGCompatible 引申到Reactive 响应式类或者结构体</li>
-<li>最后通过不断拓展 Reactive 的能力，就能完美切合</li>
-</ul>
-<h3 id="POP-解决动态派发安全性"><a href="#POP-解决动态派发安全性" class="headerlink" title="POP 解决动态派发安全性"></a>POP 解决动态派发安全性</h3><p>对于没有实现 LGProtocl 的类型，编译器将返回错误，因此不存在消息误发送的情况</p>
-<pre><code>// Compiler Error: 
-// &#39;LGTeacher&#39; does not conform to protocol &#39;LGProtocl&#39;
-// protocol requires function &#39;sayHello()&#39;
-</code></pre>
-<h3 id="POP-解决菱形缺陷"><a href="#POP-解决菱形缺陷" class="headerlink" title="POP 解决菱形缺陷"></a>POP 解决菱形缺陷</h3><p>最后我们看看多继承。多继承中存在的一个重要问题是菱形缺陷，也就是子类无法确定使用哪个父类的方法。在协议的对应方面，这个问题虽然依然存在，但却是可以唯一安全地确定的。</p>
-<p>这里很遗憾POP在 解决菱形缺陷 这一点上也存在同样的BUG , 因为多个协议存在相同的协议属性、协议方法，遵循者也是无法确定的！⚠️ 我们在平时开发中一定要尽量规避同名协议遵循问题，我们在模块划分上面一定要做做到彻底，尽管 Swift 还不能很好地处理多个协议的冲突 但是我们可以在协议层功能抽层严格机智处理上浮与下沉功能。</p>
-<p>举个例子：🌰</p>
-<ul>
-<li><p>我们刚刚是不是做了LGCompatible, 它是我们功能的入口，万物皆lg,进来，那么这层协议只需要提供入口就完毕</p>
-</li>
-<li><p>同时提供接口过度能力，把 LGReactiveCompatible 的 lg 过度到 Reactive层</p>
-<pre><code>  extension LGReactiveCompatible &#123;
-      /// Reactive extensions.
-      public static var lg: Reactive&lt;Self&gt;.Type &#123;
-          get &#123; return Reactive&lt;Self&gt;.self &#125;
-          set &#123;// this enables using Reactive to &quot;mutate&quot; base type &#125;
-      &#125;
-      /// Reactive extensions.
-      public var lg: Reactive&lt;Self&gt; &#123;
-          get &#123; return Reactive(self) &#125;
-          set &#123; // this enables using Reactive to &quot;mutate&quot; base object &#125;
-      &#125;
-  &#125;
-</code></pre>
-</li>
-<li><p>Reactive层, 根据业务划分开来，达到逻辑代码下沉效果！</p>
-<pre><code>  public struct Reactive&lt;Base&gt; &#123;
-      public let base: Base
-      public init(_ base: Base) &#123;
-          self.base = base
-      &#125;
-  &#125;
-</code></pre>
-</li>
-<li><p>根据 Reactive 里面关联的 Base 类型来确定不同的响应式功能</p>
-</li>
-<li><p>比如：extension Reactive where Base: UISwitch 其中 UISwitch 可以换成 UITableView、UITextField、UIView … 不断业务下沉！</p>
-</li>
-</ul>
-<p>相信到这里你已经感受到了面向协议编程的方便之处，但是还有一个非常重要的特性没有展现出来就是 一 耦合度大大降低，代码分层，逻辑更清晰</p>
-<h2 id="三、POP-网络"><a href="#三、POP-网络" class="headerlink" title="三、POP 网络"></a>三、POP 网络</h2><p>我们在实际开发中，网络请求是一个非常重要的模块</p>
-<pre><code>Alamofire.request(&quot;http://127.0.0.1:5000/pythonJson/&quot;)
-    .validate(statusCode: 200..&lt;300)
-    .validate(contentType: [&quot;application/json&quot;])
-    .responseData &#123; response in
-        switch response.result &#123;
-        case .success:
-            print(response)
-            let _ = LGLoginClient.lgJson(data: response.data)
-        case .failure(let error):
-            print(error)
-        &#125;
-&#125;
-</code></pre>
-<p>上面这段代码，没有错！但是如果你是一个资深iOS开发，肯定会发现问题！</p>
-<p>如果你直接在 ViewController (代表应用层) 直接这么网络请求，耦合度是非常大的（应用层与网络层耦合在一起）</p>
-<p>还有到处嵌套，可复用性特别低</p>
-<p>应用层其实根本不应该关心网络请求的method、接口、参数 说白了我也不想关心</p>
-<p>如果系统模块化处理，那我就非常 happy 😄😄😄</p>
-<h3 id="网络信息能力"><a href="#网络信息能力" class="headerlink" title="网络信息能力"></a>网络信息能力</h3><pre><code>enum LGHTTPMethod: String &#123;
-    case GET
-    case POST
-&#125;
-
-protocol LGRequest &#123;
-    var host: String &#123; get &#125;
-    var path: String &#123; get &#125;
-    var method: LGHTTPMethod &#123; get &#125;
-    var parameter: [String: Any] &#123; get &#125;
-    
-    associatedtype Response
-    func parse(data: Data) -&gt; Response?
-&#125;
-</code></pre>
-<ul>
-<li>LGHTTPMethod 提供本模块LGRequest 需要的请求方法枚举</li>
-<li>LGRequest 是登录注册模块的请求能力赋予者，通过面向协议的方式给我们的模块提供能力</li>
-<li>Response 这个关联类型，方便后面 json 转模型，设置这个泛型类型是能够通用化</li>
-</ul>
-<h3 id="模块信息层"><a href="#模块信息层" class="headerlink" title="模块信息层"></a>模块信息层</h3><pre><code>struct LGLoginRequest: LGRequest &#123;
-    typealias Response = LGPerson
-    let name: String
-    
-    let host = &quot;http://127.0.0.1:5000&quot;
-    var path: String &#123;
-        return &quot;/pythonJson/getTeacherInfo/?username=\(name)&quot;
-    &#125;
-    let method: LGHTTPMethod = .GET
-    let parameter: [String: Any] = [:]
-    
-    func parse(data: Data) -&gt; LGPerson? &#123;
-        return LGPerson(data: data)
-    &#125;
-&#125;
-</code></pre>
-<p>LGLoginRequest 遵循 LGRequest 获得host、path、method、parameter、parse 处理能力，在这里可以直接处理，就不需要到应用层再去传值！</p>
-<h3 id="网络请求能力"><a href="#网络请求能力" class="headerlink" title="网络请求能力"></a>网络请求能力</h3><pre><code>extension LGRequest &#123;
-    func send(handler: @escaping (Response?) -&gt; Void) &#123;
-        let url = URL(string: host.appending(path))!
-        var request = URLRequest(url: url)
-        request.httpMethod = method.rawValue
-        let task = URLSession.shared.dataTask(with: request) &#123;
-            data, response, error in
-            if let data = data, let res = self.parse(data: data) &#123;
-                DispatchQueue.main.async &#123; handler(res) &#125;
-            &#125; else &#123;
-                DispatchQueue.main.async &#123; handler(nil) &#125;
-            &#125;
-        &#125;
-        task.resume()
-    &#125;
-&#125;
-</code></pre>
-<p>因为面向协议，我们利用协议提供公用网络请求能力</p>
-<p>其中 Response 就是相应模型的具体类型</p>
-<h3 id="应用层调用"><a href="#应用层调用" class="headerlink" title="应用层调用"></a>应用层调用</h3><pre><code>override func viewDidLoad() &#123;
-    super.viewDidLoad()
-    let request = LGPersonRequest(name: &quot;Cooci&quot;)
-    request.send &#123; (person) in
-        self.updataUI(person: person!)
-    &#125;
-&#125;
-</code></pre>
-<ul>
-<li>应用层与网络层完全分隔开来</li>
-<li>应用层只提供必要的参数信息，具体调用哪个接口，怎么处理交给下层</li>
-<li>LGPersonRequest 模块信息处理提供层</li>
-<li>LGPersonRequest 同时还具备调用网络能力</li>
-</ul>
-<h3 id="POP网络优化重构"><a href="#POP网络优化重构" class="headerlink" title="POP网络优化重构"></a>POP网络优化重构</h3><p>很显然我们的 LGRequest 这个家伙的能力太强了！能提供信息，还能发起请求，连序列化的处理能力也是由LGRequest提供！优化重构迫在眉睫。。。。</p>
-<h4 id="1：信息提供能力者"><a href="#1：信息提供能力者" class="headerlink" title="1：信息提供能力者"></a>1：信息提供能力者</h4><pre><code>protocol LGRequest &#123;
-    var path: String &#123; get &#125;
-    var method: LGHTTPMethod &#123; get &#125;
-    var parameter: [String: Any] &#123; get &#125;
-    
-    associatedtype Response: LGDecodable
-&#125;
-
-struct LGPersonRequest: LGRequest &#123;
-    typealias Response = LGPerson
-    
-    let name: String
-    var path: String &#123;
-        return &quot;/pythonJson/getTeacherInfo/?username=\(name)&quot;
-    &#125;
-    let method: LGHTTPMethod = .GET
-    let parameter: [String: Any] = [:]
-&#125;
-</code></pre>
-<p>把公共提供的 host 提取出去</p>
-<p>不再提供 LGRequest 网络请求能力</p>
-<p>序列化交付给具体的模型，提供一个序列化能力 LGDecodable</p>
-<pre><code>protocol ClientProtocol &#123;
-    var host: String &#123; get &#125;
-    func send&lt;T: LGRequest&gt;(_ r: T, handler: @escaping (T.Response?) -&gt; Void)
-&#125;
-
-
-class LGClient: ClientProtocol&#123;
-    static let manager = LGClient()
-    let host: String = &quot;http://127.0.0.1:5000&quot;
-    
-    func send&lt;T&gt;(_ r: T, handler: @escaping (T.Response?) -&gt; Void) where T : LGRequest &#123;
-        
-        let url = URL(string: host.appending(r.path))!
-        var request = URLRequest(url: url)
-        request.httpMethod = r.method.rawValue
-        let task = URLSession.shared.dataTask(with: request) &#123;
-            data, response, error in
-            if let data = data, let res = T.Response.parse(data: data) &#123;
-                DispatchQueue.main.async &#123; handler(res) &#125;
-            &#125; else &#123;
-                DispatchQueue.main.async &#123; handler(nil) &#125;
-            &#125;
-        &#125;
-        task.resume()
-    &#125;
-   
-&#125;
-</code></pre>
-<p>提供一个网络管理类 LGClient</p>
-<p>管理网络请求能力和公共提供参数</p>
-<h4 id="2：网络能力提供者"><a href="#2：网络能力提供者" class="headerlink" title="2：网络能力提供者"></a>2：网络能力提供者</h4><pre><code>class LGLoginClient: LGClient &#123;
-    
-    override func send&lt;T&gt;(_ r: T, handler: @escaping (T.Response?) -&gt; Void) where T : LGRequest &#123;
-        
-        switch r.path &#123;
-        case let string where string.contains(&quot;/pythonJson/getTeacherInfo&quot;):
-            print(&quot;123456&quot;)
-            handler(nil)
-        default:
-            let url = URL(string: host.appending(r.path))!
-            var request = URLRequest(url: url)
-            request.httpMethod = r.method.rawValue
-            let task = URLSession.shared.dataTask(with: request) &#123;
-                data, response, error in
-                if let data = data, let res = T.Response.parse(data: data) &#123;
-                    DispatchQueue.main.async &#123; handler(res) &#125;
-                &#125; else &#123;
-                    DispatchQueue.main.async &#123; handler(nil) &#125;
-                &#125;
-            &#125;
-            task.resume()
-        &#125;
-
-    &#125;
-&#125;
-</code></pre>
-<p>模块网路能力层LGLoginClient重写，根据不同的接口分块处理</p>
-<p>其中序列化层交给泛型模型 (T.Response) 处理</p>
-<p>当然大家这里还可以将网络能力继续下沉，就给具体网络综合请求者去处理</p>
-<h4 id="3：序列化能力提供层"><a href="#3：序列化能力提供层" class="headerlink" title="3：序列化能力提供层"></a>3：序列化能力提供层</h4><pre><code>extension LGPerson: LGDecodable &#123;
-    static func parse(data: Data) -&gt; LGPerson? &#123;
-        return LGPerson(data: data)
-    &#125;
-&#125;
-</code></pre>
-<p>这里序列化就简单表达了，大家可以调用一些优化的三方框架</p>
-<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>POP网络，让应用层与网络层完全脱离！</p>
-<p>面向协议的编程方式来提供能力，大大拓展了复用性，同时耦合度也得以处理！</p>
-<p>同时这个模型（应用层 -&gt; 信息提供层 -&gt; 网络层） 编程思维也是比较容易理解，操作更容易上手！</p>
-<p>还有这样的编程习惯也符合开发流程（一般都是由后台开发人员做出相应接口，我们才会去做网络调试）</p>
-<p>后期维护简单，后期更改，我们只需要对信息提供层处理响应配置，根本不需要去动应用层或者网络层</p>
-<p>当然这也是主流开发思维，作为一名中高级iOS开发人员不动 POP网络编程 那么我估计你需要好好学习咯</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2020/03/08/%20Swift%E9%9D%A2%E5%90%91%E5%8D%8F%E8%AE%AE%E7%BC%96%E7%A8%8B/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/5/">Next &amp;raquo;</a>
@@ -2958,6 +2702,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">爬虫</a>
               </li>
              
               <li class="article-tag-list-item">

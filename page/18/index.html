@@ -152,6 +152,167 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-利用消息转发机制防止Crach" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/27/%E5%88%A9%E7%94%A8%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E6%9C%BA%E5%88%B6%E9%98%B2%E6%AD%A2Crach/">利用消息转发机制与Try Catch代码块防止崩溃</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/27/%E5%88%A9%E7%94%A8%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E6%9C%BA%E5%88%B6%E9%98%B2%E6%AD%A2Crach/" class="archive-article-date">
+  	<time datetime="2018-11-27T05:56:33.952Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-27</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h2><p>在实际应用中我们经常遇到程序崩溃的问题：例如数组下标越界、字符串下标越界、调用了未识别的方法等等，这给我们带来的很多困扰。</p>
+<p>然而这种情况其实我们不仅可以避免而且我们可以做到更健壮的，尤其是开发过程中对于此种情况崩溃的定位是很有帮助的。</p>
+<p>首先说说消息转发机制：<br>程序在崩溃前系统会给你3次机会进行补救, 可以通过重写</p>
+<pre><code>+ (BOOL)resolveInstanceMethod:(SEL)aSEL
+</code></pre>
+<p>也可以通过重写</p>
+<pre><code>- (id)forwardingTargetForSelector:(SEL)aSelector
+</code></pre>
+<p>还可以重写</p>
+<pre><code>- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
+
+- (void)forwardInvocation:(NSInvocation *)invocation
+</code></pre>
+<p>但是我们一般都是采用第三种模式。因为前两种方式信息量不够，它们只有一个SEL类型的参数, 也就是只能知道调用了哪个方法而不知道是谁调用的, 也就是不知道target是谁, 那么在这里去addMethod是没法做到通用的, 因为你连target都不知道.怎么能准确给出程序想要的去处呢! 而且, 实践时候发现forwardingTargetForSelector会拦截很多系统的方法, 可能是在这里进行重定向, 所以也不适合拦截这个方法.</p>
+<p>我们通过运行时的黑魔法来交换两个方法实现拦截系统的forwardInvocation和methodSignatureForSelector的目的。</p>
+<p>1.首先我们新建一个NSObject的Category<br>在.m文件中导入</p>
+<pre><code>#import &lt;objc/runtime.h&gt;
+</code></pre>
+<p>然后开始你的表演</p>
+<pre><code>static NSString *errorMsg;
+void dynamicMethodIMP(id self,SEL _cmd)&#123;
+
+    NSString *error = [NSString stringWithFormat:@&quot;errorClass-&gt;:%@\n errorFuction-&gt;%@\n errorReason-&gt;UnRecognized Selector&quot;,NSStringFromClass([self class]),errorMsg];
+#ifdef DEBUG
+    NSLog(@&quot;---%@---&quot;,error);
+#else
+    NSLog(@&quot;+++%@+++&quot;,error);
+#endif
+
+&#125;
+#pragma mark 方法调换
+static inline void change_method(Class _originalClass ,SEL _originalSel,Class _newClass ,SEL _newSel)&#123;
+    Method methodOriginal = class_getInstanceMethod(_originalClass, _originalSel);
+    Method methodNew = class_getInstanceMethod(_newClass, _newSel);
+    method_exchangeImplementations(methodOriginal, methodNew);
+&#125;
+
+@implementation NSObject (UnRecognizedSelHandler)
++ (void)load&#123;
+
+    change_method([self class], @selector(methodSignatureForSelector:), [self class], @selector(GLL_methodSignatureForSelector:));
+
+    change_method([self class], @selector(forwardInvocation:), [self class], @selector(GLL_forwardInvocation:));
+&#125;
+
+- (NSMethodSignature *)GLL_methodSignatureForSelector:(SEL)aSelector&#123;
+    if (![self respondsToSelector:aSelector]) &#123;
+        errorMsg = NSStringFromSelector(aSelector);
+        NSMethodSignature *methodSignature = [self GLL_methodSignatureForSelector:aSelector];
+        if (class_addMethod([self class], aSelector, (IMP)dynamicMethodIMP, &quot;v@:&quot;)) &#123;//方法参数的获取存在问题
+            NSLog(@&quot;临时方法添加成功！&quot;);
+        &#125;
+        if (!methodSignature) &#123;
+            methodSignature = [self GLL_methodSignatureForSelector:aSelector];
+        &#125;
+
+        return methodSignature;
+
+    &#125;else&#123;
+        return [self GLL_methodSignatureForSelector:aSelector];
+    &#125;
+&#125;
+
+- (void)GLL_forwardInvocation:(NSInvocation *)anInvocation&#123;
+    SEL selector = [anInvocation selector];
+    if ([self respondsToSelector:selector]) &#123;
+        [anInvocation invokeWithTarget:self];
+    &#125;else&#123;
+        [self GLL_forwardInvocation:anInvocation];
+    &#125;
+&#125;
+</code></pre>
+<p>这样当你把这个文件导入到项目中之后，你再去点击一个按钮调用一个根本就不存在的方法，它会把错误日志NSLog出来。</p>
+<p>但是，假如你的问题依然没有解决的话那么请你接着往下看。</p>
+<p>消息转发机制虽然可以扑捉到根本就不存在或者说根本就没有声明的方法，但是当你点击按钮按钮调用一个已经声明却没有实现的方法的时候程序依然崩溃闪退了。于是你就莫名其妙不知道怎么处理了，所以你就用到了下面这个方法：Try Catch代码块。</p>
+<pre><code>语法：
+try
+&#123;
+    //有可能出现错误的代码写在这里
+&#125;
+catch
+&#123;
+    //出错后的处理
+&#125;
+</code></pre>
+<p>如果try中的代码没有出错，则程序正常运行try中的内容后，不会执行catch中的内容，</p>
+<p>如果try中的代码一但出错，程序立即跳入catch中去执行代码，那么try中出错代码后的所有代码就不再执行了.</p>
+<p>catch(…)能够捕获多种数据类型的异常对象，所以它提供给程序员一种对异常对象更好的控制手段，使开发的软件系统有很好的可靠性。因此一个比较有经验的程序员通常都会这样组织编写它的代码模块。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/27/%E5%88%A9%E7%94%A8%E6%B6%88%E6%81%AF%E8%BD%AC%E5%8F%91%E6%9C%BA%E5%88%B6%E9%98%B2%E6%AD%A2Crach/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-理解 Swift 中的元类型：.Type 与 .self" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -2254,145 +2415,6 @@ UIGraphicsEndImageContext();
 
 
   
-    <article id="post-一些常见的跳转" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/11/04/%E4%B8%80%E4%BA%9B%E5%B8%B8%E8%A7%81%E7%9A%84%E8%B7%B3%E8%BD%AC/">一些常见的跳转</a>
-    </h1>
-  
-
-        
-        <a href="/2018/11/04/%E4%B8%80%E4%BA%9B%E5%B8%B8%E8%A7%81%E7%9A%84%E8%B7%B3%E8%BD%AC/" class="archive-article-date">
-  	<time datetime="2018-11-04T15:18:17.304Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li>跳转评论、详情</li>
-</ul>
-<p>跳转到详情</p>
-<pre><code>NSString *str = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/cn/app/id%@?mt=8&quot;, AppId];
-UIApplication *app = [UIApplication sharedApplication];
-NSURL *url = [NSURL URLWithString:str];
-if ([app canOpenURL:url]) &#123;
-    [app openURL:url];
-&#125;
-</code></pre>
-<p>跳转到评论</p>
-<pre><code>NSString *str = [NSString stringWithFormat: @&quot;itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&amp;id=%@&quot;, AppId];
-UIApplication *app = [UIApplication sharedApplication];
-NSURL *url = [NSURL URLWithString:str];
-if ([app canOpenURL:url]) &#123;
-     [app openURL:url];
-&#125;
-</code></pre>
-<ul>
-<li><p>弹出电话</p>
-<pre><code>  @property (nonatomic, strong) UIWebView *webView;
-
-
-
-  - (UIWebView *)webView
-  &#123;
-      if(!_webView)
-      &#123;
-          _webView = [[UIWebView alloc] initWithFrame:CGRectZero];
-      &#125;
-      return _webView;
-  &#125;
-  
-  // 客服电话
-  [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@&quot;tel://%@&quot;, self.lbl_Telphone.text]]]];
-</code></pre>
-</li>
-<li><p>跳转QQ</p>
-<pre><code>  NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@&quot;mqq://im/chat?chat_type=wpa&amp;uin=%@&amp;version=1&amp;src_type=web&quot;, self.qq]];
-  
-  [self.webView loadRequest:[NSURLRequest requestWithURL:url]];
-  
-</code></pre>
-</li>
-<li><p>跳转微信</p>
-<pre><code>  NSString *str =@&quot;weixin://qr/JnXv90fE6hqVrQOU9yA0&quot;;
-  [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:str]]];
-</code></pre>
-</li>
-<li><p>跳转到微信公众号</p>
-</li>
-</ul>
-<p>注：跳转到微信公众号，首先需要到微信开发平台，绑定对应的公众号</p>
-<pre><code>if ([WXApi isWXAppInstalled]) &#123;
-     JumpToBizProfileReq *req = [[JumpToBizProfileReq alloc]init];
-     req.username = @&quot;公众号原始ID&quot;;
-      req.extMsg = @&quot;&quot;;
-     req.profileType =0;
-     [WXApi sendReq:req];
-&#125; else &#123;
-     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-     [pasteboard setString:self.weChatID];
-     [QQMMessage showSuccessMessage:@&quot;已复制公众号&quot;];
-&#125;
-</code></pre>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">iOS</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/11/04/%E4%B8%80%E4%BA%9B%E5%B8%B8%E8%A7%81%E7%9A%84%E8%B7%B3%E8%BD%AC/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/17/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="page-number" href="/page/17/">17</a><span class="page-number current">18</span><a class="page-number" href="/page/19/">19</a><a class="page-number" href="/page/20/">20</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/19/">Next &amp;raquo;</a>
@@ -2567,6 +2589,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">数据库</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">爬虫</a>
               </li>
              
               <li class="article-tag-list-item">
