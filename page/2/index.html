@@ -152,6 +152,90 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-小程序常用基础语法精选" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/04/20/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B8%B8%E7%94%A8%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95%E7%B2%BE%E9%80%89/">小程序常用基础语法精选</a>
+    </h1>
+  
+
+        
+        <a href="/2022/04/20/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B8%B8%E7%94%A8%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95%E7%B2%BE%E9%80%89/" class="archive-article-date">
+  	<time datetime="2022-04-20T02:13:07.353Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-04-20</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在看小程序文档整理下简单的语法场景</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--index.wxml--&gt;</span><br><span class="line">&lt;!-- 模板导入 --&gt;</span><br><span class="line">&lt;!-- 于此对应的还有 include 可以将目标文件除了 &lt;template/&gt; &lt;wxs/&gt; 外的整个代码引入，相当于是拷贝到 include 位置 --&gt;</span><br><span class="line">&lt;import src=&quot;../temp.wxml&quot; /&gt;</span><br><span class="line">&lt;view class=&quot;container&quot;&gt;</span><br><span class="line">    &lt;view&gt;首页&lt;/view&gt;</span><br><span class="line"></span><br><span class="line">  &lt;!-- 花括号和引号之间如果有空格，将最终被解析成为字符串 --&gt;</span><br><span class="line">    &lt;view&gt;&#123;&#123;deviceInfo.system&#125;&#125;&lt;/view&gt;</span><br><span class="line">    &lt;van-toast id=&quot;van-toast&quot; /&gt;</span><br><span class="line">    &lt;van-button type=&quot;primary&quot; bind:click=&quot;goNext&quot;&gt;跳转&lt;/van-button&gt;</span><br><span class="line"></span><br><span class="line">  &lt;!-- 组件属性 注意如果是：关键字(需要在双引号之内) 特别注意：不要直接写 checked=&quot;false&quot;，其计算结果是一个字符串，转成 boolean 类型后代表真值--&gt;</span><br><span class="line">  &lt;view id=&quot;item-&#123;&#123;id&#125;&#125;&quot; data-id=&#x27;&#123;&#123;id&#125;&#125;&#x27; bindtap=&#x27;getCustomProperties&#x27;&gt;点击我获取自定义属性&lt;/view&gt;</span><br><span class="line">  &lt;checkbox checked=&quot;&#123;&#123;false&#125;&#125;&quot;&gt; &lt;/checkbox&gt;</span><br><span class="line">  &lt;checkbox checked=&quot;&#123;&#123;true&#125;&#125;&quot;&gt; &lt;/checkbox&gt;</span><br><span class="line">  &lt;!-- 三元运算 --&gt;</span><br><span class="line">  &lt;view hidden=&quot;&#123;&#123;flag ? true : false&#125;&#125;&quot;&gt; Hidden &lt;/view&gt;</span><br><span class="line">  &lt;!-- 加减运算 3+5+d 4+d--&gt;</span><br><span class="line">  &lt;view&gt; &#123;&#123;a + b&#125;&#125; + &#123;&#123;c&#125;&#125; + d &lt;/view&gt;</span><br><span class="line">  &lt;view&gt; &#123;&#123;2 + 2&#125;&#125; + d &lt;/view&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 双层循环使用 wx:for-item 可以指定数组当前元素的变量名, 使用 wx:for-index 可以指定数组当前下标的变量名 --&gt;</span><br><span class="line">    &lt;view wx:for=&quot;&#123;&#123;[1, 2, 3, 4, 5, 6, 7, 8, 9]&#125;&#125;&quot; wx:for-item=&quot;i&quot; wx:key=&quot;*this&quot;&gt;</span><br><span class="line">        &lt;view wx:for=&quot;&#123;&#123;[1, 2, 3, 4, 5, 6, 7, 8, 9]&#125;&#125;&quot; wx:for-item=&quot;j&quot; wx:key=&quot;*this&quot;&gt;</span><br><span class="line">            &lt;text&gt; &#123;&#123;i&#125;&#125; * &#123;&#123;j&#125;&#125; = &#123;&#123;i * j&#125;&#125;&lt;/text&gt;</span><br><span class="line">        &lt;/view&gt;</span><br><span class="line">    &lt;/view&gt;</span><br><span class="line">  &lt;!-- wx:for 渲染一个包含多节点的结构块 --&gt;</span><br><span class="line">  &lt;!-- 如不提供 wx:key（建议每个wx:for写上wx:key），会报一个 warning *this 代表在 for 循环中的 item 本身，这种表示需要 item 本身是一个唯一的字符串或者数字 --&gt;</span><br><span class="line">  &lt;block wx:for=&quot;&#123;&#123;[4, 5, 6]&#125;&#125;&quot; wx:key=&quot;*this&quot;&gt;</span><br><span class="line">    &lt;view&gt; &#123;&#123;index&#125;&#125;---&#123;&#123;item&#125;&#125;--节点 &lt;/view&gt;</span><br><span class="line">  &lt;/block&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- 模板语法 --&gt;</span><br><span class="line">    &lt;template is=&quot;a&quot; data=&quot;&#123;&#123;...item&#125;&#125;&quot; /&gt;</span><br><span class="line">    &lt;template is=&quot;b&quot; data=&quot;&#123;&#123;...item&#125;&#125;&quot; /&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- wx:if 条件渲染语法的使用 --&gt;</span><br><span class="line">    &lt;view wx:if=&quot;&#123;&#123;5 &gt; 6&#125;&#125;&quot;&gt; 1 &lt;/view&gt;</span><br><span class="line">    &lt;view wx:elif=&quot;&#123;&#123;5 &gt; 2&#125;&#125;&quot;&gt; 5 &lt;/view&gt;</span><br><span class="line">    &lt;view wx:else&gt; 3 &lt;/view&gt;</span><br><span class="line">&lt;/view&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">data: &#123;</span><br><span class="line">  id: 0,</span><br><span class="line">  flag: true,</span><br><span class="line">  a: 1,</span><br><span class="line">  b:2,</span><br><span class="line">  c:5,</span><br><span class="line">  // 模板数据</span><br><span class="line">  item: &#123;</span><br><span class="line">    index: 0,</span><br><span class="line">    msg: &#x27;this is a template&#x27;,</span><br><span class="line">    time: &#x27;2016-09-15&#x27;</span><br><span class="line">  &#125;,</span><br><span class="line">  deviceInfo: &#123;&#125;,</span><br><span class="line">  userInfo: &#123;&#125;,</span><br><span class="line">  hasUserInfo: false,</span><br><span class="line">  canIUse: wx.canIUse(&#x27;button.open-type.getUserInfo&#x27;)</span><br><span class="line">&#125;,</span><br><span class="line">getCustomProperties(e)&#123;</span><br><span class="line">  console.log(e.currentTarget.id,&#x27;组件属性(比如id=xx)获取&#x27;)</span><br><span class="line">  console.log(e.currentTarget.dataset.id,&#x27;自定义属性(data-xxx)获取&#x27;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--pages/temp.wxml--&gt;</span><br><span class="line">&lt;!-- 模板a name字段区分模板 --&gt;</span><br><span class="line">&lt;template name=&quot;a&quot;&gt;</span><br><span class="line">  &lt;view&gt;</span><br><span class="line">    &lt;text&gt; &#123;&#123;index&#125;&#125;: &#123;&#123;msg&#125;&#125; &lt;/text&gt;</span><br><span class="line">    &lt;text&gt; Time: &#123;&#123;time&#125;&#125; &lt;/text&gt;</span><br><span class="line">  &lt;/view&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 模板b name字段区分模板 --&gt;</span><br><span class="line">&lt;template name=&quot;b&quot;&gt;</span><br><span class="line">  &lt;view&gt;</span><br><span class="line">    &lt;text&gt; &#123;&#123;index&#125;&#125;: &#123;&#123;msg&#125;&#125; &lt;/text&gt;</span><br><span class="line">    &lt;text&gt; Time: &#123;&#123;time&#125;&#125; &lt;/text&gt;</span><br><span class="line">  &lt;/view&gt;</span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure>
+
+<p> <strong>页面传参 取参</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">goNext()&#123;</span><br><span class="line">  wx.navigateTo(&#123;</span><br><span class="line">    url: &quot;../test/test?id=12&quot;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/**</span><br><span class="line"> * 生命周期函数--监听页面加载</span><br><span class="line"> */</span><br><span class="line">onLoad: function (options) &#123;</span><br><span class="line">  console.log(options,&#x27;options.xx就可以获取上一个页面带过来的参数&#x27;)</span><br><span class="line">&#125;,</span><br></pre></td></tr></table></figure>
+
+
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">小程序</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/04/20/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B8%B8%E7%94%A8%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95%E7%B2%BE%E9%80%89/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-小程序API封装二" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -1374,227 +1458,6 @@ label.textColor = .playAndroidTitle
 
 
   
-    <article id="post-Android中的轻量级指针" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/08/Android%E4%B8%AD%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%8C%87%E9%92%88/">android中的轻量级指针</a>
-    </h1>
-  
-
-        
-        <a href="/2021/10/08/Android%E4%B8%AD%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%8C%87%E9%92%88/" class="archive-article-date">
-  	<time datetime="2021-10-08T06:45:30.204Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-08</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="智能指针来源"><a href="#智能指针来源" class="headerlink" title="智能指针来源"></a>智能指针来源</h2><p>由于android系统底层的很大的一部分是用C++实现的，C++的开发就难免会使用到指针的这个知识 点。而C++的难点和容易出问题的也在于指针。使用指针出错，常常会引发带来对项目具有毁灭性的错误，内存泄漏、逻辑错误、系统崩溃。</p>
-<p>引发指针错误情况表现常常有如下几个表现情况：</p>
-<p>1.申请了内存空间，但是忘记释放指针所指向的对象占用的内存空间。</p>
-<p>2.使用了无效的指针。</p>
-<p>因此在android的C++代码部分采用了智能指针的技术。智能指针通过一种能够自动危害对象引用计数的技术。来解决C++中指针存在的缺陷问题。</p>
-<p>在android系统中提供了三种类型的C++智能指针，分别为：轻量级智能指针、强指针、弱指针。<br>下面主要通过进行分析轻量级指针的实现原理。</p>
-<h2 id="轻量级指针"><a href="#轻量级指针" class="headerlink" title="轻量级指针"></a>轻量级指针</h2><p>轻量级指针就是通过利用简单的引用计数计数类维护对象的生命周期，如果一个类的对象支持使用轻量级指针，那么它就必须要从LightRefBase类进行继承，因为这个LightRefBase类提供了一个简单的引用计数器。</p>
-<h2 id="LightRefBase类定义"><a href="#LightRefBase类定义" class="headerlink" title="LightRefBase类定义"></a>LightRefBase类定义</h2><p>下面的源码主要依据android5.0的源码进行分析的。LightRefBase类的定义在android系统中的\frameworks\rs\cpp\util\RefBase.h 这个文件中。</p>
-<p>LightRefBase类也是一个模板类。模板参数T表示对象的实际类型，它必须进行对LightRefBase这个类继承。</p>
-<pre><code>//模板类
-template &lt;class T&gt;
-class LightRefBase
-&#123;
-public:
-    //公共的内联函数
-    inline LightRefBase() : mCount(0) &#123; &#125;
-    inline void incStrong(__attribute__((unused)) const void* id) const &#123;
-        __sync_fetch_and_add(&amp;mCount, 1);
-    &#125;
-    inline void decStrong(__attribute__((unused)) const void* id) const &#123;
-        if (__sync_fetch_and_sub(&amp;mCount, 1) == 1) &#123;
-            delete static_cast&lt;const T*&gt;(this);
-        &#125;
-    &#125;
-    //! DEBUGGING ONLY: Get current strong ref count.
-    inline int32_t getStrongCount() const &#123;
-        return mCount;
-    &#125;
-
-    typedef LightRefBase&lt;T&gt; basetype;
-
-protected:
-    //内联的虚构函数
-    inline ~LightRefBase() &#123; &#125;
-
-private:
-    friend class ReferenceMover;
-    inline static void moveReferences(void*, void const*, size_t,
-            const ReferenceConverterBase&amp;) &#123; &#125;
-
-private:
-    mutable volatile int32_t mCount;
-&#125;;
-</code></pre>
-<p>上面LightRefBase类定义涉及到几个知识点：</p>
-<p>1、C++的三个访问权限类型：public、protected、private。</p>
-<p>public:可以被任意实体访问。 protected:只允许子类及本类的成员函数访问。 private:只允许本类的成员函数访问。</p>
-<p>2、C++中的inline内联函数 在函数第一部分如果包含有inline关键字的函数，那么这个函数就表示为内联函数。内联函数主要为了解决一些频繁调用的小函数大量消耗栈空间（栈内存）的问题。</p>
-<p>inline的使用是有所限制的，inline只适合涵数体内代码简单的涵数使用，不能包含复杂的结构控制语句例如while、switch，并且不能内联函数本身不能是直接递归函数（递归函数：自己内部还调用自己的函数）。</p>
-<p>3、C++中的friend友元函数</p>
-<p>C++中的友元机制允许类的非公有成员被一个类或者函数访问，友元按类型分为三种：普通非类成员函数作为友元,类的成员函数作为友元，类作为友元。</p>
-<p>友元函数是可以直接访问类的私有成员的非成员函数。它是定义在类外的普通函数，它不属于任何类，但需要在类的定义中加以声明，声明时只需在友元的名称前加上关键字friend。</p>
-<p>4、C++中的mutable关键字<br>mutable是为了突破const的限制而设置的。被mutable修饰的变量，将永远处于可变的状态，即使在一个const函数中。</p>
-<p>5、C++中的template类模板<br>一个类模板（也称为类属类或类生成类）同意用户为类定义一种模式。使得类中的某些数据成员、默写成员函数的參数、某些成员函数的返回值，能够取随意类型（包含系统提前定义的和用户自己定义的）。<br>类模板的应用场景：多个类有着共同操作，但是数据类型不同。</p>
-<h2 id="LightRefBase的实现类"><a href="#LightRefBase的实现类" class="headerlink" title="LightRefBase的实现类"></a>LightRefBase的实现类</h2><p>轻量级LightRefBase类的实现类为wp类，它也是在\frameworks\rs\cpp\util\RefBase.h 这个文件中。wp也是一个模板类，模板参数T表示的是对象的实际类型，它必须继承LightRefBase类。由于wp类也是强指针的实现类，因此我们只需要分析下该wp类中关于轻量级指针类的实现部分就可以了。</p>
-<pre><code>//模板类
-template &lt;typename T&gt;
-class wp
-&#123;
-public:
-    typedef typename RefBase::weakref_type weakref_type;
-    //轻量级指针需要用到的构造函数
-    inline wp() : m_ptr(0) &#123; &#125;
-
-    wp(T* other);
-    wp(const wp&lt;T&gt;&amp; other);
-    wp(const sp&lt;T&gt;&amp; other);
-    template&lt;typename U&gt; wp(U* other);
-    template&lt;typename U&gt; wp(const sp&lt;U&gt;&amp; other);
-    template&lt;typename U&gt; wp(const wp&lt;U&gt;&amp; other);
-    //轻量级指针需要用到的虚构函数
-    ~wp();
-
-    // Assignment
-
-    wp&amp; operator = (T* other);
-    wp&amp; operator = (const wp&lt;T&gt;&amp; other);
-    wp&amp; operator = (const sp&lt;T&gt;&amp; other);
-
-    template&lt;typename U&gt; wp&amp; operator = (U* other);
-    template&lt;typename U&gt; wp&amp; operator = (const wp&lt;U&gt;&amp; other);
-    template&lt;typename U&gt; wp&amp; operator = (const sp&lt;U&gt;&amp; other);
-
-    void set_object_and_refs(T* other, weakref_type* refs);
-
-    // promotion to sp
-
-    sp&lt;T&gt; promote() const;
-
-    // Reset
-
-    void clear();
-
-    // Accessors
-
-    inline  weakref_type* get_refs() const &#123; return m_refs; &#125;
-
-    inline  T* unsafe_get() const &#123; return m_ptr; &#125;
-
-    // Operators
-
-    COMPARE_WEAK(==)
-    COMPARE_WEAK(!=)
-    COMPARE_WEAK(&gt;)
-    COMPARE_WEAK(&lt;)
-    COMPARE_WEAK(&lt;=)
-    COMPARE_WEAK(&gt;=)
-
-    inline bool operator == (const wp&lt;T&gt;&amp; o) const &#123;
-        return (m_ptr == o.m_ptr) &amp;&amp; (m_refs == o.m_refs);
-    &#125;
-    template&lt;typename U&gt;
-    inline bool operator == (const wp&lt;U&gt;&amp; o) const &#123;
-        return m_ptr == o.m_ptr;
-    &#125;
-
-    inline bool operator &gt; (const wp&lt;T&gt;&amp; o) const &#123;
-        return (m_ptr == o.m_ptr) ? (m_refs &gt; o.m_refs) : (m_ptr &gt; o.m_ptr);
-    &#125;
-    template&lt;typename U&gt;
-    inline bool operator &gt; (const wp&lt;U&gt;&amp; o) const &#123;
-        return (m_ptr == o.m_ptr) ? (m_refs &gt; o.m_refs) : (m_ptr &gt; o.m_ptr);
-    &#125;
-
-    inline bool operator &lt; (const wp&lt;T&gt;&amp; o) const &#123;
-        return (m_ptr == o.m_ptr) ? (m_refs &lt; o.m_refs) : (m_ptr &lt; o.m_ptr);
-    &#125;
-    template&lt;typename U&gt;
-    inline bool operator &lt; (const wp&lt;U&gt;&amp; o) const &#123;
-        return (m_ptr == o.m_ptr) ? (m_refs &lt; o.m_refs) : (m_ptr &lt; o.m_ptr);
-    &#125;
-                         inline bool operator != (const wp&lt;T&gt;&amp; o) const &#123; return m_refs != o.m_refs; &#125;
-    template&lt;typename U&gt; inline bool operator != (const wp&lt;U&gt;&amp; o) const &#123; return !operator == (o); &#125;
-                         inline bool operator &lt;= (const wp&lt;T&gt;&amp; o) const &#123; return !operator &gt; (o); &#125;
-    template&lt;typename U&gt; inline bool operator &lt;= (const wp&lt;U&gt;&amp; o) const &#123; return !operator &gt; (o); &#125;
-                         inline bool operator &gt;= (const wp&lt;T&gt;&amp; o) const &#123; return !operator &lt; (o); &#125;
-    template&lt;typename U&gt; inline bool operator &gt;= (const wp&lt;U&gt;&amp; o) const &#123; return !operator &lt; (o); &#125;
-
-private:
-    template&lt;typename Y&gt; friend class sp;
-    template&lt;typename Y&gt; friend class wp;
-    //轻量级指针会用到的变量m_ptr
-    T*              m_ptr;
-    weakref_type*   m_refs;
-&#125;;
-</code></pre>
-<p>##总结</p>
-<p>通过前面的概念和系统源码实现功能原理分析，我们如果要使用轻量级指针的话，那么要包含头文件并采用继承LightRefBase类的方式，那么就可以使用轻量级指针的功能了。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">Android</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/08/Android%E4%B8%AD%E7%9A%84%E8%BD%BB%E9%87%8F%E7%BA%A7%E6%8C%87%E9%92%88/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/23/">23</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
@@ -1609,7 +1472,7 @@ private:
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2023 wangjungang
+    		&copy; 2024 wangjungang
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
@@ -1708,11 +1571,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
+                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CocoaPods</a>
+                <a href="javascript:void(0)" class="js-tag color5">数据结构</a>
               </li>
              
               <li class="article-tag-list-item">
